@@ -21,57 +21,6 @@ local function norm(x,z)
     return x/l,z/l
 end
 local function dot(ax,az,bx,bz) return ax*bx+az*bz end
-local function clamp(v,a,b) if v<a then return a elseif v>b then return b else return v end end
-local function pointSegmentDistance(px,pz,ax,az,bx,bz)
-    local vx,vz=bx-ax,bz-az
-    local l2=vx*vx+vz*vz
-    if l2<=0.000000000001 then local dx,dz=px-ax,pz-az; return math.sqrt(dx*dx+dz*dz) end
-    local t=clamp(((px-ax)*vx+(pz-az)*vz)/l2,0,1)
-    local qx,qz=ax+t*vx,az+t*vz
-    local dx,dz=px-qx,pz-qz
-    return math.sqrt(dx*dx+dz*dz)
-end
-
-local function rayCircleEntry(px,pz,dx,dz,cx,cz,r)
-    local qx,qz=px-cx,pz-cz
-    local c=qx*qx+qz*qz-r*r
-    if c<=0 then return 0 end
-    local b=qx*dx+qz*dz
-    local disc=b*b-c
-    if disc<0 then return nil end
-    local t=-b-math.sqrt(disc)
-    if t>=0 then return t end
-    local t2=-b+math.sqrt(disc)
-    if t2>=0 then return t2 end
-    return nil
-end
-
--- Compatibility facade; pure geometry ownership lives in Situation/Assessment.
-function Probe.rayCapsuleEntry(...) return OuttaMyWay.ProgressionGeometry.rayCapsuleEntry(...) end
-
-local function rayExpandedBoxEntry(px,pz,dx,dz,box,radius)
-    local fx,fz=norm(box.forwardX,box.forwardZ); if fx==nil then return nil,"INVALID_BOX_FRAME" end
-    local lx,lz=-fz,fx
-    local rx,rz=px-box.originX,pz-box.originZ
-    local ox=dot(rx,rz,fx,fz); local oy=dot(rx,rz,lx,lz)
-    local vx=dot(dx,dz,fx,fz); local vy=dot(dx,dz,lx,lz)
-    local minX,maxX=box.minForward-radius,box.maxForward+radius
-    local minY,maxY=box.minLateral-radius,box.maxLateral+radius
-    if ox>=minX and ox<=maxX and oy>=minY and oy<=maxY then return 0,"ALREADY_INTERSECTING_COARSE_ENVELOPE" end
-    local tmin,tmax=0,math.huge
-    local function slab(o,v,mn,mx)
-        if math.abs(v)<0.0000001 then return o>=mn and o<=mx,nil,nil end
-        local a,b=(mn-o)/v,(mx-o)/v; if a>b then a,b=b,a end
-        return true,a,b
-    end
-    local ok,a,b=slab(ox,vx,minX,maxX); if not ok then return nil,"NO_POSITIVE_COARSE_ENVELOPE_INTERSECTION" end
-    if a~=nil then tmin=math.max(tmin,a); tmax=math.min(tmax,b) end
-    ok,a,b=slab(oy,vy,minY,maxY); if not ok then return nil,"NO_POSITIVE_COARSE_ENVELOPE_INTERSECTION" end
-    if a~=nil then tmin=math.max(tmin,a); tmax=math.min(tmax,b) end
-    if tmax>=tmin and tmax>=0 then return math.max(0,tmin),"RAY_COARSE_ENVELOPE_ENTRY" end
-    return nil,"NO_POSITIVE_COARSE_ENVELOPE_INTERSECTION"
-end
-
 local function positiveDiscs(physical)
     local out={}
     for _,p in OuttaMyWay.ValueRecord.ipairs(physical and physical.primitives or {}) do
@@ -161,42 +110,13 @@ local function demandRegions(idx,picture,subjectId,className,bucket)
     return regions
 end
 
-local function maturationRegions(self,idx,subjectId)
-    local regions={}
-    if self.headlandProbe==nil or OuttaMyWay.NativeManoeuvreObservationSource==nil then return regions end
-    for targetId,motion in pairs(idx.motion) do
-        if targetId~=subjectId and motion.intentValid==true and motion.localIntentClassification=="SETTLED_CONTINUATION" and motion.assemblyReferenceKey~=nil and motion.sourceJobToken~=nil then
-            local demos=self.headlandProbe:getObservations(motion.assemblyReferenceKey,motion.sourceJobToken)
-            local demand=OuttaMyWay.NativeManoeuvreObservationSource.forensicDemandEnvelope(demos)
-            local future=idx.future[targetId]; local alt=firstAlternative(future)
-            if demand~=nil and alt~=nil and finite(alt.startX) and finite(alt.startZ) and finite(alt.headingX) and finite(alt.headingZ) and finite(alt.boundaryDistance) then
-                local hx,hz=norm(alt.headingX,alt.headingZ)
-                if hx~=nil then
-                    local approach=math.max(0,alt.boundaryDistance-demand.entryBoundaryDistanceM)
-                    local signature=string.format("%s|%s|%s|%.3f|%.3f|%.3f|%.3f|%.3f",tostring(motion.sourceJobToken),tostring(motion.intentEpoch),tostring(demand.count),demand.entryBoundaryDistanceM,demand.sweep.minForward,demand.sweep.maxForward,demand.sweep.minLateral,demand.sweep.maxLateral)
-                    regions[#regions+1]={
-                        identity="MATURATION_WITNESS|"..tostring(targetId),groupIdentity="MATURATION_WITNESS|"..tostring(targetId),class="MATURATION_WITNESS",targetAssemblyId=targetId,targetName=motion.name or tostring(targetId),kind="BOX",
-                        originX=alt.startX+hx*approach,originZ=alt.startZ+hz*approach,forwardX=hx,forwardZ=hz,
-                        minForward=demand.sweep.minForward,maxForward=demand.sweep.maxForward,minLateral=demand.sweep.minLateral,maxLateral=demand.sweep.maxLateral,
-                        validityKey=signature,authority="COARSE_UNCONTAMINATED_DEMONSTRATED_DEMAND_WITNESS",negativeClearanceAuthority=false,
-                        purpose="PRESERVE_NATIVE_BOUNDARY_MATURATION",demonstrationCount=demand.count
-                    }
-                end
-            end
-        end
-    end
-    return regions
-end
-
 function Probe.evaluateSubjectAgainstRegion(subject,region)
     if subject==nil or region==nil then return {status="UNRESOLVED",reason="SUBJECT_OR_REGION_UNAVAILABLE"} end
     local best=nil; local bestPrimitive=nil; local bestReason=nil
     for _,p in ipairs(subject.discs or {}) do
         local distance,reason=nil,nil
         if region.kind=="CAPSULE" then
-            distance,reason=Probe.rayCapsuleEntry(p.x,p.z,subject.dx,subject.dz,region.ax,region.az,region.bx,region.bz,(p.radius or 0)+(region.radius or 0))
-        elseif region.kind=="BOX" then
-            distance,reason=rayExpandedBoxEntry(p.x,p.z,subject.dx,subject.dz,region,p.radius or 0)
+            distance,reason=OuttaMyWay.ProgressionGeometry.rayCapsuleEntry(p.x,p.z,subject.dx,subject.dz,region.ax,region.az,region.bx,region.bz,(p.radius or 0)+(region.radius or 0))
         end
         if distance~=nil and (best==nil or distance<best) then best=distance; bestPrimitive=p.identity; bestReason=reason end
     end
@@ -211,8 +131,8 @@ function Probe.evaluateSubjectAgainstRegion(subject,region)
     }
 end
 
-function Probe.new(runtime,headlandProbe)
-    return setmetatable({runtime=runtime,headlandProbe=headlandProbe,active={},lastLogAt={},lastSummaryAt={}},Probe)
+function Probe.new(runtime)
+    return setmetatable({runtime=runtime,active={},lastLogAt={},lastSummaryAt={}},Probe)
 end
 function Probe:reset() self.active={}; self.lastLogAt={}; self.lastSummaryAt={} end
 
@@ -270,7 +190,6 @@ function Probe:observe(snapshot,picture,evaluated,timestampSeconds)
             local potential=demandRegions(idx,picture,assemblyId,"POTENTIAL_DEMAND",picture.demand and picture.demand.potentialDemand)
             for _,r in ipairs(committed) do regions[#regions+1]=r end
             for _,r in ipairs(potential) do regions[#regions+1]=r end
-            for _,r in ipairs(maturationRegions(self,idx,assemblyId)) do regions[#regions+1]=r end
             local classBest={}
             for _,region in ipairs(regions) do
                 local result=Probe.evaluateSubjectAgainstRegion(subject,region)

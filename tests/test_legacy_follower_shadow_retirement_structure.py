@@ -36,9 +36,7 @@ def test_issue87_aligned_follower_boundary_path_remains_current():
     assert "FOLLOWER_BOUNDARY_OWNER_TAG" in authority
     assert "Follower regulation ALIGNED%s | %s for %s | cap %s / native %s km/h" in hud
 
-def test_issue87_separate_native_manoeuvre_and_progression_diagnostics_remain():
+def test_current_progression_diagnostic_remains_wired():
     main = read("scripts/main.lua")
-    assert "scripts/observation/NativeManoeuvreObservationSource.lua" in main
     assert "scripts/diagnostics/ProgressionPreservationProbe.lua" in main
-    assert "OuttaMyWay.nativeManoeuvreObservationSource" in main
     assert "OuttaMyWay.progressionPreservationProbe" in main

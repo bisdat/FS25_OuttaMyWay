@@ -92,11 +92,7 @@ load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
 load("scripts/diagnostics/ProductiveContinuationProbe.lua")
-load("scripts/diagnostics/DemonstratedProductiveCoverageProbe.lua")
 load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
-load("scripts/diagnostics/ProductiveCoverageResidualProbe.lua")
-load("scripts/diagnostics/RefugeQualificationShadowProbe.lua")
-load("scripts/observation/NativeManoeuvreObservationSource.lua")
 load("scripts/diagnostics/ProgressionPreservationProbe.lua")
 load("scripts/control/mechanisms/FieldWorkHoldMechanism.lua")
 load("scripts/control/mechanisms/NativeDriveMechanism.lua")
@@ -2852,49 +2848,14 @@ end)
 
 
 
-test("Native Manoeuvre Observation: deferred native manoeuvre closure freezes measurement while boundary-demand fitness stays unresolved", function()
-    local source=OuttaMyWay.NativeManoeuvreObservationSource.new({})
-    local state={
-        run=91,vehicle={name="Condor"},ref="vehicle-root:91",name="Condor",jobToken="JOB-C",startMs=1000,
-        entryPose={x=0,z=0,dx=1,dz=0},entryBoundaryDistanceM=10,entrySpeedKmh=25,
-        samples={
-            {elapsedMs=0,localEnvelope={minForward=-20,maxForward=20,minLateral=-5,maxLateral=5}},
-            {elapsedMs=200,localEnvelope={minForward=-20,maxForward=20,minLateral=-6,maxLateral=6}}
-        },
-        controlInfluenced=false,phase="WAITING_FOR_EVIDENCE",measurementEndMs=1200,
-        measurementExitPose={x=2,z=0,dx=-1,dz=0}
-    }
-    source.states[state.ref]=state
-    source:_finish(state,1500,{x=20,z=0,dx=-1,dz=0},"GIANTS_TURN_SEGMENT_ENDED_AFTER_WAITING_FOR_EVIDENCE")
-    local observations=source:getObservations(state.ref,"JOB-C")
-    equal(#observations,1)
-    equal(observations[1].durationMs,200)
-    equal(observations[1].exitForwardM,2)
-    equal(observations[1].representationFitnessForBoundaryDemand,"UNRESOLVED")
-    equal(observations[1].boundaryDemandAuthority,false)
-    equal(source.states[state.ref],nil)
-end)
 
 
-test("New turn before settled continuation cannot promote a native manoeuvre observation", function()
-    local source=OuttaMyWay.NativeManoeuvreObservationSource.new({})
-    local state={
-        run=92,vehicle={name="Condor"},ref="vehicle-root:92",name="Condor",jobToken="JOB-C",startMs=1000,
-        entryPose={x=0,z=0,dx=1,dz=0},entryBoundaryDistanceM=10,entrySpeedKmh=25,
-        samples={{elapsedMs=200,localEnvelope={minForward=-20,maxForward=20,minLateral=-5,maxLateral=5}}},
-        controlInfluenced=false,phase="WAITING_FOR_EVIDENCE",measurementEndMs=1200,
-        measurementExitPose={x=2,z=0,dx=-1,dz=0}
-    }
-    source.states[state.ref]=state
-    source:_finish(state,1400,{x=3,z=0,dx=0,dz=1},"NEW_TURN_SEGMENT_BEFORE_SETTLED_CONTINUATION")
-    equal(#source:getObservations(state.ref,"JOB-C"),0)
-end)
 
 
 
 
 test("Progression Geometry: ray-capsule witness distance is geometric and positive-only", function()
-    local d,reason=OuttaMyWay.ProgressionPreservationProbe.rayCapsuleEntry(0,0,1,0,10,0,20,0,2)
+    local d,reason=OuttaMyWay.ProgressionGeometry.rayCapsuleEntry(0,0,1,0,10,0,20,0,2)
     equal(math.abs(d-8)<0.000001,true)
     equal(reason,"RAY_CAPSULE_ENTRY")
 end)
@@ -2919,50 +2880,10 @@ end)
 
 
 
-test("D0134 productive coverage raster paints only cells inside swept marker quadrilateral",function()
-    local previous={left={x=0,z=0},right={x=10,z=0},width=10,source="TEST"}
-    local current={left={x=0,z=5},right={x=10,z=5},width=10,source="TEST"}
-    local cells=OuttaMyWay.DemonstratedProductiveCoverageProbe.rasterizeQuadCells(previous,current,5)
-    equal(#cells,2)
-    equal(OuttaMyWay.DemonstratedProductiveCoverageProbe.coverageClassFromSamples(13,13),"FULL_DEMONSTRATED_PRODUCTIVE_COVERAGE")
-    equal(OuttaMyWay.DemonstratedProductiveCoverageProbe.coverageClassFromSamples(3,13),"PARTIAL_DEMONSTRATED_PRODUCTIVE_COVERAGE")
-    equal(OuttaMyWay.DemonstratedProductiveCoverageProbe.coverageClassFromSamples(0,13),"NO_DEMONSTRATED_PRODUCTIVE_COVERAGE")
-end)
 
-test("D0134 infield shadow candidates point toward Field World centroid without selection authority",function()
-    local candidates=OuttaMyWay.RefugeQualificationShadowProbe.generateInfieldCandidates({x=0,z=0},{x=0,z=100},{20,35})
-    equal(#candidates,2)
-    equal(candidates[1].targetX,0); equal(candidates[1].targetZ,20)
-    equal(candidates[2].targetZ,35)
-    equal(candidates[1].kind,"INFIELD_SHADOW")
-    equal(OuttaMyWay.RefugeQualificationShadowProbe.boundaryDemandClass(8,12),"WITHIN_DEMONSTRATED_BOUNDARY_MANOEUVRE_ENTRY_BAND")
-    equal(OuttaMyWay.RefugeQualificationShadowProbe.boundaryDemandClass(20,12),"BEYOND_DEMONSTRATED_BOUNDARY_MANOEUVRE_ENTRY_BAND")
-end)
 
-test("D0136 geometric residual fill remains supporting evidence rather than settlement authority",function()
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.residualClass(0,0),"NO_COHERENT_PRODUCTIVE_COVERAGE_RESIDUAL")
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.residualClass(8,0),"RESIDUAL_OPEN")
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.residualClass(8,3),"RESIDUAL_PARTIALLY_FILLED")
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.residualClass(8,8),"RESIDUAL_GEOMETRICALLY_FILLED")
-end)
 
-test("D0136 intent settlement requires ordered productive return and Productive-to-turn transition",function()
-    local state={productiveReentryObserved=true,returnConsumptionObserved=true,originReacquired=true}
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.intentSettlementEligible(state,{productivePositive=true,evidenceClass="NON_TURN_LINE_ACTIVE"},{productivePositive=false,evidenceClass="TURN_SEGMENT"}),true)
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.intentSettlementEligible({productiveReentryObserved=true,returnConsumptionObserved=false,originReacquired=true},{productivePositive=true},{productivePositive=false,evidenceClass="TURN_SEGMENT"}),false)
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.intentSettlementEligible(state,{productivePositive=true},{productivePositive=false,evidenceClass="NON_TURN_LINE_INACTIVE"}),false)
-end)
 
-test("D0136 origin reacquisition uses productive sweep cells at coverage representation scale",function()
-    local previous={left={x=0,z=-5},right={x=10,z=-5},width=10,source="TEST"}
-    local current={left={x=0,z=0},right={x=10,z=0},width=10,source="TEST"}
-    local anchorCells=OuttaMyWay.DemonstratedProductiveCoverageProbe.rasterizeQuadCells(previous,current,5)
-    local set={}
-    for _,cell in ipairs(anchorCells) do set[cell.key]=true end
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.sweepIntersectsCellSet(previous,current,5,set),true)
-    local far={left={x=0,z=20},right={x=10,z=20},width=10,source="TEST"}
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.sweepIntersectsCellSet(current,far,5,{["999:999"]=true}),false)
-end)
 
 test("Native Field Worker Drive Command Probe relation remains descriptive only",function()
     local r=OuttaMyWay.NativeFieldWorkerDriveCommandProbe.candidateRelation({valid=true,targetX=10,targetZ=20},16,28)
@@ -2973,27 +2894,7 @@ test("Native Field Worker Drive Command Probe relation remains descriptive only"
     equal(r.routePrediction,false); equal(r.negativeClearanceAuthority,false)
 end)
 
-test("D0137 settlement comparison visibility uses persistent LiveObservationSource track activity",function()
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.trackIsActive({active=true}),true)
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.trackIsActive({activeObserved=true}),false)
-    equal(OuttaMyWay.ProductiveCoverageResidualProbe.trackIsActive({active=false}),false)
-end)
 
-test("D0136 settlement Future-Space adapter preserves representation boundary",function()
-    local field={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},islands={}}
-    local intent={classification="SETTLED_CONTINUATION",intentEpoch=4,intentValid=true}
-    local representation={worldPrimitives={{kind="DISC",identity="track-disc",x=50,z=20,radius=2,positiveConflictSupport=true}}}
-    local track={active=true,localIntent=intent,fieldWorldSnapshot=field,pose={x=50,z=20,dx=0,dz=1},shadowRepresentation=representation}
-    local worker=OuttaMyWay.ProductiveCoverageResidualProbe.futureSpaceWorkerFromTrack(track)
-    equal(worker.activeObserved,true)
-    equal(worker.localIntent,intent)
-    equal(worker.fieldWorldSnapshot,field)
-    equal(worker.assemblyRepresentation,representation)
-    equal(track.activeObserved,nil)
-    local future=OuttaMyWay.FieldBoundedFutureSpace.build(worker)
-    equal(future.bounded,true)
-    equal(future.reason,"SETTLED_GIANTS_LOCAL_INTENT_WITH_FIELD_WORLD_BOUNDARY")
-end)
 
 
 local function buildTrajectoryMotionEvidence(assemblyId,jobToken,dx,dz,speed,interval,nativeRateKmh,localIntentClassification,intentValid,nativeMoveForwards,headingX,headingZ)

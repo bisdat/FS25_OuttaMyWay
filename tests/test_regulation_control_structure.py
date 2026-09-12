@@ -55,11 +55,9 @@ def test_regulation_control_reuses_mechanics_without_owning_policy():
 
 
 def test_production_regulation_vocabulary_and_observation_are_wired():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     coordinator=(ROOT/"scripts"/"runtime"/"LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
-    manoeuvre=(ROOT/"scripts"/"observation"/"NativeManoeuvreObservationSource.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
 
     assert "P22_REGULATION_LEASE" not in authority
@@ -67,13 +65,9 @@ def test_production_regulation_vocabulary_and_observation_are_wired():
     assert 'kind="REGULATION_LEASE"' in authority
     assert "setRegulationControl" in authority
 
-    assert "setRegulationControlObservationSource" in manoeuvre
-    assert "regulationControlObservationSource" in manoeuvre
-    assert "setCapabilityObservationSource" not in manoeuvre
     assert "getRegulationControlObservation" in dispatcher
     assert "getRegulationControlObservation" in coordinator
     assert "appendRegulationControlObservation" in coordinator
-    assert "OuttaMyWay.nativeManoeuvreObservationSource:setRegulationControlObservationSource(OuttaMyWay.regulationControl)" in main
 
 
 def test_p22_is_retired_after_capability_graduation():

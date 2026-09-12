@@ -81,13 +81,8 @@ def test_issue112_graduated_physical_representation_uses_current_names_without_e
     assert "planViewOccupancyEvidence" in live
 
     # Current Interface Identity != Historical Evidence Identity.
-    residual = (ROOT / "scripts" / "diagnostics" / "ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
-    refuge = (ROOT / "scripts" / "diagnostics" / "RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
     native_drive = (ROOT / "scripts" / "diagnostics" / "NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
 
-    assert "assemblyRepresentation=track.shadowRepresentation" in residual
-    assert "track.shadowRepresentation" in residual
-    assert "track.shadowRepresentation" in refuge
     assert "PASSIVE_SHADOW_ONLY" in native_drive
 
 
@@ -126,7 +121,7 @@ def test_retired_unsourced_config_residue_is_removed():
         "scripts/diagnostics/RefugeQualificationShadowProbe.lua",
     ):
         assert rel not in main
-        assert (ROOT / rel).is_file()
+        assert not (ROOT / rel).exists()
 
 
 def test_test_build_identity_has_two_dynamic_source_owners():

@@ -599,22 +599,6 @@ def test_v4742_traffic_policeman_decision_policy_current_implementation_contract
     assert 'PASSIVE_LIVE_ZERO_CONTROL' in passive
 
 
-
-
-
-
-def test_v4756_deferred_native_sweep_closure_is_fail_closed_and_freezes_measurement():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    source=(ROOT/"scripts"/"observation"/"NativeManoeuvreObservationSource.lua").read_text(encoding="utf-8")
-    assert "scripts/observation/NativeManoeuvreObservationSource.lua" in main
-    assert "scripts/diagnostics/HeadlandManoeuvreSweepProbe.lua" not in main
-    assert "WAITING_FOR_EVIDENCE" in source
-    assert "GIANTS_TURN_SEGMENT_ENDED_AFTER_WAITING_FOR_EVIDENCE" in source
-    assert "representationFitnessForBoundaryDemand" in source and "UNRESOLVED" in source
-    assert "boundaryDemandAuthority=false" in source
-
-
-
 def test_d0181_d0143_runtime_literals_and_resurrection_switch_are_retired():
     config=(ROOT/"scripts/config.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts/candidates/LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -634,7 +618,7 @@ def test_d0181_d0143_runtime_literals_and_resurrection_switch_are_retired():
     assert 'bridge.architecture~="COOPERATIVE_PASSAGE"' in runtime
     assert 'kind="COOPERATIVE_PASSAGE"' in runtime
 
-def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
+def test_progression_preservation_diagnostics_consume_current_picture_without_authority():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
@@ -654,49 +638,20 @@ def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
     assert 'negativeClearanceAuthority=false' in probe
     assert 'speedAuthority=false' in probe and 'controlAuthority=false' in probe
     assert 'WITNESS_OPEN' in probe and 'consumedFromBaseline' in probe and 'WITNESS_INVALIDATED' in probe
-    assert 'MATURATION_WITNESS' in probe and 'COMMITTED_DEMAND' in probe and 'CURRENT_SPACE' in probe
+    assert 'POTENTIAL_DEMAND' in probe and 'COMMITTED_DEMAND' in probe and 'CURRENT_SPACE' in probe
 
 
-
-
-def test_v4765_d0136_productive_coverage_residual_settlement_is_intent_based_and_passive():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
-    coverage=(ROOT/"scripts"/"diagnostics"/"DemonstratedProductiveCoverageProbe.lua").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED' not in config
-    assert 'scripts/diagnostics/ProductiveCoverageResidualProbe.lua' not in main
-    assert 'addModEventListener(OuttaMyWay.productiveCoverageResidualProbe)' not in main
-    assert 'FIRST_POSITIVE_PRODUCTIVE_CORRIDOR_BACK_TO_FIELD_WORLD_BOUNDARY' in residual
-    assert 'unpaintedIsNotDemand=true' in residual
-    assert 'interpretation=POTENTIAL_PRODUCTIVE_DEMAND_ONLY' in residual
-    assert 'NATIVE_CONVERGENCE_OBSERVED' in residual
-    assert 'RESIDUAL_INTENT_SETTLED' in residual
-    assert 'RESIDUAL_GEOMETRICALLY_FILLED' in residual
-    assert 'geometricCompletionRequired=false' in residual
-    assert 'PRODUCTIVE_REENTRY_OBSERVED' in residual
-    assert 'COHERENT_RETURN_CONSUMPTION_OBSERVED' in residual
-    assert 'ORIGINATING_PRODUCTIVE_REGION_REACQUIRED' in residual
-    assert 'Productive-to-GIANTS-turn' not in residual  # implementation uses machine-readable witness token
-    assert 'SETTLEMENT_REASSESSMENT' in residual
-    assert 'action=NO_ACTUATION' in residual
-    assert 'regulationAuthority=false holdAuthority=false' in residual
-    assert 'getWorkingSegment' in coverage and 'isCellDemonstrated' in coverage
-    assert 'D-0136' in decision and 'native intent' in decision
-
-
-
-
-def test_v4798_d0144_unsources_chessboard_productive_history_and_refuge_shadow_from_live_runtime():
+def test_completed_research_instruments_are_absent_from_production():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     for rel in (
         "scripts/diagnostics/DemonstratedProductiveCoverageProbe.lua",
         "scripts/diagnostics/ProductiveCoverageResidualProbe.lua",
         "scripts/diagnostics/RefugeQualificationShadowProbe.lua",
+        "scripts/observation/NativeManoeuvreObservationSource.lua",
     ):
         assert rel not in main
+        assert not (ROOT / rel).exists()
     for retired_config_name in (
         'DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_ENABLED',
         'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED',
@@ -704,16 +659,26 @@ def test_v4798_d0144_unsources_chessboard_productive_history_and_refuge_shadow_f
         'HEADLAND_MANOEUVRE_SWEEP_PROBE_ENABLED',
     ):
         assert retired_config_name not in config
-    # Historical source files remain in-repository as evidence donors rather than being silently deleted.
-    assert (ROOT/"scripts"/"diagnostics"/"DemonstratedProductiveCoverageProbe.lua").is_file()
-    assert (ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").is_file()
-    assert (ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").is_file()
+
+    assert not (ROOT / "scripts/archive").exists()
+    retired_tokens = (
+        "DemonstratedProductiveCoverageProbe",
+        "ProductiveCoverageResidualProbe",
+        "RefugeQualificationShadowProbe",
+        "NativeManoeuvreObservationSource",
+        "MATURATION_WITNESS",
+        "COARSE_UNCONTAMINATED_DEMONSTRATED_DEMAND_WITNESS",
+        "PRESERVE_NATIVE_BOUNDARY_MATURATION",
+    )
+    for path in (ROOT / "scripts").rglob("*.lua"):
+        source = path.read_text(encoding="utf-8")
+        for token in retired_tokens:
+            assert token not in source, (path, token)
+
 
 def test_v4767_native_field_worker_drive_command_probe_is_passive_and_sdk_aligned():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
-    refuge=(ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
-    residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     d0137=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
     d0138=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
@@ -724,38 +689,16 @@ def test_v4767_native_field_worker_drive_command_probe_is_passive_and_sdk_aligne
     assert 'params.moveForwards' in probe and 'params.tX' in probe and 'params.tZ' in probe and 'params.maxSpeed' in probe
     assert 'getDriveData()' in probe and 'never calls' in probe
     assert 'driveToPoint' in probe and 'never' in probe
+    assert 'candidateRelation' in probe
     assert 'vehicle.aiDriveDirection' in probe
     assert 'initialization/default fields' in probe
     assert 'deliberately not observed here' in probe
     assert 'routePrediction=false' in probe and 'futureSpaceAuthority=false' in probe
     assert 'refugeSelectionAuthority=false' in probe and 'controlAuthority=false' in probe
-    assert 'candidateRelation' in probe and 'nativeCommandTargetDelta' in refuge and 'nativeCommandTargetDistance' in refuge
-    assert 'selectionInfluence=false' in refuge and 'nativeCommandRoutePrediction=false' in refuge
-    assert 'track.active==true' in residual and 'Probe.trackIsActive(otherTrack)' in residual
-    assert 'RESIDUAL_INTENT_SETTLED_OTHER' in residual
     assert 'D-0137' in decision and 'falsified' in decision
     assert 'D-0138' in decision and 'aiDriveParams' in decision
     assert 'Result — falsified' in d0137
     assert 'Fast falsification' in d0138
-
-
-def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'futureSpaceWorkerFromTrack' in residual
-    assert 'activeObserved=Probe.trackIsActive(track)' in residual
-    assert 'local settlingWorker=Probe.futureSpaceWorkerFromTrack(settlingTrack)' in residual
-    assert 'local otherWorker=Probe.futureSpaceWorkerFromTrack(otherTrack)' in residual
-    assert 'FieldBoundedFutureSpace.build(settlingWorker)' in residual
-    assert 'FieldBoundedFutureSpace.build(otherWorker)' in residual
-    assert 'FieldBoundedFutureSpace.evaluatePair(settlingWorker,otherWorker' in residual
-    assert 'FieldBoundedFutureSpace.build(settlingTrack)' not in residual
-    assert 'FieldBoundedFutureSpace.build(otherTrack)' not in residual
-    assert 'track.activeObserved=' not in residual
-    assert 'settlementFutureSpaceInput=PERSISTENT_TRACK_TO_OBSERVATION_ADAPTER' in residual
-    assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
-
 
 
 def test_v4769_lua_harness_uses_native_field_worker_drive_command_probe_not_falsified_native_ai_drive_signal_probe():
@@ -764,7 +707,6 @@ def test_v4769_lua_harness_uses_native_field_worker_drive_command_probe_not_fals
     assert 'load("scripts/diagnostics/NativeAIDriveSignalProbe.lua")' not in harness
     assert 'NativeAIDriveSignalProbe.' not in harness
     assert 'NativeFieldWorkerDriveCommandProbe.candidateRelation' in harness
-
 
 
 def test_v0165_transit_base_uses_job_start_cached_capability_and_bounded_settlement():
@@ -2001,11 +1943,6 @@ def test_issue112_retired_completed_worker_donor_is_not_active_source_topology()
         assert stale not in active
 
 
-def test_current_validation_vocabulary_preserves_only_historical_probe_decision_families():
+def test_current_lua_harness_contains_no_decision_provenance_tokens():
     harness = (ROOT / "tests" / "replacement_core" / "run.lua").read_text(encoding="utf-8")
-    decision_families = {
-        match.upper().replace("-", "")
-        for match in re.findall(r"d-?\d{4}", harness, re.IGNORECASE)
-    }
-    # Deliberately unsourced Productive Coverage / settlement probe evidence.
-    assert decision_families == {"D0134", "D0136", "D0137"}
+    assert re.search(r"d-?\d{4}", harness, re.IGNORECASE) is None

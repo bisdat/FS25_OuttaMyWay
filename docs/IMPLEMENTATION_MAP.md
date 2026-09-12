@@ -22,12 +22,12 @@ Architectural meaning remains owned by the
 ## Repository state
 
 - Accepted Repository State: `main` at
-  `5f09f93a90efc47caa3d418fa443005e50d0cb5f`.
+  `bd93b1d922187d46138dbd722862c8ed9a8322e5`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
-  **`0.3.0.72`**.
-- Issue #87 root ownership is fully decomposed in the working `.73` candidate;
-  independent CI validation and owner review remain pending. Player Configuration is #139.
+  **`0.3.0.73`**.
+- Issue #87 root ownership closure is completed and closed. Player Configuration is #139.
+- Working candidate: **`0.3.0.74` historical-probe retirement**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -72,7 +72,7 @@ Architectural meaning remains owned by the
 | Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one provenance-neutral physical executor beneath one Causal Obstruction / Obstruction Relocation responsibility; `.51` retires the already-uninstantiated D-0147 donor topology around it |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
-| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
+| Diagnostics / probes | `scripts/diagnostics/`; current-picture progression diagnostics wired through PassiveLiveValidator | Historical source residue and history-derived native-manoeuvre/maturation machinery are retired in the working `.74` candidate. ProgressionPreservationProbe consumes current sealed-picture occupancy, committed/potential demand and motion/future/physical evidence; ProgressionGeometry owns capsule geometry directly. Remaining current-state diagnostics are explicitly under architectural review in #152; diagnostics remain downstream-only unless/until that review discovers otherwise. |
 | Clearance trace publication | `scripts/candidates/LiveTrafficCandidateSupport.lua` | Owns the local 40.0 m window for rejected/selected already-computed clearance telemetry under [Configuration architecture](CONFIGURATION.md#clearance-trace-diagnostic-publication-ownership). Diagnostic publication does not own Passage search or construction policy; TrajectoryConflictAssessment owns the local Action-Space boundary. |
 | Diagnostic HUD presentation | `scripts/diagnostics/FutureSpaceHud.lua`, `VersionHud.lua`, `FollowerPacingHud.lua` | Each instrument owns its enablement/layout literals locally under [Configuration architecture](CONFIGURATION.md#diagnostic-hud-implementation-ownership). FutureSpaceHud remains constructed, observed and drawn by PassiveLiveValidator; VersionHud reads root `VERSION`. Dead lifecycle/transition gates are deleted without replacement; future player HUD visibility remains separate and unimplemented. |
 | Root identity surface | `scripts/config.lua` | Identity-only namespace initialisation plus `MOD_NAME` and `VERSION`, without comments. Issue #87 has no remaining unresolved root constant. No generic runtime settings/constants warehouse exists. Other assessment fixture overrides are internal validation parameterisation, not player Configuration or supported runtime variability; the Passage boundary injection is removed. |
@@ -134,15 +134,14 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed-runtime ownership closure | Root decomposition is complete in the working tree. Independent CI and owner acceptance remain pending. Player Configuration is #139; HUD/player communication is #89. |
+| #152 | live diagnostic responsibility review | Continued purpose, ownership and lifetime of remaining current-state diagnostics require explicit architectural review after historical machinery retirement. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
 ## Separate accepted work / explicit limits
 
 - **#45** — Bubble Bullet Time remains accepted but unimplemented.
-- **#87** — no unresolved root constant remains; validation and owner review
-  of the ownership closure remain pending.
+- **#87** — root ownership closure is completed and closed; no unresolved root constant remains.
 - Generic multi-context Commitment application remains an acceptable fail-closed
   limit until a concrete supported consumer requires broader cardinality.
 - The maximum-three-active-AI-worker rule is a supported claim/validation
@@ -159,15 +158,3 @@ history. Phase-shaped closure narratives do not belong here.
 The historical `docs/architecture/PHASE_13_CLOSURE_AUDIT.md` has no remaining
 present-tense architecture responsibility and is removed from the working tree;
 Git and PR #71 preserve its evidence.
-
-## Immediate engineering boundary
-
-The working Diagnostic HUD Ownership increment localises the three instruments'
-presentation values and deletes the two unconsumed legacy gates. Structural
-contracts protect exact accepted local literals, absence of root HUD dependencies
-and the indirect FutureSpaceHud lifecycle through PassiveLiveValidator.
-
-Independent CI validation and owner review remain pending. This increment does
-not implement player Configuration or change HUD text, visuals, traffic semantics,
-policy or calibration. Continuation-State workflow reconciliation remains separate
-under #141; this placement update does not redesign that workflow.

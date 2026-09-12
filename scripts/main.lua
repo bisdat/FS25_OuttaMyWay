@@ -11,7 +11,7 @@ local modules={
     "scripts/commitment/CommitmentStateMachine.lua","scripts/commitment/CommitmentRegistry.lua","scripts/commitment/ObligationLedger.lua","scripts/authority/AuthorityRegistry.lua","scripts/control/mechanisms/NonJobActuationMechanism.lua","scripts/authority/EffectiveActuationComposition.lua","scripts/authority/BoundedAuthority.lua","scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua","scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua","scripts/commitment/LiveTrafficCommitmentLifecycle.lua","scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua","scripts/responsibility/ResolutionCommitmentAdapter.lua","scripts/responsibility/ResponsibilityTransitionAuthority.lua","scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua","scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua","scripts/responsibility/CooperativePassageResponsibilityTransition.lua","scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua",
     "scripts/candidates/CandidateSpace.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/candidates/LocalPassagePlanner.lua","scripts/candidates/ObstructionRelocationCandidateSupport.lua","scripts/candidates/LiveTrafficCandidateSupport.lua","scripts/decision/ProspectivePortfolioDecisionPolicy.lua","scripts/candidates/ProspectiveDecisionPortfolioSupport.lua","scripts/constraints/ConstraintEvidence.lua",
     "scripts/constraints/evaluators/RepresentationFitness.lua","scripts/constraints/evaluators/ResponsibilityCompatibility.lua","scripts/constraints/evaluators/CommitmentPreconditions.lua","scripts/constraints/evaluators/EffectiveActuationComposition.lua",
-    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/replay/ConformanceAssertions.lua","scripts/replay/ReplayRunner.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/ProductiveContinuationProbe.lua","scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua","scripts/observation/NativeManoeuvreObservationSource.lua","scripts/diagnostics/ProgressionPreservationProbe.lua","scripts/diagnostics/VersionHud.lua","scripts/diagnostics/FollowerPacingHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/FollowerBoundaryMagnitudePolicy.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
+    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/replay/ConformanceAssertions.lua","scripts/replay/ReplayRunner.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/ProductiveContinuationProbe.lua","scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua","scripts/diagnostics/ProgressionPreservationProbe.lua","scripts/diagnostics/VersionHud.lua","scripts/diagnostics/FollowerPacingHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/FollowerBoundaryMagnitudePolicy.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
@@ -19,13 +19,10 @@ OuttaMyWay.runtime=OuttaMyWay.Runtime.new(); OuttaMyWay.runtime:initialize()
 
 -- Diagnostics consume Situation-owned Knowledge; no diagnostic object supplies
 -- semantic evidence to Candidate/Decision/Control.
--- Retired chessboard/Productive-Coverage/Refuge-qualification diagnostics are intentionally
--- unsourced from the live runtime. Their files remain historical evidence only.
 OuttaMyWay.productiveContinuationProbe=OuttaMyWay.ProductiveContinuationProbe.new(OuttaMyWay.runtime.situationAssessment)
 OuttaMyWay.nativeFieldWorkerDriveCommandProbe=OuttaMyWay.NativeFieldWorkerDriveCommandProbe.new(OuttaMyWay.runtime,OuttaMyWay.runtime.situationAssessment)
 
-OuttaMyWay.nativeManoeuvreObservationSource=OuttaMyWay.NativeManoeuvreObservationSource.new(OuttaMyWay.runtime)
-OuttaMyWay.progressionPreservationProbe=OuttaMyWay.ProgressionPreservationProbe.new(OuttaMyWay.runtime,OuttaMyWay.nativeManoeuvreObservationSource)
+OuttaMyWay.progressionPreservationProbe=OuttaMyWay.ProgressionPreservationProbe.new(OuttaMyWay.runtime)
 OuttaMyWay.runtime.passiveLiveValidator:setProgressionPreservationProbe(OuttaMyWay.progressionPreservationProbe)
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.followerPacingHud=OuttaMyWay.FollowerPacingHud.new(OuttaMyWay.runtime.regulationBoundedAuthority)
@@ -37,7 +34,6 @@ OuttaMyWay.physicalControlMechanisms={
 }
 OuttaMyWay.regulationControl=OuttaMyWay.RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)
 OuttaMyWay.runtime:setRegulationControl(OuttaMyWay.regulationControl)
-OuttaMyWay.nativeManoeuvreObservationSource:setRegulationControlObservationSource(OuttaMyWay.regulationControl)
 
 -- Production Cooperative Passage consumes the production physical mechanisms directly.
 -- No prototype owns or installs those shared mechanisms.
@@ -58,7 +54,6 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.liveRuntimeCoordinator)
     addModEventListener(OuttaMyWay.productiveContinuationProbe)
     addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)
-    addModEventListener(OuttaMyWay.nativeManoeuvreObservationSource)
     addModEventListener(OuttaMyWay.regulationControl)
     addModEventListener(OuttaMyWay.cooperativePassageControl)
     addModEventListener(OuttaMyWay.obstructionRelocationControl)

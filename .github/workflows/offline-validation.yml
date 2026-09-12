@@ -108,7 +108,6 @@ jobs:
             scripts/observation/LiveInteractionObservation.lua \
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
-            scripts/observation/NativeManoeuvreObservationSource.lua \
             scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua \
             scripts/runtime/LiveRuntimeCoordinator.lua \
             scripts/runtime/Runtime.lua
