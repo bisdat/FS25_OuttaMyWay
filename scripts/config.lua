@@ -4,7 +4,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.68"
+OuttaMyWay.VERSION = "0.3.0.69"
 
 -- Live diagnostic instrument controls are module-owned. Their exact accepted
 -- enablement and publication/sample cadences live with the five instruments;
@@ -38,16 +38,6 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
 OuttaMyWay.COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M = 2.0
 OuttaMyWay.COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M = 2.0
 OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG = 20
-
--- Resolution-Space Progression Envelope policy calibration.
--- The reserve is a withheld fraction of positively established usable Resolution
--- Space, not a claimed GIANTS braking distance.
-OuttaMyWay.RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
-
--- When ordinary Resolution Space is exhausted while intent remains unresolved,
--- retain minimal positive progression rather than Hold so fresh native intent can
--- continue to reveal without spending ordinary Resolution Space authority.
-OuttaMyWay.RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
 
 -- Transit fold settlement is bounded. The preferred ceiling is derived once at
 -- Job-Episode bootstrap from the active runtime folding configuration's

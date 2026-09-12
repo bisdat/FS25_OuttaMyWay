@@ -1023,7 +1023,27 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
-    assert 'RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75' in config
+    for name, literal in (
+        ("RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION", "0.75"),
+        ("RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH", "1"),
+    ):
+        assert name not in config
+        assert name not in authority
+        assert f"local {name} = {literal}" in envelope.splitlines()
+        assert f"tonumber({name})" in envelope
+    assert "function Envelope.establish(distanceM,speedKmh)" in envelope
+    assert "local creep=tonumber(state.intentRevelationCreepKmh) or RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH" in envelope
+    assert "if not finite(creep) or creep<RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH then creep=RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH end" in envelope
+    establish_call = "OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh)"
+    assert authority.count("ResolutionSpaceProgressionEnvelope.establish(") == 2
+    reactivate = authority.split("function Authority:_continueActionSpaceRegulationReactivation(", 1)[1].split("\nfunction ", 1)[0]
+    initial = authority.split("function Authority:_continueActionSpaceRegulationInitial(", 1)[1].split("\nfunction ", 1)[0]
+    assert establish_call in reactivate
+    assert establish_call in initial
+    assert "OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1" in config.splitlines()
+    assert 'local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"' in initial
+    assert f"if not fixedForwardIntersection then\n        envelope,envelopeReason={establish_call}\n    end" in initial
+    assert "local initialCap=fixedForwardIntersection and (OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH or 1) or (tonumber(envelope.capKmh) or 0)" in initial
     assert 'D0146_RESOLUTION_SPACE_REGULATION_KMH' not in config
     assert 'actionSpaceMaxSeparationM=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in situation
     assert 'actionSpaceRegulationKmh' not in situation
@@ -1043,7 +1063,6 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     assert 'DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION' in assessment
     assert 'ESTABLISHED_CONFLICT_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE' in assessment
     assert 'D0146_STEP2_LOCAL_PASSAGE_MIN_ENTRY_SEPARATION_M' not in config
-    assert 'RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1' in config
     planner=(ROOT/'scripts'/'candidates'/'LocalPassagePlanner.lua').read_text(encoding='utf-8')
     assert 'LOCAL_PASSAGE_DEVELOPMENT_DISTANCE_INSUFFICIENT' not in planner
     assert 'result.negativeClearanceAuthority' not in assessment

@@ -110,7 +110,7 @@ historically equal calibrations remains unresolved; Control calibration ownershi
 does not decide that question.
 
 Remaining Local Passage construction, Transit fold settlement and
-Resolution-Space / Regulation values remain separate Issue #87 ownership work.
+Forward Intersection Regulation policy remain separate Issue #87 ownership work.
 
 ## Clearance trace diagnostic publication ownership
 
@@ -128,8 +128,30 @@ policy, or Control actuation policy.
 
 Localising this diagnostic does not resolve Local Passage construction ownership.
 The 1.0 m traversal-gate shared-semantics question described above remains
-unresolved. Transit fold settlement and Resolution-Space / Regulation remain
-separate Issue #87 ownership work.
+unresolved. Transit fold settlement and Forward Intersection Regulation policy
+remain separate Issue #87 ownership work.
+
+## Resolution-Space Regulation magnitude policy ownership
+
+`ResolutionSpaceProgressionEnvelope` owns the fixed accepted 0.75 contingency
+reserve fraction and exact 1 km/h unresolved-intent creep floor. These are
+responsibility-owned Regulation magnitude policy, not player Configuration or
+tuning. The reserve withholds established usable Resolution Space; it does not
+claim a GIANTS braking distance.
+
+**Policy Owner != Materialisation Site.** `RegulationBoundedAuthority`
+materialises this policy through the envelope but does not own its values.
+`ResolutionSpaceProgressionEnvelope.establish(distanceM, speedKmh)` accepts
+current evidence; policy is module-local. **Internal Parameterisation !=
+Supported Variability:** the former reserve/creep arguments supplied only the
+accepted pair and established no alternate-policy contract. **Test
+Mutability/Injection Seam != Contract Requirement** likewise applies to the
+former offline fixture arguments.
+
+Forward Intersection deliberately bypasses this envelope and retains its
+separate fixed 1 km/h root cap. Its deeper ownership relationship remains
+unresolved. **Value Reuse != Concept Reuse:** equal literals do not establish
+common ownership between these policies or authorise their unification.
 
 ## Configuration admission test
 
@@ -317,7 +339,7 @@ evidence does not establish a responsible owner.
 | --- | --- | --- |
 | PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION` | These are the only root identities: `MOD_NAME` identifies the system/mod and `VERSION` identifies the executable build. Neither is player Configuration. |
-| ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
+| ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `FORWARD_INTERSECTION_REGULATION_SPEED_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
