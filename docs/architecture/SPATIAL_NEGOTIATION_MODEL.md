@@ -272,6 +272,16 @@ Leg or shared Bubble obligation remains open. **Pairwise Resolution != Symmetric
 Progress Requirement**: the two Passage Legs may progress and terminate at
 different times.
 
+Cooperative Passage is a core Resolution capability, not an independently
+switchable feature beneath master OuttaMyWay enablement. Before commitment,
+Passage availability is determined by current Situation evidence, Candidate
+support, mandatory constraints, Decision and Responsibility Transition. After
+commitment, the Resolution and its Passage Legs may end only through their
+accepted lifecycle, governing-basis, safety, feasibility or escalation rules;
+a mutable implementation feature flag cannot revoke the committed responsibility.
+
+> **Committed Responsibility Cannot Be Revoked by a Feature Flag**
+
 A Passage Leg has two ordinary terminal dispositions:
 
 - **HANDED_BACK** — its required Passage debt is discharged and the participant

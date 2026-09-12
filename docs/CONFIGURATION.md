@@ -258,10 +258,10 @@ evidence does not establish a responsible owner.
 | IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls; lifecycle/transition/future-space and version/follower HUD flags and coordinates | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
-| VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
+| VALIDATION / EXPERIMENTAL | no retained per-capability runtime enable/disable gate | `.63` retires the historical Control, Cooperative Passage and aligned-Follower pseudo-state gates. Core capability availability and prohibition are enforced by Responsibility / Bounded Authority / typed Control topology, not booleans. |
 | HUD IMPLEMENTATION | `TRANSITION_HUD_*`, `VERSION_HUD_*`, `FOLLOWER_PACING_HUD_*` | Coordinates, sizes, rows and diagnostic display flags belong to HUD/diagnostic implementation, not Configuration architecture. |
 | HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
-| UNRESOLVED | `ARCHITECTURE_VERSION`; `RUNTIME_MODE`; `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`; some Cooperative Passage development/traversal/reacquisition and hold/heartbeat values | `.62` proves the Follower Boundary enable gate is not assessment calibration: it remains a separate Candidate-expression gate pending its own ownership classification. Other unresolved values likewise require bounded investigation rather than prefix-based movement. |
+| UNRESOLVED | `ARCHITECTURE_VERSION`; `RUNTIME_MODE`; some Cooperative Passage development/traversal/reacquisition and hold/heartbeat values | `.63` resolves the per-capability gate question by retirement. Remaining values still require bounded ownership investigation rather than prefix-based movement. |
 
 Field World ownership is now decomposed by meaning rather than common prefix:
 `FieldWorldSnapshotRegistry` owns Snapshot-generation budget plus fingerprint
@@ -286,8 +286,13 @@ mixed root and makes `TrajectoryConflictAssessment` their explicit owner.
 but no longer couriers evaluator-private calibration.
 `.62` likewise removes six Follower Boundary assessment calibrations from the
 mixed root and makes `FollowerBoundaryDemandAssessment` their explicit owner.
-The separate `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED` Candidate-expression
-gate remains distinct and unchanged.
+`.63` follows the existing **Core Resolution Capability != Optional
+Configuration** rule through the live traffic stack: Cooperative Passage and
+aligned Follower Boundary have no independent enable state beneath master
+OuttaMyWay enablement, while unsupported/general Control is prohibited by the
+absence of an authorised typed path rather than by a false flag. Passive
+diagnostics record actual bounded dispatch outcomes instead of pseudo-authority
+state.
 The inventory is descriptive; Issue #87 continues ownership-family decomposition
 without retuning values merely because their placement changes.
 

@@ -103,7 +103,6 @@ function Validator:_warn(code,details,nowMilliseconds)
 end
 
 function Validator:_record(raw,live)
-    if self.runtime.generalControlAuthorityEnabled~=false or OuttaMyWay.CONTROL_AUTHORITY_ENABLED~=false then error("passive-live diagnostic detected enabled general Control authority",2) end
     if type(live)~="table" or live.snapshot==nil or live.picture==nil or live.decision==nil then error("Runtime live result required before diagnostic publication",2) end
     local processed={snapshot=live.snapshot,jobEpisodes=live.jobEpisodes,operation=live.operation}
     local supported=live.picture
@@ -122,7 +121,7 @@ function Validator:_record(raw,live)
         situationCount=OuttaMyWay.ValueRecord.length(supported.situations),currentPairAssessmentCount=OuttaMyWay.ValueRecord.length(supported.currentPairAssessmentScope),candidateCount=#evaluated.candidates,allPassCandidateCount=passCandidates,
         unresolvedCandidateCount=unresolvedCandidates,failedCandidateCount=failedCandidates,unavailableSourceCount=OuttaMyWay.ValueRecord.length(processed.snapshot.unavailableSources),
         fieldWorldReferenceKey=processed.snapshot.fieldWorld.referenceKey,fieldWorldFingerprint=processed.snapshot.fieldWorld.geometryFingerprint,playerFacingFieldLocators=processed.snapshot.fieldWorld.playerFacingFieldLocators or {},
-        globalActiveOperationCount=OuttaMyWay.ValueRecord.length(self.runtime.operations:listActive()),generalControlAuthorityEnabled=false,
+        globalActiveOperationCount=OuttaMyWay.ValueRecord.length(self.runtime.operations:listActive()),
         boundedControlDispatchStatus=dispatch.status,boundedControlRequestId=request and request.identity or nil,boundedControlOutcomeId=outcome and outcome.identity or nil,
         cycleActiveJobVehicleCount=counters.cycleActiveJobVehicleCount or 0,poseResolvedWorkerCount=counters.poseResolvedWorkerCount or 0,activeOperationMemberCount=counters.activeOperationMemberCount or 0,mathematicallyPossiblePairCount=counters.mathematicallyPossiblePairCount or 0,relevantPairCount=counters.relevantPairCount or 0,eligiblePairCount=counters.eligiblePairCount or 0,evaluatedPairCount=counters.evaluatedPairCount or 0,excludedPairCount=counters.excludedPairCount or 0,qualifyingPairCount=counters.qualifyingPairCount or 0,interactionEvidenceEmittedCount=counters.interactionEvidenceEmittedCount or 0,interactionEvidenceReceivedCount=counters.interactionEvidenceReceivedCount or 0,
         admittedEpisodeIds=processed.jobEpisodes.admittedEpisodeIds,endedEpisodeIds=processed.jobEpisodes.endedEpisodeIds,assemblyDiagnostics=diagnostics.assemblyDiagnostics or {},pairDiagnostics=diagnostics.pairPipeline or {},diagnosticContradictions=diagnostics.contradictions or {},currentPairScopeDiagnostics=diagnostics.currentPairScopeDiagnostics or {},futureSpaceRelationshipCount=#assessedFutureSpaceRelationships,futureSpaceRelationships=assessedFutureSpaceRelationships,activeAssemblyReferenceKeys=activeAssemblyReferenceKeys(processed.snapshot),

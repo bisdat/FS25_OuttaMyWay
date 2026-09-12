@@ -1,3 +1,70 @@
+## 2026-09-12 — #87 Core Capability Gate Retirement
+
+**Observe:** review of `COOPERATIVE_PASSAGE_ENABLED`,
+`CONTROL_AUTHORITY_ENABLED` and `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`
+initially treated them as possibly similar root-ownership candidates. Two guarded
+`.63` preflights disproved incomplete versions of that hypothesis before mutation:
+Passage gating also existed in `LocalPassagePlanner` and active
+`CooperativePassageControl`, while the old Control flag was duplicated into the
+passive diagnostic contract.
+
+Further review against current Runtime Responsibility, Spatial Negotiation and
+Configuration architecture showed that those deeper consumers do not justify the
+gate concept. They expose historical implementation layers outside the current
+responsibility model.
+
+Current authority is:
+
+```text
+master OuttaMyWay enablement
+    -> Reality / Situation
+    -> Responsibility
+    -> Bounded Authority
+    -> typed Control
+```
+
+> **Core Capability Has No Enable State**
+
+> **Master Enablement != Per-Capability Enablement**
+
+> **Committed Responsibility Cannot Be Revoked by a Feature Flag**
+
+> **Architectural Prohibition Has No Disable Flag**
+
+> **Diagnostic Assertion != Enforcement Mechanism**
+
+> **Negative Authority Annotation != Capability Enable State**
+
+A third guarded preflight then found `controlAuthorityEnabled=false` on Field
+World Snapshot/equivalence evidence products. Review classified those as explicit
+negative authority annotations: they state that identity evidence itself grants
+no Control authority and are not consulted as mutable capability state. `.63`
+therefore preserves them unchanged while retiring the Runtime pseudo-state of the
+same spelling.
+
+**Decision:** `.63` retires the three root gates, their live Passage/Follower
+gate consumers, Runtime `controlAuthorityEnabled` /
+`generalControlAuthorityEnabled` pseudo-state, and the corresponding passive
+trace contract. Tests are re-anchored to evidence/responsibility/Bounded
+Authority/typed dispatch rather than flag placement.
+
+**Non-scope:** no master-enable implementation, no Passage geometry/policy retune,
+no follower magnitude/assessment change, no Control broadening, no HUD/#89,
+#123, #116 or #45 work.
+
+**Testing lesson:** the three aborted preflights are positive evidence for
+closed-world reference censuses before mutation. Expected-reference lists must
+follow Reality rather than be widened merely to make a proposed transform pass.
+The third preflight also exposed a tooling distinction: raw substring search
+classified historical stale identifier
+`D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED` as a current
+`COOPERATIVE_PASSAGE_ENABLED` dependency. Closed-world identifier censuses must
+use identifier boundaries rather than lexical containment.
+
+> **Substring Match != Identifier Ownership**
+
+> **Historical Vocabulary Containment != Current Contract Dependency**
+
 ## 2026-09-11 — #87 Follower Boundary assessment value ownership
 
 **Observe:** after `.61`, the `FOLLOWER_BOUNDARY_*` prefix proved to contain two

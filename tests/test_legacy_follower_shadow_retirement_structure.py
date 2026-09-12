@@ -21,11 +21,14 @@ def test_issue87_legacy_follower_shadow_is_not_shipped_or_wired():
 def test_issue87_aligned_follower_boundary_path_remains_current():
     config = read("scripts/config.lua")
     follower = read("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
+    support = read("scripts/candidates/LiveTrafficCandidateSupport.lua")
     magnitude = read("scripts/authority/FollowerBoundaryMagnitudePolicy.lua")
     authority = read("scripts/authority/RegulationBoundedAuthority.lua")
     hud = read("scripts/diagnostics/FollowerPacingHud.lua")
 
-    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true" in config
+    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED" not in config
+    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED" not in support
+    assert "local function followerBoundaryRecord(picture)" in support
     assert "local FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR=0.90" in follower
     assert "local clearanceFactor=options.clearanceFactor or FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR" in follower
     assert "OuttaMyWay.FollowerBoundaryDemandAssessment" in follower

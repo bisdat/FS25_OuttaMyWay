@@ -2,52 +2,74 @@
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #135 merge,
-  `b04cc98cb4d66aeccb77fd146205903d89b35d09`.
+- Accepted Repository State: `main` after PR #136 merge,
+  `bbb23dfee0b2b5c55e241d54e2f66bfef64d6a40`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #334 passed on that exact merge commit.
+  **`0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**.
+- Post-merge Offline Validation run #336 passed on that exact merge commit.
 - Issue #87 remains open.
 
 ## Current workstream — Issue #87
 
-After `.61`, Follower Boundary was examined by responsibility rather than prefix.
-Six values govern Situation-level Follower Boundary assessment: current alignment,
-provisional temporal seed, established-purpose retention and clearance-factor
-calibration. `SituationAssessment` currently forwards them from the historical
-mixed root, while `FollowerBoundaryDemandAssessment` is the module that gives
-them meaning.
+Post-`.62`, review of three apparent capability booleans exposed a deeper
+architectural mismatch. Two guarded `.63` preflights aborted before mutation and
+proved that the historical gates were more deeply embedded than root constants:
+Cooperative Passage was checked in planning and active Control, while the old
+Control flag was duplicated into PassiveLiveValidator.
 
-A seventh similarly named value is different:
-`FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED` is consumed later by
-`LiveTrafficCandidateSupport` as a Candidate-expression gate.
+That evidence changed the question from **where should these flags live?** to
+**should a core capability or architectural prohibition have a boolean state at
+all?**
 
-> **Capability Gate != Assessment Calibration**
+> **Core Capability Has No Enable State**
 
-> **Parameter Courier != Semantic Owner**
+> **Master Enablement != Per-Capability Enablement**
 
-The Lua behavioural harness already supplies the accepted assessment values
-directly in focused D-0141 fixtures, so behavioural regression evidence remains
-independent of root placement.
+> **Committed Responsibility Cannot Be Revoked by a Feature Flag**
+
+> **Architectural Prohibition Has No Disable Flag**
+
+> **Diagnostic Assertion != Enforcement Mechanism**
+
+> **Negative Authority Annotation != Capability Enable State**
+
+Master OuttaMyWay enablement is the accepted product-level consent boundary.
+Below it, Situation / Responsibility / Bounded Authority determine whether a
+supported core action exists. Typed Control realises that action. Unsupported or
+generic Control has no authorised route rather than a boolean set to false.
+
+The three Field World identity/equivalence modules retain their explicit
+`controlAuthorityEnabled=false` evidence annotations. Those values scope the
+authority of the evidence product itself; they are not Runtime capability state
+and are not consumed as a rollout veto.
 
 ## Next bounded increment
 
-Implement **`0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**:
+Implement **`0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT`**:
 
-1. preserve the six accepted assessment calibrations exactly;
-2. make `FollowerBoundaryDemandAssessment` their explicit module-local owner;
-3. retain direct options/values as focused-test override seams;
-4. remove only those six historical root definitions from `scripts/config.lua`;
-5. stop production `SituationAssessment` couriering evaluator-private calibration;
-6. preserve all current Follower Boundary assessment semantics and reason/provenance vocabulary;
-7. preserve `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true` unchanged as
-   the separate Candidate-expression gate in `LiveTrafficCandidateSupport`;
-8. reconcile historical tests that froze the old root placement while preserving
-   their substantive aligned-production and behavioural witnesses.
+1. retire root `COOPERATIVE_PASSAGE_ENABLED`,
+   `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED` and
+   `CONTROL_AUTHORITY_ENABLED`;
+2. remove the Follower Candidate-expression rollout veto;
+3. remove Cooperative Passage planner/admission/active-Commitment feature-gate
+   checks and gate-only `COOPERATIVE_PASSAGE_DISABLED*` reasons;
+4. remove Runtime `controlAuthorityEnabled` /
+   `generalControlAuthorityEnabled` pseudo-state and status publication while
+   preserving the Field World evidence-level `controlAuthorityEnabled=false`
+   annotations;
+5. remove PassiveLiveValidator / PassiveLiveTraceRecord general-Control boolean
+   assertion/publication/schema state;
+6. preserve actual authority and safety topology: current evidence, Responsibility,
+   Bounded Authority, typed dispatcher, executor availability and current
+   Control/safety evidence;
+7. reconcile historical tests from boolean placement/state to those architectural
+   invariants and remove test setup that merely forces core Passage enabled;
+8. preserve Passage geometry/policy/calibration, Follower assessment/magnitude
+   and all supported Control behaviour.
 
-No speed retune, enable-gate ownership, HUD/#89, Passage/Resolution-Space policy,
-#123, #116 or #45 work belongs in this increment.
+Master enablement implementation itself remains deferred player Configuration and
+is outside `.63`. HUD/#89, #123, #116 and #45 remain separate.
 
 ## Separate open work
 
