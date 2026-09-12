@@ -162,7 +162,8 @@ Existing live material that predates a required documentation surface MAY tempor
 
 This exception exists solely to permit orderly adoption of this standard without manufacturing empty or speculative artifacts. While the exception applies:
 
-- it MUST NOT be used for a newly introduced Responsibility or Specification Jurisdiction;
+- it MUST NOT be used for a genuinely new architectural Responsibility or Jurisdiction introduced after standards adoption;
+- explicit Jurisdiction classification of pre-existing live architectural responsibility during the same bounded adoption census is permitted and does not by itself make that Jurisdiction new;
 - the affected material MUST identify the active migration authority;
 - the intended primary Jurisdiction ownership MUST remain explicit even when the target Specification does not yet exist;
 - placeholder or empty Specifications MUST NOT be created solely to satisfy structural conformance; and
