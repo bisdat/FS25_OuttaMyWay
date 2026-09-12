@@ -109,8 +109,39 @@ Whether these represent one shared Passage Gate Tolerance concept or two
 historically equal calibrations remains unresolved; Control calibration ownership
 does not decide that question.
 
-Remaining Local Passage construction and Forward Intersection Regulation policy
-remain separate Issue #87 ownership work.
+Local Passage fixed construction values have the Planner owner described below.
+Forward Intersection Regulation policy remains separate Issue #87 ownership work.
+
+## Local Passage Planner policy and calibration ownership
+
+`LocalPassagePlanner` owns nine fixed module-local values within Candidate-owned
+planning. **Shared Owner != Shared Concept:** these values have one production
+owner but distinct meanings; no generic Passage settings object exists or is
+justified by this ownership. None is player Configuration.
+
+- Passage construction policy: nominal Inter-Assembly Clearance is 1.0 m,
+  supplied by Planner to `PairSpecificPassageClearance` and retained in plan and
+  sweep evidence. The accepted Crossing-Window floor is nominal clearance times
+  the fixed 0.95 ratio. Represented non-contact remains a separate hard condition.
+- Excursion/entry calibration: minimum development is 4.0 m and forward
+  development per lateral metre is 2.0; recovery equals development. The 3.0 m
+  entry Control allowance remains in `frontOverlap + 2 * development + entryAllowance`.
+- Non-traversal guide calibration: development and reacquisition gate maximum
+  radii are independently 2.0 m. Both retain their relationship to the externally
+  owned traversal radius.
+- Evidence discretisation: Field World sweep spacing is 2.0 m and pair/third-party
+  sweep sampling uses 20 samples per leg as before.
+
+**Counterfactual Test Input != Supported Runtime Policy** refines **Test
+Mutability/Injection Seam != Contract Requirement**. A counterfactual floor in
+validation does not require production policy configurability. The accepted
+0.95 floor is fixed Planner-owned policy, not a runtime experiment seam.
+
+Three non-identity roots remain unresolved: the 80.0 m local Passage entry/search
+bound also supplies Situation/Trajectory Conflict Assessment Action-Space context;
+the 1.0 m traversal-gate radius is reused by Candidate guide construction and
+Control Alignment Runout / Axis Return; Forward Intersection retains its separate
+1 km/h policy. **Value Reuse != Concept Reuse** continues to govern these boundaries.
 
 ## Transit fold settlement ownership
 
@@ -130,8 +161,8 @@ establish shared policy: **Defensive Fallback != Shared Policy Owner** and
 
 These values are not player Configuration. Cooperative Passage Control consumes
 cached capability and settlement results without independently deriving timing.
-Forward Intersection ownership remains unresolved; Local Passage construction
-and traversal-gate shared semantics remain separate Issue #87 work.
+Forward Intersection ownership, the local Action-Space / entry bound and
+traversal-gate shared semantics remain separate Issue #87 work.
 
 ## Clearance trace diagnostic publication ownership
 
@@ -147,7 +178,7 @@ Configuration, Passage construction/search/geometry, Passage Entry or Action-Spa
 admission distance, Nominal Inter-Assembly Clearance or Crossing-Window acceptance
 policy, or Control actuation policy.
 
-Localising this diagnostic does not resolve Local Passage construction ownership.
+Diagnostic publication owns none of the Planner construction values described above.
 The 1.0 m traversal-gate shared-semantics question described above remains
 unresolved. Forward Intersection Regulation policy remains separate Issue #87
 ownership work.
@@ -360,14 +391,14 @@ evidence does not establish a responsible owner.
 | --- | --- | --- |
 | PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION` | These are the only root identities: `MOD_NAME` identifies the system/mod and `VERSION` identifies the executable build. Neither is player Configuration. |
-| ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `FORWARD_INTERSECTION_REGULATION_SPEED_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
-| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
-| SAFETY / RESOURCE BOUND | Passage sweep sample count | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
+| ARCHITECTURAL / RESPONSIBILITY POLICY | `FORWARD_INTERSECTION_REGULATION_SPEED_KMH`; fixed Passage policy is Planner-local | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
+| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Planner-owned Passage development and non-traversal gate geometry | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
+| EVIDENCE DISCRETISATION | Planner-local Field World and pair/third-party sweep sampling | LocalPassagePlanner owns fixed sampling under [Local Passage Planner policy and calibration ownership](#local-passage-planner-policy-and-calibration-ownership); no sweep values remain at root. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | no retained per-capability runtime enable/disable gate | `.63` retires the historical Control, Cooperative Passage and aligned-Follower pseudo-state gates. Core capability availability and prohibition are enforced by Responsibility / Bounded Authority / typed Control topology, not booleans. |
 | HUD IMPLEMENTATION | no diagnostic HUD values remain in the mixed root | FutureSpaceHud, VersionHud and FollowerPacingHud independently own their local presentation values under [Diagnostic HUD implementation ownership](#diagnostic-hud-implementation-ownership). Unconsumed lifecycle/transition gates are deleted, not relocated. |
 | HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
-| UNRESOLVED | some Cooperative Passage development/traversal/reacquisition values | `.63` resolves the per-capability gate question by retirement. Control execution/settlement/alignment/watchdog/heartbeat values are module-owned under [Cooperative Passage Control implementation ownership](#cooperative-passage-control-implementation-ownership). Remaining values still require bounded ownership investigation rather than prefix-based movement. |
+| UNRESOLVED | `COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0`; `COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0`; `FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1` | Exactly three non-identity roots remain: cross-layer local Action-Space / entry policy, Candidate/Control traversal-radius reuse, and separate Forward Intersection policy. Fixed Planner construction and calibration ownership does not resolve these concepts. |
 
 Field World ownership is now decomposed by meaning rather than common prefix:
 `FieldWorldSnapshotRegistry` owns Snapshot-generation budget plus fingerprint

@@ -3608,17 +3608,10 @@ end)
 
 test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor while construction remains at one metre",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,30)
-    local previous=OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO
-    -- A stricter-than-construction floor proves the acceptance rule is separate
-    -- from the 1.00 m geometry target: the unchanged planner cannot satisfy it.
-    OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO=1.05
-    local strictPlan,strictReason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
-    equal(strictPlan,nil); equal(strictReason,"LOCAL_PASSAGE_SPACE_EXHAUSTED_WITHIN_SUPPORTED_PROFILE")
-    -- The production TEST policy retains the 1.00 m target but accepts a bounded
-    -- five-percent undershoot; ordinary fixture geometry is therefore supported.
-    OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO=0.95
+    -- Counterfactual Test Input != Supported Runtime Policy. Construction and
+    -- acceptance have fixed, independently asserted values; rejection enforcement
+    -- is protected by the Planner ownership structural contract.
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
-    OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO=previous
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     local sweep=plan.passageGuide.pairSweepSupport
     equal(math.abs(sweep.requiredNominalClearanceM-1.0)<0.0001,true)
@@ -3626,6 +3619,27 @@ test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor w
     equal(math.abs(sweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
     equal(sweep.minimumCrossingWindowClearanceM+0.001>=sweep.acceptedNominalClearanceFloorM,true)
     equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
+
+    -- A coherent lateral pose just inside the existing construction-sufficiency
+    -- tolerance needs no excursion. Its represented gap is 0.9995 m: below the
+    -- nominal target, above the fixed floor, without changing Transit geometry.
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local lateralSeparationM=6.9995
+    values.currentSpace[2].occupancy.x=lateralSeparationM
+    values.trajectoryKnowledge[2].corridorAnchorX=lateralSeparationM
+    for _,primitive in ipairs(values.physicalSpaceEvidence[2].primitives) do
+        primitive.x=primitive.x+lateralSeparationM
+    end
+    local boundaryPlan,boundaryReason=OuttaMyWay.LocalPassagePlanner.plan(OuttaMyWay.OperationalPicture.new(values),snapshot)
+    equal(boundaryReason,nil); equal(boundaryPlan.status,"SUPPORTED")
+    local boundarySweep=boundaryPlan.passageGuide.pairSweepSupport
+    equal(boundaryPlan.passageArrangement.currentSeparationAlreadySufficient,true)
+    equal(math.abs(boundarySweep.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(boundarySweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
+    equal(math.abs(boundarySweep.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
+    equal(boundarySweep.minimumCrossingWindowClearanceM>=0.95,true)
+    equal(boundarySweep.minimumCrossingWindowClearanceM<1.0,true)
+    equal(math.abs(boundarySweep.minimumCrossingWindowClearanceM-0.9995)<0.0001,true)
 end)
 
 test("Cooperative Passage: Passage Selection may precede Entry while Resolution Space remains available",function()

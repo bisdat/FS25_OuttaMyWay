@@ -1032,7 +1032,7 @@ def test_v0104_pair_specific_clearance_is_transit_only_and_has_no_configuration_
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     fitness=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
     assert "scripts/representation/PairSpecificPassageClearance.lua" in main
-    assert "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in config
+    assert "local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in planner
     for token in ("subjectFacingExtentM","otherFacingExtentM","physicalContactThresholdM","policyRequiredSeparationM"):
         assert token in helper
     assert "PairSpecificPassageClearance.currentPair" in planner
@@ -1344,7 +1344,7 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
         "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
     ):
-        assert token in config
+        assert token in planner
     for token in (
         "longitudinalPairSeparation",
         "passageEntryReady",
@@ -1392,7 +1392,7 @@ def test_v0133_directional_passage_envelope_uses_bootstrap_giants_size_with_disc
     ):
         assert token in planner
     assert "minimumTranslatedDiscClearance" in planner  # explicit fallback retained
-    assert "OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in config
+    assert "local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in planner
     assert "local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in control
 
 
@@ -1449,8 +1449,8 @@ def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
     assert "PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW" in planner
     assert 'gate.kind=="CROSSING_WINDOW_ENTRY"' in planner
     assert 'gate.kind=="CROSSING_WINDOW_EXIT"' in planner
-    assert 'OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0' in (ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95' in (ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    assert 'local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0' in planner
+    assert 'local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95' in planner
     assert "acceptedNominalClearanceFloorM" in planner
     assert "clearanceAcceptanceRatio" in planner
 
