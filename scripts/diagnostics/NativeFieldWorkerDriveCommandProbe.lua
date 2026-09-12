@@ -1,5 +1,4 @@
--- FS25_OuttaMyWay v4.7.67 TEST BUILD.
--- D-0138 passive GIANTS Native Field-Worker Drive Command shadow probe.
+-- Passive GIANTS Native Field-Worker Drive Command shadow probe.
 --
 -- Exact FS25 1.21.1.0 SDK evidence shows AIFieldWorker:updateAIFieldWorker()
 -- obtains tX/tZ/moveForwards/maxSpeed/distanceToStop from native drive
@@ -7,7 +6,7 @@
 -- into spec_aiFieldWorker.aiDriveParams before converting its world target into
 -- steering/reverser-node local space for AIVehicleUtil.driveToPoint.
 --
--- D-0137 is falsified: vehicle.aiDriveDirection={0,1} and aiDriveTarget={0,0}
+-- The apparent drive fields vehicle.aiDriveDirection={0,1} and aiDriveTarget={0,0}
 -- are initialization/default fields in AIDriveStrategyFieldCourse, not the native
 -- field-worker command surface. They are deliberately not observed here.
 --

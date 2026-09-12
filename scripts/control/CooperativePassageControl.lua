@@ -551,7 +551,7 @@ function Control:_rebasePassageGuide(run)
     end
     local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
     if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
-    -- D-0195: Phase-5 pose is the Axis Return reference frame, not an
+    -- The captured Passage execution pose is the Axis Return reference frame, not an
     -- articulation pose which Recovery must reproduce.  Alignment is observed
     -- later against this captured axis; do not freeze member lateral offsets or
     -- member headings here as an execution target.
@@ -871,7 +871,7 @@ end
 function Control:_passageConfigurationReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         if participant.configurationMode~="TRANSIT_REQUIRED" then return false end
-        -- D-0179 + D-0181: only Job-Episode cached Transit actuator settlement
+        -- Only Job-Episode cached Transit actuator settlement
         -- owns configuration waiting on the single production Passage path.
         if participant.passageTransitFoldExpected==true and participant.passageTransitCompactionActive==true then
             local settlement=self.configurationMechanism:getCachedTransitSettlement(participant.vehicle)

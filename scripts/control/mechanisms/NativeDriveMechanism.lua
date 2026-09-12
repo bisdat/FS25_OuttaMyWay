@@ -79,7 +79,7 @@ function Mechanism:install()
             local cap = tonumber(state.speedKmh) or 0
             local outputMax = cap
             if tonumber(maxSpeed) ~= nil then outputMax = math.min(tonumber(maxSpeed), cap) end
-            -- D-0186 Regulation–Hold Boundary: GIANTS derives drive permission
+            -- Regulation–Hold Boundary: GIANTS derives drive permission
             -- from its native maxSpeed before this interception point. If a
             -- Regulation lease tightens that ceiling to exactly zero, preserve
             -- route/steering/direction but also revoke drive permission so we
@@ -183,10 +183,10 @@ function Mechanism:setRegulation(vehicle, speedKmh, ownerTag)
     return true
 end
 
--- D-0130 implementation catch-up: independently justified Regulation purposes
+-- Independently justified Regulation purposes
 -- may coexist.  The physical actuation is the least permissive active cap;
--- each owner may release only its own lease.  This remains Prototype-22 test
--- authority and does not create production Commitment or speed policy.
+-- each owner may release only its own lease. The mechanism realises bounded
+-- actuation and does not create Commitment or speed policy.
 function Mechanism:setRegulationLease(vehicle, speedKmh, ownerTag)
     if vehicle == nil or ownerTag == nil then return false, "regulation-lease-subject-or-owner-unavailable" end
     local ok, reason = self:install()

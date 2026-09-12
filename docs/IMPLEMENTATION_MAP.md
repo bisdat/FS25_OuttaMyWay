@@ -130,7 +130,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Root Surface Closure | `.63` removes the historical per-capability/pseudo-authority boolean layer. The post-`.63` census establishes **Two Root Identities; Everything Else Must Earn an Owner** and exposes historical D-number identity still embedded in surviving executable production provenance/telemetry/addressability. `.64` closes that production vocabulary first; validation-only historical fixture vocabulary follows separately before remaining value ownership/retirement. Player Configuration is split to #139 and HUD/player communication remains #89. |
+| #87 | mixed runtime constants / Root Surface Closure | `.63` removes the historical per-capability/pseudo-authority boolean layer. The post-`.63` census establishes **Two Root Identities; Everything Else Must Earn an Owner** and exposes historical D-number identity still embedded in surviving sourced production provenance/telemetry/addressability and comments. `.64` closes that production vocabulary first; validation-only historical fixture vocabulary follows separately before remaining value ownership/retirement. Player Configuration is split to #139 and HUD/player communication remains #89. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -163,11 +163,14 @@ accepted `main` at `7874314b69a168e83770092c026afe49506e18dc`.
 
 The bounded purpose is semantic identity closure, not behavioural redesign:
 
-- current executable production provenance, authority labels, evidence/outcome
-  kinds, addressability keys and telemetry use current responsibility vocabulary;
+- current sourced production provenance, authority labels, evidence/outcome
+  kinds, addressability keys, telemetry and comments use current responsibility
+  vocabulary;
 - `scripts/main.lua` defines the shipped/sourced production topology and the
   structural contract rejects historical `D-####` / `D####` identity across that
-  executable surface;
+  complete sourced surface, including comments;
+- positive structural assertions consume the current production contract;
+  negative retirement assertions retain their historical names;
 - historical validation fixture/helper/test-title vocabulary is explicitly
   deferred to a separate behaviour-neutral Validation Vocabulary Closure tranche;
 - root constant relocation/retirement, player Configuration, HUD redesign and

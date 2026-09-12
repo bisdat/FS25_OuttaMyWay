@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.3.6 TEST — D-0164 Mechanical Foldability Leakage correction.
+-- Job-Episode physical assembly representation and cached capability evidence.
 OuttaMyWay.AssemblyRepresentationCache = {}
 local Cache=OuttaMyWay.AssemblyRepresentationCache
 Cache.__index=Cache
@@ -198,7 +198,7 @@ local function directionalFoldReachabilityMetadata(object)
     return {aiUnfoldingAllowed=nil,source="UNRESOLVED"}
 end
 
--- D-0179: Job-Start Physical Capability Record.  Only the selected/runtime
+-- Job-Episode bootstrap Transit capability.  Only the selected/runtime
 -- Foldable configuration is authoritative.  GIANTS has already resolved shop
 -- alternatives into spec_foldable.foldingParts before this cache is built.
 local function bootstrapTransitFoldCapability(members,nowSeconds)
@@ -249,7 +249,7 @@ end
 local function directionalSizeMetadata(object)
     if type(object)~="table" then return nil end
 
-    -- D-0173: Passage now treats GIANTS <base><size> as static transport-scale
+    -- Passage treats GIANTS <base><size> as static transport-scale
     -- member geometry.  Prefer the already-loaded XML object so authored offsets
     -- are preserved; runtime size fields remain a bounded fallback when the
     -- loaded definition is unavailable.
@@ -532,7 +532,7 @@ local function memberDirectionalRectangleApplicable(member)
     local foldable=object.spec_foldable~=nil or type(object.getFoldAnimTime)=="function"
     if not foldable then return true end
     if member.currentConfiguration and member.currentConfiguration.foldState=="FOLDED" then return true end
-    -- D-0164: raw mechanical foldability is not Passage-configuration authority.
+    -- Raw mechanical foldability is not Passage-configuration authority.
     -- When GIANTS explicitly marks the folding mechanism as unavailable to AI,
     -- do not let that player-only/mechanical accessory suppress otherwise useful
     -- directional base-size evidence for the current productive member pose.
@@ -695,7 +695,7 @@ function Cache:getTransitFoldCapability(assemblyReferenceKey,sourceJobToken)
     return record and record.transitFoldCapability or nil
 end
 
--- D-0192 Bounded Axis Return: capture/observe the complete selected physical
+-- Bounded Axis Return: capture/observe the complete selected physical
 -- assembly in the Phase-5 execution frame. This is alignment evidence only;
 -- it does not create new Passage geometry or configuration authority.
 function Cache:getAssemblyAlignmentSnapshot(assemblyReferenceKey,sourceJobToken,originX,originZ,axisForwardX,axisForwardZ)

@@ -232,8 +232,8 @@ local function applyEstablishedPurposeRetention(relation,options)
             relation.establishedRetentionMinDot=retainDot
             return relation
         elseif finite(relation.headingDot) and relation.headingDot<=opposedDot then
-            -- D-0130 already established that clean opposed continuation can be
-            -- strategy succession rather than positive retirement. Preserve the
+            -- Clean opposed continuation can be strategy succession rather than
+            -- positive retirement. Preserve the
             -- admitted purpose until a stronger lifecycle witness (notably the
             -- existing Progress Passage event) retires it.
             relation.status="UNRESOLVED"
@@ -255,8 +255,8 @@ function Assessment.evaluatePair(leader,follower,options)
     local relation=currentRelationship(leader,follower,options.minHeadingDot or FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT)
     if existingPurpose then relation=applyEstablishedPurposeRetention(relation,options) end
 
-    -- D-0146 is a stronger current relationship witness than the historical
-    -- D-0130 retention rule.  Once Established Trajectory knowledge positively
+    -- Established Trajectory knowledge is a stronger current relationship witness
+    -- than heading-based purpose retention. Once that knowledge positively
     -- says this ordered follower purpose has succeeded into opposed conflict, or
     -- that the opposed participants have already passed one another, the old
     -- follower purpose is positively obsolete and must not keep a speed lease.

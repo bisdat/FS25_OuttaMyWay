@@ -221,11 +221,6 @@ def test_semantic_contracts_do_not_use_development_identity():
         assert stale not in current_contract
 
 
-def _strip_lua_comments(text):
-    text = re.sub(r"--\[\[.*?\]\]", "", text, flags=re.S)
-    return re.sub(r"--[^\n]*", "", text)
-
-
 def _loaded_production_lua_paths():
     main_path = ROOT / "scripts" / "main.lua"
     main = main_path.read_text(encoding="utf-8")
@@ -237,13 +232,13 @@ def _loaded_production_lua_paths():
     return paths
 
 
-def test_live_production_executable_vocabulary_has_no_historical_decision_identity():
+def test_sourced_production_vocabulary_has_no_historical_decision_identity():
     historical_identity = re.compile(r"(?i)d-?\d{4}")
     offenders = []
     for path in _loaded_production_lua_paths():
-        executable = _strip_lua_comments(path.read_text(encoding="utf-8"))
-        for match in historical_identity.finditer(executable):
-            line = executable.count("\n", 0, match.start()) + 1
+        text = path.read_text(encoding="utf-8")
+        for match in historical_identity.finditer(text):
+            line = text.count("\n", 0, match.start()) + 1
             offenders.append(
                 f"{path.relative_to(ROOT).as_posix()}:{line}:{match.group(0)}"
             )

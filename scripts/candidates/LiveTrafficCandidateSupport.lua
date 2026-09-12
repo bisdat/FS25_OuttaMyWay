@@ -33,8 +33,8 @@ function Support.new(identityRegistry,epochSequence,passiveSupport)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil},Support)
 end
 
--- Retained API for LiveRuntimeCoordinator compatibility.  D-0143 no longer
--- consumes a one-shot autonomous-head-on marker; current Situation evidence is
+-- Retained API for LiveRuntimeCoordinator compatibility. The retired prototype
+-- one-shot autonomous-head-on marker has no authority; current Situation evidence is
 -- authoritative on each live cycle.
 function Support:markAutonomousHeadOnDispatched(governingRequirementKey)
     if type(governingRequirementKey)=="string" and governingRequirementKey~="" then
@@ -44,7 +44,7 @@ end
 function Support:resetAutonomousState() self.lastStatus="PASSIVE" end
 function Support:getLastStatus() return self.lastStatus end
 
--- D-0146 Step-2 active Candidate expression.  Established conflict meaning is
+-- Cooperative Passage Candidate expression.  Established conflict meaning is
 -- consumed, not re-derived. LocalPassagePlanner owns the progressive local
 -- search and returns one sufficient Arrangement/Guide plus its bounded
 -- mechanical Representation Fitness requirements.
@@ -52,8 +52,9 @@ local function cooperativePassageRequirementKey(plan)
     return "cooperative-passage:"..tostring(plan.conflictIdentity)
 end
 
--- D-0200 dependency provenance is pair-specific. Current Pair Assessment Scope
--- supplies exact current Job Episodes; no persistent generic pair identity is required.
+-- Job Episode Dependency Collapse provenance is pair-specific. Current Pair
+-- Assessment Scope supplies exact current Job Episodes; no persistent generic
+-- pair identity is required.
 local function currentPairDependency(pictureValues,subjectAssemblyId,otherAssemblyId,preferredPairReferenceKey)
     for _,pair in OuttaMyWay.ValueRecord.ipairs(pictureValues.currentPairAssessmentScope or {}) do
         local samePair=(pair.subjectAssemblyId==subjectAssemblyId and pair.otherAssemblyId==otherAssemblyId)
@@ -176,11 +177,11 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
     }
 end
 
--- D-0146 Resolution-Space Conservation. Situation owns admission evidence and
+-- Resolution-Space Conservation. Situation owns admission evidence and
 -- temporary role assignment. Candidate does not re-derive raw GIANTS state.
 -- Current Excursion can justify early Potential-conflict admission; an already
--- Established conflict may also justify Regulation when Step-2 has not yet found
--- a supported Passage expression.
+-- Established conflict may also justify Regulation when Local Passage Search
+-- has not yet found a supported Passage expression.
 local function actionSpaceRegulationRecord(picture)
     local actionable={}
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
@@ -381,7 +382,7 @@ local function attachActionSpaceRegulation(self,picture,snapshot,item)
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
--- D-0141 aligned follower-boundary candidate support.  The Situation layer has
+-- Aligned Follower Boundary Candidate support.  The Situation layer has
 -- already decided whether current topology + a Provisional Demand Seed are
 -- Representation-Fit enough to support follower protection.  Candidate support
 -- does not inspect raw GIANTS state or historical manoeuvre probes.
@@ -616,11 +617,11 @@ local function clearanceTraceCandidate(candidate)
     }
 end
 
--- v0.1.4.6 telemetry retained.  This consumes evidence already computed by the
+-- Clearance telemetry consumes evidence already computed by the
 -- ordinary LocalPassagePlanner pass.  It does not call the planner, sweep, or
 -- geometry functions again.  The trace is intentionally limited to the local
 -- 40 m approach so the field comparison exposes NO -> YES -> NO clearance
--- behaviour without recreating v0.1.4.5 Candidate Search Amplification.
+-- behaviour without recreating Candidate Search Amplification.
 local function passageClearanceRejectionTelemetry(allRejected)
     local lines={}
     if type(allRejected)~="table" then return lines end
@@ -820,8 +821,8 @@ function Support:attach(picture,snapshot)
         if forwardReason~=nil then self.lastStatus=forwardReason; return self.passiveSupport:attach(picture,snapshot) end
     end
 
-    -- D-0181: D-0146 is the single production Cooperative Passage authority.
-    -- There is no feature switch or D-0143 fallback path to resurrect.
+    -- Cooperative Passage has a single production Candidate path.
+    -- There is no feature switch or retired prototype fallback path to resurrect.
         local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
         if plan==nil then
             for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(rejected)) do logInfo("%s",clearanceTrace) end
@@ -845,10 +846,10 @@ function Support:attach(picture,snapshot)
             return attachFollowerBoundary(self,picture,snapshot,follower)
         end
 
-        -- D-0159 corrective boundary: Passage Selection immediately restores the
-        -- proven v0.1.3.0 Resolution-to-Passage authority handoff.  Physical
-        -- Passage Entry may still be delayed, but that delay is owned inside
-        -- Cooperative Passage execution rather than by retaining D-0155.
+        -- Passage Selection immediately hands authority from Action-Space Regulation
+        -- to Cooperative Passage. Physical Passage Entry may still be delayed,
+        -- but that delay is owned inside Cooperative Passage execution rather
+        -- than by retaining Action-Space Regulation.
 
         local values=OuttaMyWay.ValueRecord.toTable(picture)
         local pictureId=self.identities:issue("PICTURE")

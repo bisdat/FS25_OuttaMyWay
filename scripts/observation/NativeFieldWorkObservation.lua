@@ -79,7 +79,7 @@ local function workingWidthObservation(vehicle)
     return {available=bestWidth~=nil,widthMetres=bestWidth,source=bestSource or "UNAVAILABLE",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"}
 end
 
--- Exact SDK + D-0138 live evidence identify aiDriveParams as the immediate
+-- Exact SDK and live native-command evidence identify aiDriveParams as the immediate
 -- native field-worker command before the P22 driveToPoint wrapper.  Reading it
 -- here makes that raw Observation available to Situation Assessment without
 -- letting Diagnostics become an authority source.

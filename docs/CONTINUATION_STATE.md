@@ -18,36 +18,47 @@ Current core behaviour is governed by Reality / Situation, Responsibility,
 Bounded Authority and typed Control rather than per-capability booleans.
 
 The subsequent Root Surface Closure census exposed a distinct surviving debt:
-historical decision identifiers still appeared in executable production
-provenance, authority labels, evidence/outcome kinds, addressability keys and
-telemetry. The Phase-14 strangler corrected authority topology but its naming
-contract explicitly allowed historical provenance, and the structural test suite
-encoded that exception.
+historical decision identifiers still appeared in sourced production
+provenance, authority labels, evidence/outcome kinds, addressability keys,
+telemetry and comments. The Phase-14 strangler corrected authority topology but
+its naming contract explicitly allowed historical provenance, and the structural
+test suite encoded that exception.
 
 > **Production Vocabulary Closure != Validation Vocabulary Closure**
 
 > **Source Topology Defines Production Surface**
 
 Git owns chronology. Historical decision identity may remain in research/history
-and, temporarily, validation fixtures, but it must not cross into the executable
-production surface sourced by `scripts/main.lua`.
+and, temporarily, validation fixtures, but it must not appear anywhere in
+`scripts/main.lua` or the production Lua modules it sources, including comments.
 
 ## Current bounded increment
 
 Implement **`0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE`**:
 
-1. replace executable D-number provenance, authority, evidence/outcome, runtime
-   identity/addressability and telemetry names with current architectural
-   responsibility vocabulary;
+1. replace sourced-production D-number provenance, authority, evidence/outcome,
+   runtime identity/addressability, telemetry and comments with current
+   architectural responsibility vocabulary;
 2. reverse the structural production-vocabulary contract so it rejects
    historical decision identity across the complete `scripts/main.lua` source
-   topology rather than preserving selected exceptions;
+   topology, including comments, rather than preserving selected exceptions;
 3. remove rolling version/decision-history headers from production modules
    touched by the tranche where Git already owns that chronology;
 4. preserve runtime behaviour, policy/calibration, geometry, lifecycle,
    authority boundaries and Control semantics;
-5. leave replacement-core fixture/test-title vocabulary for a separate
-   behaviour-neutral Validation Vocabulary Closure increment.
+5. update positive structural assertions consuming renamed current production
+   contracts while leaving historical fixture/test-title vocabulary and negative
+   retirement assertions for a separate behaviour-neutral Validation Vocabulary
+   Closure increment.
+
+PR #140 review and Offline Validation run #340 exposed two closure gaps: the
+production guard stripped comments, and 13 structural tests still positively
+asserted historical production labels. The review correction scans full sourced
+file text and reconciles those contract consumers. Contract consumers are not
+validation fixtures; preserving deferred fixture vocabulary does not preserve
+obsolete positive assertions. Independent CI validation of the correction remains
+pending publication; local scans and syntax checks do not establish suite or
+in-game validation.
 
 This tranche does **not** relocate the remaining `scripts/config.lua` constants,
 retire `BUILD_LABEL` / `ARCHITECTURE_VERSION` / `RUNTIME_MODE`, implement player

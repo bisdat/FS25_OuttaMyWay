@@ -498,7 +498,7 @@ local function actionSpaceCurrentSeparation(picture,lease,relation,bridge)
     return separation
 end
 
--- D-0198 Witness Absence Is Not Quiescence Authority. Situation owns the
+-- Witness Absence Is Not Quiescence Authority. Situation owns the
 -- interpretation of raw GIANTS intent evidence and publishes a pair-local veto
 -- naming assemblies whose native intent is still being revealed. Control only
 -- asks whether the currently protected participant is covered by that veto.
@@ -830,8 +830,9 @@ function Authority:continueActionSpaceRegulation(picture,evaluated,applied,readi
 end
 
 -- A terminalizing traffic Commitment cannot leave owner-tag Control leases or
--- Regulation authority state behind. D-0200 invokes this before terminal
--- settlement so terminal succession observes no stale actuation context.
+-- Regulation authority state behind. Job Episode Dependency Collapse invokes
+-- this before terminal settlement so terminal succession observes no stale
+-- actuation context.
 function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
     if type(commitmentId)~="string" then return {released=0} end
     local released=0

@@ -33,9 +33,11 @@ concepts. Naming work applies that vocabulary; it does not redefine it. Consult
 the [Concept Register](CONCEPT_REGISTER.md) and the applicable documents under
 [Architecture](architecture/README.md) when a term's authority is uncertain.
 
-Decision identifiers such as `D-0146` record provenance. They are not primary
-production, module or architectural names and must not substitute for a truthful
-responsibility name.
+Decision identifiers such as `D-0146` are historical repository provenance.
+Sourced-production identifiers, runtime provenance, telemetry, status and comments
+describing current responsibility use current architecture names. No decision ID
+matching `(?i)d-?\d{4}` may remain anywhere in `scripts/main.lua` or any Lua module
+it sources; this boundary includes complete file text, not only executable code.
 
 ## Repository, folder and Lua module names
 
@@ -204,9 +206,13 @@ These conventions do not redesign `scripts/config.lua` or duplicate the
 
 Git owns chronology. Do not add rolling `TEST`, `CANONICAL CANDIDATE`, release
 version or D-number headers to production modules merely to record their history.
-Retain a historical comment only when it materially explains a current
-constraint or a discovered GIANTS behaviour that a maintainer needs in order to
-change the code safely.
+Useful historical explanation may remain when it materially explains a current
+constraint or discovered GIANTS behaviour needed to change the code safely.
+Sourced production explains that constraint in current concepts; the D-number
+itself belongs in Git, `DECISION_LOG.md` or engineering history. Deliberately
+unsourced historical evidence and deferred validation fixtures may retain
+D-numbers until their later closure tranche. They do not remain in the
+`scripts/main.lua` sourced production surface, including comments.
 
 ## User-facing terminology
 
@@ -225,8 +231,8 @@ Phase 14's strangler graduates principal production Observation, Control,
 execution-mechanism and traffic-purpose vocabulary as those responsibilities
 become current. Phase 14.6C specifically reconciles the remaining primary
 Cooperative Passage, Regulation, Guarded Recovery and runtime-composition
-identifiers. Historical decision numbers may remain where they are genuinely
-provenance rather than executable identity.
+identifiers. Historical decision numbers remain only outside sourced production,
+in the historical evidence and deferred validation surfaces described above.
 
 Track any remaining divergence through architecture and implementation review
 and the [Implementation Map](IMPLEMENTATION_MAP.md), not by turning this document

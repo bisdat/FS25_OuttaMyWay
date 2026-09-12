@@ -385,7 +385,7 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     local bExcursion=bTrajectory and bTrajectory.currentExcursion==true
     if aExcursion==bExcursion then
         result.reason=aExcursion and "MULTIPLE_CURRENT_EXCURSIONS_DO_NOT_SUPPORT_UNILATERAL_CONSERVATION_ROLE" or "NO_CURRENT_EXCURSION"
-        -- D-0198: absence of the Current Excursion witness is not itself
+        -- Absence of the Current Excursion witness is not itself
         -- quiescence authority while a participant is still revealing native
         -- GIANTS turn intent inside the local Passage Action-Space envelope.
         -- Situation publishes that semantic veto; Control does not inspect raw

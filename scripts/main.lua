@@ -19,7 +19,7 @@ OuttaMyWay.runtime=OuttaMyWay.Runtime.new(); OuttaMyWay.runtime:initialize()
 
 -- Diagnostics consume Situation-owned Knowledge; no diagnostic object supplies
 -- semantic evidence to Candidate/Decision/Control.
--- D-0144: chessboard/Productive-Coverage/Refuge-qualification diagnostics are intentionally
+-- Retired chessboard/Productive-Coverage/Refuge-qualification diagnostics are intentionally
 -- unsourced from the live runtime. Their files remain historical evidence only.
 OuttaMyWay.productiveContinuationProbe=OuttaMyWay.ProductiveContinuationProbe.new(OuttaMyWay.runtime.situationAssessment)
 OuttaMyWay.nativeFieldWorkerDriveCommandProbe=OuttaMyWay.NativeFieldWorkerDriveCommandProbe.new(OuttaMyWay.runtime,OuttaMyWay.runtime.situationAssessment)
@@ -45,7 +45,7 @@ OuttaMyWay.cooperativePassageControl=OuttaMyWay.CooperativePassageControl.new(Ou
 OuttaMyWay.runtime:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
 
 -- One provenance-neutral Causal Obstruction / Obstruction Relocation responsibility
--- owns production non-active blocker movement. Historical D-0147 donor topology is
+-- owns production non-active blocker movement. Historical post-job relocation donor topology is
 -- preserved by repository history rather than sourced into the shipped runtime.
 OuttaMyWay.obstructionRelocationControl=OuttaMyWay.ObstructionRelocationControl.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource)
 OuttaMyWay.runtime:setObstructionRelocationControl(OuttaMyWay.obstructionRelocationControl)

@@ -400,7 +400,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local acceptanceRatio=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO) or 1.0
     acceptanceRatio=math.max(0,acceptanceRatio)
     local acceptedFloor=required*acceptanceRatio
-    -- D-0165 + v0.1.4.7 TEST: Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
+    -- Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
     local function evidence()
         return {minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required,acceptedNominalClearanceFloorM=acceptedFloor,clearanceAcceptanceRatio=acceptanceRatio}
     end
@@ -573,8 +573,8 @@ local function currentParticipantGeometry(physical,space,rightX,rightZ)
     return {discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=physical.configurationProfileId},nil
 end
 
--- D-0181: superseded configuration-conditioned Passage selection removed.
--- Missing cached Transit geometry now fails closed; no legacy configuration
+-- Passage selection requires cached Transit geometry and fails closed when
+-- that evidence is missing; no legacy configuration
 -- mode can acquire Cooperative Passage authority.
 
 local function transitConditionedPair(pairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearanceM)
@@ -782,7 +782,7 @@ local function planConflict(picture,snapshot,conflict)
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end
-            -- v0.1.4.6 telemetry retained: evidence already computed by the
+            -- Clearance telemetry uses evidence already computed by the
             -- normal Candidate pass so diagnostics can expose NO -> YES -> NO
             -- clearance behaviour without repeating any geometric work.
             rejected[#rejected+1]={

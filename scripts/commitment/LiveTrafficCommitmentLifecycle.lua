@@ -375,7 +375,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
 
--- D-0217 Cooperative Passage participant loss is participant-scoped. A sealed
+-- Cooperative Passage participant loss is participant-scoped. A sealed
 -- observation first establishes the complete set of still-open Passage Legs
 -- whose exact original GIANTS Job Episode has authoritatively ended. Why the
 -- Job Episode ended is provenance, not a second Passage lifecycle: player entry
@@ -541,8 +541,8 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
     return outcomes
 end
 
--- D-0200 Job Episode Dependency Collapse remains the whole-purpose collapse
--- path for non-Passage D-0146 traffic responsibilities. Cooperative Passage
+-- Job Episode Dependency Collapse remains the whole-purpose collapse
+-- path for non-Passage Job-founded traffic responsibilities. Cooperative Passage
 -- participant loss is reconciled above at Passage-Leg scope and must never be
 -- promoted back into whole-Commitment basis cessation.
 function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,snapshot)
@@ -697,9 +697,9 @@ function Lifecycle.settleCooperativePassageLeg(runtime,commitmentId,assemblyId,d
     return {commitment=record,settledObligationId=obligation.identity,remainingObligations=remaining,releasedAuthorityTokenIds=releasedTokens,releasedBoundedAuthorityGrantIds=releasedBounded,terminal=terminal,composition=composition},nil
 end
 
--- D-0146 joint Cooperative Passage admission/revision. CREATE uses the normal
+-- Joint Cooperative Passage admission/revision. CREATE uses the normal
 -- DecisionCommitmentBoundary. REVISE is needed only when an already-live traffic
--- purpose (for example D-0141 follower protection) is succeeded by the joint
+-- purpose (for example Follower Boundary protection) is succeeded by the joint
 -- TS015 Reposition; the fresh restoration/handoff obligation and both progress
 -- authority tokens are then attached to that same Commitment.
 function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)

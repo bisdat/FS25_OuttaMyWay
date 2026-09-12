@@ -1,7 +1,7 @@
 -- Physical configuration mechanism below Control.
 -- Reuses the proven GIANTS work/raise/fold integration. It owns no traffic
 -- policy or semantic configuration conclusion. Cached Transit actuation serves
--- Cooperative Passage; generic compact capability is retained for D-0147/D-0218.
+-- Cooperative Passage; generic compact capability is retained for Obstruction Relocation.
 
 OuttaMyWay.TransitConfigurationMechanism = {}
 local Mechanism = OuttaMyWay.TransitConfigurationMechanism
@@ -137,13 +137,13 @@ function Mechanism:getEvidence(vehicle)
     return foldEvidence(vehicle)
 end
 
--- D-0178: actuation-motion evidence only; no semantic folded/deployed inference.
+-- Actuation-motion evidence only; no semantic folded/deployed inference.
 function Mechanism:getActiveFoldMotionEvidence(vehicle)
     return activeFoldMotionEvidence(vehicle)
 end
 
 
--- D-0179: TRANSIT_BASE Passage consumes the Job-Episode bootstrap capability
+-- TRANSIT_BASE Passage consumes the Job-Episode bootstrap capability
 -- record directly.  No assembly/capability discovery is performed here.
 function Mechanism:prepareCachedTransit(vehicle,capability)
     if vehicle==nil then return false,"vehicle-unavailable" end
@@ -208,10 +208,10 @@ function Mechanism:getCachedTransitSettlement(vehicle)
     return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
 end
 
--- D-0183: D-0146 restoration is symmetrical with D-0179 Transit actuation.
+-- Cooperative Passage restoration is symmetrical with cached Transit actuation.
 -- Restore only cached actuators whose fold position actually moved away from the
 -- pre-Transit endpoint; generic assembly rediscovery and aggregate fold state
--- carry no D-0146 restoration authority.
+-- carry no Cooperative Passage restoration authority.
 function Mechanism:requestCachedTransitRestore(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
     if state==nil or state.bootstrapTransitCapability~=true then return false,"cached-transit-authority-not-owned" end
