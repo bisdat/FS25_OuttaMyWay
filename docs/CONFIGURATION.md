@@ -109,8 +109,29 @@ Whether these represent one shared Passage Gate Tolerance concept or two
 historically equal calibrations remains unresolved; Control calibration ownership
 does not decide that question.
 
-Remaining Local Passage construction, Transit fold settlement and
-Forward Intersection Regulation policy remain separate Issue #87 ownership work.
+Remaining Local Passage construction and Forward Intersection Regulation policy
+remain separate Issue #87 ownership work.
+
+## Transit fold settlement ownership
+
+`AssemblyRepresentationCache` owns Job-Episode bootstrap Transit settlement
+timeout derivation from the selected/runtime GIANTS folding configuration's
+`maxFoldAnimDuration`. Its module-local duration factor 1.50 and margin 2000 ms
+produce `expectedFoldDurationMs * 1.50 + 2000` for positive duration; unavailable
+native duration uses its 30000 ms fallback. The derived capability timeout is
+capped at 35000 ms and published as `capability.settlementTimeoutMs`.
+
+`TransitConfigurationMechanism` consumes that derived timeout. Its independent
+module-local 30000 ms fallback protects missing capability/state timing during
+cached Transit preparation, settlement and restoration as a defensive Control
+fail-safe. It does not derive capability timing. Equal 30000 ms literals do not
+establish shared policy: **Defensive Fallback != Shared Policy Owner** and
+**Derived Capability Timeout != Defensive Mechanism Fallback**.
+
+These values are not player Configuration. Cooperative Passage Control consumes
+cached capability and settlement results without independently deriving timing.
+Forward Intersection ownership remains unresolved; Local Passage construction
+and traversal-gate shared semantics remain separate Issue #87 work.
 
 ## Clearance trace diagnostic publication ownership
 
@@ -128,8 +149,8 @@ policy, or Control actuation policy.
 
 Localising this diagnostic does not resolve Local Passage construction ownership.
 The 1.0 m traversal-gate shared-semantics question described above remains
-unresolved. Transit fold settlement and Forward Intersection Regulation policy
-remain separate Issue #87 ownership work.
+unresolved. Forward Intersection Regulation policy remains separate Issue #87
+ownership work.
 
 ## Resolution-Space Regulation magnitude policy ownership
 
@@ -341,7 +362,7 @@ evidence does not establish a responsible owner.
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION` | These are the only root identities: `MOD_NAME` identifies the system/mod and `VERSION` identifies the executable build. Neither is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `FORWARD_INTERSECTION_REGULATION_SPEED_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
-| SAFETY / RESOURCE BOUND | Passage sweep sample count; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
+| SAFETY / RESOURCE BOUND | Passage sweep sample count | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | no retained per-capability runtime enable/disable gate | `.63` retires the historical Control, Cooperative Passage and aligned-Follower pseudo-state gates. Core capability availability and prohibition are enforced by Responsibility / Bounded Authority / typed Control topology, not booleans. |
 | HUD IMPLEMENTATION | no diagnostic HUD values remain in the mixed root | FutureSpaceHud, VersionHud and FollowerPacingHud independently own their local presentation values under [Diagnostic HUD implementation ownership](#diagnostic-hud-implementation-ownership). Unconsumed lifecycle/transition gates are deleted, not relocated. |
@@ -356,7 +377,8 @@ owns retained comparison/resolution evidence-history bounds. Those values are
 internal implementation evidence, not player Configuration, and no longer
 occupy the mixed root surface. Existing Obstruction Relocation, Runtime,
 Representation and Entity-Local Shape Evidence ownership remains unchanged.
-Fold-settlement bounds remain internal safety/control values. `.59` retires the
+Fold-settlement derivation and defensive fallback are separately module-owned
+under [Transit fold settlement ownership](#transit-fold-settlement-ownership). `.59` retires the
 legacy follower-maturation forensic shadow and all `FOLLOWER_MATURATION_*`
 root residue because that diagnostic no longer answers a current engineering
 question; the aligned `FOLLOWER_BOUNDARY_*` production path remains unchanged.

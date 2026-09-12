@@ -13,6 +13,12 @@ local MEMBER_HIERARCHY_DISCOVERY_SCAN_BUDGET=2200
 -- Physical Assembly fingerprint; this is not candidate-node cache freshness.
 local ASSEMBLY_MEMBERSHIP_REVALIDATION_INTERVAL_SECONDS=5
 
+-- Bootstrap capability timeout derivation, not a shared Control fallback policy.
+local TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR = 1.50
+local TRANSIT_FOLD_SETTLEMENT_MARGIN_MS = 2000
+local TRANSIT_FOLD_SETTLEMENT_UNKNOWN_DURATION_FALLBACK_MS = 30000
+local TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
+
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
     return pcall(object[methodName],object,...)
@@ -234,15 +240,12 @@ local function bootstrapTransitFoldCapability(members,nowSeconds)
     end
     capability.actuatorCount=#capability.actuators
     capability.isFoldable=capability.actuatorCount>0
-    local fallback=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS) or 30000
     if capability.expectedFoldDurationMs>0 then
-        local factor=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR) or 1.5
-        local margin=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS) or 2000
-        capability.settlementTimeoutMs=capability.expectedFoldDurationMs*factor+margin
+        capability.settlementTimeoutMs=capability.expectedFoldDurationMs*TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR+TRANSIT_FOLD_SETTLEMENT_MARGIN_MS
     else
-        capability.settlementTimeoutMs=fallback
+        capability.settlementTimeoutMs=TRANSIT_FOLD_SETTLEMENT_UNKNOWN_DURATION_FALLBACK_MS
     end
-    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS) or 35000)
+    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,TRANSIT_FOLD_SETTLEMENT_MAX_MS)
     return capability
 end
 
