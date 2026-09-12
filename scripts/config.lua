@@ -4,7 +4,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.71"
+OuttaMyWay.VERSION = "0.3.0.72"
 
 -- Live diagnostic instrument controls are module-owned. Their exact accepted
 -- enablement and publication/sample cadences live with the five instruments;
@@ -18,11 +18,10 @@ OuttaMyWay.VERSION = "0.3.0.71"
 -- interpretation calibration locally. Passage Action-Space policy remains external.
 
 
--- Remaining cross-responsibility Passage policy/calibration; deeper ownership
--- of the local Action-Space / entry bound and Candidate/Control traversal-radius
--- reuse remains unresolved. Fixed construction policy and calibration are Planner-owned.
+-- Remaining cross-responsibility Passage policy: ownership of the local
+-- Action-Space / entry bound remains unresolved. Guide radii are Planner-owned;
+-- captured-axis station completion tolerance is independently Control-owned.
 OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0
-OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
 
 -- Forward Intersection Regulation policy.
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1

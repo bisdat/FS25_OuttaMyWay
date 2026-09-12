@@ -416,20 +416,64 @@ def test_cooperative_passage_control_owns_execution_calibration():
         assert use in passage
 
 
-def test_passage_traversal_gate_retains_root_planner_and_control_uses():
-    name = "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"
+def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners():
+    planner_owner = ROOT / "scripts/candidates/LocalPassagePlanner.lua"
+    control_owner = ROOT / "scripts/control/CooperativePassageControl.lua"
+    planner = planner_owner.read_text(encoding="utf-8")
+    passage = control_owner.read_text(encoding="utf-8")
     config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
-    planner = (ROOT / "scripts/candidates/LocalPassagePlanner.lua").read_text(encoding="utf-8")
-    passage = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text(encoding="utf-8")
-    assert f"OuttaMyWay.{name} = 1.0" in config
-    assert f"local traversalRadius=tonumber(OuttaMyWay.{name}) or 1.0" in planner
-    assert planner.count(name) == 1
-    assert passage.count(name) == 2
-    for method in ("_startRunoutChunk", "_beginAxisReturn"):
+    radius = "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"
+    tolerance = "COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M"
+    # Calibration equality does not create shared policy or a mutable root seam.
+    for name, owner, text in ((radius, planner_owner, planner), (tolerance, control_owner, passage)):
+        assert name not in config
+        assert re.search(rf"^local {name} = 1\.0$", text, re.M)
+        assert len(re.findall(rf"\b{name}\s*=(?!=)", text)) == 1
+        assert not re.search(rf"[.\[]\s*[\"']?{name}\b", text)
+        for path in _loaded_production_lua_paths():
+            if path != owner:
+                assert name not in path.read_text(encoding="utf-8"), path
+        for path in (ROOT / "tests").rglob("*.lua"):
+            assert name not in path.read_text(encoding="utf-8"), path
+
+    guide = planner.split("local function makeGuide(", 1)[1].split("\nlocal function ", 1)[0]
+    assert f"local traversalRadius={radius}" in guide
+    for kind, forward in (("CROSSING_WINDOW_ENTRY", "development"),
+                          ("CROSSING_WINDOW_EXIT", "development+traversal")):
+        assert f'{{kind="{kind}",forwardM={forward},lateralFraction=1.0,radiusM=traversalRadius}}' in guide
+    for participant in ("subject", "other"):
+        assert re.search(rf"gate\.{participant}=\{{[^\n]+radiusM=gate\.radiusM\}}", guide)
+
+    for method, station, forwards in (("_startRunoutChunk", "progress+length", "true"),
+                                      ("_beginAxisReturn", "0", "false")):
         block = passage.split(f"function Control:{method}(", 1)[1].split("\nfunction Control:", 1)[0]
-        assert f"local tolerance=tonumber(OuttaMyWay.{name}) or 1.0" in block
-        assert "self.driveMechanism:setAxisTravel(" in block
-        assert ",tolerance)" in block
+        assert f"local tolerance={tolerance}" in block
+        assert ("self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,"
+                "participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,"
+                f"{station},run.speedKmh,{forwards},tolerance)") in block
+    gate = passage.split("function Control:_startGuideGate(", 1)[1].split("\nfunction Control:", 1)[0]
+    assert tolerance not in gate
+    assert "local target=self:_guideTargetFor(run,p,gate)" in gate
+    assert "p.targetX,p.targetZ,p.targetRadiusM=target.x,target.z,target.radiusM" in gate
+    assert "self.driveMechanism:setReposition(p.vehicle,target.x,target.z,run.speedKmh,target.radiusM)" in gate
+
+
+def test_native_drive_materialises_distinct_spatial_and_station_completion():
+    drive = (ROOT / "scripts/control/mechanisms/NativeDriveMechanism.lua").read_text(encoding="utf-8")
+    axis = drive.split('state.mode == "AXIS_TRAVEL"', 1)[1].split('state.mode == "REPOSITION"', 1)[0]
+    for expression in (
+        "local progress=(x-ox)*fx+(z-oz)*fz",
+        "local targetStation=tonumber(state.targetStationM)",
+        "local tolerance=math.max(0,tonumber(state.stationToleranceM) or 0)",
+        "local reached=(forwards and progress+tolerance>=targetStation) or ((not forwards) and progress-tolerance<=targetStation)",
+    ):
+        assert expression in axis
+    reposition = drive.split('state.mode == "REPOSITION"', 1)[1]
+    assert "local dx, dz = state.targetX - x, state.targetZ - z" in reposition
+    assert "local remaining = math.sqrt(dx * dx + dz * dz)" in reposition
+    assert "remaining <= (tonumber(state.targetRadiusM) or 1.0)" in reposition
+    assert "stationToleranceM=stationToleranceM" in drive
+    assert "targetRadiusM = targetRadiusM" in drive
 
 
 def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
@@ -471,7 +515,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "localrecovery=development",
         "localentryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
         "localentryBoundary=frontOverlap+2*development+entryAllowance",
-        "localtraversalRadius=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M)or1.0",
+        "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
         "localdevelopmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,development*0.25))",
         "localrecoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,recovery*0.25))",
         "localstepM=COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M",
@@ -510,8 +554,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     remaining = dict(re.findall(r"^OuttaMyWay\.(\w+) = ([^\n]+)$", config, re.M))
     assert set(remaining) == {
         "MOD_NAME", "VERSION", "COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M",
-        "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M", "FORWARD_INTERSECTION_REGULATION_SPEED_KMH",
+        "FORWARD_INTERSECTION_REGULATION_SPEED_KMH",
     }
     assert remaining["COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M"] == "80.0"
-    assert remaining["COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"] == "1.0"
     assert remaining["FORWARD_INTERSECTION_REGULATION_SPEED_KMH"] == "1"

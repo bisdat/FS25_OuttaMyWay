@@ -20,7 +20,8 @@ local COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M = 4.0
 local COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
 local COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M = 3.0
 
--- Non-traversal guide calibration; traversal radius remains externally owned.
+-- Two-dimensional guide target radii, independent of Control axis station tolerance.
+local COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
 local COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M = 2.0
 local COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M = 2.0
 
@@ -263,7 +264,7 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
     local development=tonumber(geometry.developmentDistanceM) or 0
     local traversal=tonumber(geometry.crossingWindowForwardPerParticipantM) or 0
     local recovery=tonumber(geometry.recoveryDistanceM) or 0
-    local traversalRadius=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local traversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M
     local developmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,development*0.25))
     local recoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,recovery*0.25))
     local gates={}
