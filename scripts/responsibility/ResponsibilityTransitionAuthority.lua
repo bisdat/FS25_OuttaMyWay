@@ -323,7 +323,7 @@ end
 
 -- Direct Cooperative Passage substrate targeting is a transition-boundary
 -- consistency question, not Responsibility continuation authority.  The
--- retained purpose must first target the selected D0146 governing requirement
+-- retained purpose must first target the selected Cooperative Passage governing requirement
 -- and the same two current Job Episodes.  Only then may an already-current
 -- Resolution responsibility be reused.
 function Authority:evaluateDirectCooperativePassageSubstrate(picture,evaluated)
@@ -556,7 +556,7 @@ function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitmen
         conflictIdentity=current.provenance.conflictIdentity,reason="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
     },{kind="COOPERATIVE_PASSAGE_ESTABLISHED_CONFLICT_SUCCESSION",conflictIdentity=current.provenance.conflictIdentity})
     if settled==nil then
-        logInfo("D0146_ACTION_SPACE_PASSAGE_SUPERSESSION commitment=%s conflict=%s physicalLeaseCleared=true obligationSettlement=%s",tostring(commitment.identity),tostring(current.provenance.conflictIdentity),tostring(reason))
+        logInfo("ACTION_SPACE_REGULATION_PASSAGE_SUPERSESSION commitment=%s conflict=%s physicalLeaseCleared=true obligationSettlement=%s",tostring(commitment.identity),tostring(current.provenance.conflictIdentity),tostring(reason))
     end
     return {settled=settled,reason=reason,physical=neutralized},nil
 end

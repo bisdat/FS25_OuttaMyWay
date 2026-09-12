@@ -1,22 +1,11 @@
--- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; TRANSIT_BASE planning fails closed.
--- Candidate-owned Local Passage planning remains vehicle-name independent: Local Passage Space, Progressive Passage Search, Passage Arrangement and Passage Guide remain the governing Candidate concepts.
---
--- Passage Selection may precede physical Passage Entry.  Selection immediately
--- commits Cooperative Passage and supersedes D-0155, restoring the proven
--- v0.1.3.0 authority handoff.  The derived Entry Boundary is consumed later by
--- Cooperative Passage Control's PASSAGE_APPROACH phase; Candidate does not
--- retain uncertainty regulation after the resolution is known.
--- TRANSIT_BASE planning now carries one uniform Transit obligation; legacy
--- configuration-conditioned selection remains only as the existing geometry
--- fallback when Native Base Transit Geometry is unavailable. From the selected
--- represented geometry the planner derives a
--- non-negative Clearance Deficit, participant excursion, physical Crossing
--- Window from longitudinal extents, and Recovery toward the native lateral
--- axis.  The old P23 12/8/12 guide distances are donor evidence, not geometry.
---
--- Current represented discs remain bounded evidence: translated-disc sweep
--- does not claim exact articulated swept-envelope closure.  Third parties and
--- Field World remain constraints on the pair plan, not hidden participants.
+-- Candidate-owned Local Passage planning is vehicle-name independent. Local
+-- Passage Space, Progressive Passage Search, Passage Arrangement and Passage
+-- Guide are the governing Candidate concepts. Selection may precede physical
+-- Passage Entry; the derived Entry Boundary is consumed later by Cooperative
+-- Passage Control. TRANSIT_BASE planning carries one uniform Transit obligation.
+-- Current represented geometry is bounded evidence rather than exact articulated
+-- swept-envelope closure; third parties and Field World remain constraints, not
+-- hidden participants.
 
 OuttaMyWay.LocalPassagePlanner={}
 local Planner=OuttaMyWay.LocalPassagePlanner
@@ -651,7 +640,7 @@ local function passageConfigurationPlan(conflict,arrangement)
         participants={participant(conflict.subjectAssemblyId,arrangement.subjectConfiguration),participant(conflict.otherAssemblyId,arrangement.otherConfiguration)},
         selectedRelationSign=arrangement.relationSign,configurationReleasedSpaceEvaluated=true,
         totalConfigurationReleasedSpaceM=(arrangement.subjectConfiguration.releaseM or 0)+(arrangement.otherConfiguration.releaseM or 0),
-        negativeClearanceAuthority=false,authority="D0179_JOB_START_PHYSICAL_CAPABILITY_RECORD"
+        negativeClearanceAuthority=false,authority="JOB_EPISODE_BOOTSTRAP_TRANSIT_CAPABILITY"
     },nil
 end
 

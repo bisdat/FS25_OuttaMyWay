@@ -1,6 +1,5 @@
--- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 D-0146 trajectory/conflict behaviour preserved; D-0147 is architecture-only.
--- Situation Assessment owns the persistent state supplied to this module. This module
--- consumes only sealed/current Situation evidence and has no Candidate/Decision/Control authority.
+-- Trajectory Conflict Assessment consumes sealed/current Situation evidence and
+-- has no Candidate, Decision or Control authority.
 
 OuttaMyWay.TrajectoryConflictAssessment = {}
 local Assessment = OuttaMyWay.TrajectoryConflictAssessment
@@ -237,7 +236,7 @@ local function knowledgeForTrack(track)
         provenance={
             source="TrajectoryConflictAssessment",
             layer="SITUATION_KNOWLEDGE",
-            authority="D0146_SITUATION_KNOWLEDGE",
+            authority="TRAJECTORY_CONFLICT_ASSESSMENT",
             basis="RECENT_PHYSICAL_DISPLACEMENT_WITH_TRAJECTORY_PERSISTENCE",
             productiveContextIsGate=false,
             decisionAuthority=false,
@@ -830,7 +829,7 @@ function Assessment.classifyPairs(context)
                     classification=nil,
                     status="INSUFFICIENT_KNOWLEDGE",
                     reason="ESTABLISHED_TRAJECTORY_NOT_AVAILABLE_FOR_BOTH_PARTICIPANTS",
-                    provenance={source="TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
+                    provenance={source="TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="TRAJECTORY_CONFLICT_ASSESSMENT",decisionAuthority=false,controlAuthority=false}
                 }
                 if aTrajectory~=nil and bTrajectory~=nil and aTrajectory.established==true and bTrajectory.established==true then
                     local trajectoryDot=dot(aTrajectory.establishedDirectionX,aTrajectory.establishedDirectionZ,bTrajectory.establishedDirectionX,bTrajectory.establishedDirectionZ)

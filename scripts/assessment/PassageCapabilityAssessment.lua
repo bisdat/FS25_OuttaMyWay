@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.3.3 TEST — D-0146/D-0159 purpose-specific Passage fitness.
+-- Purpose-specific Cooperative Passage mechanical fitness assessment.
 --
 -- Situation does not pre-classify Passage capability by vehicle identity. Once
 -- an Established Opposed Corridor Conflict exists, cached current/observed
@@ -62,7 +62,7 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
         },
         provenance={
             source="PassageCapabilityAssessment",layer="SITUATION_ASSESSMENT",
-            authority="D0146_STEP2_PURPOSE_SPECIFIC_MECHANICAL_PREFLIGHT",
+            authority="COOPERATIVE_PASSAGE_MECHANICAL_PREFLIGHT",
             decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,
             negativeClearanceAuthority=false
         }

@@ -226,7 +226,7 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
         },"|")
         if self.trajectoryLogSignatures[key]~=signature or due then
             self.trajectoryLogSignatures[key]=signature
-            logInfo(string.format("TRAJECTORY assembly=%s job=%s status=%s transition=%s establishedDir=(%s,%s) anchor=(%s,%s) currentDir=(%s,%s) currentDot=%s forming=%sm aligned=%sm excursion=%s excursionDistance=%sm context=%s productivePositive=%s authority=D0146_SITUATION_KNOWLEDGE diagnosticOnly=true",
+            logInfo(string.format("TRAJECTORY assembly=%s job=%s status=%s transition=%s establishedDir=(%s,%s) anchor=(%s,%s) currentDir=(%s,%s) currentDot=%s forming=%sm aligned=%sm excursion=%s excursionDistance=%sm context=%s productivePositive=%s authority=TRAJECTORY_CONFLICT_ASSESSMENT diagnosticOnly=true",
                 key,tostring(item.jobToken or "n/a"),tostring(item.status),tostring(item.lastTransition),
                 numberText(item.establishedDirectionX),numberText(item.establishedDirectionZ),numberText(item.corridorAnchorX),numberText(item.corridorAnchorZ),
                 numberText(item.currentDirectionX),numberText(item.currentDirectionZ),numberText(item.currentToEstablishedDot),numberText(item.formationDistanceM),
@@ -252,7 +252,7 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
         if self.opposedCorridorLogSignatures[key]~=signature or due then
             self.opposedCorridorLogSignatures[key]=signature
             local actionOverlap=action.currentCorridorOverlap or {}
-            logInfo(string.format("OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s participation=%s/%s pending=%s/%s passageEligible=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s settled=%s/%s relationship=%s relationshipReason=%s primitives=%d+%d actionSpace=%s actionReason=%s regulated=%s protected=%s excursion=%s role=%s actionSep=%s actionOverlap=%s actionNative=%s magnitudeAuthority=BOUNDED_AUTHORITY authority=D0146_SITUATION_KNOWLEDGE diagnosticOnly=true",
+            logInfo(string.format("OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s participation=%s/%s pending=%s/%s passageEligible=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s settled=%s/%s relationship=%s relationshipReason=%s primitives=%d+%d actionSpace=%s actionReason=%s regulated=%s protected=%s excursion=%s role=%s actionSep=%s actionOverlap=%s actionNative=%s magnitudeAuthority=BOUNDED_AUTHORITY authority=TRAJECTORY_CONFLICT_ASSESSMENT diagnosticOnly=true",
                 key,tostring(item.operationId or "n/a"),tostring(item.classification or "UNRESOLVED"),tostring(item.status),tostring(item.reason),
                 tostring(item.subjectParticipationClass or "OPERATION_MEMBER"),tostring(item.otherParticipationClass or "OPERATION_MEMBER"),booleanText(item.subjectProductiveCommencementPending),booleanText(item.otherProductiveCommencementPending),booleanText(item.cooperativePassageEligible),numberText(item.trajectoryDot),
                 booleanText(item.mutuallyFacing),tostring(overlap.status or "UNRESOLVED"),booleanText(overlap.positive),numberText(overlap.overlapM),

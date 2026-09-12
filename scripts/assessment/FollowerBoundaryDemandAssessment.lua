@@ -1,4 +1,4 @@
--- D-0141 aligned Follower Boundary-Demand assessment.
+-- Follower Boundary-Demand Situation assessment.
 --
 -- Situation Knowledge only.  This module separates:
 --   1. current Adjacent Following topology;
@@ -267,14 +267,14 @@ function Assessment.evaluatePair(leader,follower,options)
                 pairKey=pairKey(leader.assemblyId,follower.assemblyId),leaderAssemblyId=leader.assemblyId,followerAssemblyId=follower.assemblyId,
                 status="RETIRE_SUPPORTED",purposeState="RETIRE",reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION",
                 relationship=relation,representationFitness="CURRENTLY_FIT",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
-                opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="D0146_POSITIVE_RELATIONSHIP_SUCCESSION"}
+                opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="OPPOSED_RELATIONSHIP_SUCCESSION"}
             }
         elseif opposed.classification=="NO_OPPOSED_CONFLICT" and opposed.reason=="PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES" then
             return {
                 pairKey=pairKey(leader.assemblyId,follower.assemblyId),leaderAssemblyId=leader.assemblyId,followerAssemblyId=follower.assemblyId,
                 status="RETIRE_SUPPORTED",purposeState="RETIRE",reason="ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION",
                 relationship=relation,representationFitness="CURRENTLY_FIT",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
-                opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="D0146_POSITIVE_RELATIONSHIP_SUCCESSION"}
+                opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="OPPOSED_RELATIONSHIP_SUCCESSION"}
             }
         end
     end

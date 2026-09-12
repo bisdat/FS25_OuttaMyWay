@@ -221,13 +221,35 @@ def test_semantic_contracts_do_not_use_development_identity():
         assert stale not in current_contract
 
 
-def test_preserves_provenance_and_telemetry_separately_from_current_identity():
-    support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+def _strip_lua_comments(text):
+    text = re.sub(r"--\[\[.*?\]\]", "", text, flags=re.S)
+    return re.sub(r"--[^\n]*", "", text)
 
-    # D-numbers remain legitimate where they identify historical decision provenance.
-    assert 'decision="D-0146"' in support
-    assert 'decision="D-0141"' in lifecycle
+
+def _loaded_production_lua_paths():
+    main_path = ROOT / "scripts" / "main.lua"
+    main = main_path.read_text(encoding="utf-8")
+    paths = [main_path]
+    for relative in re.findall(r'"(scripts/[^"]+\.lua)"', main):
+        path = ROOT / relative
+        assert path.is_file(), relative
+        paths.append(path)
+    return paths
+
+
+def test_live_production_executable_vocabulary_has_no_historical_decision_identity():
+    historical_identity = re.compile(r"(?i)d-?\d{4}")
+    offenders = []
+    for path in _loaded_production_lua_paths():
+        executable = _strip_lua_comments(path.read_text(encoding="utf-8"))
+        for match in historical_identity.finditer(executable):
+            line = executable.count("\n", 0, match.start()) + 1
+            offenders.append(
+                f"{path.relative_to(ROOT).as_posix()}:{line}:{match.group(0)}"
+            )
+    assert offenders == []
+
+
 
 def test_semantic_runtime_categories_are_closed():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
@@ -291,10 +313,12 @@ def test_semantic_runtime_categories_are_closed():
     ):
         assert stale not in semantic_result_files
 
-    # Historical provenance and stable forensic event names remain legitimate.
-    assert 'decision="D-0146"' in support
-    assert 'decision="D-0141"' in lifecycle
-    assert 'logInfo("D0146_' in passage
+    # Current production provenance and forensic telemetry name current
+    # responsibilities. Historical decision identity is enforced repository-wide
+    # over the sourced production surface by the dedicated test above.
+    assert 'decision="COOPERATIVE_PASSAGE"' in support + lifecycle
+    assert 'decision="FOLLOWER_BOUNDARY"' in support + lifecycle
+    assert 'logInfo("COOPERATIVE_PASSAGE_' in passage
 
 def test_semantic_recognition_and_validation_topology_are_closed():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")

@@ -21,13 +21,14 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #136 merge,
-  `bbb23dfee0b2b5c55e241d54e2f66bfef64d6a40`.
+- Accepted Repository State: `main` after PR #137 merge,
+  `7874314b69a168e83770092c026afe49506e18dc`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #336 passed on the exact merge commit.
-- Issue #87 remains active through the `.63` Core Capability Gate Retirement tranche.
+  **`0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT`**.
+- Post-merge Offline Validation run #339 passed structural and Lua behavioural contracts.
+- Issue #87 remains active through Root Surface Closure; `.64` is the current
+  Production Vocabulary Closure implementation increment.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -70,7 +71,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates rather than assigning them false owners |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates. Root Surface Closure now targets only two root identities (`MOD_NAME`, `VERSION`); `.64` first closes historical decision identity on the sourced production surface before further value ownership movement. |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -129,7 +130,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `.63` removes the historical per-capability/pseudo-authority boolean layer for Cooperative Passage, aligned Follower Boundary and Control. Master OuttaMyWay enablement remains the sole accepted product-level capability switch concept; implementation remains deferred. Remaining #87 work concerns Cooperative Passage / Resolution-Space value ownership, identity/release values, HUD/#89 boundaries, validation/diagnostic presentation and the required Player / Developer-Debug / Internal presentation boundary. |
+| #87 | mixed runtime constants / Root Surface Closure | `.63` removes the historical per-capability/pseudo-authority boolean layer. The post-`.63` census establishes **Two Root Identities; Everything Else Must Earn an Owner** and exposes historical D-number identity still embedded in surviving executable production provenance/telemetry/addressability. `.64` closes that production vocabulary first; validation-only historical fixture vocabulary follows separately before remaining value ownership/retirement. Player Configuration is split to #139 and HUD/player communication remains #89. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -157,28 +158,21 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.63 — CORE CAPABILITY GATE RETIREMENT`** from
-accepted `main` at `bbb23dfee0b2b5c55e241d54e2f66bfef64d6a40`.
+Implement and validate **#87 `.64 — PRODUCTION VOCABULARY CLOSURE`** from
+accepted `main` at `7874314b69a168e83770092c026afe49506e18dc`.
 
-Remove the historical pseudo-state layer rather than moving it:
+The bounded purpose is semantic identity closure, not behavioural redesign:
 
-- root `COOPERATIVE_PASSAGE_ENABLED`, `CONTROL_AUTHORITY_ENABLED` and
-  `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`;
-- Follower Candidate rollout veto;
-- Cooperative Passage planner/admission/active-Commitment feature-gate checks and
-  gate-only `COOPERATIVE_PASSAGE_DISABLED*` reasons;
-- Runtime `controlAuthorityEnabled` / `generalControlAuthorityEnabled` fields and
-  status publication, while preserving Field World evidence-level
-  `controlAuthorityEnabled=false` annotations;
-- PassiveLiveValidator / PassiveLiveTraceRecord general-Control boolean
-  assertion/publication/schema field.
+- current executable production provenance, authority labels, evidence/outcome
+  kinds, addressability keys and telemetry use current responsibility vocabulary;
+- `scripts/main.lua` defines the shipped/sourced production topology and the
+  structural contract rejects historical `D-####` / `D####` identity across that
+  executable surface;
+- historical validation fixture/helper/test-title vocabulary is explicitly
+  deferred to a separate behaviour-neutral Validation Vocabulary Closure tranche;
+- root constant relocation/retirement, player Configuration, HUD redesign and
+  policy/calibration changes remain outside `.64`.
 
-Preserve current Situation, Candidate, Decision, Responsibility, Bounded Authority
-and typed Control topology. Preserve all Passage geometry/policy/calibration,
-Follower assessment/magnitude and current safety/feasibility handling. Historical
-tests must be re-anchored to these actual invariants rather than deleted or
-weakened.
+> **Production Vocabulary Closure != Validation Vocabulary Closure**
 
-Master OuttaMyWay enablement is the accepted product-level switch concept but its
-implementation is outside this tranche. HUD/#89, #123, #116 and #45 remain
-separate.
+> **Source Topology Defines Production Surface**
