@@ -8,6 +8,9 @@ OuttaMyWay.LiveTrafficCandidateSupport = {}
 local Support = OuttaMyWay.LiveTrafficCandidateSupport
 Support.__index = Support
 
+-- Diagnostic Publication Window != Passage Search Horizon.
+local COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0
+
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] "..message) end
@@ -625,7 +628,7 @@ end
 local function passageClearanceRejectionTelemetry(allRejected)
     local lines={}
     if type(allRejected)~="table" then return lines end
-    local maxTraceSeparation=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M) or 40.0
+    local maxTraceSeparation=COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M
     for _,conflict in ipairs(allRejected) do
         local best=nil
         local residues={}
@@ -665,7 +668,7 @@ end
 local function passageClearanceSelectedTelemetry(plan)
     if type(plan)~="table" then return nil end
     local separation=tonumber(plan.separationM)
-    local maxTraceSeparation=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M) or 40.0
+    local maxTraceSeparation=COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M
     if not finiteNumber(separation) or separation>maxTraceSeparation then return nil end
     local arrangement=plan.passageArrangement or {}
     local guide=plan.passageGuide or {}

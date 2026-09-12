@@ -4,7 +4,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.67"
+OuttaMyWay.VERSION = "0.3.0.68"
 
 -- Live diagnostic instrument controls are module-owned. Their exact accepted
 -- enablement and publication/sample cadences live with the five instruments;
@@ -23,7 +23,6 @@ OuttaMyWay.VERSION = "0.3.0.67"
 -- exact collision calculation. Cached complete-assembly Transit geometry
 -- constructs Passage; Reality remains the calibration authority.
 OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0
-OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0 -- TEST telemetry only; does not alter Candidate evaluation.
 OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
 OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95 -- TEST: nominal 1 m remains construction target; 95% is admissible Crossing-Window policy floor.
 -- Passage Development is derived from actual participant displacement.

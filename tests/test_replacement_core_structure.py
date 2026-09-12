@@ -1392,11 +1392,24 @@ def test_v0146_clearance_telemetry_reuses_existing_sweep_evidence_without_extra_
     assert "nominalResidue" in support
     assert "floorResidue" in support
     assert "sweepEvidence=sweepEvidence" in planner
-    assert "COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0" in config
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    window="COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M"
+    assert window not in config
+    assert window not in planner
+    assert window not in control
+    assert f"local {window} = 40.0" in support.splitlines()
+    assert f"OuttaMyWay.{window}" not in support
+    assert support.count(window)==3  # One local owner and exactly two publication reads.
     # The telemetry layer must consume the planner result passed to attach(); it must not invoke planning itself.
     start=support.index("local function passageClearanceRejectionTelemetry")
     end=support.index("local function followerMatchesCooperative",start)
     telemetry=support[start:end]
+    selected=telemetry.index("local function passageClearanceSelectedTelemetry")
+    for publication in (telemetry[:selected],telemetry[selected:]):
+        assert publication.count(window)==1
+        assert f"local maxTraceSeparation={window}\n" in publication
+    assert "separation<=maxTraceSeparation" in telemetry[:selected]
+    assert "separation>maxTraceSeparation" in telemetry[selected:]
     assert "LocalPassagePlanner.plan" not in telemetry
     assert "pairSweepSupport(" not in telemetry
     assert "guideFieldSupport(" not in telemetry

@@ -112,6 +112,25 @@ does not decide that question.
 Remaining Local Passage construction, Transit fold settlement and
 Resolution-Space / Regulation values remain separate Issue #87 ownership work.
 
+## Clearance trace diagnostic publication ownership
+
+`LiveTrafficCandidateSupport` owns the module-local 40.0 m clearance-trace
+publication bound. Both rejected and selected telemetry paths use it only to
+publish already-computed planner evidence within the local approach; telemetry
+does not invoke planning, sweeps or geometry or recreate Candidate Search
+Amplification.
+
+**Diagnostic Publication Window != Passage Search Horizon**, consistent with
+**Diagnostic Distance != Passage Distance**. This bound is not player
+Configuration, Passage construction/search/geometry, Passage Entry or Action-Space
+admission distance, Nominal Inter-Assembly Clearance or Crossing-Window acceptance
+policy, or Control actuation policy.
+
+Localising this diagnostic does not resolve Local Passage construction ownership.
+The 1.0 m traversal-gate shared-semantics question described above remains
+unresolved. Transit fold settlement and Resolution-Space / Regulation remain
+separate Issue #87 ownership work.
+
 ## Configuration admission test
 
 A value belongs in player Configuration only when every condition below holds:
