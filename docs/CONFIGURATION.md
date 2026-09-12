@@ -93,6 +93,25 @@ The future player HUD visibility concept below remains separate and unimplemente
 by these diagnostic switches. No shared diagnostic settings holder or player
 setting is introduced by this ownership boundary.
 
+## Cooperative Passage Control implementation ownership
+
+`CooperativePassageControl` owns six module-local execution calibration and
+safety bounds: Passage actuation speed (8.0 km/h), phase watchdog (45000 ms),
+captured-axis alignment lateral tolerance (0.50 m) and heading minimum dot
+(0.995), physical Hold settlement speed (0.25 km/h), and Control diagnostic /
+clearance heartbeat cadence (1000 ms). These are internal implementation values,
+not player tuning or a separate shared Cooperative Passage constants subsystem.
+
+**Value Reuse != Concept Reuse.** The root traversal-gate radius remains consumed
+by `LocalPassagePlanner` for Passage-guide traversal and by
+`CooperativePassageControl` for Alignment Runout and Axis Return tolerance.
+Whether these represent one shared Passage Gate Tolerance concept or two
+historically equal calibrations remains unresolved; Control calibration ownership
+does not decide that question.
+
+Remaining Local Passage construction, Transit fold settlement and
+Resolution-Space / Regulation values remain separate Issue #87 ownership work.
+
 ## Configuration admission test
 
 A value belongs in player Configuration only when every condition below holds:
@@ -280,13 +299,13 @@ evidence does not establish a responsible owner.
 | PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION` | These are the only root identities: `MOD_NAME` identifies the system/mod and `VERSION` identifies the executable build. Neither is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
-| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
-| SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
+| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
+| SAFETY / RESOURCE BOUND | Passage sweep sample count; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | no retained per-capability runtime enable/disable gate | `.63` retires the historical Control, Cooperative Passage and aligned-Follower pseudo-state gates. Core capability availability and prohibition are enforced by Responsibility / Bounded Authority / typed Control topology, not booleans. |
 | HUD IMPLEMENTATION | no diagnostic HUD values remain in the mixed root | FutureSpaceHud, VersionHud and FollowerPacingHud independently own their local presentation values under [Diagnostic HUD implementation ownership](#diagnostic-hud-implementation-ownership). Unconsumed lifecycle/transition gates are deleted, not relocated. |
 | HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
-| UNRESOLVED | some Cooperative Passage development/traversal/reacquisition and hold/heartbeat values | `.63` resolves the per-capability gate question by retirement. Remaining values still require bounded ownership investigation rather than prefix-based movement. |
+| UNRESOLVED | some Cooperative Passage development/traversal/reacquisition values | `.63` resolves the per-capability gate question by retirement. Control execution/settlement/alignment/watchdog/heartbeat values are module-owned under [Cooperative Passage Control implementation ownership](#cooperative-passage-control-implementation-ownership). Remaining values still require bounded ownership investigation rather than prefix-based movement. |
 
 Field World ownership is now decomposed by meaning rather than common prefix:
 `FieldWorldSnapshotRegistry` owns Snapshot-generation budget plus fingerprint

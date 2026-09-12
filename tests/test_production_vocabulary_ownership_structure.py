@@ -357,9 +357,9 @@ def test_semantic_recognition_and_validation_topology_are_closed():
 
     # One current Passage actuation calibration; the retired donor identifier
     # remains retired rather than being resurrected by semantic cleanup.
-    assert "COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in config
+    assert "local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in passage
     assert "COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0" not in config
-    assert "COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH or 8.0" in passage
+    assert "speedKmh=COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH" in passage
 
     # Entry-Point Retirement Implies Lifecycle-Tail Retirement.
     assert "function Control:_beginParticipantRestore(run,participant)" in passage
@@ -371,3 +371,60 @@ def test_semantic_recognition_and_validation_topology_are_closed():
 
     # Validation Inventory Is Executable Topology.
     assert "tests/test_production_vocabulary_ownership_structure.py" in workflow
+
+
+def test_cooperative_passage_control_owns_execution_calibration():
+    config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
+    owner = ROOT / "scripts/control/CooperativePassageControl.lua"
+    passage = owner.read_text(encoding="utf-8")
+    # Independent accepted literals and their operational paths, not values
+    # inferred from the implementation declarations.
+    expected = (
+        ("COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH", "8.0",
+         "_executeCooperativePassageJointRequests", "speedKmh="),
+        ("COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS", "45000",
+         "update", "local timeout="),
+        ("COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M", "0.50",
+         "_assemblyAxisSettled", "local lateralTolerance="),
+        ("COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT", "0.995",
+         "_assemblyAxisSettled", "local headingMinDot="),
+        ("COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH", "0.25",
+         "_allStopped", "local limit="),
+        ("COOPERATIVE_PASSAGE_HEARTBEAT_MS", "1000",
+         "update", "self.nextHeartbeatMs=nowMs+"),
+    )
+    for name, literal, method, use in expected:
+        assert name not in config
+        assert re.search(rf"^local {name} = {re.escape(literal)}$", passage, re.M)
+        block = passage.split(f"function Control:{method}(", 1)[1].split("\nfunction Control:", 1)[0]
+        assert re.search(rf"{re.escape(use + name)}\s*$", block, re.M)
+        assert f"OuttaMyWay.{name}" not in passage
+        for path in _loaded_production_lua_paths():
+            if path != owner:
+                assert name not in path.read_text(encoding="utf-8"), path
+
+    assert "run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS" in passage
+    for use in (
+        "actualSpeedKmh(p.vehicle)>limit",
+        "math.abs(vehicleLateral)>lateralTolerance",
+        "vehicleHeadingDot<headingMinDot",
+        "memberHeadingDot<headingMinDot",
+        "nowMs-(run.phaseStartedAt or nowMs)>=timeout",
+    ):
+        assert use in passage
+
+
+def test_passage_traversal_gate_retains_root_planner_and_control_uses():
+    name = "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"
+    config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
+    planner = (ROOT / "scripts/candidates/LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    passage = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text(encoding="utf-8")
+    assert f"OuttaMyWay.{name} = 1.0" in config
+    assert f"local traversalRadius=tonumber(OuttaMyWay.{name}) or 1.0" in planner
+    assert planner.count(name) == 1
+    assert passage.count(name) == 2
+    for method in ("_startRunoutChunk", "_beginAxisReturn"):
+        block = passage.split(f"function Control:{method}(", 1)[1].split("\nfunction Control:", 1)[0]
+        assert f"local tolerance=tonumber(OuttaMyWay.{name}) or 1.0" in block
+        assert "self.driveMechanism:setAxisTravel(" in block
+        assert ",tolerance)" in block
