@@ -12,6 +12,16 @@ OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
 Control.__index=Control
 
+-- Internal execution calibration and safety bounds, not player Configuration.
+-- Alignment tolerances measure settlement around the captured Transit axis;
+-- they do not define Passage-clearance or traversal-gate geometry.
+local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0
+local COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
+local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
+local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
+local COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
+local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
+
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PASSAGE] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PASSAGE] "..message) end
@@ -339,7 +349,7 @@ function Control:_allSameJob(run)
     return true,nil
 end
 function Control:_allStopped(run)
-    local limit=OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH or 0.25
+    local limit=COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH
     for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         -- Passage settling needs owned Hold authority plus physical settlement.
         -- Do not require proof that OuttaMyWay causally stopped the participant:
@@ -608,8 +618,8 @@ function Control:_assemblyAxisSettled(participant)
     local ox,oz=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
     if fx==nil or fz==nil or ox==nil or oz==nil then return false,"ASSEMBLY_AXIS_FRAME_UNAVAILABLE" end
     local rightX,rightZ=fz,-fx
-    local lateralTolerance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M) or 0.50
-    local headingMinDot=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT) or 0.995
+    local lateralTolerance=COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M
+    local headingMinDot=COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT
     local vehicleLateral=(pp.x-ox)*rightX+(pp.z-oz)*rightZ
     if math.abs(vehicleLateral)>lateralTolerance then
         return false,string.format("ASSEMBLY_VEHICLE_AXIS_LATERAL_NOT_SETTLED:%.3f",vehicleLateral)
@@ -1090,7 +1100,7 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         passageArrangement=bridge.passageArrangement,passageConfiguration=configurationPlan,passageEntry=bridge.passageEntry,passageExcursion=bridge.passageExcursion,controlProfile=bridge.controlProfile,
         thirdPartyConstraints=bridge.localPassageSpace and bridge.localPassageSpace.thirdPartyConstraints or {},
         initialSeparationM=distance(a.startX,a.startZ,b.startX,b.startZ),headingDot=dot(a.startForwardX,a.startForwardZ,b.startForwardX,b.startForwardZ),
-        speedKmh=OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH or 8.0
+        speedKmh=COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH
     }
     local guideOk,guideReason=self:_preflightPassageGuide(run)
     if not guideOk then return false,"COOPERATIVE_PASSAGE_GUIDE_PREFLIGHT:"..tostring(guideReason) end
@@ -1149,7 +1159,7 @@ function Control:update(dt)
     local thirdOk,thirdReason=self:_thirdPartySupport(run,nil)
     if not thirdOk then self:_failHeld(thirdReason); return end
 
-    local timeout=OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS or 45000
+    local timeout=COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS
     if run.failureReason==nil and nowMs-(run.phaseStartedAt or nowMs)>=timeout then
         if run.phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant~=nil then
             local waiting=run.waitingParticipant; waiting.axisReturnSkipped=true
@@ -1262,13 +1272,13 @@ function Control:update(dt)
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
         elseif nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
-            run.nextReturnClearDiagnosticMs=nowMs+(OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS or 1000)
+            run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
             logInfo("RETURN_CLEARANCE_WAIT_DETAIL commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
         end
     end
 
     if self.run~=nil and nowMs>=(self.nextHeartbeatMs or 0) then
-        self.nextHeartbeatMs=nowMs+(OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS or 1000)
+        self.nextHeartbeatMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
         local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
         logInfo("STATE commitment=%s phase=%s A=%s speed=%.2f B=%s speed=%.2f separation=%s failure=%s",
             tostring(run.commitmentId),tostring(run.phase),run.a.name,actualSpeedKmh(run.a.vehicle),run.b.name,actualSpeedKmh(run.b.vehicle),

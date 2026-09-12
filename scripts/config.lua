@@ -4,7 +4,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.66"
+OuttaMyWay.VERSION = "0.3.0.67"
 
 -- Live diagnostic instrument controls are module-owned. Their exact accepted
 -- enablement and publication/sample cadences live with the five instruments;
@@ -39,12 +39,6 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
 OuttaMyWay.COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M = 2.0
 OuttaMyWay.COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M = 2.0
 OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG = 20
-OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0
-OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
--- Assembly-alignment tolerances are measurements around the captured Transit
--- assembly pose; they are not Passage-clearance geometry.
-OuttaMyWay.COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
-OuttaMyWay.COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 
 -- Resolution-Space Progression Envelope policy calibration.
 -- The reserve is a withheld fraction of positively established usable Resolution
@@ -55,10 +49,6 @@ OuttaMyWay.RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
 -- retain minimal positive progression rather than Hold so fresh native intent can
 -- continue to reveal without spending ordinary Resolution Space authority.
 OuttaMyWay.RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
-
--- Cooperative Passage hold-settlement and heartbeat implementation calibration.
-OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
-OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Transit fold settlement is bounded. The preferred ceiling is derived once at
 -- Job-Episode bootstrap from the active runtime folding configuration's

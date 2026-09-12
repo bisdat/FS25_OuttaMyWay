@@ -1291,12 +1291,13 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
     assert "D0146_PASSAGE_SECOND_WHISTLE" not in control
     assert "COOPERATIVE_PASSAGE_EXCURSION" in control
     # Isolation guardrails for the first field experiment.
-    assert "OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in config
+    assert "local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in control
     assert "AGRONOMIC_DEBT_RETURN" not in control
 
 
 
 def test_v0133_directional_passage_envelope_uses_bootstrap_giants_size_with_disc_fallback():
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
@@ -1316,7 +1317,7 @@ def test_v0133_directional_passage_envelope_uses_bootstrap_giants_size_with_disc
         assert token in planner
     assert "minimumTranslatedDiscClearance" in planner  # explicit fallback retained
     assert "OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in config
-    assert "OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in config
+    assert "local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in control
 
 
 def test_v0134_passage_settling_uses_owned_hold_plus_physical_stationary_not_permission_gate_causation():
@@ -1493,8 +1494,8 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     assert 'ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED' in control
     assert 'ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED' not in control
     assert 'alignmentBaseline' not in control
-    assert 'COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50' in config
-    assert 'COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995' in config
+    assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50' in control
+    assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995' in control
 
 
 def test_v01143_regulation_authority_semantics():

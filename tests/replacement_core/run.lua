@@ -5629,15 +5629,12 @@ test("Cooperative Passage: native blocked signal does not independently abort an
         a={vehicle=vehicleA,name="A",assemblyId="AS-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B"},
         participants={{vehicle=vehicleA,name="A",assemblyId="AS-A"},{vehicle=vehicleB,name="B",assemblyId="AS-B"}},thirdPartyConstraints={}
     }
-    local oldWatchdog=OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS
-    OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS=45000
     local oldTime=g_time; g_time=1000
     control:update(16)
     equal(control.run.failureReason,nil)
     equal(control.run.phase,"GUIDE_TRAVERSAL")
     equal(restoreRequests,0)
     g_time=oldTime
-    OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS=oldWatchdog
 end)
 
 test("Cooperative Passage: clearance telemetry retains already-computed rejected sweep evidence",function()
