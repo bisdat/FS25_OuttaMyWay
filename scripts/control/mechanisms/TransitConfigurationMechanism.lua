@@ -7,6 +7,10 @@ OuttaMyWay.TransitConfigurationMechanism = {}
 local Mechanism = OuttaMyWay.TransitConfigurationMechanism
 Mechanism.__index = Mechanism
 
+-- Defensive Fallback != Shared Policy Owner. Consume the derived capability
+-- timeout first; missing cached timing retains an independent Control fail-safe.
+local CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS = 30000
+
 local function safeCall(object, methodName, ...)
     if object == nil or type(object[methodName]) ~= "function" then return false, nil end
     return pcall(object[methodName], object, ...)
@@ -154,7 +158,7 @@ function Mechanism:prepareCachedTransit(vehicle,capability)
     local state={
         vehicle=vehicle,objects=capability.members or {},workStates={},loweredStates={},foldRequested=false,restoreFoldRequested=false,
         compactRequestedAt=g_time or 0,restoreRequestedAt=nil,workMutations=0,raisedMutations=0,foldMutations=0,
-        bootstrapTransitCapability=true,transitActuatorStates={},settlementTimeoutMs=tonumber(capability.settlementTimeoutMs) or (OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS or 30000)
+        bootstrapTransitCapability=true,transitActuatorStates={},settlementTimeoutMs=tonumber(capability.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     }
     for _,object in ipairs(state.objects) do
         if type(object.getIsTurnedOn)=="function" and type(object.setIsTurnedOn)=="function" then
@@ -202,7 +206,7 @@ function Mechanism:getCachedTransitSettlement(vehicle)
     end
     local actuatorCount=#(state.transitActuatorStates or {})
     local elapsed=math.max(0,(g_time or 0)-(state.compactRequestedAt or (g_time or 0)))
-    local timeout=tonumber(state.settlementTimeoutMs) or (OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS or 30000)
+    local timeout=tonumber(state.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     local normal=actuatorCount>0 and settledCount==actuatorCount
     local exhausted=not normal and elapsed>=timeout
     return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
@@ -253,7 +257,7 @@ function Mechanism:getCachedRestoreSettlement(vehicle)
         if settled then settledCount=settledCount+1 end
     end
     local elapsed=math.max(0,(g_time or 0)-(state.restoreRequestedAt or (g_time or 0)))
-    local timeout=tonumber(state.settlementTimeoutMs) or (OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS or 30000)
+    local timeout=tonumber(state.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     local normal=settledCount==actuatorCount
     local exhausted=not normal and elapsed>=timeout
     return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "RESTORE_ACTUATORS_SETTLED" or (exhausted and "RESTORE_FOLD_SETTLEMENT_EXHAUSTED" or "RESTORE_ACTUATORS_PENDING")}

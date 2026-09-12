@@ -771,7 +771,6 @@ def test_v0165_transit_base_uses_job_start_cached_capability_and_bounded_settlem
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"TransitConfigurationMechanism.lua").read_text(encoding="utf-8")
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     ready=control.split('function Control:_passageConfigurationReady(run)',1)[1].split('function Control:_notify(result)',1)[0]
     assert 'getTransitFoldCapability(participant.referenceKey,participant.startJobToken)' in control
     assert 'prepareCachedTransit(participant.vehicle,capability)' in control
@@ -784,10 +783,68 @@ def test_v0165_transit_base_uses_job_start_cached_capability_and_bounded_settlem
     assert 'spec.allowUnfoldingByAI~=false' in cache
     assert 'spec.maxFoldAnimDuration' in cache
     assert 'foldingConfigurations.foldingConfiguration(0).foldingParts#allowUnfoldingByAI' not in cache
-    assert 'COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR = 1.50' in config
-    assert 'COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000' in config
-    assert 'COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000' in config
     assert 'targetFoldAnimTime' in authority and 'value>=0.999' in authority
+
+def test_transit_settlement_derivation_and_defensive_fallback_have_separate_owners():
+    cache_path = ROOT / "scripts/representation/AssemblyRepresentationCache.lua"
+    mechanism_path = ROOT / "scripts/control/mechanisms/TransitConfigurationMechanism.lua"
+    cache = cache_path.read_text(encoding="utf-8")
+    mechanism = mechanism_path.read_text(encoding="utf-8")
+    config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
+    control = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text(encoding="utf-8")
+    historical = (
+        "COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR",
+        "COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS",
+        "COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS",
+        "COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS",
+    )
+    expected = (
+        ("TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR", "1.50"),
+        ("TRANSIT_FOLD_SETTLEMENT_MARGIN_MS", "2000"),
+        ("TRANSIT_FOLD_SETTLEMENT_UNKNOWN_DURATION_FALLBACK_MS", "30000"),
+        ("TRANSIT_FOLD_SETTLEMENT_MAX_MS", "35000"),
+    )
+    bootstrap = cache.split("local function bootstrapTransitFoldCapability(", 1)[1].split("\nlocal function ", 1)[0]
+    for name, literal in expected:
+        assert re.search(rf"^local {name} = {re.escape(literal)}$", cache, re.M)
+        assert cache.count(name) == 2
+        assert bootstrap.count(name) == 1
+    assert "if capability.expectedFoldDurationMs>0 then" in bootstrap
+    assert "capability.settlementTimeoutMs=capability.expectedFoldDurationMs*TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR+TRANSIT_FOLD_SETTLEMENT_MARGIN_MS" in bootstrap
+    assert "else\n        capability.settlementTimeoutMs=TRANSIT_FOLD_SETTLEMENT_UNKNOWN_DURATION_FALLBACK_MS\n    end" in bootstrap
+    assert "capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,TRANSIT_FOLD_SETTLEMENT_MAX_MS)" in bootstrap
+
+    # Defensive Fallback != Shared Policy Owner: literal expectations are independent.
+    defensive = "CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS"
+    assert f"local {defensive} = 30000" in mechanism
+    assert mechanism.count(defensive) == 4
+    for method, source in (
+        ("prepareCachedTransit", "capability"),
+        ("getCachedTransitSettlement", "state"),
+        ("getCachedRestoreSettlement", "state"),
+    ):
+        block = mechanism.split(f"function Mechanism:{method}(", 1)[1].split("\nfunction Mechanism:", 1)[0]
+        assert f"tonumber({source}.settlementTimeoutMs) or {defensive}" in block
+        assert block.count(defensive) == 1
+    assert "AssemblyRepresentationCache" not in mechanism
+    assert "expectedFoldDurationMs" not in mechanism
+    assert "maxFoldAnimDuration" not in mechanism + control
+    assert not re.search(r"settlementTimeoutMs\s*=(?!=)", control)
+    assert "OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1\n" in config
+
+    # Closed production ownership excludes a shared mutable/global timing holder.
+    main = (ROOT / "scripts/main.lua").read_text(encoding="utf-8")
+    for relative in re.findall(r'"(scripts/[^"\n]+\.lua)"', main):
+        path = ROOT / relative
+        text = path.read_text(encoding="utf-8")
+        for token in historical:
+            assert token not in text, path
+        if path != cache_path:
+            for name, _ in expected:
+                assert name not in text, path
+        if path != mechanism_path:
+            assert defensive not in text, path
+
 
 def test_alignment_authority_surface_is_central_and_diagnostics_are_downstream_only():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
