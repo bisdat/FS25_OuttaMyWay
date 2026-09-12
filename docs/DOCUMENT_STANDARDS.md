@@ -156,6 +156,20 @@ A Specification MAY cite several architectural sections. It MUST distinguish its
 
 Traceability MUST replace duplicated authority. `/spec` MUST NOT require Architecture to restate implementation mechanics, and Architecture MUST NOT require `/spec` to duplicate architectural prose merely to remain navigable.
 
+### Bounded standards-adoption exception
+
+Existing live material that predates a required documentation surface MAY temporarily identify its primary traceability target as **pending migration** only while one explicit repository migration owns creation of that surface.
+
+This exception exists solely to permit orderly adoption of this standard without manufacturing empty or speculative artifacts. While the exception applies:
+
+- it MUST NOT be used for a newly introduced Responsibility or Specification Jurisdiction;
+- the affected material MUST identify the active migration authority;
+- the intended primary Jurisdiction ownership MUST remain explicit even when the target Specification does not yet exist;
+- placeholder or empty Specifications MUST NOT be created solely to satisfy structural conformance; and
+- the pending marker MUST be removed once the migration establishes the required surface.
+
+This is a migration mechanism, not an alternative steady state. A repository-wide standards adoption MUST define a closure condition after which this exception no longer applies.
+
 ## Deferred responsibilities
 
 Current implemented Architecture MUST NOT carry an `implemented` status marker merely to confirm the normal state.
