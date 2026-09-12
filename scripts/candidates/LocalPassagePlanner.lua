@@ -10,6 +10,24 @@
 OuttaMyWay.LocalPassagePlanner={}
 local Planner=OuttaMyWay.LocalPassagePlanner
 
+-- Shared Owner != Shared Concept: these independent values are not settings.
+-- Fixed Passage construction policy; represented non-contact remains hard.
+local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
+local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95
+
+-- Excursion/entry calibration. Entry allowance is not assembly length or braking distance.
+local COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M = 4.0
+local COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
+local COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M = 3.0
+
+-- Non-traversal guide calibration; traversal radius remains externally owned.
+local COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M = 2.0
+local COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M = 2.0
+
+-- Planner evidence discretisation, shared by pair and third-party sweep sites.
+local COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M = 2.0
+local COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG = 20
+
 local function byAssembly(values)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
@@ -207,14 +225,14 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
     local maximumOffset=math.max(math.abs(tonumber(arrangement.subjectLateralOffsetM) or 0),math.abs(tonumber(arrangement.otherLateralOffsetM) or 0))
     local development=0
     if maximumOffset>0.001 then
-        local minimumDevelopment=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M) or 4.0
-        local forwardPerLateral=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M) or 2.0
+        local minimumDevelopment=COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M
+        local forwardPerLateral=COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M
         development=math.max(minimumDevelopment,maximumOffset*forwardPerLateral)
     end
     local recovery=development
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
-    local entryAllowance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M) or 3.0
+    local entryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M
     local entryBoundary=frontOverlap+2*development+entryAllowance
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
@@ -246,8 +264,8 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
     local traversal=tonumber(geometry.crossingWindowForwardPerParticipantM) or 0
     local recovery=tonumber(geometry.recoveryDistanceM) or 0
     local traversalRadius=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M) or 1.0
-    local developmentRadius=math.min(tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,development*0.25))
-    local recoveryRadius=math.min(tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,recovery*0.25))
+    local developmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,development*0.25))
+    local recoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,recovery*0.25))
     local gates={}
     if development>0.001 then
         gates[#gates+1]={kind="DEVELOPMENT_ENTRY",forwardM=development*0.5,lateralFraction=0.5,radiusM=developmentRadius}
@@ -294,7 +312,7 @@ end
 
 local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
     if type(fieldWorld)~="table" or type(fieldWorld.boundary)~="table" or OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3 then return false,"FIELD_WORLD_GEOMETRY_UNAVAILABLE" end
-    local stepM=OuttaMyWay.COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M or 2.0
+    local stepM=COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M
     local entryOrigins=guide.entryOrigins or {}
     local previous={
         subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
@@ -370,7 +388,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local minimum=math.huge
     local minimumCrossing=math.huge
     local minimumOutsideCrossing=math.huge
-    local samples=OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG or 20
+    local samples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG
     local directional=directionalEnvelopeValid(aEnvelope) and directionalEnvelopeValid(bEnvelope)
     local entryOrigins=guide.entryOrigins or {}
     local previous={
@@ -397,7 +415,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
     end
     local required=tonumber(nominalClearanceM) or 1.0
-    local acceptanceRatio=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO) or 1.0
+    local acceptanceRatio=COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO
     acceptanceRatio=math.max(0,acceptanceRatio)
     local acceptedFloor=required*acceptanceRatio
     -- Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
@@ -519,7 +537,7 @@ local function thirdPartyGuideSupport(guide,aSpace,bSpace,aDiscs,bDiscs,picture,
     if aRadius==nil or bRadius==nil then return false,"PARTICIPANT_PASSAGE_RADIAL_RESERVE_UNAVAILABLE" end
     local participantDiscs={subject=aDiscs,other=bDiscs}
     local participantEnvelopes={subject=aEnvelope,other=bEnvelope}
-    local samples=OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG or 20
+    local samples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG
     local support={}
     for _,third in ipairs(thirds) do
         local entryOrigins=guide.entryOrigins or {}
@@ -705,7 +723,7 @@ local function planConflict(picture,snapshot,conflict)
     if not finite(ax) or not finite(az) or not finite(bx) or not finite(bz) then return nil,"CURRENT_SPACE_POSE_UNAVAILABLE" end
     local longitudinalSeparation=longitudinalPairSeparation(aSpace,bSpace,aTrajectory,bTrajectory)
     if not finite(longitudinalSeparation) then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
-    local nominalClearance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or 1.0
+    local nominalClearance=COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M
     local baselinePairClearance,clearanceReason=OuttaMyWay.PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
     if baselinePairClearance==nil then return nil,"PAIR_SPECIFIC_PASSAGE_CLEARANCE_UNAVAILABLE:"..tostring(clearanceReason) end
     local pairClearance,transitReason=transitConditionedPair(baselinePairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)

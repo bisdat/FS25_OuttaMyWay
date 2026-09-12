@@ -11,6 +11,8 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
 
+    planner = (ROOT / "scripts/candidates/LocalPassagePlanner.lua").read_text(encoding="utf-8")
+
     for token in (
         "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M",
         "COOPERATIVE_PASSAGE_EXCURSION",
@@ -22,7 +24,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         "ACTION_SPACE_REGULATION_OWNER_TAG",
         "obstructionRelocationCandidateSupport",
     ):
-        assert token in config + support + capability + authority + runtime
+        assert token in config + support + capability + authority + runtime + planner
 
     for stale in (
         "D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED",
@@ -38,7 +40,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         "legacyTerminalEgressCandidateSupport",
         "completedObstructionCandidateSupport",
     ):
-        assert stale not in config + support + capability + authority + runtime
+        assert stale not in config + support + capability + authority + runtime + planner
 
 
 def test_issue112_graduated_physical_representation_uses_current_names_without_erasing_distinct_evidence_contracts():
@@ -428,3 +430,88 @@ def test_passage_traversal_gate_retains_root_planner_and_control_uses():
         assert f"local tolerance=tonumber(OuttaMyWay.{name}) or 1.0" in block
         assert "self.driveMechanism:setAxisTravel(" in block
         assert ",tolerance)" in block
+
+
+def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
+    owner = ROOT / "scripts/candidates/LocalPassagePlanner.lua"
+    planner = owner.read_text(encoding="utf-8")
+    config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
+    expected = {
+        "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M": "1.0",
+        "COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO": "0.95",
+        "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M": "4.0",
+        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M": "2.0",
+        "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M": "3.0",
+        "COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M": "2.0",
+        "COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M": "2.0",
+        "COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M": "2.0",
+        "COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG": "20",
+    }
+    # Pin accepted literals independently. One local declaration, no reassignment,
+    # root lookup, exported setting or alternate production consumer.
+    for name, literal in expected.items():
+        assert name not in config
+        assert re.search(rf"^local\s+{name}\s*=\s*{re.escape(literal)}\s*$", planner, re.M)
+        assert len(re.findall(rf"\b{name}\s*=(?!=)", planner)) == 1
+        assert not re.search(rf"[.\[]\s*[\"']?{name}\b", planner)
+        for path in _loaded_production_lua_paths():
+            if path != owner:
+                assert name not in path.read_text(encoding="utf-8"), path
+
+    # Whitespace-independent expressions protect calculation and use, including
+    # both independent sweep sites. Existing guide/Transit/Control contracts remain.
+    code = re.sub(r"\s+", "", re.sub(r"--[^\n]*", "", planner))
+    for expression in (
+        "localnominalClearance=COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M",
+        "PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)",
+        "localminimumDevelopment=COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M",
+        "localforwardPerLateral=COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
+        "ifmaximumOffset>0.001then",
+        "development=math.max(minimumDevelopment,maximumOffset*forwardPerLateral)",
+        "localrecovery=development",
+        "localentryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
+        "localentryBoundary=frontOverlap+2*development+entryAllowance",
+        "localtraversalRadius=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M)or1.0",
+        "localdevelopmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,development*0.25))",
+        "localrecoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,recovery*0.25))",
+        "localstepM=COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M",
+        "segmentInsideField(p0.x,p0.z,p1.x,p1.z,fieldWorld,stepM)",
+        "localrequired=tonumber(nominalClearanceM)or1.0",
+        "localacceptanceRatio=COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO",
+        "acceptanceRatio=math.max(0,acceptanceRatio)",
+        "localacceptedFloor=required*acceptanceRatio",
+        'ifminimumCrossing==math.hugeorminimumCrossing+0.001<acceptedFloorthenreturnfalse,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW",evidence()end',
+        'ifminimumOutsideCrossing<-0.001thenreturnfalse,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",evidence()end',
+    ):
+        assert expression in code, expression
+    assert code.count("localsamples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG") == 2
+    for method in ("pairSweepSupport", "thirdPartyGuideSupport"):
+        block = planner.split(f"local function {method}(", 1)[1].split("\nlocal function ", 1)[0]
+        compact = re.sub(r"\s+", "", block)
+        assert "localsamples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG" in compact
+        if method == "pairSweepSupport":
+            assert "fori=0,samplesdo" in compact
+        else:
+            assert "segmentDirectionalEnvelopeAgainstThirdParty(" in compact
+            assert "segmentAgainstThirdParty(" in compact
+            assert compact.count("third,nominalClearanceM,samples)") == 2
+
+    helper = (ROOT / "scripts/representation/PairSpecificPassageClearance.lua").read_text(encoding="utf-8")
+    assert "rightX,rightZ,nominalClearanceM)" in helper
+    assert "local margin=tonumber(nominalClearanceM)" in helper
+    assert re.findall(r"function Planner\.([^\n]+)", planner) == [
+        "planConflict(picture,snapshot,conflict)", "plan(picture,snapshot)"
+    ]
+    # Counterfactual Test Input != Supported Runtime Policy: no harness retains
+    # a root lookup/write, including a bracket-form override.
+    for path in (ROOT / "tests").rglob("*.lua"):
+        assert "COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO" not in path.read_text(encoding="utf-8"), path
+
+    remaining = dict(re.findall(r"^OuttaMyWay\.(\w+) = ([^\n]+)$", config, re.M))
+    assert set(remaining) == {
+        "MOD_NAME", "VERSION", "COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M",
+        "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M", "FORWARD_INTERSECTION_REGULATION_SPEED_KMH",
+    }
+    assert remaining["COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M"] == "80.0"
+    assert remaining["COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"] == "1.0"
+    assert remaining["FORWARD_INTERSECTION_REGULATION_SPEED_KMH"] == "1"
