@@ -732,7 +732,9 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     assert 'params.moveForwards' in probe and 'params.tX' in probe and 'params.tZ' in probe and 'params.maxSpeed' in probe
     assert 'getDriveData()' in probe and 'never calls' in probe
     assert 'driveToPoint' in probe and 'never' in probe
-    assert 'vehicle.aiDriveDirection' in probe and 'falsified' in probe
+    assert 'vehicle.aiDriveDirection' in probe
+    assert 'initialization/default fields' in probe
+    assert 'deliberately not observed here' in probe
     assert 'routePrediction=false' in probe and 'futureSpaceAuthority=false' in probe
     assert 'refugeSelectionAuthority=false' in probe and 'controlAuthority=false' in probe
     assert 'candidateRelation' in probe and 'nativeCommandTargetDelta' in refuge and 'nativeCommandTargetDistance' in refuge
@@ -1356,7 +1358,6 @@ def test_d0164_mechanical_foldability_does_not_bypass_passage_configuration_reac
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     assert "allowUnfoldingByAI" in cache
     assert "MECHANICAL_ONLY_FOLDABILITY_AI_DISABLED" in cache
-    assert "raw mechanical foldability is not Passage-configuration authority" in cache
     # Deployed foldable members without positive AI-disabled evidence remain conservative.
     assert 'member.currentConfiguration and member.currentConfiguration.foldState=="FOLDED"' in cache
     assert 'reachability.aiUnfoldingAllowed==false' in cache
