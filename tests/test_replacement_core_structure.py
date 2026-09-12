@@ -413,17 +413,37 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
         assert forbidden not in validator
 
 
-def test_v4717_plan_view_representation_foundation_remains_active():
+def test_generic_plan_view_representation_foundation_remains_active():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     for rel in (
-        "scripts/representation/catalogues/CondorEndurance2Donor.lua",
+        "scripts/representation/EntityLocalShapeEvidence.lua",
+        "scripts/representation/CurrentPhysicalConflictRepresentation.lua",
         "scripts/representation/PlanViewFootprint.lua",
         "scripts/representation/AssemblyRepresentationCache.lua",
     ):
         assert rel in main
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     footprint=(ROOT/"scripts"/"representation"/"PlanViewFootprint.lua").read_text(encoding="utf-8")
-    donor=(ROOT/"scripts"/"representation"/"catalogues"/"CondorEndurance2Donor.lua").read_text(encoding="utf-8")
+    retired_catalogue="scripts/representation/catalogues/CondorEndurance2Donor.lua"
+    assert not (ROOT/retired_catalogue).exists()
+    assert retired_catalogue not in main
+    assert retired_catalogue not in (ROOT/"tests/replacement_core/run.lua").read_text(encoding="utf-8")
+    representation_source="\n".join(path.read_text(encoding="utf-8") for path in (ROOT/"scripts/representation").rglob("*.lua"))
+    for retired in (
+        "CondorEndurance2Donor", "RepresentationDonorCatalogues",
+        "MATCHED_DONOR_FALLBACK", "donorFallback", "donorCurrentPhysical",
+        "donorConfigurationEvidence", "donorFor(", "donorPathNode",
+        "DONOR_DECLARED_PATH", "DONOR_DIRECT_MAPPING", "DONOR_NAME_SCAN",
+        "NO_DONOR_SELECTOR", "donorCandidates", "donorMembers", "donorCatalogue",
+        "configurationSelectorSummary",
+    ):
+        assert retired not in representation_source
+    for required in (
+        "GENERIC_COLLISION_NAME_SCAN",
+        "MEMBER_ROOT_PARTIAL", "RUNTIME_COMPOUND_CHILD_CONFIRMED",
+        "RUNTIME_COMPOUND_CHILD_INACTIVE", "unresolvedPrimitiveNames",
+    ):
+        assert required in cache
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     for token in ("discoverAssembly","assemblyFingerprint","configurationProfileCacheHit","getShapeGeometryBoundingSphere","getShapeWorldBoundingSphere","rootAlias"):
@@ -432,8 +452,6 @@ def test_v4717_plan_view_representation_foundation_remains_active():
         assert token in footprint
     for forbidden in ("SHADOW_FUTURE_CONVERGENCE_POSITIVE","evaluateShadowPair(","composePositiveEvidence("):
         assert forbidden not in footprint
-    for token in ("boom01ArmLeftCol01","boom01ArmRightCol04","PERMANENT_PHYSICAL_CONTROL","PROTOTYPES_08_09_10_11_13"):
-        assert token in donor
     for token in ("planViewOccupancyEvidence","currentFootprintOutcome","POSITIVE_INTERACTION_ONLY"):
         assert token in source
     for token in ("assemblyRepresentationInventoryPrimitives","assemblyRepresentationParticipatingPrimitives","assemblyRepresentationInactivePrimitives","assemblyRepresentationProfileCacheHit","currentFootprintOutcome"):

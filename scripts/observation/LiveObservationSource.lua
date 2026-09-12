@@ -669,8 +669,6 @@ function Source:capture(mission, nowSeconds)
                     inactivePrimitiveCount=worker.assemblyRepresentation.inactivePrimitiveCount,
                     unresolvedPrimitiveCount=worker.assemblyRepresentation.unresolvedPrimitiveCount,
                     runtimeConfirmedPrimitiveCount=worker.assemblyRepresentation.runtimeConfirmedPrimitiveCount,
-                    donorFallbackPrimitiveCount=worker.assemblyRepresentation.donorFallbackPrimitiveCount,
-                    configurationSelectorSummary=worker.assemblyRepresentation.configurationSelectorSummary,
                     participatingPrimitiveNames=worker.assemblyRepresentation.participatingPrimitiveNames,
                     inactivePrimitiveNames=worker.assemblyRepresentation.inactivePrimitiveNames,
                     unresolvedPrimitiveNames=worker.assemblyRepresentation.unresolvedPrimitiveNames,
