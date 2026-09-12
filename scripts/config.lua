@@ -4,18 +4,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.65"
--- Temporary live-gate HUDs. Diagnostic instrumentation only.
--- v4.7.24 retains the lifecycle gate only to verify cleanup causes no behavioural change
--- to Future-Space admission, termination precedence or fresh-Episode identity.
-OuttaMyWay.LIFECYCLE_TEST_HUD_ENABLED = false
-OuttaMyWay.FUTURE_SPACE_HUD_ENABLED = false
-OuttaMyWay.TRANSITION_HUD_ENABLED = false
-OuttaMyWay.TRANSITION_HUD_X = 0.985
-OuttaMyWay.TRANSITION_HUD_Y = 0.720
-OuttaMyWay.TRANSITION_HUD_TITLE_SIZE = 0.016
-OuttaMyWay.TRANSITION_HUD_TEXT_SIZE = 0.014
-OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT = 0.022
+OuttaMyWay.VERSION = "0.3.0.66"
 
 -- Live diagnostic instrument controls are module-owned. Their exact accepted
 -- enablement and publication/sample cadences live with the five instruments;
@@ -79,14 +68,5 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS = 2000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
--- Forward Intersection Regulation policy and diagnostic HUD presentation.
+-- Forward Intersection Regulation policy.
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
-OuttaMyWay.VERSION_HUD_ENABLED = true
-OuttaMyWay.VERSION_HUD_X = 0.985
-OuttaMyWay.VERSION_HUD_Y = 0.720
-OuttaMyWay.VERSION_HUD_TEXT_SIZE = 0.014
-OuttaMyWay.FOLLOWER_PACING_HUD_ENABLED = true
-OuttaMyWay.FOLLOWER_PACING_HUD_X = 0.985
-OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
-OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
-OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3

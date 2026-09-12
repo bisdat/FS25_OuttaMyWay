@@ -22,14 +22,13 @@ Architectural meaning remains owned by the
 ## Repository state
 
 - Accepted Repository State: `main` at
-  `c80c7de32fed74204efd593b53eeb04649ee032a`.
+  `53c0b9c094e0bebfed65b92bab1b8c955f20ea15`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
-  **`0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE`**.
-- Issue #87 remains active through Root Surface Closure; the prepared Validation
-  Vocabulary Closure increment changes tests and documentation only. Independent
-  validation and owner review remain pending as recorded in
-  [Continuation State](CONTINUATION_STATE.md).
+  **`0.3.0.65`**.
+- Issue #87 remains active through Root Surface Closure. The working Diagnostic
+  HUD Ownership increment uses `0.3.0.66 TEST — DIAGNOSTIC HUD OWNERSHIP`;
+  independent CI validation and owner review remain pending.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -73,7 +72,8 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates. Root identity retirement leaves only `MOD_NAME` and `VERSION`; remaining non-identity families still require responsibility-owned decomposition. |
+| Diagnostic HUD presentation | `scripts/diagnostics/FutureSpaceHud.lua`, `VersionHud.lua`, `FollowerPacingHud.lua` | Each instrument owns its enablement/layout literals locally under [Configuration architecture](CONFIGURATION.md#diagnostic-hud-implementation-ownership). FutureSpaceHud remains constructed, observed and drawn by PassiveLiveValidator; VersionHud reads root `VERSION`. Dead lifecycle/transition gates are deleted without replacement; future player HUD visibility remains separate and unimplemented. |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates. Root identity retirement leaves only `MOD_NAME` and `VERSION`; diagnostic HUD values are now module-local or retired; remaining non-identity families still require responsibility-owned decomposition. |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -132,7 +132,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Root Surface Closure | **Two Root Identities; Everything Else Must Earn an Owner** remains the direction for value ownership/retirement. Accepted `.64` closes sourced-production vocabulary; the prepared test/documentation-only increment reconciles current validation vocabulary while preserving historical assertion payload and deliberate evidence. Player Configuration is split to #139 and HUD/player communication remains #89. |
+| #87 | mixed runtime constants / Root Surface Closure | **Two Root Identities; Everything Else Must Earn an Owner** remains the direction for value ownership/retirement. Production and validation vocabulary closure are in the accepted baseline. Diagnostic HUD ownership removes this presentation family from the mixed root while preserving accepted literals and behaviour. Player Configuration is split to #139 and HUD/player communication remains #89. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -160,16 +160,12 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-The prepared Validation Vocabulary Closure increment uses accepted `main` at
-`c80c7de32fed74204efd593b53eeb04649ee032a` and leaves executable `.64` unchanged.
+The working Diagnostic HUD Ownership increment localises the three instruments'
+presentation values and deletes the two unconsumed legacy gates. Structural
+contracts protect exact accepted local literals, absence of root HUD dependencies
+and the indirect FutureSpaceHud lifecycle through PassiveLiveValidator.
 
-Current validation fixtures, helpers, test titles and comments use architectural
-vocabulary. Exact negative historical tokens and deliberate historical evidence
-remain under the [Naming Conventions](NAMING_CONVENTIONS.md#validation-vocabulary).
-The narrow replacement-core structural guard permits only retained historical
-probe decision families; it does not prohibit historical payload across `/tests`.
-
-Independent validation and owner review precede resumption of remaining root
-value ownership/retirement. Player Configuration, HUD redesign and
-policy/calibration changes remain outside this increment. The
-[Continuation State](CONTINUATION_STATE.md) owns the current review boundary.
+Independent CI validation and owner review remain pending. This increment does
+not implement player Configuration or change HUD text, visuals, traffic semantics,
+policy or calibration. Continuation-State workflow reconciliation remains separate
+under #141; this placement update does not redesign that workflow.
