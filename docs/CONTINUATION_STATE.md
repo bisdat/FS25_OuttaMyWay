@@ -210,7 +210,7 @@ The investigation must determine whether this is implementation/substrate drift 
 
 The Stranded Live Knowledge harvest of `docs/IMPLEMENTATION_MAP.md` found no remaining unique durable semantic responsibility that requires the Map to stay live.
 
-Its durable Regulation, Resolution / Obstruction Relocation and Representation findings are already owned by current Architecture and primary Specifications. The remaining diagnostics question is owned by Issue #152. Repository/build-state entries and completed migration/strangler material are chronology and do not belong on a live authority surface.
+Its durable Regulation, Resolution / Obstruction Relocation and Representation findings are already owned by current Architecture and primary Specifications. The remaining diagnostics question is owned by Issue #152. Repository/build-state entries and completed migration material are chronology and do not belong on a live authority surface.
 
 The Map's remaining legitimate responsibility was navigation. That responsibility is transferred as follows:
 
