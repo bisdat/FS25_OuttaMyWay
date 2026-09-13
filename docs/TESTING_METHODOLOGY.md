@@ -2,13 +2,19 @@
 
 ## 1. Purpose
 
-**This document defines how OuttaMyWay engineering claims are challenged, how evidence strength increases, and what each validation level can and cannot establish.** It specialises [Engineering Architecture](ENGINEERING_ARCHITECTURE.md) and applies within the [Scope and Validation Envelope](SCOPE_AND_VALIDATION_ENVELOPE.md). It is not a catalogue of test functions or scenario history.
+**This document defines how OuttaMyWay engineering claims are challenged, how evidence strength increases, and what each validation level can and cannot establish.** It specialises [Engineering Architecture](ENGINEERING_ARCHITECTURE.md) and applies within the [Scope and Validation Envelope](SCOPE_AND_VALIDATION_ENVELOPE.md).
+
+It owns durable validation method and evidence-strength rules. It does not own test-function inventories, CI job topology, historical pass/fail counts, Issue or pull-request chronology, scenario history, or the current implementation details of individual validation mechanisms. Those belong to `/tests`, workflow/source surfaces, the Engineering Journal, Research, Git and GitHub provenance as applicable.
+
+> **Testing Methodology != Validation Evidence Ledger**
 
 ## 2. Validation principles
 
 ### Disprove at the Cheapest Valid Abstraction Level
 
-Challenge a claim at the lowest-cost level capable of validly disproving it. An architectural contradiction need not be implemented; a code-walk contradiction need not consume an in-game tranche; an offline behavioural contradiction need not be rediscovered in-game. This does not erase epistemic boundaries: runtime-dependent claims still require runtime Reality.
+Challenge a claim at the lowest-cost level capable of validly disproving it. An architectural contradiction need not be implemented; a code-walk contradiction need not consume an in-game tranche; an offline behavioural contradiction need not be rediscovered in-game.
+
+This does not erase epistemic boundaries. Runtime-dependent claims still require runtime Reality.
 
 ### Validation Strength Must Match Claim Breadth
 
@@ -20,160 +26,182 @@ While concepts are changing, prefer narrow fixtures with deep scrutiny. Once arc
 
 ### Failed Validation Is Evidence
 
-A failed hypothesis or test is not wasted work. Ask: **What did we learn, and which assumption or responsibility changed?** Reality remains the final architect; offline tests cannot overrule contrary field Reality.
+A failed hypothesis or test is not wasted work. Ask: **What did we learn, and which assumption, responsibility or validation mechanism changed?** Reality remains the final architect; offline tests cannot overrule contrary field Reality.
+
+### Validation Evidence Does Not Create Authority
+
+Tests may demonstrate that an architecture, implementation or mechanism satisfies an asserted contract. They do not become the owner of that contract merely because they encode it.
+
+> **Tests Are Contract Evidence, Not Contract Authority**
+
+When a test and its governing Architecture or Specification disagree, investigate whether the implementation/test has drifted or whether Reality has disproved the governing contract. Do not silently promote the test into normative authority.
 
 ## 3. Claim and assumption traceability
 
-A supported claim should be human-traceable from scope, through its architectural owner and material assumptions, implementation owner, applicable offline validation, and applicable field Reality evidence. This is governance, not a requirement for a heavyweight requirements database. Material assumptions and scope boundaries are indexed in [Scope and Validation Envelope](SCOPE_AND_VALIDATION_ENVELOPE.md).
+A supported claim should be human-traceable through:
+
+```text
+scope / validation obligation
+    -> architectural owner and material assumptions
+    -> implementation-facing contract
+    -> implementation owner
+    -> applicable offline validation
+    -> applicable in-game Reality evidence
+```
+
+The implementation-facing contract is expected to become explicit through `/spec` as Issue #141 establishes that surface. Until then, use the governing Architecture and current source responsibility directly rather than inventing a parallel requirements database.
+
+Material assumptions and scope boundaries are indexed in [Scope and Validation Envelope](SCOPE_AND_VALIDATION_ENVELOPE.md).
 
 ## 4. Progressive Validation
 
-The levels below are deliberate but not rigid; especially, architecture bench tests and thought experiments may iterate.
+The levels below are deliberate but not rigid. Architecture bench tests and thought experiments may iterate, and evidence may send work back to an earlier level.
 
 ### Level 1 — Architectural Bench Test
 
-Challenge authority, evidence, obligations, termination, invariants, genericity, constraints and counterexamples before implementation. This can disprove architecture; it cannot prove GIANTS runtime behaviour.
+Challenge authority, evidence, obligations, termination, invariants, genericity, constraints and counterexamples before implementation.
+
+This level can disprove Architecture. It cannot prove GIANTS runtime behaviour.
 
 ### Level 2 — Adversarial Thought Experiment
 
-Challenge missing or incomplete observation, worker completion/succession, player claim, third-worker arrival, configuration failure, unusual assembly geometry, competing responsibilities, constrained space and evidence supersession.
+Challenge likely failure surfaces before code or runtime cost is paid. Useful adversarial questions include:
+
+- missing, stale or incomplete observation;
+- worker completion, restart or succession;
+- player claim;
+- third-worker arrival;
+- configuration failure;
+- unusual assembly geometry;
+- competing responsibilities;
+- constrained space;
+- evidence contradiction or supersession; and
+- loss of an assumed implementation capability.
+
+Thought experiments expose missing contracts and counterexamples. They remain hypotheses until evidence validates the relevant Reality-dependent assumptions.
 
 ### Level 3 — Implementation / Code Walk
 
-Trace accepted responsibility through source:
+Trace the accepted responsibility through implementation boundaries. A typical runtime walk follows:
 
 ```text
 Reality source
 -> Observation
 -> Situation Assessment
--> Responsibility
--> Authority
+-> prospective selection where applicable
+-> Responsibility Transition
+-> Current Responsibility
+-> Bounded Authority
 -> Control
 -> Reality
 ```
 
-Look for hidden authority, duplicated responsibility, stale implementation generations, literals masquerading as architecture, unsupported evidence promotion, special-case accumulation, incorrect ownership and missing release/termination handling. Use the [Implementation Map](IMPLEMENTATION_MAP.md) as the primary navigation aid.
+Look for:
+
+- hidden or duplicated authority;
+- stale implementation generations;
+- literals masquerading as Architecture;
+- unsupported evidence promotion;
+- special-case accumulation;
+- incorrect responsibility placement;
+- missing failure, release or termination handling; and
+- source behaviour that no longer realises the governing contract.
+
+Use current Architecture, source responsibility naming and colocated source documentation as the primary evidence. `IMPLEMENTATION_MAP.md` may assist while it remains a transitional bootstrap surface, but it is not normative and is scheduled for retirement once `/spec` and source traceability replace its legitimate navigation role.
 
 ### Level 4 — Executable Offline Bench Validation
 
-The current mechanisms are Python structural/source-contract tests and Lua offline behavioural/conformance tests, documented in [`/tests`](../tests/README.md). Their claim is bounded to: given repository/source structure or simulated/stubbed evidence, the implementation satisfies the asserted contract. They cannot prove GIANTS supplies equivalent evidence or reacts equivalently in-game.
+Executable offline validation challenges repository/source contracts and behaviour in controlled non-game environments.
 
-### Continuous Integration Execution Boundary
+Current mechanisms and fixtures are documented in [`/tests`](../tests/README.md). Their claim is bounded to the contract actually exercised: given the repository/source structure, simulated evidence, stubs and validation runtime used by the suite, the implementation satisfies the asserted offline contract.
 
-GitHub Actions owns ordinary execution and reporting of the repository offline
-validation suites against pull-request and `main` commits. Implementation
-agents retain responsibility for inexpensive implementation-local sanity checks
-and ordinarily do not duplicate repository-suite execution. Tests remain
-readable executable contract evidence for implementation work: **Test
-Visibility Is Not Test Execution Responsibility**.
+Offline validation cannot prove that GIANTS supplies equivalent evidence, timing, physics or behaviour in-game.
 
-`Structural contracts` is the required blocking check on protected `main`. A
-green result proves only the structural/source contract asserted by that suite;
-CI does not interpret the evidence, define architecture, or create owner
-acceptance. Engineering owns interpretation, and the repository owner's merge
-accepts an Engineering Increment. CI cannot replace appropriately scoped
-in-game Reality validation where a claim depends on GIANTS behaviour.
+#### Independent execution and CI
 
-The `Lua offline behavioural contracts` job is blocking. Its two inner harness
-steps deliberately retain `continue-on-error` so both behavioural outcomes are
-collected even when one fails; a final enforcement gate then fails the job
-unless **both** outcomes are successful. This establishes **Evidence Collection
-!= CI Enforcement**: preserving complete failure evidence does not require a
-non-blocking CI verdict.
+Ordinary repository offline suites are executed and reported independently by CI. Implementation agents remain responsible for inexpensive implementation-local sanity checks and ordinarily do not duplicate the complete repository suites merely to reproduce CI.
 
-Issue #67 established **Test Composition != Accepted Production Topology** and
-reconciled the offline harness composition, fixtures and causal assertions with
-accepted production responsibilities. Issue #78 then corrected the sole
-remaining production failure exposed by that reconciliation. Independent CI on
-`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION` established the
-first clean reconciled baseline:
+> **Test Visibility Is Not Test Execution Responsibility**
 
-- main replacement-core behavioural contracts: **337 passed / 0 failed**;
-- focused obstruction-relocation behavioural contracts: **9 passed / 0 failed**.
+CI execution, engineering interpretation, repository-owner acceptance and in-game Reality validation are distinct responsibilities:
 
-This evidence justifies **Observational Reconciliation Enables Regression
-Authority**: a future non-zero Lua harness result is now a blocking offline
-regression signal unless investigation proves that the asserted contract or
-validation mechanism itself has legitimately changed. No historical failure
-count is an accepted threshold.
+```text
+implementation-local sanity check
+        |
+        v
+independent CI execution / evidence collection
+        |
+        v
+engineering interpretation
+        |
+        v
+owner acceptance by merge
+        |
+        v
+in-game Reality validation where the claim requires it
+```
 
-**Regression Authority != Runtime Reality Authority**. A green Lua contract
-means the implementation satisfies the asserted offline behaviour under the
-repository's pinned LuaJIT semantic profile and fixtures. It does not prove that
-GIANTS supplies equivalent evidence or produces equivalent in-game behaviour.
+A green CI result proves only the contracts asserted by the executed suites. CI does not define Architecture, interpret evidence, create owner acceptance or replace runtime Reality.
 
-**Validation Execution Separation** and **Independent Execution Preserves
-Validation Independence** distinguish implementation-local checks, independent
-CI execution, engineering interpretation, owner acceptance, and in-game Reality
-evidence without weakening any test to obtain green CI.
+#### Evidence collection and enforcement
 
-### Build Identity Contract
+A validation system may continue collecting independent outcomes after one sub-check fails and still produce a blocking final verdict.
 
-**Behaviour Regression Contract != Build Identity Contract.** A behavioural,
-architectural or source-structure regression must fail because the responsibility
-it names changed, not merely because a new executable TEST build received a new
-version.
+> **Evidence Collection != CI Enforcement**
 
-Current non-canonical TEST build version has exactly two source owners:
+Preserving complete diagnostic evidence is compatible with fail-closed enforcement.
 
-- `scripts/config.lua` owns `OuttaMyWay.VERSION`;
-- `modDesc.xml` owns the equal mod version value/text consumed by GIANTS.
+Once a suite has been reconciled against accepted production responsibility and has a clean accepted baseline, a new failure is a regression signal until investigation establishes one of the following:
 
-`scripts/main.lua` has runtime-entry responsibility and does not own a current
-build-version literal. Historical regression tests likewise do not own the
-current version.
+- implementation regression;
+- legitimate change to the governing contract;
+- legitimate change to the validation mechanism or fixture; or
+- invalid environmental/runtime assumptions in the validation setup.
 
-One dedicated structural **Build Identity Contract** dynamically reads the two
-owner files and proves version equality and absence of
-the current version literal from runtime/test surfaces that do not own it.
-Historical documentation and evidence may truthfully retain earlier or current
-build identities because provenance is not Build Identity ownership.
+No historical failure count is an accepted threshold.
 
-This is **Identity Coherence Without Distributed Sentinels**: changing executable
-bytes still requires one fresh TEST build identity before push, but that identity
-change must not masquerade as many unrelated behavioural regressions.
+> **Regression Authority != Runtime Reality Authority**
 
-### Validation Bootstrap Dependency
+Offline regression authority concerns the asserted offline contract only. It does not establish equivalent GIANTS runtime behaviour.
 
-**Validation Prerequisite != Runner Package Universe.** A blocking validation job
-must depend only on environment capabilities materially required to construct
-and execute its declared validation runtime.
+#### Validation Runtime Contract
 
-The Lua behavioural job requires a source-control client plus a compiler/archive
-toolchain capable of building the pinned LuaJIT source revision. It does not
-require arbitrary package repositories preconfigured on the hosted runner to be
-healthy. The workflow therefore verifies the required tools already exposed by
-the runner and fails explicitly if they are absent; it does not unconditionally
-run a global package-index refresh merely to repair the validation environment.
+Repeatable offline evidence depends on materially relevant execution semantics as well as repository bytes and fixture inputs.
 
-This is **Validation Dependency Must Be Causally Relevant**. A missing compiler
-is a validation-environment failure. An unrelated browser repository publishing
-temporarily inconsistent metadata is not evidence about OuttaMyWay and must not
-prevent the behavioural harness from executing when the required toolchain is
-already present.
+When interpreter build options, language compatibility modes, runtime libraries or other execution semantics materially affect the asserted contract, validation must identify and control those dependencies rather than assuming that executables with the same product name or source version are semantically equivalent.
 
-This rule does not weaken the pinned LuaJIT source revision,
-`LUAJIT_ENABLE_LUA52COMPAT`, semantic-profile reporting, harness enforcement, or
-the requirement that both Lua behavioural outcomes succeed.
+The current executable profile and mechanism-specific requirements belong in `/tests` and workflow/source documentation.
 
-### Validation Runtime Contract
+#### Validation Dependency Must Be Causally Relevant
 
-Repeatable offline evidence depends on materially relevant execution semantics as well as repository bytes and test inputs. Interpreter name or source version alone is insufficient when build-time semantic options affect the contracts exercised by the suite.
+A blocking validation job should depend only on environment capabilities materially required to construct and execute its declared validation runtime.
 
-PR #24 demonstrated this for the sealed-collection harness. Stock Ubuntu LuaJIT at upstream commit `c525bcb9024510cad9e170e12b6209aedb330f83` did not honour `__pairs` and did not expose `rawlen()`, producing **239 passed / 40 failed**. Rebuilding the same source revision with `LUAJIT_ENABLE_LUA52COMPAT` changed only those interpreter semantics and restored **266 passed / 13 failed**, exactly matching the local Fedora result.
+A missing required compiler, interpreter capability or source dependency is a validation-environment failure. An unrelated package repository or service outage is not evidence about OuttaMyWay and should not block validation when all causally required capabilities are already available.
 
-For this harness, the validation runtime therefore requires a semantic profile in which `pairs()` honours `__pairs` and `rawlen()` is available. CI should make that profile observable rather than silently assuming that any executable labelled LuaJIT is equivalent.
+This principle must not be used to weaken pinned runtime semantics or skip a genuinely required prerequisite.
+
+#### Build identity validation
+
+> **Behaviour Regression Contract != Build Identity Contract**
+
+Behavioural, architectural and source-structure regressions should fail because the responsibility they name changed, not merely because a new TEST build received a new version identity.
+
+Where build identity coherence is validated, tests should read the authoritative identity owners and compare them rather than distributing the current literal through unrelated behavioural tests or runtime surfaces.
+
+> **Identity Coherence Without Distributed Sentinels**
+
+Exact identity-owner files and the current executable test mechanism are implementation facts, not Testing Methodology.
 
 ### Level 5 — Targeted In-Game Reality Test
 
-Define a bounded question before spending an in-game tranche. Capture where applicable:
+Define a bounded question before spending an in-game tranche. Capture, where applicable:
 
 ```text
 Question
 Hypothesis
 Scenario / Repeatable Reality Fixture
 FS25 runtime baseline
-OuttaMyWay commit/version
+OuttaMyWay revision
 relevant configuration
 required instrumentation
 expected confirming evidence
@@ -185,31 +213,41 @@ limits
 
 “Run TSxxx and see whether it works” is not a sufficient test definition.
 
+The test should make clear what observation could disprove the hypothesis and what claim breadth a successful run would legitimately support.
+
 ### Level 6 — Relevant Regression Portfolio
 
 Select regressions causally:
 
 ```text
 changed responsibility
--> affected assumptions/contracts
--> relevant prior scenarios/sentinels
+-> affected assumptions / contracts
+-> relevant prior scenarios / sentinels
 ```
 
-Do not rerun every historical scenario ceremonially when the change cannot affect it, and do not validate a fix only against the newest failing fixture when earlier scenarios exercise the affected assumptions. Game/runtime updates do not automatically invalidate all evidence: revalidate affected assumptions and sentinels, broadening only when evidence warrants it.
+Do not rerun every historical scenario ceremonially when the change cannot affect it, and do not validate a fix only against the newest failing fixture when earlier scenarios exercise the affected assumptions.
+
+Game/runtime updates do not automatically invalidate all evidence. Revalidate affected assumptions and sentinels, broadening only when evidence warrants it.
 
 ### Level 7 — Mature Supported-Envelope Validation
 
-Once conceptual stability is sufficient, validation should broaden systematically across the Supported Envelope using a scope-filtered agronomy/assembly/configuration/spatial coverage model derived from the reviewed game corpus. The [Vehicle Definition Corpus](research/VEHICLE_DEFINITION_CORPUS.md) records 606 reviewed base-game definitions, 90 used primary roles and 42 used capabilities; the machine-readable corpus is under [`research/vehicle_semantics/`](research/vehicle_semantics/README.md). Scope Overlay, paid DLC and modded definitions remain Deferred.
+Once conceptual stability is sufficient, validation should broaden systematically across the Supported Envelope using representative agronomy, assembly, configuration and spatial variation justified by reviewed evidence.
 
-This does not require every Cartesian combination of 606 definitions and creates neither a Scope Overlay nor a validation matrix. **No current comprehensive validation matrix is implied or required by this section.**
+The current reviewed corpus and its machine-readable evidence are owned by [Vehicle Definition Corpus and Semantic Review](research/VEHICLE_DEFINITION_CORPUS.md) and related Research surfaces. Corpus size, composition and deferred external-definition coverage are research facts, not Testing Methodology.
+
+Mature validation does not require every Cartesian combination and does not imply that a comprehensive static validation matrix already exists or is required. Coverage design should follow material variation and the Supported Envelope rather than combinatorial ceremony.
 
 ## 5. Repeatable Reality Fixtures
 
 A **Repeatable Reality Fixture** is a saved in-game state selected or constructed so a materially equivalent starting condition can be rerun across implementation iterations. It controls starting Reality and improves attribution across fix/build/test cycles.
 
-**A Scenario is a reproducible starting Reality. A Test is a question asked of Reality using that Scenario.** One Scenario may support several Tests. Fixture repeatability strengthens attribution; it does not increase claim breadth. **Scenario Identity Follows Starting Reality:** a materially changed starting state should normally become a variant or new scenario rather than silently redefining its TS identifier.
+> **A Scenario is a reproducible starting Reality. A Test is a question asked of Reality using that Scenario.**
 
-The [Scenario Library](research/SCENARIO_LIBRARY.md) owns human fixture descriptions.
+One Scenario may support several Tests. Fixture repeatability strengthens attribution; it does not increase claim breadth.
+
+**Scenario Identity Follows Starting Reality:** a materially changed starting state should normally become a variant or new scenario rather than silently redefining its TS identifier.
+
+The [Scenario Library](research/SCENARIO_LIBRARY.md) owns human fixture descriptions and current scenario-specific evidence.
 
 ### Scenario retention
 
@@ -224,7 +262,7 @@ Saved state is a proving instrument, not necessarily permanent repository knowle
 coverage case
     -> satisfactory
         -> record coverage; no saved fixture required
-    -> materially interesting failure/boundary
+    -> materially interesting failure / boundary
         -> investigate reproducibility
         -> preserve a Repeatable Reality Fixture when controlled repetition is useful
         -> retain as a Regression Sentinel only while ongoing value justifies it
@@ -234,21 +272,39 @@ coverage case
 - **Repeatable Reality Fixture:** preserved starting Reality with controlled-repetition value.
 - **Regression Sentinel:** retained fixture protecting a materially important previously failed assumption or behaviour.
 
-**Coverage breadth does not imply fixture retention. Failure-Driven Fixture Promotion** preserves a coverage case when investigation, correction or regression protection requires controlled reproduction. A varying terrain, slope or other property becomes an architectural dimension only if repeated evidence shows that it materially changes a responsibility or claim.
+**Coverage breadth does not imply fixture retention. Failure-Driven Fixture Promotion** preserves a coverage case when investigation, correction or regression protection requires controlled reproduction.
+
+A varying terrain, slope, implement family or other property becomes an architectural or validation dimension only if repeated evidence shows that it materially changes a responsibility, assumption or supported claim.
 
 ## 7. Failure interpretation and recording
 
-Useful interpretations include architecture disproved, implementation defect, implementation/architecture mismatch, invalid test assumption, invalid or insufficiently controlled fixture, insufficient instrumentation, environment/runtime change, boundary-characterisation observation, and inconclusive evidence. These are reasoning aids, not a mandatory enum.
+Useful interpretations include:
 
-Record the question, evidence, conclusion and limits in the responsible repository home. Preserve failures because they narrow uncertainty and guide later regression selection.
+- Architecture disproved;
+- implementation defect;
+- implementation / Architecture mismatch;
+- invalid test assumption;
+- invalid or insufficiently controlled fixture;
+- insufficient instrumentation;
+- validation mechanism defect;
+- environment/runtime change;
+- boundary-characterisation observation; and
+- inconclusive evidence.
+
+These are reasoning aids, not a mandatory enum.
+
+Record the question, evidence, conclusion and limits in the responsible repository home. Validation Methodology owns the process; `/tests` owns executable offline mechanisms and fixtures; Research/Scenario surfaces own bounded studies and in-game fixture evidence; the Engineering Journal owns investigation/evolution evidence; Architecture and Specification own current normative meaning.
+
+Preserve failures because they narrow uncertainty and guide later regression selection.
 
 ## 8. What each level cannot prove
 
 - Architecture and thought experiments cannot prove engine behaviour.
 - Code walks cannot prove execution or field outcomes.
 - Structural tests cannot prove behavioural correctness.
-- Stubbed Lua tests cannot prove equivalent GIANTS evidence or response.
+- Stubbed or offline behavioural tests cannot prove equivalent GIANTS evidence or response.
 - One in-game fixture cannot prove the whole Supported Envelope.
 - Repetition cannot compensate for insufficient claim breadth.
+- A passing test cannot enlarge the authority of the contract it exercises.
 
 Only appropriately scoped runtime Reality evidence supports runtime-dependent claims.
