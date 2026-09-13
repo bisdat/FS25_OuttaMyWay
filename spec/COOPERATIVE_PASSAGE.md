@@ -4,7 +4,7 @@
 
 **Specification Jurisdiction:** Cooperative Passage  
 **Parent Specification:** [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md)  
-**Primary Architecture Authority:** [`docs/architecture/SPATIAL_NEGOTIATION_MODEL.md`](../docs/architecture/SPATIAL_NEGOTIATION_MODEL.md#5-specification-jurisdiction--cooperative-passage)
+**Primary Architecture Authority:** [`architecture/SPATIAL_NEGOTIATION_MODEL.md`](../architecture/SPATIAL_NEGOTIATION_MODEL.md#5-specification-jurisdiction--cooperative-passage)
 
 This Specification owns the implementation-facing contract for the purpose-specific **Cooperative Passage** Resolution: Passage Candidate requirements, Bubble Formation, participant-scoped Passage Legs, shared Passage obligations, Passage-specific third-party protection, Reality-verified execution, intervention-created recovery/restoration debt, and Last-Leg Dissolution.
 

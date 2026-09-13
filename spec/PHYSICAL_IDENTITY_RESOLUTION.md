@@ -3,7 +3,7 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Physical Identity Resolution  
-**Primary Architecture Authority:** [`docs/architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](../docs/architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#3-specification-jurisdiction--physical-identity-resolution)
+**Primary Architecture Authority:** [`architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](../architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#3-specification-jurisdiction--physical-identity-resolution)
 
 This Specification owns the implementation-facing contract for defensible correspondence between observed source physical evidence and a runtime physical entity, including the identity, geometry-authority and pose-authority claims that may legitimately be attached to that correspondence.
 

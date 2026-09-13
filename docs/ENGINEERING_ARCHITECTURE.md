@@ -251,7 +251,7 @@ authority.
 
 Runtime system/build identity is limited to `OuttaMyWay.MOD_NAME` and
 `OuttaMyWay.VERSION`, as defined by the root-identity boundary in
-[Configuration architecture](CONFIGURATION.md#configuration-and-other-value-responsibilities).
+[Configuration architecture](../architecture/CONFIGURATION.md#configuration-and-other-value-responsibilities).
 Architecture remains repository knowledge rather than a separately versioned
 runtime identity. TEST build prose belongs in engineering provenance.
 

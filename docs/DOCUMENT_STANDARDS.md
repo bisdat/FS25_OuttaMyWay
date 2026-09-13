@@ -12,17 +12,21 @@ Normative requirements govern engineering meaning and ownership. They MUST NOT u
 
 > **Normative on semantics; permissive on presentation.**
 
-# `/docs` — Architecture and engineering knowledge standard
+# `/architecture` — System Architecture standard
 
 ## Purpose
 
-`/docs` owns the human-readable engineering knowledge that explains what OuttaMyWay should achieve, why its responsibilities exist, which concepts and constraints govern them, and where authoritative engineering knowledge is owned.
+`/architecture` owns the human-readable current system Architecture that explains what OuttaMyWay should achieve, why its responsibilities exist, and which concepts, constraints and authority relationships govern them.
 
 Architecture MUST describe the system as it should be experienced and reasoned about. It MUST NOT be derived from current implementation structure, and implementation convenience MUST NOT determine architectural boundaries.
 
-A future engineer MUST be able to reconstruct the current architecture directly from the live documentation without reconstructing it from Git history, Issues, pull requests, test runs or source code.
+A future engineer MUST be able to reconstruct the current architecture directly from `/architecture` without reconstructing it from Git history, Issues, pull requests, test runs or source code.
 
-`/docs` MUST remain readable as an engineering surface for humans. Machine-readable traceability MAY support it, but metadata MUST NOT replace the explanation required to understand the architecture.
+`/architecture` MUST remain readable as an engineering surface for humans. Machine-readable traceability MAY support it, but metadata MUST NOT replace the explanation required to understand the architecture.
+
+`/docs` is the separate engineering-knowledge and governance surface. It owns engineering method, continuation, standards, naming, validation methodology, engine knowledge, research/evidence routes, decision/journal records and other project knowledge whose responsibility is not System Architecture. `/docs` MUST NOT be used as a synonym for Architecture.
+
+> **Documentation Surface != Architecture Surface.**
 
 ## Current truth, history and evidence
 
@@ -136,7 +140,7 @@ The corresponding Specification MUST provide a reciprocal route to its primary a
 The preferred traceability chain is:
 
 ```text
-/docs
+/architecture
 architectural meaning
         ⇅
 /spec

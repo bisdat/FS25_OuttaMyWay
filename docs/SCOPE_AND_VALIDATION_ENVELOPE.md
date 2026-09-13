@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-**This document defines the boundary of the claims OuttaMyWay undertakes to support and therefore the boundary of its validation obligation.** It indexes rather than replaces [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation](architecture/SPATIAL_NEGOTIATION_MODEL.md), [Physical Representation Architecture](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md), [Project Vision](PROJECT_VISION.md), or individual decisions.
+**This document defines the boundary of the claims OuttaMyWay undertakes to support and therefore the boundary of its validation obligation.** It indexes rather than replaces [Runtime Responsibility Architecture](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation](../architecture/SPATIAL_NEGOTIATION_MODEL.md), [Physical Representation Architecture](../architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md), [Project Vision](../architecture/PROJECT_VISION.md), or individual decisions.
 
 ## 2. Claim classes
 
@@ -16,7 +16,7 @@
 
 The current supported claim is bounded to qualifying native GIANTS AI field work in a field-bounded Local Operation containing one to three simultaneously active supported GIANTS AI worker assemblies. Validation targets workers performing different agronomic roles. Player-controlled vehicles do not count toward the AI-worker cap and are not autonomous cooperative-worker participants.
 
-GIANTS retains AI jobs, productive routing and navigation, native turning and productive work. OuttaMyWay owns only the bounded temporary coordination and intervention responsibilities defined by [Runtime Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Spatial Negotiation](architecture/SPATIAL_NEGOTIATION_MODEL.md). Completed or other non-participant assemblies may remain physically relevant where current architecture permits. Player intervention remains a legitimate bounded outcome when no supported autonomous resolution exists.
+GIANTS retains AI jobs, productive routing and navigation, native turning and productive work. OuttaMyWay owns only the bounded temporary coordination and intervention responsibilities defined by [Runtime Architecture](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Spatial Negotiation](../architecture/SPATIAL_NEGOTIATION_MODEL.md). Completed or other non-participant assemblies may remain physically relevant where current architecture permits. Player intervention remains a legitimate bounded outcome when no supported autonomous resolution exists.
 
 This summary does not duplicate detailed admission, lifecycle, representation, commitment or control semantics from their architectural owners.
 
@@ -30,11 +30,11 @@ An assumption is a proposition about Reality or available evidence on which a cl
 
 | Material assumption | Owner / boundary | Validation implication |
 |---|---|---|
-| Partial observability is permanent. | [Runtime Observation](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#11-reality-observation-and-situation-assessment) | Preserve provenance and uncertainty; do not infer unavailable facts. |
-| A8 Productive Forward-Line Certainty supports a bounded immediate productive corridor and is falsifiable by contrary Reality. | [Spatial A8](architecture/SPATIAL_NEGOTIATION_MODEL.md#a8--productive-forward-line-certainty) | Revalidate against transitions, turns and contradictory current evidence. |
-| GIANTS retains productive route ownership. | [Spatial scope](architecture/SPATIAL_NEGOTIATION_MODEL.md#1-scope) | Intervention tests must not claim replacement-route authority. |
-| Physical representation authority is purpose-scoped. | [Physical Representation](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#purpose-scoped-geometry-authority) | Validate the claimed subject, state, purpose and horizon rather than treating geometry as universal. |
-| Lifecycle observation may be incomplete; absence under incomplete observation is not termination. | [Lifecycle Evidence Asymmetry](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#lifecycle-evidence-asymmetry) | Test positive completion/succession and incomplete-evidence cases separately. |
+| Partial observability is permanent. | [Runtime Observation](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#11-reality-observation-and-situation-assessment) | Preserve provenance and uncertainty; do not infer unavailable facts. |
+| A8 Productive Forward-Line Certainty supports a bounded immediate productive corridor and is falsifiable by contrary Reality. | [Spatial A8](../architecture/SPATIAL_NEGOTIATION_MODEL.md#a8--productive-forward-line-certainty) | Revalidate against transitions, turns and contradictory current evidence. |
+| GIANTS retains productive route ownership. | [Spatial scope](../architecture/SPATIAL_NEGOTIATION_MODEL.md#1-scope) | Intervention tests must not claim replacement-route authority. |
+| Physical representation authority is purpose-scoped. | [Physical Representation](../architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#purpose-scoped-geometry-authority) | Validate the claimed subject, state, purpose and horizon rather than treating geometry as universal. |
+| Lifecycle observation may be incomplete; absence under incomplete observation is not termination. | [Lifecycle Evidence Asymmetry](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#lifecycle-evidence-asymmetry) | Test positive completion/succession and incomplete-evidence cases separately. |
 
 **Assumption Traceability:** material assumptions should be identifiable, have an owner, and imply a validation obligation, boundary or revalidation trigger.
 
@@ -51,7 +51,7 @@ A constraint is a required design boundary the solution must obey, not a predict
 - at most one coupled pairwise Resolution Commitment per Operation, with exactly two active AI participants; and
 - player intervention remains a legitimate outcome rather than a design failure by definition.
 
-Full semantics belong to [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation](architecture/SPATIAL_NEGOTIATION_MODEL.md), and [Physical Representation Architecture](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md).
+Full semantics belong to [Runtime Responsibility Architecture](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation](../architecture/SPATIAL_NEGOTIATION_MODEL.md), and [Physical Representation Architecture](../architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md).
 
 ## 7. Explicit exclusions and no-claim boundary
 

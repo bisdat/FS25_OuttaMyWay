@@ -1,8 +1,12 @@
-# Architecture documentation
+# System Architecture
 
 Architecture describes **what the system should achieve**: its current
 responsibilities, concepts, boundaries and intended behaviour. It is distinct
 from implementation placement, engineering chronology and validation evidence.
+
+`/architecture` is a first-class engineering surface alongside `/spec`, `/scripts` and `/tests`. Their repository addressability is peer-level; their authority is not: Architecture owns current system meaning, Specification owns implementation-facing contract, source owns current mechanism, and tests provide evidence.
+
+> **First-Class Authority Deserves First-Class Addressability.**
 
 A future engineer should be able to reconstruct the present architecture
 directly from this live tree. Phase/tranche migration history belongs in Git,
@@ -34,9 +38,9 @@ available through Git history and PR #71 rather than as a live architecture
 child.
 
 Current implementation placement and material architecture-to-code drift are
-owned by [`../IMPLEMENTATION_MAP.md`](../IMPLEMENTATION_MAP.md). The active
-engineering boundary is owned by
-[`../CONTINUATION_STATE.md`](../CONTINUATION_STATE.md).
+owned by the [Implementation Map](../docs/IMPLEMENTATION_MAP.md). The active
+engineering boundary is owned by the
+[Continuation State](../docs/CONTINUATION_STATE.md).
 
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's current responsibility model, not as implementation chronology.

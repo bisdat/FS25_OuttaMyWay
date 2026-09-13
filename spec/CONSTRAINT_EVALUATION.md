@@ -3,7 +3,7 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Constraint Evaluation  
-**Primary Architecture Authority:** [`docs/architecture/CANDIDATE_SUPPORT_PROJECTION.md`](../docs/architecture/CANDIDATE_SUPPORT_PROJECTION.md#3-specification-jurisdiction--constraint-evaluation)
+**Primary Architecture Authority:** [`architecture/CANDIDATE_SUPPORT_PROJECTION.md`](../architecture/CANDIDATE_SUPPORT_PROJECTION.md#3-specification-jurisdiction--constraint-evaluation)
 
 This Specification owns the implementation-facing contract for applying **mandatory invariant verdicts** to prospective Candidates and Candidate combinations using the exact Candidate-support-enriched Decision Picture.
 

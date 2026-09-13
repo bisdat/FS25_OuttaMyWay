@@ -4,10 +4,10 @@
 
 `/spec` is OuttaMyWay's implementation-facing contract surface.
 
-Architecture under `/docs` defines **what the system should achieve and why its responsibilities exist**. A primary Specification defines **what an implementation of one declared Specification Jurisdiction must preserve, expose, reject, sequence or report in order to realise that Architecture**. Source under `/scripts` defines the current mechanism that attempts to satisfy that contract. Tests provide evidence about the contract; they do not own it.
+Architecture under `/architecture` defines **what the system should achieve and why its responsibilities exist**. A primary Specification defines **what an implementation of one declared Specification Jurisdiction must preserve, expose, reject, sequence or report in order to realise that Architecture**. Source under `/scripts` defines the current mechanism that attempts to satisfy that contract. Tests provide evidence about the contract; they do not own it.
 
 ```text
-/docs
+/architecture
 Architecture — what / why
         ⇅
 /spec
@@ -15,9 +15,9 @@ Specification — implementation-facing contract
         ⇅
 /scripts
 Implementation — current mechanism
-        ⇅
+
 /tests and Reality
-Validation evidence
+Validation evidence that challenges the contracts and implementation
 ```
 
 This surface specialises the repository rules in [`docs/DOCUMENT_STANDARDS.md`](../docs/DOCUMENT_STANDARDS.md). Where the two disagree, `DOCUMENT_STANDARDS.md` remains the higher-level documentation authority.

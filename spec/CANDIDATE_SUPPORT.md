@@ -3,7 +3,7 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Candidate Support  
-**Primary Architecture Authority:** [`docs/architecture/CANDIDATE_SUPPORT_PROJECTION.md`](../docs/architecture/CANDIDATE_SUPPORT_PROJECTION.md#2-specification-jurisdiction--candidate-support)
+**Primary Architecture Authority:** [`architecture/CANDIDATE_SUPPORT_PROJECTION.md`](../architecture/CANDIDATE_SUPPORT_PROJECTION.md#2-specification-jurisdiction--candidate-support)
 
 This Specification owns the implementation-facing contract for enumerating independently supportable fresh prospective purposes from one current Situation, constructing purpose-local support statements, composing a complete prospective portfolio, and publishing the one Candidate-support-enriched Decision Picture from which Candidate Space is materialised.
 

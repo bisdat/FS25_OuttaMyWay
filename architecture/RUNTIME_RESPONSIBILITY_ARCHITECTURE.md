@@ -26,7 +26,7 @@ This architecture declares the following Specification Jurisdictions.
 
 The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../../spec/CONTROL.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
+All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../spec/CONTROL.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -84,7 +84,7 @@ Candidate construction, mandatory constraints and Decision are not redefined her
 
 **Does not own:** general Observation semantics, Situation interpretation, traffic strategy, Current Responsibility selection, physical representation fitness, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md)
+**Primary Specification:** [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md)
 
 ### Global Runtime and Local Operations
 
@@ -270,7 +270,7 @@ Reality constrains every Specification Jurisdiction but is not itself an OuttaMy
 
 **Does not own:** semantic traffic purpose, Situation classification, Passage choice, regulated subject selection, responsibility persistence, Bounded Authority or physical command.
 
-**Primary Specification:** [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md)
+**Primary Specification:** [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md)
 
 Observation answers: **What evidence exists?**
 
@@ -288,7 +288,7 @@ Control outcomes re-enter the architecture through Reality and Observation. Cont
 
 **Does not own:** raw evidence acquisition, representation truth construction, Candidate construction, strategic selection, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md)
+**Primary Specification:** [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md)
 
 Situation Assessment answers: **What does current evidence mean for this Local Operation now?**
 
@@ -362,7 +362,7 @@ If the same assembly later begins a fresh GIANTS Job, that is an ordinary Situat
 
 **Does not own:** reinterpretation of Reality, Situation Assessment, spatial strategy, regulated-subject selection, magnitude selection, productive routing, retained Resolution obligation lifecycle, Bounded Authority or Control construction.
 
-**Primary Specification:** [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md)
+**Primary Specification:** [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md)
 
 **Responsibility Transition** is the semantic lifecycle boundary between Current Responsibility instances. A transition is an episodic change justified by fresh Situation Assessment, not ordinary continuation.
 
@@ -435,7 +435,7 @@ GIANTS AI is the default and attractor. GIANTS owns jobs, productive routing and
 
 **Does not own:** Situation reasons, productive routing, successor reservation, spatial displacement, Responsibility Transition or physical materialisation.
 
-**Primary Specification:** [`../../spec/REGULATION.md`](../../spec/REGULATION.md)
+**Primary Specification:** [`../../spec/REGULATION.md`](../spec/REGULATION.md)
 
 Regulation is bounded and reversible. It changes timing rather than productive routes and has weak persistence. An explicit current positive justification is required, and Regulation ends when that justification is positively discharged, invalidated or replaced.
 
@@ -468,7 +468,7 @@ Positive dissolution, positive supersession, governing-basis cessation or anothe
 
 **Does not own:** Situation recognition, concrete resolution choreography, purpose-specific geometry, Bounded Authority or Control mechanics.
 
-**Primary Specification:** [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md)
+**Primary Specification:** [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md)
 
 **Resolution Commitment** is a durable accepted resolution obligation. It has strong persistence while legitimate obligations remain open. Obligations, not stale admission predictions or geometry, justify persistence; execution may adapt to fresh Reality.
 
@@ -496,7 +496,7 @@ While such a contradiction remains unreconciled, Control must not invent a new p
 
 **Does not own:** Causal Obstruction recognition, non-active classification, Player Claim classification, general Bounded Authority or generic Control mechanics.
 
-**Primary Specification:** [`../../spec/OBSTRUCTION_RELOCATION.md`](../../spec/OBSTRUCTION_RELOCATION.md)
+**Primary Specification:** [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md)
 
 ### Beneficiary and controlled subject
 
@@ -585,7 +585,7 @@ The third worker does not join the pairwise commitment. Spatial Negotiation owns
 
 **Does not own:** strategic purpose, Responsibility Transition, productive routing, stale geometry preservation, Control execution or semantic Resolution success.
 
-**Primary Specification:** [`../../spec/BOUNDED_AUTHORITY.md`](../../spec/BOUNDED_AUTHORITY.md)
+**Primary Specification:** [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md)
 
 Bounded Authority answers: **Given current responsibility and current Reality, what physical action may OuttaMyWay perform now?**
 
@@ -611,7 +611,7 @@ Relinquishment does not require a new grant. A release or quiescence action narr
 
 **Does not own:** strategic purpose, Responsibility Transition, Bounded Authority creation, Regulation magnitude policy, Resolution settlement semantics or alternative-strategy invention.
 
-**Primary Specification:** [`../../spec/CONTROL.md`](../../spec/CONTROL.md)
+**Primary Specification:** [`../../spec/CONTROL.md`](../spec/CONTROL.md)
 
 Control answers: **How is this already-authorised physical request realised through available GIANTS mechanisms?**
 
