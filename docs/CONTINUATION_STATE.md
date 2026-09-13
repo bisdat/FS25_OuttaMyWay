@@ -72,7 +72,7 @@ The census exposed three important drift classes:
 
 The Continuation-State failure had a structural cause rather than merely missed maintenance: exact post-merge repository identity cannot be authored truthfully before the accepting merge exists. Its maintenance contract now removes that self-invalidating responsibility.
 
-The current-index / traceability reconciliation has established another useful boundary:
+The current-index / traceability reconciliation established another useful boundary:
 
 > **Concept Register != Jurisdiction Catalogue**
 
@@ -80,32 +80,39 @@ The Concept Register remains a thin current-state index. Architecture owns the c
 
 The prospective-selection responsibilities **Candidate Support**, **Constraint Evaluation** and **Decision** now have current index coverage. Physical Representation index entries have been reconciled to the accepted Physical Identity Resolution / Assessment Representation architecture, including removal or renaming of concepts that were absorbed by the current model rather than preserving old labels as independent authority. The Architecture breadcrumb now names the current **Candidate Support, Constraint and Decision Architecture** subject.
 
+Review of `docs/IMPLEMENTATION_MAP.md` established that its intended live responsibility should not be preserved as a permanent manually maintained documentation surface.
+
+> **Implementation Map Is Transitional, Not Durable Authority**
+
+Its useful material is already tending toward stronger owners: Architecture owns semantic responsibility, source owns mechanism, Issues and Continuation own unresolved/current engineering boundaries, Git and the Journal own chronology, and future `/spec` plus generated traceability should own the durable Architecture-to-implementation contract route.
+
+The file remains live **temporarily** because repository bootstrap and engineering governance still route implementation-placement questions through it. Retirement must therefore wait until `/spec` and source traceability can assume its legitimate navigation role and a Stranded Live Knowledge check has harvested any unique current knowledge.
+
+A manually maintained placement map is unnecessary once contract traceability is authoritative.
+
 ## Immediate next bounded engineering step
 
-Reconcile `docs/IMPLEMENTATION_MAP.md` as a truthful current **Architecture-to-source placement and material-drift map**.
+Reconcile `docs/TESTING_METHODOLOGY.md` so it remains the durable owner of validation method and evidence-strength process without carrying historical run/PR/Issue narrative that belongs to evidence/history surfaces.
 
-The document currently has a valid responsibility but mixes that responsibility with build/PR chronology, candidate-state prose, stale architecture links and implementation-detail inventories that are likely to move into future `/spec` or generated implementation reference.
+The increment should ask:
 
-The next increment should therefore ask:
+- which rules describe durable validation method rather than one historical investigation;
+- which exact pass/fail counts, build references, Issue/PR provenance or scenario chronology should move out of the live methodology surface;
+- whether existing distinctions between implementation-local checks, CI offline validation and in-game Reality validation remain complete and non-duplicative;
+- whether any testing vocabulary now conflicts with the reconciled Architecture or documentation standard; and
+- whether current test responsibilities are described at the right abstraction level without turning methodology into a test inventory.
 
-- what information is genuinely required to navigate from current architectural responsibility to current source placement;
-- what material architecture-to-code drift still deserves explicit current visibility;
-- which build, PR, Issue and migration chronology belongs in Git, the Engineering Journal or other evidence/history surfaces instead;
-- which stale Configuration and pre-reconciliation Architecture links must be repaired;
-- what placement information is likely to become generated `/spec -> /scripts` traceability later and therefore should not be polished into a permanent manually maintained truth surface; and
-- whether the Implementation Map should survive future `/spec` adoption in reduced form, be generated, or eventually retire once its responsibility has a stronger owner.
-
-The goal is not to redesign `/spec` prematurely. It is to make the current placement surface truthful enough to bridge into `/spec` design without preserving its historical leakage as a requirement.
+The goal is to retain the contract for **how evidence becomes trustworthy**, not the chronology of prior evidence.
 
 ## Subsequent #141 boundaries
 
-After the Implementation Map reconciliation, the present sequence is:
+After Testing Methodology reconciliation, the present sequence is:
 
-1. reconcile `docs/TESTING_METHODOLOGY.md` so durable validation contracts remain while historical validation evidence returns to evidence/history surfaces;
-2. perform the bounded normative-language/conformance review of `docs/NAMING_CONVENTIONS.md`;
-3. design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
-4. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain; and
-5. only after the model has survived those applications, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. perform the bounded normative-language/conformance review of `docs/NAMING_CONVENTIONS.md`;
+2. design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
+3. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain;
+4. once `/spec` and source traceability can replace the legitimate placement/navigation responsibility, perform a Stranded Live Knowledge harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating its bootstrap/navigation/governance references atomically; and
+5. only after the model has survived those applications, adopt the remaining proven rules into `AGENTS.md` and CI/pre-commit enforcement.
 
 This sequence remains evidence-led. If a reconciliation disproves the current standard or ordering, update the model rather than preserving the plan for its own sake.
 
