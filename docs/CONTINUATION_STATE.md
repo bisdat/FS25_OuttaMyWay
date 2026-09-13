@@ -62,7 +62,7 @@ Accepted reconciliations have established:
 
 The standards have therefore survived several different architecture shapes. Jurisdiction boundaries are being discovered from semantic cohesion rather than document headings, source topology or implementation convenience.
 
-A top-level `/docs` authority census also established that not every live document is Architecture. Existing first-class roles remain legitimate for governance, current concept state, current continuation, implementation placement, validation methodology, scope/claim boundaries, historical decisions, engineering evidence, engine knowledge, research and localisation.
+A top-level `/docs` authority census also established that not every live document is Architecture. Existing first-class roles remain legitimate for governance, current concept state, current continuation, validation methodology, scope/claim boundaries, historical decisions, engineering evidence, engine knowledge, research and localisation.
 
 The census exposed three important drift classes:
 
@@ -70,49 +70,60 @@ The census exposed three important drift classes:
 2. **Traceability Drift** — a correctly owned index or breadcrumb points to superseded headings or responsibility structure after Architecture reconciliation.
 3. **Placement Map -> Engineering History Leakage** — a current implementation-placement map accumulates build/PR chronology and stale implementation-detail links instead of remaining a truthful current map.
 
-The Continuation-State failure had a structural cause rather than merely missed maintenance: exact post-merge repository identity cannot be authored truthfully before the accepting merge exists. Its maintenance contract now removes that self-invalidating responsibility.
+The Continuation-State failure had a structural cause rather than merely missed maintenance: exact post-merge repository identity cannot be authored truthfully before the accepting merge exists. Its maintenance contract removes that self-invalidating responsibility.
 
-The current-index / traceability reconciliation established another useful boundary:
+The current-index / traceability reconciliation established:
 
 > **Concept Register != Jurisdiction Catalogue**
 
-The Concept Register remains a thin current-state index. Architecture owns the complete Specification Jurisdiction inventory; the register indexes a Jurisdiction name only when that name is also useful as a durable responsibility concept. Current Architecture links and names are repaired in the register rather than preserving old section numbering or pre-reconciliation concept shapes.
+The Concept Register remains a thin current-state index. Architecture owns the complete Specification Jurisdiction inventory; the register indexes a Jurisdiction name only when that name is also useful as a durable responsibility concept.
 
-The prospective-selection responsibilities **Candidate Support**, **Constraint Evaluation** and **Decision** now have current index coverage. Physical Representation index entries have been reconciled to the accepted Physical Identity Resolution / Assessment Representation architecture, including removal or renaming of concepts that were absorbed by the current model rather than preserving old labels as independent authority. The Architecture breadcrumb now names the current **Candidate Support, Constraint and Decision Architecture** subject.
-
-Review of `docs/IMPLEMENTATION_MAP.md` established that its intended live responsibility should not be preserved as a permanent manually maintained documentation surface.
+Review of `docs/IMPLEMENTATION_MAP.md` established:
 
 > **Implementation Map Is Transitional, Not Durable Authority**
 
 Its useful material is already tending toward stronger owners: Architecture owns semantic responsibility, source owns mechanism, Issues and Continuation own unresolved/current engineering boundaries, Git and the Journal own chronology, and future `/spec` plus generated traceability should own the durable Architecture-to-implementation contract route.
 
-The file remains live **temporarily** because repository bootstrap and engineering governance still route implementation-placement questions through it. Retirement must therefore wait until `/spec` and source traceability can assume its legitimate navigation role and a Stranded Live Knowledge check has harvested any unique current knowledge.
+The file remains live temporarily because repository bootstrap and engineering governance still route implementation-placement questions through it. Retirement must wait until `/spec` and source traceability can assume its legitimate navigation role and a Stranded Live Knowledge check has harvested any unique current knowledge.
 
-A manually maintained placement map is unnecessary once contract traceability is authoritative.
+The Testing Methodology reconciliation establishes another authority boundary:
+
+> **Testing Methodology != Validation Evidence Ledger**
+
+Testing Methodology owns durable rules for how claims are challenged and how evidence strength increases. `/tests` owns executable offline mechanisms and fixtures; workflow/source surfaces own current execution mechanics; Research, Scenario and Engineering Journal surfaces own bounded evidence and investigation history; Architecture and future Specification own normative contract meaning.
+
+Historical pass/fail counts, Issue/PR/build narratives and mechanism-specific runtime details are therefore not live methodology. The seven-level progressive-validation model, causal regression selection, Repeatable Reality Fixtures, evidence limits, independent CI execution and Reality-validation boundaries remain durable.
+
+The reconciliation also makes explicit:
+
+- **Tests Are Contract Evidence, Not Contract Authority**;
+- **a passing test cannot enlarge the authority of the contract it exercises**;
+- **Regression Authority != Runtime Reality Authority**; and
+- `IMPLEMENTATION_MAP.md` may assist code walks only as a transitional navigation aid rather than normative implementation authority.
 
 ## Immediate next bounded engineering step
 
-Reconcile `docs/TESTING_METHODOLOGY.md` so it remains the durable owner of validation method and evidence-strength process without carrying historical run/PR/Issue narrative that belongs to evidence/history surfaces.
+Perform the bounded normative-language and authority-conformance review of `docs/NAMING_CONVENTIONS.md`.
 
 The increment should ask:
 
-- which rules describe durable validation method rather than one historical investigation;
-- which exact pass/fail counts, build references, Issue/PR provenance or scenario chronology should move out of the live methodology surface;
-- whether existing distinctions between implementation-local checks, CI offline validation and in-game Reality validation remain complete and non-duplicative;
-- whether any testing vocabulary now conflicts with the reconciled Architecture or documentation standard; and
-- whether current test responsibilities are described at the right abstraction level without turning methodology into a test inventory.
+- whether MUST / MUST NOT / SHOULD / MAY usage matches the accepted documentation standard;
+- whether any advisory `should` wording is actually a mandatory semantic naming rule or needs an explicit legitimate exception class;
+- whether naming guidance duplicates architectural definitions instead of applying them;
+- whether current terminology reflects the reconciled Specification Jurisdictions and responsibility vocabulary without becoming another Architecture or Spec catalogue;
+- whether historical migration language or implementation-era naming examples still imply present authority; and
+- whether the document remains a naming standard rather than a source/API inventory.
 
-The goal is to retain the contract for **how evidence becomes trustworthy**, not the chronology of prior evidence.
+The goal is conformance and authority clarity, not wholesale renaming of current source during the documentation increment.
 
 ## Subsequent #141 boundaries
 
-After Testing Methodology reconciliation, the present sequence is:
+After Naming Conventions conformance, the present sequence is:
 
-1. perform the bounded normative-language/conformance review of `docs/NAMING_CONVENTIONS.md`;
-2. design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
-3. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain;
-4. once `/spec` and source traceability can replace the legitimate placement/navigation responsibility, perform a Stranded Live Knowledge harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating its bootstrap/navigation/governance references atomically; and
-5. only after the model has survived those applications, adopt the remaining proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
+2. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain;
+3. once `/spec` and source traceability can replace the legitimate placement/navigation responsibility, perform a Stranded Live Knowledge harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating its bootstrap/navigation/governance references atomically; and
+4. only after the model has survived those applications, adopt the remaining proven rules into `AGENTS.md` and CI/pre-commit enforcement.
 
 This sequence remains evidence-led. If a reconciliation disproves the current standard or ordering, update the model rather than preserving the plan for its own sake.
 
