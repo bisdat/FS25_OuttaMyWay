@@ -26,7 +26,7 @@ This architecture declares the following Specification Jurisdictions.
 
 The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-The primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md). Issue #141 owns the active repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture, and the pending markers must disappear when the `/spec` surface is established.
+**Observation** now routes to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md) and **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md). The remaining primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -270,7 +270,7 @@ Reality constrains every Specification Jurisdiction but is not itself an OuttaMy
 
 **Does not own:** semantic traffic purpose, Situation classification, Passage choice, regulated subject selection, responsibility persistence, Bounded Authority or physical command.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md)
 
 Observation answers: **What evidence exists?**
 
@@ -362,7 +362,7 @@ If the same assembly later begins a fresh GIANTS Job, that is an ordinary Situat
 
 **Does not own:** reinterpretation of Reality, Situation Assessment, spatial strategy, regulated-subject selection, magnitude selection, productive routing, retained Resolution obligation lifecycle, Bounded Authority or Control construction.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md)
 
 **Responsibility Transition** is the semantic lifecycle boundary between Current Responsibility instances. A transition is an episodic change justified by fresh Situation Assessment, not ordinary continuation.
 

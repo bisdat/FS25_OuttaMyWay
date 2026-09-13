@@ -45,6 +45,20 @@ A specialised Jurisdiction MAY depend on another Jurisdiction. Its Specification
 
 A recognised Deferred Responsibility with no implementation requirement MAY remain without a Specification. Placeholder, empty or speculative Specifications MUST NOT be created for symmetry.
 
+## Current primary Specifications
+
+The currently migrated primary Specifications are:
+
+| Specification Jurisdiction | Primary Specification |
+| --- | --- |
+| **Observation** | [`OBSERVATION.md`](OBSERVATION.md) |
+| **Responsibility Transition** | [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) |
+| **Physical Identity Resolution** | [`PHYSICAL_IDENTITY_RESOLUTION.md`](PHYSICAL_IDENTITY_RESOLUTION.md) |
+
+All other currently implemented Specification Jurisdictions remain under the bounded **pending migration** exception until their primary Specifications are deliberately created and reciprocal Architecture routes are established. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
+
+This index is navigation, not a second Jurisdiction catalogue. Architecture remains authoritative for the complete Jurisdiction inventory and ownership relationships.
+
 ## The Specification contract spine
 
 Primary Specifications do not require one rigid heading template. They MUST, however, make the following semantic obligations directly discoverable.
@@ -107,6 +121,10 @@ Failure semantics MUST preserve the Architecture's authority boundaries. Failure
 Every primary Specification MUST provide a discoverable route to the implementation that currently realises it.
 
 Exact source-file, function and helper placement are traceability facts, not normative contract meaning. They MAY be supplied by generated reference or by a clearly non-normative authored mapping while generated traceability is not yet available.
+
+A primary Specification does not imply one primary source module. One Jurisdiction may be realised by several modules, and one module may realise semantic slices of several neighbouring contracts, provided ownership remains explicit and traceable.
+
+> **Primary Specification != Primary Source Module**
 
 Generated implementation reference MUST remain distinguishable from authored Specification text. Generated reference may report source facts; it MUST NOT become the owner of implementation-contract semantics.
 
