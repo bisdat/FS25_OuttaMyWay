@@ -23,13 +23,17 @@ A Cooperative Passage Candidate MUST be grounded in current Passage-specific evi
 Before the Candidate may be selected and committed, the implementation MUST preserve the following distinctions:
 
 - current productive/working geometry establishes whether genuine opposed corridor competition exists;
-- compact/Transit geometry MAY support prospective Passage arrangement planning only for its declared Passage purpose;
+- complete-assembly Transit geometry MUST support prospective Passage arrangement planning for the declared Passage purpose;
 - complete Physical Assembly membership is required for complete-assembly Passage geometry claims;
 - directional asymmetry and offsets MUST be preserved where supported by evidence;
 - generic positive physical-conflict evidence does not independently establish Passage clearance or contact; and
 - Situation foreseeability, Candidate support, mandatory Constraint evaluation and Decision remain separate upstream authorities.
 
 A compact representation MUST NOT be used to make a currently deployed productive corridor artificially narrow for Passage recognition.
+
+> **Working Geometry Recognises Passage; Transit Geometry Executes Passage.**
+
+Working geometry establishes that the Passage problem exists. Transit geometry establishes whether a Passage arrangement can be planned and, once physically realised, executed. Cooperative Passage has no supported full-width/working-configuration execution mode.
 
 ### Passage Candidate product
 
@@ -43,7 +47,7 @@ As applicable, the semantic product includes:
 - required Passage clearance and represented non-contact support;
 - Development burden and required downstream reserve;
 - entry/capture boundary evidence;
-- required configuration plan where compact/Transit realisation is needed;
+- the required Transit configuration plan for both participants;
 - Passage guide semantics sufficient to express the intended physical choreography; and
 - any third-party occupancy/protection facts that constrain commitment.
 
@@ -137,11 +141,11 @@ Fresh hard-safety evidence about the former participant's continuing occupancy t
 
 Passage commitment does not freeze execution geometry.
 
-Before physical Passage movement that depends on the retained arrangement begins after capture/configuration settlement, the implementation MUST return to **fresh Reality** and establish that the accepted Passage remains executable for the realised physical state.
+Before geometry-dependent physical Passage movement begins after capture, both participants MUST positively realise their required Transit configuration. The implementation MUST then return to **fresh Reality** and establish that the accepted Transit Passage remains executable for the realised physical state.
 
 The execution-validity question includes, as applicable:
 
-- realised compact/Transit geometry;
+- realised Transit geometry for both participants;
 - current natural separation and lateral relationship;
 - current clearance deficit;
 - Development burden;
@@ -200,7 +204,7 @@ After dissolution, fresh Situation Assessment determines any new responsibility 
 - **Passage recognition not positively supported** — no Passage Candidate authority.
 - **Complete-assembly purpose-specific geometry unavailable** — reject any Candidate requiring complete-assembly Passage authority; do not substitute subset completeness.
 - **Required reserve unavailable** — do not commit.
-- **Physical compact/Transit configuration not positively realised** — do not begin geometry-dependent Passage movement.
+- **Either participant's required Transit configuration not positively realised** — do not begin geometry-dependent Passage movement; there is no full-width/working-configuration Passage execution fallback.
 - **Execution arrangement no longer supported by fresh Reality** — reject/halt unsupported progression and require supported adaptation or failure handling; do not preserve stale guide authority.
 - **One participant's exact Job Episode authoritatively ends** — vacate only that Passage Leg, release its participant-scoped authority, preserve the survivor contract.
 - **Raw contradiction before semantic lifecycle resolution** — suspend unsupported new progression as needed for safety, but do not vacate a leg or dissolve the Bubble from raw evidence alone.
@@ -219,9 +223,11 @@ Cooperative Passage begins with exactly two original active GIANTS AI participan
 
 Passage geometry may prove Passage-specific conclusions only within its declared state, purpose and coverage. It does not acquire generic collision or negative-clearance authority.
 
-### Planned configuration is not realised configuration
+### Working recognition and Transit execution remain distinct
 
-Candidate planning may use supported prospective Transit geometry. Physical movement depending on that geometry requires fresh positive realised-state evidence.
+Working geometry establishes genuine Passage competition. Candidate planning uses supported prospective Transit geometry. After commitment/capture, physical Passage execution requires positive Transit realisation for both participants plus fresh realised-state evidence before geometry-dependent movement begins.
+
+> **Working Geometry Recognises Passage; Transit Geometry Executes Passage.**
 
 ### Stale guide assumptions have no independent authority
 
