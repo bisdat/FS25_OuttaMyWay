@@ -234,6 +234,8 @@ The current `ProspectivePortfolioDecisionPolicy` selects a support group from Ca
 
 [`tests/test_constraint_verdict_ownership_structure.py`](../tests/test_constraint_verdict_ownership_structure.py) challenges that mandatory verdict ownership remains outside Decision preference.
 
+[`tests/test_prospective_decision_ownership_structure.py`](../tests/test_prospective_decision_ownership_structure.py) is direct evidence of the current portfolio-selection implementation, including its deliberate `lowerPrecedenceConstraintFallback=false` contract. That test is **evidence of current implementation behaviour, not authority that the behaviour matches Architecture**.
+
 Additional replacement-core structural tests protect explicit non-intervention, exact identity binding and Responsibility Transition ordering where Decision products cross into lifecycle change.
 
 A targeted conformance test is required for **Support Precedence != Admissibility Bypass**: when one supported group's Candidates fail mandatory Constraints while another supported group contains an admissible Candidate, Decision must follow the accepted admissibility-aware compatibility contract rather than suppressing the admissible Candidate through source ordering alone.
