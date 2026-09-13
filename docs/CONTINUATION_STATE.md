@@ -37,18 +37,32 @@ A useful Continuation State should remain correct across unrelated merges. Its r
 
 Issue #141 is establishing durable authoring, ownership, topology and conformance standards for the repository's first-class engineering surfaces before those standards are adopted into root working governance or automated enforcement.
 
-The `/docs` reconciliation, Specification design and primary-Spec migration are complete enough to distinguish two responsibilities that had previously been conflated:
+The `/docs` reconciliation, Specification design, primary-Spec migration and root Architecture migration are complete enough to distinguish the durable semantic surfaces:
 
-- `/architecture` — current System Architecture: what OuttaMyWay should achieve, why its responsibilities exist, and which concepts, constraints and authority relationships govern them; and
+- `/architecture` — current System Architecture: what OuttaMyWay should achieve, why its responsibilities exist, and which concepts, constraints and authority relationships govern them;
+- `/spec` — implementation-facing contracts for declared Specification Jurisdictions;
+- `/scripts` — current production implementation mechanism; and
 - `/docs` — engineering knowledge and governance: method, continuation, standards, naming, validation methodology, engine knowledge, research/evidence routes and decision/journal records.
 
 > **Documentation Surface != Architecture Surface.**
 
-System Architecture occupies a first-class root `/architecture` surface alongside `/spec`, `/scripts` and `/tests`. This topology change does not change OuttaMyWay behavioural Architecture.
-
 Every currently implemented Specification Jurisdiction declared by accepted Architecture has one primary Specification. **Configuration** remains a Deferred Responsibility and correctly has no placeholder Specification.
 
-The repository requires tooling that protects objective relationships among Architecture, Specification, source and validation and detects drift. A generated implementation-reference system is not assumed to be that tooling; it must earn a separate responsibility if a demonstrated need emerges.
+`docs/DOCUMENT_STANDARDS.md` now defines the common standards authority for `/architecture`, `/spec` and `/scripts`, while the individual surface READMEs remain entrance/navigation surfaces rather than competing rulebooks.
+
+The accepted cross-surface rule is:
+
+> **Touch One; Validate Three.**
+
+Any proposed accepted change touching `/architecture`, `/spec` or `/scripts` must validate the other two Authority Triad surfaces. Validation does not require modification; unchanged surfaces may be explicitly dispositioned as still correct.
+
+Production source documentation assumes language competence and documents system meaning. Module-level traceability must survive the descent into source through concise explanation at semantic junctions, while self-evident mechanics do not require commentary.
+
+> **Assume Language Competence; Document System Meaning.**
+
+The repository still requires tooling that protects objective relationships among Architecture, Specification, source and validation and detects drift. Source-side traceability must eventually be machine-recognisable, but its concrete representation remains deliberately undecided until the tooling contract is established.
+
+A generated implementation-reference system is not assumed to be that tooling; it must earn a separate responsibility if a demonstrated need emerges.
 
 ## Accepted authority model
 
@@ -73,8 +87,6 @@ contract evidence
 
 Generated reference may expose source facts and traceability, but it does not acquire normative contract authority.
 
-The common Specification contract spine has survived materially different Jurisdiction shapes: lifecycle/context, evidence/representation, prospective selection, generic and specialised Resolution, semantic Regulation, current Bounded Authority and physical Control.
-
 Governing boundaries include:
 
 > **Specification Operationalises Architecture; It Does Not Paraphrase It.**
@@ -88,6 +100,10 @@ Governing boundaries include:
 > **Tests Are Contract Evidence, Not Contract Authority**
 
 > **Traceability Replaces Duplicated Authority.**
+
+> **Human-Readable Meaning; Machine-Readable Relationships.**
+
+> **Tooling Enforces Relationships; It Does Not Own Meaning.**
 
 All implemented primary Specifications are indexed by [`../spec/README.md`](../spec/README.md). Architecture remains authoritative for the complete Jurisdiction inventory.
 
@@ -192,25 +208,24 @@ The investigation must determine whether this is implementation/substrate drift 
 
 ## Immediate next bounded #141 engineering step
 
-After the Architecture surface migration is accepted, define the missing **production source-documentation standard** in `DOCUMENT_STANDARDS.md`.
+Perform the required **Stranded Live Knowledge** harvest for `docs/IMPLEMENTATION_MAP.md`.
 
-The standard should establish the minimum durable expectations for `/scripts` without selecting tooling prematurely:
+The Map is transitional and may not remain a shadow authority now that Architecture, Specification and production source responsibilities are explicit. Before deleting it:
 
-1. module responsibility and semantic boundary where names/source structure are insufficient;
-2. governing Specification traceability where the relationship is meaningful;
-3. non-obvious invariants, evidence limits, GIANTS/runtime constraints and failure/conservative semantics;
-4. explanation of *why / constraint / ownership* rather than paraphrase of obvious code;
-5. no duplication of Architecture or Specification authority; and
-6. no blanket requirement to document every private helper or implementation step.
+1. identify every piece of unique current knowledge still owned only by the Map;
+2. classify each item by its responsible durable surface — Architecture, Specification, source documentation or engineering governance;
+3. transfer only genuinely stranded current knowledge to the correct owner;
+4. avoid copying material already owned elsewhere merely to preserve familiar wording; and
+5. delete `docs/IMPLEMENTATION_MAP.md` only when no unique live responsibility remains stranded there.
 
-This is a standards activity first. No generated reference, manifest, annotation framework or CI checker is authorised merely by defining the source-documentation contract.
+This is a knowledge-ownership exercise, not a source refactor.
 
 ## Subsequent #141 boundaries
 
-After the source-documentation standard is explicit:
+After the Stranded Live Knowledge harvest:
 
-1. perform the required **Stranded Live Knowledge** harvest for `docs/IMPLEMENTATION_MAP.md`, transfer any unique current knowledge to its responsible Architecture, Specification, source or engineering-governance owner, and delete the transitional Map;
-2. define the contract for repository conformance tooling that protects objective `/architecture ↔ /spec ↔ /scripts` relationships and the applicable `/tests` evidence routes without claiming semantic authority;
+1. define the contract for repository conformance tooling that protects objective `/architecture ↔ /spec ↔ /scripts` relationships, Authority Triad disposition and applicable `/tests` evidence routes without claiming semantic authority;
+2. select the minimum source-side traceability representation required by that tooling contract, closing the bounded source-traceability adoption exception in `DOCUMENT_STANDARDS.md`;
 3. implement only the objective checks justified by that contract, including live breadcrumb/link integrity and durable traceability invariants;
 4. decide separately whether any generated reference product has demonstrated enough value to own a durable responsibility; and
 5. only after the standards and tooling survive application, update `AGENTS.md` and permanent CI/pre-commit governance.
