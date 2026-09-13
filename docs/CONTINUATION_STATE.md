@@ -66,35 +66,46 @@ A top-level `/docs` authority census also established that not every live docume
 
 The census exposed three important drift classes:
 
-1. **Current-State Authority Drift** — a document whose role is current state contains obsolete state. This file itself was the clearest example.
+1. **Current-State Authority Drift** — a document whose role is current state contains obsolete state.
 2. **Traceability Drift** — a correctly owned index or breadcrumb points to superseded headings or responsibility structure after Architecture reconciliation.
 3. **Placement Map -> Engineering History Leakage** — a current implementation-placement map accumulates build/PR chronology and stale implementation-detail links instead of remaining a truthful current map.
 
-The Continuation-State failure had a structural cause rather than merely missed maintenance: exact post-merge repository identity cannot be authored truthfully before the accepting merge exists. The maintenance contract above removes that self-invalidating responsibility.
+The Continuation-State failure had a structural cause rather than merely missed maintenance: exact post-merge repository identity cannot be authored truthfully before the accepting merge exists. Its maintenance contract now removes that self-invalidating responsibility.
+
+The current-index / traceability reconciliation has established another useful boundary:
+
+> **Concept Register != Jurisdiction Catalogue**
+
+The Concept Register remains a thin current-state index. Architecture owns the complete Specification Jurisdiction inventory; the register indexes a Jurisdiction name only when that name is also useful as a durable responsibility concept. Current Architecture links and names are repaired in the register rather than preserving old section numbering or pre-reconciliation concept shapes.
+
+The prospective-selection responsibilities **Candidate Support**, **Constraint Evaluation** and **Decision** now have current index coverage. Physical Representation index entries have been reconciled to the accepted Physical Identity Resolution / Assessment Representation architecture, including removal or renaming of concepts that were absorbed by the current model rather than preserving old labels as independent authority. The Architecture breadcrumb now names the current **Candidate Support, Constraint and Decision Architecture** subject.
 
 ## Immediate next bounded engineering step
 
-Perform the **current-index / traceability reconciliation** for `docs/CONCEPT_REGISTER.md` and directly affected navigation breadcrumbs only where the repair is inseparable.
+Reconcile `docs/IMPLEMENTATION_MAP.md` as a truthful current **Architecture-to-source placement and material-drift map**.
 
-The purpose of that increment is to restore truthful current links and concept ownership after the Architecture reconciliations, without turning the Concept Register into another Architecture definition surface.
+The document currently has a valid responsibility but mixes that responsibility with build/PR chronology, candidate-state prose, stale architecture links and implementation-detail inventories that are likely to move into future `/spec` or generated implementation reference.
 
-Expected questions include:
+The next increment should therefore ask:
 
-- which concept links now target retired pre-reconciliation headings;
-- whether any concept meaning has become stale rather than merely its link;
-- whether new Specification Jurisdiction names need thin index entries or whether existing responsibility concepts already provide sufficient navigation; and
-- which README breadcrumbs must change to reflect the reconciled architectural subject names.
+- what information is genuinely required to navigate from current architectural responsibility to current source placement;
+- what material architecture-to-code drift still deserves explicit current visibility;
+- which build, PR, Issue and migration chronology belongs in Git, the Engineering Journal or other evidence/history surfaces instead;
+- which stale Configuration and pre-reconciliation Architecture links must be repaired;
+- what placement information is likely to become generated `/spec -> /scripts` traceability later and therefore should not be polished into a permanent manually maintained truth surface; and
+- whether the Implementation Map should survive future `/spec` adoption in reduced form, be generated, or eventually retire once its responsibility has a stronger owner.
+
+The goal is not to redesign `/spec` prematurely. It is to make the current placement surface truthful enough to bridge into `/spec` design without preserving its historical leakage as a requirement.
 
 ## Subsequent #141 boundaries
 
-After the current-index / traceability reconciliation, the present sequence is:
+After the Implementation Map reconciliation, the present sequence is:
 
-1. reconcile `docs/IMPLEMENTATION_MAP.md` as a truthful current Architecture-to-source placement surface, while avoiding investment in material likely to be superseded by `/spec` traceability;
-2. reconcile `docs/TESTING_METHODOLOGY.md` so durable validation contracts remain while historical validation evidence returns to evidence/history surfaces;
-3. perform the bounded normative-language/conformance review of `docs/NAMING_CONVENTIONS.md`;
-4. then design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
-5. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain; and
-6. only after the model has survived those applications, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. reconcile `docs/TESTING_METHODOLOGY.md` so durable validation contracts remain while historical validation evidence returns to evidence/history surfaces;
+2. perform the bounded normative-language/conformance review of `docs/NAMING_CONVENTIONS.md`;
+3. design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
+4. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain; and
+5. only after the model has survived those applications, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
 
 This sequence remains evidence-led. If a reconciliation disproves the current standard or ordering, update the model rather than preserving the plan for its own sake.
 
