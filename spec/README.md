@@ -53,7 +53,10 @@ The currently migrated primary Specifications are:
 | --- | --- |
 | **Observation** | [`OBSERVATION.md`](OBSERVATION.md) |
 | **Responsibility Transition** | [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) |
+| **Resolution Lifecycle** | [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md) |
+| **Cooperative Passage** | [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) |
 | **Physical Identity Resolution** | [`PHYSICAL_IDENTITY_RESOLUTION.md`](PHYSICAL_IDENTITY_RESOLUTION.md) |
+| **Assessment Representation** | [`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) |
 
 All other currently implemented Specification Jurisdictions remain under the bounded **pending migration** exception until their primary Specifications are deliberately created and reciprocal Architecture routes are established. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
 
