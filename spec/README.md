@@ -51,7 +51,9 @@ The currently migrated primary Specifications are:
 
 | Specification Jurisdiction | Primary Specification |
 | --- | --- |
+| **Operation Lifecycle** | [`OPERATION_LIFECYCLE.md`](OPERATION_LIFECYCLE.md) |
 | **Observation** | [`OBSERVATION.md`](OBSERVATION.md) |
+| **Situation Assessment** | [`SITUATION_ASSESSMENT.md`](SITUATION_ASSESSMENT.md) |
 | **Responsibility Transition** | [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) |
 | **Resolution Lifecycle** | [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md) |
 | **Cooperative Passage** | [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) |
