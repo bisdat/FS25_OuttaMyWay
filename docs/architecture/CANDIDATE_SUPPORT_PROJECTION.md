@@ -28,7 +28,7 @@ Candidate Support must not preselect the winner. Constraint Evaluation must not 
 
 Candidate Support Projection, Candidate-support group, Prospective Decision Portfolio, Candidate Space and the Candidate-support-enriched Decision Picture are Concepts or products at these boundaries. They do not create additional Jurisdictions merely by being separately named.
 
-The primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md). Issue #141 owns the active repository migration.
+**Candidate Support** routes to [`../../spec/CANDIDATE_SUPPORT.md`](../../spec/CANDIDATE_SUPPORT.md), **Constraint Evaluation** to [`../../spec/CONSTRAINT_EVALUATION.md`](../../spec/CONSTRAINT_EVALUATION.md), and **Decision** to [`../../spec/DECISION.md`](../../spec/DECISION.md).
 
 ## 1. Cross-jurisdiction prospective-selection flow
 
@@ -84,7 +84,7 @@ Situation Assessment owns current semantic relationships. Candidate Support asks
 
 **Does not own:** current Situation classification, mandatory Constraint verdicts, cross-purpose preference, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/CANDIDATE_SUPPORT.md`](../../spec/CANDIDATE_SUPPORT.md)
 
 Candidate Support answers:
 
@@ -240,7 +240,7 @@ Historical completed-worker or Terminal-Egress provenance does not create a para
 
 **Does not own:** Candidate construction, Situation interpretation, preference, winner selection, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/CONSTRAINT_EVALUATION.md`](../../spec/CONSTRAINT_EVALUATION.md)
 
 Constraint Evaluation answers:
 
@@ -264,7 +264,7 @@ Constraint Evaluation may reject, narrow or admit. It does not select the winner
 
 **Does not own:** current Situation classification, Candidate construction, support provenance, mandatory constraint meaning, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/DECISION.md`](../../spec/DECISION.md)
 
 Decision answers:
 

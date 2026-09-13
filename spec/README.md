@@ -57,6 +57,9 @@ The currently migrated primary Specifications are:
 | **Cooperative Passage** | [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) |
 | **Physical Identity Resolution** | [`PHYSICAL_IDENTITY_RESOLUTION.md`](PHYSICAL_IDENTITY_RESOLUTION.md) |
 | **Assessment Representation** | [`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) |
+| **Candidate Support** | [`CANDIDATE_SUPPORT.md`](CANDIDATE_SUPPORT.md) |
+| **Constraint Evaluation** | [`CONSTRAINT_EVALUATION.md`](CONSTRAINT_EVALUATION.md) |
+| **Decision** | [`DECISION.md`](DECISION.md) |
 
 All other currently implemented Specification Jurisdictions remain under the bounded **pending migration** exception until their primary Specifications are deliberately created and reciprocal Architecture routes are established. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
 
