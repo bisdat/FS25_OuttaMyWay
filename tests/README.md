@@ -8,6 +8,8 @@ This directory describes the executable offline validation mechanisms and fixtur
 tests/
 ├── README.md
 ├── test_*_structure.py
+├── source_reference_prototype.py
+├── source_reference_prototype_manifest.json
 ├── replacement_core/
 │   ├── README.md
 │   └── run.lua
@@ -20,6 +22,16 @@ tests/
 Responsibility-named `test_*_structure.py` modules validate repository and source contracts: module placement, loading and dependencies; selected forbidden paths, literals and authority boundaries; and legitimate dependencies on live Research evidence. Test module names describe the durable contract they protect rather than the engineering phase, Issue or migration that introduced them.
 
 `pytest` runs this suite in GitHub Actions and may also be used locally. These assertions do not prove GIANTS runtime behaviour.
+
+### Source-reference prototype
+
+Issue #141 currently includes one explicitly temporary validation-machinery experiment:
+
+- `source_reference_prototype_manifest.json` is bounded prototype metadata standing in for a future colocated source annotation contract;
+- `source_reference_prototype.py` verifies those declarations against real source/Spec paths and emits deterministic non-normative reference; and
+- `test_source_reference_prototype_structure.py` checks that the committed prototype output is current.
+
+The experiment is evidence, not permanent tooling authority. Its design record lives at [`docs/research/prototypes/PROTOTYPE_35_SOURCE_DOCUMENTATION_TRACEABILITY.md`](../docs/research/prototypes/PROTOTYPE_35_SOURCE_DOCUMENTATION_TRACEABILITY.md). If a later source-annotation model supersedes the manifest, the temporary fixture should be removed rather than preserved as historical topology.
 
 ## Lua offline conformance and behavioural harness
 
