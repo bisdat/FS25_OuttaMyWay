@@ -304,7 +304,7 @@ Offline tests can challenge semantic lifecycle and deterministic geometry contra
 
 In-game validation is required for capture timing, configuration settlement, actual Passage clearance, execution-validity refresh, third-worker interaction, GIANTS handback and participant-loss behaviour.
 
-Issue #116 remains the current unresolved Reality investigation for **Crossing-Window Jam Without Failure Recognition** and stale arrangement evidence. It is validation evidence/work ownership, not Specification authority. This Specification makes the governing execution-validity contract explicit; it does not claim that the current source already satisfies that contract.
+Targeted Reality validation must specifically challenge post-configuration arrangement revalidation, crossing-window progress/failure recognition, stale-guide contradiction, and the distinction between execution-origin rebasing and arrangement validity. Unresolved investigations and evidence history remain owned by Issues and engineering-evidence surfaces rather than this Specification.
 
 ### Outside this Specification's validation claim
 
