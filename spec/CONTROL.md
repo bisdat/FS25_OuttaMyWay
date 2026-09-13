@@ -3,7 +3,7 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Control  
-**Primary Architecture Authority:** [`docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#11-specification-jurisdiction--control)
+**Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#11-specification-jurisdiction--control)
 
 This Specification owns the implementation-facing contract for **physical realisation of an already-authorised request through supported GIANTS/runtime mechanisms**, including physical feasibility checks, bounded execution, safe refusal/stop/cleanup and reporting of physical outcomes.
 

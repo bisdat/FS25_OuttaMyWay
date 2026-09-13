@@ -4,7 +4,7 @@
 
 **Specification Jurisdiction:** Obstruction Relocation  
 **Parent Jurisdiction:** [`Resolution Lifecycle`](RESOLUTION_LIFECYCLE.md)  
-**Primary Architecture Authority:** [`docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#8-specification-jurisdiction--obstruction-relocation)
+**Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#8-specification-jurisdiction--obstruction-relocation)
 
 This Specification owns the implementation-facing contract for the specialised **Resolution Commitment** that removes a positively established **Causal Obstruction** when the blocker is currently non-active, unclaimed and otherwise supportable for bounded relocation.
 

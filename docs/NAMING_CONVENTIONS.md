@@ -54,7 +54,7 @@ Representation**, **Candidate Support**, **Constraint Evaluation** and
 
 This list is illustrative, not a second vocabulary catalogue. The architecture
 documents own definitions and relationships. The [Concept Register](CONCEPT_REGISTER.md)
-and [Architecture](architecture/README.md) provide current discovery routes when
+and [Architecture](../architecture/README.md) provide current discovery routes when
 a term's authority is uncertain.
 
 Historical decision identifiers such as `D-0146` are provenance, not current
@@ -250,7 +250,7 @@ whether a value is genuinely system-wide; this Naming standard does not create
 that authority.
 
 These conventions do not redesign `scripts/config.lua` or duplicate the
-[Configuration architecture](CONFIGURATION.md).
+[Configuration architecture](../architecture/CONFIGURATION.md).
 
 ## Historical provenance
 

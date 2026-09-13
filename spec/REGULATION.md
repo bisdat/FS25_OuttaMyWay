@@ -3,7 +3,7 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Regulation  
-**Primary Architecture Authority:** [`docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#specification-jurisdiction--regulation)
+**Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#specification-jurisdiction--regulation)
 
 This Specification owns the implementation-facing contract for a current **Regulation** responsibility: bounded temporal coordination of otherwise GIANTS-owned progression while GIANTS retains productive routing.
 

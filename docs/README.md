@@ -1,8 +1,9 @@
 # Engineering documentation — Start here
 
-This directory is the live entrance to OuttaMyWay's engineering knowledge.
-Each route below states the responsibility of a direct child. The archive is
-intentionally absent under the Archive Navigation Exemption.
+This directory is the live entrance to OuttaMyWay's engineering knowledge and governance.
+System Architecture is a separate first-class root surface under [`/architecture`](../architecture/README.md); `/docs` must not be used as a synonym for Architecture.
+Each route below states the responsibility of a live engineering record or surface.
+The archive is intentionally absent under the Archive Navigation Exemption.
 
 ## How to use this map
 
@@ -21,7 +22,7 @@ observation is classified as new.
 
 ## Project direction and engineering state
 
-- [Project Vision](PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity, scope, and product-level direction.
+- [Project Vision](../architecture/PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity, scope, and product-level direction.
 - [Engineering Architecture](ENGINEERING_ARCHITECTURE.md) — engineering method, repository authority, knowledge governance, and canonicalisation.
 - [Current Concept Register](CONCEPT_REGISTER.md) — thin index of accepted, deferred, and rejected current concepts.
 - [Continuation State](CONTINUATION_STATE.md) — replace-in-place current concern, established understanding, and next engineering boundary.
@@ -39,12 +40,12 @@ observation is classified as new.
 
 ## System knowledge
 
-- [Architecture](architecture/README.md) — what the system should achieve and which responsibilities and concepts exist.
-- [Specification](../spec/README.md) — implementation-facing contract standard and, as Jurisdictions migrate, the primary contracts between Architecture and source.
-- [Implementation Map](IMPLEMENTATION_MAP.md) — transitional placement/navigation surface retained until Specification and source/generated traceability replace its legitimate role.
+- [Architecture](../architecture/README.md) — what the system should achieve and which responsibilities and concepts exist.
+- [Specification](../spec/README.md) — implementation-facing contract standard and the primary contracts between Architecture and source.
+- [Implementation Map](IMPLEMENTATION_MAP.md) — transitional placement/navigation surface retained until Specification and source traceability replace its legitimate role.
 - [Engine Knowledge](engine/README.md) — reusable observed FS25/GIANTS runtime behaviour, API surfaces, and semantic limits.
-- [Configuration](CONFIGURATION.md) — supported player-choice and consent surface, admission rules, defaults, persistence, and authority boundaries.
-- [GUI](GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
+- [Configuration](../architecture/CONFIGURATION.md) — supported player-choice and consent surface, admission rules, defaults, persistence, and authority boundaries.
+- [GUI](../architecture/GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
 
 The live root does not link `archive/`; archived material has no current
 authority and remains bounded recovery/harvesting material until deletion is

@@ -19,7 +19,7 @@ def test_repository_context_bootstrap_routes_current_responsibilities():
         "docs/README.md",
         "docs/ENGINEERING_ARCHITECTURE.md",
         "docs/CONTINUATION_STATE.md",
-        "docs/architecture/README.md",
+        "architecture/README.md",
         "docs/engine/README.md",
         "docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md",
         "docs/IMPLEMENTATION_MAP.md",

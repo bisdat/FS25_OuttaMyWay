@@ -76,15 +76,15 @@ task-relevant responsibility routes
 
 Follow the responsibility routes that can materially affect the question:
 
-- runtime/system semantics → `docs/architecture/README.md`, then
-  `docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and applicable
+- runtime/system semantics → root `architecture/README.md`, then
+  `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and applicable
   specialised architecture;
 - GIANTS/FS25 runtime behaviour or API assumptions → `docs/engine/README.md`,
   then `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` and
   `docs/engine/GIANTS_API_SURFACES.md` where applicable;
 - current implementation placement or strangler state →
   `docs/IMPLEMENTATION_MAP.md`;
-- Configuration or mixed runtime constants → `docs/CONFIGURATION.md`;
+- Configuration or mixed runtime constants → `architecture/CONFIGURATION.md`;
 - names, vocabulary, identifiers, or new durable terminology →
   `docs/NAMING_CONVENTIONS.md`;
 - validation, regression, fixtures, or evidence strength →
@@ -140,8 +140,8 @@ classifying the observation as NEW.
 ## Current architectural authority
 
 For runtime/system behaviour, the Repository Context Bootstrap must traverse
-`docs/architecture/README.md`,
-`docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, the applicable
+`architecture/README.md`,
+`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, the applicable
 specialised architecture and current Continuation State before implementation.
 Treat historical documents as evidence/provenance where they conflict with
 current accepted architecture.
@@ -179,7 +179,7 @@ misleading.
 
 ## Configuration authority
 
-`docs/CONFIGURATION.md` is the authoritative Configuration architecture. Read
+`architecture/CONFIGURATION.md` is the authoritative Configuration architecture. Read
 and follow it before changing player Configuration or the mixed runtime constants
 surface currently implemented in `scripts/config.lua`.
 
@@ -189,7 +189,7 @@ Protect document responsibilities so documentation does not become another chang
 
 - root `README`/`README.md`: concise project explanation and navigation;
 - `docs/README.md`: engineering start-here map;
-- architecture documents: current system responsibilities and concepts;
+- root `/architecture`: current system responsibilities and concepts;
 - decision records/log: durable decisions and rationale;
 - engineering journal/research: observations, discoveries, failed hypotheses and evolution;
 - `docs/CONTINUATION_STATE.md`: current, replace-in-place engineering continuation point;

@@ -35,13 +35,20 @@ A useful Continuation State should remain correct across unrelated merges. Its r
 
 ## Current engineering concern — Issue #141
 
-Issue #141 is establishing durable authoring, ownership and traceability standards across `/docs`, `/spec` and `/scripts` before those standards are adopted into root working governance or automated enforcement.
+Issue #141 is establishing durable authoring, ownership, topology and conformance standards for the repository's first-class engineering surfaces before those standards are adopted into root working governance or automated enforcement.
 
-The `/docs` reconciliation, Specification design and primary-Spec migration phases are now complete enough to move the falsification boundary down one layer.
+The `/docs` reconciliation, Specification design and primary-Spec migration are complete enough to distinguish two responsibilities that had previously been conflated:
 
-Every currently implemented Specification Jurisdiction declared by accepted Architecture now has one primary Specification. **Configuration** remains a Deferred Responsibility and correctly has no placeholder Specification.
+- `/architecture` — current System Architecture: what OuttaMyWay should achieve, why its responsibilities exist, and which concepts, constraints and authority relationships govern them; and
+- `/docs` — engineering knowledge and governance: method, continuation, standards, naming, validation methodology, engine knowledge, research/evidence routes and decision/journal records.
 
-The bounded `pending migration` exception is therefore no longer needed for implemented runtime responsibilities. The next #141 question is whether the accepted source-documentation model and generated-reference/traceability design can represent the implementation **without turning source topology or generated output into normative authority**.
+> **Documentation Surface != Architecture Surface.**
+
+System Architecture occupies a first-class root `/architecture` surface alongside `/spec`, `/scripts` and `/tests`. This topology change does not change OuttaMyWay behavioural Architecture.
+
+Every currently implemented Specification Jurisdiction declared by accepted Architecture has one primary Specification. **Configuration** remains a Deferred Responsibility and correctly has no placeholder Specification.
+
+The repository requires tooling that protects objective relationships among Architecture, Specification, source and validation and detects drift. A generated implementation-reference system is not assumed to be that tooling; it must earn a separate responsibility if a demonstrated need emerges.
 
 ## Accepted authority model
 
@@ -185,47 +192,34 @@ The investigation must determine whether this is implementation/substrate drift 
 
 ## Immediate next bounded #141 engineering step
 
-Prototype **source documentation + generated implementation reference** against representative current modules.
+After the Architecture surface migration is accepted, define the missing **production source-documentation standard** in `DOCUMENT_STANDARDS.md`.
 
-This is a contract-design experiment, not a mass-commenting exercise and not yet a CI-enforcement tranche.
+The standard should establish the minimum durable expectations for `/scripts` without selecting tooling prematurely:
 
-The experiment should answer four questions:
+1. module responsibility and semantic boundary where names/source structure are insufficient;
+2. governing Specification traceability where the relationship is meaningful;
+3. non-obvious invariants, evidence limits, GIANTS/runtime constraints and failure/conservative semantics;
+4. explanation of *why / constraint / ownership* rather than paraphrase of obvious code;
+5. no duplication of Architecture or Specification authority; and
+6. no blanket requirement to document every private helper or implementation step.
 
-1. **What must authored source documentation own?**  
-   It should identify module responsibility, semantic boundary, governing primary Specification and non-obvious mechanisms needed to preserve that contract, without copying Architecture or Spec prose.
-
-2. **What should generated reference own?**  
-   It should expose deterministic source facts such as modules, public contracts, declared Spec relationships and machine-readable traceability, without becoming normative meaning.
-
-3. **Which source boundaries require documentation?**  
-   Public interfaces nearly always do. Private helpers require explanation when they establish, transform, validate, terminate or otherwise carry important semantic authority, or when their mechanism would be misleading without explanation.
-
-4. **Can the model survive different source shapes?**  
-   Test it on at least one semantic producer and one physical/control-oriented module, with a low-semantic-authority module as a negative comparison. Do not infer a one-module/one-Spec mapping where the implementation legitimately crosses neighbouring contracts.
-
-The standing principles are:
-
-> **Code Documentation Is Colocated Explanation, Not System Authority.**
-
-> **Semantic Boundary Requires Documentation.**
-
-> **Contract Semantics Must Survive Mechanism Replacement.**
-
-The toolchain remains an implementation choice to be tested against these requirements. Do not select LDoc, LuaLS/LuaCATS or another format merely because it is convenient to generate.
+This is a standards activity first. No generated reference, manifest, annotation framework or CI checker is authorised merely by defining the source-documentation contract.
 
 ## Subsequent #141 boundaries
 
-If the source-documentation/reference prototype survives application:
+After the source-documentation standard is explicit:
 
-1. define the smallest durable source annotation convention and generated-reference contract;
-2. establish deterministic **Architecture -> Specification -> source -> tests** traceability, including a machine-readable representation suitable for checking;
-3. design one cheap deterministic contract checker that can run locally and independently in CI without making CI the semantic authority;
-4. once `/spec` plus source/generated traceability replaces the legitimate placement/navigation role, perform a **Stranded Live Knowledge** harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating bootstrap/navigation/governance references atomically; and
-5. only after these models have survived real application, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. perform the required **Stranded Live Knowledge** harvest for `docs/IMPLEMENTATION_MAP.md`, transfer any unique current knowledge to its responsible Architecture, Specification, source or engineering-governance owner, and delete the transitional Map;
+2. define the contract for repository conformance tooling that protects objective `/architecture ↔ /spec ↔ /scripts` relationships and the applicable `/tests` evidence routes without claiming semantic authority;
+3. implement only the objective checks justified by that contract, including live breadcrumb/link integrity and durable traceability invariants;
+4. decide separately whether any generated reference product has demonstrated enough value to own a durable responsibility; and
+5. only after the standards and tooling survive application, update `AGENTS.md` and permanent CI/pre-commit governance.
 
-Do not update `AGENTS.md` merely because primary Specification migration is complete. **Adoption follows validation.**
+> **Tooling Enforces Relationships; It Does Not Own Meaning.**
 
-This sequence remains evidence-led. If source-tooling work or later Reality disproves the current standards, Specification model or Jurisdiction boundaries, update those authorities rather than preserving the programme for its own sake.
+> **Adoption follows validation.**
+
+If tooling or later Reality disproves the standards, Specification model or Jurisdiction boundaries, update those authorities rather than preserving the programme for its own sake.
 
 ## Separate adjacent responsibilities
 

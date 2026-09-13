@@ -14,7 +14,7 @@ This document defines the current accepted Configuration responsibility and its 
 
 Configuration is therefore a recognised Deferred Responsibility under the repository documentation standard. No primary `/spec` exists yet, and an empty or speculative Specification must not be created merely for symmetry. A Configuration Specification becomes appropriate only when the unresolved runtime contract has been established sufficiently to state a truthful implementation-facing contract.
 
-The [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](LOCALISATION.md) owns user-facing localisation policy.
+The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
 
 ## Specification Jurisdiction
 

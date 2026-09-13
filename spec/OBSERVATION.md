@@ -3,7 +3,7 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Observation  
-**Primary Architecture Authority:** [`docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#4-specification-jurisdiction--observation)
+**Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#4-specification-jurisdiction--observation)
 
 This Specification owns the implementation-facing contract by which current evidence from Reality is acquired, identified, bounded, preserved and published for downstream interpretation.
 

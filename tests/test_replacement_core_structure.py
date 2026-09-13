@@ -490,7 +490,7 @@ def test_issue100_current_pair_assessment_scope_replaces_persistent_encounter_hi
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     picture=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"architecture"/"SPATIAL_NEGOTIATION_MODEL.md").read_text(encoding="utf-8")
+    architecture=(ROOT/"architecture"/"SPATIAL_NEGOTIATION_MODEL.md").read_text(encoding="utf-8")
     assert "scripts/assessment/CurrentPairAssessmentScope.lua" in main
     assert "scripts/assessment/EncounterRegistry.lua" not in main
     assert not (ROOT/"scripts"/"assessment"/"EncounterRegistry.lua").exists()
