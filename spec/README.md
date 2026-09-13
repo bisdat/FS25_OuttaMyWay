@@ -55,6 +55,7 @@ The currently migrated primary Specifications are:
 | **Observation** | [`OBSERVATION.md`](OBSERVATION.md) |
 | **Situation Assessment** | [`SITUATION_ASSESSMENT.md`](SITUATION_ASSESSMENT.md) |
 | **Responsibility Transition** | [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) |
+| **Regulation** | [`REGULATION.md`](REGULATION.md) |
 | **Resolution Lifecycle** | [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md) |
 | **Cooperative Passage** | [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) |
 | **Physical Identity Resolution** | [`PHYSICAL_IDENTITY_RESOLUTION.md`](PHYSICAL_IDENTITY_RESOLUTION.md) |
@@ -62,8 +63,10 @@ The currently migrated primary Specifications are:
 | **Candidate Support** | [`CANDIDATE_SUPPORT.md`](CANDIDATE_SUPPORT.md) |
 | **Constraint Evaluation** | [`CONSTRAINT_EVALUATION.md`](CONSTRAINT_EVALUATION.md) |
 | **Decision** | [`DECISION.md`](DECISION.md) |
+| **Bounded Authority** | [`BOUNDED_AUTHORITY.md`](BOUNDED_AUTHORITY.md) |
+| **Control** | [`CONTROL.md`](CONTROL.md) |
 
-All other currently implemented Specification Jurisdictions remain under the bounded **pending migration** exception until their primary Specifications are deliberately created and reciprocal Architecture routes are established. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
+**Obstruction Relocation** is the only currently implemented Specification Jurisdiction still under the bounded **pending migration** exception until its primary Specification and reciprocal Architecture route are deliberately created. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
 
 This index is navigation, not a second Jurisdiction catalogue. Architecture remains authoritative for the complete Jurisdiction inventory and ownership relationships.
 
