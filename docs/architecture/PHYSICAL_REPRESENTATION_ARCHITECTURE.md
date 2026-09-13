@@ -25,7 +25,7 @@ Physical Identity Resolution may support Assessment Representation, but identity
 
 Planar Collision Semantics, Purpose-Scoped Geometry Authority, Coverage Closure, Configuration Footprint Authority, Representation Passport, Deployment Sweep, Manoeuvre Sweep and related terms are Concepts, Evidence Rules, Constraints or lifecycle elements inside these Jurisdictions. They do not create additional Specification Jurisdictions merely by being separately named.
 
-The primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md). Issue #141 owns the active repository migration.
+**Physical Identity Resolution** now routes to its primary Specification at [`../../spec/PHYSICAL_IDENTITY_RESOLUTION.md`](../../spec/PHYSICAL_IDENTITY_RESOLUTION.md). **Assessment Representation** remains **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining migration.
 
 ## 1. Cross-jurisdiction representation flow
 
@@ -111,7 +111,7 @@ Total width must not be assumed to be symmetrically centred on the powered vehic
 
 **Does not own:** Physical Assembly inventory closure, occupancy coverage closure, Situation meaning, Regulation, Resolution Commitment, Bounded Authority or Control.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/PHYSICAL_IDENTITY_RESOLUTION.md`](../../spec/PHYSICAL_IDENTITY_RESOLUTION.md)
 
 Physical Identity Resolution answers:
 
