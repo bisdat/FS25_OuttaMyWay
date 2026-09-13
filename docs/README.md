@@ -9,9 +9,10 @@ intentionally absent under the Archive Navigation Exemption.
 Root `../AGENTS.md` requires substantive engineering work to enter through this
 map after reading the root working rules. Establish current engineering governance
 and continuation first, then follow only the responsibility routes relevant to
-the task. Runtime work normally continues through Architecture; GIANTS/FS25
-behaviour or API assumptions continue through Engine Knowledge; validation work
-continues through Testing Methodology and `/tests`.
+the task. Runtime semantic work normally continues through Architecture;
+implementation-contract work continues through [`/spec`](../spec/README.md);
+GIANTS/FS25 behaviour or API assumptions continue through Engine Knowledge;
+validation work continues through Testing Methodology and `/tests`.
 
 Current documentation establishes present responsibility. When an observation
 may already be known, the root **Relevant Knowledge Sweep** additionally searches
@@ -39,7 +40,8 @@ observation is classified as new.
 ## System knowledge
 
 - [Architecture](architecture/README.md) — what the system should achieve and which responsibilities and concepts exist.
-- [Implementation Map](IMPLEMENTATION_MAP.md) — where accepted architectural responsibilities presently appear in source and where placement or vocabulary lags.
+- [Specification](../spec/README.md) — implementation-facing contract standard and, as Jurisdictions migrate, the primary contracts between Architecture and source.
+- [Implementation Map](IMPLEMENTATION_MAP.md) — transitional placement/navigation surface retained until Specification and source/generated traceability replace its legitimate role.
 - [Engine Knowledge](engine/README.md) — reusable observed FS25/GIANTS runtime behaviour, API surfaces, and semantic limits.
 - [Configuration](CONFIGURATION.md) — supported player-choice and consent surface, admission rules, defaults, persistence, and authority boundaries.
 - [GUI](GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
