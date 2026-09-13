@@ -37,9 +37,11 @@ A useful Continuation State should remain correct across unrelated merges. Its r
 
 Issue #141 is establishing durable authoring, ownership and traceability standards across `/docs`, `/spec` and `/scripts` before those standards are adopted into root working governance or automated enforcement.
 
-The `/docs` reconciliation and Specification-design phases are complete. Four bounded Specification tranches have now exercised materially different responsibility shapes: heterogeneous standalone Jurisdictions, explicit parent/child dependencies, a tightly coupled prospective-selection peer chain, and the upstream **Operation Lifecycle → Situation Assessment** semantic handoff.
+The `/docs` reconciliation and Specification-design phases are complete. The common Specification model has now survived five materially different application shapes, including the vertical **Regulation → Bounded Authority → Control** chain from semantic responsibility through physical permission to physical execution.
 
-The current evidence increasingly supports the Specification model. The next useful falsification boundary is the vertical physical-authority chain **Regulation → Bounded Authority → Control**. Source-documentation conventions, generated reference and CI/pre-commit enforcement remain downstream until primary-Spec migration provides sufficiently broad representative source boundaries.
+Primary Specifications now cover fourteen implemented Jurisdictions. **Obstruction Relocation** is the only currently implemented Specification Jurisdiction still under the bounded `pending migration` exception. Configuration remains a Deferred Responsibility and correctly has no placeholder Specification.
+
+The immediate work therefore remains Specification migration, but only for the final specialised Resolution Jurisdiction. Source-documentation conventions, generated reference and CI/pre-commit enforcement remain downstream until that last implemented contract has been tested against the common model.
 
 ## Accepted understanding
 
@@ -62,7 +64,7 @@ The common Specification contract spine remains:
 
 Lifecycle/ordered-flow and semantic-data-contract sections remain conditional on the Jurisdiction actually owning those semantics.
 
-Governing authoring boundaries include:
+Governing authoring boundaries continue to include:
 
 > **Specification Operationalises Architecture; It Does Not Paraphrase It.**
 
@@ -74,129 +76,183 @@ Governing authoring boundaries include:
 
 > **Tests Are Contract Evidence, Not Contract Authority**
 
-Primary Specifications now cover eleven implemented Jurisdictions:
+Primary Specifications now cover:
 
 - Operation Lifecycle;
 - Observation;
 - Situation Assessment;
 - Responsibility Transition;
+- Regulation;
 - Resolution Lifecycle;
 - Cooperative Passage;
 - Physical Identity Resolution;
 - Assessment Representation;
 - Candidate Support;
-- Constraint Evaluation; and
-- Decision.
+- Constraint Evaluation;
+- Decision;
+- Bounded Authority; and
+- Control.
 
-The remaining implemented runtime Jurisdictions are Regulation, Obstruction Relocation, Bounded Authority and Control. Configuration remains a Deferred Responsibility and correctly has no placeholder Spec.
+## Regulation → Bounded Authority → Control boundary
 
-## Operation Lifecycle and Situation Assessment boundary
-
-The latest tranche confirms that lifecycle/context authority and current semantic interpretation remain separate responsibilities.
-
-**Operation Lifecycle** owns exact Job Episode identity, positive termination/succession, Field World admission, productive-commencement-gated Local Operation participation, dynamic membership and natural closure.
-
-**Situation Assessment** consumes those lifecycle facts together with current Observation and representation evidence to publish current semantic meaning in the Operational Picture. It may identify current relationships, uncertainty, representation fitness for the current question, physical relevance and Causal Obstruction, but it cannot create or rewrite lifecycle truth.
-
-The tranche names:
-
-> **Semantic Interpretation != Lifecycle Authority.**
-
-> **Operational Membership != Spatial Relevance.**
-
-A same-Field active GIANTS worker whose productive commencement is not yet positively witnessed may be physically/Situation-relevant and may constrain Resolution Space while still remaining `operationMember = false`. Conversely, a completed or otherwise non-member physical assembly may remain spatially relevant without remaining a cooperative participant.
-
-The tranche also sharpens Lifecycle Evidence Asymmetry:
-
-> **Lifecycle Certainty and Observation Completeness Are Orthogonal.**
-
-> **Positive Termination != Missing-Membership Evidence.**
-
-Incomplete membership evidence prevents removal **by absence**. It does not erase a separately positive member-specific lifecycle fact. A positively terminated exact Job Episode no longer supports active Local Operation participation merely because another member's evidence is unresolved.
-
-This is an implementation-facing consequence of already accepted Architecture, not a new timeout/grace-period model.
-
-## Separate conformance questions exposed by Specification work
-
-Specification migration is deliberately allowed to expose implementation/test drift without absorbing that drift into the normative contract.
-
-### Prospective portfolio admissibility
-
-The prospective-selection tranche established:
-
-> **Support Precedence != Admissibility Bypass**
-
-Current portfolio source/test behaviour can select a preferred support group before group-local mandatory admissibility is known and intentionally avoids lower-precedence fallback. Accepted Architecture instead defines Decision over supported, constraint-admissible alternatives unless a stronger exclusion relationship is explicitly owned. That investigation remains separate from Specification migration.
-
-### Mixed lifecycle evidence
-
-The Operation Lifecycle tranche exposed a mixed-evidence edge case: `JobEpisodeAdmission` can positively terminate one member while `OperationAdmission` receives an otherwise incomplete Field World membership sample because another member remains unresolved. Current incomplete-membership merging can preserve the ended assembly in `memberAssemblyIds` even though its active Job Episode has disappeared from `memberJobEpisodeIds`.
-
-The ordinary single-completion path does not exhibit this because positive end evidence normally leaves that membership sample complete. The unresolved question is specifically whether group-wide incompleteness is currently applied too coarsely when one exact member has independent positive terminal evidence.
-
-No runtime or test change is justified from source inspection alone. The next investigation for this debt is a controlled offline fixture with independent positive termination and unrelated membership uncertainty, followed by architectural classification before implementation.
-
-These conformance questions do not silently alter their governing Specifications. If evidence disproves Architecture, Architecture and the affected Specs must be updated first.
-
-## Immediate next bounded #141 engineering step
-
-Apply the Specification model to the vertical physical-authority chain:
-
-1. **Regulation** — bounded temporal coordination while GIANTS retains productive routing;
-2. **Bounded Authority** — current physical permission derived from Current Responsibility and fresh Reality; and
-3. **Control** — physical realisation of an already-authorised request through supported GIANTS mechanisms.
-
-This tranche should test whether the three layers remain semantically distinct even where current source paths are tightly integrated:
+The latest tranche confirms that the physical-authority chain remains three distinct responsibilities rather than one generic actuation subsystem.
 
 ```text
-Situation Assessment / Responsibility Transition
-        |
-        v
-Regulation
-why temporal intervention persists
+Current Regulation responsibility
+why temporal coordination persists
         |
         v
 Bounded Authority
-what physical action is permitted now
+what positive physical effect is permitted now
         |
         v
 Control
-how the permitted action is realised
+how that bounded effect is physically realised
         |
         v
 Reality -> Observation
 ```
 
-The tranche must preserve these established boundaries:
+### Regulation
 
-- Regulation changes timing, not productive route;
-- Regulation remains successor-agnostic but not future-blind;
-- `WAITING_FOR_EVIDENCE` is bounded evidence-state continuity, not a generic lifecycle state;
-- exact 1 km/h policies remain purpose-bound architectural policies where applicable, not universal Control calibration;
-- Current Responsibility continuity may coexist with Bounded Authority discontinuity;
-- mechanical exclusivity/leases do not create semantic permission;
-- Bounded Authority may narrow or end but never enlarge upstream strategic authority;
-- Control may discover physical feasibility but may not invent strategic purpose; and
-- Control outcomes return through Reality/Observation rather than self-certifying semantic success.
+Regulation owns bounded temporal coordination while GIANTS retains productive routing. It does not own the controlled physical magnitude or the mechanism that realises it.
 
-If source review reveals that a current Control helper, lease/token mechanism or Regulation adapter is carrying semantic authority beyond these boundaries, record that as conformance evidence rather than defining the Spec around the mechanism.
+The tranche names:
+
+> **Regulation Responsibility != `REGULATE_SPEED` Capability.**
+
+A speed-limiting physical effect does not prove that semantic Current Responsibility is Regulation. Another Current Responsibility may legitimately require a bounded supporting temporal effect. Conversely, a Regulation responsibility may remain current while no physical speed lease is active.
+
+> **Responsibility Persistence != Actuation Persistence.**
+
+The same Regulation identity may survive magnitude refresh, Bounded Authority replacement, physical quiescence and later reactivation. Those are maintenance unless Responsibility Transition establishes a genuine semantic lifecycle change.
+
+### Bounded Authority
+
+Bounded Authority owns current positive physical permission derived from Current Responsibility and current accepted evidence. The common grant registry is only one implementation substrate; purpose-specific authority policy also belongs to this Jurisdiction.
+
+The tranche names:
+
+> **Actuation Token != Bounded Authority Grant.**
+
+A commitment token, capability reservation, mechanical lease or retained handle may be necessary substrate, but none independently proves that a physical effect is permitted now.
+
+> **Positive Physical Actuation Requires Positive Bounded Authority.**
+
+Positive OuttaMyWay actuation must be explicitly bounded for the current responsibility, subject, capability and validity context. Novel vocabulary or executor placement must not manufacture an implicit bypass.
+
+> **Relinquishment Is Authority-Narrowing, Not Authority Creation.**
+
+Fail-safe cleanup may clear, neutralise or release already-owned physical effects without acquiring a new positive grant, provided that path can only reduce OuttaMyWay intervention.
+
+Responsibility continuity may therefore coexist with Bounded Authority discontinuity. A grant may be refreshed, replaced, released or participant-scoped independently without implying responsibility churn.
+
+### Control
+
+Control owns physical feasibility and execution of an already-authorised request. Dispatch selects a compatible executor; it is not strategic Decision.
+
+The tranche names:
+
+> **Permission To Attempt != Proof Of Feasibility.**
+
+A valid Bounded Authority grant permits an attempt. Control may still refuse or stop when current physical Reality, Player Claim, source-AI reactivation, object availability or mechanism feasibility contradicts execution.
+
+> **Physical Completion != Semantic Resolution Completion.**
+
+Control may establish mechanical facts about its own execution but cannot self-certify Situation meaning, responsibility persistence, obstruction discharge or Resolution settlement. Physical outcomes return through Reality and Observation.
+
+Downstream Authority Monotonicity remains decisive: Control may equal or narrow permission, refuse, stop and relinquish; it may not enlarge the strategic action authorised upstream.
+
+## Separate conformance questions exposed by Specification work
+
+Specification migration is deliberately allowed to expose implementation/test drift without absorbing that drift into the normative contract.
+
+### Prospective portfolio admissibility — Issue #170
+
+> **Support Precedence != Admissibility Bypass**
+
+The unresolved question remains whether current prospective-portfolio precedence is implementation/test drift or represents a stronger architectural exclusion relationship not yet named. No implementation change follows merely from the Spec review.
+
+### Mixed lifecycle evidence — Issue #172
+
+> **Lifecycle Certainty and Observation Completeness Are Orthogonal.**
+
+> **Positive Termination != Missing-Membership Evidence.**
+
+The unresolved case is whether group-wide incomplete membership preservation can incorrectly retain an assembly whose exact Job Episode has independently positive terminal evidence. A controlled offline fixture must classify that evidence before implementation changes.
+
+### Regulation Control unknown-owner authority bypass — Issue #174
+
+The physical-authority tranche exposed a fail-closed question at the Regulation Control boundary. Current source requires a Bounded Authority grant only for a hard-coded set of known Regulation owner tags. A novel positive `REGULATION_LEASE` owner tag can potentially reach physical `APPLY` execution without a `boundedAuthorityId` if its commitment/token/composition checks otherwise pass.
+
+Current production callers appear to use the known tags, so this is a latent conformance question rather than an observed runtime caller bypass. Structural tests protect the known-tag gate but do not establish that unknown positive actuation fails closed.
+
+The investigation must distinguish:
+
+1. implementation/test drift — every positive Regulation `APPLY` must require Bounded Authority regardless of owner-tag vocabulary; or
+2. a missing architectural exception — some positive Regulation actuation is intentionally authorised without Bounded Authority, in which case Architecture must own that exception explicitly.
+
+Accepted Architecture currently supports the first interpretation, but testing must validate rather than assume it. Release/cleanup remains a distinct authority-narrowing case.
+
+These conformance questions remain outside the Specification migration itself. If evidence disproves Architecture, Architecture and affected Specs must change before implementation is defended.
+
+## Immediate next bounded #141 engineering step
+
+Apply the Specification model to **Obstruction Relocation**, the final currently implemented Jurisdiction still pending migration.
+
+Obstruction Relocation is a specialised child of Resolution Lifecycle. The tranche should test the whole already-migrated dependency chain rather than treat the current source module as the responsibility boundary:
+
+```text
+Situation Assessment
+Causal Obstruction + non-active/unclaimed classification
+        |
+        v
+Resolution Lifecycle
+persistent accepted obligation semantics
+        |
+        v
+Obstruction Relocation
+specialised objective / bounded recurrence / discharge semantics
+        |
+        v
+Bounded Authority
+current permission for blocker-specific physical effect
+        |
+        v
+Control
+one authorised physical actuation + owned cleanup
+        |
+        v
+Reality -> reassessment
+```
+
+The tranche should specifically test:
+
+- whether Causal Obstruction remains wholly Situation-owned rather than being recreated by relocation Candidate/Control code;
+- whether Obstruction Relocation adds only specialised Resolution semantics instead of duplicating generic commitment/obligation lifecycle;
+- whether **Relocation Is Geometry-Bounded, Not Count-Bounded** remains an objective contract rather than a source-loop prescription;
+- whether **Actuation Recurrence != Resolution Settlement Evidence** remains explicit across repeated bounded moves;
+- whether historical Job provenance remains non-authoritative for current blocker recognition and relocation eligibility;
+- whether Player Claim and fresh source-AI reactivation terminate or supersede physical permission at the correct authority layer; and
+- whether current source reveals any additional Architecture-to-implementation drift that must be recorded separately instead of normalised into the Spec.
+
+If this final migration disproves the common Specification model, update the model. Do not preserve completion symmetry for its own sake.
 
 ## Subsequent #141 boundaries
 
-If the Regulation / Bounded Authority / Control tranche survives review:
+If the Obstruction Relocation tranche survives review:
 
-1. migrate **Obstruction Relocation** as the remaining specialised Resolution Jurisdiction against already-migrated Resolution Lifecycle, Situation Assessment, Bounded Authority and Control contracts;
-2. confirm all implemented Jurisdictions have primary Specifications while Configuration remains honestly Deferred;
-3. prototype source-documentation and generated-reference tooling against representative migrated modules;
-4. establish deterministic Architecture -> Specification -> source -> test traceability without turning generated reference into normative authority;
-5. once `/spec` and source traceability replace the legitimate placement/navigation role, perform a Stranded Live Knowledge harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating bootstrap/navigation/governance references atomically; and
-6. only after these models have survived application, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. confirm every currently implemented Specification Jurisdiction has one primary Specification while Configuration remains honestly Deferred;
+2. prototype source-documentation and generated-reference tooling against representative modules from different Jurisdiction shapes;
+3. establish deterministic Architecture -> Specification -> source -> test traceability without turning generated reference into normative authority;
+4. once `/spec` and source traceability replace the legitimate placement/navigation role, perform a **Stranded Live Knowledge** harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating bootstrap/navigation/governance references atomically; and
+5. only after these models have survived application, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
 
-This sequence remains evidence-led. If Specification work or later Reality disproves the current standards, Architecture or Jurisdiction model, update those authorities rather than preserving the migration plan for its own sake.
+This sequence remains evidence-led. If later Reality or the conformance investigations disprove the current standards, Architecture or Jurisdiction model, update those authorities rather than preserving the migration plan for its own sake.
 
 ## Separate adjacent responsibilities
 
-The prospective-portfolio admissibility/precedence investigation and the mixed lifecycle-membership investigation remain separate implementation/architecture conformance work. They must not be silently fixed through Specification wording.
+Issues #170, #172 and #174 are active conformance investigations exposed by Specification work; they must not be silently fixed through Specification wording.
 
 Issue #139 remains the design-to-implementation investigation for supported player Configuration. Configuration remains without a speculative primary Specification until that responsibility matures enough to require implementation.
 
