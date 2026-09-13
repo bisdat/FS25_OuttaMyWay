@@ -206,29 +206,40 @@ Accepted Architecture instead distinguishes autonomous strategy exhaustion from 
 
 The investigation must determine whether this is implementation/substrate drift or whether a narrower relocation-strategy basis exists but has not yet been named architecturally. No runtime change follows from source inspection alone.
 
+## Implementation Map retirement boundary
+
+The Stranded Live Knowledge harvest of `docs/IMPLEMENTATION_MAP.md` found no remaining unique durable semantic responsibility that requires the Map to stay live.
+
+Its durable Regulation, Resolution / Obstruction Relocation and Representation findings are already owned by current Architecture and primary Specifications. The remaining diagnostics question is owned by Issue #152. Repository/build-state entries and completed migration/strangler material are chronology and do not belong on a live authority surface.
+
+The Map's remaining legitimate responsibility was navigation. That responsibility is transferred as follows:
+
+- current implementation placement is reached through the governing primary Specification and its implementation traceability into `/scripts`;
+- current engineering or migration state is reached through `CONTINUATION_STATE.md` and the responsible Issue where applicable; and
+- Git, pull requests and Issues retain completed migration chronology.
+
+> **Retirement Requires Breadcrumb Succession.**
+
+The retired Map is deleted rather than archived because no bounded recovery or transitional dependency requires a live copy after breadcrumb repair. Git retains its history.
+
 ## Immediate next bounded #141 engineering step
 
-Perform the required **Stranded Live Knowledge** harvest for `docs/IMPLEMENTATION_MAP.md`.
+Define the contract for **repository conformance tooling**.
 
-The Map is transitional and may not remain a shadow authority now that Architecture, Specification and production source responsibilities are explicit. Before deleting it:
+The contract must determine exactly which relationships are objective enough for tooling to enforce across `/architecture ↔ /spec ↔ /scripts` and the applicable `/tests` evidence routes, including Authority Triad disposition, without allowing automation to claim semantic authority.
 
-1. identify every piece of unique current knowledge still owned only by the Map;
-2. classify each item by its responsible durable surface — Architecture, Specification, source documentation or engineering governance;
-3. transfer only genuinely stranded current knowledge to the correct owner;
-4. avoid copying material already owned elsewhere merely to preserve familiar wording; and
-5. delete `docs/IMPLEMENTATION_MAP.md` only when no unique live responsibility remains stranded there.
+This step must define required inputs, stable semantic identities, relationship classes, failure conditions and the boundary between machine-checkable conformance and human engineering judgement before selecting an implementation mechanism.
 
-This is a knowledge-ownership exercise, not a source refactor.
+The concrete source-side traceability representation remains deliberately undecided until this contract establishes what tooling actually needs.
 
 ## Subsequent #141 boundaries
 
-After the Stranded Live Knowledge harvest:
+After the conformance-tooling contract is explicit:
 
-1. define the contract for repository conformance tooling that protects objective `/architecture ↔ /spec ↔ /scripts` relationships, Authority Triad disposition and applicable `/tests` evidence routes without claiming semantic authority;
-2. select the minimum source-side traceability representation required by that tooling contract, closing the bounded source-traceability adoption exception in `DOCUMENT_STANDARDS.md`;
-3. implement only the objective checks justified by that contract, including live breadcrumb/link integrity and durable traceability invariants;
-4. decide separately whether any generated reference product has demonstrated enough value to own a durable responsibility; and
-5. only after the standards and tooling survive application, update `AGENTS.md` and permanent CI/pre-commit governance.
+1. select the minimum source-side traceability representation required by that contract, closing the bounded source-traceability adoption exception in `DOCUMENT_STANDARDS.md`;
+2. implement only the objective checks justified by that contract, including live breadcrumb/link integrity and durable traceability invariants;
+3. decide separately whether any generated reference product has demonstrated enough value to own a durable responsibility; and
+4. only after the standards and tooling survive application, adopt the resulting enforcement into permanent CI/pre-commit governance and any further root working rules required by that validated mechanism.
 
 > **Tooling Enforces Relationships; It Does Not Own Meaning.**
 
