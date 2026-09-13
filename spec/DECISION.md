@@ -45,23 +45,28 @@ Decision MAY preserve unresolved alternatives as evidence for an explicit WAIT/n
 
 ### Cross-purpose compatibility and governing scope
 
-Where a complete prospective portfolio contains several independently supported Candidate-support groups, Decision owns the compatibility/preference question among those groups.
+Where a complete prospective portfolio contains several independently supported Candidate-support groups, Decision owns the compatibility/preference question among the **constraint-admissible alternatives** in those groups.
 
-Decision MAY select one governing support group according to accepted architectural compatibility/precedence policy before applying local within-group preference.
+A governing support scope MUST therefore be selected with knowledge of mandatory admissibility. Decision MUST NOT select a support group solely from support metadata and then use that selection to suppress an otherwise admissible Candidate in another group unless Architecture explicitly defines a precedence rule that survives Candidate inadmissibility independently of preference.
+
+The current prospective-selection Architecture does not grant a generic lower-precedence admissibility bypass.
 
 That scope selection MUST NOT be represented as:
 
 - Candidate Support having preselected the group;
-- Constraint Evaluation rejecting otherwise supported groups on preference grounds; or
+- Constraint Evaluation rejecting otherwise supported groups on preference grounds;
+- a mandatory FAIL/UNRESOLVED Candidate blocking another group's admissible Candidate merely through Decision ordering; or
 - deletion of the unselected support groups from the evidence/provenance record.
 
 The complete support universe remains true even when one governing scope is selected for this Decision.
 
 > **Complete Support != Selected Support.**
 
+> **Support Precedence != Admissibility Bypass.**
+
 ### Within-scope selection
 
-Within the selected governing scope, Decision chooses among Candidates that remain admissible after all mandatory verdicts.
+Within a valid governing scope, Decision chooses among Candidates that remain admissible after all mandatory verdicts.
 
 The implementation MAY use accepted comparison cost, preference bands, compatibility rules and deterministic tie-breaks where Architecture permits them.
 
@@ -108,7 +113,7 @@ A proposed commitment action is **Decision intent**, not an already-applied sema
 
 Decision may contain more than one layer of policy without becoming more than one Jurisdiction.
 
-A valid Decision flow may be:
+A valid Decision flow is:
 
 ```text
 complete supported portfolio
@@ -117,10 +122,13 @@ complete supported portfolio
 mandatory Constraint admissibility
         |
         v
+admissible alternatives by group
+        |
+        v
 cross-group compatibility / precedence
         |
         v
-selected governing group
+selected governing scope
         |
         v
 within-group preference / tie-break
@@ -135,6 +143,8 @@ Responsibility Transition
 Cross-group compatibility and within-group preference are both Decision authority because both answer **which supported admissible alternative should be chosen now?**
 
 They MUST remain separate from Candidate Support completeness and mandatory Constraint meaning even when current source implements them through several policy helpers.
+
+A policy MAY intentionally choose non-selection over an admissible alternative only when the accepted Architecture or Decision contract positively defines that policy. An implementation-local ordering token or legacy precedence rule is not sufficient authority.
 
 ## Durable invariants
 
@@ -152,6 +162,12 @@ Cross-purpose precedence or compatibility belongs to Decision unless Architectur
 
 > **Compatibility Choice != Constraint Verdict.**
 
+### Support precedence cannot bypass admissibility
+
+A preferred support group whose Candidates fail or remain unresolved does not, by preference alone, erase another group's Candidate that passed every mandatory Constraint.
+
+If Architecture needs such a stronger exclusion relationship, that relationship must be stated explicitly at the proper authority level rather than inferred from implementation ordering.
+
 ### Unselected support remains true support
 
 Choosing one group/Candidate does not retroactively make independently supported alternatives unsupported. Decision records choice; it does not rewrite the support universe.
@@ -168,10 +184,10 @@ No Decision record, selected Candidate or commitment-action token independently 
 
 - **Candidate inventory / verdict set identity mismatch** — reject/fail closed; do not restamp.
 - **Incomplete mandatory verdict set** — no supported selection.
-- **No admissible Candidate, unresolved mandatory evidence remains** — produce explicit WAIT/non-selection where the governing contract permits waiting; do not fall through to a lower-precedence alternative merely because it is easier.
-- **Cross-group compatibility policy cannot identify a governing scope** — produce explicit non-selection rather than invent an ordering.
-- **Selected governing group contains no admissible Candidate** — follow the accepted Decision policy for waiting/exhaustion; unselected lower-precedence groups do not become automatic fallback unless Architecture explicitly authorises that fallback.
-- **No supported Candidate remains and complete supportable space is positively exhausted** — produce explicit settlement/non-intervention intent as appropriate; do not invent activity.
+- **Candidate has unresolved mandatory evidence** — that Candidate is not admissible; it MAY contribute to an explicit WAIT outcome only where the accepted Decision policy makes waiting semantically appropriate.
+- **Cross-group compatibility policy cannot identify a governing scope among admissible alternatives** — produce explicit non-selection rather than invent an ordering.
+- **Preferred support group has no admissible Candidate while another group does** — do not suppress the admissible alternative merely because the preferred group's support existed; any stronger exclusion requires explicit architectural authority.
+- **No admissible Candidate remains and complete supportable/admissible space is positively exhausted** — produce explicit settlement/non-intervention intent as appropriate; do not invent activity.
 - **Equivalent admissible alternatives with no semantic preference** — MAY use an accepted deterministic tie-break.
 - **Architecture requires ambiguity to fail closed** — do not use deterministic ordering to bypass that requirement.
 
@@ -208,6 +224,8 @@ Current implementation routes include:
 
 Current policy helper names and ordering are implementation topology. The Specification owns the semantic distinction between supported admissibility, compatibility/preference, explicit non-selection and downstream transition intent.
 
+The current `ProspectivePortfolioDecisionPolicy` selects a support group from Candidate-inventory metadata without receiving the mandatory verdict set, after which `DecisionSelector` filters viable Candidates to that chosen group. That source ordering is a **conformance question**, not normative authority: it must not be used to weaken the architectural rule that Decision chooses among supported, constraint-admissible alternatives.
+
 ## Validation route
 
 ### Structural/source-contract validation
@@ -217,6 +235,8 @@ Current policy helper names and ordering are implementation topology. The Specif
 [`tests/test_constraint_verdict_ownership_structure.py`](../tests/test_constraint_verdict_ownership_structure.py) challenges that mandatory verdict ownership remains outside Decision preference.
 
 Additional replacement-core structural tests protect explicit non-intervention, exact identity binding and Responsibility Transition ordering where Decision products cross into lifecycle change.
+
+A targeted conformance test is required for **Support Precedence != Admissibility Bypass**: when one supported group's Candidates fail mandatory Constraints while another supported group contains an admissible Candidate, Decision must follow the accepted admissibility-aware compatibility contract rather than suppressing the admissible Candidate through source ordering alone.
 
 ### Offline behavioural/conformance validation
 
