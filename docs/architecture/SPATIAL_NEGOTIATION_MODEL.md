@@ -194,6 +194,10 @@ Passage recognition geometry is not Passage Candidate geometry.
 
 Recognition uses each complete Physical Assembly's actual current productive or working configuration. Current directional working extents and represented productive corridors must establish genuine corridor competition. A compact or Transit representation must not shrink a deployed productive corridor for the recognition question.
 
+> **Working Geometry Recognises Passage; Transit Geometry Executes Passage.**
+
+Working geometry answers whether a Cooperative Passage problem exists. Transit geometry answers whether the committed Passage can be physically executed. These are different purpose-specific questions and neither representation may inherit the other's authority.
+
 Generic broad physical-conflict evidence or GIANTS blocked/proximity signals do not independently establish Passage contact or Passage clearance.
 
 > **Generic Physical Conflict != Passage Physical Conflict**
@@ -272,7 +276,7 @@ Cooperative Passage is a pairwise Resolution Commitment. It is distinct from Reg
 
 Situation Assessment establishes current Passage foreseeability and genuine corridor competition. The Candidate Support architecture owns the generic machinery by which prospective alternatives, mandatory constraints and Decision are evaluated. Cooperative Passage owns the purpose-specific requirements that make a Passage Candidate semantically meaningful.
 
-When a Passage Candidate requires a compact or Transit geometry basis, cached directional Transit geometry for the complete Physical Assembly may construct and test the simple Passage arrangement before physical Transit realisation. This may include facing extents, Passage clearance, Development burden and crossing-window physical extents.
+Every Cooperative Passage Candidate uses cached directional Transit geometry for the complete Physical Assembly to construct and test the simple Passage arrangement before physical Transit realisation. This may include facing extents, Passage clearance, Development burden and crossing-window physical extents. Transit geometry is therefore mandatory for Passage planning/execution, while physical Transit realisation is deferred until after selection and capture.
 
 Complete Physical Assembly membership is mandatory. Internally complete Transit dimensions for only a subset of the Physical Assembly are insufficient. Directional offsets and asymmetric extents remain valid and must not be recentered without evidence.
 
@@ -284,7 +288,7 @@ Situation Assessment recognises genuine Passage competition
     |
     v
 purpose-specific Passage Candidate
-using supported complete-assembly geometry
+using supported complete-assembly Transit geometry
     |
     v
 Candidate Support / mandatory constraints / Decision
@@ -296,9 +300,9 @@ Responsibility Transition
 Cooperative Passage Resolution Commitment
 ```
 
-Selection and commitment occur only after a supported Candidate and arrangement exist. Physical compact/Transit realisation is not a prerequisite for Candidate planning authority.
+Selection and commitment occur only after a supported Candidate and Transit arrangement exist. Physical Transit realisation is not a prerequisite for Candidate planning authority.
 
-Physical guide movement relying on a compact/Transit-conditioned plan must not treat planned configuration as realised Reality. Fresh Reality at the configuration/settlement and execution-origin boundary governs whether the retained Passage geometry remains executable or requires supported adaptation before physical Passage movement.
+After commitment/capture, both Passage participants must positively realise the required Transit configuration before geometry-dependent Passage movement begins. Planned Transit geometry must not be treated as realised Reality. Fresh Reality at the configuration/settlement and execution-origin boundary governs whether the retained Transit Passage geometry remains executable or requires supported adaptation before physical Passage movement.
 
 This purpose-specific contract does not claim generic current collision-shape Coverage Closure or generic negative-clearance authority. It uses the coarsest representation demonstrated sufficient for the Passage question; more detailed manoeuvre-sweep construction is not a Passage prerequisite without new Reality evidence.
 
@@ -364,9 +368,9 @@ Passage owns only intervention-created debt. It does not reconstruct pre-existin
 
 Committed Passage remains Reality-sensitive.
 
-The execution contract must continue to respect:
+Before geometry-dependent Passage movement begins after capture, both participants must positively realise their required Transit configuration. The execution contract must then continue to respect:
 
-- realised compact/Transit width and natural separation;
+- realised Transit width for both participants and natural separation;
 - actual clearance deficit;
 - Development burden;
 - execution origin;
@@ -374,7 +378,9 @@ The execution contract must continue to respect:
 - guide geometry and lateral allocation while they remain prospective rather than physically committed; and
 - recovery debt derived from the manoeuvre actually executed.
 
-Stale early guide assumptions have no independent authority. The execution boundary after capture/configuration must return to fresh Reality before Passage movement that depends on the realised geometry.
+There is no supported full-width/working-configuration Cooperative Passage execution fallback.
+
+Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry.
 
 Once a physical leg begins, its locally authorised execution choice should remain stable enough to avoid unsafe oscillation. Hard safety remains authoritative.
 
