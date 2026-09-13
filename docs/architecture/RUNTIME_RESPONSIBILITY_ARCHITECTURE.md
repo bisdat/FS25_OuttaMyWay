@@ -26,7 +26,7 @@ This architecture declares the following Specification Jurisdictions.
 
 The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-**Operation Lifecycle** now routes to [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), and **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md). The remaining primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture.
+**Operation Lifecycle** now routes to [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../../spec/CONTROL.md). **Obstruction Relocation** remains **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibility described here remains current Architecture.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -435,7 +435,7 @@ GIANTS AI is the default and attractor. GIANTS owns jobs, productive routing and
 
 **Does not own:** Situation reasons, productive routing, successor reservation, spatial displacement, Responsibility Transition or physical materialisation.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/REGULATION.md`](../../spec/REGULATION.md)
 
 Regulation is bounded and reversible. It changes timing rather than productive routes and has weak persistence. An explicit current positive justification is required, and Regulation ends when that justification is positively discharged, invalidated or replaced.
 
@@ -585,7 +585,7 @@ The third worker does not join the pairwise commitment. Spatial Negotiation owns
 
 **Does not own:** strategic purpose, Responsibility Transition, productive routing, stale geometry preservation, Control execution or semantic Resolution success.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/BOUNDED_AUTHORITY.md`](../../spec/BOUNDED_AUTHORITY.md)
 
 Bounded Authority answers: **Given current responsibility and current Reality, what physical action may OuttaMyWay perform now?**
 
@@ -611,7 +611,7 @@ Relinquishment does not require a new grant. A release or quiescence action narr
 
 **Does not own:** strategic purpose, Responsibility Transition, Bounded Authority creation, Regulation magnitude policy, Resolution settlement semantics or alternative-strategy invention.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/CONTROL.md`](../../spec/CONTROL.md)
 
 Control answers: **How is this already-authorised physical request realised through available GIANTS mechanisms?**
 
