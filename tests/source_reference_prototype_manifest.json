@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "source": "scripts/assessment/TrajectoryConflictAssessment.lua",
+      "role": "semantic-boundary",
+      "export": "OuttaMyWay.TrajectoryConflictAssessment",
+      "primary_spec": "spec/SITUATION_ASSESSMENT.md",
+      "related_specs": [],
+      "boundary_symbols": [
+        "updateTrajectories"
+      ]
+    },
+    {
+      "source": "scripts/control/CooperativePassageControl.lua",
+      "role": "semantic-boundary",
+      "export": "OuttaMyWay.CooperativePassageControl",
+      "primary_spec": "spec/CONTROL.md",
+      "related_specs": [
+        "spec/COOPERATIVE_PASSAGE.md"
+      ],
+      "boundary_symbols": [
+        "vacateParticipant",
+        "continueAfterParticipantVacatur",
+        "currentParticipantRequest",
+        "acceptSurvivorPermission",
+        "_executeCooperativePassageJointRequests"
+      ]
+    },
+    {
+      "source": "scripts/authority/AuthorityRegistry.lua",
+      "role": "shared-substrate",
+      "export": "OuttaMyWay.AuthorityRegistry",
+      "primary_spec": null,
+      "related_specs": [
+        "spec/RESOLUTION_LIFECYCLE.md",
+        "spec/BOUNDED_AUTHORITY.md",
+        "spec/CONTROL.md"
+      ],
+      "boundary_symbols": [
+        "acquireProgress",
+        "acquireObstructionRelocation",
+        "releaseForCommitment"
+      ]
+    },
+    {
+      "source": "scripts/contracts/ControlRequest.lua",
+      "role": "contract-value",
+      "export": "OuttaMyWay.ControlRequest",
+      "primary_spec": "spec/CONTROL.md",
+      "related_specs": [],
+      "boundary_symbols": []
+    }
+  ]
+}
