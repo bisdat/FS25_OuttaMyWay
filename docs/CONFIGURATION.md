@@ -1,441 +1,309 @@
-# Configuration architecture
+# Configuration Architecture
 
-## Purpose and scope
+## Purpose and architectural boundary
 
-**Configuration is the supported player-choice surface of OuttaMyWay.**
+**Configuration is OuttaMyWay's supported player-choice surface.**
 
-**Configuration as Consent Surface** means that Configuration expresses choices
-the player is legitimately allowed to make. It does not expose arbitrary
-implementation variability and does not create strategic or physical authority.
+Configuration exists to express choices the player is legitimately allowed to make about the product. It does not expose arbitrary implementation variability, manufacture system authority, or turn internal tuning into supported user policy.
 
-This document owns:
+> **Configuration as Consent Surface**
 
-- which choices the player may make and the semantic meaning of each setting;
-- the admission rule for adding settings;
-- defaults policy and persistence expectations;
-- consent and authority boundaries;
-- change semantics requirements; and
-- compatibility and migration requirements.
+This document defines the current accepted Configuration responsibility and its boundaries. The Configuration runtime contract is intentionally incomplete: Issue #139 owns the remaining design-to-implementation investigation.
 
-It does not own presentation mechanics or turn internal constants into player
-choices. Exact labels, explanatory text, widgets, layout, HUD movement or scale,
-and interaction mechanics belong to future [GUI/HUD architecture](GUI.md).
+**Status: Not implemented.**
 
-## Configuration and other value responsibilities
+Configuration is therefore a recognised Deferred Responsibility under the repository documentation standard. No primary `/spec` exists yet, and an empty or speculative Specification must not be created merely for symmetry. A Configuration Specification becomes appropriate only when the unresolved runtime contract has been established sufficiently to state a truthful implementation-facing contract.
 
-Classify a value by the responsibility that gives it meaning:
+The [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](LOCALISATION.md) owns user-facing localisation policy.
+
+## Specification Jurisdiction
+
+This architecture declares one Specification Jurisdiction:
+
+| Specification Jurisdiction | Primary architectural responsibility |
+| --- | --- |
+| **Configuration** | Define supported player choices, their semantic meaning, consent boundaries, defaults requirements, persistence/change obligations and compatibility expectations without creating runtime authority. |
+
+Configuration is not a generic value-ownership jurisdiction. Internal policy, calibration, diagnostics, safety bounds, build identity and validation parameters remain owned by the responsibilities that give them meaning.
+
+## 1. Configuration and other value responsibilities
+
+A value belongs to Configuration because it represents a supported player choice, not because it is numeric, editable, global, easy to expose, or stored in a file whose name suggests configuration.
+
+Classify values by semantic responsibility:
 
 ```text
 Meaningful supported player choice
     -> Configuration
 
 Architecture-owned behavioural policy
-    -> architectural/responsibility-owned policy
+    -> owning architectural responsibility
 
 Implementation calibration
-    -> owning implementation module/subsystem
+    -> owning Specification / source responsibility
 
-Safety/resource/watchdog bound
-    -> owning implementation/control responsibility
+Safety, resource or watchdog bound
+    -> owning runtime / Control responsibility
 
 Diagnostic implementation detail
-    -> diagnostics
+    -> instrumentation / diagnostics
 
-Validation/prototype/experimental value
-    -> validation/research/implementation evidence
+Validation or experimental value
+    -> validation / research evidence
 
-Release/build identity
-    -> release/build responsibility
+Release or build identity
+    -> release / build responsibility
 
-HUD/GUI layout mechanics
-    -> future GUI/HUD implementation
+GUI / HUD layout mechanics
+    -> GUI / HUD responsibility
 ```
 
-[`scripts/config.lua`](../scripts/config.lua) is not the architectural definition
-of Configuration. It is identity-only: namespace initialisation followed by
-`MOD_NAME` and `VERSION`. It contains no policy, calibration or comments.
-There is no generic runtime settings/constants warehouse.
+A shared numeric value does not establish a shared concept. Global accessibility does not establish architectural ownership. Technical mutability does not establish supported variability.
 
-Place a value in the narrowest responsibility that legitimately owns it. Promote
-it to shared scope only when multiple components genuinely share the same
-semantic concept. A value needed only by one implementation module should
-normally become module-local when later implementation work reaches it. A
-genuinely shared value belongs to its responsibility or subsystem. Only
-genuinely system-wide identity or invariants belong at the root `OuttaMyWay`
-namespace.
+> **Negative Configuration Classification != Configuration Ownership**
 
-Global accessibility is an implementation mechanism, not an architectural
-responsibility. Do not replace the mixed surface with a generic `globals.lua`
-dumping ground. Equal numeric values do not prove shared meaning or ownership.
+Determining that a value is *not* player Configuration does not make Configuration architecture the owner of that value's implementation detail.
 
-`BUILD_LABEL`, `ARCHITECTURE_VERSION` and `RUNTIME_MODE` are retired without
-replacement. Startup diagnostics and VersionHud consume `VERSION` only.
-Architecture is repository knowledge, not runtime identity; the one accepted
-Runtime requires no mode identity. These values are not relocated into settings,
-local aliases or another metadata holder.
+The durable Configuration concern is the classification rule and consent boundary. Exact module names, constants, formulas, calibration inventories and current source placement belong outside this Architecture.
 
-## Diagnostic HUD implementation ownership
+## 2. Configuration admission test
 
-Diagnostic HUD enablement and layout are module-owned implementation values,
-not player Configuration. Future Space, Version and Follower Pacing are independent
-instrument owners: `FutureSpaceHud`, `VersionHud` and `FollowerPacingHud` each
-own their own diagnostic switch, coordinates and presentation sizes; Future Space
-also owns line height and Follower Pacing owns its row bound. Equal coordinates
-or sizes do not establish shared HUD authority.
+A proposed setting enters supported player Configuration only when all of the following are true:
 
-Future Space layout uses current Future Space vocabulary. The obsolete lifecycle
-and transition HUD gates are deleted without replacement: neither has a current
-production consumer or validation contract requiring retention. FutureSpaceHud
-itself remains live through PassiveLiveValidator's construction, observation and
-draw path. VersionHud continues to consume the legitimate root `VERSION` identity.
+1. it represents a meaningful player choice;
+2. every offered value is supported behaviour rather than an experiment or engineering convenience;
+3. the choice can be explained truthfully without implementation jargon;
+4. changing it cannot enlarge OuttaMyWay's architectural or safety authority;
+5. an explicit supported default can be defined;
+6. persistence and change semantics can be stated deliberately rather than inherited accidentally; and
+7. the player benefit justifies the additional UI, compatibility and support burden.
 
-The future player HUD visibility concept below remains separate and unimplemented
-by these diagnostic switches. No shared diagnostic settings holder or player
-setting is introduced by this ownership boundary.
+If these conditions are not met, the value remains with its narrower architectural, implementation, diagnostic, validation or build owner.
 
-## Cooperative Passage Control implementation ownership
+Future settings, including any future advanced settings, must satisfy the same admission test. No options surface should be populated merely to appear comprehensive.
 
-`CooperativePassageControl` owns seven module-local execution calibration and
-safety bounds: Passage actuation speed (8.0 km/h), phase watchdog (45000 ms),
-captured-axis alignment lateral tolerance (0.50 m) and heading minimum dot
-(0.995), physical Hold settlement speed (0.25 km/h), and Control diagnostic /
-clearance heartbeat cadence (1000 ms), plus captured-axis station completion
-tolerance (1.0 m) for Alignment Runout and Axis Return. These are internal implementation values,
-not player tuning or a separate shared Cooperative Passage constants subsystem.
+## 3. Accepted initial player Configuration concepts
 
-**Spatial Gate Radius != Axis Station Tolerance.** `LocalPassagePlanner` owns
-its two-dimensional Crossing-Window guide target radius. Control consumes the
-Candidate-supplied `target.radiusM` through `NativeDriveMechanism:setReposition`,
-whose completion condition is Euclidean distance to the target. Control's
-independent station tolerance reaches `NativeDriveMechanism:setAxisTravel`, whose
-completion condition compares projected captured-axis progress plus/minus the
-tolerance with the target station. The mechanism materialises each meaning; it
-does not establish a shared Passage tolerance owner.
+The accepted initial conceptual surface is deliberately small:
 
-**Value Reuse != Concept Reuse.** Both calibrations remain exactly 1.0 m; equal
-literals do not establish shared policy. Neither value is player Configuration.
+- **OuttaMyWay enabled**;
+- **HUD visibility**;
+- **Logging**; and
+- **Debug**.
 
-Local Passage fixed construction values have the Planner owner described below.
-Forward Intersection policy has the Situation owner described below.
-
-## Local Passage Planner policy and calibration ownership
-
-`LocalPassagePlanner` owns ten fixed module-local values within Candidate-owned
-planning. **Shared Owner != Shared Concept:** these values have one production
-owner but distinct meanings; no generic Passage settings object exists or is
-justified by this ownership. None is player Configuration.
-
-- Passage construction policy: nominal Inter-Assembly Clearance is 1.0 m,
-  supplied by Planner to `PairSpecificPassageClearance` and retained in plan and
-  sweep evidence. The accepted Crossing-Window floor is nominal clearance times
-  the fixed 0.95 ratio. Represented non-contact remains a separate hard condition.
-- Excursion/entry calibration: minimum development is 4.0 m and forward
-  development per lateral metre is 2.0; recovery equals development. The 3.0 m
-  entry Control allowance remains in `frontOverlap + 2 * development + entryAllowance`.
-- Guide calibration: Crossing-Window entry and exit target radii are 1.0 m.
-  Development and reacquisition gate maximum radii are independently 2.0 m;
-  their radii remain `min(2.0, max(traversalRadius, development * 0.25))` and
-  `min(2.0, max(traversalRadius, recovery * 0.25))`, respectively.
-- Evidence discretisation: Field World sweep spacing is 2.0 m and pair/third-party
-  sweep sampling uses 20 samples per leg as before.
-
-**Counterfactual Test Input != Supported Runtime Policy** refines **Test
-Mutability/Injection Seam != Contract Requirement**. A counterfactual floor in
-validation does not require production policy configurability. The accepted
-0.95 floor is fixed Planner-owned policy, not a runtime experiment seam.
-
-## Local Passage Action-Space Boundary ownership
-
-**Assessment Owns Boundary; Candidate Consumes Evidence.**
-`TrajectoryConflictAssessment` owns the fixed 80.0 m Local Passage Action-Space
-Boundary as `LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M`. Its native-intent
-revelation quiescence veto, Current-Excursion Resolution-Space Conservation and
-Established-conflict Resolution-Space Conservation use this same boundary.
-Established conflict publishes `actionSpaceConservation.maxSeparationM` as
-Situation evidence, including when separation exceeds the boundary.
-
-`SituationAssessment` supplies evidence without a boundary policy argument.
-`LocalPassagePlanner` consumes `conflict.actionSpaceConservation.maxSeparationM`;
-missing or invalid positive finite boundary evidence fails closed. Separation
-above the published boundary retains `ESTABLISHED_CONFLICT_NOT_YET_LOCAL`.
-Candidate does not select another boundary or supply a fallback.
-
-The former `actionSpaceMaxSeparationM` fixture parameter is removed. Other
-focused assessment calibration overrides remain internal validation
-parameterisation, not player Configuration or supported runtime variability.
-
-## Forward Intersection Intent-Revelation Creep ownership
-
-**Situation Owns Magnitude; Authority Materialises It**, consistent with
-**Policy Owner != Materialisation Site**. `SpatialConstraintAssessment` owns
-fixed 1 km/h policy as `FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH`
-for `MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME`. It publishes
-`regulationSpeedKmh` and `actionSpaceConservation.fixedRegulationSpeedKmh`.
-
-`LiveTrafficCandidateSupport` carries the established magnitude unchanged in
-`actionSpaceRegulationBridge.fixedRegulationSpeedKmh`.
-`RegulationBoundedAuthority` consumes that Candidate evidence to materialise
-Forward Intersection admission and rejects missing or invalid positive finite
-magnitudes. Neither Candidate nor Authority independently derives this policy
-or supplies a literal fallback.
-
-Ordinary Action-Space Regulation continues through
-`ResolutionSpaceProgressionEnvelope`. Forward Intersection
-`WAITING_FOR_EVIDENCE` retains its existing fixed-creep authority, with no new
-timeout. Temporal allocation, incumbent Follower Boundary precedence and
-positive dissolution/supersession semantics are unchanged.
-
-## Transit fold settlement ownership
-
-`AssemblyRepresentationCache` owns Job-Episode bootstrap Transit settlement
-timeout derivation from the selected/runtime GIANTS folding configuration's
-`maxFoldAnimDuration`. Its module-local duration factor 1.50 and margin 2000 ms
-produce `expectedFoldDurationMs * 1.50 + 2000` for positive duration; unavailable
-native duration uses its 30000 ms fallback. The derived capability timeout is
-capped at 35000 ms and published as `capability.settlementTimeoutMs`.
-
-`TransitConfigurationMechanism` consumes that derived timeout. Its independent
-module-local 30000 ms fallback protects missing capability/state timing during
-cached Transit preparation, settlement and restoration as a defensive Control
-fail-safe. It does not derive capability timing. Equal 30000 ms literals do not
-establish shared policy: **Defensive Fallback != Shared Policy Owner** and
-**Derived Capability Timeout != Defensive Mechanism Fallback**.
-
-These values are not player Configuration. Cooperative Passage Control consumes
-cached capability and settlement results without independently deriving timing.
-
-## Clearance trace diagnostic publication ownership
-
-`LiveTrafficCandidateSupport` owns the module-local 40.0 m clearance-trace
-publication bound. Both rejected and selected telemetry paths use it only to
-publish already-computed planner evidence within the local approach; telemetry
-does not invoke planning, sweeps or geometry or recreate Candidate Search
-Amplification.
-
-**Diagnostic Publication Window != Passage Search Horizon**, consistent with
-**Diagnostic Distance != Passage Distance**. This bound is not player
-Configuration, Passage construction/search/geometry, Passage Entry or Action-Space
-admission distance, Nominal Inter-Assembly Clearance or Crossing-Window acceptance
-policy, or Control actuation policy.
-
-Diagnostic publication owns none of the Planner construction values described above.
-
-## Resolution-Space Regulation magnitude policy ownership
-
-`ResolutionSpaceProgressionEnvelope` owns the fixed accepted 0.75 contingency
-reserve fraction and exact 1 km/h unresolved-intent creep floor. These are
-responsibility-owned Regulation magnitude policy, not player Configuration or
-tuning. The reserve withholds established usable Resolution Space; it does not
-claim a GIANTS braking distance.
-
-**Policy Owner != Materialisation Site.** `RegulationBoundedAuthority`
-materialises this policy through the envelope but does not own its values.
-`ResolutionSpaceProgressionEnvelope.establish(distanceM, speedKmh)` accepts
-current evidence; policy is module-local. **Internal Parameterisation !=
-Supported Variability:** the former reserve/creep arguments supplied only the
-accepted pair and established no alternate-policy contract. **Test
-Mutability/Injection Seam != Contract Requirement** likewise applies to the
-former offline fixture arguments.
-
-Forward Intersection deliberately bypasses this envelope and consumes its
-separate Situation-owned fixed 1 km/h magnitude described above.
-**Value Reuse != Concept Reuse:** equal literals do not establish
-common ownership between these policies or authorise their unification.
-
-## Configuration admission test
-
-A value belongs in player Configuration only when every condition below holds:
-
-1. It represents a meaningful player choice.
-2. Every offered value is supported behaviour, not an experiment.
-3. It can be explained without implementation terminology.
-4. Changing it cannot enlarge OuttaMyWay's architectural or safety authority.
-5. It can have an explicit supported default and persistence semantics.
-6. The player benefit justifies the additional UI and support complexity.
-
-If any condition is not met, the value remains internal. A value is not
-Configuration merely because it is numeric, tunable, currently stored in
-`config.lua`, or technically possible to expose.
-
-## Initial player Configuration concepts
-
-The initial conceptual surface is deliberately small. These are semantic setting
-concepts; final player-facing labels and localisation may be established during
-later user-facing work.
+These are semantic Configuration concepts. Final labels, explanatory text, widgets, layout and interaction mechanics are not owned here.
 
 ### OuttaMyWay enabled
 
-This is the master enable or disable choice.
+This is the master product-level enable/disable choice.
 
-- Enabled permits normal OuttaMyWay operation subject to every architectural
-  evidence, responsibility and authority boundary.
-- Disabled prevents acquisition of new OuttaMyWay intervention responsibility
-  and autonomous coordination.
-- Disabling does not require unsafe instantaneous abandonment of already-active
-  physical Control. Safe neutralisation and relinquishment remain a Control
-  responsibility.
+When enabled, normal OuttaMyWay operation is permitted subject to all independent evidence, responsibility, representation, authority and Control boundaries.
 
-Configuration expresses player intent; it does not override Control safety.
-The runtime transition mechanism remains implementation work.
+When disabled, OuttaMyWay must not acquire new intervention responsibility or initiate new autonomous coordination.
 
-### HUD
+Disabling does not require unsafe instantaneous abandonment of already-active physical Control. Existing physical authority must reach an appropriate safe neutralisation or relinquishment boundary before disablement is complete.
 
-The player may choose whether normal OuttaMyWay player-facing operational
-communication is visible. This setting does not encompass diagnostic/test HUDs.
-Future GUI/HUD architecture may support visibility, movement and scaling, but
-layout, movement, scale and presentation remain deferred to that responsibility.
+The exact runtime mechanism, completion evidence and transition sequence for safe disablement are not yet defined.
+
+Configuration expresses player consent. It does not override Control safety.
+
+### HUD visibility
+
+HUD visibility governs normal player-facing OuttaMyWay operational communication.
+
+It does not govern diagnostic or test HUDs merely because they are visible on screen.
+
+Configuration owns the player's visibility choice. GUI/HUD architecture owns what normal player-facing messages exist, their lifecycle, priority, presentation, accessibility, layout and interaction semantics.
 
 ### Logging
 
-Logging is a supported choice for useful normal operational logging suitable for
-diagnosis or bug-report evidence. It does not expose every diagnostic or Probe
-toggle.
+Logging is a supported high-level choice for useful normal operational logging suitable for diagnosis and bug-report evidence.
+
+It is not a promise that every internal diagnostic, probe, trace or cadence becomes player-configurable.
+
+The exact runtime logging contract, default and persistence semantics are not yet defined.
 
 ### Debug
 
-Debug is a supported choice for substantially more detailed engineering/debug
-instrumentation. Individual Probe switches, sampling periods, diagnostic HUDs
-and instrumentation controls remain internal implementation details. The later
-implementation may refine the relationship between Debug and Logging; this
-architecture does not require unnecessary coupling between them.
+Debug is a supported high-level choice for substantially more detailed engineering/debug instrumentation.
 
-### Core resolution capabilities are not separate player options
+It does not create player ownership of individual probes, sample periods, diagnostic HUDs or internal instrumentation switches.
 
-A supported non-active, unclaimed Causal Obstruction is handled through normal
-OuttaMyWay Obstruction Relocation when current Situation, responsibility,
-Bounded Authority and Control evidence justify that response.
+The exact relationship between Debug, Logging and existing internal diagnostics remains unresolved. Configuration must eventually define the supported meaning without exposing the internal instrumentation topology as the public contract.
 
-Obstruction Relocation is therefore a core resolution capability, not a separate
-player consent setting. Enabling OuttaMyWay as a whole is sufficient product
-consent for that capability. This does not make arbitrary parked vehicles
-movable: harmless occupancy creates no responsibility, current Player Claim is
-hands-off, active GIANTS workers remain under active spatial negotiation, and
-unsupported or unsafe relocation still fails closed or escalates.
+## 4. Core capabilities are not separate Configuration
+
+Master enablement is the product-level consent boundary for supported OuttaMyWay operation.
+
+Core runtime capabilities do not become independent player features merely because they are separately named or implemented.
+
+In particular, current architecture does not define separate player enable switches for:
+
+- Regulation;
+- Cooperative Passage; or
+- Obstruction Relocation.
+
+These capabilities remain governed by current Situation, Current Responsibility, Bounded Authority, representation, safety and Control contracts.
 
 > **Core Resolution Capability != Optional Configuration**
 
-> **Master Enablement Is Sufficient Consent for Core Obstruction Relocation**
+A harmless parked vehicle does not become movable because OuttaMyWay is enabled. A player-controlled subject does not lose Player Claim. Unsupported or unsafe action remains unsupported or unsafe. Configuration supplies consent to operate the product; it does not manufacture the evidence or authority required for any particular intervention.
 
-## Configuration and authority
+## 5. Configuration and runtime authority
 
-Reality is independent of player Configuration. The normal runtime responsibility
-path remains:
+Reality is independent of player Configuration.
+
+The normal runtime responsibility path remains:
 
 ```text
 Reality
-    |
+   |
+   v
 Observation
-    |
+   |
+   v
 Situation Assessment
-    |
+   |
+   v
 Responsibility Transition
-    |
+   |
+   v
 Current Responsibility
-    |
+   |
+   v
 Bounded Authority
-    |
+   |
+   v
 Control
-    |
+   |
+   v
 Reality
 ```
 
-Configuration applies only as an external constraint or input at the boundary
-relevant to each setting:
+Configuration constrains operation at the boundary relevant to the setting. It does not replace any stage in that authority chain.
 
 ```text
 Configuration
-    |-- master enablement
-    |      -> permits or prevents normal OuttaMyWay operation subject to all
-    |         independent evidence, responsibility, authority and Control bounds
-    |
-    `-- HUD / Logging / Debug
-           -> presentation and instrumentation only
+   |-- master enablement
+   |      -> permits or prevents normal OuttaMyWay operation
+   |         subject to independent runtime authority
+   |
+   `-- HUD / Logging / Debug
+          -> presentation and instrumentation choices only
 ```
-
-Configuration does not establish Reality, Observation evidence or Situation
-meaning. Master enablement governs whether OuttaMyWay operates as a product; it
-does not selectively grant or veto individual core resolution capabilities.
-HUD, Logging and Debug affect presentation or instrumentation, not Responsibility
-Transition. Configuration never enlarges responsibility or Bounded Authority.
 
 Configuration does not:
 
-- prove Reality;
-- establish Observation evidence;
-- create Situation meaning;
-- establish Responsibility Transition;
-- create Current Responsibility;
+- establish Reality;
+- create Observation evidence;
+- determine Situation meaning;
+- establish or supersede Current Responsibility;
 - grant Bounded Authority;
-- override representation fitness or safety evidence;
-- override GIANTS job ownership or player takeover; or
-- turn an unsupported action into a supported one.
+- waive mandatory constraints;
+- override representation fitness or hard-safety evidence;
+- override GIANTS productive-job ownership;
+- override current Player Claim; or
+- turn unsupported Control into supported Control.
 
-## Advanced Configuration
+> **Configuration Can Constrain Authority; It Cannot Create Authority.**
 
-Architecture may allow a future Advanced section, but a setting enters it only
-when the same Configuration admission test proves it is a legitimate supported
-player choice. Do not populate an options surface merely to make it appear
-comprehensive.
+## 6. Explicitly non-Configuration value classes
 
-Passage clearance values, trajectory thresholds, Passage or Control speeds,
-sweep sample counts, watchdog durations, Field World equivalence tolerances,
-representation scan/resource budgets, Intent-Revelation Creep magnitude, fold
-timing bounds and diagnostic sample intervals are not currently player
-Configuration. Depending on the value, they are architectural policy,
-implementation calibration, safety/resource bounds or diagnostics. Later
-ownership follows evidence and responsibility rather than current file placement.
+The following classes are not currently player Configuration merely because they may be represented as tunable values in implementation:
 
-## Defaults and compatibility
+- Passage clearance and planning calibration;
+- trajectory or spatial thresholds;
+- Control speeds and station tolerances;
+- watchdog or settlement bounds;
+- resource, scan or sampling budgets;
+- representation tolerances;
+- Intent-Revelation Creep and other responsibility-owned policy magnitudes;
+- diagnostic publication periods or windows;
+- individual probe or diagnostic-HUD switches; and
+- validation fixture parameters.
 
-Every player setting must have an explicit supported default before player-facing
-implementation. Defaults represent the intended normal player experience and
-must not be inherited accidentally from development, validation or diagnostic
-switches. Current `config.lua` values are not evidence of final player defaults
-unless architecture explicitly establishes them.
+A future proposal to expose any such value must pass the Configuration admission test as a genuine supported player choice. Current implementation mutability or test injection does not establish that contract.
 
-When the settings schema evolves, migrations and versioning must preserve the
-defined meaning of player Configuration. Compatibility aliases or conversions
-exist only where a supported persisted setting actually requires them.
+## 7. Defaults
 
-## Persistence
+Every implemented player setting must have an explicit supported default.
 
-Player Configuration should persist across game sessions through an appropriate
-supported FS25 settings mechanism. The exact GIANTS API and storage mechanism
-remain deferred until implementation investigation.
+Defaults represent the intended normal player experience. They must not be inherited accidentally from development, validation, diagnostic or implementation values.
 
-Configuration is player/mod preference. It is not automatically part of
-simulated Field World Reality or a farm/save lifecycle. Multiplayer and
-server/client ownership remain unresolved pending evidence about FS25's supported
-settings semantics; this architecture does not choose an owner prematurely.
+No supported defaults for the four initial Configuration concepts are established by this Architecture yet.
 
-## Change and reload semantics
+## 8. Persistence and ownership scope
 
-Each implemented setting must define explicit change semantics appropriate to
-its behavioural implications: for example, immediate application, application
-at the next safe responsibility boundary, or application next session. There is
-no universal requirement that all changes take effect immediately. Safety and
-responsibility boundaries outrank UI immediacy; exact mechanisms remain deferred
-to implementation.
+Persistence is part of the Configuration contract, but the persistence mechanism and lifecycle ownership are not yet established.
 
-## Current root surface
+The eventual design must use an evidence-supported FS25 mechanism rather than assuming storage design from convenience.
 
-Issue #87 mixed-runtime ownership decomposition has no remaining unresolved
-root constant in current architecture. `scripts/config.lua` contains exactly
-the namespace initialisation and two root assignments:
+The following remain unresolved:
 
-| Identity | Responsibility |
-| --- | --- |
-| `MOD_NAME` | System/mod identity |
-| `VERSION` | Executable build identity, coherent with `modDesc.xml` |
+- whether a given preference belongs to player, mod, save, server or another supported lifecycle scope;
+- which settings, if any, are persisted independently;
+- multiplayer and server/client authority;
+- schema/version ownership; and
+- migration semantics for persisted values.
 
-Every surviving internal value belongs to its responsible module or subsystem;
-there is no generic settings/constants module. The
-[Implementation Map](IMPLEMENTATION_MAP.md) owns source placement.
-Supported player Configuration remains separate work under Issue #139.
+Configuration must not invent simulated Field World meaning merely because a preference is persisted.
 
-## Implementation boundary
+## 9. Change and disablement semantics
 
-This architecture does not redesign `scripts/config.lua`, implement settings or
-persistence, create an options screen, investigate GIANTS APIs, change GUI/HUD
-behaviour, relocate constants, or rename historical identifiers. Those require
-later bounded Engineering Increments supported by evidence.
+Each implemented setting must define explicit change semantics appropriate to its behavioural consequences.
+
+A setting may eventually apply immediately, at a safe responsibility boundary, at another evidence-defined transition, or next session. There is no architectural requirement that all settings share one reload rule.
+
+Safety and responsibility boundaries outrank UI immediacy.
+
+Master disablement is the highest-risk case. Accepted architecture already requires that disabling prevent new intervention responsibility while avoiding unsafe abandonment of already-active Control. The exact neutralisation/relinquishment contract remains unresolved and must be established before implementation is accepted.
+
+## 10. Presentation and localisation boundary
+
+Configuration owns the semantic choices made available to the player.
+
+GUI/HUD architecture owns:
+
+- settings presentation;
+- widgets and layout;
+- interaction mechanics;
+- normal player-facing operational messaging; and
+- visual accessibility behaviour.
+
+Localisation owns user-facing wording/localisation policy.
+
+Diagnostic/test HUDs remain instrumentation unless deliberately promoted through the GUI/HUD responsibility. The existence of a visible diagnostic control does not make it part of HUD visibility Configuration.
+
+## 11. Deferred Configuration contract areas
+
+The following Configuration contract areas are intentionally unresolved rather than silently inferred:
+
+- supported defaults for the initial four settings;
+- safe disablement completion evidence and transition sequence;
+- runtime interface shape and ownership boundary;
+- Logging versus Debug semantics and their relationship to internal diagnostics;
+- persistence API and storage mechanism;
+- preference lifecycle scope;
+- multiplayer/server-client ownership;
+- persisted schema/version/migration semantics; and
+- per-setting change/reload behaviour.
+
+Issue #139 owns the active investigation that must resolve these questions before Configuration implementation is accepted.
+
+These are unresolved contract areas, not permission to preserve current implementation behaviour as architecture.
+
+## 12. Architectural boundaries
+
+This architecture does not authorise:
+
+- a generic global settings/constants warehouse;
+- resurrection of per-capability rollout gates;
+- player tuning of internal Passage, Regulation, representation or Control calibration merely because those values exist;
+- treating diagnostics as player Configuration by default;
+- assuming current implementation defaults are player defaults;
+- assuming a persistence mechanism or multiplayer owner without GIANTS evidence;
+- unsafe instantaneous abandonment of active Control on disablement;
+- GUI/HUD layout or message-lifecycle decisions; or
+- implementation work under this documentation reconciliation.
+
+Current implementation placement belongs outside this Architecture. Issue #139 owns the design-to-implementation work required to establish the still-missing Configuration contract and runtime surface.
