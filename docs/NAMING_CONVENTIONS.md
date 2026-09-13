@@ -1,66 +1,102 @@
 # Naming conventions
 
-This document is the authoritative repository convention for names in source,
-configuration, tests, diagnostics and engineering prose. Its primary objective
-is semantic truthfulness, not cosmetic uniformity. Naming should make ownership,
-authority and the path from evidence to action predictable to a new contributor.
+## Purpose and authority
+
+This document is the authoritative repository standard for names in source,
+configuration, tests, diagnostics and engineering prose.
+
+Its purpose is semantic truthfulness: names must make responsibility, authority,
+evidence and the path from evidence to action predictable to a contributor who
+did not participate in the implementation history.
+
+This standard **applies** accepted architectural and engineering vocabulary. It
+does not define that vocabulary or create new architectural responsibility.
+Architecture owns concepts and their relationships; this document governs how
+repository names express them.
+
+> **Naming Standard Applies Vocabulary; It Does Not Own Vocabulary**
+
+The normative terms **MUST**, **MUST NOT** and **MAY** have the meanings defined
+by [Documentation Standards](DOCUMENT_STANDARDS.md#normative-language).
 
 ## Governing principles
 
-- Name a thing for its current responsibility, not its development origin.
-- Use the durable vocabulary supplied by accepted architecture.
-- Do not imply authority that the named component does not possess.
-- Prefer the narrowest name that truthfully describes the responsibility.
-- Let architectural discovery establish concepts before naming them. A name must
-  not manufacture architecture or make an unresolved responsibility appear
-  settled.
-- Do not assume that each architectural concept requires a corresponding class,
-  module or file. Concepts and implementation units are not one-to-one.
-- Treat existing non-conforming names as transitional implementation debt, not
+Repository naming MUST follow these rules:
+
+- name a thing for its current responsibility, not its development origin;
+- use durable vocabulary supplied by accepted Architecture and other responsible
+  engineering authorities;
+- do not imply authority the named component does not possess;
+- use the narrowest name that truthfully describes the responsibility;
+- let architectural discovery establish concepts before naming them; a name
+  MUST NOT manufacture architecture or make an unresolved responsibility appear
+  settled;
+- do not assume each architectural concept requires a corresponding class,
+  module or file; concepts and implementation units are not one-to-one; and
+- treat existing non-conforming current names as implementation debt, not
   precedent for new work.
+
+Naming conformance MUST improve semantic predictability. It MUST NOT be used to
+justify unrelated behavioural change or speculative repository restructuring.
 
 ## Architectural terminology
 
-Use accepted architectural terms consistently and preserve their accepted
-capitalization in engineering prose. This includes **Field World**, **Job
-Episode**, **Local Operation**, **Observation**, **Situation Assessment**,
-**Responsibility Transition**, **Current Responsibility**, **GIANTS AI**,
-**Regulation**, **Resolution Commitment**, **Bounded Authority**, **Control**,
-**Cooperative Passage** and **Physical Assembly**.
+Accepted architectural terms MUST be used consistently and preserve their
+accepted capitalisation in engineering prose.
 
-The architecture documents own the definitions and relationships of these
-concepts. Naming work applies that vocabulary; it does not redefine it. Consult
-the [Concept Register](CONCEPT_REGISTER.md) and the applicable documents under
-[Architecture](architecture/README.md) when a term's authority is uncertain.
+Examples include **Field World**, **Job Episode**, **Local Operation**,
+**Observation**, **Situation Assessment**, **Responsibility Transition**,
+**Current Responsibility**, **GIANTS AI**, **Regulation**, **Resolution
+Commitment**, **Bounded Authority**, **Control**, **Cooperative Passage**,
+**Physical Assembly**, **Physical Identity Resolution**, **Assessment
+Representation**, **Candidate Support**, **Constraint Evaluation** and
+**Decision**.
 
-Decision identifiers such as `D-0146` are historical repository provenance.
-Sourced-production identifiers, runtime provenance, telemetry, status and comments
-describing current responsibility use current architecture names. No decision ID
-matching `(?i)d-?\d{4}` may remain anywhere in `scripts/main.lua` or any Lua module
-it sources; this boundary includes complete file text, not only executable code.
+This list is illustrative, not a second vocabulary catalogue. The architecture
+documents own definitions and relationships. The [Concept Register](CONCEPT_REGISTER.md)
+and [Architecture](architecture/README.md) provide current discovery routes when
+a term's authority is uncertain.
+
+Historical decision identifiers such as `D-0146` are provenance, not current
+semantic names. Sourced production identifiers, comments, telemetry and status
+that describe current responsibility MUST use current architectural or
+implementation vocabulary rather than development-origin decision IDs.
+
+Deliberately historical evidence MAY retain decision identifiers where their
+provenance is materially useful. Validation MAY retain a historical identifier
+when the identifier itself is the asserted payload or fixture provenance.
 
 ## Repository, folder and Lua module names
 
-- Name folders for the responsibility or cohesive subsystem they contain, not
-  for the experiment, decision or implementation sequence that produced them.
-- Use `PascalCase` for Lua module, type and file names.
-- A Lua file and its primary module or type should normally have the same name.
-- Give each file one principal responsibility. Keep closely related supporting
-  work together when splitting it would create artificial fragmentation or hide
-  the execution path.
-- Production authority must not remain indefinitely beneath names such as
-  `prototypes/` or `diagnostics/`, or carry `Shadow`, `TEST` or similar labels,
-  after those labels cease to describe its actual responsibility.
+- Folders MUST be named for the responsibility or cohesive subsystem they
+  contain, not the experiment, decision, tranche or implementation sequence that
+  produced them.
+- OuttaMyWay-owned Lua module, type and file names MUST use `PascalCase`.
+- A Lua file exporting one primary module or type MUST use the same basename as
+  that primary export. A file intentionally containing no single primary export
+  is exempt from this same-name rule.
+- Each production file MUST have one principal responsibility. Closely related
+  supporting work MAY remain colocated when splitting it would create artificial
+  fragmentation or obscure the execution path.
+- Production authority MUST NOT remain indefinitely beneath names such as
+  `prototypes/` or `diagnostics/`, or retain `Shadow`, `TEST`, `Prototype` or
+  similar labels, after those labels cease to describe the component's actual
+  responsibility.
 
-Explicit composition and loading remain preferable where they make startup,
-ownership and call paths easier for a human to follow.
+Repository naming does not require one file per concept or one folder per
+Specification Jurisdiction.
 
 ## Lua function names and verbs
 
-Use `lowerCamelCase` for Lua functions. Choose a verb that describes the
-function's actual semantic effect:
+OuttaMyWay-owned Lua functions MUST use `lowerCamelCase`. A GIANTS callback,
+external interface or compatibility boundary MAY retain an externally required
+name; precise internal names MUST be used behind that boundary where the
+external name would otherwise obscure responsibility.
 
-| Verb | Expected meaning |
+When the following verbs are used, their semantic claim MUST match the stated
+meaning:
+
+| Verb | Semantic claim |
 | --- | --- |
 | `observe` | Obtain current evidence from Reality without interpreting it as a decision. |
 | `capture` | Record a bounded snapshot or value for an explicit scope. |
@@ -72,37 +108,40 @@ function's actual semantic effect:
 | `select` | Choose among supported alternatives. |
 | `admit` | Accept a subject into a defined lifecycle or eligibility boundary. |
 | `transition` | Apply an already-justified change of responsibility or state. |
-| `authorize` | Grant bounded permission within an already-established purpose or responsibility. It may narrow or refuse permitted action but must not invent strategic purpose. |
+| `authorize` | Grant bounded permission within an already-established purpose or responsibility. It may narrow or refuse permitted action but does not invent strategic purpose. |
 | `execute` | Perform an already-authorised action. |
 | `dispatch` | Route already-authorised work to the responsible executor. |
 | `release` | End a held responsibility, resource or bounded claim through its defined lifecycle. |
 | `neutralize` | Put controlled actuation into its safe neutral condition. |
-| `settle` | Discharge a defined obligation or procedure using the evidence required by its governing contract. Name what is being settled where ambiguity exists. |
+| `settle` | Discharge a defined obligation or procedure using the evidence required by its governing contract. |
 
-Avoid broad public verbs such as `process`, `handle`, `attach`, `run` and generic
-`update` when a more precise architectural verb is available. External or GIANTS
-lifecycle APIs may impose such a name; keep that boundary name where required
-and use precise internal names behind it.
+A public OuttaMyWay-owned function MUST NOT use a broad verb such as `process`,
+`handle`, `attach`, `run` or generic `update` when an accepted narrower verb
+truthfully describes its effect. Externally prescribed callback names are exempt
+at the external boundary.
 
-In particular, `assess` interprets evidence but does not acquire responsibility
-or Control; `evaluate` answers a bounded question and does not primarily mutate
-lifecycle or authority; `dispatch` routes work whose authority already exists;
-and `execute` performs action whose authority already exists.
+In particular:
+
+- `assess` interprets evidence but does not acquire responsibility or Control;
+- `evaluate` answers a bounded question but does not primarily mutate lifecycle
+  or authority;
+- `dispatch` routes work whose authority already exists; and
+- `execute` performs action whose authority already exists.
 
 ## Responsibility-bearing nouns
 
-Use responsibility-bearing nouns only for components that actually perform the
-corresponding role:
+A responsibility-bearing noun MUST be used only when the named component
+actually performs the corresponding role:
 
 | Noun | Responsibility claimed by the name |
 | --- | --- |
 | Source | Originates evidence or values from an identified boundary. |
 | Adapter | Translates one explicit interface or representation to another without taking domain authority. |
-| Assessment | An interpretation of evidence for a stated question and scope. |
+| Assessment | Interprets evidence for a stated question and scope. |
 | Evaluator | Answers a bounded question according to stated evidence and rules. |
 | Authority | Owns the accepted determination or permission for its declared boundary. |
-| Registry | Maintains identity-indexed records, lookup or membership representation for a defined population. Storage and lookup do not create semantic authority; that belongs to the responsibility establishing the record or lifecycle fact. |
-| Ledger | Records durable facts or transitions with their provenance; it is not automatically the decision owner. |
+| Registry | Maintains identity-indexed records, lookup or membership representation for a defined population. Storage and lookup do not create semantic authority. |
+| Ledger | Records durable facts or transitions with provenance; it is not automatically the decision owner. |
 | Policy | Defines rules for choosing or permitting action, separate from performing it. |
 | Planner | Develops candidate future action without granting authority or executing it. |
 | Coordinator | Sequences collaborators toward one cohesive responsibility. |
@@ -113,15 +152,15 @@ corresponding role:
 | Shadow | Observes or compares without influencing production semantics or Control. |
 | Prototype | Implements experimental, non-production responsibility. |
 
-A Coordinator must not silently accumulate unrelated domain authority. Probe,
-Diagnostic and Shadow explicitly claim no production semantic or Control
-authority. When production runtime depends on a Prototype mechanism, that
-mechanism has conceptually graduated; rename and re-home it in an appropriate
-later bounded Engineering Increment.
+A Coordinator MUST NOT silently accumulate unrelated domain authority. `Probe`,
+`Diagnostic` and `Shadow` explicitly claim no production semantic or Control
+authority. A mechanism on which production runtime depends MUST NOT remain named
+or housed as a `Prototype` once it has become accepted production responsibility.
 
 ## Evidence and outcome vocabulary
 
-Keep the path from Reality to action explicit:
+The path from Reality to action MUST remain explicit in names and engineering
+prose:
 
 - **Evidence** is an observed fact, signal or claim together with its limits and
   provenance.
@@ -140,25 +179,30 @@ Keep the path from Reality to action explicit:
 - An **Outcome** reports what actually resulted, including failure, partial
   completion or neutralisation.
 
-An actuator command or target is a Request or execution input, not evidence that
-the intended semantic Outcome occurred. Success must come back through Reality,
+An actuator command or target MUST NOT be named or interpreted as evidence that
+the intended semantic Outcome occurred. Success returns through Reality,
 Observation and the appropriate assessment.
 
 ## Identity vocabulary
 
-- `...Id` is stable semantic identity within its declared scope.
-- `...ReferenceKey` is a value used to resolve or correlate an external/runtime
-  reference; it is not architectural identity without independent authority.
-- `...Token` is an opaque capability, lease, continuation or correlation value
-  whose meaning belongs to its issuer.
-- `...Key` is a lookup or association key with explicitly documented scope.
-- `...Index` is a position in an ordered collection or representation.
-- `...Count` is a quantity of items, never an identity or position.
+Identity suffixes MUST preserve their declared semantics:
 
-A runtime or external reference key must not silently become architectural
-identity. If the implementation needs both, represent and name them separately.
+- `...Id` — stable semantic identity within its declared scope;
+- `...ReferenceKey` — a value used to resolve or correlate an external/runtime
+  reference; not architectural identity without independent authority;
+- `...Token` — an opaque capability, lease, continuation or correlation value
+  whose meaning belongs to its issuer;
+- `...Key` — a lookup or association key with explicitly documented scope;
+- `...Index` — a position in an ordered collection or representation; and
+- `...Count` — a quantity of items, never an identity or position.
+
+An external/runtime reference key MUST NOT silently become architectural
+identity. When both concepts are required, they MUST be represented and named
+separately.
 
 ## State vocabulary
+
+State-related nouns MUST match the authority and lifecycle actually represented:
 
 - `Kind` distinguishes stable semantic variants of a concept.
 - `Class` or `Classification` records an interpreted category under stated
@@ -173,104 +217,118 @@ identity. If the implementation needs both, represent and name them separately.
 - `Reason` explains the rationale for a conclusion, decision or action.
 - `Disposition` records the decided handling or terminal treatment of a subject.
 
-Persistence does not promote a procedural Phase into an architectural Current
-Responsibility. Use the term matching the concept's actual authority and
+Persistence MUST NOT promote a procedural `Phase` into an architectural Current
+Responsibility. The name must describe the concept's actual authority and
 lifecycle.
 
 ## Booleans, numbers and units
 
-Name booleans as clear predicates, such as `isActive`, `hasAuthority`,
-`canProceed` or `shouldRelease`. Avoid ambiguous nouns and inverted names whose
-truth value is difficult to read at a call site.
+OuttaMyWay-owned boolean names MUST read as clear predicates such as `isActive`,
+`hasAuthority`, `canProceed` or `shouldRelease`. An externally fixed schema name
+is exempt at the external boundary.
 
-Include units where they are not otherwise unambiguous. Preferred forms include
-`distanceM`, `speedMps`, `speedKmh`, `elapsedMs` and `durationSec`; constants use
-forms such as `_DISTANCE_M`, `_SPEED_KMH`, `_INTERVAL_MS`, `_FRACTION` and
-`_COUNT`.
+A numeric name MUST include its unit when the unit is not fixed unambiguously by
+the surrounding type, API or contract. Suitable forms include `distanceM`,
+`speedMps`, `speedKmh`, `elapsedMs` and `durationSec`; constants may use forms
+such as `_DISTANCE_M`, `_SPEED_KMH`, `_INTERVAL_MS`, `_FRACTION` and `_COUNT`.
 
-Do not share a constant merely because two concepts currently have the same
-numeric value. Shared ownership requires shared semantic meaning.
+A constant MUST NOT be shared merely because two concepts currently have the
+same numeric value. Shared ownership requires shared semantic meaning.
 
 ## Constants and Configuration
 
-Player Configuration is distinct from implementation constants and policy. A
-value used by one module should normally be module-local. A genuinely shared
-value belongs to the responsibility or subsystem that gives it meaning. Only
-truly system-wide identity and invariants belong on the root `OuttaMyWay`
-namespace. Do not create generic global-variable dumping grounds.
+Player Configuration is distinct from implementation constants and policy.
+
+A value MAY be module-local when its meaning is local to that module. A shared
+constant MUST have an identifiable shared semantic owner. A generic global
+constants/settings namespace MUST NOT be created merely to centralise unrelated
+values.
+
+Only responsibilities that are genuinely system-wide may place names on the
+root `OuttaMyWay` namespace. The owning Architecture or Specification determines
+whether a value is genuinely system-wide; this Naming standard does not create
+that authority.
 
 These conventions do not redesign `scripts/config.lua` or duplicate the
 [Configuration architecture](CONFIGURATION.md).
 
 ## Historical provenance
 
-Git owns chronology. Do not add rolling `TEST`, `CANONICAL CANDIDATE`, release
-version or D-number headers to production modules merely to record their history.
-Useful historical explanation may remain when it materially explains a current
-constraint or discovered GIANTS behaviour needed to change the code safely.
-Sourced production explains that constraint in current concepts; the D-number
-itself belongs in Git, `DECISION_LOG.md` or engineering history. Deliberately
-unsourced historical evidence may retain D-numbers where they remain materially
-useful provenance. They do not remain in the `scripts/main.lua` sourced
-production surface, including comments.
+Git owns chronology.
+
+Production modules MUST NOT carry rolling `TEST`, `CANONICAL CANDIDATE`, release
+version, Issue, PR or decision-ID headers merely to record development history.
+
+Historical explanation MAY remain in current engineering surfaces when it is
+necessary to understand a still-current external constraint or observed GIANTS
+behaviour, but current source explanation MUST express the constraint using
+current concepts rather than development-origin labels.
+
+Deliberately historical or research evidence MAY retain provenance identifiers
+where they remain materially useful. Historical provenance does not grant current
+semantic authority.
 
 ## Validation vocabulary
 
-**Current Validation Contract != Historical Assertion Payload.**
+> **Current Validation Contract != Historical Assertion Payload**
 
-Current validation test names, helpers, local concept identifiers, synthetic
-fixture identity/provenance and explanatory comments use current architectural
-vocabulary. A decision number that merely identifies development origin does
-not name the present contract.
+Current validation test names, helpers, local concept identifiers and explanatory
+comments MUST use current architectural or implementation vocabulary when they
+express a current contract.
 
-Exact historical identifiers may remain when validation intentionally asserts
-that a retired production token is absent, preserves deliberately historical
-fixture/evidence provenance, or examines a deliberately unsourced historical
-probe whose identity remains materially meaningful. Historical text inside an
-assertion is payload, not automatically current validation identity.
+A historical identifier MAY remain when validation intentionally:
 
-**Validation Vocabulary Closure != Historical Evidence Erasure.** Apply this
-distinction by validation purpose; do not remove historical identifiers through
-a blanket test-tree prohibition or cosmetically promote historical probes into
-current production concepts.
+- asserts that a retired production token is absent;
+- preserves historical fixture/evidence provenance; or
+- examines deliberately historical evidence whose identity remains materially
+  meaningful.
+
+Historical text inside an assertion is payload, not automatically current
+validation identity.
+
+> **Validation Vocabulary Closure != Historical Evidence Erasure**
+
+Historical identifiers MUST NOT be removed through a blanket test-tree
+prohibition when their historical meaning is part of the evidence being tested.
+Conversely, historical probes MUST NOT be cosmetically promoted into current
+production concepts merely to satisfy naming uniformity.
 
 ## User-facing terminology
 
-Player-facing names describe player choices and observable behaviour. Do not
-expose internal architecture, implementation jargon or historical experiment
-names as player concepts. This convention does not define GUI or HUD design;
-that architecture remains deferred.
+Player-facing names MUST describe player choices and observable behaviour. They
+MUST NOT expose internal architecture, implementation jargon or historical
+experiment names as player concepts.
+
+This standard does not define GUI or HUD design; that responsibility remains with
+the appropriate GUI/HUD architecture.
 
 ## Transitional non-conformance
 
 Adopting this convention does not require cosmetic rewriting of genuine
-historical/research provenance. Current production, however, should not retain a
-development-origin name once the responsibility is established.
+historical or research provenance.
 
-Phase 14's strangler graduates principal production Observation, Control,
-execution-mechanism and traffic-purpose vocabulary as those responsibilities
-become current. Phase 14.6C specifically reconciles the remaining primary
-Cooperative Passage, Regulation, Guarded Recovery and runtime-composition
-identifiers. Historical decision numbers remain only outside sourced production,
-in deliberately historical evidence and assertion payload as described above.
+For current implementation:
 
-Track any remaining divergence through architecture and implementation review
-and the [Implementation Map](IMPLEMENTATION_MAP.md), not by turning this document
-into a rename backlog.
+1. new or extracted code MUST follow this convention immediately;
+2. moved or substantially changed code MUST be renamed when its responsibility
+   is clarified by the change;
+3. historical/research material MAY retain provenance where it remains useful
+   evidence;
+4. compatibility aliases MAY be retained only when an actual compatibility
+   boundary requires them; and
+5. behavioural changes MUST NOT be introduced merely to achieve naming
+   uniformity.
 
-During later work:
+Existing current names that still diverge from this standard remain ordinary
+implementation debt. They are discovered and corrected through bounded
+architecture/source review or the future Architecture -> Specification -> source
+traceability route; this document MUST NOT become a rename backlog.
 
-1. New or extracted code follows this convention immediately.
-2. Moved code is renamed when its responsibility is genuinely clarified.
-3. Historical/research material may retain provenance where it remains useful evidence.
-4. Compatibility aliases are used only where genuinely required.
-5. Behavioural changes are not justified merely to achieve naming uniformity.
-
-A rename should improve the predictability of responsibility.
+A rename must improve the predictability of responsibility.
 
 ## Naming review test
 
-Before accepting a new or changed name, ask:
+Before accepting a new or changed name, verify:
 
 - What responsibility does the name claim?
 - Does the implementation actually own that responsibility?
@@ -282,3 +340,6 @@ Before accepting a new or changed name, ask:
 - Does it describe current meaning rather than development origin?
 - Is an accepted architectural term already available?
 - Would the name survive a change in implementation mechanism?
+
+If those questions cannot be answered truthfully, the name is not ready to be
+accepted.
