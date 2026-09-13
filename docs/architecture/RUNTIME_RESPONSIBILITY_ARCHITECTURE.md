@@ -26,7 +26,7 @@ This architecture declares the following Specification Jurisdictions.
 
 The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-**Observation** now routes to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md) and **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md). The remaining primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture.
+**Observation** now routes to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), and **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md). The remaining primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -468,7 +468,7 @@ Positive dissolution, positive supersession, governing-basis cessation or anothe
 
 **Does not own:** Situation recognition, concrete resolution choreography, purpose-specific geometry, Bounded Authority or Control mechanics.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md)
 
 **Resolution Commitment** is a durable accepted resolution obligation. It has strong persistence while legitimate obligations remain open. Obligations, not stale admission predictions or geometry, justify persistence; execution may adapt to fresh Reality.
 
