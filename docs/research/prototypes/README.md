@@ -42,3 +42,4 @@ architecture but do not establish current architectural authority.
 - [32 — Native AI Drive Signal Shadow](PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md)
 - [33 — Native Field-Worker Drive Command Shadow](PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md)
 - [34 — Aligned Follower Boundary Regulation](PROTOTYPE_34_ALIGNED_FOLLOWER_BOUNDARY_REGULATION.md)
+- [35 — Source Documentation and Traceability](PROTOTYPE_35_SOURCE_DOCUMENTATION_TRACEABILITY.md)
