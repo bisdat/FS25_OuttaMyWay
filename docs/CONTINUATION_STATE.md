@@ -37,11 +37,18 @@ A useful Continuation State should remain correct across unrelated merges. Its r
 
 Issue #141 is establishing durable authoring, ownership and traceability standards across `/docs`, `/spec` and `/scripts` before those standards are adopted into root working governance or automated enforcement.
 
-The `/docs` reconciliation, Specification design and primary-Spec migration phases are now complete enough to move the falsification boundary down one layer.
+The `/docs` reconciliation, Specification design and primary-Spec migration phases are complete. Every currently implemented Specification Jurisdiction declared by accepted Architecture has one primary Specification. **Configuration** remains a Deferred Responsibility and correctly has no placeholder Specification.
 
-Every currently implemented Specification Jurisdiction declared by accepted Architecture now has one primary Specification. **Configuration** remains a Deferred Responsibility and correctly has no placeholder Specification.
+The active falsification boundary is now **source documentation and generated implementation reference**.
 
-The bounded `pending migration` exception is therefore no longer needed for implemented runtime responsibilities. The next #141 question is whether the accepted source-documentation model and generated-reference/traceability design can represent the implementation **without turning source topology or generated output into normative authority**.
+A bounded non-production prototype has tested the model against four materially different current source shapes without modifying production Lua:
+
+- semantic producer — `TrajectoryConflictAssessment.lua`;
+- large specialised Control implementation — `CooperativePassageControl.lua`;
+- shared substrate / negative authority donor — `AuthorityRegistry.lua`; and
+- compact contract-value declaration — `ControlRequest.lua`.
+
+The prototype record is [`research/prototypes/PROTOTYPE_35_SOURCE_DOCUMENTATION_TRACEABILITY.md`](research/prototypes/PROTOTYPE_35_SOURCE_DOCUMENTATION_TRACEABILITY.md).
 
 ## Accepted authority model
 
@@ -66,9 +73,7 @@ contract evidence
 
 Generated reference may expose source facts and traceability, but it does not acquire normative contract authority.
 
-The common Specification contract spine has survived materially different Jurisdiction shapes: lifecycle/context, evidence/representation, prospective selection, generic and specialised Resolution, semantic Regulation, current Bounded Authority and physical Control.
-
-Governing boundaries include:
+Governing boundaries remain:
 
 > **Specification Operationalises Architecture; It Does Not Paraphrase It.**
 
@@ -76,134 +81,13 @@ Governing boundaries include:
 
 > **Primary Specification != Primary Source Module**
 
-> **Semantic Product != Required Concrete Source Type**
-
 > **Tests Are Contract Evidence, Not Contract Authority**
 
 > **Traceability Replaces Duplicated Authority.**
 
-All implemented primary Specifications are indexed by [`../spec/README.md`](../spec/README.md). Architecture remains authoritative for the complete Jurisdiction inventory.
+## Source-documentation prototype findings
 
-## Obstruction Relocation boundary
-
-The final migration confirms that Obstruction Relocation is a specialised **Resolution** contract, not a completed-worker lifecycle, parking subsystem or generic movement service.
-
-The governing chain is:
-
-```text
-Situation Assessment
-positive Causal Obstruction + blocker classification
-        |
-        v
-prospective selection / Responsibility Transition
-        |
-        v
-Obstruction Relocation Resolution
-persistent obstruction-removal obligation
-        |
-        v
-Bounded Authority
-one current positive physical permission
-        |
-        v
-Control
-one authorised physical attempt + owned cleanup
-        |
-        v
-Reality -> Observation -> Situation Assessment
-```
-
-The specialisation preserves these distinctions:
-
-> **Causal Obstruction != Relocation Responsibility.**
-
-Situation Assessment owns the current causal relationship. A relocation Resolution exists only after the strategic and Responsibility Transition boundaries establish that responsibility.
-
-> **Beneficiary != Controlled Subject.**
-
-The beneficiary is the active supported worker whose continuity justifies intervention; the blocker is the controlled physical subject. OuttaMyWay has no independent duty to park or tidy the blocker.
-
-> **Historical Provenance != Relocation Eligibility.**
-
-Current positive Reality may establish an otherwise-supported non-active unclaimed blocker without historical Job Episode provenance.
-
-> **Relocation Is Geometry-Bounded, Not Count-Bounded.**
-
-One bounded inward actuation is authorised from current Reality. There is no first/second-courtesy state, completed-worker movement budget or automatic boundary-away stage.
-
-> **Actuation Recurrence != Resolution Settlement Evidence.**
-
-> **Manoeuvre Completion != Obstruction Removal.**
-
-A physical move ends its own Bounded Authority and returns to fresh Reality. A fresh positive obstruction may justify another bounded actuation under the same Resolution; physical target attainment alone cannot settle the semantic obligation.
-
-> **Obstruction Absence != Supported Continuation.**
-
-Where the representation/evidence contract does not own negative clearance, disappearance of the previously positive obstruction relation is insufficient by itself. Successful discharge requires positive evidence that the beneficiary obligation is actually satisfied.
-
-> **Resolution Persistence != Actuation Persistence.**
-
-The Resolution may remain current while no physical grant is active and the system waits for fresh evidence. That is not a generic WAITING responsibility.
-
-## Current source conformance questions
-
-Specification work has deliberately exposed questions that remain owned by separate evidence-led investigations. They must not be normalised into contract wording merely because current source behaves that way.
-
-### Prospective portfolio admissibility — Issue #170
-
-> **Support Precedence != Admissibility Bypass**
-
-Current portfolio precedence may suppress a lower-precedence mandatory-admissible alternative before group-local admissibility is known. Testing must determine whether that is implementation/test drift or a missing architectural exclusion relationship.
-
-### Mixed lifecycle evidence — Issue #172
-
-> **Lifecycle Certainty and Observation Completeness Are Orthogonal.**
-
-> **Positive Termination != Missing-Membership Evidence.**
-
-The unresolved question is whether group-wide incomplete membership preservation can retain an assembly whose exact Job Episode has independently positive terminal evidence.
-
-### Regulation Control positive-authority gate — Issue #174
-
-Current Regulation Control requires Bounded Authority only for a hard-coded set of known owner tags. The unresolved question is whether an unknown positive `REGULATION_LEASE` purpose can fail open despite the accepted rule:
-
-> **Positive Physical Actuation Requires Positive Bounded Authority.**
-
-Release/cleanup remains a separate authority-narrowing case.
-
-### Obstruction Relocation failure / basis semantics — Issue #176
-
-The final Spec migration exposed a terminal-semantics contradiction.
-
-Current source emits `OBJECTIVE_FAILED` when the Causal Obstruction remains positively present but no meaningful inward relocation remains. The specialised lifecycle then currently settles non-success obligations as `BASIS_CESSATION`, while the generic Governing Basis evaluator treats `OBJECTIVE_FAILED` as basis invalidation.
-
-Accepted Architecture instead distinguishes autonomous strategy exhaustion from disappearance of the Causal Obstruction itself:
-
-> **Resolution Failure / Escalation != Causal-Obstruction Basis Cessation.**
-
-The investigation must determine whether this is implementation/substrate drift or whether a narrower relocation-strategy basis exists but has not yet been named architecturally. No runtime change follows from source inspection alone.
-
-## Immediate next bounded #141 engineering step
-
-Prototype **source documentation + generated implementation reference** against representative current modules.
-
-This is a contract-design experiment, not a mass-commenting exercise and not yet a CI-enforcement tranche.
-
-The experiment should answer four questions:
-
-1. **What must authored source documentation own?**  
-   It should identify module responsibility, semantic boundary, governing primary Specification and non-obvious mechanisms needed to preserve that contract, without copying Architecture or Spec prose.
-
-2. **What should generated reference own?**  
-   It should expose deterministic source facts such as modules, public contracts, declared Spec relationships and machine-readable traceability, without becoming normative meaning.
-
-3. **Which source boundaries require documentation?**  
-   Public interfaces nearly always do. Private helpers require explanation when they establish, transform, validate, terminate or otherwise carry important semantic authority, or when their mechanism would be misleading without explanation.
-
-4. **Can the model survive different source shapes?**  
-   Test it on at least one semantic producer and one physical/control-oriented module, with a low-semantic-authority module as a negative comparison. Do not infer a one-module/one-Spec mapping where the implementation legitimately crosses neighbouring contracts.
-
-The standing principles are:
+The current evidence supports the existing principles:
 
 > **Code Documentation Is Colocated Explanation, Not System Authority.**
 
@@ -211,26 +95,103 @@ The standing principles are:
 
 > **Contract Semantics Must Survive Mechanism Replacement.**
 
-The toolchain remains an implementation choice to be tested against these requirements. Do not select LDoc, LuaLS/LuaCATS or another format merely because it is convenient to generate.
+and adds several sharper distinctions.
+
+### Source traceability may be many-to-many; normative ownership is not
+
+> **Source Traceability May Be Many-to-Many; Normative Ownership Is Not.**
+
+A Specification may be realised by several modules, and one module may support several neighbouring Specifications. That does not create overlapping normative contract ownership.
+
+A semantic-boundary module may truthfully identify one governing primary Specification plus related context. A genuinely shared substrate may have **no primary Specification of its own**; forcing one would let source topology manufacture Architecture.
+
+`AuthorityRegistry.lua` is the negative donor. Its actuation-owner tokens are implementation substrate and must not be relabelled as Bounded Authority merely for documentation symmetry.
+
+### Generated structure is not authored semantics
+
+> **Generated Structure != Authored Semantics.**
+
+Deterministic tooling can expose source path, export, declared source role, Spec links, selected boundary symbols and structurally declared record fields. Those are useful navigation/reference facts, not explanations of architectural purpose or contract meaning.
+
+The prototype therefore separates:
+
+- **authored source documentation** — local responsibility, semantic boundary, authority limits and non-obvious mechanism rationale; from
+- **generated reference** — reproducible implementation facts and traceability.
+
+### Documentation tooling must not distort runtime design
+
+The current `ValueRecord.define(...)` declarations contain useful field structure in source text without exposing all of that declaration metadata at runtime.
+
+The prototype reads source statically rather than changing production runtime to make documentation easier.
+
+> **Documentation Tooling Must Not Distort Runtime Design.**
+
+### Useful source documentation is selective
+
+The prototype rejects exhaustive-comment rules. Authored explanation is valuable where a boundary establishes, transforms, validates or terminates semantic authority, or where the mechanism would otherwise be misleading.
+
+Compact structural declarations such as `ControlRequest.lua` should not duplicate field membership manually when generated reference can expose it deterministically.
+
+### Source documentation is release material
+
+Production comments are part of production Lua bytes.
+
+> **Source Documentation Is Release Material.**
+
+Applying an accepted source-comment convention therefore belongs in a normal source/build increment even when runtime behaviour is intentionally unchanged. Moving the explanation into detached sidecars merely to avoid build identity would weaken the colocated-explanation principle.
+
+## Prototype tooling boundary
+
+The current prototype uses:
+
+- `tests/source_reference_prototype_manifest.json` — temporary experimental metadata standing in for future source annotations;
+- `tests/source_reference_prototype.py` — deterministic static reader/generator;
+- `tests/test_source_reference_prototype_structure.py` — staleness/contract check; and
+- `research/prototypes/PROTOTYPE_35_SOURCE_REFERENCE.generated.md` — generated non-normative output.
+
+The temporary manifest is **not** an accepted second source-of-truth. Its purpose is to test the content model before production source bytes are changed.
+
+The prototype does not select a permanent third-party documentation renderer. Type/editor tooling may later supplement source documentation, but OuttaMyWay's Architecture/Specification relationship remains repository semantic metadata rather than renderer authority.
+
+## Current source-conformance investigations
+
+Separate evidence-led investigations remain independent of Issue #141 unless their evidence changes Architecture or a primary Specification:
+
+- Issue #170 — **Support Precedence != Admissibility Bypass**;
+- Issue #172 — **Lifecycle Certainty and Observation Completeness Are Orthogonal** / **Positive Termination != Missing-Membership Evidence**;
+- Issue #174 — positive Regulation Control actuation must not gain a Bounded Authority bypass from unknown owner-tag vocabulary; and
+- Issue #176 — **Resolution Failure / Escalation != Causal-Obstruction Basis Cessation**.
+
+These questions must not be normalised into source-documentation wording merely because current source behaves that way.
+
+## Immediate next bounded #141 engineering step
+
+If the non-production prototype is accepted, run a **deliberately versioned production source-annotation trial** on the same representative donors.
+
+The trial should:
+
+1. define the smallest colocated source metadata/comment convention needed by the four donors;
+2. preserve the semantic-boundary / contract-value / shared-substrate distinctions;
+3. add selective explanation only where the source boundary genuinely needs it;
+4. keep `AuthorityRegistry` as the negative case with no fabricated primary Spec;
+5. make the generator read real source annotations rather than the temporary manifest;
+6. remove the temporary manifest when it no longer owns unique experimental evidence;
+7. regenerate the deterministic reference and let independent CI validate it; and
+8. consume a fresh TEST BUILD because production source bytes will change.
+
+The source trial is still a falsification experiment. If colocated annotations create noise, duplicate Specification meaning, misrepresent shared substrate or prove awkward across these source shapes, revise the model before broader adoption.
 
 ## Subsequent #141 boundaries
 
-If the source-documentation/reference prototype survives application:
+Only after the production source trial survives review should the programme:
 
-1. define the smallest durable source annotation convention and generated-reference contract;
-2. establish deterministic **Architecture -> Specification -> source -> tests** traceability, including a machine-readable representation suitable for checking;
-3. design one cheap deterministic contract checker that can run locally and independently in CI without making CI the semantic authority;
-4. once `/spec` plus source/generated traceability replaces the legitimate placement/navigation role, perform a **Stranded Live Knowledge** harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating bootstrap/navigation/governance references atomically; and
-5. only after these models have survived real application, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. decide which source-documentation rules have enough evidence to enter `DOCUMENT_STANDARDS.md`;
+2. establish repository-wide deterministic **Architecture -> Specification -> source -> tests** traceability;
+3. define the smallest permanent generated-reference/checker contract;
+4. perform a **Stranded Live Knowledge** harvest and retire `IMPLEMENTATION_MAP.md` once its legitimate navigation role has actually been replaced;
+5. update bootstrap/navigation references atomically; and
+6. only then adopt proven rules into `AGENTS.md` and permanent CI/pre-commit enforcement.
 
-Do not update `AGENTS.md` merely because primary Specification migration is complete. **Adoption follows validation.**
+Do not update `AGENTS.md` merely because the prototype generator works. **Adoption follows validation.**
 
-This sequence remains evidence-led. If source-tooling work or later Reality disproves the current standards, Specification model or Jurisdiction boundaries, update those authorities rather than preserving the programme for its own sake.
-
-## Separate adjacent responsibilities
-
-The active conformance investigations above are independent of the #141 documentation/tooling migration unless their evidence changes Architecture or a primary Specification.
-
-Issue #139 remains the design-to-implementation investigation for supported player Configuration. Configuration remains without a speculative primary Specification until that responsibility matures enough to require implementation.
-
-Issue #89 remains the deferred GUI/HUD/player-communication responsibility. Diagnostic HUDs are not promoted into product GUI merely because they exist.
+Issue #139 remains the separate design-to-implementation investigation for supported player Configuration. Issue #89 remains the deferred GUI/HUD/player-communication responsibility.
