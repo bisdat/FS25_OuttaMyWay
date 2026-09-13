@@ -18,14 +18,15 @@ for the end-to-end lifecycle, authority and Control model.
 
 Follow its responsibility routes to:
 
-- [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) — active
+- [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md) — active
   spatial-coordination policy, Regulation, Cooperative Passage, Passage Legs,
   Bubble lifecycle and third-worker protection;
 - [Physical Representation Architecture](PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
-  — representation portfolios, validity and evidence quality;
-- [Candidate Support Projection Architecture](CANDIDATE_SUPPORT_PROJECTION.md)
-  — fresh prospective Candidate-support projection and the current
-  Candidate/Decision boundary.
+  — physical identity resolution, assessment representation, scoped geometry
+  authority, coverage and evidence quality;
+- [Candidate Support, Constraint and Decision Architecture](CANDIDATE_SUPPORT_PROJECTION.md)
+  — fresh prospective Candidate support, mandatory Constraint Evaluation and
+  Decision before Responsibility Transition.
 
 Phase/tranche closure audits do not own current architecture after their durable
 findings have been harvested. Historical Phase-13 closure evidence remains
