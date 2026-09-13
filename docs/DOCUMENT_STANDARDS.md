@@ -127,7 +127,7 @@ The disposition of the other Authority Triad surfaces MUST be explicit enough th
 
 A trivial change MAY receive a correspondingly trivial disposition. The rule exists to force consideration of semantic impact, not to manufacture meaningless edits.
 
-Tooling SHOULD assist by identifying implicated Jurisdictions, related Specifications and declared source participants and by requiring disposition of the remaining Authority Triad surfaces.
+Future tooling MAY assist by identifying implicated Jurisdictions, related Specifications and declared source participants and by requiring disposition of the remaining Authority Triad surfaces.
 
 Tooling MUST NOT claim to establish that the disposition is semantically correct.
 
@@ -232,7 +232,7 @@ A validation route establishes where a contract is challenged. It does not trans
 
 ## Structural conformance
 
-Repository tooling SHOULD eventually be capable of detecting objectively knowable drift including:
+Any repository conformance tooling adopted for these relationships MUST be capable of detecting the objectively knowable drift within its declared scope, including as applicable:
 
 - an Architecture Jurisdiction with no valid primary Specification;
 - a Specification referring to an unknown Jurisdiction;
@@ -668,7 +668,7 @@ The responsibility explanation MUST describe semantic purpose and boundary rathe
 
 Where omission could cause a module to be mistaken for authority it does not possess, the module documentation MUST identify the important exclusion.
 
-Module-level documentation SHOULD be concise. A competent engineer reading the module should be able to understand why the module exists before reconstructing that purpose from its implementation.
+Module-level documentation MUST remain concise enough to orient an experienced engineer without reproducing the implementation. A competent engineer reading the module MUST be able to understand why the module exists before reconstructing that purpose from its implementation.
 
 ## Specification participation
 
@@ -698,7 +698,7 @@ Documentation is particularly required when a function or mechanism:
 - has a return value or effect whose semantic meaning is narrower than a superficial reading would suggest; or
 - exists because of a non-obvious ordering, compatibility or runtime constraint.
 
-Such documentation SHOULD state only what is necessary to understand the mechanism safely: purpose, significant effect, material constraint and important interpretation limit.
+Required documentation MUST be limited to what is necessary to understand the mechanism safely: purpose, significant effect, material constraint and important interpretation limit.
 
 It MUST NOT narrate implementation line by line.
 
@@ -714,7 +714,7 @@ Function visibility is not the governing criterion. Semantic weight and risk of 
 
 ## Source navigation expectation
 
-Production source documentation SHOULD allow an experienced engineer to descend through:
+Production source documentation MUST make it possible for an experienced engineer to descend through:
 
 ```text
 Architecture
@@ -736,9 +736,9 @@ The standard does not require every edge of the Lua call graph to be documented.
 
 ## Inline comments
 
-Inline comments SHOULD explain why a non-obvious mechanism, ordering choice, fallback or constraint exists.
+Where an inline comment is required to explain a non-obvious mechanism, ordering choice, fallback or constraint, it MUST explain why that mechanism exists rather than narrate syntax.
 
-They SHOULD assume that the reader can interpret ordinary Lua constructs, method invocation, local functions, iteration, conditionals and other normal language mechanics.
+Source comments MUST assume that the reader can interpret ordinary Lua constructs, method invocation, local functions, iteration, conditionals and other normal language mechanics.
 
 They MUST NOT restate obvious assignments, branches, loops, calls or syntax.
 
@@ -748,7 +748,7 @@ There MUST NOT be a blanket requirement to comment every function, private helpe
 
 ## Consistency of annotation
 
-Where documentation is required at equivalent semantic boundaries, the repository SHOULD use a consistent concise annotation form so that engineers know where to look and future tooling can recognise structure where appropriate.
+Where documentation is required at equivalent semantic boundaries, the repository MUST use a consistent concise annotation form so that engineers know where to look and future tooling can recognise structure where appropriate.
 
 Consistency MUST NOT force irrelevant boilerplate.
 
@@ -762,9 +762,9 @@ The exact annotation syntax is intentionally not selected by this standard.
 
 Where GIANTS behaviour or another external runtime constraint materially affects how source must be interpreted or safely modified, its local consequence MUST be documented close to the affected mechanism.
 
-Reusable engine knowledge SHOULD remain in the repository surface responsible for engine knowledge rather than being copied repeatedly into source.
+Reusable engine knowledge MUST remain in the repository surface responsible for engine knowledge rather than being copied repeatedly into source.
 
-Source documentation SHOULD state the local consequence and route to reusable engine knowledge where useful.
+Source documentation MUST state the local consequence. It MAY additionally route to reusable engine knowledge where that route assists maintenance.
 
 A successful native invocation MUST NOT be described as stronger semantic evidence than the runtime actually establishes.
 
@@ -776,7 +776,7 @@ Source comments MUST distinguish mechanical success from semantic success where 
 
 ## Implementation-owned values
 
-Non-obvious implementation calibrations, tolerances and literals SHOULD identify their units, local ownership and semantic scope where those facts are not otherwise clear.
+Non-obvious implementation calibrations, tolerances and literals MUST identify their units, local ownership and semantic scope where those facts are not otherwise clear.
 
 Source documentation MUST distinguish implementation-owned calibration from Architecture or Specification requirement.
 
@@ -804,16 +804,16 @@ A diagnostic mechanism MUST NOT remain in production solely to preserve historic
 
 Production source documentation is sufficient when an experienced engineer can navigate and modify the mechanism without being forced to infer system meaning that should have been stated locally.
 
-A source review SHOULD ask:
+A source review MUST consider:
 
-- Is the module's semantic responsibility clear?
-- Can its governing Specification participation be discovered?
-- Are important authority, evidence, lifecycle and handoff boundaries explained?
-- Are non-obvious GIANTS/runtime constraints visible where they matter?
-- Could a return value or successful native call be mistaken for stronger evidence?
-- Are local calibrations distinguishable from contract requirements?
-- Are comments explaining why, constraint and ownership rather than syntax?
-- Has unnecessary commentary been avoided?
+- whether the module's semantic responsibility is clear;
+- whether its governing Specification participation can be discovered;
+- whether important authority, evidence, lifecycle and handoff boundaries are explained;
+- whether non-obvious GIANTS/runtime constraints are visible where they matter;
+- whether a return value or successful native call could be mistaken for stronger evidence;
+- whether local calibrations are distinguishable from contract requirements;
+- whether comments explain why, constraint and ownership rather than syntax; and
+- whether unnecessary commentary has been avoided.
 
 # Tests, validation and Reality
 
@@ -839,7 +839,7 @@ They do not by themselves authorise generated source-reference documentation, LD
 
 Any such mechanism MUST first earn a clear repository responsibility.
 
-Tooling SHOULD automate objective conformance where doing so materially reduces drift.
+Tooling MAY automate objective conformance where doing so materially reduces drift and the relevant tooling responsibility has been explicitly accepted.
 
 Tooling MUST NOT own semantic meaning that belongs to Architecture, Specification or source documentation.
 
