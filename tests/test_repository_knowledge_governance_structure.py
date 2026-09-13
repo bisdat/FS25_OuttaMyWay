@@ -22,12 +22,19 @@ def test_repository_context_bootstrap_routes_current_responsibilities():
         "architecture/README.md",
         "docs/engine/README.md",
         "docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md",
-        "docs/IMPLEMENTATION_MAP.md",
+        "current implementation placement",
+        "governing primary Specification",
+        "/spec",
+        "/scripts",
+        "current engineering or migration boundary",
         "docs/TESTING_METHODOLOGY.md",
         "tests/AGENTS.md",
     )
     for token in required:
         assert token in agents
+
+    assert "docs/IMPLEMENTATION_MAP.md" not in agents
+    assert "strangler state" not in agents
 
 
 def test_relevant_knowledge_sweep_requires_provenance_classification():

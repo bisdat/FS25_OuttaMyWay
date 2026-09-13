@@ -82,8 +82,10 @@ Follow the responsibility routes that can materially affect the question:
 - GIANTS/FS25 runtime behaviour or API assumptions → `docs/engine/README.md`,
   then `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` and
   `docs/engine/GIANTS_API_SURFACES.md` where applicable;
-- current implementation placement or strangler state →
-  `docs/IMPLEMENTATION_MAP.md`;
+- current implementation placement → governing primary Specification under
+  `/spec`, then its implementation traceability into `/scripts`;
+- current engineering or migration boundary → `docs/CONTINUATION_STATE.md` and
+  the responsible GitHub Issue where applicable;
 - Configuration or mixed runtime constants → `architecture/CONFIGURATION.md`;
 - names, vocabulary, identifiers, or new durable terminology →
   `docs/NAMING_CONVENTIONS.md`;

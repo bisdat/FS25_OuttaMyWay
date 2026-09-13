@@ -37,9 +37,9 @@ findings have been harvested. Historical Phase-13 closure evidence remains
 available through Git history and PR #71 rather than as a live architecture
 child.
 
-Current implementation placement and material architecture-to-code drift are
-owned by the [Implementation Map](../docs/IMPLEMENTATION_MAP.md). The active
-engineering boundary is owned by the
+Current implementation placement is reached through the governing primary
+Specifications under [`/spec`](../spec/README.md) and their implementation
+traceability into `/scripts`. The active engineering boundary is owned by the
 [Continuation State](../docs/CONTINUATION_STATE.md).
 
 Architecture may describe intended behaviour that is not yet implemented. Read

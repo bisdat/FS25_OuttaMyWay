@@ -98,8 +98,10 @@ task-relevant architecture / engine / implementation / policy / validation route
 The bootstrap is responsibility-directed, not an instruction to read every live
 document. Runtime semantic work follows current Architecture; GIANTS/FS25
 behaviour and API assumptions follow Engine Knowledge; implementation placement
-follows the Implementation Map; Configuration, Naming and Testing each retain
-their own authoritative routes. A pull-request review also reads the PR and
+follows the governing primary Specification and its implementation traceability
+into `/scripts`; current engineering or migration state follows Continuation State
+and the responsible Issue where applicable. Configuration, Naming and Testing each
+retain their own authoritative routes. A pull-request review also reads the PR and
 linked Issue, changed-file list and governing responsibility documents before
 interpreting the diff.
 
@@ -276,7 +278,7 @@ Every enduring item has one authoritative home; other documents link rather than
 | Current concept state | `CONCEPT_REGISTER.md` |
 | Significant choices and rationale | `DECISION_LOG.md` |
 | Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and `research/` |
-| Implementation placement / architecture-to-code mapping | `IMPLEMENTATION_MAP.md` |
+| Implementation-facing contracts / current source traceability | root `../spec/README.md` and the governing primary Specifications |
 | Configuration architecture | `CONFIGURATION.md` |
 | GUI architecture | `GUI.md` (Deferred placeholder) |
 | Release history | root `../CHANGELOG.md` |
