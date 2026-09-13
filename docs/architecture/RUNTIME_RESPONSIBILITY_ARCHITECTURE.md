@@ -26,7 +26,7 @@ This architecture declares the following Specification Jurisdictions.
 
 The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-**Observation** now routes to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), and **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md). The remaining primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture.
+**Operation Lifecycle** now routes to [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), and **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md). The remaining primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibilities described here remain current Architecture.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -84,7 +84,7 @@ Candidate construction, mandatory constraints and Decision are not redefined her
 
 **Does not own:** general Observation semantics, Situation interpretation, traffic strategy, Current Responsibility selection, physical representation fitness, Bounded Authority or Control.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md)
 
 ### Global Runtime and Local Operations
 
@@ -288,7 +288,7 @@ Control outcomes re-enter the architecture through Reality and Observation. Cont
 
 **Does not own:** raw evidence acquisition, representation truth construction, Candidate construction, strategic selection, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md)
 
 Situation Assessment answers: **What does current evidence mean for this Local Operation now?**
 
