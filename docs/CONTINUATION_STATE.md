@@ -46,13 +46,13 @@ A useful Continuation State should remain correct across unrelated merges. Its r
 
 Issue #141 is establishing durable authoring, ownership and traceability standards across `/docs`, future `/spec`, and `/scripts` before those standards are adopted into root working governance or automated enforcement.
 
-The current phase remains `/docs` reconciliation. `/spec`, source-documentation conventions and CI/pre-commit enforcement deliberately remain downstream until the documentation model has survived real application.
+The planned `/docs` reconciliation phase is now complete enough to support the next boundary: design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions. Source-documentation conventions, generated reference and CI/pre-commit enforcement remain downstream until the Specification model has itself survived real application.
 
 ## Accepted understanding
 
-The documentation standard has now been exercised against materially different responsibility shapes rather than remaining a whiteboard proposal.
+The documentation standard has been exercised against materially different responsibility shapes rather than remaining a whiteboard proposal.
 
-Accepted reconciliations have established:
+Accepted Architecture reconciliations establish:
 
 - **Runtime Responsibility Architecture** — explicit peer Specification Jurisdictions for the major runtime responsibility boundaries;
 - **Spatial Negotiation** — a specialisation of existing Runtime Jurisdictions plus the concrete **Cooperative Passage** Jurisdiction;
@@ -60,77 +60,81 @@ Accepted reconciliations have established:
 - **Candidate Support / Constraint / Decision** — three peer Jurisdictions, with Candidate Support Projection and the Prospective Decision Portfolio remaining subordinate concepts; and
 - **Configuration** — one recognised **Deferred Responsibility / Specification Jurisdiction**, explicitly not implemented and therefore correctly without a speculative `/spec`.
 
-The standards have therefore survived several different architecture shapes. Jurisdiction boundaries are being discovered from semantic cohesion rather than document headings, source topology or implementation convenience.
+The standards have therefore survived several different architecture shapes. Jurisdiction boundaries are discovered from semantic cohesion rather than document headings, source topology or implementation convenience.
 
-A top-level `/docs` authority census also established that not every live document is Architecture. Existing first-class roles remain legitimate for governance, current concept state, current continuation, validation methodology, scope/claim boundaries, historical decisions, engineering evidence, engine knowledge, research and localisation.
+The top-level `/docs` authority census established that not every live document is Architecture. Distinct first-class roles remain legitimate for governance, current concept state, current continuation, validation methodology, scope/claim boundaries, historical decisions, engineering evidence, engine knowledge, research, localisation and deferred responsibilities.
 
-The census exposed three important drift classes:
-
-1. **Current-State Authority Drift** — a document whose role is current state contains obsolete state.
-2. **Traceability Drift** — a correctly owned index or breadcrumb points to superseded headings or responsibility structure after Architecture reconciliation.
-3. **Placement Map -> Engineering History Leakage** — a current implementation-placement map accumulates build/PR chronology and stale implementation-detail links instead of remaining a truthful current map.
-
-The Continuation-State failure had a structural cause rather than merely missed maintenance: exact post-merge repository identity cannot be authored truthfully before the accepting merge exists. Its maintenance contract removes that self-invalidating responsibility.
-
-The current-index / traceability reconciliation established:
+The reconciliations established several durable document-authority boundaries:
 
 > **Concept Register != Jurisdiction Catalogue**
 
-The Concept Register remains a thin current-state index. Architecture owns the complete Specification Jurisdiction inventory; the register indexes a Jurisdiction name only when that name is also useful as a durable responsibility concept.
-
-Review of `docs/IMPLEMENTATION_MAP.md` established:
+The Concept Register remains a thin current-state index. Architecture owns the complete Specification Jurisdiction inventory.
 
 > **Implementation Map Is Transitional, Not Durable Authority**
 
-Its useful material is already tending toward stronger owners: Architecture owns semantic responsibility, source owns mechanism, Issues and Continuation own unresolved/current engineering boundaries, Git and the Journal own chronology, and future `/spec` plus generated traceability should own the durable Architecture-to-implementation contract route.
-
-The file remains live temporarily because repository bootstrap and engineering governance still route implementation-placement questions through it. Retirement must wait until `/spec` and source traceability can assume its legitimate navigation role and a Stranded Live Knowledge check has harvested any unique current knowledge.
-
-The Testing Methodology reconciliation establishes another authority boundary:
+`IMPLEMENTATION_MAP.md` remains temporarily because current bootstrap/governance still routes implementation-placement questions through it. Future `/spec` plus source/generated traceability should assume its legitimate navigation role before a Stranded Live Knowledge harvest and retirement.
 
 > **Testing Methodology != Validation Evidence Ledger**
 
-Testing Methodology owns durable rules for how claims are challenged and how evidence strength increases. `/tests` owns executable offline mechanisms and fixtures; workflow/source surfaces own current execution mechanics; Research, Scenario and Engineering Journal surfaces own bounded evidence and investigation history; Architecture and future Specification own normative contract meaning.
+Testing Methodology owns durable validation method and evidence-strength rules. `/tests` owns executable offline mechanisms and fixtures; evidence/history surfaces own what happened; Architecture and future Specification own normative contract meaning.
 
-Historical pass/fail counts, Issue/PR/build narratives and mechanism-specific runtime details are therefore not live methodology. The seven-level progressive-validation model, causal regression selection, Repeatable Reality Fixtures, evidence limits, independent CI execution and Reality-validation boundaries remain durable.
+> **Tests Are Contract Evidence, Not Contract Authority**
 
-The reconciliation also makes explicit:
+A passing test cannot enlarge the authority of the contract it exercises. Offline regression authority remains distinct from runtime Reality authority.
 
-- **Tests Are Contract Evidence, Not Contract Authority**;
-- **a passing test cannot enlarge the authority of the contract it exercises**;
-- **Regression Authority != Runtime Reality Authority**; and
-- `IMPLEMENTATION_MAP.md` may assist code walks only as a transitional navigation aid rather than normative implementation authority.
+The Naming Conventions conformance establishes another boundary:
+
+> **Naming Standard Applies Vocabulary; It Does Not Own Vocabulary**
+
+Architecture and other responsible engineering authorities define concepts and responsibility. Naming Conventions governs how repository names truthfully express those concepts. Mandatory semantic naming rules use `MUST` / `MUST NOT`; legitimate alternatives use `MAY`; exceptions are explicit rather than hidden inside ambiguous advisory wording.
+
+Naming conformance does not require one file per concept, one module per Jurisdiction or behavioural refactoring merely for uniformity. Historical/research provenance may retain historical identifiers where their provenance is materially meaningful, while current production names must express current responsibility.
 
 ## Immediate next bounded engineering step
 
-Perform the bounded normative-language and authority-conformance review of `docs/NAMING_CONVENTIONS.md`.
+Design the initial `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions.
 
-The increment should ask:
+This is a **Specification architecture/design increment**, not yet a source-documentation or generated-reference implementation.
 
-- whether MUST / MUST NOT / SHOULD / MAY usage matches the accepted documentation standard;
-- whether any advisory `should` wording is actually a mandatory semantic naming rule or needs an explicit legitimate exception class;
-- whether naming guidance duplicates architectural definitions instead of applying them;
-- whether current terminology reflects the reconciled Specification Jurisdictions and responsibility vocabulary without becoming another Architecture or Spec catalogue;
-- whether historical migration language or implementation-era naming examples still imply present authority; and
-- whether the document remains a naming standard rather than a source/API inventory.
+The next increment should establish:
 
-The goal is conformance and authority clarity, not wholesale renaming of current source during the documentation increment.
+- the responsibility and authority of `/spec` relative to `/docs`, `/scripts` and `/tests`;
+- one primary Specification per implemented Specification Jurisdiction;
+- the minimum authored Specification anatomy needed to express implementation-facing contract without duplicating Architecture or source;
+- reciprocal Architecture <-> Specification traceability;
+- how specialised/cross-Jurisdiction contracts reference rather than restate their authoritative owner;
+- how failure semantics, lifecycle, boundary contracts and durable invariants are represented;
+- how validation routes are identified without embedding rolling test history;
+- how future generated source reference and traceability attach without becoming normative meaning; and
+- how Deferred Responsibilities such as Configuration remain honestly without placeholder Specifications until implementation requires them.
+
+The design must be tested against several materially different Jurisdictions rather than inferred from a single convenient example.
+
+Likely representative cases include:
+
+- **Observation** or **Control** for a relatively direct Runtime Jurisdiction;
+- **Cooperative Passage** for a specialised lifecycle-rich Resolution Jurisdiction;
+- **Assessment Representation** for a representation/evidence-heavy Jurisdiction; and
+- **Candidate Support / Constraint Evaluation / Decision** for adjacent peer Jurisdictions with strict ownership separation.
+
+The objective is to discover a Specification model that preserves semantic ownership while giving humans and agents a reliable implementation-facing contract route.
 
 ## Subsequent #141 boundaries
 
-After Naming Conventions conformance, the present sequence is:
+After the `/spec` design has survived representative application, the present sequence is:
 
-1. design the `/spec` surface from the reconciled Architecture and explicit Specification Jurisdictions;
-2. prototype source-documentation / generated-reference tooling against representative modules before selecting a toolchain;
-3. once `/spec` and source traceability can replace the legitimate placement/navigation responsibility, perform a Stranded Live Knowledge harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating its bootstrap/navigation/governance references atomically; and
-4. only after the model has survived those applications, adopt the remaining proven rules into `AGENTS.md` and CI/pre-commit enforcement.
+1. create the bounded initial Specification surface and migrate the accepted implemented Jurisdictions from their temporary `pending migration` state;
+2. prototype source-documentation and generated-reference tooling against representative modules before selecting a toolchain;
+3. establish deterministic Architecture -> Specification -> source -> test traceability without turning generated reference into normative authority;
+4. once `/spec` and source traceability replace the legitimate placement/navigation role, perform a Stranded Live Knowledge harvest and retire `docs/IMPLEMENTATION_MAP.md`, updating bootstrap/navigation/governance references atomically; and
+5. only after these models have survived application, adopt the proven rules into `AGENTS.md` and CI/pre-commit enforcement.
 
-This sequence remains evidence-led. If a reconciliation disproves the current standard or ordering, update the model rather than preserving the plan for its own sake.
+This sequence remains evidence-led. If Specification design disproves the current standards or Jurisdiction model, update those authorities rather than preserving the plan for its own sake.
 
 ## Separate adjacent responsibilities
 
-Issue #139 remains the design-to-implementation investigation for supported player Configuration. The current Configuration Architecture intentionally leaves defaults, persistence ownership, multiplayer semantics, safe-disablement completion, runtime interface shape and per-setting change semantics unresolved.
+Issue #139 remains the design-to-implementation investigation for supported player Configuration. The current Configuration Architecture intentionally leaves defaults, persistence ownership, multiplayer semantics, safe-disablement completion, runtime interface shape and per-setting change semantics unresolved. Configuration therefore remains without a speculative `/spec` until that responsibility matures enough to require one.
 
 Issue #89 remains the deferred GUI/HUD/player-communication responsibility. Diagnostic HUDs are not promoted into product GUI merely because they exist.
 
-These adjacent responsibilities matter to the boundaries above but are not part of the current #141 documentation-authority increment.
+These adjacent responsibilities matter to future contracts but are not part of the current #141 Specification-design increment.
