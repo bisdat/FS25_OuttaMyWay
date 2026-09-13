@@ -26,7 +26,7 @@ This architecture declares the following Specification Jurisdictions.
 
 The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-**Operation Lifecycle** now routes to [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../../spec/CONTROL.md). **Obstruction Relocation** remains **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration. This is not a deferred-runtime status: the responsibility described here remains current Architecture.
+All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../../spec/CONTROL.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -496,7 +496,7 @@ While such a contradiction remains unreconciled, Control must not invent a new p
 
 **Does not own:** Causal Obstruction recognition, non-active classification, Player Claim classification, general Bounded Authority or generic Control mechanics.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/OBSTRUCTION_RELOCATION.md`](../../spec/OBSTRUCTION_RELOCATION.md)
 
 ### Beneficiary and controlled subject
 
