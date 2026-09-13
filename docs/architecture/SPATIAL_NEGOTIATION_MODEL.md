@@ -26,7 +26,7 @@ This architecture specialises two Jurisdictions declared by the Runtime architec
 
 Current Pair Assessment Scope, Productive Forward-Line Certainty, TURNING uncertainty, the Spatial Constraint Overlay, Bubble, Passage Leg, Resolution Epoch and Passage reserve are Concepts, Evidence Rules, Policies or lifecycle elements within these Jurisdictions. They do not create additional Specification Jurisdictions merely by being separately named.
 
-The primary Cooperative Passage `/spec` route is **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md). Issue #141 owns the active repository migration. The inherited Situation Assessment and Regulation `/spec` routes remain pending under the same migration as declared by the Runtime architecture.
+The primary Cooperative Passage `/spec` route is [`../../spec/COOPERATIVE_PASSAGE.md`](../../spec/COOPERATIVE_PASSAGE.md). The inherited Situation Assessment and Regulation `/spec` routes remain pending under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration.
 
 ## 1. Cross-jurisdiction spatial flow
 
@@ -264,7 +264,7 @@ If shaping moves the encounter beyond either productive-certainty horizon, the f
 
 **Does not own:** raw Observation, generic Situation Assessment, generic Candidate/Constraint/Decision machinery, Responsibility Transition, generic Resolution persistence, generic Bounded Authority, generic Control mechanics, productive routing or future GIANTS intent.
 
-**Primary Specification:** pending `/spec` migration under Issue #141.
+**Primary Specification:** [`../../spec/COOPERATIVE_PASSAGE.md`](../../spec/COOPERATIVE_PASSAGE.md)
 
 Cooperative Passage is a pairwise Resolution Commitment. It is distinct from Regulation: many Regulation episodes never require coupling, and straightforward opposed Passages may require no prior Regulation.
 
