@@ -65,6 +65,9 @@ local function physicalDiscs(representation)
     return result
 end
 
+-- Only settled GIANTS local continuation is projected as bounded Future Space. A
+-- TURNING worker stays unresolved because manoeuvre sweep is not represented, not
+-- because the unmodelled space has been shown clear.
 function Future.build(worker)
     if worker==nil or worker.activeObserved~=true then return {bounded=false,outcome="FUTURE_SPACE_UNRESOLVED",reason="WORKER_NOT_ACTIVE"} end
     local intent=worker.localIntent or {}
@@ -140,6 +143,9 @@ local function segmentDistance(a,b,c,d)
     return math.min(pointSegmentDistance(a,c,d),pointSegmentDistance(b,c,d),pointSegmentDistance(c,a,b),pointSegmentDistance(d,a,b))
 end
 
+-- This comparison owns positive interaction support only. A represented path/disc
+-- intersection is useful evidence; non-intersection cannot establish clearance
+-- because representation and manoeuvre coverage do not close the negative case.
 function Future.evaluatePair(subject,other,subjectFuture,otherFuture)
     subjectFuture=subjectFuture or Future.build(subject)
     otherFuture=otherFuture or Future.build(other)

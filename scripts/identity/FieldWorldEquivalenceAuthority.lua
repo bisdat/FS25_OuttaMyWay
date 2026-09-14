@@ -168,6 +168,9 @@ function Authority:resolve(snapshot)
         elseif classResult.outcome=="DIFFERENT_FIELD_WORLD" then differentCount=differentCount+1 end
     end
 
+    -- Assignment requires one coherent positive class and positive exclusion of all
+    -- alternatives. Ambiguity remains UNRESOLVED; this authority never chooses a
+    -- merely best-looking Field World when equivalence evidence does not close.
     if #sameClasses==1 and differentCount==#classKeys-1 then
         return self:_joinClass(snapshot,sameClasses[1],classComparisons)
     end
@@ -191,6 +194,9 @@ function Authority:resolve(snapshot)
     return result
 end
 
+-- Retirement is lifecycle-scoped evidence retirement, not a claim that the physical
+-- field ceased to exist: an equivalence class remains live only while a relevant
+-- Job Episode continues to witness it across observation cycles.
 function Authority:endObservationCycle()
     local retired={}
     for _,key in OuttaMyWay.ValueRecord.ipairs(sortedClassKeys(self.classes)) do

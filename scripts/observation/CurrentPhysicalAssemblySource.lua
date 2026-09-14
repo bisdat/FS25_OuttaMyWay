@@ -202,6 +202,9 @@ function Source:observe(mission)
     return self.records,self.diagnostics
 end
 
+-- A member position inside a Field World Snapshot is a positive presence witness
+-- only. Membership/position/Snapshot coverage is intentionally incomplete, so the
+-- absence of a witness here must never be promoted into physical exclusion.
 function Source:observeFieldWorldPresence(records,snapshots,fieldWorldReferenceKey)
     local snapshotList={}
     for _,snapshot in OuttaMyWay.ValueRecord.pairs(snapshots or {}) do snapshotList[#snapshotList+1]=snapshot end
