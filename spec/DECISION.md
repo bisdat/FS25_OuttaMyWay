@@ -213,6 +213,15 @@ Decision failure or non-selection does not itself release or establish Current R
 
 Purpose-specific contracts such as [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) define what their Candidates mean and what obligations selection would imply. Decision chooses among supported expressions; it does not redefine those purpose contracts.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/decision/DecisionSelector.lua`](../scripts/decision/DecisionSelector.lua) | `REALISES` |
+| [`scripts/decision/ProspectivePortfolioDecisionPolicy.lua`](../scripts/decision/ProspectivePortfolioDecisionPolicy.lua) | `REALISES` |
+| [`scripts/decision/TrafficPolicemanDecisionPolicy.lua`](../scripts/decision/TrafficPolicemanDecisionPolicy.lua) | `REALISES` |
+| [`scripts/contracts/DecisionRecord.lua`](../scripts/contracts/DecisionRecord.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

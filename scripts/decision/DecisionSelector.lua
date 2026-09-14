@@ -1,3 +1,6 @@
+--- Selects among mandatory-admissible Candidates and publishes the explicit Decision outcome without establishing Current Responsibility.
+-- Specification Jurisdictions: `DECISION`
+
 OuttaMyWay.DecisionSelector={}
 local Selector=OuttaMyWay.DecisionSelector
 Selector.__index=Selector
