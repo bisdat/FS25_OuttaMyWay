@@ -1,3 +1,6 @@
+--- Defines and validates the semantic Regulation responsibility product.
+-- Specification Jurisdictions: `REGULATION`
+
 OuttaMyWay.Regulation = OuttaMyWay.ValueRecord.register(
     "Regulation",
     OuttaMyWay.ValueRecord.define(
