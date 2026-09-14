@@ -47,7 +47,7 @@ Architecture owns the existence and topology of Specification Jurisdictions. Eac
 
 > **Specification Jurisdiction Is the Cross-Surface Semantic Anchor.**
 
-A distinct Jurisdiction may `SPECIALISES` another distinct Jurisdiction. Architectural specialisation inside one Jurisdiction does not create a machine specialisation edge.
+A distinct Jurisdiction may declare `SPECIALISES` against another distinct Jurisdiction. Architectural specialisation inside one Jurisdiction does not create a machine specialisation edge.
 
 A generic machine `DEPENDS_ON` relationship is deliberately not adopted. Current cross-Jurisdiction prose mixes prerequisites, optional contributors, downstream consumers, handoffs and authority boundaries; forcing those into one edge would invent semantics.
 
