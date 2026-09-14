@@ -1,3 +1,6 @@
+--- Enforces Resolution settling and terminal ordering, authority release and open-obligation gating.
+-- Specification Jurisdictions: `RESOLUTION_LIFECYCLE`
+
 OuttaMyWay.TerminalSettlementEvaluator = {}
 local Evaluator = OuttaMyWay.TerminalSettlementEvaluator
 Evaluator.__index = Evaluator

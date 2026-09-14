@@ -1,3 +1,6 @@
+--- Owns Resolution-obligation identity, terminal dependency and evidence-bound scoped settlement.
+-- Specification Jurisdictions: `RESOLUTION_LIFECYCLE`
+
 OuttaMyWay.ObligationLedger = {}
 local Ledger = OuttaMyWay.ObligationLedger
 Ledger.__index = Ledger

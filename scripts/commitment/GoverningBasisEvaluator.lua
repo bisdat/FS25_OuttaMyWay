@@ -1,3 +1,6 @@
+--- Interprets authoritative Governing Basis evidence into continuation or canonical Resolution terminal meaning.
+-- Specification Jurisdictions: `RESOLUTION_LIFECYCLE`
+
 OuttaMyWay.GoverningBasisEvaluator = {}
 local Evaluator = OuttaMyWay.GoverningBasisEvaluator
 Evaluator.__index = Evaluator
