@@ -1,6 +1,8 @@
--- FS25_OuttaMyWay runtime entry point. Current TEST build identity is owned by scripts/config.lua and modDesc.xml.
+-- FS25_OuttaMyWay runtime entry point. Current build identity is owned by scripts/config.lua and modDesc.xml.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
+-- Module source order is dependency-sensitive: sourced modules may consume globals established by earlier modules.
+-- Preserve source-before-consumer ordering; this bootstrap sequence does not define architectural authority.
 local modules={
     "scripts/config.lua",
     "scripts/contracts/ValueRecord.lua","scripts/contracts/ObservationSnapshot.lua","scripts/contracts/OperationalPicture.lua","scripts/contracts/CandidateAction.lua","scripts/contracts/CandidateInventory.lua","scripts/contracts/ConstraintVerdict.lua","scripts/contracts/ConstraintVerdictSet.lua","scripts/contracts/DecisionRecord.lua","scripts/contracts/CommitmentRecord.lua","scripts/contracts/ObligationRecord.lua","scripts/contracts/Regulation.lua","scripts/contracts/ResolutionCommitment.lua","scripts/contracts/BoundedAuthorityGrant.lua","scripts/contracts/ControlRequest.lua","scripts/contracts/ControlOutcome.lua","scripts/contracts/ReplayFixture.lua","scripts/contracts/ReplayRunResult.lua","scripts/contracts/GoverningBasisVerdict.lua","scripts/contracts/CommitmentApplicationRecord.lua","scripts/contracts/PassiveLiveTraceRecord.lua",
