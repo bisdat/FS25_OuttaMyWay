@@ -288,6 +288,22 @@ Fresh Observation and reassessment are the normal recovery route from unresolved
 
 Resolution contracts own persistence/obligation terminality. Situation Assessment interprets the current evidence those contracts consume; it does not invent or settle obligations outside those contracts.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) | `REALISES` |
+| [`scripts/assessment/CurrentPairAssessmentScope.lua`](../scripts/assessment/CurrentPairAssessmentScope.lua) | `REALISES` |
+| [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua) | `REALISES` |
+| [`scripts/assessment/FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) | `REALISES` |
+| [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) | `REALISES` |
+| [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) | `REALISES` |
+| [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) | `REALISES` |
+| [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) | `REALISES` |
+| [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) | `REALISES` |
+| [`scripts/contracts/OperationalPicture.lua`](../scripts/contracts/OperationalPicture.lua) | `REALISES` |
+| [`scripts/assessment/ProgressionGeometry.lua`](../scripts/assessment/ProgressionGeometry.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

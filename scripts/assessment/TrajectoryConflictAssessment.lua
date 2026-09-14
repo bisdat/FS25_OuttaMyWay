@@ -1,3 +1,6 @@
+--- Interprets current motion evidence into bounded trajectory and opposed-corridor Situation relationships.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 -- Trajectory Conflict Assessment consumes sealed/current Situation evidence and
 -- has no Candidate, Decision or Control authority.
 

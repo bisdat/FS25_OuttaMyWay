@@ -1,3 +1,6 @@
+--- Interprets follower and leader boundary demand into current Situation-owned relationship knowledge.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 -- Follower Boundary-Demand Situation assessment.
 --
 -- Situation Knowledge only.  This module separates:

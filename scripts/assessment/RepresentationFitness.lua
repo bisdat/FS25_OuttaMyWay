@@ -1,3 +1,6 @@
+--- Arbitrates whether claim-bearing representations are fit for the current Situation question and horizon.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 OuttaMyWay.RepresentationFitness = {}
 local Fitness = OuttaMyWay.RepresentationFitness
 

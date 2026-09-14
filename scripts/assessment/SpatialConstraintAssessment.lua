@@ -1,3 +1,6 @@
+--- Interprets current space evidence into bounded Spatial Constraint and Resolution-Margin Situation knowledge.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 -- Situation-owned prospective Forward Intersection knowledge. The represented
 -- continuations end at Field World boundaries; no route is predicted beyond
 -- that positive evidence.

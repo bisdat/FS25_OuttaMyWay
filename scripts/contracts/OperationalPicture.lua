@@ -1,3 +1,6 @@
+--- Sealed Situation Assessment product preserving current semantic meaning while excluding Decision and Control authority.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 local forbiddenDecisionFields = {
     yieldRole = true,
     progressRole = true,

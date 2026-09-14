@@ -1,3 +1,6 @@
+--- Provides Situation-specific neutral progression geometry without owning Situation semantic conclusions.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 -- Neutral geometry used by Situation/shadow progression reasoning.
 -- Pure maths only; no semantic, Decision or Control authority.
 OuttaMyWay.ProgressionGeometry={}
