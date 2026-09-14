@@ -1,3 +1,6 @@
+--- Defines and validates complete Candidate inventory identity, support boundary and uniqueness.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`
+
 local function unique(values,label)
     local seen={}
     for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do

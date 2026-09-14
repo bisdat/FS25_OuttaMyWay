@@ -1,3 +1,6 @@
+--- Constructs bounded Obstruction Relocation Candidate support from current obstruction evidence.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`, `OBSTRUCTION_RELOCATION`
+
 OuttaMyWay.ObstructionRelocationCandidateSupport={}
 local Support=OuttaMyWay.ObstructionRelocationCandidateSupport
 Support.__index=Support

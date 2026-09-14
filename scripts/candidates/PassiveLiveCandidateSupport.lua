@@ -1,3 +1,6 @@
+--- Constructs explicit passive and fail-closed Candidate support while preserving GIANTS authority.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`
+
 OuttaMyWay.PassiveLiveCandidateSupport = {}
 local Support = OuttaMyWay.PassiveLiveCandidateSupport
 Support.__index = Support
