@@ -1,3 +1,6 @@
+--- Owns Local Operation establishment, membership reconciliation, evidence asymmetry and natural closure.
+-- Specification Jurisdictions: `OPERATION_LIFECYCLE`
+
 OuttaMyWay.OperationAdmission = {}
 local Admission = OuttaMyWay.OperationAdmission
 Admission.__index = Admission

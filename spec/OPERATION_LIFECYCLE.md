@@ -261,6 +261,16 @@ Physical representation may be bootstrapped/cached during a Job Episode, but rep
 
 Job-founded Current Responsibilities may lose governing basis when exact Job Episodes terminate. Those Jurisdictions own responsibility reconciliation; Operation Lifecycle supplies the lifecycle fact.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/identity/JobEpisodeAdmission.lua`](../scripts/identity/JobEpisodeAdmission.lua) | `REALISES` |
+| [`scripts/identity/OperationAdmission.lua`](../scripts/identity/OperationAdmission.lua) | `REALISES` |
+| [`scripts/identity/FieldWorldSnapshotRegistry.lua`](../scripts/identity/FieldWorldSnapshotRegistry.lua) | `REALISES` |
+| [`scripts/identity/FieldWorldEquivalenceEvaluator.lua`](../scripts/identity/FieldWorldEquivalenceEvaluator.lua) | `REALISES` |
+| [`scripts/identity/FieldWorldEquivalenceAuthority.lua`](../scripts/identity/FieldWorldEquivalenceAuthority.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.
