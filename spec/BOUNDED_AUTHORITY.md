@@ -248,6 +248,19 @@ Resolution contracts own obligations/purpose. Bounded Authority may grant partic
 
 Control consumes current Bounded Authority and realises no broader physical effect. Control may independently reject/narrow/stop on physical feasibility/safety grounds.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/contracts/BoundedAuthorityGrant.lua`](../scripts/contracts/BoundedAuthorityGrant.lua) | `REALISES` |
+| [`scripts/authority/BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua) | `REALISES` |
+| [`scripts/authority/RegulationBoundedAuthority.lua`](../scripts/authority/RegulationBoundedAuthority.lua) | `REALISES` |
+| [`scripts/authority/FollowerBoundaryMagnitudePolicy.lua`](../scripts/authority/FollowerBoundaryMagnitudePolicy.lua) | `REALISES` |
+| [`scripts/authority/ResolutionSpaceProgressionEnvelope.lua`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua) | `REALISES` |
+| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
+| [`scripts/authority/AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua) | `SUPPORTS` |
+| [`scripts/authority/EffectiveActuationComposition.lua`](../scripts/authority/EffectiveActuationComposition.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.
@@ -257,7 +270,11 @@ Primary current implementation routes include:
 - [`scripts/contracts/BoundedAuthorityGrant.lua`](../scripts/contracts/BoundedAuthorityGrant.lua) — current grant value representation;
 - [`scripts/authority/BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua) — current common grant registry, current-responsibility/token/composition validation, target monotonicity and Control-request materialisation;
 - [`scripts/authority/RegulationBoundedAuthority.lua`](../scripts/authority/RegulationBoundedAuthority.lua) — current purpose-specific temporal-permission policy, magnitude refresh, quiescence/reactivation and supporting Regulation effects;
-- runtime purpose-specific request construction for Cooperative Passage and Obstruction Relocation; and
+- [`scripts/authority/FollowerBoundaryMagnitudePolicy.lua`](../scripts/authority/FollowerBoundaryMagnitudePolicy.lua) — final follower physical-speed permission derived from the Situation-owned admissible envelope;
+- [`scripts/authority/ResolutionSpaceProgressionEnvelope.lua`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua) — current progression-magnitude, reserve and Intent-Revelation Creep policy;
+- [`scripts/authority/AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua) — subordinate actuation-token exclusivity/lifetime substrate;
+- [`scripts/authority/EffectiveActuationComposition.lua`](../scripts/authority/EffectiveActuationComposition.lua) — subordinate actuation-composition coherence and exclusivity substrate;
+- [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — purpose-specific Bounded Authority request construction for Cooperative Passage and Obstruction Relocation; and
 - responsibility-transition / terminal-settlement paths that release dependent grants when their semantic basis ends.
 
 The common `BoundedAuthority` module is not the entire Jurisdiction. Purpose-specific authority policies remain part of this contract even when placed elsewhere.

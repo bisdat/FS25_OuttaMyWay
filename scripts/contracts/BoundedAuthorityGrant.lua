@@ -1,3 +1,6 @@
+--- Defines the current Bounded Authority grant product binding responsibility, subject, capability, target and validity context.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 local function requireIdentity(name,value,prefix)
     if type(value)~="string" or value=="" then error("BoundedAuthorityGrant requires "..name,3) end
     if prefix~=nil and string.sub(value,1,string.len(prefix)+1)~=prefix.."-" then

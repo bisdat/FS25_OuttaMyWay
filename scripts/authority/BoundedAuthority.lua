@@ -1,3 +1,6 @@
+--- Establishes, validates, materialises and releases current Bounded Authority grants without enlarging downstream Control authority.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 OuttaMyWay.BoundedAuthority = {}
 local Authority = OuttaMyWay.BoundedAuthority
 Authority.__index = Authority
