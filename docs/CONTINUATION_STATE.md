@@ -12,9 +12,19 @@ Git owns exact accepted commit chronology. Executable-version owners own TEST bu
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering concern — Issue #141
+## Current engineering boundary — post-#141 selection point
 
-Issue #141 is establishing durable authoring, ownership and structural-conformance standards across the repository's Authority Triad:
+Issue #141 has completed the repository-wide documentation/source-documentation standards and source-traceability programme.
+
+The repository is now at a **stable concern-selection boundary**. No successor engineering concern is selected by this document.
+
+The next active concern must be chosen deliberately from current evidence and open repository work rather than inherited from #141 migration chronology.
+
+## Accepted steady-state documentation model
+
+`docs/DOCUMENT_STANDARDS.md` is the normative authoring, ownership and cross-surface conformance standard for live engineering documentation and source documentation.
+
+The Authority Triad remains:
 
 ```text
 /architecture
@@ -37,173 +47,74 @@ The governing cross-surface rule remains:
 
 Tests are evidence rather than a fourth authority surface. `/docs` remains the separate engineering-knowledge and governance surface.
 
-## Accepted #141 understanding
+## Steady-state source traceability
 
-The documentation-standard work and subsequent whiteboard/POC have established the following model.
+Specification Jurisdiction is the stable semantic identity joining Architecture, primary Specification and materially participating production source.
 
-### Specification Jurisdiction is the semantic anchor
+Architecture owns Jurisdiction existence and `SPECIALISES` topology. A primary Specification owns source-participation classification as `REALISES` or `SUPPORTS`. Participating source reciprocally acknowledges the complete set of Jurisdiction IDs in which it materially participates, without assigning itself authority or relationship type.
 
-Architecture owns the existence and topology of Specification Jurisdictions. Each implemented Jurisdiction has one primary Specification. A Jurisdiction receives one canonical machine-stable ID, while subordinate Responsibilities remain human architectural concepts unless evidence later establishes another need.
-
-> **Specification Jurisdiction Is the Cross-Surface Semantic Anchor.**
-
-A distinct Jurisdiction may declare `SPECIALISES` against another distinct Jurisdiction. Architectural specialisation inside one Jurisdiction does not create a machine specialisation edge.
-
-A generic machine `DEPENDS_ON` relationship is deliberately not adopted. Current cross-Jurisdiction prose mixes prerequisites, optional contributors, downstream consumers, handoffs and authority boundaries; forcing those into one edge would invent semantics.
-
-### Specification owns source-participation classification
-
-The source-role vocabulary survived a whole-portfolio dry classification across all 15 current primary Jurisdictions without requiring a third role:
-
-- `REALISES` — the source directly implements Jurisdiction-owned semantic meaning;
-- `SUPPORTS` — the source provides materially Jurisdiction-specific subordinate infrastructure without owning the semantic boundary.
-
-`SUPPORTS` is direct rather than transitive. Mere imports, calls, upstream production, downstream consumption, shared technical utility or implementation of another Jurisdiction do not create source participation automatically.
-
-> **Calling a Contract != Implementing the Contract.**
-
-> **Technical Dependency != Contract Support.**
-
-> **Support Is Direct, Not Transitive.**
-
-Source placement does not determine contract participation. One module may truthfully realise several Jurisdictions when it directly implements several semantic slices.
-
-> **Source Participation Follows Implemented Meaning, Not Directory Placement.**
-
-### Source acknowledges participation without assigning authority
-
-The primary Specification owns `REALISES` / `SUPPORTS`. Source reciprocally acknowledges only the Jurisdiction IDs in which it materially participates.
-
-The demonstrated source representation is a visible module-documentation line of the form:
-
-```lua
--- Specification Jurisdictions: `COOPERATIVE_PASSAGE`, `CONTROL`
-```
-
-The acknowledgement is intentionally untyped. Declaration order carries no authority.
-
-> **Reciprocity != Co-Ownership.**
-
-> **Specification Owns Contract-Participation Classification.**
-
-> **Source Acknowledges Participation; It Does Not Assign Itself Contract Authority.**
-
-> **Authoritative Edge, Reciprocal Acknowledgement.**
-
-### Navigation remains richer than the machine graph
-
-A Specification's ordinary Implementation traceability may route to upstream producers, downstream consumers, neighbouring authorities, shared mechanisms or directories that are useful to an engineer but are not material contract participants.
+Navigation remains richer than the machine graph:
 
 > **Navigation Trace != Contract Participation.**
 
-Machine participant rows therefore use exact production-file paths. Directory links, globs and phrases such as "runtime orchestration" remain human navigation rather than semantic graph edges.
+Source participation follows implemented meaning rather than directory placement, imports or call topology.
 
-### Validation remains evidence
+> **Source Participation Follows Implemented Meaning, Not Directory Placement.**
 
-A primary Specification may name exact repository evidence as `CHALLENGES`. The validation artefact does not reciprocally self-certify contract coverage.
+> **Calling a Contract != Implementing the Contract.**
+
+> **Support Is Direct, Not Transitive.**
+
+Validation remains evidence. A Specification may declare exact repository validation artefacts as `CHALLENGES`; the validation artefact does not self-certify coverage.
 
 > **A Validation Surface Challenges a Contract; It Does Not Certify It.**
 
-> **A Contract Names Its Evidence Route; Evidence Does Not Self-Certify Its Contract Coverage.**
+## Structural conformance
 
-Targeted in-game Reality validation and scenario interpretation remain human-readable evidence routes rather than invented repository nodes.
+The bounded source-traceability adoption period is complete and no longer a live repository state.
 
-## POC evidence
+`tests/test_document_conformance_structure.py` derives the declared conformance graph from the authoritative Architecture, Specification and source surfaces and runs inside the blocking `Structural contracts` CI job.
 
-Draft PR #184 is a branch-only experiment and is not an adoption candidate.
-
-Its first phase proved that a visible source documentation line can be consumed independently by a deterministic extractor and LDoc 1.5.0 while coexisting with LuaLS/LuaCATS-style parameter/return annotations. A custom module-level LDoc `@participates` tag was weaker because default generated HTML omitted the custom values; visible structured prose rendered correctly. Semantic IDs containing underscores must appear as inline code to preserve literal identity through Markdown rendering.
-
-The second phase extended the experiment across generated copies of real Architecture, Specification and source artefacts. It covered five representative Jurisdictions, including specialisation and many-to-many source participation.
-
-The POC successfully derived a disposable conformance graph and rejected six deliberately injected defects for the intended reasons:
-
-1. Architecture / primary-Spec disagreement;
-2. missing source acknowledgement;
-3. source acknowledgement without Spec classification;
-4. unknown `SPECIALISES` target;
-5. a `SPECIALISES` cycle; and
-6. an implemented Jurisdiction with no `REALISES` participant.
-
-Normal repository Offline Validation also remained green on the experimental branch.
-
-The experiment supports:
-
-> **Parse the Contracted Surface; Do Not Interpret the Document.**
-
-> **The Conformance Graph Should Be Derived, Not Authored.**
-
-> **Derived Index != Authority Surface.**
-
-> **Shared Syntax; Independent Consumers.**
-
-Generated LDoc or other reference output remains optional and derived.
-
-> **Documentation Renderer != Documentation Authority.**
-
-## Structural-conformance boundary
-
-Machine conformance is intentionally narrow. It may prove declared structural coherence including canonical Jurisdiction identity, primary-Spec reciprocity, `SPECIALISES` target/cycle validity, exact source paths, legal `REALISES` / `SUPPORTS` classification, at least one realiser per implemented Jurisdiction, Spec/source acknowledgement closure, repository validation-path resolution, incoming relationship closure after rename/deletion, and eventual Authority-Triad change disposition.
-
-It must not infer undeclared semantic relationships from prose, directories, imports or call topology. It cannot establish that Architecture is correct, that a source classification is semantically right, that an omitted participant should have been declared, or that a test adequately represents Reality.
+The checker validates only objectively knowable declared relationships. It does not infer semantic participation from prose, directories, imports or call topology and cannot establish semantic completeness.
 
 > **Tooling Can Prove Declared Closure; Humans Establish Semantic Completeness.**
 
-> **No Speculative Linting in Normative Conformance.**
-
 > **Machine conformance establishes declared structural coherence. Engineering establishes semantic truth.**
 
-## Bounded migration state
+There is no authored central conformance manifest. Generated graph/index or source-reference output, if ever useful, remains derived and non-authoritative.
 
-The representation has now been selected, but the accepted repository has not yet migrated all Architecture, Specifications and source to it.
+The former migration batching idea **`Migration Unit = Closed Participation Component` is retired**. Repository graph connectivity is not a required change-set boundary.
 
-The bounded adoption exception therefore remains necessary until all current implemented Jurisdictions have canonical IDs and exact primary-Spec routes; every primary Specification classifies its complete material production participant set by exact path as `REALISES` or `SUPPORTS`; every participating source module reciprocally acknowledges its complete Jurisdiction set; every implemented Jurisdiction has at least one realiser; and the derived graph closes with zero unresolved relationships.
+> **Migration Slice != Graph Component.**
 
-No authored central manifest is required or desired. A generated graph/index may exist as a disposable diagnostic or presentation product.
+## Retired #141 migration state
 
-Permanent CI/pre-commit enforcement remains a later adoption decision after the repository-wide migration proves the contract in accepted source.
+The following are no longer current continuation instructions and must not be resurrected as live programme state:
 
-## Immediate next bounded #141 engineering step
+- participant-classification audit as pending work;
+- repository-wide source-acknowledgement migration as pending work;
+- bounded-adoption exceptions for incomplete Architecture/Specification/source declarations;
+- delaying permanent declared-graph conformance until after migration; and
+- treating graph connected components as mandatory migration units.
 
-With the Jurisdiction identity spine established, complete the **participant-classification audit** before changing production source traceability.
+Historical details of the #141 investigation, POC, migration slices and closure proof remain in GitHub Issue #141, its pull requests and Git history rather than in this live continuation document.
 
-For every current primary Specification, classify each current implementation route and any additional source discovered by inspection as `REALISES`, `SUPPORTS`, navigation-only, or unresolved pending inspection. Build the inverse source-module → Jurisdiction map at the same time.
+## Executable baseline
 
-`navigation-only` and `unresolved` are audit categories, not repository relationship types.
+The documentation/governance work through #141 did not consume a TEST BUILD or change runtime behaviour. The accepted executable TEST identity remains `.75` unless a later runtime change explicitly advances it.
 
-No primary Specification should publish an authoritative `Contract participants` table until its material participant set is believed complete.
+## Immediate next bounded engineering step
 
-> **An Authoritative Participant Set Must Be Complete When Published.**
+Select the next active engineering concern deliberately.
 
-When the audit is complete, derive the bipartite Jurisdiction ↔ material-source graph and compute its connected components. Participant-edge migration units are closed participation components, not arbitrary Jurisdiction batches.
+Before implementation begins:
 
-> **Migration Unit = Closed Participation Component.**
+1. perform the Repository Context Bootstrap and Relevant Knowledge Sweep required by `AGENTS.md`;
+2. identify the current evidence-backed problem rather than inheriting a historical phase or migration label;
+3. establish the governing Architecture and primary Specification boundary;
+4. record the selected concern here as the new continuation boundary; and
+5. only then move from observation/discussion into implementation.
 
-No source acknowledgement should be added merely from directory placement or current traceability prose. The audit must apply `REALISES | SUPPORTS` semantics to implemented meaning.
+Open Issues are candidate work, not automatically the current concern.
 
-## Subsequent #141 boundaries
-
-After repository-wide traceability migration succeeds:
-
-1. implement only the deterministic conformance checker justified by the accepted contract;
-2. apply Authority Triad change-set disposition enforcement without pretending to validate the human judgement behind `VALIDATED_UNCHANGED`;
-3. decide separately whether LDoc or another generated source-reference product has demonstrated enough value to own an optional presentation responsibility; and
-4. adopt permanent CI/pre-commit/root governance only after the checker survives real repository use.
-
-> **Adoption follows validation.**
-
-If tooling or later Reality disproves the standards, Specification model or Jurisdiction boundaries, update those authorities rather than preserving the programme for its own sake.
-
-## Separate adjacent responsibilities
-
-The current source-conformance investigations exposed by Specification work remain separate from #141 unless their evidence changes Architecture or a primary Specification:
-
-- Issue #170 — **Support Precedence != Admissibility Bypass**;
-- Issue #172 — **Lifecycle Certainty and Observation Completeness Are Orthogonal** and **Positive Termination != Missing-Membership Evidence**;
-- Issue #174 — **Positive Physical Actuation Requires Positive Bounded Authority**;
-- Issue #176 — **Resolution Failure / Escalation != Causal-Obstruction Basis Cessation**;
-- Issue #152 — live diagnostic-responsibility review;
-- Issue #139 — supported player Configuration investigation; and
-- Issue #89 — deferred GUI/HUD/player-communication responsibility.
-
-Configuration remains a Deferred Responsibility and does not receive a speculative primary Specification merely to satisfy structural symmetry.
+> **Concern Selection != Backlog Order**
