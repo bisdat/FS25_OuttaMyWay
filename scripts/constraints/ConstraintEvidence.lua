@@ -1,3 +1,6 @@
+--- Constructs Constraint-local PASS/FAIL/UNRESOLVED evaluator outcomes before authoritative verdict publication.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.ConstraintEvidence={}
 local Evidence=OuttaMyWay.ConstraintEvidence
 

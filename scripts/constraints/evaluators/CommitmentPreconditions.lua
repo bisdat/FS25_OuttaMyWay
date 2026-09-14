@@ -1,3 +1,6 @@
+--- Evaluates mandatory commitment preconditions, including completeness of bounded observation contracts.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.CommitmentPreconditionsConstraint={}
 local Evaluator=OuttaMyWay.CommitmentPreconditionsConstraint
 Evaluator.id="COMMITMENT_PRECONDITIONS"

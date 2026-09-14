@@ -1,3 +1,6 @@
+--- Evaluates the mandatory responsibility-compatibility question for a Candidate on the current picture.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.ResponsibilityCompatibilityConstraint={}
 local Evaluator=OuttaMyWay.ResponsibilityCompatibilityConstraint
 Evaluator.id="RESPONSIBILITY_COMPATIBILITY"

@@ -1,3 +1,6 @@
+--- Sealed complete Constraint verdict-set product binding one Candidate inventory to all mandatory Constraint identities.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 local function unique(values,label)
     local seen={}
     for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do

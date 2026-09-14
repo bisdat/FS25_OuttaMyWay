@@ -1,3 +1,6 @@
+--- Evaluates whether purpose-scoped Representation Fitness satisfies a Candidate's mandatory representation needs.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.RepresentationFitnessConstraint={}
 local Evaluator=OuttaMyWay.RepresentationFitnessConstraint
 Evaluator.id="REPRESENTATION_FITNESS"
