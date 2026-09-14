@@ -1,3 +1,6 @@
+--- Sealed mandatory Constraint verdict product preserving PASS/FAIL/UNRESOLVED meaning and evidence lineage.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.ConstraintVerdict = OuttaMyWay.ValueRecord.register(
     "ConstraintVerdict",
     OuttaMyWay.ValueRecord.define("ConstraintVerdict", {"identity", "epoch", "constraintId", "evaluator", "candidateId", "result", "mandatory", "evidence", "provenance", "reason", "revalidationTrigger"}, {}, function(values)

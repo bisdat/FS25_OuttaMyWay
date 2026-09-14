@@ -138,6 +138,19 @@ Constraint Evaluation failure does not itself choose an alternative or establish
 
 [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) remains downstream. A PASS verdict never establishes responsibility.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/constraints/ConstraintEngine.lua`](../scripts/constraints/ConstraintEngine.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/RepresentationFitness.lua`](../scripts/constraints/evaluators/RepresentationFitness.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/ResponsibilityCompatibility.lua`](../scripts/constraints/evaluators/ResponsibilityCompatibility.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/CommitmentPreconditions.lua`](../scripts/constraints/evaluators/CommitmentPreconditions.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/EffectiveActuationComposition.lua`](../scripts/constraints/evaluators/EffectiveActuationComposition.lua) | `REALISES` |
+| [`scripts/contracts/ConstraintVerdict.lua`](../scripts/contracts/ConstraintVerdict.lua) | `REALISES` |
+| [`scripts/contracts/ConstraintVerdictSet.lua`](../scripts/contracts/ConstraintVerdictSet.lua) | `REALISES` |
+| [`scripts/constraints/ConstraintEvidence.lua`](../scripts/constraints/ConstraintEvidence.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

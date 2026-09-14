@@ -1,3 +1,6 @@
+--- Evaluates every mandatory Constraint for every Candidate and publishes the complete exact-picture verdict set.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.ConstraintEngine={}
 local Engine=OuttaMyWay.ConstraintEngine
 Engine.__index=Engine

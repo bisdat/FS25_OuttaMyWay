@@ -1,3 +1,6 @@
+--- Evaluates structural validity of the Candidate's effective actuation composition when physical actuation is proposed.
+-- Specification Jurisdictions: `CONSTRAINT_EVALUATION`
+
 OuttaMyWay.EffectiveActuationCompositionConstraint={}
 local Evaluator=OuttaMyWay.EffectiveActuationCompositionConstraint
 Evaluator.id="EFFECTIVE_ACTUATION_COMPOSITION"
