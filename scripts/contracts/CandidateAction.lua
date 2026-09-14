@@ -1,3 +1,6 @@
+--- Defines and validates the Candidate semantic product while rejecting downstream authority leakage.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`
+
 local allowedCapabilities = {
     CONTINUE_UNCHANGED=true,
     CONTINUE_OBSERVATION=true,

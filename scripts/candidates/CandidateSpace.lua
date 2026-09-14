@@ -1,3 +1,6 @@
+--- Materialises the complete supported Candidate inventory while excluding downstream Constraint authority.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`
+
 OuttaMyWay.CandidateSpace = {}
 local CandidateSpace=OuttaMyWay.CandidateSpace
 CandidateSpace.__index=CandidateSpace

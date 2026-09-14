@@ -207,6 +207,19 @@ Situation Assessment owns the current semantic relationships and Operational Pic
 
 [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) alone makes a selected responsibility authoritative. Candidate Support remains prospective.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/candidates/ProspectiveDecisionPortfolioSupport.lua`](../scripts/candidates/ProspectiveDecisionPortfolioSupport.lua) | `REALISES` |
+| [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
+| [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) | `REALISES` |
+| [`scripts/candidates/PassiveLiveCandidateSupport.lua`](../scripts/candidates/PassiveLiveCandidateSupport.lua) | `REALISES` |
+| [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
+| [`scripts/candidates/CandidateSpace.lua`](../scripts/candidates/CandidateSpace.lua) | `REALISES` |
+| [`scripts/contracts/CandidateAction.lua`](../scripts/contracts/CandidateAction.lua) | `REALISES` |
+| [`scripts/contracts/CandidateInventory.lua`](../scripts/contracts/CandidateInventory.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

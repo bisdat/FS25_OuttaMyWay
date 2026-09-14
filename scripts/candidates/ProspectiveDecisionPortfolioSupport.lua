@@ -1,3 +1,6 @@
+--- Composes complete fresh Candidate-support groups into one Candidate-support-enriched Decision picture.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`
+
 OuttaMyWay.ProspectiveDecisionPortfolioSupport={}
 local Support=OuttaMyWay.ProspectiveDecisionPortfolioSupport
 Support.__index=Support
