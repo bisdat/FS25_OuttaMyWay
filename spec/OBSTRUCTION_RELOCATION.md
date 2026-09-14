@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Obstruction Relocation  
+**Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
+
 **Parent Jurisdiction:** [`Resolution Lifecycle`](RESOLUTION_LIFECYCLE.md)  
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#8-specification-jurisdiction--obstruction-relocation)
 

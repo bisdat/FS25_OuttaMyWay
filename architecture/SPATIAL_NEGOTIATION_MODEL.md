@@ -268,7 +268,9 @@ If shaping moves the encounter beyond either productive-certainty horizon, the f
 
 **Does not own:** raw Observation, generic Situation Assessment, generic Candidate/Constraint/Decision machinery, Responsibility Transition, generic Resolution persistence, generic Bounded Authority, generic Control mechanics, productive routing or future GIANTS intent.
 
-**Primary Specification:** [`../../spec/COOPERATIVE_PASSAGE.md`](../spec/COOPERATIVE_PASSAGE.md)
+**Jurisdiction ID:** `COOPERATIVE_PASSAGE`
+**Primary Specification:** [`spec/COOPERATIVE_PASSAGE.md`](../spec/COOPERATIVE_PASSAGE.md)
+**Specialises:** `RESOLUTION_LIFECYCLE`
 
 Cooperative Passage is a pairwise Resolution Commitment. It is distinct from Regulation: many Regulation episodes never require coupling, and straightforward opposed Passages may require no prior Regulation.
 

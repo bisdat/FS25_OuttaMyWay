@@ -84,7 +84,8 @@ Situation Assessment owns current semantic relationships. Candidate Support asks
 
 **Does not own:** current Situation classification, mandatory Constraint verdicts, cross-purpose preference, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/CANDIDATE_SUPPORT.md`](../spec/CANDIDATE_SUPPORT.md)
+**Jurisdiction ID:** `CANDIDATE_SUPPORT`
+**Primary Specification:** [`spec/CANDIDATE_SUPPORT.md`](../spec/CANDIDATE_SUPPORT.md)
 
 Candidate Support answers:
 
@@ -240,7 +241,8 @@ Historical completed-worker or Terminal-Egress provenance does not create a para
 
 **Does not own:** Candidate construction, Situation interpretation, preference, winner selection, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/CONSTRAINT_EVALUATION.md`](../spec/CONSTRAINT_EVALUATION.md)
+**Jurisdiction ID:** `CONSTRAINT_EVALUATION`
+**Primary Specification:** [`spec/CONSTRAINT_EVALUATION.md`](../spec/CONSTRAINT_EVALUATION.md)
 
 Constraint Evaluation answers:
 
@@ -264,7 +266,8 @@ Constraint Evaluation may reject, narrow or admit. It does not select the winner
 
 **Does not own:** current Situation classification, Candidate construction, support provenance, mandatory constraint meaning, Responsibility Transition, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/DECISION.md`](../spec/DECISION.md)
+**Jurisdiction ID:** `DECISION`
+**Primary Specification:** [`spec/DECISION.md`](../spec/DECISION.md)
 
 Decision answers:
 

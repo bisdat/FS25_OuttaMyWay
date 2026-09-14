@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Decision  
+**Jurisdiction ID:** `DECISION`
+
 **Primary Architecture Authority:** [`architecture/CANDIDATE_SUPPORT_PROJECTION.md`](../architecture/CANDIDATE_SUPPORT_PROJECTION.md#4-specification-jurisdiction--decision)
 
 This Specification owns the implementation-facing contract for choosing among supported, mandatory-constraint-admissible prospective alternatives using accepted compatibility, precedence, preference and deterministic tie-break policy.

@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Responsibility Transition  
+**Jurisdiction ID:** `RESPONSIBILITY_TRANSITION`
+
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#6-specification-jurisdiction--responsibility-transition)
 
 This Specification owns the implementation-facing contract for authoritative establishment, termination and atomic replacement of **Current Responsibility**, including responsibility-instance identity.

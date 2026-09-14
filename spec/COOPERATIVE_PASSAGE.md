@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Cooperative Passage  
+**Jurisdiction ID:** `COOPERATIVE_PASSAGE`
+
 **Parent Specification:** [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md)  
 **Primary Architecture Authority:** [`architecture/SPATIAL_NEGOTIATION_MODEL.md`](../architecture/SPATIAL_NEGOTIATION_MODEL.md#5-specification-jurisdiction--cooperative-passage)
 
