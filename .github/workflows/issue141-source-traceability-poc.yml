@@ -25,7 +25,7 @@ jobs:
       - name: Render with LDoc 1.5.0
         uses: lunarmodules/ldoc@v1.5.0
         with:
-          args: -c experiments/issue141_source_traceability_poc/workspace/config.ld
+          args: -c experiments/issue141_source_traceability_poc/workspace/config.ld experiments/issue141_source_traceability_poc/workspace/src
 
       - name: Verify rendered Jurisdictions and LuaCATS coexistence
         run: python3 experiments/issue141_source_traceability_poc/poc.py verify-render
