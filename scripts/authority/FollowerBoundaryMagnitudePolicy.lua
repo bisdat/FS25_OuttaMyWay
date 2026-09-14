@@ -1,3 +1,6 @@
+--- Materialises final follower physical speed permission from the Situation-owned admissible magnitude envelope.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 -- Authority-owned Follower Boundary magnitude materialisation.
 --
 -- Situation Assessment owns the current admissible magnitude envelope.

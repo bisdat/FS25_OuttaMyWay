@@ -1,3 +1,6 @@
+--- Provides subordinate effective-actuation composition coherence used by Bounded Authority without deciding current permission.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 OuttaMyWay.EffectiveActuationComposition = {}
 local Composition = OuttaMyWay.EffectiveActuationComposition
 

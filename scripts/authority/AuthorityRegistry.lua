@@ -1,3 +1,6 @@
+--- Provides subordinate actuation-token exclusivity and lifetime substrate without itself granting semantic physical permission.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 OuttaMyWay.AuthorityRegistry = {}
 local Registry = OuttaMyWay.AuthorityRegistry
 Registry.__index = Registry

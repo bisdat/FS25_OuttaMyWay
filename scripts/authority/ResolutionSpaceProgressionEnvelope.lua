@@ -1,3 +1,6 @@
+--- Owns Bounded Authority progression-magnitude policy, including contingency reserve and Intent-Revelation Creep.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 -- Resolution-Space Progression Envelope with Intent-Revelation Creep.
 -- Bounded-Authority magnitude policy only. Situation owns the Resolution-Space obligation and
 -- role assignment; this module owns the elastic integer Regulation magnitude and unresolved-intent creep floor.

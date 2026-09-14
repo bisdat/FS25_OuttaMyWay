@@ -1,3 +1,6 @@
+--- Derives purpose-specific current Regulation physical permissions, magnitude refresh and quiescence under Bounded Authority.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`
+
 -- Bounded Authority specialisation for live Regulation physical permissions.
 -- It preserves the proven Regulation policies and request shapes while
 -- LiveControlDispatcher routes only already-authorised requests.
