@@ -1,5 +1,5 @@
---- Acquires current physical pose and publishes purpose-scoped representation evidence with explicit claim limits.
--- Specification Jurisdictions: `OBSERVATION`, `ASSESSMENT_REPRESENTATION`
+--- Acquires current physical pose and publishes purpose-scoped obstruction-relocation representation evidence with explicit claim limits.
+-- Specification Jurisdictions: `OBSERVATION`, `ASSESSMENT_REPRESENTATION`, `OBSTRUCTION_RELOCATION`
 
 OuttaMyWay.CurrentPhysicalPoseSource={}
 local Source=OuttaMyWay.CurrentPhysicalPoseSource
