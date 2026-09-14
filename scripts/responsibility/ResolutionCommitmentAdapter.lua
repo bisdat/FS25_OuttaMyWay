@@ -1,5 +1,5 @@
---- Materializes the read-only Resolution Commitment successor view required by Responsibility Transition while owning no lifecycle authority.
--- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+--- Materializes the semantic Resolution Commitment view consumed at the Responsibility Transition boundary without owning retained substrate lifecycle authority.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`, `RESOLUTION_LIFECYCLE`
 
 OuttaMyWay.ResolutionCommitmentAdapter = {}
 local Adapter = OuttaMyWay.ResolutionCommitmentAdapter

@@ -1,3 +1,6 @@
+--- Defines and validates the semantic Resolution Commitment product.
+-- Specification Jurisdictions: `RESOLUTION_LIFECYCLE`
+
 local function validateAssemblyIds(name,values)
     local previous=nil
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(values or {}) do

@@ -187,6 +187,16 @@ Fresh semantic evidence arrives through the upstream evidence and interpretation
 
 Bounded Authority and Control may narrow/refuse physical action and report outcomes. They do not settle Resolution obligations or declare semantic success solely from actuator completion.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua) | `REALISES` |
+| [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) | `REALISES` |
+| [`scripts/commitment/ObligationLedger.lua`](../scripts/commitment/ObligationLedger.lua) | `REALISES` |
+| [`scripts/commitment/GoverningBasisEvaluator.lua`](../scripts/commitment/GoverningBasisEvaluator.lua) | `REALISES` |
+| [`scripts/commitment/TerminalSettlementEvaluator.lua`](../scripts/commitment/TerminalSettlementEvaluator.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.
