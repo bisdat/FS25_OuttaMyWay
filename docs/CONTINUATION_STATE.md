@@ -6,7 +6,7 @@ This document is the compact, replace-in-place description of OuttaMyWay's **cur
 
 It is **not** a repository-status dashboard.
 
-Git owns exact accepted commit chronology. Executable-version owners own TEST build identity. GitHub Issues and pull requests own their own state and discussion history. Canonical-release identity remains owned by release governance.
+Git owns exact accepted commit chronology. Executable-version owners own build identity. GitHub Issues and pull requests own their own state and discussion history. Canonical-release identity remains owned by release governance.
 
 > **Continuation Boundary != Repository Status Dashboard**
 
@@ -14,11 +14,11 @@ Only the copy on accepted `main` is authoritative. On a working branch this file
 
 ## Current engineering boundary — post-#141 selection point
 
-Issue #141 has completed the repository-wide documentation/source-documentation standards and source-traceability programme.
+Issue #141 has completed the repository-wide documentation/source-documentation standards, source-traceability and selective semantic source-documentation programme.
 
 The repository is now at a **stable concern-selection boundary**. No successor engineering concern is selected by this document.
 
-The next active concern must be chosen deliberately from current evidence and open repository work rather than inherited from #141 migration chronology.
+The next active concern must be chosen deliberately from current evidence and open repository work rather than inherited from #141 migration or audit chronology.
 
 ## Accepted steady-state documentation model
 
@@ -69,6 +69,18 @@ Validation remains evidence. A Specification may declare exact repository valida
 
 > **A Validation Surface Challenges a Contract; It Does Not Certify It.**
 
+## Accepted source-documentation closure
+
+Source-documentation sufficiency is selective and semantics-weighted. The closure review did not treat comment density or zero-comment files as defects by themselves; it reviewed implementation areas where missing local explanation could cause a maintainer to violate an ownership boundary, causal ordering, fail-safe condition, or other non-obvious contract.
+
+> **Comment Need Follows Semantic Risk, Not Comment Density.**
+
+The final bootstrap review established one additional local source contract: `scripts/main.lua` module source order is dependency-sensitive because sourced modules may consume globals established by earlier modules. That order must therefore remain source-before-consumer, but it does not define architectural authority or Specification sequencing.
+
+> **Bootstrap Order Is Dependency Order, Not Architectural Authority.**
+
+The event-listener list was not promoted into a broader ordering contract. Only evidence-backed causal relationships are documented; incidental registration sequence must not be converted into architecture without supporting Reality or contract evidence.
+
 ## Structural conformance
 
 The bounded source-traceability adoption period is complete and no longer a live repository state.
@@ -87,21 +99,23 @@ The former migration batching idea **`Migration Unit = Closed Participation Comp
 
 > **Migration Slice != Graph Component.**
 
-## Retired #141 migration state
+## Retired #141 migration and audit state
 
 The following are no longer current continuation instructions and must not be resurrected as live programme state:
 
 - participant-classification audit as pending work;
 - repository-wide source-acknowledgement migration as pending work;
+- repository-wide zero-comment or comment-density sweeps as pending work;
 - bounded-adoption exceptions for incomplete Architecture/Specification/source declarations;
-- delaying permanent declared-graph conformance until after migration; and
-- treating graph connected components as mandatory migration units.
+- delaying permanent declared-graph conformance until after migration;
+- treating graph connected components as mandatory migration units; and
+- promoting incidental bootstrap or event-listener sequence into architectural authority without evidence.
 
-Historical details of the #141 investigation, POC, migration slices and closure proof remain in GitHub Issue #141, its pull requests and Git history rather than in this live continuation document.
+Historical details of the #141 investigation, POC, migration slices, source-documentation audit and closure proof remain in GitHub Issue #141, its pull requests and Git history rather than in this live continuation document.
 
 ## Executable baseline
 
-The documentation/governance work through #141 did not consume a TEST BUILD or change runtime behaviour. The accepted executable TEST identity remains `.75` unless a later runtime change explicitly advances it.
+The documentation/governance work through #141 did not advance the build component or change runtime behaviour. The accepted executable build identity remains `.75` unless a later runtime change explicitly advances it.
 
 ## Immediate next bounded engineering step
 
@@ -110,7 +124,7 @@ Select the next active engineering concern deliberately.
 Before implementation begins:
 
 1. perform the Repository Context Bootstrap and Relevant Knowledge Sweep required by `AGENTS.md`;
-2. identify the current evidence-backed problem rather than inheriting a historical phase or migration label;
+2. identify the current evidence-backed problem rather than inheriting a historical phase, migration label or audit label;
 3. establish the governing Architecture and primary Specification boundary;
 4. record the selected concern here as the new continuation boundary; and
 5. only then move from observation/discussion into implementation.
