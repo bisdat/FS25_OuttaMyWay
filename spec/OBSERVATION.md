@@ -150,17 +150,39 @@ Situation Assessment consumes Observation and assigns current semantic meaning. 
 
 Control may produce physical outcomes. Those outcomes become evidence only by returning through Reality and Observation.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/contracts/ObservationSnapshot.lua`](../scripts/contracts/ObservationSnapshot.lua) | `REALISES` |
+| [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) | `REALISES` |
+| [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) | `REALISES` |
+| [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) | `REALISES` |
+| [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `REALISES` |
+| [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) | `REALISES` |
+| [`scripts/observation/LiveInteractionObservation.lua`](../scripts/observation/LiveInteractionObservation.lua) | `REALISES` |
+| [`scripts/observation/LocalIntentObservation.lua`](../scripts/observation/LocalIntentObservation.lua) | `REALISES` |
+| [`scripts/observation/NativeFieldWorkObservation.lua`](../scripts/observation/NativeFieldWorkObservation.lua) | `REALISES` |
+| [`scripts/observation/FieldBoundedFutureSpace.lua`](../scripts/observation/FieldBoundedFutureSpace.lua) | `REALISES` |
+| [`scripts/runtime/LiveRuntimeCoordinator.lua`](../scripts/runtime/LiveRuntimeCoordinator.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**. It describes the present mechanism; it does not define the contract.
 
 Primary current implementation routes include:
 
-- [`scripts/contracts/ObservationSnapshot.lua`](../scripts/contracts/ObservationSnapshot.lua) — current sealed Snapshot value contract and guard against downstream semantic fields;
-- [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) — current publication boundary that assigns Observation identity/epoch and converts raw source evidence into the Snapshot;
-- [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — current live source composition;
-- bounded evidence sources under [`scripts/observation/`](../scripts/observation/), including Job, physical assembly/pose, native field-work and interaction evidence; and
-- runtime orchestration that publishes/consumes sealed Observation Snapshots.
+- [`scripts/contracts/ObservationSnapshot.lua`](../scripts/contracts/ObservationSnapshot.lua) — sealed Snapshot value contract and guard against downstream semantic fields;
+- [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) — publication boundary assigning Observation identity/epoch while preserving raw evidence limits;
+- [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — live GIANTS/runtime evidence composition;
+- [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) — current non-semantic Physical Assembly source evidence;
+- [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) — current pose acquisition plus purpose-scoped representation-evidence publication; its Assessment Representation role is governed separately;
+- [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) — current GIANTS AI-job source evidence;
+- [`scripts/observation/LiveInteractionObservation.lua`](../scripts/observation/LiveInteractionObservation.lua) — current interaction source evidence;
+- [`scripts/observation/LocalIntentObservation.lua`](../scripts/observation/LocalIntentObservation.lua) — bounded local movement-intent evidence;
+- [`scripts/observation/NativeFieldWorkObservation.lua`](../scripts/observation/NativeFieldWorkObservation.lua) — current native field-work evidence;
+- [`scripts/observation/FieldBoundedFutureSpace.lua`](../scripts/observation/FieldBoundedFutureSpace.lua) — bounded Field World future-space evidence; and
+- [`scripts/runtime/LiveRuntimeCoordinator.lua`](../scripts/runtime/LiveRuntimeCoordinator.lua) — Control-outcome return into raw Observation and live-cycle publication coordination.
 
 No one source file is the Observation Jurisdiction. Source topology may change while this contract remains stable.
 

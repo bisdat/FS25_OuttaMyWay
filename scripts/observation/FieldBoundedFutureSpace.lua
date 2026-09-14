@@ -1,3 +1,6 @@
+--- Acquires bounded future-space evidence within the Field World without deciding downstream Situation meaning.
+-- Specification Jurisdictions: `OBSERVATION`
+
 OuttaMyWay.FieldBoundedFutureSpace = {}
 local Future=OuttaMyWay.FieldBoundedFutureSpace
 

@@ -1,3 +1,6 @@
+--- Acquires current interaction evidence for downstream interpretation without assigning traffic responsibility.
+-- Specification Jurisdictions: `OBSERVATION`
+
 OuttaMyWay.LiveInteractionObservation = {}
 local Observation = OuttaMyWay.LiveInteractionObservation
 

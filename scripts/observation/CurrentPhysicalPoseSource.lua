@@ -1,3 +1,6 @@
+--- Acquires current physical pose and publishes purpose-scoped representation evidence with explicit claim limits.
+-- Specification Jurisdictions: `OBSERVATION`, `ASSESSMENT_REPRESENTATION`
+
 OuttaMyWay.CurrentPhysicalPoseSource={}
 local Source=OuttaMyWay.CurrentPhysicalPoseSource
 Source.__index=Source
@@ -41,9 +44,9 @@ function Source.new()
     return setmetatable({publishedCount=0},Source)
 end
 
--- Observation-only augmentation performed before RuntimeObservationAdapter seals
--- the snapshot. The pose is a current physical reference for bounded relocation
--- planning; it grants no Situation relevance, negative clearance or actuation.
+-- Observation acquisition and Assessment Representation publication are performed before RuntimeObservationAdapter seals
+-- the snapshot. The pose remains current evidence; the purpose-scoped representation adds bounded claim permissions
+-- without granting Situation relevance, negative clearance or actuation authority.
 function Source:observe(raw,liveObservationSource)
     if type(raw)~="table" then return 0 end
     raw.geometry=raw.geometry or {}

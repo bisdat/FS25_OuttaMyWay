@@ -1,3 +1,6 @@
+--- Publishes raw runtime evidence as one identified, epoch-bound Observation Snapshot while preserving source limitations.
+-- Specification Jurisdictions: `OBSERVATION`
+
 OuttaMyWay.RuntimeObservationAdapter = {}
 local Adapter = OuttaMyWay.RuntimeObservationAdapter
 Adapter.__index = Adapter

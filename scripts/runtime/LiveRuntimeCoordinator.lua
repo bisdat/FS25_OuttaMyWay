@@ -1,3 +1,6 @@
+--- Returns authorised Control outcomes through raw Observation and coordinates publication before downstream processing.
+-- Specification Jurisdictions: `OBSERVATION`
+
 -- Runtime-owned live coordinator. Reality capture and sealed processing are
 -- causally upstream of diagnostics. Diagnostics receive results only after the
 -- Runtime has completed Situation -> Decision -> bounded Control dispatch.

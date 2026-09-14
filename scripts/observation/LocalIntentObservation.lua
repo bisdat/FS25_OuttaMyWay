@@ -1,3 +1,6 @@
+--- Acquires bounded local movement-intent evidence without converting it into Candidate or responsibility semantics.
+-- Specification Jurisdictions: `OBSERVATION`
+
 OuttaMyWay.LocalIntentObservation = {}
 local Observation=OuttaMyWay.LocalIntentObservation
 
