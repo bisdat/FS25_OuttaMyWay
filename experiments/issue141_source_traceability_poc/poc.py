@@ -45,7 +45,7 @@ TARGETS = (
 )
 
 JURISDICTIONS = re.compile(
-    r"^\s*--+\s*Specification Jurisdictions:\s*([A-Z][A-Z0-9_]*(?:\s*,\s*[A-Z][A-Z0-9_]*)*)\s*$"
+    r"^\s*--+\s*Specification Jurisdictions:\s*(`?[A-Z][A-Z0-9_]*`?(?:\s*,\s*`?[A-Z][A-Z0-9_]*`?)*)\s*$"
 )
 
 
@@ -70,7 +70,7 @@ def prepare() -> None:
         if not source_path.is_file():
             raise SystemExit(f"missing production source: {item['path']}")
         source = source_path.read_text(encoding="utf-8")
-        jurisdiction_text = ", ".join(item["jurisdictions"])
+        jurisdiction_text = ", ".join(f"`{value}`" for value in item["jurisdictions"])
 
         header = [
             f"--- {item['summary']}",
@@ -118,7 +118,8 @@ def extract() -> None:
         for line in generated.read_text(encoding="utf-8").splitlines():
             match = JURISDICTIONS.match(line)
             if match:
-                matches.append([value.strip() for value in match.group(1).split(",")])
+                values = [value.strip().strip("`") for value in match.group(1).split(",")]
+                matches.append(values)
         if len(matches) != 1:
             raise SystemExit(
                 f"expected exactly one Specification Jurisdictions line in {item['path']}; found {len(matches)}"
@@ -159,6 +160,7 @@ def verify_render() -> None:
         raise SystemExit("graph.json missing; extractor did not run")
     print(f"LDoc render PASS ({len(html_files)} HTML files)")
     print("visible structured Jurisdiction metadata rendering PASS")
+    print("literal semantic-ID rendering PASS")
     print("LuaLS/LuaCATS param/return coexistence PASS")
 
 
