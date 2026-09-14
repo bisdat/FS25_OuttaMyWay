@@ -1,3 +1,6 @@
+--- Interprets current evidence for persistence, waiting, positive dissolution or supersession of established responsibilities.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 OuttaMyWay.CurrentResponsibilityAssessment = {}
 local Assessment = OuttaMyWay.CurrentResponsibilityAssessment
 Assessment.__index = Assessment

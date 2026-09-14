@@ -1,3 +1,6 @@
+--- Builds ephemeral exact-member pair assessment scope without creating persistent pair authority.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 -- Ephemeral Situation scope rebuilt from current Operation membership and exact
 -- active Job Episodes for every Operational Picture.
 -- Absence Is Not Separation.

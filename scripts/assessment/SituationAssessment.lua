@@ -1,3 +1,6 @@
+--- Interprets one coherent current evidence cycle into the authoritative Situation-owned Operational Picture.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 OuttaMyWay.SituationAssessment = {}
 local Assessment = OuttaMyWay.SituationAssessment
 Assessment.__index = Assessment

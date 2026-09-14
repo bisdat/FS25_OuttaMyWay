@@ -1,3 +1,6 @@
+--- Interprets positive current blocking evidence into Causal Obstruction Situation meaning without granting relocation authority.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 OuttaMyWay.CausalObstructionAssessment = {}
 local Assessment = OuttaMyWay.CausalObstructionAssessment
 Assessment.__index = Assessment

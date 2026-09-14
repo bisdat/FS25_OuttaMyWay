@@ -1,3 +1,6 @@
+--- Publishes Situation-owned mechanical fitness for the current Cooperative Passage preflight question.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
+
 -- Purpose-specific Cooperative Passage mechanical fitness assessment.
 --
 -- Situation does not pre-classify Passage capability by vehicle identity. Once
