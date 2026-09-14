@@ -287,6 +287,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
+| [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `SUPPORTS` |
 | [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) | `SUPPORTS` |
 
 ## Implementation traceability

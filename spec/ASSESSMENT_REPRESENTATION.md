@@ -298,17 +298,28 @@ Situation Assessment determines representation fitness for the current question.
 
 [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) consumes purpose-specific representation for Passage recognition, Candidate planning and Reality-verified execution. It owns the Passage question and specialised sufficiency requirements; this Jurisdiction owns the evidence product and its claim permissions.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `REALISES` |
+| [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) | `REALISES` |
+| [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua) | `REALISES` |
+| [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) | `REALISES` |
+| [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.
 
 Current implementation routes include:
 
-- [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current Job-Episode-scoped assembly representation catalogue, local primitives, physical/configuration evidence and purpose-specific Transit Passage products;
-- [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) — current positive-conflict representation with explicit `coverageComplete=false` and `negativeClearanceAuthority=false` limits;
-- [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua) — current plan-view footprint summarisation mechanism;
-- [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) and neighbouring Observation sources — current publication of purpose-scoped physical-representation evidence into the Observation boundary; and
-- [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) — current **consumer-side Situation Assessment** fitness evaluation. Its placement is useful traceability but it does not transfer the Representation-Fitness Arbiter responsibility into this Specification.
+- [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — Job-Episode-scoped assembly representation catalogue, local primitives, physical/configuration evidence and purpose-specific Transit Passage products; its Physical Identity Resolution and Cooperative Passage roles are governed separately;
+- [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) — bounded current positive-conflict representation with explicit `coverageComplete=false` and `negativeClearanceAuthority=false` limits; its Physical Identity Resolution role is governed separately;
+- [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua) — plan-view geometry summarisation and bounded current-overlap evidence without manufactured negative clearance;
+- [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) — pair-specific facing-extents and represented-clearance product for the Cooperative Passage purpose; its Cooperative Passage support role is governed separately;
+- [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) — Observation acquisition plus purpose-scoped obstruction-relocation representation publication with explicit validity, uncertainty and permitted conclusions; its Observation and Obstruction Relocation roles are governed separately; and
+- [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) — **consumer-side Situation Assessment** fitness evaluation. Its placement is useful navigation but it does not transfer the Representation-Fitness Arbiter responsibility into this Specification.
 
 Current source does not require one universal Representation object or concrete `RepresentationPassport` type. Contract semantics may be distributed across representation records so long as scope, validity, provenance, uncertainty, coverage and claim permissions remain coherently recoverable.
 

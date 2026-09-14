@@ -327,6 +327,7 @@ Core Obstruction Relocation availability does not depend on a per-capability pla
 | [`scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua`](../scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/control/ObstructionRelocationControl.lua`](../scripts/control/ObstructionRelocationControl.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
+| [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
@@ -335,6 +336,7 @@ The following mapping is **non-normative source traceability**.
 Current implementation routes include:
 
 - [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — upstream Situation production for current Causal Obstruction and blocker classification;
+- [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) — Observation/Assessment Representation publication of the relocation-specific current physical-reference product; it supports this Jurisdiction without owning Causal Obstruction or relocation responsibility;
 - [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) — current blocker-scoped support, bounded inward objective, reassessment and purpose-specific terminal evidence construction;
 - [`scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua`](../scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua) — current specialised Resolution establishment/maintenance adapter;
 - [`scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua`](../scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua) — current specialised commitment/settlement integration with the generic Resolution substrate;

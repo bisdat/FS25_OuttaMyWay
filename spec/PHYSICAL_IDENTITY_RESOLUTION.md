@@ -178,6 +178,14 @@ A Physical Identity Resolution success therefore does not tell Situation Assessm
 
 Those Jurisdictions may consume representation products downstream. Physical Identity Resolution itself creates no Regulation, Resolution Commitment, Bounded Authority or Control permission.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `REALISES` |
+| [`scripts/representation/EntityLocalShapeEvidence.lua`](../scripts/representation/EntityLocalShapeEvidence.lua) | `REALISES` |
+| [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.
@@ -186,10 +194,10 @@ Current implementation is intentionally not one-module-per-Jurisdiction.
 
 Relevant implementation routes include:
 
-- [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current shared mechanism for Physical Assembly discovery, candidate hierarchy scanning, entity-local geometry measurement, rejection/provenance capture and job-scoped representation knowledge;
-- [`scripts/representation/EntityLocalShapeEvidence.lua`](../scripts/representation/EntityLocalShapeEvidence.lua) — current shared bounded evaluator for geometry/world coherence and root-alias discrimination;
-- current physical-evidence sources under [`scripts/observation/`](../scripts/observation/) — Observation-owned inputs supplying assembly and pose evidence; and
-- shared representation consumers that reuse admitted entity-local evidence for their own separate products.
+- [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — shared Physical Assembly discovery, candidate hierarchy scanning, entity-local geometry measurement, rejection/provenance capture and job-scoped representation knowledge; its Assessment Representation and Cooperative Passage roles are governed separately;
+- [`scripts/representation/EntityLocalShapeEvidence.lua`](../scripts/representation/EntityLocalShapeEvidence.lua) — bounded Geometry–World Coherence and Descendant–Root Alias Discrimination evaluator;
+- [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) — current candidate discovery, current-member participation revalidation and entity-local admission/rejection before bounded positive-conflict representation publication; its Assessment Representation role is governed separately; and
+- current physical-evidence sources under [`scripts/observation/`](../scripts/observation/) — upstream Observation-owned inputs supplying assembly and pose evidence without acquiring Physical Identity Resolution authority merely through consumption.
 
 `AssemblyRepresentationCache.lua` spans more than Physical Identity Resolution. Only the semantic slice that establishes correspondence/claim evidence is governed by this Specification; cache lifetime, coverage composition and final Assessment Representation permissions belong to neighbouring contracts.
 

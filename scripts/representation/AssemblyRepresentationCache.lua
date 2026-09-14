@@ -1,3 +1,6 @@
+--- Resolves runtime physical correspondence and publishes job-scoped, purpose-bounded assembly representation products, including Transit Passage geometry.
+-- Specification Jurisdictions: `PHYSICAL_IDENTITY_RESOLUTION`, `ASSESSMENT_REPRESENTATION`, `COOPERATIVE_PASSAGE`
+
 -- Job-Episode physical assembly representation and cached capability evidence.
 OuttaMyWay.AssemblyRepresentationCache = {}
 local Cache=OuttaMyWay.AssemblyRepresentationCache
