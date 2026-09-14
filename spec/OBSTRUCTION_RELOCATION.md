@@ -317,6 +317,17 @@ Control executes the already-authorised relocation/support request, rechecks cur
 
 Core Obstruction Relocation availability does not depend on a per-capability player configuration toggle. Product master enablement and current claim/authority boundaries remain separate concerns.
 
+
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) | `REALISES` |
+| [`scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua`](../scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua`](../scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua) | `REALISES` |
+| [`scripts/control/ObstructionRelocationControl.lua`](../scripts/control/ObstructionRelocationControl.lua) | `REALISES` |
+| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

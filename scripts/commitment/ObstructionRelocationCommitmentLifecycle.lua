@@ -1,3 +1,6 @@
+--- Applies and settles the specialised Obstruction Relocation commitment against parent lifecycle semantics.
+-- Specification Jurisdictions: `OBSTRUCTION_RELOCATION`
+
 OuttaMyWay.ObstructionRelocationCommitmentLifecycle={}
 local Lifecycle=OuttaMyWay.ObstructionRelocationCommitmentLifecycle
 

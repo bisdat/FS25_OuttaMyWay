@@ -1,3 +1,6 @@
+--- Executes authorised Obstruction Relocation actuation, higher-priority claim checks, cleanup and physical outcome publication.
+-- Specification Jurisdictions: `CONTROL`, `OBSTRUCTION_RELOCATION`
+
 -- Provenance-neutral physical Obstruction Relocation execution.
 -- This Control consumes only an authorised current Obstruction Relocation objective,
 -- current physical subject and current Bounded Authority. Historical Job provenance
