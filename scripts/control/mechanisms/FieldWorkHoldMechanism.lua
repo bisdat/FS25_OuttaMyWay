@@ -1,3 +1,6 @@
+--- Provides subordinate GIANTS field-work Hold actuation and release below Control without owning the reason to hold.
+-- Specification Jurisdictions: `CONTROL`
+
 -- Physical Hold mechanism below Control.
 -- Reuses the empirically proven GIANTS getCanAIFieldWorkerContinueWork
 -- integration point. It owns no traffic policy, Commitment or semantic

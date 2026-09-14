@@ -1,3 +1,6 @@
+--- Provides subordinate non-job physical actuation, claim checks and neutralisation below Control without relocation-purpose authority.
+-- Specification Jurisdictions: `CONTROL`
+
 -- Shared non-job physical actuation mechanism for provenance-neutral Obstruction Relocation.
 -- Mechanical safety boundary only: semantic movement permission remains in the
 -- current Responsibility / Bounded Authority / Control path. This mechanism neither

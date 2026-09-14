@@ -1,3 +1,6 @@
+--- Defines physical Control outcome evidence without claiming semantic responsibility or Resolution settlement.
+-- Specification Jurisdictions: `CONTROL`
+
 OuttaMyWay.ControlOutcome = OuttaMyWay.ValueRecord.register(
     "ControlOutcome",
     OuttaMyWay.ValueRecord.define("ControlOutcome", {"identity", "requestId", "status", "observedPhysicalEffect", "progress", "provenance", "timestamp"}, {"completionEvidence", "failureEvidence"}, function(values)

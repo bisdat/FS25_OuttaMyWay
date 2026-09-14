@@ -1,3 +1,6 @@
+--- Provides subordinate work/raise/fold configuration actuation and restoration below Control without semantic configuration authority.
+-- Specification Jurisdictions: `CONTROL`
+
 -- Physical configuration mechanism below Control.
 -- Reuses the proven GIANTS work/raise/fold integration. It owns no traffic
 -- policy or semantic configuration conclusion. Cached Transit actuation serves

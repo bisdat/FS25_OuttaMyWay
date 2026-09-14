@@ -1,3 +1,6 @@
+--- Routes already-authorised Control requests to compatible executors and publishes physical dispatch outcomes without strategic choice.
+-- Specification Jurisdictions: `CONTROL`
+
 OuttaMyWay.LiveControlDispatcher = {}
 local Dispatcher = OuttaMyWay.LiveControlDispatcher
 Dispatcher.__index = Dispatcher

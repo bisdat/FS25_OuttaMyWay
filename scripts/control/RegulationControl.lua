@@ -1,3 +1,6 @@
+--- Executes already-authorised Regulation lease application/release and physical Control observation.
+-- Specification Jurisdictions: `CONTROL`
+
 -- Regulation Control boundary.
 -- Production boundary for already-authorised REGULATE_SPEED requests.
 -- Physical drive mechanics are supplied by the production NativeDriveMechanism;
