@@ -1,3 +1,6 @@
+--- Sealed Decision product preserving exact input lineage, explicit non-selection, and selected-candidate viability.
+-- Specification Jurisdictions: `DECISION`
+
 local allowedActions={CREATE=true,MAINTAIN=true,REVISE=true,WAIT=true,SETTLE=true}
 local function contains(values,target)
     for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do if value==target then return true end end

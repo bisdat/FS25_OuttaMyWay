@@ -1,3 +1,6 @@
+--- Chooses the governing support scope for one prospective portfolio using Decision-owned compatibility and precedence policy.
+-- Specification Jurisdictions: `DECISION`
+
 OuttaMyWay.ProspectivePortfolioDecisionPolicy={}
 local Policy=OuttaMyWay.ProspectivePortfolioDecisionPolicy
 Policy.KIND="PROSPECTIVE_DECISION_PORTFOLIO_COMPATIBILITY"

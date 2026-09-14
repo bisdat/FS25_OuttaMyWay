@@ -1,6 +1,7 @@
--- Traffic Policeman sequential Decision policy.
+--- Traffic Policeman sequential Decision policy.
 -- Implements the settled sequential Decision ordering only. It does not derive traffic evidence,
 -- assign roles, construct Vulnerable Space/Convergent Projection or actuate Control.
+-- Specification Jurisdictions: `DECISION`
 
 OuttaMyWay.TrafficPolicemanDecisionPolicy = {}
 local Policy = OuttaMyWay.TrafficPolicemanDecisionPolicy
