@@ -41,7 +41,9 @@ The terms **MUST** and **MUST NOT** define mandatory repository standards.
 
 Normative requirements govern engineering meaning and ownership. They MUST NOT unnecessarily prescribe presentation syntax where several equally clear representations are possible.
 
-> **Normative on semantics; permissive on presentation.**
+Where a small stable syntax is itself the repository interface consumed by structural conformance tooling, this standard MAY prescribe that syntax explicitly. Such syntax is an interface to authoritative meaning; it is not a replacement for the human explanation surrounding it.
+
+> **Normative on semantics; permissive on presentation except where presentation is the contracted machine interface.**
 
 # Semantic authority model
 
@@ -172,45 +174,158 @@ contract evidence
 
 Architecture Responsibilities and Specification Jurisdictions MUST have stable human-readable semantic identities.
 
-Their identity MUST NOT depend solely upon Markdown heading position, source filename, source directory, class or table name, function name or current implementation topology.
+Every Specification Jurisdiction MUST additionally have one canonical machine-stable **Jurisdiction ID** declared by its authoritative Architecture and acknowledged unchanged by its primary Specification.
+
+A Jurisdiction ID MUST be unique repository-wide and MUST remain stable while the same semantic Jurisdiction remains current. IDs use upper-case ASCII words separated by underscores, for example `COOPERATIVE_PASSAGE`.
+
+A Jurisdiction ID MUST NOT be inferred from a Markdown heading, filename, source directory, class or table name, function name or current implementation topology.
+
+Architecture Responsibilities do not acquire machine IDs merely because they are separately named. The Specification Jurisdiction is the cross-surface semantic anchor.
 
 A Specification Jurisdiction is a semantic boundary, not a repository path.
 
-A primary Specification filename MAY provide navigation to a Jurisdiction but does not create the Jurisdiction.
+A primary Specification filename provides physical navigation to a Jurisdiction but does not create the Jurisdiction.
 
 A source module MAY participate in several Jurisdictions. A Jurisdiction MAY be realised by several source modules.
 
+> **Specification Jurisdiction Is the Cross-Surface Semantic Anchor.**
+
 > **Primary Specification != Primary Source Module.**
+
+## Contracted machine-readable surface
+
+Structural conformance tooling MUST parse only the explicitly contracted constructs defined in this section and the surface-specific rules below. It MUST NOT attempt to infer semantic relationships from arbitrary prose, imports, call topology, directory placement, filenames or ordinary Markdown links.
+
+The contracted constructs are:
+
+- Architecture-owned `Jurisdiction ID`, `Primary Specification` and optional `Specialises` declarations;
+- Specification-owned `Jurisdiction ID`, `Primary Architecture Authority`, `Contract participants` and repository validation-participant declarations;
+- source-owned `Specification Jurisdictions:` acknowledgement in module documentation; and
+- Authority Triad dispositions belonging to the proposed change set when that enforcement mechanism is adopted.
+
+A parser MAY generate an in-memory or disposable index/graph from these facts. Such a graph is derived and MUST NOT become another authored authority surface.
+
+> **Parse the Contracted Surface; Do Not Interpret the Document.**
+
+> **The Conformance Graph Should Be Derived, Not Authored.**
+
+> **Derived Index != Authority Surface.**
 
 ## Architecture-to-Specification relationship
 
 Every implemented Specification Jurisdiction MUST have exactly one primary Specification owner.
 
-Every primary Specification MUST identify exactly one governing Specification Jurisdiction.
+Every authoritative Architecture declaration for a Specification Jurisdiction MUST expose these machine-stable facts in the detailed Jurisdiction declaration:
 
-Every governing Jurisdiction MUST provide a discoverable route to its primary Specification.
+```markdown
+**Jurisdiction ID:** `COOPERATIVE_PASSAGE`
+**Primary Specification:** [`spec/COOPERATIVE_PASSAGE.md`](../spec/COOPERATIVE_PASSAGE.md)
+```
 
-The corresponding Specification MUST provide a reciprocal route to its primary architectural authority.
+A distinct specialised Jurisdiction MUST additionally declare its parent contract where applicable:
+
+```markdown
+**Specialises:** `RESOLUTION_LIFECYCLE`
+```
+
+`Specialises` is omitted when no parent specialisation exists. A placeholder such as `NONE` MUST NOT be used.
+
+`SPECIALISES` applies only when one distinct Specification Jurisdiction inherits another distinct Jurisdiction's contract. Architectural specialisation inside the same Jurisdiction does not create a machine `SPECIALISES` edge.
+
+Every `SPECIALISES` target MUST name an existing Jurisdiction ID. A Jurisdiction MUST NOT specialise itself, and the `SPECIALISES` graph MUST remain acyclic.
+
+This standard does not define a general machine `DEPENDS_ON` relationship. Current cross-Jurisdiction prose includes prerequisites, optional contributors, downstream consumers, handoffs and authority boundaries whose semantics are not one uniform graph edge. Those relationships remain human-authored until Architecture establishes a narrower durable relationship class.
+
+Every primary Specification MUST identify exactly one governing Jurisdiction ID and its Primary Architecture Authority.
+
+The governing Architecture's `Primary Specification` path and the corresponding Specification identity MUST agree exactly. The Specification's `Primary Architecture Authority` path MUST reciprocally identify the Architecture that declares the Jurisdiction.
 
 For an implemented Specification Jurisdiction, Architecture MUST route normal implementation-facing navigation through `/spec`.
 
 Architecture MAY additionally link directly to source when that source relationship is itself architecturally meaningful. Such a link MUST NOT replace the primary `/architecture → /spec → /scripts` route.
 
+> **Architectural Specialisation != Jurisdiction Specialisation.**
+
 ## Specification-to-source relationship
 
 Every primary Specification MUST provide a discoverable route to the production source that currently participates materially in its contract.
 
-Production source that materially participates in a Specification Jurisdiction MUST expose that participation in a stable form suitable for objective repository conformance checking.
+The authoritative machine participant set is owned by the primary Specification under a `## Contract participants` section using exact production-file paths and exactly one participation token per source/Jurisdiction pair:
 
-The relationship MUST distinguish semantic participation rather than merely establish that a hyperlink exists.
+```markdown
+## Contract participants
 
-The representation MUST be capable of distinguishing, where applicable, principal realisation, specialised participation and subordinate support. The eventual canonical tokens used for those relationship meanings are a tooling/interface decision and are not selected by this standard.
+| Production source | Participation |
+| --- | --- |
+| [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
+| [`scripts/control/mechanisms/NativeDriveMechanism.lua`](../scripts/control/mechanisms/NativeDriveMechanism.lua) | `SUPPORTS` |
+```
 
-Relationship semantics MUST NOT imply contract ownership merely because a module happens to contain the current implementation.
+The example paths illustrate syntax only; the owning Specification determines the truthful participant set for its Jurisdiction.
 
-Where Specification and source both declare a relationship, those declarations MUST be mutually compatible.
+The only source-participation relationship classes are:
 
-> **Source Traceability Is Contract Participation, Not Contract Assignment.**
+**`REALISES`**  
+The source module directly implements a semantic product, evidence rule, verdict, lifecycle meaning, authority decision, invariant, policy boundary or purpose-specific execution rule whose correctness is governed by that Jurisdiction.
+
+**`SUPPORTS`**  
+The source module supplies materially Jurisdiction-specific subordinate infrastructure required by that implementation, but does not itself establish or represent the Jurisdiction-owned semantic boundary.
+
+A source/Jurisdiction pair MUST NOT be both `REALISES` and `SUPPORTS`. `REALISES` is sufficient when the stronger relationship exists.
+
+Every implemented Jurisdiction MUST have at least one `REALISES` participant.
+
+Participant paths MUST identify exact production source files. Directories, globs, generic phrases such as "runtime orchestration", or links whose purpose is merely navigation MUST NOT appear as machine participant rows.
+
+A generic technical utility, upstream producer, downstream consumer, neighbouring authority, import, caller or callee does not acquire a participation edge solely because the Jurisdiction operationally depends upon it.
+
+`SUPPORTS` is direct, not transitive. A mechanism that supports Control does not thereby support every specialised Jurisdiction that ultimately uses Control. A second `SUPPORTS` relationship exists only when that source directly provides subordinate infrastructure belonging to that Jurisdiction's implementation boundary.
+
+A source module may truthfully `REALISE` several Jurisdictions when the same file directly implements several semantic contracts. Directory placement and a module's locally dominant responsibility do not override implemented meaning.
+
+> **Source Participation Follows Implemented Meaning, Not Directory Placement.**
+
+> **Calling a Contract != Implementing the Contract.**
+
+> **Technical Dependency != Contract Support.**
+
+> **Support Is Direct, Not Transitive.**
+
+## Reciprocal source acknowledgement
+
+Production source that materially participates in one or more Specification Jurisdictions MUST acknowledge those Jurisdictions in its module documentation using exactly one visible line of the form:
+
+```lua
+-- Specification Jurisdictions: `COOPERATIVE_PASSAGE`, `CONTROL`
+```
+
+Jurisdiction IDs MUST appear as literal inline code so documentation renderers preserve exact identifier text. Declaration order carries no authority and MUST NOT be interpreted as primary ownership or precedence.
+
+The source acknowledgement is intentionally untyped. Source MUST NOT assign itself `REALISES`, `SUPPORTS`, primary ownership, specialisation or other contract authority.
+
+For every Spec-declared source participant, that source MUST acknowledge the same Jurisdiction ID. For every source-side Jurisdiction acknowledgement, that Jurisdiction's primary Specification MUST classify the source exactly once as `REALISES` or `SUPPORTS`.
+
+A production source module that participates in no Specification Jurisdiction does not require an empty acknowledgement.
+
+The human-readable module responsibility explanation and this mechanically inspectable acknowledgement MAY share one documentation block. The acknowledgement MUST remain useful to a human reader without requiring conformance tooling or generated documentation.
+
+> **Reciprocity != Co-Ownership.**
+
+> **Specification Owns Contract-Participation Classification.**
+
+> **Source Acknowledges Participation; It Does Not Assign Itself Contract Authority.**
+
+> **Authoritative Edge, Reciprocal Acknowledgement.**
+
+## Navigation traceability
+
+The machine participant set is deliberately narrower than human implementation navigation.
+
+A primary Specification's ordinary `Implementation traceability` prose MAY continue to route engineers to upstream producers, downstream consumers, neighbouring authorities, shared mechanisms, directories or other useful implementation locations that are not material contract participants for that Jurisdiction.
+
+An ordinary source link MUST NOT be interpreted as `REALISES` or `SUPPORTS` merely because it appears in a Specification.
+
+> **Navigation Trace != Contract Participation.**
 
 ## Source descent
 
@@ -230,43 +345,85 @@ Validation routes MAY identify structural checks, offline behavioural tests, tar
 
 A validation route establishes where a contract is challenged. It does not transfer normative ownership to the validation surface.
 
+When a primary Specification declares concrete repository validation artefacts for machine conformance, it MUST use exact repository paths under a `## Repository validation participants` section with the relationship `CHALLENGES`:
+
+```markdown
+## Repository validation participants
+
+| Validation surface | Relationship |
+| --- | --- |
+| [`tests/test_replacement_core_structure.py`](../tests/test_replacement_core_structure.py) | `CHALLENGES` |
+```
+
+A repository validation artefact does not need a reciprocal self-declaration. The primary Specification names the evidence route; the evidence does not self-certify contract coverage.
+
+Targeted in-game Reality validation, scenario interpretation and other non-file evidence MAY remain human-readable validation prose rather than being forced into pseudo-path identities.
+
+> **A Validation Surface Challenges a Contract; It Does Not Certify It.**
+
+> **A Contract Names Its Evidence Route; Evidence Does Not Self-Certify Its Contract Coverage.**
+
 ## Structural conformance
 
-Any repository conformance tooling adopted for these relationships MUST be capable of detecting the objectively knowable drift within its declared scope, including as applicable:
+Repository conformance tooling adopted for these relationships MUST be capable of detecting the objectively knowable drift within its declared scope, including:
 
-- an Architecture Jurisdiction with no valid primary Specification;
-- a Specification referring to an unknown Jurisdiction;
-- a Specification referring to missing production source;
-- source declaring an unknown Specification Jurisdiction;
-- incompatible reciprocal Spec/source participation declarations;
-- broken live traceability routes;
-- deleted or renamed responsibilities leaving stale live relationships;
-- Authority Triad changes with no disposition of the other surfaces; and
-- validation routes that no longer resolve.
+- duplicate or malformed canonical Jurisdiction IDs;
+- an implemented Architecture Jurisdiction with no valid primary Specification;
+- Architecture/Specification disagreement over Jurisdiction identity, primary Specification path or Primary Architecture Authority;
+- an unknown, self-targeting or cyclic `SPECIALISES` relationship;
+- a Spec-declared participant whose production source path does not exist;
+- an illegal or duplicate `REALISES` / `SUPPORTS` classification for one source/Jurisdiction pair;
+- an implemented Jurisdiction with no `REALISES` participant;
+- a Spec-declared participant whose source does not acknowledge that Jurisdiction;
+- a source acknowledgement naming an unknown Jurisdiction;
+- a source acknowledgement for which the primary Specification supplies no `REALISES` or `SUPPORTS` classification;
+- a declared repository validation path that no longer resolves;
+- deleted or renamed artefacts leaving unresolved incoming declared relationships;
+- broken live traceability routes covered by the tool's explicit link-integrity scope; and
+- Authority Triad changes with no disposition of the other surfaces once a change-set disposition mechanism is adopted.
 
 Structural conformance tooling MUST restrict itself to objectively testable repository relationships.
 
-It MUST NOT claim to determine whether Architecture is correct, whether Specification faithfully operationalises Architecture, whether a source relationship has been semantically classified correctly, whether source prose accurately explains a mechanism or whether a passing test reflects runtime Reality sufficiently.
+It MUST NOT claim to determine whether Architecture is correct, whether Specification faithfully operationalises Architecture, whether an undeclared semantic participant was omitted, whether a source relationship has been semantically classified correctly, whether a validation surface is adequate, whether source prose accurately explains a mechanism or whether a passing test reflects runtime Reality sufficiently.
 
-> **Tooling Enforces Relationships; It Does Not Own Meaning.**
+A declared relationship that is inconsistent is machine-checkable. A relationship nobody declared, but which engineering judgement says should exist, remains a semantic-completeness question until an authority surface declares it.
+
+> **Tooling Can Prove Declared Closure; Humans Establish Semantic Completeness.**
+
+> **No Speculative Linting in Normative Conformance.**
+
+> **Machine conformance establishes declared structural coherence. Engineering establishes semantic truth.**
 
 ## Bounded source-traceability adoption
 
-This standard intentionally defines the semantic information required from production source before selecting the representation technology used to expose that information mechanically.
+The cross-surface representation and relationship contract are now selected, but accepted production Architecture, Specifications and source have not yet completed the repository-wide migration to those constructs.
 
-Existing production source MAY therefore temporarily lack the final machine-recognisable source-side traceability representation while one explicit repository migration owns establishment of that representation.
+Existing production source MAY therefore temporarily lack the required `Specification Jurisdictions:` acknowledgement, and accepted Architecture/Specifications MAY temporarily lack the new machine-stable declarations and participant tables, while one explicit repository migration owns establishment of the complete graph.
 
 During that bounded adoption period:
 
 - existing Specification-authored implementation routes remain valid navigation;
-- the semantic requirement for reciprocal source participation is accepted but its concrete file representation remains pending;
-- no placeholder manifest, generated reference, annotation framework or arbitrary comment syntax MUST be introduced solely to create superficial conformance;
-- any concrete representation MUST first have an explicit repository responsibility and conformance contract; and
-- the migration MUST define a closure condition after which source-side representation becomes steady-state required conformance.
+- the selected representation MUST be used by the migration rather than inventing a parallel manifest or competing annotation scheme;
+- no authored central conformance manifest MUST become a second authority for relationships owned by Architecture, Specification or source;
+- a disposable or generated graph/index MAY be produced from the authoritative surfaces for checking, reporting or navigation;
+- LDoc, LuaLS/LuaCATS or another documentation/IDE consumer MAY consume compatible source documentation, but generated output MUST remain derived and non-authoritative; and
+- steady-state enforcement MUST NOT be declared complete until the migration closure condition below is satisfied.
+
+Migration closure requires all current implemented Specification Jurisdictions to have unique canonical Jurisdiction IDs and exact primary-Spec routes; every primary Specification to acknowledge the correct Jurisdiction/Architecture authority and classify every material production participant by exact source path as `REALISES` or `SUPPORTS`; every participating source module to reciprocally acknowledge the complete set of its Jurisdictions; every implemented Jurisdiction to have at least one `REALISES`; and the derived graph to close with zero unresolved relationships.
+
+Repository validation-participant migration MAY proceed with the same programme but is not required to invent repository evidence where none is currently appropriate. Every declared repository validation path MUST resolve.
+
+After the closure condition is accepted, missing or inconsistent required declarations become ordinary steady-state conformance failures and this bounded exception MUST be removed or rewritten as completed policy rather than preserved as live migration state.
 
 This is a migration mechanism, not an alternative permanent state.
 
 No generated reference system is authorised merely by this exception.
+
+> **Visible Structured Source Metadata; Independent Consumers.**
+
+> **Shared Syntax; Independent Consumers.**
+
+> **Prefer Documentation-Compatible Metadata Over Conformance-Only Metadata.**
 
 # `/architecture` — System Architecture standard
 
@@ -362,6 +519,8 @@ A Specification Jurisdiction MUST represent a cohesive architectural boundary th
 
 Every Specification Jurisdiction MUST be explicitly named and declared by its authoritative Architecture. A Specification Jurisdiction MUST NOT be inferred solely from document structure, headings, source topology or implementation placement.
 
+Every Specification Jurisdiction MUST expose one unique canonical `Jurisdiction ID` and one exact `Primary Specification` path using the contracted representation defined above once the bounded migration is complete.
+
 Every implementation-bearing architectural Responsibility MUST belong to exactly one primary Specification Jurisdiction.
 
 A Jurisdiction MAY contain several subordinate Responsibilities, Concepts, Constraints, Invariants, Evidence Rules, Policies or Lifecycles when they form one cohesive implementation-facing contract.
@@ -374,7 +533,9 @@ A broad architectural subject MAY contain several Specification Jurisdictions wh
 
 The number and boundaries of Jurisdictions MUST be discovered from Architecture rather than imposed from repository structure.
 
-Specification Jurisdictions MUST NOT overlap in primary contract ownership. A specialised Jurisdiction MAY depend upon or specialise a contract owned by another Jurisdiction, but it MUST reference that contract rather than independently restate or claim its normative ownership.
+Specification Jurisdictions MUST NOT overlap in primary contract ownership. A specialised Jurisdiction MAY specialise a contract owned by another Jurisdiction, but it MUST reference that contract rather than independently restate or claim its normative ownership.
+
+Human-authored cross-Jurisdiction dependency prose does not automatically create additional machine graph edges.
 
 ## Deferred responsibilities
 
@@ -391,6 +552,10 @@ Status: Not implemented
 A recognised Deferred Responsibility MAY therefore exist in current Architecture without an implementation Specification.
 
 An empty or speculative Specification MUST NOT be created solely to satisfy structural symmetry.
+
+A Deferred Responsibility is not a deferred Specification Jurisdiction merely because it is named. If Architecture later establishes a genuine unimplemented Specification Jurisdiction, its representation and conformance semantics MUST be designed from that evidence rather than inferred from the present Deferred Responsibility mechanism.
+
+> **Deferred Responsibility != Deferred Jurisdiction.**
 
 ## Cross-jurisdiction relationships
 
@@ -426,6 +591,8 @@ A document is not required to use a universal heading template when another stru
 Large Architecture documents MUST provide stable navigation sufficient for an engineer to enter at the relevant Responsibility or architectural subject without reconstructing the whole document.
 
 Subsections MUST NOT be treated as independent Specification Jurisdictions merely because they have headings.
+
+Summary tables MAY provide navigation across Jurisdictions, but they MUST NOT become a second independently maintained machine authority for canonical IDs or topology. The detailed authoritative declaration owns the contracted machine facts.
 
 ## Readability and naming
 
@@ -495,7 +662,7 @@ Every implemented Specification Jurisdiction declared by Architecture MUST have 
 
 Every primary Specification MUST:
 
-- identify exactly one governing Specification Jurisdiction;
+- acknowledge exactly one canonical `Jurisdiction ID` declared by Architecture;
 - identify its Primary Architecture Authority;
 - distinguish related architectural context from primary authority;
 - own one cohesive implementation-facing contract;
@@ -504,7 +671,7 @@ Every primary Specification MUST:
 
 A primary Specification MUST NOT be created from a source file, class, helper, document heading or implementation subsystem merely because that unit exists. Specification identity follows the architectural Jurisdiction.
 
-A specialised Jurisdiction MAY depend on another Jurisdiction. Its Specification MUST reference the parent or neighbouring contract rather than restating or claiming ownership of that contract.
+A specialised Jurisdiction MAY inherit another Jurisdiction's contract. Its Specification MUST reference the parent contract rather than restating or claiming ownership of that contract.
 
 A recognised Deferred Responsibility with no implementation requirement MAY remain without a Specification. Placeholder, empty or speculative Specifications MUST NOT be created for symmetry.
 
@@ -514,7 +681,9 @@ Primary Specifications do not require one rigid Markdown heading template. They 
 
 ### Identity and authority
 
-A primary Specification MUST make clear which Specification Jurisdiction it implements, which Architecture is primary authority, what implementation-facing responsibility it owns and which neighbouring responsibilities it deliberately does not own where confusion is plausible.
+A primary Specification MUST expose its canonical Jurisdiction acknowledgement and Primary Architecture Authority using the contracted constructs defined above.
+
+It MUST make clear what implementation-facing responsibility it owns and which neighbouring responsibilities it deliberately does not own where confusion is plausible.
 
 The responsibility statement MUST be implementation-facing rather than a pasted architectural summary.
 
@@ -544,9 +713,17 @@ It MUST make clear which relevant outcomes are positively supported, positively 
 
 Failure semantics MUST preserve architectural authority boundaries. Failure MUST NOT manufacture a stronger conclusion merely to keep implementation active.
 
+### Contract participants
+
+Every primary Specification MUST own the complete current material production-source participant set for its Jurisdiction using the contracted `Contract participants` representation after the bounded migration is complete.
+
+Classification MUST follow the `REALISES` / `SUPPORTS` meanings in this standard rather than source directory placement, import topology or convenience.
+
+A primary Specification MUST NOT classify a module merely because it is useful navigation. Human navigation belongs in Implementation traceability.
+
 ### Implementation traceability
 
-Every primary Specification MUST provide a discoverable route to the production implementation that currently participates materially in its contract.
+Every primary Specification MUST provide a discoverable human route to the production implementation and neighbouring implementation locations useful for understanding its contract.
 
 Exact source-file, function and helper placement are traceability facts rather than normative contract meaning.
 
@@ -554,7 +731,9 @@ A primary Specification does not imply one primary source module. One Jurisdicti
 
 > **Primary Specification != Primary Source Module.**
 
-Implementation traceability MUST remain distinguishable from authored contract meaning. Any future generated reference MAY expose implementation facts but MUST NOT become owner of Specification semantics.
+Implementation traceability MUST remain distinguishable from the authoritative machine participant table and from authored contract meaning. It MAY include broader navigation routes that intentionally create no contract-participation edge.
+
+Any future generated reference MAY expose implementation facts but MUST NOT become owner of Specification semantics.
 
 When implementation topology changes without changing the contract, the Specification's normative meaning SHOULD remain stable. The legitimate exception is a topology change that demonstrates that the Specification had accidentally named an implementation mechanism rather than a durable contract boundary. That is contract-design evidence and the Specification SHOULD then be deliberately corrected.
 
@@ -563,6 +742,8 @@ When implementation topology changes without changing the contract, the Specific
 Every primary Specification MUST identify how its contract is challenged.
 
 The route MUST distinguish, as applicable, structural or source-contract validation, offline behavioural or conformance validation, targeted in-game Reality validation, and evidence outside the claim of the Specification.
+
+Concrete repository validation artefacts that participate in machine conformance MUST be declared by exact path as `CHALLENGES` under the contracted repository-validation representation.
 
 A Specification MUST NOT maintain rolling pass/fail counts, build-by-build evidence, scenario chronology or CI run history.
 
@@ -590,9 +771,11 @@ A semantic data contract MUST describe meaning and required relationships. It MU
 
 ### Cross-Jurisdiction dependencies
 
-Where a contract depends on another Jurisdiction, the Specification MUST identify that dependency and the assumption made about the neighbouring contract.
+Where a contract depends on another Jurisdiction, the Specification MUST identify that dependency and the assumption made about the neighbouring contract in human-readable prose.
 
 It MUST NOT copy the neighbouring contract into its own text. Cross-Jurisdiction architectural rules retain one architectural owner; affected Specifications reference that authority.
+
+The heading or prose relationship `Cross-Jurisdiction dependencies` does not automatically create a machine `DEPENDS_ON` graph edge.
 
 ## Architecture, Specification and implementation values
 
@@ -634,7 +817,7 @@ Public visibility is not itself the governing documentation criterion. Public in
 
 A primary Specification should remain meaningful if its internal implementation mechanism were substantially replaced, unless Reality or architectural change demonstrates that the contract itself was wrong.
 
-Before acceptance, reviewers MUST be able to determine whether the governing Jurisdiction and primary Architecture are clear, the text defines an implementation-facing contract rather than paraphrasing Architecture, boundary products and failure semantics are sufficiently explicit, owned lifecycle or ordering semantics are present where applicable, neighbouring contracts are referenced rather than duplicated, current source is reachable without source placement becoming normative meaning, validation routes exist without embedding validation history, and implementation values have not become requirements merely because they exist.
+Before acceptance, reviewers MUST be able to determine whether the governing Jurisdiction and primary Architecture are clear, the text defines an implementation-facing contract rather than paraphrasing Architecture, boundary products and failure semantics are sufficiently explicit, owned lifecycle or ordering semantics are present where applicable, neighbouring contracts are referenced rather than duplicated, material source participation is truthfully classified, broader implementation navigation remains distinguishable from participation, validation routes exist without embedding validation history, and implementation values have not become requirements merely because they exist.
 
 # `/scripts` — Production Source Documentation standard
 
@@ -672,15 +855,27 @@ Module-level documentation MUST remain concise enough to orient an experienced e
 
 ## Specification participation
 
-A source module that materially participates in one or more Specification Jurisdictions MUST expose that participation according to the cross-surface traceability requirements of this document.
+A source module that materially participates in one or more Specification Jurisdictions MUST expose exactly one `Specification Jurisdictions:` acknowledgement in its module documentation after the bounded migration is complete.
 
-Its traceability representation MUST NOT imply that the module owns a Specification merely because it implements some of the contract.
+The acknowledgement MUST contain canonical Jurisdiction IDs only, represented as literal inline code and separated by commas when several apply.
+
+The acknowledgement MUST NOT contain `REALISES`, `SUPPORTS`, `SPECIALISES`, primary-owner language or any other source-authored relationship classification.
+
+Declaration order carries no authority.
 
 Many-to-many Specification/source participation MUST remain representable.
 
+A source module that materially participates in no Specification Jurisdiction MUST NOT add a fake empty declaration merely for uniformity.
+
 The human-readable explanation and mechanically inspectable relationship MAY share one representation, but machine metadata MUST NOT replace the human explanation required to understand the module.
 
+The representation is intentionally compatible with ordinary source-documentation tooling. A renderer such as LDoc MAY consume the same documentation, but conformance MUST NOT depend on generated documentation existing.
+
 > **Human-Readable Meaning; Machine-Readable Relationships.**
+
+> **Source Acknowledges Participation; It Does Not Assign Itself Contract Authority.**
+
+> **Declaration Order Carries No Authority.**
 
 ## Function and local-mechanism documentation
 
@@ -754,7 +949,7 @@ Consistency MUST NOT force irrelevant boilerplate.
 
 A documented function need not contain empty parameter, return, precondition or failure sections when those concepts are self-evident or irrelevant.
 
-The exact annotation syntax is intentionally not selected by this standard.
+The exact annotation syntax for ordinary function documentation remains intentionally unselected. The module-level `Specification Jurisdictions:` acknowledgement is the narrow exception because its syntax is part of the cross-surface conformance interface.
 
 > **Structure Enough for Navigation and Tooling; No Boilerplate for Its Own Sake.**
 
@@ -807,7 +1002,7 @@ Production source documentation is sufficient when an experienced engineer can n
 A source review MUST consider:
 
 - whether the module's semantic responsibility is clear;
-- whether its governing Specification participation can be discovered;
+- whether its complete governing Specification participation can be discovered through the canonical acknowledgement;
 - whether important authority, evidence, lifecycle and handoff boundaries are explained;
 - whether non-obvious GIANTS/runtime constraints are visible where they matter;
 - whether a return value or successful native call could be mistaken for stronger evidence;
@@ -833,19 +1028,25 @@ When Reality disproves Architecture, Architecture MUST be reconsidered and delib
 
 # Tooling boundary
 
-The standards in this document define semantic responsibilities and mechanically useful relationships before selecting implementation technology.
+This document now defines the semantic relationships and the narrow machine-readable constructs required for cross-surface structural conformance.
 
-They do not by themselves authorise generated source-reference documentation, LDoc, LuaLS/LuaCATS, a bespoke documentation parser, a repository manifest, a new CI checker, function-level repository indexing or a new annotation framework.
+A minimal repository parser/checker MAY consume only those contracted constructs to derive a conformance graph, validate declared closure and report deterministic failures described by this standard.
 
-Any such mechanism MUST first earn a clear repository responsibility.
+That responsibility does not authorise the checker to infer semantic meaning beyond declared facts.
 
-Tooling MAY automate objective conformance where doing so materially reduces drift and the relevant tooling responsibility has been explicitly accepted.
+This standard does not require generated source-reference documentation, LDoc, LuaLS/LuaCATS, a checked-in central manifest, function-level repository indexing, call-graph reconstruction or a general annotation framework.
+
+LDoc, LuaLS/LuaCATS or another documentation/IDE system MAY consume compatible source documentation independently. A generated product MAY reproduce authoritative facts deterministically without acquiring authority over those facts.
+
+A checked-in authored manifest MUST NOT duplicate the Architecture/Specification/source relationship facts merely to make parsing easier. A generated or disposable graph/index MAY exist as a derived diagnostic or presentation product.
+
+Any permanent CI, pre-commit or root-governance enforcement mechanism remains a separate adoption decision after the bounded migration proves the representation over the whole repository.
 
 Tooling MUST NOT own semantic meaning that belongs to Architecture, Specification or source documentation.
 
-A generated product MAY reproduce authoritative facts deterministically without acquiring authority over those facts.
-
 > **Source Documentation Need != Generated Reference Need.**
+
+> **Documentation Renderer != Documentation Authority.**
 
 > **Tooling Enforces Relationships; It Does Not Own Meaning.**
 
