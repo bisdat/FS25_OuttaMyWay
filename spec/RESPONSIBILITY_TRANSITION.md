@@ -217,6 +217,17 @@ Bounded Authority may grant physical permission only under a current responsibil
 
 Control realises already-authorised action. It does not establish or replace semantic responsibility even when physical neutralisation is a prerequisite for atomic replacement.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) | `REALISES` |
+| [`scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua`](../scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua`](../scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

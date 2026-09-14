@@ -1,3 +1,6 @@
+--- Validates and orders follower Regulation responsibility transition context before authoritative establishment or maintenance.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+
 OuttaMyWay.FollowerBoundaryResponsibilityTransition = {}
 local Transition = OuttaMyWay.FollowerBoundaryResponsibilityTransition
 Transition.__index = Transition

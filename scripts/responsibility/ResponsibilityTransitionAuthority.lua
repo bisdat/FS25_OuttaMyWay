@@ -1,3 +1,6 @@
+--- Owns authoritative Current Responsibility establishment, termination, atomic replacement and semantic identity continuity.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+
 OuttaMyWay.ResponsibilityTransitionAuthority = {}
 local Authority = OuttaMyWay.ResponsibilityTransitionAuthority
 Authority.__index = Authority

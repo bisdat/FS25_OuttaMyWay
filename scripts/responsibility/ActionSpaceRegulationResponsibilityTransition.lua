@@ -1,3 +1,6 @@
+--- Validates and orders Action-Space Regulation responsibility transition context before authoritative establishment or maintenance.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+
 OuttaMyWay.ActionSpaceRegulationResponsibilityTransition = {}
 local Transition = OuttaMyWay.ActionSpaceRegulationResponsibilityTransition
 Transition.__index = Transition
