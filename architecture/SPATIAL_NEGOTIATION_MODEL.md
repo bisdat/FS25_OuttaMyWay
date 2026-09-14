@@ -26,7 +26,7 @@ This architecture specialises two Jurisdictions declared by the Runtime architec
 
 Current Pair Assessment Scope, Productive Forward-Line Certainty, TURNING uncertainty, the Spatial Constraint Overlay, Bubble, Passage Leg, Resolution Epoch and Passage reserve are Concepts, Evidence Rules, Policies or lifecycle elements within these Jurisdictions. They do not create additional Specification Jurisdictions merely by being separately named.
 
-The primary Cooperative Passage `/spec` route is [`../../spec/COOPERATIVE_PASSAGE.md`](../spec/COOPERATIVE_PASSAGE.md). The inherited Situation Assessment and Regulation `/spec` routes remain pending under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../docs/DOCUMENT_STANDARDS.md), with Issue #141 owning that remaining repository migration.
+The inherited **Situation Assessment** and **Regulation** Jurisdictions route to [`../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md) and [`../spec/REGULATION.md`](../spec/REGULATION.md). The concrete **Cooperative Passage** Jurisdiction routes to [`../spec/COOPERATIVE_PASSAGE.md`](../spec/COOPERATIVE_PASSAGE.md). Spatial Negotiation specialises the inherited Jurisdictions architecturally; it does not create duplicate primary Specifications for them.
 
 ## 1. Cross-jurisdiction spatial flow
 
