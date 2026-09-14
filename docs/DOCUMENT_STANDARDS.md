@@ -394,30 +394,33 @@ A declared relationship that is inconsistent is machine-checkable. A relationshi
 
 > **Machine conformance establishes declared structural coherence. Engineering establishes semantic truth.**
 
-## Bounded source-traceability adoption
+## Steady-state source-traceability conformance
 
-The cross-surface representation and relationship contract are now selected, but accepted production Architecture, Specifications and source have not yet completed the repository-wide migration to those constructs.
+The repository operates in steady-state cross-surface traceability. There is no migration exception for missing required Architecture, Specification or participating-source declarations.
 
-Existing production source MAY therefore temporarily lack the required `Specification Jurisdictions:` acknowledgement, and accepted Architecture/Specifications MAY temporarily lack the new machine-stable declarations and participant tables, while one explicit repository migration owns establishment of the complete graph.
+Every implemented Specification Jurisdiction MUST continuously satisfy the contracted relationships defined above:
 
-During that bounded adoption period:
+- one unique canonical Jurisdiction ID declared by its authoritative Architecture and acknowledged by its primary Specification;
+- one exact reciprocal Architecture-to-primary-Specification route;
+- valid, acyclic `SPECIALISES` relationships where specialisation exists;
+- one authoritative Specification classification for every material production participant as exactly one of `REALISES` or `SUPPORTS`;
+- at least one `REALISES` production participant per implemented Jurisdiction;
+- one reciprocal source acknowledgement for every Spec-declared participant; and
+- no source-side Jurisdiction acknowledgement without exactly one reciprocal Specification classification.
 
-- existing Specification-authored implementation routes remain valid navigation;
-- the selected representation MUST be used by the migration rather than inventing a parallel manifest or competing annotation scheme;
-- no authored central conformance manifest MUST become a second authority for relationships owned by Architecture, Specification or source;
-- a disposable or generated graph/index MAY be produced from the authoritative surfaces for checking, reporting or navigation;
-- LDoc, LuaLS/LuaCATS or another documentation/IDE consumer MAY consume compatible source documentation, but generated output MUST remain derived and non-authoritative; and
-- steady-state enforcement MUST NOT be declared complete until the migration closure condition below is satisfied.
+Missing, stale, malformed or inconsistent required declarations are ordinary structural conformance failures. Deleting, renaming, splitting, merging or reclassifying an authoritative or participating artefact MUST close or update every incoming and reciprocal declared relationship in the same accepted change.
 
-Migration closure requires all current implemented Specification Jurisdictions to have unique canonical Jurisdiction IDs and exact primary-Spec routes; every primary Specification to acknowledge the correct Jurisdiction/Architecture authority and classify every material production participant by exact source path as `REALISES` or `SUPPORTS`; every participating source module to reciprocally acknowledge the complete set of its Jurisdictions; every implemented Jurisdiction to have at least one `REALISES`; and the derived graph to close with zero unresolved relationships.
+A change that creates or removes material source participation MUST update the owning Specification participant table and the source module's complete acknowledgement set together. A source acknowledgement MUST continue to state the complete current set of Jurisdictions implemented by that module; migration-style partial acknowledgement is not a permitted steady-state condition.
 
-Repository validation-participant migration MAY proceed with the same programme but is not required to invent repository evidence where none is currently appropriate. Every declared repository validation path MUST resolve.
+Repository validation-participant declarations remain intentionally evidence-driven rather than symmetry-driven. A primary Specification MAY declare exact repository validation artefacts using the contracted `CHALLENGES` relationship when that machine-readable relationship is useful. Absence of such a declaration is not itself a conformance failure, but every declared validation path MUST resolve. Tooling MUST NOT invent validation-participant rows merely to make every Specification look structurally identical.
 
-After the closure condition is accepted, missing or inconsistent required declarations become ordinary steady-state conformance failures and this bounded exception MUST be removed or rewritten as completed policy rather than preserved as live migration state.
+Structural conformance tooling MAY derive an in-memory or disposable graph from the authoritative surfaces and enforce the objectively knowable relationships listed in this standard. The derived graph, checker implementation, generated report or index MUST NOT become an independently authored manifest or semantic authority.
 
-This is a migration mechanism, not an alternative permanent state.
+Human-readable implementation traceability MAY remain broader than the machine participant set. Generated documentation and IDE/documentation consumers MAY consume the shared source metadata, but generated output remains derived and non-authoritative.
 
-No generated reference system is authorised merely by this exception.
+Steady-state structural conformance does not establish semantic completeness. Tooling can prove that declared relationships close; engineering judgement remains responsible for deciding whether the declared relationships are truthful and complete, and Reality remains capable of disproving the underlying Architecture, Specification, implementation and validation assumptions.
+
+No generated reference system is authorised by steady-state conformance alone.
 
 > **Visible Structured Source Metadata; Independent Consumers.**
 
