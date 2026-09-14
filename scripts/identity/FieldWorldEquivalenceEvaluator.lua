@@ -1,3 +1,6 @@
+--- Classifies Field World Snapshot relationships as SAME, DIFFERENT or UNRESOLVED from bounded spatial evidence.
+-- Specification Jurisdictions: `OPERATION_LIFECYCLE`
+
 OuttaMyWay.FieldWorldEquivalenceEvaluator = {}
 local Evaluator = OuttaMyWay.FieldWorldEquivalenceEvaluator
 Evaluator.__index = Evaluator

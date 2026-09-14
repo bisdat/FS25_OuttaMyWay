@@ -1,3 +1,6 @@
+--- Owns Job Episode admission, succession, positive termination and immutable lifecycle binding.
+-- Specification Jurisdictions: `OPERATION_LIFECYCLE`
+
 OuttaMyWay.JobEpisodeAdmission = {}
 local Admission = OuttaMyWay.JobEpisodeAdmission
 Admission.__index = Admission

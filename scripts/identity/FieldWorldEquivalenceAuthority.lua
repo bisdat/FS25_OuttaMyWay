@@ -1,3 +1,6 @@
+--- Owns coherent Field World identity assignment, equivalence classes and lifecycle-scoped retirement.
+-- Specification Jurisdictions: `OPERATION_LIFECYCLE`
+
 OuttaMyWay.FieldWorldEquivalenceAuthority = {}
 local Authority = OuttaMyWay.FieldWorldEquivalenceAuthority
 Authority.__index = Authority

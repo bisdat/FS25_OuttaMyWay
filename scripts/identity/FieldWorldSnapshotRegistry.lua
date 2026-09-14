@@ -1,3 +1,6 @@
+--- Constructs immutable Job-seeded Field World Snapshots and their geometry and fingerprint evidence.
+-- Specification Jurisdictions: `OPERATION_LIFECYCLE`
+
 OuttaMyWay.FieldWorldSnapshotRegistry = {}
 local Registry = OuttaMyWay.FieldWorldSnapshotRegistry
 Registry.__index = Registry
