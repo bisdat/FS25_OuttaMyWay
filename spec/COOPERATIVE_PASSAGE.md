@@ -277,6 +277,18 @@ Regulation owns the third-worker Bullet-Time responsibility. The Passage Resolut
 
 Bounded Authority determines participant-scoped physical permission. Control executes already-authorised Passage actions. Neither may invent a replacement strategy or declare semantic Passage success solely from actuator completion.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
+| [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
+| [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
+| [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
+| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
+| [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.
@@ -287,6 +299,7 @@ Current implementation routes include:
 - [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) and Passage-purpose products from [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current purpose-specific geometry/clearance evidence;
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
 - [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) — current Passage-Leg obligation creation/settlement, participant-loss vacatur and parent terminal integration;
+- [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current Passage-specific joint Bounded Authority request construction, survivor-leg authority rebind/failure handling and completion integration;
 - [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) — current semantic Resolution Commitment view over the retained implementation substrate; and
 - [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) — current physical Passage executor, configuration settlement, guide execution, recovery and handback mechanism.
 
