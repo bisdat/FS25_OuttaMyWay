@@ -1,3 +1,6 @@
+--- Acquires current Physical Assembly source evidence and publishes it as non-semantic Observation evidence.
+-- Specification Jurisdictions: `OBSERVATION`
+
 OuttaMyWay.CurrentPhysicalAssemblySource = {}
 local Source = OuttaMyWay.CurrentPhysicalAssemblySource
 Source.__index = Source

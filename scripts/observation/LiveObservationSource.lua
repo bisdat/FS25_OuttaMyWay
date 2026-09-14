@@ -1,3 +1,6 @@
+--- Acquires and composes live GIANTS/runtime evidence domains for one raw Observation cycle without downstream interpretation.
+-- Specification Jurisdictions: `OBSERVATION`
+
 -- Live Job-Episode, productive commencement and physical relevance observation.
 OuttaMyWay.LiveObservationSource = {}
 local Source = OuttaMyWay.LiveObservationSource

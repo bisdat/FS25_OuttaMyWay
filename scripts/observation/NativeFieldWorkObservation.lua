@@ -1,3 +1,6 @@
+--- Acquires current GIANTS native field-work evidence without converting it into Situation or Control authority.
+-- Specification Jurisdictions: `OBSERVATION`
+
 -- Raw GIANTS field-worker observation surface.
 -- Observation only: this module reports native field-course facts and grants no
 -- Productive/Transitional semantic authority. SituationAssessment owns any

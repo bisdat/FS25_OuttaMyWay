@@ -1,3 +1,6 @@
+--- Defines the sealed Observation publication product and excludes downstream semantic authority from one evidence snapshot.
+-- Specification Jurisdictions: `OBSERVATION`
+
 local forbiddenSemanticFields = {
     yieldRole = true,
     progressRole = true,

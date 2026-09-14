@@ -1,3 +1,6 @@
+--- Acquires current GIANTS AI job evidence without assigning Operation Lifecycle or Situation meaning.
+-- Specification Jurisdictions: `OBSERVATION`
+
 OuttaMyWay.LiveAIJobEvidence = {}
 local Evidence = OuttaMyWay.LiveAIJobEvidence
 
