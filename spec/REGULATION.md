@@ -226,6 +226,13 @@ Bounded Authority owns current physical permission, controlled subject, magnitud
 
 Control realises already-authorised physical timing requests. A physical lease or observed speed effect does not become Regulation lifecycle authority.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/contracts/Regulation.lua`](../scripts/contracts/Regulation.lua) | `REALISES` |
+| [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

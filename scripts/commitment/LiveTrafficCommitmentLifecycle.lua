@@ -1,3 +1,6 @@
+--- Maintains purpose-specific retained Commitment and Obligation substrate for live traffic interventions.
+-- Specification Jurisdictions: `REGULATION`, `COOPERATIVE_PASSAGE`
+
 -- Live traffic Commitment lifecycle over the replacement-core
 -- Commitment/Obligation/Authority kernel. It introduces no Refuge Region or
 -- Durable Separation authority.
