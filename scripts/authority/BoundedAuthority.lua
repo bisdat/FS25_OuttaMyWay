@@ -36,6 +36,9 @@ local function currentFor(runtime,responsibilityId,commitmentId)
     return nil
 end
 
+-- A Bounded Authority target is an envelope, not a template for downstream expansion.
+-- Regulation may narrow an APPLY speed or RELEASE the same lease; other capabilities
+-- must preserve the granted target exactly so Control cannot redirect an existing grant.
 local function targetMatchesGrant(requestTarget,grantTarget,capability)
     if type(requestTarget)~="table" or type(grantTarget)~="table" then return false,"BOUNDED_AUTHORITY_TARGET_UNAVAILABLE" end
     if capability=="REGULATE_SPEED" then

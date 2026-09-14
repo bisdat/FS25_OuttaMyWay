@@ -1,3 +1,8 @@
+-- Applies a sealed Decision to generic retained Commitment state.
+-- This is the Decision -> Commitment mutation boundary: it validates selected
+-- physical ownership/composition coherence and lifecycle action semantics, but does
+-- not choose the Decision or establish Current Responsibility.
+
 OuttaMyWay.DecisionCommitmentBoundary = {}
 local Boundary = OuttaMyWay.DecisionCommitmentBoundary
 Boundary.__index = Boundary
@@ -27,6 +32,9 @@ local function situationDependencies(picture)
     return result
 end
 
+-- Candidate-declared physical ownership and Effective Actuation Composition are
+-- two views of the same authority intent. Reject disagreement here so admission
+-- cannot silently create a broader or differently classified actuation-owner set.
 local function validatePhysicalOwnershipAgainstComposition(progressOwnership,obstructionRelocationOwnership,compositionValues)
     if type(compositionValues)~="table" then return end
     local progressDeclared,obstructionDeclared={},{}
@@ -144,6 +152,8 @@ function Boundary:apply(picture,decisionResult)
             resultingState=record.state
             explanation=action=="REVISE" and "Revised strategy inside the same unresolved Commitment" or "Maintained the existing Commitment"
         end
+    -- WAIT retains responsibility while prohibiting speculative progress. A newly
+    -- admitted WAIT therefore must not emerge holding physical actuation authority.
     elseif action == "WAIT" then
         if context == nil and candidate ~= nil then
             local admitted=self:_admitFromCandidate(picture,decision,candidate)
@@ -167,6 +177,9 @@ function Boundary:apply(picture,decisionResult)
             resultingState=record.state
             explanation="Preserved responsibility while speculative progress remained prohibited"
         end
+    -- SETTLE cannot manufacture terminal meaning from a Decision directive; the
+    -- canonical Governing Basis evaluator must independently invalidate the basis and
+    -- agree with any supplied disposition/cause before authority enters SETTLING.
     elseif action == "SETTLE" then
         if context == nil then
             action="NO_MUTATION"; explanation="Complete supportable space exhausted before a Commitment existed"
