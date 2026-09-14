@@ -1,0 +1,41 @@
+name: Issue 141 Source Traceability POC
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue141_source_traceability_poc/**'
+      - '.github/workflows/issue141-source-traceability-poc.yml'
+  workflow_dispatch:
+
+jobs:
+  source-traceability-poc:
+    name: Source traceability POC
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare generated real-source copies
+        run: python3 experiments/issue141_source_traceability_poc/poc.py prepare
+
+      - name: Prove deterministic extraction
+        run: python3 experiments/issue141_source_traceability_poc/poc.py extract
+
+      - name: Render with LDoc 1.5.0
+        uses: lunarmodules/ldoc@v1.5.0
+        with:
+          args: -c experiments/issue141_source_traceability_poc/workspace/config.ld
+
+      - name: Verify rendered Jurisdictions and LuaCATS coexistence
+        run: python3 experiments/issue141_source_traceability_poc/poc.py verify-render
+
+      - name: Preserve generated evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue141-source-traceability-poc
+          path: |
+            experiments/issue141_source_traceability_poc/workspace/graph.json
+            experiments/issue141_source_traceability_poc/workspace/doc
+          if-no-files-found: warn
