@@ -1,3 +1,6 @@
+--- Constructs live-traffic Candidate support including Cooperative Passage purpose-local Candidate semantics.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`, `COOPERATIVE_PASSAGE`
+
 -- Live traffic Candidate Support consumes Situation-owned encounter meaning and
 -- publishes current Follower Boundary, Action-Space Regulation and Cooperative
 -- Passage candidate contracts. Cooperative Passage is a REPOSITION Candidate;

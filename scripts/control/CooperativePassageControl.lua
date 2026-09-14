@@ -1,3 +1,6 @@
+--- Executes the already-authorised Cooperative Passage choreography, participant recovery and GIANTS handback.
+-- Specification Jurisdictions: `CONTROL`, `COOPERATIVE_PASSAGE`
+
 -- Cooperative Passage bounded Control executes an already-established pair plan.
 -- It may remain in PASSAGE_APPROACH until the Candidate Entry Boundary, then
 -- settles/configures the pair and instantiates the guide from actual execution

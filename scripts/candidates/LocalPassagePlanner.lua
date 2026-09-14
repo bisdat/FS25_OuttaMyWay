@@ -1,3 +1,6 @@
+--- Plans purpose-specific Cooperative Passage arrangements, reserve, entry boundaries and guides within Candidate Support.
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`, `COOPERATIVE_PASSAGE`
+
 -- Candidate-owned Local Passage planning is vehicle-name independent. Local
 -- Passage Space, Progressive Passage Search, Passage Arrangement and Passage
 -- Guide are the governing Candidate concepts. Selection may precede physical

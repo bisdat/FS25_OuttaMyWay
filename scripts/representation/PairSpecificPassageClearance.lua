@@ -1,3 +1,6 @@
+--- Derives dedicated Passage-clearance representation support without choosing Passage roles, configuration, burden or motion.
+-- Specification Jurisdictions: `ASSESSMENT_REPRESENTATION`, `COOPERATIVE_PASSAGE`
+
 -- Pair-Specific Passage Clearance geometry support.
 --
 -- This representation adapter derives one-sided Facing Clearance Extents and

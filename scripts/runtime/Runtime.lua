@@ -1,3 +1,6 @@
+--- Composes the runtime pipeline and directly implements purpose-specific Bounded Authority, Cooperative Passage and Obstruction Relocation integration rules.
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`
+
 OuttaMyWay.Runtime = {}
 local Runtime = OuttaMyWay.Runtime
 Runtime.__index = Runtime
