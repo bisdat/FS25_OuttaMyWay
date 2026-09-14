@@ -4,8 +4,8 @@
 This experiment never edits production Lua. It copies three representative modules
 into a generated workspace, prepends an LDoc-compatible module block containing an
 untyped Jurisdiction acknowledgement, and appends a small LuaCATS-style param/return
-probe. The same @participates facts are then consumed independently by a minimal
-extractor and by LDoc.
+probe. The same visible structured Jurisdiction line is then consumed independently
+by a minimal extractor and by LDoc.
 """
 
 from __future__ import annotations
@@ -44,7 +44,9 @@ TARGETS = (
     },
 )
 
-PARTICIPATES = re.compile(r"^\s*--+\s*@participates\s+([A-Z][A-Z0-9_]*)\s*$")
+JURISDICTIONS = re.compile(
+    r"^\s*--+\s*Specification Jurisdictions:\s*([A-Z][A-Z0-9_]*(?:\s*,\s*[A-Z][A-Z0-9_]*)*)\s*$"
+)
 
 
 def generated_name(path: str) -> str:
@@ -68,16 +70,17 @@ def prepare() -> None:
         if not source_path.is_file():
             raise SystemExit(f"missing production source: {item['path']}")
         source = source_path.read_text(encoding="utf-8")
+        jurisdiction_text = ", ".join(item["jurisdictions"])
 
         header = [
             f"--- {item['summary']}",
+            f"-- Specification Jurisdictions: {jurisdiction_text}",
             f"-- POC copy of `{item['path']}`; production source is unchanged.",
             f"-- @module {item['module']}",
+            "",
         ]
-        header.extend(f"-- @participates {jurisdiction}" for jurisdiction in item["jurisdictions"])
-        header.append("")
 
-        # LDoc 1.5 explicitly supports LuaLS-style @param/@return forms.  This
+        # LDoc 1.5 explicitly supports LuaLS-style @param/@return forms. This
         # generated local function is intentionally absent from production source;
         # it proves the two documentation syntaxes can be parsed in one file.
         luacats_probe = """
@@ -100,9 +103,6 @@ dir = 'experiments/issue141_source_traceability_poc/workspace/doc'
 format = 'markdown'
 all = true
 not_luadoc = true
-custom_tags = {
-    { 'participates', title = 'Specification Jurisdictions' },
-}
 """
     (WORKSPACE / "config.ld").write_text(config, encoding="utf-8")
     print(f"prepared {len(TARGETS)} real-source copies in {SRC.relative_to(ROOT)}")
@@ -114,13 +114,18 @@ def extract() -> None:
         generated = SRC / generated_name(item["path"])
         if not generated.is_file():
             raise SystemExit(f"generated source missing: {generated}")
-        found: list[str] = []
+        matches: list[list[str]] = []
         for line in generated.read_text(encoding="utf-8").splitlines():
-            match = PARTICIPATES.match(line)
+            match = JURISDICTIONS.match(line)
             if match:
-                found.append(match.group(1))
+                matches.append([value.strip() for value in match.group(1).split(",")])
+        if len(matches) != 1:
+            raise SystemExit(
+                f"expected exactly one Specification Jurisdictions line in {item['path']}; found {len(matches)}"
+            )
+        found = matches[0]
         if len(found) != len(set(found)):
-            raise SystemExit(f"duplicate @participates declaration in {item['path']}: {found}")
+            raise SystemExit(f"duplicate Jurisdiction declaration in {item['path']}: {found}")
         actual[item["path"]] = sorted(found)
 
     expected = expected_graph()
@@ -145,7 +150,7 @@ def verify_render() -> None:
         for jurisdictions in expected_graph().values()
         for jurisdiction in jurisdictions
     }
-    required.add("__omwIssue141PocIdentity")
+    required.update({"Specification Jurisdictions", "__omwIssue141PocIdentity"})
     missing = sorted(value for value in required if value not in rendered)
     if missing:
         raise SystemExit(f"LDoc output missing expected rendered values: {missing}")
@@ -153,8 +158,8 @@ def verify_render() -> None:
     if not GRAPH.is_file():
         raise SystemExit("graph.json missing; extractor did not run")
     print(f"LDoc render PASS ({len(html_files)} HTML files)")
+    print("visible structured Jurisdiction metadata rendering PASS")
     print("LuaLS/LuaCATS param/return coexistence PASS")
-    print("custom @participates rendering PASS")
 
 
 def main() -> None:
