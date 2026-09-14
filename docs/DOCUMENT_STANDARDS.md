@@ -257,11 +257,11 @@ The authoritative machine participant set is owned by the primary Specification 
 
 | Production source | Participation |
 | --- | --- |
-| [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
-| [`scripts/control/mechanisms/NativeDriveMechanism.lua`](../scripts/control/mechanisms/NativeDriveMechanism.lua) | `SUPPORTS` |
+| [`scripts/authority/BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua) | `REALISES` |
+| [`scripts/authority/AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua) | `SUPPORTS` |
 ```
 
-The example paths illustrate syntax only; the owning Specification determines the truthful participant set for its Jurisdiction.
+The example paths illustrate the `BOUNDED_AUTHORITY` relationship shape; the owning Specification determines the truthful participant set for every Jurisdiction.
 
 The only source-participation relationship classes are:
 
