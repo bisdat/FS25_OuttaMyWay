@@ -111,7 +111,8 @@ Total width must not be assumed to be symmetrically centred on the powered vehic
 
 **Does not own:** Physical Assembly inventory closure, occupancy coverage closure, Situation meaning, Regulation, Resolution Commitment, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/PHYSICAL_IDENTITY_RESOLUTION.md`](../spec/PHYSICAL_IDENTITY_RESOLUTION.md)
+**Jurisdiction ID:** `PHYSICAL_IDENTITY_RESOLUTION`
+**Primary Specification:** [`spec/PHYSICAL_IDENTITY_RESOLUTION.md`](../spec/PHYSICAL_IDENTITY_RESOLUTION.md)
 
 Physical Identity Resolution answers:
 
@@ -189,7 +190,8 @@ Functional class may guide operational questions or candidate priorities. Struct
 
 **Does not own:** Situation interpretation, strategic Candidate choice, Responsibility Transition, Regulation, Resolution Commitment, Bounded Authority or Control.
 
-**Primary Specification:** [`../../spec/ASSESSMENT_REPRESENTATION.md`](../spec/ASSESSMENT_REPRESENTATION.md)
+**Jurisdiction ID:** `ASSESSMENT_REPRESENTATION`
+**Primary Specification:** [`spec/ASSESSMENT_REPRESENTATION.md`](../spec/ASSESSMENT_REPRESENTATION.md)
 
 Assessment Representation answers:
 

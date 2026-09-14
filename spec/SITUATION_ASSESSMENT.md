@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Situation Assessment  
+**Jurisdiction ID:** `SITUATION_ASSESSMENT`
+
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#5-specification-jurisdiction--situation-assessment)
 
 This Specification owns the implementation-facing contract for interpreting current evidence into current **Situation meaning** for each active Local Operation, including current participation meaning, physical relevance, current relationships, uncertainty, obstruction causality, representation fitness for the current question, and semantic justification for whether an existing responsibility remains supported or a different lifecycle outcome should be considered.

@@ -165,22 +165,21 @@ Permanent CI/pre-commit enforcement remains a later adoption decision after the 
 
 ## Immediate next bounded #141 engineering step
 
-After the conformance-standard change is accepted, plan and execute the **bounded repository traceability migration** across all 15 current primary Jurisdictions.
+With the Jurisdiction identity spine established, complete the **participant-classification audit** before changing production source traceability.
 
-That migration must be evidence-led rather than mechanical. For each Jurisdiction it must:
+For every current primary Specification, classify each current implementation route and any additional source discovered by inspection as `REALISES`, `SUPPORTS`, navigation-only, or unresolved pending inspection. Build the inverse source-module → Jurisdiction map at the same time.
 
-1. add the Architecture-owned canonical Jurisdiction ID and exact primary-Spec route;
-2. add the reciprocal Specification identity/Architecture route;
-3. audit current implementation traceability and separate material `REALISES` / `SUPPORTS` participants from navigation-only routes;
-4. add exact participant rows to the primary Specification;
-5. add the untyped Jurisdiction acknowledgement to each material production source module;
-6. preserve or improve concise module-level semantic documentation without narrating Lua syntax;
-7. validate Authority-Triad impact; and
-8. prove full declared graph closure before calling the migration complete.
+`navigation-only` and `unresolved` are audit categories, not repository relationship types.
 
-The migration must not classify source from directory placement, blindly convert all existing traceability links, create transitive support edges, manufacture `DEPENDS_ON`, or introduce generated documentation as an authority requirement.
+No primary Specification should publish an authoritative `Contract participants` table until its material participant set is believed complete.
 
-Draft PR #184 should remain unmerged as experimental evidence while the standards are adopted. Once its findings are incorporated into accepted authority and no further POC work is needed, it can be closed unmerged; GitHub retains the experimental history.
+> **An Authoritative Participant Set Must Be Complete When Published.**
+
+When the audit is complete, derive the bipartite Jurisdiction ↔ material-source graph and compute its connected components. Participant-edge migration units are closed participation components, not arbitrary Jurisdiction batches.
+
+> **Migration Unit = Closed Participation Component.**
+
+No source acknowledgement should be added merely from directory placement or current traceability prose. The audit must apply `REALISES | SUPPORTS` semantics to implemented meaning.
 
 ## Subsequent #141 boundaries
 

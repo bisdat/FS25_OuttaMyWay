@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Operation Lifecycle  
+**Jurisdiction ID:** `OPERATION_LIFECYCLE`
+
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#2-specification-jurisdiction--operation-lifecycle)
 
 This Specification owns the implementation-facing contract for establishing, maintaining and closing **Job Episodes** and field-bounded **Local Operation** participation from authoritative GIANTS lifecycle evidence, including Field World identity/equivalence, membership evidence asymmetry and natural closure.

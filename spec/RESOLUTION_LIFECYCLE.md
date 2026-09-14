@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Resolution Lifecycle  
+**Jurisdiction ID:** `RESOLUTION_LIFECYCLE`
+
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#specification-jurisdiction--resolution-lifecycle)
 
 This Specification owns the implementation-facing contract for the generic persistence, obligation and terminal semantics of a **Resolution Commitment** after that semantic responsibility has been established.

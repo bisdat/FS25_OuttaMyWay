@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Assessment Representation  
+**Jurisdiction ID:** `ASSESSMENT_REPRESENTATION`
+
 **Primary Architecture Authority:** [`architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](../architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#4-specification-jurisdiction--assessment-representation)
 
 This Specification owns the implementation-facing contract for constructing, maintaining and publishing the most informative **defensible spatial representation** for a declared subject, physical state, purpose and conclusion scope.

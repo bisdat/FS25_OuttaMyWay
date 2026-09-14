@@ -3,6 +3,8 @@
 ## Identity and authority
 
 **Specification Jurisdiction:** Bounded Authority  
+**Jurisdiction ID:** `BOUNDED_AUTHORITY`
+
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#10-specification-jurisdiction--bounded-authority)
 
 This Specification owns the implementation-facing contract that turns a current semantic responsibility plus current accepted evidence into **specific physical permission that is valid now**.
