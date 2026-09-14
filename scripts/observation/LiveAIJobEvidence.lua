@@ -101,6 +101,9 @@ function Evidence.jobActiveInMission(mission, job, token)
     return false, "mission.aiSystem.activeJobs"
 end
 
+-- Source-job end is deliberately conjunctive GIANTS evidence. The retained last-job
+-- identity must match while current/active-job slots are absent and AI/field-work
+-- state is inactive; any contradictory witness leaves termination unestablished.
 function Evidence.sourceJobEndEvidence(mission, vehicle, previousToken)
     if not usableVehicle(vehicle) or previousToken == nil then
         return {observed = false, reason = "PREVIOUS_JOB_IDENTITY_UNAVAILABLE"}

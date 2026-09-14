@@ -101,6 +101,9 @@ function Admission:_admit(evidence, snapshot)
 end
 
 
+-- Field World binding is captured once per Job Episode. Later observations may
+-- add resolved identity/status, but they may not replace the first captured
+-- Snapshot, polygon or fingerprint and thereby move the Episode retrospectively.
 function Admission:_bindFieldWorld(record, evidence, snapshot)
     if evidence.fieldWorldSnapshotReferenceKey == nil then return record, false end
     local updates={}
@@ -189,6 +192,9 @@ function Admission:observe(snapshot)
             current = nil
         end
 
+        -- Positive source-job termination or runtime removal wins over presence-like
+        -- fields that may lag GIANTS lifecycle state; do not resurrect the same
+        -- Episode from contradictory evidence in the observation that ended it.
         local shouldAdmit = current == nil and canAdmit(evidence)
         if removed or (endedBySourceJob and cause == nil) then shouldAdmit = false end
         if shouldAdmit then
