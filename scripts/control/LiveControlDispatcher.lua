@@ -24,6 +24,9 @@ function Dispatcher:getRegulationControlObservation()
     if self.regulationControl~=nil and type(self.regulationControl.getControlExecutionObservation)=="function" then return self.regulationControl:getControlExecutionObservation() end
     return nil
 end
+-- Control outcomes report physical dispatch evidence only. Upstream Responsibility /
+-- Resolution lifecycle may consume that evidence, but an ACCEPTED outcome here does
+-- not itself establish semantic success, obligation settlement or terminal meaning.
 function Dispatcher:recordOutcome(request,status,effect,failure)
     local values={identity=self.runtime.identities:issue("CONTROL_OUTCOME"),requestId=request.identity,status=status,observedPhysicalEffect=effect or {},progress={},provenance={source="LiveControlDispatcher"},timestamp=(tonumber(g_time) or 0)/1000}
     if failure~=nil then values.failureEvidence=failure end
@@ -31,6 +34,9 @@ function Dispatcher:recordOutcome(request,status,effect,failure)
     self.outcomes[#self.outcomes+1]=outcome
     return outcome
 end
+-- Dispatch is intentionally monotonic with the already-authorised request: capability
+-- and target select the compatible executor, but this boundary must not create or
+-- broaden Bounded Authority, choose magnitude, or reinterpret Candidate policy.
 function Dispatcher:dispatch(request,candidate)
     if request==nil then return false,"CONTROL_REQUEST_REQUIRED" end
     if request.capability=="REGULATE_SPEED" then
@@ -53,6 +59,9 @@ function Dispatcher:dispatch(request,candidate)
     end
     return false,"CONTROL_REQUEST_CAPABILITY_UNSUPPORTED"
 end
+-- Cooperative Passage uses a joint dispatch boundary because the two authorised
+-- reposition requests form one coordinated physical actuation. Single dispatch
+-- deliberately refuses that case rather than starting one participant independently.
 function Dispatcher:dispatchJoint(requestA,requestB,candidate)
     if requestA==nil or requestB==nil then return false,"JOINT_CONTROL_REQUESTS_REQUIRED" end
     local control=self.cooperativePassageControl

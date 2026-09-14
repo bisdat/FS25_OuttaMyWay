@@ -326,6 +326,9 @@ function Authority:neutralizeFollowerBoundaryPhysical(picture,evaluated,candidat
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,followerBoundary=true,commitment=commitment}
 end
 
+-- Quiescence retains the semantic Regulation purpose/lease while withdrawing its
+-- current physical permission. A retained lease is therefore not evidence of active
+-- actuation; reactivation must acquire fresh token / Bounded Authority state.
 function Authority:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
     local lease=self.followerBoundaryLease
     if lease==nil then return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_QUIESCENCE_NO_RETAINED_PURPOSE",followerBoundary=true} end
@@ -524,6 +527,9 @@ local function actionSpaceRegulationQuiescenceSupported(picture,lease,action)
     return true,action.reason
 end
 
+-- Action-Space quiescence has the same split: purpose may remain retained while the
+-- physical lease effect and Bounded Authority are released until positive support
+-- re-establishes permission.
 function Authority:_quiesceActionSpaceRegulationActuation(picture,evaluated,lease,relation,action)
     if lease==nil then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_ACTUATION_QUIESCENCE_NO_ACTIVE_RELATIONSHIP",actionSpaceRegulation=true} end
     if lease.actuationActive==false then
