@@ -291,6 +291,21 @@ Raw physical Control outcomes and execution observations re-enter through Realit
 
 Control may be required to neutralise predecessor physical effects around a transition, but it does not make the semantic transition authoritative.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/contracts/ControlRequest.lua`](../scripts/contracts/ControlRequest.lua) | `REALISES` |
+| [`scripts/contracts/ControlOutcome.lua`](../scripts/contracts/ControlOutcome.lua) | `REALISES` |
+| [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) | `REALISES` |
+| [`scripts/control/RegulationControl.lua`](../scripts/control/RegulationControl.lua) | `REALISES` |
+| [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
+| [`scripts/control/ObstructionRelocationControl.lua`](../scripts/control/ObstructionRelocationControl.lua) | `REALISES` |
+| [`scripts/control/mechanisms/FieldWorkHoldMechanism.lua`](../scripts/control/mechanisms/FieldWorkHoldMechanism.lua) | `SUPPORTS` |
+| [`scripts/control/mechanisms/NativeDriveMechanism.lua`](../scripts/control/mechanisms/NativeDriveMechanism.lua) | `SUPPORTS` |
+| [`scripts/control/mechanisms/NonJobActuationMechanism.lua`](../scripts/control/mechanisms/NonJobActuationMechanism.lua) | `SUPPORTS` |
+| [`scripts/control/mechanisms/TransitConfigurationMechanism.lua`](../scripts/control/mechanisms/TransitConfigurationMechanism.lua) | `SUPPORTS` |
+
 ## Implementation traceability
 
 The following mapping is **non-normative source traceability**.

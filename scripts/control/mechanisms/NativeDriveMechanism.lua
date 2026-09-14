@@ -1,3 +1,6 @@
+--- Provides subordinate GIANTS-native Regulation and Passage drive actuation below Control without policy or Commitment authority.
+-- Specification Jurisdictions: `CONTROL`
+
 -- GIANTS-native drive mechanism below Control.
 -- Positive Regulation preserves native permission; a zero effective cap is a
 -- Hold and revokes drive permission. The same interception realises validated
