@@ -1,3 +1,7 @@
+-- Shared immutable value substrate for architecture records. ValueRecord separates
+-- semantic data from runtime object identity/metatables, seals nested values, and
+-- provides deterministic traversal/serialization across GIANTS and offline tests.
+
 OuttaMyWay.ValueRecord = {}
 local ValueRecord = OuttaMyWay.ValueRecord
 
@@ -114,6 +118,8 @@ local function canonical(value)
     return "{" .. table.concat(parts, ",") .. "}"
 end
 
+-- Schema definitions reject undeclared fields before sealing so architecture products
+-- cannot accumulate ad-hoc runtime state by mutation or extension.
 function ValueRecord.define(typeName, requiredFields, optionalFields, validator)
     local allowed = {}
     for _, name in ipairs(requiredFields or {}) do allowed[name] = true end

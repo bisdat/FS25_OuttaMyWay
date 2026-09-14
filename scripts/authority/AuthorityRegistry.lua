@@ -17,6 +17,9 @@ function Registry.new(identityRegistry, epochSequence, commitmentRegistry)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,commitments=commitmentRegistry,byAssembly={},generations={}},Registry)
 end
 
+-- Token ownership is deliberately exclusive per Physical Assembly. This registry
+-- records mechanical ownership only: it requires an ACTIVE Commitment but does not
+-- decide whether that Commitment is semantically entitled to physical permission.
 function Registry:_acquire(assemblyId,commitmentId,authorityClass)
     if type(assemblyId)~="string" or assemblyId=="" then error("assembly identity required",2) end
     if authorityClass~=PROGRESS and authorityClass~=OBSTRUCTION_RELOCATION then error("unsupported authority class",2) end

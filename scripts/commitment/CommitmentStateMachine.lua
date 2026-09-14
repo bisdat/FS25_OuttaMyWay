@@ -1,3 +1,7 @@
+-- Shared Commitment lifecycle mechanics. This module enforces legal state movement
+-- and terminal preconditions; Governing Basis evaluation elsewhere decides whether
+-- an observed event actually justifies entering SETTLING.
+
 OuttaMyWay.CommitmentStateMachine = {}
 local StateMachine = OuttaMyWay.CommitmentStateMachine
 
@@ -47,6 +51,8 @@ function StateMachine.transition(record, toState, context, obligationLedger)
         revision = record.revision + 1
     }
 
+    -- SETTLING freezes the first authoritative terminal meaning. Later evidence may
+    -- complete settlement, but it may not rewrite the cause or disposition.
     if toState == "SETTLING" then
         if not StateMachine.TERMINAL[context.intendedTerminalDisposition] then
             error("SETTLING requires one canonical intended terminal disposition", 2)
@@ -58,6 +64,8 @@ function StateMachine.transition(record, toState, context, obligationLedger)
         changes.intendedTerminalDisposition = context.intendedTerminalDisposition
         changes.terminalCause = context.terminalCause
     elseif StateMachine.TERMINAL[toState] then
+        -- Terminality is not merely a state transition: every terminal dependency
+        -- must be settled and explicit settlement evidence must accompany it.
         if record.intendedTerminalDisposition ~= toState then
             error("terminal disposition does not match the intended disposition", 2)
         end

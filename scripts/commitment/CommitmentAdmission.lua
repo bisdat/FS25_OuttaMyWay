@@ -1,3 +1,8 @@
+-- Shared admission substrate for already-authorised Commitment creation.
+-- It enforces unresolved-responsibility and actuation-owner exclusivity, then
+-- materialises the retained Commitment/Obligation/token records; it does not decide
+-- whether a Candidate ought to become responsible.
+
 OuttaMyWay.CommitmentAdmission = {}
 local Admission = OuttaMyWay.CommitmentAdmission
 Admission.__index = Admission
@@ -38,6 +43,8 @@ function Admission:admit(values)
         error("Commitment admission requires Governing Basis responsibilityKey",2)
     end
     local existing = self:findLiveByResponsibilityKey(responsibilityKey)
+    -- A responsibility key may have only one unresolved owner. The sole overlap is
+    -- the explicit handoff from a SETTLING Commitment already fixed to supersession.
     for _, record in OuttaMyWay.ValueRecord.ipairs(existing) do
         local permittedSuccessor = values.supersedesCommitmentId == record.identity
             and record.state == "SETTLING"
