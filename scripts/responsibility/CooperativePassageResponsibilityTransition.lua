@@ -1,3 +1,6 @@
+--- Validates Cooperative Passage successor context and orders establishment of its Resolution responsibility before physical dispatch.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+
 OuttaMyWay.CooperativePassageResponsibilityTransition = {}
 local Transition = OuttaMyWay.CooperativePassageResponsibilityTransition
 Transition.__index = Transition

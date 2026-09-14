@@ -1,3 +1,6 @@
+--- Validates Obstruction Relocation successor context, governing basis and continuity before authoritative Resolution responsibility exposure.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+
 OuttaMyWay.ObstructionRelocationResponsibilityTransition={}
 local Transition=OuttaMyWay.ObstructionRelocationResponsibilityTransition
 Transition.__index=Transition

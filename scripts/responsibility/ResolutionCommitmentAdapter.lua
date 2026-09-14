@@ -1,3 +1,6 @@
+--- Materializes the read-only Resolution Commitment successor view required by Responsibility Transition while owning no lifecycle authority.
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+
 OuttaMyWay.ResolutionCommitmentAdapter = {}
 local Adapter = OuttaMyWay.ResolutionCommitmentAdapter
 
