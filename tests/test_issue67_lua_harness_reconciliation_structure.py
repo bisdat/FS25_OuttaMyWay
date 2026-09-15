@@ -1,10 +1,19 @@
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
+
+
+def workflow_job(workflow, job_id):
+    marker=f"  {job_id}:\n"
+    assert marker in workflow
+    tail=workflow.split(marker, 1)[1]
+    next_job=re.search(r"^  [a-z][a-z0-9-]*:\n", tail, flags=re.MULTILINE)
+    return tail[:next_job.start()] if next_job else tail
 
 
 def test_issue67_replacement_core_loader_matches_current_constraint_topology():
@@ -71,14 +80,15 @@ def test_issue67_focused_obstruction_fixture_has_executable_load_helper():
 
 def test_reconciled_lua_workflow_collects_both_outcomes_and_blocks_on_failure():
     workflow=read(".github/workflows/offline-validation.yml")
+    lua_job=workflow_job(workflow, "lua-observation")
 
-    assert "name: Lua offline behavioural contracts" in workflow
-    assert "id: lua" in workflow
-    assert "id: obstruction_relocation" in workflow
-    assert workflow.count("continue-on-error: true") == 2
-    assert "name: Enforce Lua behavioural contracts" in workflow
-    assert 'MAIN_OUTCOME="${{ steps.lua.outcome }}"' in workflow
-    assert 'FOCUSED_OUTCOME="${{ steps.obstruction_relocation.outcome }}"' in workflow
-    assert 'if [[ "$MAIN_OUTCOME" != "success" || "$FOCUSED_OUTCOME" != "success" ]]; then' in workflow
-    assert "any non-success inner outcome fails the enforcement gate" in workflow
+    assert "name: Lua offline behavioural contracts" in lua_job
+    assert "id: lua" in lua_job
+    assert "id: obstruction_relocation" in lua_job
+    assert lua_job.count("continue-on-error: true") == 2
+    assert "name: Enforce Lua behavioural contracts" in lua_job
+    assert 'MAIN_OUTCOME="${{ steps.lua.outcome }}"' in lua_job
+    assert 'FOCUSED_OUTCOME="${{ steps.obstruction_relocation.outcome }}"' in lua_job
+    assert 'if [[ "$MAIN_OUTCOME" != "success" || "$FOCUSED_OUTCOME" != "success" ]]; then' in lua_job
+    assert "any non-success inner outcome fails the enforcement gate" in lua_job
     assert "Evidence Collection != CI Enforcement" in " ".join(read("docs/TESTING_METHODOLOGY.md").split())

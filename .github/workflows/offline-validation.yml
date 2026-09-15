@@ -165,3 +165,41 @@ jobs:
             exit 1
           fi
           echo "Lua behavioural contracts PASS: main=$MAIN_OUTCOME focused=$FOCUSED_OUTCOME"
+
+  source-reference:
+    name: Generated source reference
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Prepare derived source copies
+        run: python tools/source_reference.py prepare
+        env:
+          OMW_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Render source reference with LDoc 1.5.0
+        uses: lunarmodules/ldoc@v1.5.0
+        with:
+          args: -c tools/ldoc/config.ld .generated/source-reference/src
+
+      - name: Verify rendered source reference
+        run: python tools/source_reference.py verify
+
+      - name: Publish generated source reference
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outtamyway-source-reference
+          path: |
+            .generated/source-reference/html
+            .generated/source-reference/manifest.json
+            .generated/source-reference/README.txt
+          if-no-files-found: warn
