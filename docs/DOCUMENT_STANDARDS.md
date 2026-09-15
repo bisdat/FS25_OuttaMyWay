@@ -45,6 +45,26 @@ Where a small stable syntax is itself the repository interface consumed by struc
 
 > **Normative on semantics; permissive on presentation except where presentation is the contracted machine interface.**
 
+## Live navigation and relative links
+
+Engineering Architecture owns the **Live Breadcrumb Invariant** and the **Archive Navigation Exemption**. This standard operationalises those existing governance rules for current live Markdown authoring; it does not create a second architectural owner for them.
+
+The current live Markdown roots are `/architecture`, `/spec` and `/docs`.
+
+Within those roots:
+
+- every live documentation folder MUST contain a `README.md` navigation entry point;
+- each folder README MUST link every direct intentionally retained live Markdown document other than itself;
+- each folder README MUST link every direct live documentation subfolder through that child's `README.md`;
+- direct-child navigation is sufficient; a parent README need not duplicate a complete descendant tree; and
+- relative links in live Markdown MUST resolve to an existing repository file or directory after any fragment or query component is removed.
+
+`docs/archive/` and its descendants remain outside the live breadcrumb tree under the Architecture-owned Archive Navigation Exemption. External URLs and anchor-only links do not create repository-relative link obligations.
+
+Breadcrumb presence establishes discoverability, not semantic authority. A stale document MUST NOT be retained merely to satisfy navigation, and adding a breadcrumb MUST NOT manufacture a responsibility that does not otherwise exist.
+
+> **Navigation Completeness != Semantic Authority.**
+
 # Semantic authority model
 
 Architecture defines what the system should achieve, why its responsibilities exist and which concepts, constraints and authority relationships govern them.
