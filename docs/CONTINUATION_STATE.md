@@ -12,81 +12,76 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — Issue #45 Bubble Bullet Time
+## Current engineering boundary — Issue #216 Resolution-Margin Demand
 
-Issue #45 is the active concern after post-merge `.77` Reality validation of the completed #172 lifecycle correction exposed a supported-envelope three-worker traffic failure.
+Issue #216 is the active concern after accepted build **0.3.0.78** positively validated the Issue #45 Bubble Bullet Time behaviour and later exposed a separate two-worker collision.
 
-In the observed run, Condor and S 416 were executing Cooperative Passage `CM-00003` while Patriot remained an independent third active worker in the same Local Operation. Fresh Situation Assessment continued to observe Condor/Patriot spatial interaction, including Category-1 Forward Intersection evidence, but Patriot did not receive the Architecture-required Bubble Bullet Time protection and later collided head-on with Condor. A separate S 416/Patriot follower purpose repeatedly admitted and retired during the same Resolution Epoch.
+PR #215 merged the `.78` Bubble Bullet Time implementation to accepted `main`; post-merge Offline Validation #496 passed on that merge. Issue #45 is completed and closed. In the subsequent `.78` Reality run, the formation-time independent third worker received the required fixed 1 km/h Bubble protection during the active Cooperative Passage Resolution Epoch, ordinary third-party negotiation remained deferred, and the Bubble effect released when the Resolution Epoch ended.
 
-The accepted Spatial Negotiation architecture already resolves the responsibility boundary:
+The later failure occurs outside that Bubble and after the subsequent two-worker Cooperative Passage had also completed and dissolved. Patriot and S 416 then entered an ordinary Action-Space Regulation relationship. The player observed a physical collision while S 416 remained in GIANTS-owned turning motion.
 
-- at Bubble Formation, the independent third active AI Traffic Party enters exactly **1 km/h Intent-Revelation Creep** for the Resolution Epoch;
-- that worker remains physically and semantically independent and does not join the pairwise Resolution Commitment;
-- Reality and pairwise relationships involving the third worker remain observed;
-- ordinary relationships with either Bubble participant are **deferred rather than independently negotiated** while the Bubble owns the coupled Resolution decision horizon; and
-- unexpected hard-safety evidence remains authoritative.
+## Current evidence and discoveries
 
-The Category-1 evidence is therefore relevant current Reality, but it does not itself justify an independently negotiated Forward Intersection responsibility during the active Bubble. The follower admit/retire loop is likewise inconsistent with the Bubble-owned decision horizon.
+The decisive `.78` evidence does not support treating the collision as a narrow Bubble or Passage regression.
 
-> **Active Pair Resolution Needs Stable Third-Party Protection.**
+Before Action-Space Regulation was admitted, the retained non-authoritative `ProgressionPreservationProbe` already reported Patriot's supported native progression intersecting S 416's represented Current Space within only a few metres. Candidate Support still published no temporal-coordination action because the current production Action-Space path primarily depended on a Current-Excursion/opposed-corridor proxy.
 
-## Bounded `.78` implementation hypothesis
+When Action-Space Regulation was later admitted, `ResolutionSpaceProgressionEnvelope` was initialised from roughly 26 m of reference-pose separation even though the positive represented Current-Space witness lay only a few metres ahead on Patriot's supported progression. The authorised cap therefore remained close to native speed. The physical effect then became quiescent when the Current Excursion was no longer ahead on the stable participant trajectory, while current spatial demand had not positively dissolved.
 
-The current Engineering Increment implements Bubble Bullet Time as a **supporting physical Regulation effect of the existing Cooperative Passage Resolution responsibility**. It does not create a new Regulation responsibility, another Resolution, another Operation, a third Passage Leg or a new traffic hierarchy.
+This supports two durable distinctions:
 
-Current source already supplies the required lower-level primitives:
+> **Current Excursion != Resolution-Margin Demand.**
 
-- `LiveTrafficCommitmentLifecycle` can acquire supporting progress authority and revise Effective Actuation Composition;
-- generic Bounded Authority can grant `REGULATE_SPEED` under the current Passage Resolution responsibility;
-- `NativeDriveMechanism` composes independently owned Regulation leases by applying the least-permissive active cap; and
-- passive Candidate Support can preserve observation while issuing no independent physical Candidate.
+> **Reference-Point Separation != Usable Resolution Space.**
 
-The bounded implementation therefore:
+The earlier Issue #93 investigation also constrains interpretation: generic positive bounding-disc overlap is not proof of actual machine contact and does not carry negative-clearance authority. In #216, the represented spatial witness and the player's observed collision are therefore separate evidence claims.
 
-1. identifies only the independent third worker already present at **Bubble Formation**;
-2. prepares that worker's supporting authority/composition under the Passage commitment without adding it to the Passage pair;
-3. after Responsibility Transition has exposed the Passage Resolution as current, activates a fixed **1 km/h** Bubble lease immediately before joint Passage Control begins;
-4. while a Passage Leg remains live, projects ordinary live-traffic Candidate Support to passive observation so follower/Forward-Intersection relationships remain observed but deferred;
-5. releases the Bubble physical effect when its current third-party basis ends and on Resolution-Epoch termination; and
-6. leaves ordinary two-worker Passage behaviour unchanged.
+## Authority classification
 
-Later arrival of a new third worker after Bubble Formation is deliberately outside this `.78` increment. That question remains unresolved rather than being silently invented through implementation convenience.
+Current Architecture remains coherent.
 
-## Disproved implementation assumption
+Spatial Negotiation Architecture already establishes that time consumes options, that Regulation may preserve Resolution Space while GIANTS keeps routing authority, and that Situation Assessment owns current option-space / Resolution-Margin meaning. The Runtime Responsibility Architecture already keeps Situation meaning, Candidate/Decision, Responsibility Transition, Bounded Authority and Control separate.
 
-The first implementation sketch attempted to create positive Bubble Bounded Authority inside `CooperativePassageResponsibilityTransition`. Code walk disproved that ordering: `ResponsibilityTransitionAuthority` registers the Passage Resolution as current only after the specialised transition collaborator returns, and generic Bounded Authority correctly rejects permission before Current Responsibility exists.
+The missing boundary is implementation-facing Specification detail. `spec/SITUATION_ASSESSMENT.md` now defines **Resolution-Margin Demand Evidence** as the Situation-owned positive evidence product for the question of whether currently supported native progression consumes represented Current Space, Committed Demand or Potential Demand within its bounded local progression horizon.
 
-The corrected ordering is:
+The contract preserves these limits:
 
-```text
-Bubble Formation
-    -> prepare third-party supporting authority/composition
-    -> Responsibility Transition exposes current Passage Resolution
-    -> activate fixed 1 km/h Bounded Authority
-    -> joint Passage Control begins
-```
+- a positive witness-entry distance is one-sided evidence, not safe clearance;
+- Current Excursion and other recognised relationships may contribute evidence but do not define the demand;
+- reference-pose separation cannot substitute for a nearer positive represented witness when the question is usable Resolution Margin;
+- no target turn path or future route is predicted;
+- no Productive History or persistent pair baseline is required;
+- Situation Assessment does not select a Candidate, regulated subject or speed; and
+- Bounded Authority remains the owner of current physical subject and permitted magnitude.
 
-> **Supporting Composition Preparation != Positive Physical Permission.**
+## Authority Triad disposition for the Specification tranche
 
-This preserves the accepted rule that positive physical actuation requires an already-current semantic responsibility.
+This branch intentionally changes only the implementation-facing contract and current continuation record.
 
-## Validation boundary
+- **Architecture — validated unchanged.** Existing Runtime Responsibility and Spatial Negotiation architecture already own the required Resolution-Margin and Regulation semantics.
+- **Specification — changed.** Situation Assessment now operationalises the missing Resolution-Margin Demand Evidence boundary.
+- **Source — validated as not yet conforming to the clarified contract.** Production still exposes related positive progression/intersection geometry only through a non-authoritative diagnostic while active Action-Space Regulation relies primarily on Current-Excursion/opposed-corridor interpretation and reference-pose separation.
 
-The focused offline contract must challenge that:
+This is deliberate specification-first work. The branch does not weaken Architecture to match the implementation and does not promote diagnostic output into authority.
 
-- a formation-time third worker receives supporting 1 km/h protection without becoming a Passage participant;
-- positive Bounded Authority is not created before the Passage Resolution is current;
-- the two Passage requests and supporting third-party effect share one current Effective Actuation Composition;
-- ordinary third-party follower/Forward-Intersection negotiation is deferred to passive observation while the Passage Resolution Epoch is live;
-- physical Bubble protection releases when its basis or Resolution Epoch ends; and
-- a two-worker Passage does not manufacture third-party Regulation.
+## Validation boundary — Touch One; Validate Three
 
-GitHub Actions remains the execution authority for blocking structural and Lua behavioural contracts.
+The eventual implementation must preserve a three-part behavioural guardrail:
 
-If offline validation passes and the increment is accepted, the next Reality challenge is the retained three-worker scenario that exposed #45: form a genuine two-worker Cooperative Passage with an independent third active worker already present and observe whether the third worker remains at the required 1 km/h throughout the active Resolution Epoch, ordinary pair relationships remain observed without follower-regulation oscillation, and the Passage completes without the prior head-on collision. A successful run challenges integrated behaviour; it does not prove the whole supported envelope.
+1. **Target case:** supported native progression positively intersects represented Current Space/Demand while the other worker is manoeuvring; Resolution-Margin Demand follows that represented claim before, during and after any narrower Current-Excursion proxy window.
+2. **Negative neighbour:** a nearby or `TURNING` worker whose represented Current Space/Demand does not positively intersect the subject's supported progression does not trigger Regulation merely from proximity, turn state, shared Operation membership or a generic zone classification.
+3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space behaviour preserves its accepted relationship interpretation, role allocation, elastic Regulation lifecycle, quiescence/reactivation semantics and Passage succession when equivalent evidence remains available.
 
-## Executable baseline and parked concerns
+Repository offline suites remain GitHub Actions' execution responsibility. A Specification-only change consumes no new TEST build identity.
 
-This executable increment advances TEST build identity from `.77` to **`.78`**. `scripts/config.lua` and `modDesc.xml` remain the two build-identity owners and must agree exactly. No canonical-release identity changes.
+## Next bounded engineering step
 
-Issues #170, #174 and #176 remain parked standards-work conformance concerns. Issue #210 remains a parked generated-source-reference improvement. Issue #172 is completed and closed.
+After this Specification tranche is reviewed and accepted, return to **Hypothesise** before changing executable code.
+
+The next question is:
+
+> What is the smallest production Situation Assessment mechanism that can publish Resolution-Margin Demand Evidence from current sealed evidence, and how should existing Regulation Candidate Support consume it without importing diagnostic authority or changing GIANTS routing ownership?
+
+Only after that mechanism and its evidence contract are agreed should an executable implementation increment begin. Any pushed executable revision must then receive a fresh TEST build identity beyond `.78` and must be validated against the three-part guardrail above before in-game Reality testing.
+
+Issues #170, #174 and #176 remain parked standards-work conformance concerns. Issue #210 remains a parked generated-source-reference improvement. Issue #45 and Issue #172 are completed and closed.
