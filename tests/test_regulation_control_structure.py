@@ -16,6 +16,8 @@ def test_regulation_control_owns_production_speed_execution():
     assert "function Control:getVehicleControlObservation" in control
     assert 'target.kind~="REGULATION_LEASE"' in control
     assert "boundedAuthority:validateRequest(request)" in control
+    # Authority Requirement != Vocabulary Enumeration: positive APPLY fails closed
+    # without requiring Control to enumerate every current or future owner tag.
     assert "boundedAuthorityRequiredOwnerTags" not in control
     assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in control
     assert 'return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED"' in control
