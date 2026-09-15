@@ -201,3 +201,27 @@ def test_issue87_obstruction_relocation_bounds_live_with_their_narrowest_owners(
     assert "local BOUNDED_MOVE_WATCHDOG_MS=45000" in control
     assert "if elapsed>BOUNDED_MOVE_WATCHDOG_MS then" in control
     assert 'reason="BOUNDED_MOVE_WATCHDOG_EXPIRED"' in control
+
+
+def test_issue176_centroid_strategy_exhaustion_escalates_without_basis_cessation():
+    candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+    lifecycle = read("scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua")
+    verdict = read("scripts/contracts/GoverningBasisVerdict.lua")
+    evaluator = read("scripts/commitment/GoverningBasisEvaluator.lua")
+    settlement = read("scripts/commitment/TerminalSettlementEvaluator.lua")
+    boundary = read("scripts/commitment/DecisionCommitmentBoundary.lua")
+
+    assert "POSITIVE_CAUSAL_OBSTRUCTION_WITHOUT_MEANINGFUL_INWARD_RELOCATION_SPACE" in candidate
+    assert 'capability=eventKind=="OBJECTIVE_FAILED" and "ESCALATE"' in candidate
+    assert 'CENTROID_STRATEGY_EXHAUSTED' in lifecycle
+    assert 'return "SATISFACTION","PLAYER_ESCALATION"' in lifecycle
+    assert 'return "BASIS_CESSATION","RELOCATION_BASIS_CEASED"' in lifecycle
+    assert 'causalObstructionBasisCeased=requiredOutcomeBranch=="RELOCATION_BASIS_CEASED"' in lifecycle
+    assert 'centroidStrategyExhausted=semanticEvent=="CENTROID_STRATEGY_EXHAUSTED"' in lifecycle
+
+    assert '"terminalSupported"' in verdict
+    assert 'CENTROID_STRATEGY_EXHAUSTED={disposition="FAILED",cause="CENTROID_STRATEGY_EXHAUSTED",basisCessation=false}' in evaluator
+    assert 'terminalSupported=terminalSupported' in evaluator
+    assert 'invalidated=basisCessationSupported' in evaluator
+    assert 'if not governingBasisVerdict.terminalSupported then' in settlement
+    assert 'if not verdict.terminalSupported then error("settlementDirective event does not support terminal settlement",2) end' in boundary

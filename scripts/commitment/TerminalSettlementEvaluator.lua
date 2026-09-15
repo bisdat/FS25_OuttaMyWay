@@ -14,7 +14,7 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
     if record == nil then error("unknown Commitment " .. tostring(commitmentId),2) end
     OuttaMyWay.ValueRecord.assertType(governingBasisVerdict,"GoverningBasisVerdict")
     if governingBasisVerdict.commitmentId ~= commitmentId then error("Governing Basis verdict belongs to another Commitment",2) end
-    if not governingBasisVerdict.invalidated then return {commitment=record,releasedAuthorityTokenIds={}} end
+    if not governingBasisVerdict.terminalSupported then return {commitment=record,releasedAuthorityTokenIds={}} end
     if record.state == "SETTLING" then
         if record.terminalCause ~= governingBasisVerdict.terminalCause then
             error("first authoritative invalidation already fixed terminal cause",2)

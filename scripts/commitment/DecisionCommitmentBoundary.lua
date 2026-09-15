@@ -178,7 +178,7 @@ function Boundary:apply(picture,decisionResult)
             explanation="Preserved responsibility while speculative progress remained prohibited"
         end
     -- SETTLE cannot manufacture terminal meaning from a Decision directive; the
-    -- canonical Governing Basis evaluator must independently invalidate the basis and
+    -- canonical Governing Basis evaluator must independently support terminality and
     -- agree with any supplied disposition/cause before authority enters SETTLING.
     elseif action == "SETTLE" then
         if context == nil then
@@ -191,7 +191,7 @@ function Boundary:apply(picture,decisionResult)
             previousState=record.state; commitmentId=record.identity
             if type(directive.eventKind) ~= "string" then error("settlementDirective requires canonical eventKind",2) end
             local verdict=self.governingBasisEvaluator:evaluate(record,{kind=directive.eventKind,evidence=directive.evidence or {},provenance=directive.provenance or {}})
-            if not verdict.invalidated then error("settlementDirective event does not invalidate Governing Basis",2) end
+            if not verdict.terminalSupported then error("settlementDirective event does not support terminal settlement",2) end
             if directive.intendedTerminalDisposition ~= nil and directive.intendedTerminalDisposition ~= verdict.intendedTerminalDisposition then
                 error("settlementDirective disposition contradicts canonical Governing Basis event",2)
             end
