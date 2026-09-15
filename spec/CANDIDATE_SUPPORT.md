@@ -213,6 +213,7 @@ Situation Assessment owns the current semantic relationships and Operational Pic
 | --- | --- |
 | [`scripts/candidates/ProspectiveDecisionPortfolioSupport.lua`](../scripts/candidates/ProspectiveDecisionPortfolioSupport.lua) | `REALISES` |
 | [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
+| [`scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua`](../scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/PassiveLiveCandidateSupport.lua`](../scripts/candidates/PassiveLiveCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
@@ -228,6 +229,7 @@ Current implementation routes include:
 
 - [`scripts/candidates/ProspectiveDecisionPortfolioSupport.lua`](../scripts/candidates/ProspectiveDecisionPortfolioSupport.lua) — composition of fresh support groups into one target Decision Picture and complete prospective portfolio;
 - [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) — current live-traffic purpose-local support construction;
+- [`scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua`](../scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua) — current active-Passage decision-horizon projection that preserves observation while deferring ordinary independent traffic negotiation to passive support;
 - [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) — obstruction-relocation support construction;
 - [`scripts/candidates/PassiveLiveCandidateSupport.lua`](../scripts/candidates/PassiveLiveCandidateSupport.lua) — explicit passive/fail-closed support paths;
 - [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) — current purpose-local Cooperative Passage planning support; and
@@ -243,9 +245,13 @@ No one source module is the Jurisdiction. Current module size or helper topology
 
 [`tests/test_constraint_verdict_ownership_structure.py`](../tests/test_constraint_verdict_ownership_structure.py) provides neighbouring evidence that Candidate planning packets do not own mandatory Constraint verdicts.
 
+[`tests/test_bubble_bullet_time_structure.py`](../tests/test_bubble_bullet_time_structure.py) challenges active-Passage decision-horizon deferral without granting Candidate Support physical authority.
+
 ### Offline behavioural/conformance validation
 
 [`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises Candidate support, Candidate inventory construction and prospective selection flows in the replacement-core harness.
+
+[`tests/replacement_core/bubble_bullet_time.lua`](../tests/replacement_core/bubble_bullet_time.lua) exercises active-Passage passive support versus ordinary delegated support as part of the focused Bubble contract.
 
 Offline validation can challenge identity, completeness, provenance and authority separation. It cannot prove GIANTS Reality or the physical validity of purpose-specific geometry used by a Candidate.
 

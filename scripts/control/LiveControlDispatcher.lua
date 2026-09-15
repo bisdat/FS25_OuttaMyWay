@@ -62,12 +62,28 @@ end
 -- Cooperative Passage uses a joint dispatch boundary because the two authorised
 -- reposition requests form one coordinated physical actuation. Single dispatch
 -- deliberately refuses that case rather than starting one participant independently.
+-- Bubble Bullet Time, when prepared at Bubble Formation, becomes positive
+-- physical authority here: Responsibility Transition has already exposed the
+-- Passage Resolution, while physical Passage execution has not yet begun.
 function Dispatcher:dispatchJoint(requestA,requestB,candidate)
     if requestA==nil or requestB==nil then return false,"JOINT_CONTROL_REQUESTS_REQUIRED" end
     local control=self.cooperativePassageControl
     if control==nil or type(control.executeJointRequests)~="function" then return false,"COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE" end
+
+    local bubble=self.runtime and self.runtime.bubbleBulletTime or nil
+    local bubbleState=nil
+    if bubble~=nil and type(bubble.activatePrepared)=="function" then
+        local activated,reason=bubble:activatePrepared(requestA.commitmentId,requestA,candidate)
+        if activated==nil then return false,"BUBBLE_BULLET_TIME_ACTIVATION_FAILED:"..tostring(reason) end
+        bubbleState=activated
+    end
+
     local started,result=control:executeJointRequests(requestA,requestB,candidate)
-    if started==true then self.dispatchCount=self.dispatchCount+1 end
+    if started==true then
+        self.dispatchCount=self.dispatchCount+1
+    elseif bubble~=nil and bubbleState~=nil and bubbleState.status=="ACTIVE" and type(bubble.releaseForCommitment)=="function" then
+        bubble:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+    end
     return started,result
 end
 function Dispatcher:notifyRejected(request,reason,effect)
