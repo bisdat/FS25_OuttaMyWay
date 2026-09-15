@@ -346,6 +346,8 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | Production source | Participation |
 | --- | --- |
 | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) | `REALISES` |
+| [`scripts/assessment/ResolutionMarginSituationAssessment.lua`](../scripts/assessment/ResolutionMarginSituationAssessment.lua) | `REALISES` |
+| [`scripts/assessment/ResolutionMarginDemandAssessment.lua`](../scripts/assessment/ResolutionMarginDemandAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CurrentPairAssessmentScope.lua`](../scripts/assessment/CurrentPairAssessmentScope.lua) | `REALISES` |
 | [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua) | `REALISES` |
 | [`scripts/assessment/FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) | `REALISES` |
@@ -363,15 +365,17 @@ The following mapping is **non-normative source traceability**.
 
 Current implementation routes include:
 
-- [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) — current Operational Picture composition and semantic handoff;
+- [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) — baseline Operational Picture composition and semantic handoff;
+- [`scripts/assessment/ResolutionMarginDemandAssessment.lua`](../scripts/assessment/ResolutionMarginDemandAssessment.lua) — current one-sided positive progression-to-Current-Space/Demand witness interpretation using neutral progression geometry;
+- [`scripts/assessment/ResolutionMarginSituationAssessment.lua`](../scripts/assessment/ResolutionMarginSituationAssessment.lua) — Situation-layer composition that enriches the baseline picture with `resolutionMarginDemandKnowledge` while preserving the same picture identity/epoch;
 - [`scripts/assessment/CurrentPairAssessmentScope.lua`](../scripts/assessment/CurrentPairAssessmentScope.lua) — current ephemeral exact-member pair scope;
 - [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua), [`FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) and [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) — current spatial relationship/constraint interpretation;
 - [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — current positive obstruction-cause interpretation;
 - [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) and [`PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) — current question-scoped representation-fitness interpretation;
 - [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) — current specialised semantic persistence/dissolution interpretation for established Regulation purposes; and
-- [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current orchestration that places Situation Assessment after Observation and Operation lifecycle, before Candidate/Constraint/Decision.
+- [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) plus [`scripts/main.lua`](../scripts/main.lua) — current orchestration/composition placing the final Situation Assessment product after Observation and Operation lifecycle, before Candidate/Constraint/Decision.
 
-The accepted source currently exposes related positive progression/intersection geometry through the non-authoritative `ProgressionPreservationProbe`, while active Action-Space Regulation is still primarily admitted from Current-Excursion/opposed-corridor interpretation. Those mechanisms are implementation evidence, not the Specification contract. Until production Situation Assessment publishes Resolution-Margin Demand Evidence directly, this clarification intentionally exposes an implementation-conformance gap rather than promoting diagnostic output into semantic authority.
+Production Situation Assessment now publishes Resolution-Margin Demand Evidence directly from current sealed evidence. The retained `ProgressionPreservationProbe` remains non-authoritative diagnostic instrumentation and is not imported into the semantic production path. In build `.79`, no Candidate, Decision, Responsibility, Bounded Authority or Control source consumes the new Situation field; this increment establishes the semantic bridge only.
 
 No single assessment helper owns the whole Situation Assessment Jurisdiction.
 
@@ -383,20 +387,21 @@ Current structural evidence includes:
 
 - [`tests/test_replacement_core_structure.py`](../tests/test_replacement_core_structure.py), which protects the separation of Situation Assessment from Candidate/Decision/Control;
 - [`tests/test_live_interaction_observation_structure.py`](../tests/test_live_interaction_observation_structure.py), which challenges Observation-to-Situation evidence ownership;
-- [`tests/test_follower_boundary_assessment_value_ownership_structure.py`](../tests/test_follower_boundary_assessment_value_ownership_structure.py) and [`tests/test_trajectory_assessment_value_ownership_structure.py`](../tests/test_trajectory_assessment_value_ownership_structure.py), which protect Situation-owned relationship interpretation; and
+- [`tests/test_follower_boundary_assessment_value_ownership_structure.py`](../tests/test_follower_boundary_assessment_value_ownership_structure.py) and [`tests/test_trajectory_assessment_value_ownership_structure.py`](../tests/test_trajectory_assessment_value_ownership_structure.py), which protect Situation-owned relationship interpretation;
+- [`tests/test_resolution_margin_demand_structure.py`](../tests/test_resolution_margin_demand_structure.py), which protects one-sided Resolution-Margin evidence ownership and rejects downstream runtime consumption in the `.79` semantic increment; and
 - [`tests/test_obstruction_relocation_structure.py`](../tests/test_obstruction_relocation_structure.py), which protects the distinction between Causal Obstruction recognition and downstream relocation mechanics.
 
 ### Offline behavioural/conformance validation
 
-[`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises sealed Observation → Operation Lifecycle → Operational Picture flows, relationship interpretation, uncertainty, representation fitness and downstream use.
+[`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises sealed Observation → Operation Lifecycle → Operational Picture flows, relationship interpretation, uncertainty, representation fitness and downstream use. [`tests/replacement_core/resolution_margin_demand.lua`](../tests/replacement_core/resolution_margin_demand.lua) directly challenges the Resolution-Margin semantic product and its Situation-layer composition.
 
 Offline validation can challenge identity/provenance, deterministic Situation semantics and fail-closed behavior. It cannot prove that the GIANTS/runtime evidence being interpreted is physically complete or timely.
 
-When Resolution-Margin Demand Evidence is implemented, focused offline validation MUST challenge at least these three boundaries:
+Focused Resolution-Margin validation MUST challenge at least these three boundaries:
 
 1. **Positive target:** supported native progression has a positive represented Current-Space/Demand witness within its bounded horizon before, during or after a Current-Excursion classification window; the Situation evidence follows the represented demand rather than requiring that proxy relationship.
 2. **Negative neighbour:** a nearby or `TURNING` worker with no positive represented witness on the subject's supported progression does not create positive Resolution-Margin Demand merely from proximity, turn state or shared Local Operation membership.
-3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space semantics retain their accepted relationship, role-allocation and Regulation lifecycle meaning when equivalent evidence is supplied.
+3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space semantics retain their accepted relationship, role-allocation and Regulation lifecycle meaning when equivalent evidence is supplied. In `.79`, structural validation additionally requires that downstream runtime layers do not consume the new evidence at all.
 
 ### Targeted in-game Reality validation
 
