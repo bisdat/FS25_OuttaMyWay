@@ -143,6 +143,7 @@ jobs:
           "$LUAJIT_BIN" tests/replacement_core/operation_lifecycle.lua
           "$LUAJIT_BIN" tests/replacement_core/bubble_bullet_time.lua
           "$LUAJIT_BIN" tests/replacement_core/resolution_margin_demand.lua
+          "$LUAJIT_BIN" tests/replacement_core/regulation_control_authority.lua
 
       - name: Run focused obstruction relocation contract
         id: obstruction_relocation
@@ -156,7 +157,7 @@ jobs:
           {
             echo "## Lua offline behavioural contracts"
             echo
-            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time + Resolution-Margin Demand outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time + Resolution-Margin Demand + Regulation Control Authority outcome: \`${{ steps.lua.outcome }}\`"
             echo "- Focused obstruction-relocation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
             echo "- **This job is blocking: any non-success inner outcome fails the enforcement gate.**"
             echo "- \`continue-on-error\` keeps evidence collection complete so both harness outcomes remain visible."

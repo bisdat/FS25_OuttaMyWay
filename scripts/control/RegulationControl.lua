@@ -11,14 +11,6 @@ OuttaMyWay.RegulationControl = {}
 local Control = OuttaMyWay.RegulationControl
 Control.__index = Control
 
-local boundedAuthorityRequiredOwnerTags = {
-    FOLLOWER_BOUNDARY=true,
-    ACTION_SPACE_REGULATION=true,
-    FORWARD_INTERSECTION_INTENT_REVELATION=true,
-    RELOCATION_SERIALIZATION=true,
-    BUBBLE_BULLET_TIME=true
-}
-
 local function referenceKey(vehicle)
     return "vehicle-root:" .. tostring(vehicle and (vehicle.rootNode or vehicle) or "nil")
 end
@@ -111,15 +103,20 @@ function Control:executeControlRequest(request,candidate)
     end
 
     local target=request.target or {}
-    if boundedAuthorityRequiredOwnerTags[tostring(target.ownerTag)]==true and request.boundedAuthorityId==nil then
+    if target.kind~="REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string" or type(target.ownerTag)~="string" then
+        return false,"CONTROL_REQUEST_TARGET_UNSUPPORTED"
+    end
+
+    -- Positive actuation is defined by the requested operation, not by a vocabulary
+    -- whitelist. Unknown/future owner tags therefore fail closed instead of becoming
+    -- an implicit Bounded Authority exemption. RELEASE remains authority-narrowing
+    -- cleanup and does not require acquisition of a new positive grant.
+    if target.operation=="APPLY" and request.boundedAuthorityId==nil then
         return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED"
     end
     if request.boundedAuthorityId~=nil then
         local ok,reason=self.runtime.boundedAuthority:validateRequest(request)
         if ok~=true then return false,reason end
-    end
-    if target.kind~="REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string" or type(target.ownerTag)~="string" then
-        return false,"CONTROL_REQUEST_TARGET_UNSUPPORTED"
     end
 
     local vehicle=self:_vehicleForReferenceKey(target.vehicleReferenceKey)

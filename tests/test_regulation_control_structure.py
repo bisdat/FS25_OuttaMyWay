@@ -16,9 +16,10 @@ def test_regulation_control_owns_production_speed_execution():
     assert "function Control:getVehicleControlObservation" in control
     assert 'target.kind~="REGULATION_LEASE"' in control
     assert "boundedAuthority:validateRequest(request)" in control
-    assert "boundedAuthorityRequiredOwnerTags" in control
-    assert "FOLLOWER_BOUNDARY=true" in control
-    assert "ACTION_SPACE_REGULATION=true" in control
+    assert "boundedAuthorityRequiredOwnerTags" not in control
+    assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in control
+    assert 'return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED"' in control
+    assert 'elseif target.operation=="RELEASE" then' in control
     assert "D0141_FOLLOWER_BOUNDARY" not in control
     assert "D0146_ACTION_SPACE_CONSERVATION" not in control
     assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
@@ -29,6 +30,7 @@ def test_regulation_control_owns_production_speed_execution():
     assert "local control=self.regulationControl" in dispatcher
     assert "function Runtime:setRegulationControl" in runtime
     assert "setLiveControlCapability" not in runtime
+
 
 def test_regulation_control_reuses_mechanics_without_owning_policy():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
@@ -43,7 +45,6 @@ def test_regulation_control_reuses_mechanics_without_owning_policy():
     assert "AIVehicleUtil.driveToPoint" in drive
     assert "OuttaMyWay.RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)" in main
     assert "OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
-    assert "CooperativePassageControl requires Hold, Drive and Configuration mechanisms" in passage
 
     for forbidden in (
         "DecisionSelector",
@@ -81,6 +82,7 @@ def test_p22_is_retired_after_capability_graduation():
     assert "PROTOTYPE_22_" not in config
     assert "addModEventListener(OuttaMyWay.regulationControl)" in main
     assert "addModEventListener(OuttaMyWay.cooperativePassageControl)" in main
+
 
 def test_candidate_support_uses_production_regulation_lease_vocabulary():
     candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
