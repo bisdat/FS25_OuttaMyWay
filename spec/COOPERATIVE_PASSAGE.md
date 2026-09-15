@@ -285,6 +285,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
+| [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) | `REALISES` |
 | [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
 | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `SUPPORTS` |
@@ -300,6 +301,7 @@ Current implementation routes include:
 - [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) and Passage-purpose products from [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current purpose-specific geometry/clearance evidence;
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
 - [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) — current Passage-Leg obligation creation/settlement, participant-loss vacatur and parent terminal integration;
+- [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) — current formation-time independent-third supporting-ownership preparation, fixed 1 km/h Regulation activation after Passage responsibility exposure, and Resolution-Epoch/basis cleanup;
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current Passage-specific joint Bounded Authority request construction, survivor-leg authority rebind/failure handling and completion integration;
 - [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) — current semantic Resolution Commitment view over the retained implementation substrate; and
 - [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) — current physical Passage executor, configuration settlement, guide execution, recovery and handback mechanism.
@@ -314,11 +316,15 @@ Current source contains an execution-origin guide rebase and preflight path. Thi
 
 [`tests/test_replacement_core_structure.py`](../tests/test_replacement_core_structure.py) protects pairwise Passage ownership, Responsibility Transition ordering, participant-loss settlement, third-party serialization and Control/authority boundaries.
 
+[`tests/test_bubble_bullet_time_structure.py`](../tests/test_bubble_bullet_time_structure.py) protects the current Bubble-protection wiring, fixed Regulation literal, decision-horizon deferral and cleanup placement.
+
 Representation-specific structural tests protect purpose-scoped geometry ownership and prevent generic representation evidence from silently acquiring Passage authority.
 
 ### Offline behavioural/conformance validation
 
 [`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises Passage Candidate/commitment creation, participant-scoped obligations, vacatur, survivor continuation, terminal settlement and bounded Control sequencing.
+
+[`tests/replacement_core/bubble_bullet_time.lua`](../tests/replacement_core/bubble_bullet_time.lua) exercises the formation-time third-party preparation, post-transition fixed 1 km/h activation, passive Bubble decision horizon, basis release and two-worker non-interference contract.
 
 Offline tests can challenge semantic lifecycle and deterministic geometry contracts but cannot prove that real GIANTS physical execution preserves required clearance.
 

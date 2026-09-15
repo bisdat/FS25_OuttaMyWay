@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install pytest
 
       - name: Run structural/source-contract suite
-        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_regulation_control_structure.py tests/test_physical_control_mechanisms_structure.py tests/test_live_interaction_observation_structure.py tests/test_non_job_actuation_mechanism_structure.py tests/test_runtime_composition_structure.py tests/test_relocation_serialization_structure.py tests/test_production_vocabulary_ownership_structure.py tests/test_forward_intersection_evidence_continuity_structure.py tests/test_issue67_lua_harness_reconciliation_structure.py tests/test_repository_knowledge_governance_structure.py tests/test_runtime_cadence_ownership_structure.py tests/test_assembly_discovery_bound_ownership_structure.py tests/test_representation_cache_bound_ownership_structure.py tests/test_entity_local_shape_evidence_ownership_structure.py tests/test_field_world_value_ownership_structure.py tests/test_legacy_follower_shadow_retirement_structure.py tests/test_live_diagnostic_value_ownership_structure.py tests/test_trajectory_assessment_value_ownership_structure.py tests/test_follower_boundary_assessment_value_ownership_structure.py tests/test_core_capability_gate_retirement_structure.py tests/test_hud_glyph_compatibility_structure.py tests/test_live_document_navigation_structure.py tests/test_document_conformance_structure.py
+        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_regulation_control_structure.py tests/test_physical_control_mechanisms_structure.py tests/test_live_interaction_observation_structure.py tests/test_non_job_actuation_mechanism_structure.py tests/test_runtime_composition_structure.py tests/test_relocation_serialization_structure.py tests/test_production_vocabulary_ownership_structure.py tests/test_forward_intersection_evidence_continuity_structure.py tests/test_issue67_lua_harness_reconciliation_structure.py tests/test_repository_knowledge_governance_structure.py tests/test_runtime_cadence_ownership_structure.py tests/test_assembly_discovery_bound_ownership_structure.py tests/test_representation_cache_bound_ownership_structure.py tests/test_entity_local_shape_evidence_ownership_structure.py tests/test_field_world_value_ownership_structure.py tests/test_legacy_follower_shadow_retirement_structure.py tests/test_live_diagnostic_value_ownership_structure.py tests/test_trajectory_assessment_value_ownership_structure.py tests/test_follower_boundary_assessment_value_ownership_structure.py tests/test_core_capability_gate_retirement_structure.py tests/test_hud_glyph_compatibility_structure.py tests/test_bubble_bullet_time_structure.py tests/test_live_document_navigation_structure.py tests/test_document_conformance_structure.py
 
   lua-observation:
     name: Lua offline behavioural contracts
@@ -62,6 +62,7 @@ jobs:
             scripts/authority/AuthorityRegistry.lua \
             scripts/authority/EffectiveActuationComposition.lua \
             scripts/authority/RegulationBoundedAuthority.lua \
+            scripts/authority/BubbleBulletTime.lua \
             scripts/assessment/CurrentResponsibilityAssessment.lua \
             scripts/assessment/SituationAssessment.lua \
             scripts/candidates/ObstructionRelocationCandidateSupport.lua \
@@ -69,6 +70,7 @@ jobs:
             scripts/candidates/LiveTrafficCandidateSupport.lua \
             scripts/candidates/LocalPassagePlanner.lua \
             scripts/candidates/PassiveLiveCandidateSupport.lua \
+            scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua \
             scripts/commitment/CommitmentAdmission.lua \
             scripts/commitment/CommitmentRegistry.lua \
             scripts/commitment/DecisionCommitmentBoundary.lua \
@@ -109,6 +111,7 @@ jobs:
             scripts/observation/LiveInteractionObservation.lua \
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
+            scripts/responsibility/CooperativePassageResponsibilityTransition.lua \
             scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua \
             scripts/runtime/LiveRuntimeCoordinator.lua \
             scripts/runtime/Runtime.lua
@@ -136,6 +139,7 @@ jobs:
         run: |
           "$LUAJIT_BIN" tests/replacement_core/run.lua
           "$LUAJIT_BIN" tests/replacement_core/operation_lifecycle.lua
+          "$LUAJIT_BIN" tests/replacement_core/bubble_bullet_time.lua
 
       - name: Run focused obstruction relocation contract
         id: obstruction_relocation
@@ -149,7 +153,7 @@ jobs:
           {
             echo "## Lua offline behavioural contracts"
             echo
-            echo "- Main replacement-core + focused Operation Lifecycle outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time outcome: \`${{ steps.lua.outcome }}\`"
             echo "- Focused obstruction-relocation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
             echo "- **This job is blocking: any non-success inner outcome fails the enforcement gate.**"
             echo "- \`continue-on-error\` keeps evidence collection complete so both harness outcomes remain visible."

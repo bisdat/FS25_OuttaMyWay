@@ -52,6 +52,7 @@ function Coordinator:deleteMap()
     if self.source and type(self.source.reset)=="function" then self.source:reset() end
     if self.targetedFieldIdentityProbe and type(self.targetedFieldIdentityProbe.reset)=="function" then self.targetedFieldIdentityProbe:reset() end
     if self.fieldWorldSnapshots and type(self.fieldWorldSnapshots.reset)=="function" then self.fieldWorldSnapshots:reset() end
+    if self.runtime and self.runtime.bubbleBulletTime and type(self.runtime.bubbleBulletTime.releaseAll)=="function" then self.runtime.bubbleBulletTime:releaseAll("MAP_DELETE") end
     if self.runtime and type(self.runtime.resetSituationKnowledge)=="function" then self.runtime:resetSituationKnowledge() end
     self.elapsed=0
 end
@@ -80,6 +81,16 @@ function Coordinator:update(dt)
         appendObstructionRelocationObservation(raw,obstructionRelocationObservation)
         local ok,live=pcall(self.runtime.processLiveObservation,self.runtime,raw)
         if ok then
+            if self.runtime.bubbleBulletTime~=nil and type(self.runtime.bubbleBulletTime.releaseUnsupportedProtection)=="function" then
+                local okBubble,bubbleResult=pcall(self.runtime.bubbleBulletTime.releaseUnsupportedProtection,self.runtime.bubbleBulletTime,live)
+                if okBubble then
+                    live.bubbleBulletTime=bubbleResult
+                else
+                    self.errorCount=self.errorCount+1
+                    logError("Bubble Bullet Time release assessment failed: "..tostring(bubbleResult))
+                    if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeError)=="function" then self.diagnosticObserver:observeRuntimeError(bubbleResult) end
+                end
+            end
             if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeResult)=="function" then
                 local okRecord,record=pcall(self.diagnosticObserver.observeRuntimeResult,self.diagnosticObserver,raw,live,due,nowMilliseconds)
                 if okRecord then records[#records+1]=record else self.errorCount=self.errorCount+1; self.diagnosticObserver:observeRuntimeError(record) end

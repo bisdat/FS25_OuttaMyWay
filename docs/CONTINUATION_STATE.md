@@ -12,145 +12,81 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — Issue #172 lifecycle conformance
+## Current engineering boundary — Issue #45 Bubble Bullet Time
 
-The post-#141 concern-selection boundary has selected **Issue #172 — mixed membership incompleteness retaining positively ended participant** as the active engineering concern.
+Issue #45 is the active concern after post-merge `.77` Reality validation of the completed #172 lifecycle correction exposed a supported-envelope three-worker traffic failure.
 
-#172 was not prompted by an in-game failure. It was discovered during the Issue #141 Operation Lifecycle / Situation Assessment primary-Specification review in PR #173, when accepted lifecycle authority was compared with existing `OperationAdmission.lua` reconciliation behaviour. Git history shows the coarse incomplete-membership preservation mechanism existed at least as early as v4.7.23, so this is treated as latent implementation drift rather than a `.75` regression.
+In the observed run, Condor and S 416 were executing Cooperative Passage `CM-00003` while Patriot remained an independent third active worker in the same Local Operation. Fresh Situation Assessment continued to observe Condor/Patriot spatial interaction, including Category-1 Forward Intersection evidence, but Patriot did not receive the Architecture-required Bubble Bullet Time protection and later collided head-on with Condor. A separate S 416/Patriot follower purpose repeatedly admitted and retired during the same Resolution Epoch.
 
-The governing `OPERATION_LIFECYCLE` contract is settled for this concern:
+The accepted Spatial Negotiation architecture already resolves the responsibility boundary:
 
-- absence under incomplete observation does not terminate a previously active member;
-- positive termination of an exact Job Episode is authoritative active-participant loss; and
-- wider membership incompleteness must not defer that separately positive terminal fact.
+- at Bubble Formation, the independent third active AI Traffic Party enters exactly **1 km/h Intent-Revelation Creep** for the Resolution Epoch;
+- that worker remains physically and semantically independent and does not join the pairwise Resolution Commitment;
+- Reality and pairwise relationships involving the third worker remain observed;
+- ordinary relationships with either Bubble participant are **deferred rather than independently negotiated** while the Bubble owns the coupled Resolution decision horizon; and
+- unexpected hard-safety evidence remains authoritative.
 
-The bounded implementation correction therefore changes incomplete Operation reconciliation so the conservative prior-plus-positive candidate membership set is reconciled against current exact Job Episodes before active membership is published. Another member's unresolved evidence can still preserve that unresolved member, but cannot preserve a positively terminated participant.
+The Category-1 evidence is therefore relevant current Reality, but it does not itself justify an independently negotiated Forward Intersection responsibility during the active Bubble. The follower admit/retire loop is likewise inconsistent with the Bubble-owned decision horizon.
 
-The focused offline regression models one Operation containing A, B and C, then observes A positively terminated, B unresolved and C positively active. The required result is A removed, B conservatively retained and C retained.
+> **Active Pair Resolution Needs Stable Third-Party Protection.**
 
-> **Structural Conformance Contradiction != Runtime Reproduction Requirement.**
+## Bounded `.78` implementation hypothesis
 
-> **Targeted Regression Proves the Rule; In-Game Validation Challenges the Integration.**
+The current Engineering Increment implements Bubble Bullet Time as a **supporting physical Regulation effect of the existing Cooperative Passage Resolution responsibility**. It does not create a new Regulation responsibility, another Resolution, another Operation, a third Passage Leg or a new traffic hierarchy.
 
-A later normal cold/warm in-game validation is therefore an integration challenge. A successful run supports that ordinary GIANTS Reality still behaves correctly after the repair; it does not claim the exact mixed-evidence edge condition was reproduced in-game.
+Current source already supplies the required lower-level primitives:
 
-## Accepted steady-state documentation model
+- `LiveTrafficCommitmentLifecycle` can acquire supporting progress authority and revise Effective Actuation Composition;
+- generic Bounded Authority can grant `REGULATE_SPEED` under the current Passage Resolution responsibility;
+- `NativeDriveMechanism` composes independently owned Regulation leases by applying the least-permissive active cap; and
+- passive Candidate Support can preserve observation while issuing no independent physical Candidate.
 
-`docs/DOCUMENT_STANDARDS.md` is the normative authoring, ownership and cross-surface conformance standard for live engineering documentation and source documentation.
+The bounded implementation therefore:
 
-The Authority Triad remains:
+1. identifies only the independent third worker already present at **Bubble Formation**;
+2. prepares that worker's supporting authority/composition under the Passage commitment without adding it to the Passage pair;
+3. after Responsibility Transition has exposed the Passage Resolution as current, activates a fixed **1 km/h** Bubble lease immediately before joint Passage Control begins;
+4. while a Passage Leg remains live, projects ordinary live-traffic Candidate Support to passive observation so follower/Forward-Intersection relationships remain observed but deferred;
+5. releases the Bubble physical effect when its current third-party basis ends and on Resolution-Epoch termination; and
+6. leaves ordinary two-worker Passage behaviour unchanged.
+
+Later arrival of a new third worker after Bubble Formation is deliberately outside this `.78` increment. That question remains unresolved rather than being silently invented through implementation convenience.
+
+## Disproved implementation assumption
+
+The first implementation sketch attempted to create positive Bubble Bounded Authority inside `CooperativePassageResponsibilityTransition`. Code walk disproved that ordering: `ResponsibilityTransitionAuthority` registers the Passage Resolution as current only after the specialised transition collaborator returns, and generic Bounded Authority correctly rejects permission before Current Responsibility exists.
+
+The corrected ordering is:
 
 ```text
-/architecture
-Architecture — what / why
-        ⇅
-/spec
-Specification — implementation-facing contract
-        ⇅
-/scripts
-Source — current mechanism
-        |
-        v
-/tests + Reality
-Validation evidence
+Bubble Formation
+    -> prepare third-party supporting authority/composition
+    -> Responsibility Transition exposes current Passage Resolution
+    -> activate fixed 1 km/h Bounded Authority
+    -> joint Passage Control begins
 ```
 
-The governing cross-surface rule remains:
+> **Supporting Composition Preparation != Positive Physical Permission.**
 
-> **Touch One; Validate Three.**
+This preserves the accepted rule that positive physical actuation requires an already-current semantic responsibility.
 
-Tests are evidence rather than a fourth authority surface. `/docs` remains the separate engineering-knowledge and governance surface.
+## Validation boundary
 
-## Steady-state source traceability
+The focused offline contract must challenge that:
 
-Specification Jurisdiction is the stable semantic identity joining Architecture, primary Specification and materially participating production source.
+- a formation-time third worker receives supporting 1 km/h protection without becoming a Passage participant;
+- positive Bounded Authority is not created before the Passage Resolution is current;
+- the two Passage requests and supporting third-party effect share one current Effective Actuation Composition;
+- ordinary third-party follower/Forward-Intersection negotiation is deferred to passive observation while the Passage Resolution Epoch is live;
+- physical Bubble protection releases when its basis or Resolution Epoch ends; and
+- a two-worker Passage does not manufacture third-party Regulation.
 
-Architecture owns Jurisdiction existence and `SPECIALISES` topology. A primary Specification owns source-participation classification as `REALISES` or `SUPPORTS`. Participating source reciprocally acknowledges the complete set of Jurisdiction IDs in which it materially participates, without assigning itself authority or relationship type.
+GitHub Actions remains the execution authority for blocking structural and Lua behavioural contracts.
 
-Navigation remains richer than the machine graph:
+If offline validation passes and the increment is accepted, the next Reality challenge is the retained three-worker scenario that exposed #45: form a genuine two-worker Cooperative Passage with an independent third active worker already present and observe whether the third worker remains at the required 1 km/h throughout the active Resolution Epoch, ordinary pair relationships remain observed without follower-regulation oscillation, and the Passage completes without the prior head-on collision. A successful run challenges integrated behaviour; it does not prove the whole supported envelope.
 
-> **Navigation Trace != Contract Participation.**
+## Executable baseline and parked concerns
 
-Source participation follows implemented meaning rather than directory placement, imports or call topology.
+This executable increment advances TEST build identity from `.77` to **`.78`**. `scripts/config.lua` and `modDesc.xml` remain the two build-identity owners and must agree exactly. No canonical-release identity changes.
 
-> **Source Participation Follows Implemented Meaning, Not Directory Placement.**
-
-> **Calling a Contract != Implementing the Contract.**
-
-> **Support Is Direct, Not Transitive.**
-
-Validation remains evidence. A Specification may declare exact repository validation artefacts as `CHALLENGES`; the validation artefact does not self-certify coverage.
-
-> **A Validation Surface Challenges a Contract; It Does Not Certify It.**
-
-## Accepted source-documentation closure
-
-Source-documentation sufficiency is selective and semantics-weighted. The closure review did not treat comment density or zero-comment files as defects by themselves; it reviewed implementation areas where missing local explanation could cause a maintainer to violate an ownership boundary, causal ordering, fail-safe condition, or other non-obvious contract.
-
-> **Comment Need Follows Semantic Risk, Not Comment Density.**
-
-`scripts/main.lua` module source order is dependency-sensitive because sourced modules may consume globals established by earlier modules. That order must remain source-before-consumer, but it does not define architectural authority or Specification sequencing.
-
-> **Bootstrap Order Is Dependency Order, Not Architectural Authority.**
-
-The event-listener list is not a broader ordering contract. Only evidence-backed causal relationships are documented; incidental registration sequence must not be converted into architecture without supporting Reality or contract evidence.
-
-## Structural conformance
-
-`tests/test_document_conformance_structure.py` derives the declared conformance graph from the authoritative Architecture, Specification and source surfaces and runs inside the blocking `Structural contracts` CI job.
-
-The checker validates only objectively knowable declared relationships. It does not infer semantic participation from prose, directories, imports or call topology and cannot establish semantic completeness.
-
-`tests/test_live_document_navigation_structure.py` independently enforces the objective live-navigation contract over current Markdown roots `/architecture`, `/spec` and `/docs`: every live documentation directory has a README entry point, each README breadcrumbs its direct live Markdown children and direct live documentation subfolders, and repository-relative links resolve. `docs/archive/**` remains exempt under the Architecture-owned Archive Navigation Exemption.
-
-> **Tooling Can Prove Declared Closure; Humans Establish Semantic Completeness.**
-
-> **Machine conformance establishes declared structural coherence. Engineering establishes semantic truth.**
-
-There is no authored central conformance manifest. Generated graph/index output remains derived and non-authoritative.
-
-The former migration batching idea **`Migration Unit = Closed Participation Component` is retired**. Repository graph connectivity is not a required change-set boundary.
-
-> **Migration Slice != Graph Component.**
-
-## Generated source reference
-
-The LDoc source reference is an adopted derived presentation consumer, not an authority surface and not a blocking semantic-conformance mechanism.
-
-CI prepares disposable copies of production Lua, adds renderer-only module identities where needed, renders with pinned LDoc tooling, verifies that accepted Jurisdiction identifiers remain visible, and publishes the result as the `outtamyway-source-reference` GitHub Actions artifact. The artifact records both source-head and tested-commit provenance.
-
-Generated HTML is not committed into the repository. Whether generated reference should later be published or stored differently remains a separate future engineering decision. Ordinary human use of the artifact may supply evidence about its usefulness without keeping #141 open.
-
-> **Generated Reference != Repository Authority.**
-
-> **Shared Source Documentation; Independent Consumers.**
-
-## Retired #141 programme state
-
-The following are no longer current continuation instructions and must not be resurrected as live programme state:
-
-- participant-classification audit as pending work;
-- repository-wide source-acknowledgement migration as pending work;
-- repository-wide zero-comment or comment-density sweeps as pending work;
-- bounded-adoption exceptions for incomplete Architecture/Specification/source declarations;
-- delaying permanent declared-graph conformance until after migration;
-- treating graph connected components as mandatory migration units;
-- generated source-reference adoption as pending #141 work;
-- Live Breadcrumb / relative-link structural enforcement as pending #141 work; and
-- promoting incidental bootstrap or event-listener sequence into architectural authority without evidence.
-
-Historical details of the #141 investigation, POC, migration slices, source-documentation audit, tooling adoption and closure proof remain in GitHub Issue #141, its pull requests and Git history rather than in this live continuation document.
-
-## Executable baseline
-
-This lifecycle conformance correction changes executable runtime behaviour and therefore advances the branch's current build identity from `.75` through the failed `.76` validation revision to **`.77`** under the four-component version policy. `scripts/config.lua` and `modDesc.xml` remain the two build-identity owners and must agree exactly.
-
-No canonical-release identity changes.
-
-## Immediate next bounded engineering step
-
-Before this increment is accepted, blocking repository CI must validate the focused #172 regression together with the existing replacement-core, obstruction-relocation and structural contracts.
-
-If the branch is accepted, the next bounded evidence step is a **normal cold/warm in-game lifecycle validation** using build `.77`. Its purpose is to challenge integration with GIANTS Reality after the conformance correction, not to recreate or claim direct in-game proof of the exact A-ended / B-unresolved / C-active edge fixture.
-
-After that Reality evidence is recorded, close or revise #172 according to what the combined offline and in-game evidence supports. Issues #170, #174 and #176 remain separate parked conformance concerns; Issue #210 remains a parked generated-reference improvement concern.
+Issues #170, #174 and #176 remain parked standards-work conformance concerns. Issue #210 remains a parked generated-source-reference improvement. Issue #172 is completed and closed.
