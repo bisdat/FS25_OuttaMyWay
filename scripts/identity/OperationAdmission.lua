@@ -149,18 +149,22 @@ function Admission:observe(snapshot, episodeResult)
             active = self:_update(active, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
             transitions[#transitions + 1] = { event="MEMBERSHIP_UPDATED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds, membershipEvidenceComplete=true }
         else
-            -- Incomplete membership evidence may add positively observed members, but it cannot
-            -- prove removal of previously admitted members. Preserve the prior membership set
-            -- until complete evidence arrives; this prevents an unresolved Job Episode stop
-            -- sample from masquerading as explicit Encounter membership invalidation.
-            local retainedEpisodeIds = {}
-            for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(active.memberAssemblyIds or {}) do
+            -- Incomplete evidence first preserves the conservative prior+positive candidate set.
+            -- Active Operation membership then still requires a current exact Job Episode:
+            -- absence alone cannot remove an unresolved member, while positive termination is
+            -- honoured independently of uncertainty about another member.
+            local candidateAssemblyIds = mergedUnique(active.memberAssemblyIds, memberAssemblyIds)
+            local retainedAssemblyIds, retainedEpisodeIds = {}, {}
+            for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(candidateAssemblyIds) do
                 local activeEpisode = self.jobEpisodes:getActiveForAssembly(assemblyId)
-                if activeEpisode ~= nil then retainedEpisodeIds[#retainedEpisodeIds + 1] = activeEpisode.identity end
+                if activeEpisode ~= nil then
+                    retainedAssemblyIds[#retainedAssemblyIds + 1] = assemblyId
+                    retainedEpisodeIds[#retainedEpisodeIds + 1] = activeEpisode.identity
+                end
             end
             active = self:_update(
                 active,
-                mergedUnique(active.memberAssemblyIds, memberAssemblyIds),
+                retainedAssemblyIds,
                 mergedUnique(retainedEpisodeIds, memberEpisodeIds),
                 mergedUnique(active.memberFieldWorldSnapshotReferenceKeys, snapshotReferences),
                 mergedUnique(active.memberFieldPolygonReferenceKeys, polygonReferences),
