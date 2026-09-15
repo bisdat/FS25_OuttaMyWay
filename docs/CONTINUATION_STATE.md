@@ -12,24 +12,13 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — Issue #141 generated source-reference adoption
+## Current engineering boundary — post-#141 selection point
 
-Issue #141 completed the repository-wide documentation/source-documentation standards, source-traceability and selective semantic source-documentation programme, but its final closure review recovered one deliberately deferred tooling question: the successful LDoc source-rendering proof of concept had never been adopted as a permanent derived reference.
+Issue #141 has completed the repository-wide documentation/source-documentation standards, Architecture/Specification/source traceability, selective semantic source-documentation review, generated source-reference adoption, and objective live-document navigation enforcement.
 
-The repository owner has now selected a bounded **LDoc generated source-reference trial** under #141.
+The repository is now at a **stable concern-selection boundary**. No successor engineering concern is selected by this document.
 
-The adopted responsibility is deliberately narrow:
-
-- production source comments remain the authored source-documentation authority;
-- primary Specifications remain the authority for `REALISES` / `SUPPORTS` source participation;
-- structural conformance remains independent of the documentation renderer;
-- LDoc renders a disposable human-facing reference from current source;
-- generated HTML is published as a GitHub Actions artifact rather than committed into the repository; and
-- whether generated HTML should ever become checked-in repository material remains a separate future decision that must earn its own responsibility.
-
-> **Generated Reference != Repository Authority.**
-
-> **Shared Source Documentation; Independent Consumers.**
+The next active concern must be chosen deliberately from current evidence and open repository work rather than inherited from #141 migration, audit, documentation or tooling chronology.
 
 ## Accepted steady-state documentation model
 
@@ -86,19 +75,19 @@ Source-documentation sufficiency is selective and semantics-weighted. The closur
 
 > **Comment Need Follows Semantic Risk, Not Comment Density.**
 
-The final bootstrap review established one additional local source contract: `scripts/main.lua` module source order is dependency-sensitive because sourced modules may consume globals established by earlier modules. That order must therefore remain source-before-consumer, but it does not define architectural authority or Specification sequencing.
+`scripts/main.lua` module source order is dependency-sensitive because sourced modules may consume globals established by earlier modules. That order must remain source-before-consumer, but it does not define architectural authority or Specification sequencing.
 
 > **Bootstrap Order Is Dependency Order, Not Architectural Authority.**
 
-The event-listener list was not promoted into a broader ordering contract. Only evidence-backed causal relationships are documented; incidental registration sequence must not be converted into architecture without supporting Reality or contract evidence.
+The event-listener list is not a broader ordering contract. Only evidence-backed causal relationships are documented; incidental registration sequence must not be converted into architecture without supporting Reality or contract evidence.
 
-## Structural conformance and generated reference
-
-The bounded source-traceability adoption period is complete and no longer a live repository state.
+## Structural conformance
 
 `tests/test_document_conformance_structure.py` derives the declared conformance graph from the authoritative Architecture, Specification and source surfaces and runs inside the blocking `Structural contracts` CI job.
 
 The checker validates only objectively knowable declared relationships. It does not infer semantic participation from prose, directories, imports or call topology and cannot establish semantic completeness.
+
+`tests/test_live_document_navigation_structure.py` independently enforces the objective live-navigation contract over current Markdown roots `/architecture`, `/spec` and `/docs`: every live documentation directory has a README entry point, each README breadcrumbs its direct live Markdown children and direct live documentation subfolders, and repository-relative links resolve. `docs/archive/**` remains exempt under the Architecture-owned Archive Navigation Exemption.
 
 > **Tooling Can Prove Declared Closure; Humans Establish Semantic Completeness.**
 
@@ -106,13 +95,23 @@ The checker validates only objectively knowable declared relationships. It does 
 
 There is no authored central conformance manifest. Generated graph/index output remains derived and non-authoritative.
 
-The LDoc source reference is now a separately adopted derived presentation consumer. CI prepares disposable copies of production Lua, adds generated renderer-only module identities where needed, renders with LDoc, verifies that accepted Jurisdiction identifiers remain visible, and uploads the result as an Actions artifact. The renderer does not own or validate semantic contract relationships.
-
 The former migration batching idea **`Migration Unit = Closed Participation Component` is retired**. Repository graph connectivity is not a required change-set boundary.
 
 > **Migration Slice != Graph Component.**
 
-## Retired #141 migration and audit state
+## Generated source reference
+
+The LDoc source reference is an adopted derived presentation consumer, not an authority surface and not a blocking semantic-conformance mechanism.
+
+CI prepares disposable copies of production Lua, adds renderer-only module identities where needed, renders with pinned LDoc tooling, verifies that accepted Jurisdiction identifiers remain visible, and publishes the result as the `outtamyway-source-reference` GitHub Actions artifact. The artifact records both source-head and tested-commit provenance.
+
+Generated HTML is not committed into the repository. Whether generated reference should later be published or stored differently remains a separate future engineering decision. Ordinary human use of the artifact may supply evidence about its usefulness without keeping #141 open.
+
+> **Generated Reference != Repository Authority.**
+
+> **Shared Source Documentation; Independent Consumers.**
+
+## Retired #141 programme state
 
 The following are no longer current continuation instructions and must not be resurrected as live programme state:
 
@@ -121,10 +120,12 @@ The following are no longer current continuation instructions and must not be re
 - repository-wide zero-comment or comment-density sweeps as pending work;
 - bounded-adoption exceptions for incomplete Architecture/Specification/source declarations;
 - delaying permanent declared-graph conformance until after migration;
-- treating graph connected components as mandatory migration units; and
+- treating graph connected components as mandatory migration units;
+- generated source-reference adoption as pending #141 work;
+- Live Breadcrumb / relative-link structural enforcement as pending #141 work; and
 - promoting incidental bootstrap or event-listener sequence into architectural authority without evidence.
 
-Historical details of the #141 investigation, POC, migration slices, source-documentation audit and closure proof remain in GitHub Issue #141, its pull requests and Git history rather than in this live continuation document.
+Historical details of the #141 investigation, POC, migration slices, source-documentation audit, tooling adoption and closure proof remain in GitHub Issue #141, its pull requests and Git history rather than in this live continuation document.
 
 ## Executable baseline
 
@@ -132,14 +133,16 @@ The documentation/governance/tooling work through #141 does not advance the buil
 
 ## Immediate next bounded engineering step
 
-Validate the generated source-reference adoption against the real current repository:
+Select the next active engineering concern deliberately.
 
-1. GitHub Actions must preserve the existing blocking `Structural contracts` and `Lua offline behavioural contracts` unchanged in authority;
-2. the separate `Generated source reference` job must prepare and render the complete current production Lua corpus successfully with pinned LDoc tooling;
-3. the produced Actions artifact must contain the generated HTML plus source-commit provenance and the explicit non-authoritative boundary;
-4. rendering must preserve the accepted visible `Specification Jurisdictions:` metadata without requiring LDoc-specific production annotations; and
-5. review the artifact as a human navigation aid before deciding whether the trial is useful enough to retain.
+Before implementation begins:
 
-Generated HTML remains outside the repository tree during this trial. Moving generated reference into the repository, making renderer success a blocking acceptance criterion, or requiring LDoc-specific annotations in production source each require a separate explicit decision.
+1. perform the Repository Context Bootstrap and Relevant Knowledge Sweep required by `AGENTS.md`;
+2. identify the current evidence-backed problem rather than inheriting a historical phase, migration, audit, documentation or tooling label;
+3. establish the governing Architecture and primary Specification boundary where applicable;
+4. record the selected concern here as the new continuation boundary; and
+5. only then move from observation/discussion into implementation.
 
-After the LDoc adoption increment is accepted, complete the remaining #141 closure audit rather than beginning another source-comment sweep. In particular, confirm whether the original Live Breadcrumb / relative-link structural-enforcement completion criterion is fully satisfied before closing the Issue.
+Open Issues are candidate work, not automatically the current concern.
+
+> **Concern Selection != Backlog Order**

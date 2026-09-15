@@ -32,6 +32,15 @@ Follow its responsibility routes to:
   — fresh prospective Candidate support, mandatory Constraint Evaluation and
   Decision before Responsibility Transition.
 
+Other direct live Architecture responsibilities are:
+
+- [Project Vision](PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity,
+  scope, and product-level direction;
+- [Configuration Architecture](CONFIGURATION.md) — supported player-choice and
+  consent surface, admission rules, defaults, persistence, and authority boundaries;
+- [GUI Architecture](GUI.md) — deferred player-facing interface and communication
+  architecture responsibility.
+
 Phase/tranche closure audits do not own current architecture after their durable
 findings have been harvested. Historical Phase-13 closure evidence remains
 available through Git history and PR #71 rather than as a live architecture
