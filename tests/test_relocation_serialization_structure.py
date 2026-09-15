@@ -21,7 +21,8 @@ def test_relocation_serialization_belongs_to_current_obstruction_relocation_only
     ):
         assert token in authority
 
-    assert "RELOCATION_SERIALIZATION=true" in control
+    assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in control
+    assert "boundedAuthorityRequiredOwnerTags" not in control
     assert runtime.count("_applyRelocationSerialization") == 1
     assert "OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED" in runtime
     assert "relocationSerializationBeneficiaries" in obstruction
@@ -47,5 +48,5 @@ def test_relocation_serialization_preserves_hold_mechanics_and_bounded_authority
     assert '"PROGRESS_ACTUATION"' in authority
     assert 'capability="REGULATE_SPEED"' in authority
     assert '"APPLY",RELOCATION_SERIALIZATION_OWNER_TAG,0.0' in authority
-    assert 'RELOCATION_SERIALIZATION=true' in control
+    assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in control
     assert 'return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED"' in control

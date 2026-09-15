@@ -271,11 +271,13 @@ def test_semantic_runtime_categories_are_closed():
     passage = (ROOT / "scripts" / "control" / "CooperativePassageControl.lua").read_text(encoding="utf-8")
     capability = (ROOT / "scripts" / "assessment" / "PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
 
-    # Semantic Rename Requires Producer–Consumer Closure: the Authority producer
-    # and Control validation consumer must use the same current owner tags.
+    # Purpose vocabulary belongs to its producer. Control enforces the generic
+    # positive-actuation authority invariant without enumerating every owner tag.
     for current in ("FOLLOWER_BOUNDARY", "ACTION_SPACE_REGULATION"):
         assert f'{current}_OWNER_TAG="{current}"' in authority
-        assert f'{current}=true' in regulation
+    assert "boundedAuthorityRequiredOwnerTags" not in regulation
+    assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in regulation
+    assert 'return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED"' in regulation
     assert "D0141_FOLLOWER_BOUNDARY" not in regulation + authority
     assert "D0146_ACTION_SPACE_CONSERVATION" not in regulation + authority
 

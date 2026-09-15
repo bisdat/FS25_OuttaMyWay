@@ -1790,7 +1790,8 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
     assert "_materializeBoundedAuthorityRequest" in obstruction_request
 
     assert "boundedAuthority:validateRequest(request)" in regulation_control
-    assert "boundedAuthorityRequiredOwnerTags" in regulation_control
+    assert "boundedAuthorityRequiredOwnerTags" not in regulation_control
+    assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in regulation_control
     assert "BOUNDED_AUTHORITY_GRANT_REQUIRED" in regulation_control
     assert "boundedAuthority:validateRequest(request)" in cooperative
     assert "boundedAuthority:validateRequest(request)" in terminal
