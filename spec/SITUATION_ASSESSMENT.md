@@ -175,6 +175,44 @@ Spatial Negotiation Architecture specialises Situation Assessment for:
 
 This Specification does not duplicate those spatial policies. The implementation MUST route those conclusions through Situation Assessment semantics rather than Candidate Support or Control.
 
+### Resolution-Margin Demand Evidence
+
+Spatial Negotiation Architecture establishes that time consumes options and that Situation Assessment owns current option-space / Resolution-Margin meaning. **Resolution-Margin Demand Evidence** is the implementation-facing Situation product for the bounded question:
+
+> Does a subject's currently supported native progression positively consume represented Current Space or another spatial-demand claim within the subject's current bounded progression horizon?
+
+Resolution-Margin Demand Evidence is Situation meaning only. It is not Candidate Support, Current Responsibility, a speed target, negative-clearance proof or Control permission.
+
+A positive Resolution-Margin Demand Evidence record MUST identify, where supported:
+
+- the progressing subject and its current lifecycle/Operation scope;
+- the current progression basis, including the bounded local intent or continuation horizon that makes projection legitimate;
+- the represented claim being consumed, including subject/owner identity and claim class such as Current Space, Committed Demand or Potential Demand;
+- a positive known witness-entry distance along the subject's supported progression;
+- the representation provenance, fitness and claim permissions supporting that witness;
+- the current evidence/intent identity or equivalent validity basis needed to know when the conclusion must be reassessed; and
+- explicit uncertainty/claim limits sufficient to prevent downstream consumers from treating the witness as safe clearance.
+
+The witness-entry distance is deliberately one-sided evidence. It means a positively represented claim is known to occur **no farther than** that point along the supported progression horizon. It MUST NOT be interpreted to mean that every earlier point is clear, that the distance is a stopping/braking allowance, or that a particular speed is safe.
+
+> **Positive Witness Distance != Safe Clearance.**
+
+A reference-pose or assembly-origin separation MAY remain valid evidence for another spatial question, but it MUST NOT substitute for usable Resolution Margin when a nearer positive represented witness answers the current option-space question.
+
+> **Reference-Point Separation != Usable Resolution Space.**
+
+A Current Excursion, opposed-corridor relationship, follower relationship, Forward Intersection or other recognised spatial relationship MAY contribute evidence about why temporal coordination is valuable. None is the definition of Resolution-Margin Demand Evidence. In particular, a Current Excursion moving from "ahead" to "not ahead" does not positively dissolve a still-supported represented progression witness.
+
+> **Current Excursion != Resolution-Margin Demand.**
+
+Resolution-Margin Demand Evidence MUST remain current-evidence based. It MUST NOT require reconstructed Productive History, persistent pair history or a remembered encounter baseline merely to establish current demand. A short-lived evidence identity may support current-cycle continuity where already authorised, but history cannot manufacture a positive witness after its current representation or intent basis is gone.
+
+A target's current represented occupancy may participate while that target is `TURNING`; doing so does not authorise extrapolation of the target's turn path. The progressing subject's projection likewise ends at the current supported local horizon. Situation Assessment MUST NOT convert current-space demand evidence into a predicted future route for either participant.
+
+When current evidence positively supports Resolution-Margin Demand, Candidate Support MAY use that Situation meaning when constructing a prospective Regulation Candidate. Situation Assessment MUST NOT thereby choose the Candidate, regulated physical subject or permitted magnitude. Decision and Responsibility Transition remain downstream, and Bounded Authority independently owns what temporal effect is physically permitted now.
+
+When a previously positive witness becomes unavailable or unfit and no authorised negative conclusion exists, the Resolution-Margin question becomes `UNRESOLVED`; it MUST NOT become positive clearance or positive purpose dissolution merely because one proxy relationship or diagnostic signal disappeared.
+
 ## Current responsibility interpretation
 
 Situation Assessment may interpret whether the current evidence continues to support an already-established Regulation or Resolution basis, including whether evidence is positively supported, positively dissolved/superseded, or temporarily unresolved.
@@ -206,6 +244,7 @@ Contractually significant classes of content include, as applicable:
 - physically/relevantly observed assemblies distinct from participants;
 - current/current-future-space semantic knowledge;
 - demand classes such as Committed Demand, Potential Demand and Temporary Slack;
+- Resolution-Margin Demand Evidence and its current claim limits;
 - current pair scope and current relationship classifications;
 - motion/productive-continuation knowledge;
 - follower / trajectory / opposed-corridor / spatial-constraint knowledge;
@@ -235,6 +274,10 @@ A previous relationship may inform retained responsibility only where that respo
 
 Unavailable or incomplete evidence MUST NOT become safe separation, negative obstruction, positive clearance, positive lifecycle termination or another stronger conclusion unless the responsible evidence contract explicitly supports it.
 
+### Positive Resolution-Margin evidence remains one-sided
+
+A positive represented witness may establish current spatial demand while still lacking negative-clearance authority. Situation Assessment MUST preserve that asymmetry rather than promoting a witness-entry distance into safe traversable distance or a physical timing target.
+
 ### Purpose-local interpretation preserves purpose scope
 
 A purpose-specific representation or relationship conclusion MUST NOT silently acquire authority for unrelated Situation questions.
@@ -254,6 +297,8 @@ Diagnostics MAY expose contradictions, counters and pipeline state. A diagnostic
 - **Positive lifecycle termination already established** — honour the lifecycle fact; do not preserve active-participant meaning merely because other evidence is incomplete.
 - **Representation unavailable/unfit** — publish uncertainty or the strongest supported weaker claim; do not manufacture clearance or conflict.
 - **Pair evidence absent without negative authority** — relationship remains unresolved.
+- **Resolution-Margin witness positive** — publish the current positive demand evidence with its subject, represented claim, bounded horizon, provenance and one-sided claim limits; do not derive a speed or safe-clearance conclusion.
+- **Resolution-Margin witness unavailable/unfit without negative authority** — publish `UNRESOLVED`; do not convert witness loss, Current-Excursion role change or reference-point separation into positive clearance/dissolution.
 - **Source unavailable** — retain explicit uncertainty derived from Observation; no fabricated semantic negative.
 - **Conflicting current evidence** — publish contradiction/unresolved meaning or fail closed according to the responsible sub-contract; do not silently choose the interpretation that enables intervention.
 - **Causal obstruction not positively supported** — no Causal Obstruction relationship.
@@ -274,11 +319,19 @@ Fresh Observation and reassessment are the normal recovery route from unresolved
 
 ### Assessment Representation
 
-[`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) owns claim-bearing representation products. Situation Assessment decides fitness for the current question without enlarging representation authority.
+[`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) owns claim-bearing representation products. Situation Assessment decides fitness for the current question without enlarging representation authority. Resolution-Margin Demand Evidence may use positive-conflict-supporting representation only within those existing claim permissions; it does not create negative-clearance authority.
 
 ### Candidate Support
 
-[`CANDIDATE_SUPPORT.md`](CANDIDATE_SUPPORT.md) consumes the Operational Picture and asks what prospective purposes are supportable. It MUST NOT force Situation Assessment to preselect a Candidate.
+[`CANDIDATE_SUPPORT.md`](CANDIDATE_SUPPORT.md) consumes the Operational Picture and asks what prospective purposes are supportable. It MAY consume Resolution-Margin Demand Evidence when projecting Regulation support, but MUST NOT force Situation Assessment to preselect a Candidate or physical target.
+
+### Regulation
+
+[`REGULATION.md`](REGULATION.md) owns the semantic temporal-coordination responsibility after Responsibility Transition establishes it. Resolution-Margin Demand Evidence may justify prospective or continuing temporal coordination, but it does not itself establish Regulation identity, choose a physical lease or reserve a successor.
+
+### Bounded Authority
+
+[`BOUNDED_AUTHORITY.md`](BOUNDED_AUTHORITY.md) owns which physical subject may be temporally constrained now, the permitted magnitude/envelope and whether actuation may be current or quiescent. A Resolution-Margin witness is admissible Situation evidence, not an authorised Control target.
 
 ### Responsibility Transition
 
@@ -318,6 +371,8 @@ Current implementation routes include:
 - [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) — current specialised semantic persistence/dissolution interpretation for established Regulation purposes; and
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current orchestration that places Situation Assessment after Observation and Operation lifecycle, before Candidate/Constraint/Decision.
 
+The accepted source currently exposes related positive progression/intersection geometry through the non-authoritative `ProgressionPreservationProbe`, while active Action-Space Regulation is still primarily admitted from Current-Excursion/opposed-corridor interpretation. Those mechanisms are implementation evidence, not the Specification contract. Until production Situation Assessment publishes Resolution-Margin Demand Evidence directly, this clarification intentionally exposes an implementation-conformance gap rather than promoting diagnostic output into semantic authority.
+
 No single assessment helper owns the whole Situation Assessment Jurisdiction.
 
 ## Validation route
@@ -337,9 +392,17 @@ Current structural evidence includes:
 
 Offline validation can challenge identity/provenance, deterministic Situation semantics and fail-closed behavior. It cannot prove that the GIANTS/runtime evidence being interpreted is physically complete or timely.
 
+When Resolution-Margin Demand Evidence is implemented, focused offline validation MUST challenge at least these three boundaries:
+
+1. **Positive target:** supported native progression has a positive represented Current-Space/Demand witness within its bounded horizon before, during or after a Current-Excursion classification window; the Situation evidence follows the represented demand rather than requiring that proxy relationship.
+2. **Negative neighbour:** a nearby or `TURNING` worker with no positive represented witness on the subject's supported progression does not create positive Resolution-Margin Demand merely from proximity, turn state or shared Local Operation membership.
+3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space semantics retain their accepted relationship, role-allocation and Regulation lifecycle meaning when equivalent evidence is supplied.
+
 ### Targeted in-game Reality validation
 
 In-game validation remains required for live GIANTS intent, productive continuation, blocking causality, physical relevance, timing, player claim and any other Situation conclusion whose source evidence depends on engine/runtime Reality.
+
+For Resolution-Margin Demand, a targeted Reality challenge must distinguish the Situation-evidence claim from downstream actuation: demonstrate that the relevant positive represented demand exists in the live encounter, that an unrelated nearby turn does not manufacture demand, and that any later Regulation/Bounded-Authority implementation preserves GIANTS routing while changing only supported temporal coordination.
 
 ### Outside this Specification's validation claim
 
