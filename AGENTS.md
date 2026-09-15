@@ -84,6 +84,10 @@ Follow the responsibility routes that can materially affect the question:
   `docs/engine/GIANTS_API_SURFACES.md` where applicable;
 - current implementation placement → governing primary Specification under
   `/spec`, then its implementation traceability into `/scripts`;
+- source-documentation or generated implementation-reference work →
+  `docs/DOCUMENT_STANDARDS.md`; generated LDoc output is a derived human view
+  and cannot replace Architecture, Specification, source documentation, or
+  structural conformance;
 - current engineering or migration boundary → `docs/CONTINUATION_STATE.md` and
   the responsible GitHub Issue where applicable;
 - Configuration or mixed runtime constants → `architecture/CONFIGURATION.md`;
@@ -165,6 +169,9 @@ The repository must remain understandable to a fallible human engineer, not only
 - When restructuring code, make architectural responsibility boundaries visible in the directory/file/function structure.
 - Behaviour-preserving restructuring and behavioural implementation should normally be separate pull requests.
 - Update navigation/code-map documentation whenever structural changes would otherwise make the execution path harder to follow.
+- Treat the generated LDoc source reference as optional human navigation over the
+  current source comments. It does not make undocumented semantics authoritative
+  and must not become a substitute for source reading or governing Specifications.
 
 ## Naming authority
 
@@ -191,6 +198,7 @@ Protect document responsibilities so documentation does not become another chang
 
 - root `README`/`README.md`: concise project explanation and navigation;
 - `docs/README.md`: engineering start-here map;
+- `docs/DOCUMENT_STANDARDS.md`: normative authoring, source-documentation and cross-surface traceability standard;
 - root `/architecture`: current system responsibilities and concepts;
 - decision records/log: durable decisions and rationale;
 - engineering journal/research: observations, discoveries, failed hypotheses and evolution;
@@ -235,6 +243,8 @@ During an ordinary Engineering Increment:
 - after pushing the branch, use GitHub Actions as the independent execution authority for repository/offline validation.
 
 `Structural contracts` and `Lua offline behavioural contracts` are blocking CI contracts on `main`. The Lua job deliberately collects both inner harness outcomes before a final enforcement gate fails the job if either outcome is not successful. Neither offline contract proves GIANTS in-game Reality.
+
+`Generated source reference` is a separate non-blocking CI publication job. It prepares disposable copies of current production Lua, renders their source documentation with LDoc, verifies that accepted Jurisdiction identifiers remain visible, and uploads the resulting HTML as a GitHub Actions artifact. The generated files are a derived human reference only: do not commit them, use them as conformance evidence, or treat them as Architecture/Specification/source authority unless a later explicit engineering decision changes that boundary.
 
 Do not claim Farming Simulator field/runtime validation unless it was actually performed and the evidence is available. Implementation-local checks, CI offline validation and in-game Reality validation are separate claims.
 

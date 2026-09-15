@@ -26,6 +26,8 @@ def test_repository_context_bootstrap_routes_current_responsibilities():
         "governing primary Specification",
         "/spec",
         "/scripts",
+        "source-documentation or generated implementation-reference work",
+        "docs/DOCUMENT_STANDARDS.md",
         "current engineering or migration boundary",
         "docs/TESTING_METHODOLOGY.md",
         "tests/AGENTS.md",
@@ -104,3 +106,30 @@ def test_documentation_creation_gate_prevents_phase_history_from_becoming_live_a
     assert "Current Architecture Should Not Require Historical Reconstruction" in agents
     assert "Reject phase-shaped architecture containers" in agents
     assert "do not create the new live document" in agents
+
+
+def test_generated_source_reference_remains_derived_non_authoritative_ci_output():
+    agents=flattened("AGENTS.md")
+    workflow=read(".github/workflows/offline-validation.yml")
+    config=read("tools/ldoc/config.ld")
+    generator=read("tools/source_reference.py")
+    gitignore=read(".gitignore")
+
+    assert "Generated source reference" in agents
+    assert "non-blocking CI publication job" in agents
+    assert "derived human reference only" in agents
+    assert "Generated source reference" in workflow
+    assert "continue-on-error: true" in workflow
+    assert "lunarmodules/ldoc@v1.5.0" in workflow
+    assert "actions/upload-artifact@v4" in workflow
+    assert "outtamyway-source-reference" in workflow
+    assert "tools/source_reference.py prepare" in workflow
+    assert "tools/source_reference.py verify" in workflow
+    assert "OMW_SOURCE_HEAD_SHA" in workflow
+    assert "github.event.pull_request.head.sha || github.sha" in workflow
+    assert "Derived, non-authoritative human reference" in config
+    assert "DERIVED_NON_AUTHORITATIVE_SOURCE_REFERENCE" in generator
+    assert '"sourceHeadCommit"' in generator
+    assert '"testedCommit"' in generator
+    assert 'GITHUB_SHA' in generator
+    assert ".generated/" in gitignore

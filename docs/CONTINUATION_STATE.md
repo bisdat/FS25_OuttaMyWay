@@ -12,13 +12,24 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — post-#141 selection point
+## Current engineering boundary — Issue #141 generated source-reference adoption
 
-Issue #141 has completed the repository-wide documentation/source-documentation standards, source-traceability and selective semantic source-documentation programme.
+Issue #141 completed the repository-wide documentation/source-documentation standards, source-traceability and selective semantic source-documentation programme, but its final closure review recovered one deliberately deferred tooling question: the successful LDoc source-rendering proof of concept had never been adopted as a permanent derived reference.
 
-The repository is now at a **stable concern-selection boundary**. No successor engineering concern is selected by this document.
+The repository owner has now selected a bounded **LDoc generated source-reference trial** under #141.
 
-The next active concern must be chosen deliberately from current evidence and open repository work rather than inherited from #141 migration or audit chronology.
+The adopted responsibility is deliberately narrow:
+
+- production source comments remain the authored source-documentation authority;
+- primary Specifications remain the authority for `REALISES` / `SUPPORTS` source participation;
+- structural conformance remains independent of the documentation renderer;
+- LDoc renders a disposable human-facing reference from current source;
+- generated HTML is published as a GitHub Actions artifact rather than committed into the repository; and
+- whether generated HTML should ever become checked-in repository material remains a separate future decision that must earn its own responsibility.
+
+> **Generated Reference != Repository Authority.**
+
+> **Shared Source Documentation; Independent Consumers.**
 
 ## Accepted steady-state documentation model
 
@@ -81,7 +92,7 @@ The final bootstrap review established one additional local source contract: `sc
 
 The event-listener list was not promoted into a broader ordering contract. Only evidence-backed causal relationships are documented; incidental registration sequence must not be converted into architecture without supporting Reality or contract evidence.
 
-## Structural conformance
+## Structural conformance and generated reference
 
 The bounded source-traceability adoption period is complete and no longer a live repository state.
 
@@ -93,7 +104,9 @@ The checker validates only objectively knowable declared relationships. It does 
 
 > **Machine conformance establishes declared structural coherence. Engineering establishes semantic truth.**
 
-There is no authored central conformance manifest. Generated graph/index or source-reference output, if ever useful, remains derived and non-authoritative.
+There is no authored central conformance manifest. Generated graph/index output remains derived and non-authoritative.
+
+The LDoc source reference is now a separately adopted derived presentation consumer. CI prepares disposable copies of production Lua, adds generated renderer-only module identities where needed, renders with LDoc, verifies that accepted Jurisdiction identifiers remain visible, and uploads the result as an Actions artifact. The renderer does not own or validate semantic contract relationships.
 
 The former migration batching idea **`Migration Unit = Closed Participation Component` is retired**. Repository graph connectivity is not a required change-set boundary.
 
@@ -115,20 +128,18 @@ Historical details of the #141 investigation, POC, migration slices, source-docu
 
 ## Executable baseline
 
-The documentation/governance work through #141 did not advance the build component or change runtime behaviour. The accepted executable build identity remains `.75` unless a later runtime change explicitly advances it.
+The documentation/governance/tooling work through #141 does not advance the build component or change runtime behaviour. The accepted executable build identity remains `.75` unless a later runtime change explicitly advances it.
 
 ## Immediate next bounded engineering step
 
-Select the next active engineering concern deliberately.
+Validate the generated source-reference adoption against the real current repository:
 
-Before implementation begins:
+1. GitHub Actions must preserve the existing blocking `Structural contracts` and `Lua offline behavioural contracts` unchanged in authority;
+2. the separate `Generated source reference` job must prepare and render the complete current production Lua corpus successfully with pinned LDoc tooling;
+3. the produced Actions artifact must contain the generated HTML plus source-commit provenance and the explicit non-authoritative boundary;
+4. rendering must preserve the accepted visible `Specification Jurisdictions:` metadata without requiring LDoc-specific production annotations; and
+5. review the artifact as a human navigation aid before deciding whether the trial is useful enough to retain.
 
-1. perform the Repository Context Bootstrap and Relevant Knowledge Sweep required by `AGENTS.md`;
-2. identify the current evidence-backed problem rather than inheriting a historical phase, migration label or audit label;
-3. establish the governing Architecture and primary Specification boundary;
-4. record the selected concern here as the new continuation boundary; and
-5. only then move from observation/discussion into implementation.
+Generated HTML remains outside the repository tree during this trial. Moving generated reference into the repository, making renderer success a blocking acceptance criterion, or requiring LDoc-specific annotations in production source each require a separate explicit decision.
 
-Open Issues are candidate work, not automatically the current concern.
-
-> **Concern Selection != Backlog Order**
+After the LDoc adoption increment is accepted, complete the remaining #141 closure audit rather than beginning another source-comment sweep. In particular, confirm whether the original Live Breadcrumb / relative-link structural-enforcement completion criterion is fully satisfied before closing the Issue.
