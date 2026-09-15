@@ -12,13 +12,27 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — post-#141 selection point
+## Current engineering boundary — Issue #172 lifecycle conformance
 
-Issue #141 has completed the repository-wide documentation/source-documentation standards, Architecture/Specification/source traceability, selective semantic source-documentation review, generated source-reference adoption, and objective live-document navigation enforcement.
+The post-#141 concern-selection boundary has selected **Issue #172 — mixed membership incompleteness retaining positively ended participant** as the active engineering concern.
 
-The repository is now at a **stable concern-selection boundary**. No successor engineering concern is selected by this document.
+#172 was not prompted by an in-game failure. It was discovered during the Issue #141 Operation Lifecycle / Situation Assessment primary-Specification review in PR #173, when accepted lifecycle authority was compared with existing `OperationAdmission.lua` reconciliation behaviour. Git history shows the coarse incomplete-membership preservation mechanism existed at least as early as v4.7.23, so this is treated as latent implementation drift rather than a `.75` regression.
 
-The next active concern must be chosen deliberately from current evidence and open repository work rather than inherited from #141 migration, audit, documentation or tooling chronology.
+The governing `OPERATION_LIFECYCLE` contract is settled for this concern:
+
+- absence under incomplete observation does not terminate a previously active member;
+- positive termination of an exact Job Episode is authoritative active-participant loss; and
+- wider membership incompleteness must not defer that separately positive terminal fact.
+
+The bounded implementation correction therefore changes incomplete Operation reconciliation so a previously admitted assembly is retained only while its exact Job Episode remains active. Another member's unresolved evidence can still preserve that unresolved member, but cannot preserve a positively terminated participant.
+
+The focused offline regression models one Operation containing A, B and C, then observes A positively terminated, B unresolved and C positively active. The required result is A removed, B conservatively retained and C retained.
+
+> **Structural Conformance Contradiction != Runtime Reproduction Requirement.**
+
+> **Targeted Regression Proves the Rule; In-Game Validation Challenges the Integration.**
+
+A later normal cold/warm in-game validation is therefore an integration challenge. A successful run supports that ordinary GIANTS Reality still behaves correctly after the repair; it does not claim the exact mixed-evidence edge condition was reproduced in-game.
 
 ## Accepted steady-state documentation model
 
@@ -129,20 +143,14 @@ Historical details of the #141 investigation, POC, migration slices, source-docu
 
 ## Executable baseline
 
-The documentation/governance/tooling work through #141 does not advance the build component or change runtime behaviour. The accepted executable build identity remains `.75` unless a later runtime change explicitly advances it.
+This lifecycle conformance correction changes executable runtime behaviour and therefore advances the branch's current build identity from `.75` to **`.76`** under the four-component version policy. `scripts/config.lua` and `modDesc.xml` remain the two build-identity owners and must agree exactly.
+
+No canonical-release identity changes.
 
 ## Immediate next bounded engineering step
 
-Select the next active engineering concern deliberately.
+Before this increment is accepted, blocking repository CI must validate the focused #172 regression together with the existing replacement-core, obstruction-relocation and structural contracts.
 
-Before implementation begins:
+If the branch is accepted, the next bounded evidence step is a **normal cold/warm in-game lifecycle validation** using build `.76`. Its purpose is to challenge integration with GIANTS Reality after the conformance correction, not to recreate or claim direct in-game proof of the exact A-ended / B-unresolved / C-active edge fixture.
 
-1. perform the Repository Context Bootstrap and Relevant Knowledge Sweep required by `AGENTS.md`;
-2. identify the current evidence-backed problem rather than inheriting a historical phase, migration, audit, documentation or tooling label;
-3. establish the governing Architecture and primary Specification boundary where applicable;
-4. record the selected concern here as the new continuation boundary; and
-5. only then move from observation/discussion into implementation.
-
-Open Issues are candidate work, not automatically the current concern.
-
-> **Concern Selection != Backlog Order**
+After that Reality evidence is recorded, close or revise #172 according to what the combined offline and in-game evidence supports. Issues #170, #174 and #176 remain separate parked conformance concerns; Issue #210 remains a parked generated-reference improvement concern.
