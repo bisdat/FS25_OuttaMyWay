@@ -6104,7 +6104,7 @@ end)
 
 test("Forward Intersection evidence continuity distinguishes waiting, dissolution and supersession",function()
     local assessment=OuttaMyWay.CurrentResponsibilityAssessment.new()
-    local current={provenance={admissionKind="FORWARD_INTERSECTION",retainedCommitmentId="CM-FI",conflictIdentity="FI-CONTINUITY"}}
+    local current={identity="RS-1",provenance={admissionKind="FORWARD_INTERSECTION",retainedCommitmentId="CM-FI",conflictIdentity="FI-CONTINUITY"}}
 
     local positive={
         identity="FI-CONTINUITY",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",
