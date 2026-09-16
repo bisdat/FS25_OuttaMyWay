@@ -89,7 +89,7 @@ This architectural correction is Category-1-specific. It does not redesign:
 
 - **Architecture — preserved.** Spatial Negotiation owns Corner Atlas, Corner Envelope, Corner Engagement and Positive Corner Departure as spatial concepts rather than responsibility-local Category-1 history.
 - **Specification — preserved.** Situation Assessment owns retained corner knowledge, current engagement and A8-gated positive topological departure.
-- **Code — passive knowledge implemented; behavioural consumption deferred.** `SpatialConstraintAssessment` retains the Atlas and worker/job engagements and publishes detached values under `spatialConstraintKnowledge.cornerKnowledge`. `SituationAssessment` supplies authoritative current productive-continuation knowledge, physical evidence and Observation provenance. Candidate, Decision, Responsibility and Control paths remain unchanged.
+- **Code — passive knowledge implemented; behavioural consumption deferred.** `SpatialConstraintAssessment` retains the Atlas and worker/job engagements, distinguishes current Corner Occupancy and publishes detached values under `spatialConstraintKnowledge.cornerKnowledge`. `SituationAssessment` supplies authoritative current productive-continuation knowledge, physical evidence and Observation provenance. Candidate, Decision, Responsibility and Control paths remain unchanged.
 
 > **Reality Updated the Architecture.**
 
@@ -99,7 +99,11 @@ Review the passive experiment and challenge its Cross-Corridor Envelope in GIANT
 
 The implementation uses the existing exact polygon geometry identity and quantisation basis, independently of Local Operation and equivalence-class turnover. Different fingerprints in an equivalent lifecycle Field World remain unresolved for Atlas reuse. Map/Situation reset clears retained knowledge.
 
-The envelope hypothesis uses intervals along the incident-edge directions, intersected with Field World. Each extent learns the other corridor's positive working width monotonically, retaining its provisional demand claim. Positive current assembly overlap establishes engagement; non-overlap cannot discharge it. Fresh A8 must follow the remembered manoeuvring Observation and supply both departure witnesses. A still-current departure witness prevents trailing overlap from immediately recreating the retired engagement.
+The envelope hypothesis uses intervals along the incident-edge directions, intersected with Field World. Each extent learns the other corridor's positive working width monotonically, retaining its provisional demand claim.
+
+**Corner Occupancy != Corner Engagement.** Positive current assembly overlap establishes Corner Occupancy; Corner Engagement additionally requires positive relevance to another current worker's supported demand. The implementation uses a current, job/intent-coherent A8 bounded axis intersecting the Field-World-clipped Corner Envelope as its narrow positive demand witness, independently of pairwise FI. Occupancy-only evidence is current and is not retained across missing overlap; its absence remains unresolved, not positive non-occupancy. Genuine Engagement retains its worker-plus-corner identity when other-worker relevance becomes unresolved or changes to a third worker; non-overlap cannot discharge it. Current membership loss or a new source Job Episode cannot resurrect stale worker state. Detached Occupancy, Engagement and departure publications are separate, and transition-only Corner diagnostics use `[CORNER-KNOWLEDGE]`.
+
+Fresh A8 must follow the remembered manoeuvring Observation and supply both departure witnesses. A still-current departure witness prevents trailing overlap from immediately recreating the retired engagement.
 
 Primary Reality questions:
 

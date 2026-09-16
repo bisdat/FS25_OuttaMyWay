@@ -139,11 +139,13 @@ return function(test,equal,fixtures)
         equal(count(result.engagements),0)
     end)
 
-    test("Corner Engagement: positive represented overlap establishes worker/job-scoped engagement",function()
+    test("Corner Engagement: occupancy plus supported other-worker demand establishes worker/job-scoped engagement",function()
         local _,_,result=engaged()
         local record=result.cornerKnowledge.engagements[1]
         equal(record.assemblyId,"AS-A"); equal(record.sourceJobToken,"job:AS-A")
         equal(record.entryEvidence.primitiveId,"DISC-A")
+        equal(count(result.cornerKnowledge.occupancies),1)
+        equal(record.establishingDemandEvidence[1].assemblyId,"AS-B")
         equal(record.hasObservedManoeuvring,false); equal(record.isDepartureGateOpen,false)
     end)
 
@@ -211,7 +213,8 @@ return function(test,equal,fixtures)
         equal(result.events[2].kind,"POSITIVE_CORNER_DEPARTURE")
         values.physicalSpaceEvidence=physical()
         result=assess(assessment,values).cornerKnowledge
-        equal(count(result.engagements),0); equal(count(result.events),0)
+        equal(count(result.engagements),0); equal(count(result.events),1)
+        equal(result.events[1].kind,"CORNER_OCCUPANCY_ESTABLISHED")
     end)
 
     test("Corner Departure: old observation, wrong job and mismatched continuation cannot supply fresh A8",function()
@@ -235,6 +238,8 @@ return function(test,equal,fixtures)
         reacquire(values)
         local result=assess(assessment,values).cornerKnowledge
         equal(count(result.engagements),0); equal(count(result.positiveDepartures),0)
+        equal(count(result.occupancies),0)
+        values.futureSpace[#values.futureSpace+1]=future("AS-B",50,5,100,5)
         values.physicalSpaceEvidence=physical()
         result=assess(assessment,values).cornerKnowledge
         equal(count(result.engagements),1)
@@ -250,7 +255,8 @@ return function(test,equal,fixtures)
         local result=assess(assessment,values).cornerKnowledge
         equal(count(result.atlasEntries),1)
         equal(result.atlasEntries[1].cornerKey,original.cornerKnowledge.atlasEntries[1].cornerKey)
-        equal(count(result.engagements),1)
+        equal(count(result.occupancies),1)
+        equal(count(result.engagements),0)
     end)
 
     test("Corner Atlas: different or unresolved polygon identity cannot inherit retained knowledge",function()
@@ -303,6 +309,156 @@ return function(test,equal,fixtures)
         equal(edgeExtent(result.atlasEntries[1],true),160)
         equal(edgeExtent(result.atlasEntries[1],false),150)
         equal(count(result.engagements),0)
+    end)
+
+    test("Corner Occupancy: a lone worker on a known corner cannot establish Engagement",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values)
+        values.assemblyIds={"AS-A"}; values.physicalSpaceEvidence=physical()
+        local result=assess(assessment,values).cornerKnowledge
+        equal(count(result.occupancies),1); equal(count(result.engagements),0)
+        equal(count(result.positiveDepartures),0)
+        equal(result.events[1].kind,"CORNER_OCCUPANCY_ESTABLISHED")
+    end)
+
+    test("Corner Occupancy: unrelated, unavailable, stale or TURNING demand cannot establish Engagement",function()
+        for _,kind in Value.ipairs({"NONINTERSECTING","MISSING","TURNING","NO_A8","WRONG_JOB","WRONG_INTENT","NOT_CURRENT"}) do
+            local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+            assess(assessment,values); values.physicalSpaceEvidence=physical()
+            if kind=="NONINTERSECTING" then values.futureSpace[2]=future("AS-B",50,50,100,50)
+            elseif kind=="MISSING" then values.futureSpace={values.futureSpace[1]}
+            elseif kind=="TURNING" then values.motionEvidence[2].localIntentClassification="TURNING"
+            elseif kind=="NO_A8" then values.productiveContinuationKnowledge[2].productivePositive=false
+            elseif kind=="WRONG_JOB" then values.productiveContinuationKnowledge[2].jobToken="old-job"
+            elseif kind=="WRONG_INTENT" then values.futureSpace[2].alternatives[1].intentEpoch=2
+            else values.assemblyIds={"AS-A"} end
+            local result=assess(assessment,values).cornerKnowledge
+            equal(count(result.occupancies),1,kind); equal(count(result.engagements),0,kind)
+        end
+    end)
+
+    test("Corner Engagement: later relevant demand establishes Engagement from current Occupancy",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values); values.physicalSpaceEvidence=physical()
+        values.futureSpace={future("AS-B",50,50,100,50)}
+        local occupied=assess(assessment,values).cornerKnowledge
+        equal(count(occupied.occupancies),1); equal(count(occupied.engagements),0)
+        values.futureSpace={future("AS-B",50,5,100,5)}
+        local result=assess(assessment,values)
+        equal(result.pairRelationships[1].relationshipStatus,"UNRESOLVED")
+        equal(count(result.cornerKnowledge.engagements),1)
+        equal(count(occupied.engagements),0)
+        equal(count(result.cornerKnowledge.events),1)
+        equal(result.cornerKnowledge.events[1].kind,"CORNER_ENGAGEMENT_ESTABLISHED")
+    end)
+
+    test("Corner Engagement: negative pair FI still allows positive other-worker corner demand",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values); values.physicalSpaceEvidence=physical()
+        values.futureSpace={future("AS-A",90,50,90,0),future("AS-B",95,5,100,5)}
+        local result=assess(assessment,values)
+        equal(result.pairRelationships[1].relationshipStatus,"NEGATIVE")
+        equal(count(result.cornerKnowledge.occupancies),1)
+        equal(count(result.cornerKnowledge.engagements),1)
+    end)
+
+    test("Corner demand: a bounded segment crosses the envelope without either endpoint inside",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values); values.physicalSpaceEvidence=physical()
+        values.futureSpace={future("AS-B",50,5,100,20)}
+        local result=assess(assessment,values).cornerKnowledge
+        equal(count(result.engagements),1)
+        local witness=result.engagements[1].currentRelevantDemand[1]
+        equal(witness.z,10)
+        assert(witness.x>64 and witness.x<100)
+        equal(witness.negativeClearanceAuthority,false)
+    end)
+
+    test("Corner Engagement: a different discovery counterpart can supply first relevant demand",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values)
+        values.assemblyIds={"AS-A","AS-C"}; values.physicalSpaceEvidence=physical()
+        values.motionEvidence[2]=motion("AS-C",12)
+        values.productiveContinuationKnowledge[2]={assemblyId="AS-C",jobToken="job:AS-C",productivePositive=true,isTurn=false}
+        values.futureSpace={future("AS-C",50,5,100,5)}
+        local result=assess(assessment,values).cornerKnowledge
+        equal(count(result.engagements),1)
+        equal(result.engagements[1].establishingDemandEvidence[1].assemblyId,"AS-C")
+    end)
+
+    test("Corner Engagement: three-worker relevance changes without pair-history transfer",function()
+        local assessment,values,original=engaged()
+        values.assemblyIds[3]="AS-C"; values.motionEvidence[3]=motion("AS-C",12)
+        values.productiveContinuationKnowledge[3]={assemblyId="AS-C",jobToken="job:AS-C",productivePositive=true,isTurn=false}
+        values.futureSpace={future("AS-C",50,5,100,5)}
+        local result=assess(assessment,values).cornerKnowledge
+        equal(count(result.engagements),1)
+        local before,after=original.cornerKnowledge.engagements[1],result.engagements[1]
+        equal(after.cornerKey,before.cornerKey); equal(after.assemblyReferenceKey,before.assemblyReferenceKey)
+        equal(after.sourceJobToken,before.sourceJobToken)
+        equal(after.establishedObservationSnapshotId,before.establishedObservationSnapshotId)
+        equal(after.establishingDemandEvidence[1].assemblyId,"AS-B")
+        equal(after.currentRelevantDemand[1].assemblyId,"AS-C")
+        equal(before.currentRelevantDemand[1].assemblyId,"AS-B")
+        equal(count(result.events),0)
+        values.futureSpace={}; values.assemblyIds={"AS-A"}
+        result=assess(assessment,values).cornerKnowledge
+        equal(count(result.engagements),1)
+        equal(result.engagements[1].relevanceEvidenceState,"UNRESOLVED_RETAINED_ENGAGEMENT")
+        equal(count(result.engagements[1].currentRelevantDemand),0)
+        equal(count(result.positiveDepartures),0)
+    end)
+
+    test("Corner Occupancy: missing overlap is unresolved and cannot start a Departure lifecycle",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values); values.assemblyIds={"AS-A"}; values.physicalSpaceEvidence=physical()
+        local occupied=assess(assessment,values).cornerKnowledge
+        equal(count(occupied.occupancies),1)
+        turn(assessment,values); reacquire(values)
+        local result=assess(assessment,values).cornerKnowledge
+        equal(count(result.occupancies),0); equal(count(result.engagements),0)
+        equal(count(result.positiveDepartures),0); equal(count(result.events),0)
+        -- No retained Occupancy can combine with later demand without fresh overlap.
+        values.assemblyIds={"AS-A","AS-B"}; values.futureSpace={future("AS-B",50,5,100,5)}
+        result=assess(assessment,values).cornerKnowledge
+        equal(count(result.engagements),0)
+    end)
+
+    test("Corner Occupancy: new job receives fresh evidence and cannot inherit stale Occupancy",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new(); local values=input()
+        assess(assessment,values); values.assemblyIds={"AS-A"}; values.physicalSpaceEvidence=physical()
+        assess(assessment,values)
+        values.motionEvidence[1].sourceJobToken="replacement-job"; values.physicalSpaceEvidence={}
+        local result=assess(assessment,values).cornerKnowledge
+        equal(count(result.occupancies),0); equal(count(result.engagements),0)
+        values.physicalSpaceEvidence=physical()
+        result=assess(assessment,values).cornerKnowledge
+        equal(result.occupancies[1].sourceJobToken,"replacement-job")
+        equal(result.events[1].kind,"CORNER_OCCUPANCY_ESTABLISHED")
+        equal(count(result.engagements),0)
+    end)
+
+    test("Corner diagnostics: dedicated namespace and unchanged cycles produce no Corner noise",function()
+        local previousLogging=Logging; local messages={}
+        Logging={info=function(formatValue,...) messages[#messages+1]=string.format(formatValue,...) end}
+        local ok,reason=pcall(function()
+            local assessment,values=engaged()
+            local hasCorner,hasForward=false,false
+            for _,message in Value.ipairs(messages) do
+                if message:find("CORNER_",1,true) then
+                    equal(message:find("[FS25_OuttaMyWay][CORNER-KNOWLEDGE]",1,true),1)
+                    hasCorner=true
+                elseif message:find("FORWARD_INTERSECTION_ASSESSED",1,true) then
+                    equal(message:find("[FS25_OuttaMyWay][FORWARD-INTERSECTION]",1,true),1)
+                    hasForward=true
+                end
+            end
+            equal(hasCorner,true); equal(hasForward,true)
+            messages={}; assess(assessment,values)
+            equal(#messages,0)
+        end)
+        Logging=previousLogging
+        assert(ok,reason)
     end)
 
     test("Passive Corner knowledge leaves FI geometry and temporal allocation unchanged",function()

@@ -187,9 +187,11 @@ local function cornerEvent(events,kind,entry,details)
     local event=copyKnowledge(details or {})
     event.kind=kind; event.cornerKey=entry.cornerKey; event.polygonKey=entry.polygonKey
     events[#events+1]=event
-    logInfo(string.format("%s polygon=%s corner=%s worker=%s job=%s observation=%s edge=%s extentM=%s cornerAlongAxisM=%s reason=%s",
+    local message=string.format("%s polygon=%s corner=%s worker=%s job=%s observation=%s edge=%s extentM=%s cornerAlongAxisM=%s reason=%s",
         kind,entry.polygonKey,entry.cornerKey,tostring(event.assemblyId or "none"),tostring(event.sourceJobToken or "none"),
-        tostring(event.observationSnapshotId),tostring(event.edgeKey or "none"),numberText(event.extentM),numberText(event.cornerAlongAxisM),tostring(event.reason or "none")))
+        tostring(event.observationSnapshotId),tostring(event.edgeKey or "none"),numberText(event.extentM),numberText(event.cornerAlongAxisM),tostring(event.reason or "none"))
+    if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] %s",message)
+    else print("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] "..message) end
 end
 
 -- Cross-corridor dimensions are a measurement hypothesis, retaining the raw
@@ -279,7 +281,7 @@ local function segmentIntersection(a,b,c,d)
     if t>=0 and t<=1 and u>=0 and u<=1 then return {x=a.x+t*x,z=a.z+t*z} end
 end
 
--- Positive Overlap Establishes Engagement; Missing Overlap Does Not Establish
+-- Positive Overlap Establishes Occupancy; Missing Overlap Does Not Establish
 -- Departure. Find a concrete point common to a positive current DISC, the
 -- edge-coordinate envelope and Field World. Boundary candidates also handle
 -- envelopes clipped by concavities/islands; no whole-assembly clearance follows.
@@ -327,6 +329,37 @@ local function overlapWitness(entry,physical,world)
     end
 end
 
+-- A current A8-bounded centre axis is a narrow positive demand witness. Its
+-- intersection with the Field-World-clipped envelope suffices; missing it says
+-- nothing about safety or wider demand. No width inflation or turn prediction.
+local function cornerDemandWitness(entry,p,motion,productive,path,input)
+    if not motion or not productive or not path or p.status~="SUPPORTED"
+        or motion.assemblyReferenceKey==nil or motion.sourceJobToken==nil or productive.jobToken~=motion.sourceJobToken
+        or productive.productivePositive~=true or productive.isTurn==true
+        or motion.localIntentClassification=="TURNING"
+        or (path.intentEpoch~=nil and motion.intentEpoch~=nil and path.intentEpoch~=motion.intentEpoch) then return nil end
+    local vertices=envelopeVertices(entry)
+    if not vertices then return nil end
+    local a,b={x=p.currentX,z=p.currentZ},{x=p.contactX,z=p.contactZ}
+    local function witness(pointValue)
+        if pointValue and inEnvelope(pointValue,entry) then
+            local containment=OuttaMyWay.FieldWorldSnapshotRegistry.evaluatePositionContainment(input.fieldWorld,pointValue.x,pointValue.z)
+            if containment.resolved and containment.inside then
+                return {assemblyId=p.assemblyId,assemblyReferenceKey=motion.assemblyReferenceKey,
+                    sourceJobToken=motion.sourceJobToken,futureSpaceIdentity=p.futureSpaceIdentity,
+                    observationSnapshotId=input.observationSnapshotId,x=pointValue.x,z=pointValue.z,
+                    source="CURRENT_A8_BOUNDED_AXIS_INTERSECTS_CORNER",negativeClearanceAuthority=false}
+            end
+        end
+    end
+    local found=witness(a) or witness(b)
+    if found then return found end
+    for i=1,4 do
+        found=witness(segmentIntersection(a,b,vertices[i],vertices[i%4+1]))
+        if found then return found end
+    end
+end
+
 -- Fresh authoritative A8 is only the gate. Both independent topological
 -- witnesses must hold on its current bounded axis; FI and overlap are absent
 -- from this discharge predicate. EPSILON_M is the existing spatial tolerance.
@@ -355,8 +388,9 @@ local function departureEvidence(entry,p,productive,motion,input,engagement)
     return true,"CORNER_BEHIND_AXIS_AND_NON_INCIDENT_TERMINATION",true,alongM,edgeKey
 end
 
--- Retained spatial state belongs to this Situation Assessment instance and is
--- cleared by its map reset, never by pair/Responsibility/Operation turnover.
+-- Atlas knowledge belongs to this Situation Assessment instance and is cleared
+-- by map reset, never by pair/Responsibility/Operation turnover. Worker state
+-- additionally remains bounded by current membership and source Job Episode.
 -- A departure record is the last dated positive event for that worker/job,
 -- not a claim of perpetual clearance; new positive engagement replaces it.
 -- Publications are detached values. Corner knowledge has no Candidate,
@@ -364,17 +398,20 @@ end
 local function assessCornerKnowledge(self,input,projections,relationships)
     local polygonKey=atlasPolygonKey(input.fieldWorld)
     local result={polygonKey=polygonKey,status=polygonKey and "EXACT_POLYGON_IDENTITY_SUPPORTED" or "POLYGON_IDENTITY_UNRESOLVED",
-        atlasEntries={},engagements={},positiveDepartures={},events={},decisionAuthority=false,controlAuthority=false,
+        atlasEntries={},occupancies={},engagements={},positiveDepartures={},events={},decisionAuthority=false,controlAuthority=false,
         authority="PASSIVE_SITUATION_KNOWLEDGE_ONLY"}
     if not polygonKey then return result end
     local atlas=self.cornerAtlases[polygonKey]
-    if not atlas then atlas={polygonKey=polygonKey,corners={},engagements={},departures={}}; self.cornerAtlases[polygonKey]=atlas end
+    if not atlas then atlas={polygonKey=polygonKey,corners={},occupancies={},engagements={},departures={}}; self.cornerAtlases[polygonKey]=atlas end
     for _,relation in OuttaMyWay.ValueRecord.ipairs(relationships) do
         if relation.spatialOverlay=="CATEGORY_1_CORNER" then learnCorner(atlas,relation,input,result.events) end
     end
     local motions=byAssembly(input.motionEvidence)
     local productive=byAssembly(input.productiveContinuationKnowledge)
     local physical=byAssembly(input.physicalSpaceEvidence)
+    local futures=byAssembly(input.futureSpace)
+    local currentIds={}
+    for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do currentIds[p.assemblyId]=true end
     local keys={}
     for key in OuttaMyWay.ValueRecord.pairs(atlas.corners) do keys[#keys+1]=key end
     table.sort(keys)
@@ -383,6 +420,22 @@ local function assessCornerKnowledge(self,input,projections,relationships)
         result.atlasEntries[#result.atlasEntries+1]=copyKnowledge(entry)
         local engagements=atlas.engagements[key] or {}; atlas.engagements[key]=engagements
         local departures=atlas.departures[key] or {}; atlas.departures[key]=departures
+        local previousOccupancies=atlas.occupancies[key] or {}
+        local occupancies={}; atlas.occupancies[key]=occupancies
+        -- Current Operation membership is lifecycle-owned. Atlas survival does
+        -- not resurrect worker state after that worker leaves current membership.
+        for reference,record in OuttaMyWay.ValueRecord.pairs(engagements) do
+            if not currentIds[record.assemblyId] then engagements[reference]=nil end
+        end
+        for reference,record in OuttaMyWay.ValueRecord.pairs(departures) do
+            if not currentIds[record.assemblyId] then departures[reference]=nil end
+        end
+        local demandWitnesses={}
+        for _,other in OuttaMyWay.ValueRecord.ipairs(projections) do
+            local witness=cornerDemandWitness(entry,other,motions[other.assemblyId],productive[other.assemblyId],
+                continuation(futures[other.assemblyId]),input)
+            if witness then demandWitnesses[#demandWitnesses+1]=witness end
+        end
         for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
             local motion=motions[p.assemblyId]
             local reference=motion and motion.assemblyReferenceKey
@@ -396,15 +449,37 @@ local function assessCornerKnowledge(self,input,projections,relationships)
                 -- engagement just because a trailing primitive still overlaps.
                 local departed=departures[reference]
                 local stillDeparted=departed and departureEvidence(entry,p,productive[p.assemblyId],motion,input,departed)==true
-                if not engagement and overlap and not stillDeparted then
+                -- Occupancy-only evidence is current, never inferred from a
+                -- missing DISC. Genuine Engagement has its own continuity rule.
+                if overlap then
+                    local occupancy={cornerKey=key,polygonKey=polygonKey,assemblyId=p.assemblyId,assemblyReferenceKey=reference,
+                        sourceJobToken=token,observationSnapshotId=input.observationSnapshotId,overlapEvidence=overlap,
+                        negativeClearanceAuthority=false}
+                    occupancies[reference]=occupancy
+                    result.occupancies[#result.occupancies+1]=copyKnowledge(occupancy)
+                    local previous=previousOccupancies[reference]
+                    if not previous or previous.sourceJobToken~=token then
+                        cornerEvent(result.events,"CORNER_OCCUPANCY_ESTABLISHED",entry,{assemblyId=p.assemblyId,
+                            sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
+                    end
+                end
+                local relevantDemand={}
+                for _,witness in OuttaMyWay.ValueRecord.ipairs(demandWitnesses) do
+                    if witness.assemblyId~=p.assemblyId and witness.assemblyReferenceKey~=reference then
+                        relevantDemand[#relevantDemand+1]=witness
+                    end
+                end
+                if not engagement and overlap and #relevantDemand>0 and not stillDeparted then
                     engagement={cornerKey=key,polygonKey=polygonKey,assemblyId=p.assemblyId,assemblyReferenceKey=reference,
                         sourceJobToken=token,establishedObservationSnapshotId=input.observationSnapshotId,
-                        entryEvidence=overlap,hasObservedManoeuvring=false,isDepartureGateOpen=false}
+                        entryEvidence=overlap,establishingDemandEvidence=copyKnowledge(relevantDemand),hasObservedManoeuvring=false,isDepartureGateOpen=false}
                     engagements[reference]=engagement; departures[reference]=nil
                     cornerEvent(result.events,"CORNER_ENGAGEMENT_ESTABLISHED",entry,{assemblyId=p.assemblyId,sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
                 end
                 if engagement then
                     engagement.assemblyId=p.assemblyId
+                    engagement.currentRelevantDemand=copyKnowledge(relevantDemand)
+                    engagement.relevanceEvidenceState=#relevantDemand>0 and "POSITIVE_CURRENT_DEMAND" or "UNRESOLVED_RETAINED_ENGAGEMENT"
                     engagement.currentEvidenceState=overlap and "POSITIVE_CURRENT_OVERLAP" or "RETAINED_WITHOUT_DEPARTURE_EVIDENCE"
                     local turning=productive[p.assemblyId] and productive[p.assemblyId].jobToken==token and productive[p.assemblyId].isTurn==true
                     turning=turning or motion.localIntentClassification=="TURNING"
