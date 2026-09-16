@@ -12,112 +12,126 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — Issue #216 Resolution-Margin Demand
+## Current engineering boundary — Issue #170 prospective portfolio admissibility
 
-Issue #216 remains the active concern after accepted build **0.3.0.78** positively validated Bubble Bullet Time and later exposed a separate two-worker collision while S 416 remained in GIANTS-owned turning motion.
+Issue #170 owns the conformance question **Support Precedence != Admissibility Bypass**.
 
-PR #217 established the implementation-facing Situation Assessment contract for **Resolution-Margin Demand Evidence**. Accepted `main` at the start of this increment is merge `d7ab92a5fbcd7a51aaeeeb04c20fbff63d5726cd`. Build identity before executable work was `0.3.0.78`.
+Accepted `main` at the start of this Engineering Increment is merge `ea9b6fd2fe5300f48ba44f685f5cfaaca394f584` from PR #221, with executable build identity **0.3.0.81**.
 
-The accepted discoveries are:
+The active branch advances executable identity to **0.3.0.82** for a bounded correction to prospective Decision scope selection.
 
-> **Current Excursion != Resolution-Margin Demand.**
+## Established observation
 
-> **Reference-Point Separation != Usable Resolution Space.**
-
-The `.78` collision trace showed represented Current-Space progression demand several seconds before the narrower Current-Excursion proxy admitted Action-Space Regulation, and the demand remained after that proxy moved outside its current `ahead` condition. The existing authority-owned progression envelope was initialised from reference-pose separation rather than the nearer represented spatial witness.
-
-## `.79` semantic-production hypothesis
-
-Build **0.3.0.79** is deliberately narrower than a collision correction.
-
-It makes Resolution-Margin Demand a real production Situation product while leaving Candidate Support, Decision, Responsibility Transition, Bounded Authority and Control unchanged.
-
-The production flow is:
+The accepted prospective-selection chain is:
 
 ```text
-current sealed Observation / Operation evidence
-        |
-        v
-baseline Situation Assessment
-        |
-        v
-Resolution-Margin Demand Assessment
-        |
-        v
-same Operational Picture identity / epoch
-+ resolutionMarginDemandKnowledge
-        |
-        v
-existing downstream pipeline unchanged
+Candidate Support
+    -> Candidate Space
+    -> Constraint Evaluation
+    -> Decision
+    -> Responsibility Transition
 ```
 
-`ResolutionMarginDemandAssessment` uses current Situation-owned evidence and the existing neutral `ProgressionGeometry.rayCapsuleEntry()` maths. It does **not** import or promote `ProgressionPreservationProbe`; that probe remains diagnostic-only.
+Current Architecture and primary Specifications establish that mandatory Constraint admissibility precedes Decision compatibility/preference. A Candidate with mandatory FAIL or UNRESOLVED evidence is not admissible, and Decision may not enlarge or bypass that result through preference.
 
-`ResolutionMarginSituationAssessment` is a Situation-layer decorator composed at the runtime bootstrap. It enriches the delegate Operational Picture before publication while preserving the same picture identity and epoch. The runtime still exposes one final `situationAssessment` product to the rest of the pipeline.
+Before `.82`, source first computed the globally mandatory-PASS Candidate set, but prospective portfolio policy selected one support group from the complete support-group metadata without receiving that admissible set. Decision then filtered the admissible Candidates to the selected group. A preferred support group could therefore suppress an independently supported mandatory-PASS Candidate in another group even when every Candidate in the preferred group was FAIL or UNRESOLVED.
 
-Positive Resolution-Margin records are intentionally one-sided. They retain:
+## Deterministic investigation evidence
 
-- current Operation scope;
-- the progressing subject and settled supported native progression basis;
-- bounded Field-World local intent horizon;
-- represented Current Space / Committed Demand / Potential Demand claim identity;
-- known witness-entry distance;
-- subject and target representation-fitness records and claim permissions;
-- evidence/intent validity identities and provenance; and
-- explicit claim limits denying negative-clearance, safe-clearance, stopping-distance, speed and route-prediction authority.
+Closed, unmerged draft PR #222 was used only as a disposable deterministic probe.
 
-No positive witness is published when the progressing subject lacks settled supported continuation, when usable representation fitness is unavailable, when a positive represented intersection is absent, or when the witness lies beyond the supported local horizon.
+The probe directly supplied the real Decision path with two independently supported groups:
 
-## Disproved shortcut
+- `FORWARD_INTERSECTION` — the normally preferred group;
+- `PASSAGE` — the lower-precedence group.
 
-The #216 code walk disproved the tempting implementation shortcut of feeding `knownWitnessEntryM` directly into the existing `ResolutionSpaceProgressionEnvelope`.
+With Passage mandatory-PASS:
 
-The merged Specification states that a witness-entry distance is positive one-sided evidence: a represented claim is known **no farther than** that point. It is not proof that all earlier space is clear and is not a braking/stopping allowance.
+- Forward Intersection mandatory-FAIL still caused the Forward group to be selected, Passage to remain globally viable but unselected, and Decision to SETTLE;
+- Forward Intersection mandatory-UNRESOLVED still caused the Forward group to be selected, Passage to remain globally viable but unselected, and Decision to WAIT.
 
-The existing authority envelope, by contrast, is defined around positively established usable Resolution Space.
+The dedicated probe passed because it asserted that current source behaviour. Normal Offline Validation #510 also passed, proving the accepted regression suite did not challenge the condition.
 
-> **Positive Witness Distance != Permitted Progression Distance.**
+## Historical provenance
 
-Therefore `.79` creates no speed target and no new authority policy. The remaining physical-response question must be answered separately after the semantic product is validated.
+The no-fallback behaviour was deliberate, not accidental.
 
-## Authority Triad
+Phase-13 PR #63 moved prospective independent-purpose ordering toward Decision while requiring existing behaviour to be preserved unless Architecture or Reality disproved it. Merged design PR #64 then explicitly preserved the old first-success result: lower-precedence groups were not to become accidental fallback merely because the historically selected group failed or remained unresolved, because the pre-portfolio implementation would never have exposed those lower groups.
 
-- **Architecture — unchanged.** Existing Spatial Negotiation and Runtime Responsibility architecture already own Resolution-Margin meaning and Regulation responsibility boundaries.
-- **Specification — accepted in PR #217.** Situation Assessment owns the one-sided semantic evidence contract.
-- **Source — `.79` implements only the Situation semantic bridge.** Downstream physical consumers remain intentionally absent.
+The `.19` implementation failed GIANTS Reality for the separate **Support Projection != New Operational Picture** defect. PR #69 / `.20` corrected that defect while deliberately retaining Decision compatibility precedence. `.20` subsequently passed Reality and Phase 13 closed.
 
-The primary Situation Assessment Spec now classifies the two new production assessment modules and records the `.79` no-consumer boundary.
+The historical rationale for no-fallback was therefore migration behaviour preservation. No current or historical architectural evidence located by #170 establishes that fresh support for a preferred purpose semantically makes another independently supported mandatory-admissible purpose impermissible.
 
-## Touch One; Validate Three — `.79`
+> **Behaviour Preservation != Semantic Exclusion.**
 
-**Touch One:** production Situation meaning only — a settled active worker's supported native progression positively consuming another current represented spatial claim inside the same Resolution-Space scope.
+A migration rule that reproduces old first-success control flow does not by itself establish an enduring semantic veto between prospective purposes.
 
-**Validate Three:** 
+## `.82` implementation hypothesis — Admissibility-Aware Governing Scope Selection
 
-1. **Target positive — #216 world shape.** A settled worker progresses toward Current Space occupied by a manoeuvring/turning worker. Positive Resolution-Margin Demand must be published from the represented claim without requiring Current Excursion input.
-2. **Negative neighbour.** A nearby/turning worker whose represented Current Space does not positively intersect the subject's supported progression must not manufacture positive demand from proximity, turn state or shared Operation membership.
-3. **Established behaviour.** Existing Candidate, Decision, Current-Excursion/opposed-corridor Regulation, follower, Forward Intersection, Bubble and Passage behaviour must remain unchanged because `.79` introduces no downstream consumer. Structural validation explicitly rejects any `.79` Candidate/Decision/Responsibility/Authority/Control consumption of `resolutionMarginDemandKnowledge`.
+The correction is not a retry/fallback loop.
 
-A further fail-closed focused check requires usable representation fitness for both subject and represented target before positive demand is published.
+Prospective Decision compatibility/precedence is applied to support groups represented by **mandatory-admissible Candidates**:
 
-## Validation boundary
+```text
+complete supported portfolio
+        |
+        v
+complete mandatory Constraint verdicts
+        |
+        v
+mandatory-admissible Candidates
+        |
+        v
+groups containing admissible alternatives
+        |
+        v
+Decision compatibility / precedence
+        |
+        v
+selected governing scope
+        |
+        v
+existing within-group policy
+        |
+        v
+selected Candidate or explicit non-selection
+```
 
-The focused offline witness is `tests/replacement_core/resolution_margin_demand.lua`. It challenges positive current-space evidence, the negative neighbour, representation-fitness failure, and preservation of Operational Picture identity/epoch through Situation-layer composition.
+This preserves established compatibility precedence when competing groups are both admissible. It prevents a group containing no admissible Candidate from acquiring stronger exclusion authority merely because its support exists.
 
-`tests/test_resolution_margin_demand_structure.py` protects source ordering, Jurisdiction ownership, one-sided claim limits, diagnostic independence and the deliberate absence of downstream consumption.
+When the complete prospective portfolio has no admissible Candidate, no inadmissible support group is promoted to governing scope. Decision instead uses the complete verdict evidence to produce explicit non-selection:
 
-The new focused Lua witness runs inside the existing main Lua validation collector. The Issue #67 two-outcome CI contract is not changed.
+- unresolved mandatory evidence -> `WAIT_FOR_EVIDENCE`;
+- complete mandatory failure/exhaustion -> `COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED` / SETTLE.
 
-Offline validation can prove deterministic semantic behaviour and conformance. It cannot prove that live GIANTS evidence is physically complete or timely.
+Candidate Support no longer publishes the historical `lowerPrecedenceConstraintFallback=false` policy token because fallback/precedence is Decision authority, not Candidate-support semantics.
+
+## Authority Triad Revalidation
+
+- **Architecture — validated unchanged.** `architecture/CANDIDATE_SUPPORT_PROJECTION.md` already defines complete support, mandatory admissibility before Decision, and prohibits preference from bypassing mandatory Constraints. Spatial Negotiation gives no fresh Forward-Intersection support a generic veto over an independently admissible Passage Candidate.
+- **Specification — validated unchanged.** `spec/CANDIDATE_SUPPORT.md`, `spec/CONSTRAINT_EVALUATION.md` and `spec/DECISION.md` already operationalise the accepted ownership boundaries; Decision explicitly states **Support Precedence != Admissibility Bypass**.
+- **Source — changed.** `ProspectivePortfolioDecisionPolicy` now receives mandatory-admissible Candidates and limits compatibility policy to their groups. `DecisionSelector` distinguishes admissible-scope selection from global no-admissible WAIT/SETTLE. `ProspectiveDecisionPortfolioSupport` no longer publishes the historical Decision-policy fallback token.
+
+> **Touch One; Validate Three.**
+
+## Behavioural Validation Matrix
+
+Focused offline Decision evidence challenges:
+
+1. preferred Forward Intersection PASS + Passage PASS -> existing Forward precedence remains;
+2. preferred Forward Intersection FAIL + Passage PASS -> Passage remains selectable;
+3. preferred Forward Intersection UNRESOLVED + Passage PASS -> Passage remains selectable;
+4. no admissible Candidate with unresolved mandatory evidence -> explicit WAIT remains;
+5. all Candidates mandatory-FAIL -> explicit SETTLE remains.
+
+The full accepted offline suite remains responsible for neighbouring/regression coverage including follower Regulation, Forward Intersection, Cooperative Passage, Action-Space Regulation, Obstruction Relocation, Responsibility Transition and downstream authority/control contracts.
+
+Because `.82` changes which already-supported Candidate may be selected in a condition that previously produced WAIT/SETTLE, offline conformance alone is not a complete GIANTS Reality claim. After blocking CI is green, an owner-performed in-game smoke should challenge ordinary supported traffic behaviour before merge. No Passage geometry, Regulation magnitude, Bounded Authority rule or physical Control mechanism is intentionally changed.
 
 ## Next bounded engineering step
 
-First validate the `.79` semantic increment independently. Do not interpret a green `.79` as a collision fix.
+Run GitHub Actions on the complete `.82` branch and interpret the independent evidence.
 
-If `.79` is accepted, the next activity returns to **Discuss / Hypothesise** for the unresolved authority question:
+If blocking offline validation is green, review the exact diff and perform the bounded in-game Reality smoke. Treat any unexpected physical behaviour as evidence against the implementation hypothesis rather than weakening the admissibility contract to obtain the historical result.
 
-> Given positive Resolution-Margin Demand Evidence that deliberately lacks negative-clearance authority, what temporal magnitude may Bounded Authority legitimately permit, and from what additional positive evidence can that permission be derived without treating witness distance as safe traversable distance?
-
-Only after that authority/evidence contract is agreed should Candidate or Regulation behaviour consume Resolution-Margin Demand.
-
-Issues #170, #174 and #176 remain parked standards-work conformance concerns. Issue #210 remains a parked generated-source-reference improvement. Issues #45 and #172 are completed and closed.
+Issue #170 remains open until the accepted correction and required evidence are complete.
