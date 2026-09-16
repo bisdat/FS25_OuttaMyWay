@@ -316,9 +316,10 @@ Diagnostics MAY expose contradictions, counters and pipeline state. A diagnostic
 - **Pair evidence absent without negative authority** — relationship remains unresolved.
 - **Resolution-Margin witness positive** — publish the current positive demand evidence with its subject, represented claim, bounded horizon, provenance and one-sided claim limits; do not derive a speed or safe-clearance conclusion.
 - **Resolution-Margin witness unavailable/unfit without negative authority** — publish `UNRESOLVED`; do not convert witness loss, Current-Excursion role change or reference-point separation into positive clearance/dissolution.
-- **Category-1 approach allocation current, protected worker has not entered `TURNING`** — ordinary current-purpose support/dissolution/supersession semantics remain available; do not manufacture Evacuation Protection merely from prior Category-1 history.
-- **Category-1 Protected Manoeuvre Entry established** — preserve the incumbent protected/yielder roles through the native manoeuvre; Forward-Intersection topology change alone is not positive discharge or role reversal.
-- **Category-1 protected worker reacquires fresh A8 after Protected Manoeuvre Entry** — publish positive evacuation-purpose basis cessation; no successor relationship or delay literal is required merely to release the incumbent Regulation.
+- **Known Category-1 corner, no current Corner Engagement** — retain the Corner Atlas entry as Field World knowledge; do not manufacture current constrained-space occupation or Regulation merely from the known corner's existence.
+- **Corner Engagement current** — preserve the current constrained-space fact across Forward-Intersection, Current-Excursion, Passage and Responsibility changes; those changes do not themselves establish Corner Departure.
+- **Engaged worker reacquires fresh A8 after manoeuvring uncertainty** — reassess departure against the stored corner topology; A8 alone is not discharge.
+- **Fresh A8 plus Positive Corner Departure** — publish the corner engagement as retired for that worker; downstream Situation/Decision processing may then reassess any remaining interaction from current Reality.
 - **Source unavailable** — retain explicit uncertainty derived from Observation; no fabricated semantic negative.
 - **Conflicting current evidence** — publish contradiction/unresolved meaning or fail closed according to the responsible sub-contract; do not silently choose the interpretation that enables intervention.
 - **Causal obstruction not positively supported** — no Causal Obstruction relationship.
