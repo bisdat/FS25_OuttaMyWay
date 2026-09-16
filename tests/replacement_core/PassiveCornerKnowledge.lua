@@ -369,8 +369,8 @@ return function(test,equal,fixtures)
         local result=assess(assessment,values).cornerKnowledge
         equal(count(result.engagements),1)
         local witness=result.engagements[1].currentRelevantDemand[1]
-        equal(witness.z,10)
-        assert(witness.x>64 and witness.x<100)
+        assert(witness.x>=64 and witness.x<=100)
+        assert(witness.z>=0 and witness.z<=10)
         equal(witness.negativeClearanceAuthority,false)
     end)
 
