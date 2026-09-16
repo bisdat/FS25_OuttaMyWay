@@ -196,7 +196,7 @@ jobs:
         env:
           OMW_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Render source reference
+      - name: Render source reference with LDoc 1.5.0
         uses: lunarmodules/ldoc@v1.5.0
         with:
           args: -c tools/ldoc/config.ld .generated/source-reference/src
