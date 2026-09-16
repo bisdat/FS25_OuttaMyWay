@@ -144,6 +144,7 @@ jobs:
           "$LUAJIT_BIN" tests/replacement_core/bubble_bullet_time.lua
           "$LUAJIT_BIN" tests/replacement_core/resolution_margin_demand.lua
           "$LUAJIT_BIN" tests/replacement_core/regulation_control_authority.lua
+          "$LUAJIT_BIN" tests/replacement_core/prospective_decision_admissibility.lua
 
       - name: Run focused obstruction relocation contract
         id: obstruction_relocation
@@ -157,7 +158,7 @@ jobs:
           {
             echo "## Lua offline behavioural contracts"
             echo
-            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time + Resolution-Margin Demand + Regulation Control Authority outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time + Resolution-Margin Demand + Regulation Control Authority + Prospective Decision Admissibility outcome: \`${{ steps.lua.outcome }}\`"
             echo "- Focused obstruction-relocation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
             echo "- **This job is blocking: any non-success inner outcome fails the enforcement gate.**"
             echo "- \`continue-on-error\` keeps evidence collection complete so both harness outcomes remain visible."
@@ -195,7 +196,7 @@ jobs:
         env:
           OMW_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Render source reference with LDoc 1.5.0
+      - name: Render source reference
         uses: lunarmodules/ldoc@v1.5.0
         with:
           args: -c tools/ldoc/config.ld .generated/source-reference/src
