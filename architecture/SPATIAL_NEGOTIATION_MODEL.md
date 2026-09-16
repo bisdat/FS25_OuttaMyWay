@@ -240,7 +240,7 @@ Once a Forward Intersection temporal allocation has been admitted, loss of suppo
 
 Situation Assessment may classify the same Regulation purpose as `WAITING_FOR_EVIDENCE` and preserve its existing yielder allocation and exact 1 km/h Intent-Revelation Creep while fresh Reality resolves the ambiguity.
 
-This grants no turn-path prediction and creates no `TURNING` route authority. Supported negative Forward Intersection evidence may positively dissolve the allocation; an established valid relationship may positively supersede it. Temporary unresolvability or missing continuation evidence may do neither.
+This grants no turn-path prediction and creates no `TURNING` route authority. A current Forward Intersection negative may positively dissolve the allocation only when the evidence basis that produced that negative is fit for incumbent-purpose dissolution. A bounded continuation may remain fit for prospective Forward Intersection reasoning while being unfit for dissolution when current realised progression positively contradicts that continuation. In that case the incumbent allocation remains `WAITING_FOR_EVIDENCE` until fresh Reality removes the contradiction or establishes a valid supersession. This does not require a successor relationship, delay literal or travelled-distance threshold: once the contradiction is absent and a supported negative remains current, Situation Assessment may positively dissolve the allocation immediately. An established valid relationship may positively supersede it. Temporary unresolvability or missing continuation evidence may do neither.
 
 A bounded fail-safe may force reassessment or escalation if evidence does not recover, but timeout expiry alone must not manufacture a safe or dissolved conclusion.
 
