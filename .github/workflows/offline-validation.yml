@@ -64,6 +64,7 @@ jobs:
             scripts/authority/RegulationBoundedAuthority.lua \
             scripts/authority/BubbleBulletTime.lua \
             scripts/assessment/CurrentResponsibilityAssessment.lua \
+            scripts/assessment/SpatialConstraintAssessment.lua \
             scripts/assessment/SituationAssessment.lua \
             scripts/assessment/ResolutionMarginDemandAssessment.lua \
             scripts/assessment/ResolutionMarginSituationAssessment.lua \
@@ -113,6 +114,7 @@ jobs:
             scripts/observation/LiveInteractionObservation.lua \
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
+            scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua \
             scripts/responsibility/CooperativePassageResponsibilityTransition.lua \
             scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua \
             scripts/runtime/LiveRuntimeCoordinator.lua \
@@ -145,6 +147,7 @@ jobs:
           "$LUAJIT_BIN" tests/replacement_core/resolution_margin_demand.lua
           "$LUAJIT_BIN" tests/replacement_core/regulation_control_authority.lua
           "$LUAJIT_BIN" tests/replacement_core/prospective_decision_admissibility.lua
+          "$LUAJIT_BIN" tests/replacement_core/category1_evacuation_protection.lua
 
       - name: Run focused obstruction relocation contract
         id: obstruction_relocation
@@ -158,7 +161,7 @@ jobs:
           {
             echo "## Lua offline behavioural contracts"
             echo
-            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time + Resolution-Margin Demand + Regulation Control Authority + Prospective Decision Admissibility outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- Main replacement-core + focused Operation Lifecycle + Bubble Bullet Time + Resolution-Margin Demand + Regulation Control Authority + Prospective Decision Admissibility + Category-1 Evacuation Protection outcome: \`${{ steps.lua.outcome }}\`"
             echo "- Focused obstruction-relocation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
             echo "- **This job is blocking: any non-success inner outcome fails the enforcement gate.**"
             echo "- \`continue-on-error\` keeps evidence collection complete so both harness outcomes remain visible."

@@ -53,3 +53,20 @@ def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
     for path in (ROOT / "scripts").rglob("*.lua"):
         assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in path.read_text(), path
     assert "FORWARD_INTERSECTION_TIMEOUT" not in authority
+
+
+def test_category1_evacuation_protection_is_responsibility_local_and_role_stable():
+    assessment = (ROOT / "scripts" / "assessment" / "CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
+    spatial = (ROOT / "scripts" / "assessment" / "SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
+    transition = (ROOT / "scripts" / "responsibility" / "ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
+
+    assert "category1ByResponsibilityId" in assessment
+    assert 'relation.spatialOverlay=="CATEGORY_1_CORNER"' in assessment
+    assert "CATEGORY_1_PROTECTED_MANOEUVRE_ENTRY" in assessment
+    assert "CATEGORY_1_EVACUATION_PROTECTION_AWAITS_FRESH_A8" in assessment
+    assert "CATEGORY_1_EVACUATION_POSITIVELY_DISCHARGED_BY_FRESH_A8" in assessment
+    assert "a8ProductivePositive" in spatial
+    assert "turningPositive" in spatial
+    assert 'context=="ROLE_MIGRATION"' in transition
+    assert "CATEGORY_1_EVACUATION_PROTECTION_FREEZES_ROLES" in transition
+    assert "FORWARD_INTERSECTION_TIMEOUT" not in transition

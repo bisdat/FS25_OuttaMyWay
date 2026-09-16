@@ -64,11 +64,17 @@ local function positiveRate(motion)
     if motion and finite(motion.reportedSpeedMps) and motion.reportedSpeedMps>0 then return motion.reportedSpeedMps,"GIANTS_REPORTED_PROGRESS_RATE" end
     return nil,"POSITIVE_PROGRESS_RATE_UNAVAILABLE"
 end
+local function currentProductiveState(motion)
+    local raw=motion and motion.nativeFieldWork or {}
+    return raw.segmentAvailable==true and raw.isTurn~=true and raw.implementLineClassification=="ACTIVE", raw.isTurn==true
+end
 local function projection(world,worldKey,id,future,motion)
     local path=continuation(future); local width=motion and motion.nativeFieldWork and motion.nativeFieldWork.workingWidth
+    local a8ProductivePositive,turningPositive=currentProductiveState(motion)
     local result={assemblyId=id,assemblyReferenceKey=motion and motion.assemblyReferenceKey,fieldWorldReferenceKey=worldKey,
         fieldWorldSnapshotReferenceKey=world and world.representativeSnapshotReferenceKey,futureSpaceIdentity=future and future.identity,
         futureSpaceBasis=path and path.kind,status="UNRESOLVED",decisionAuthority=false,controlAuthority=false,positiveOnly=true,
+        a8ProductivePositive=a8ProductivePositive,turningPositive=turningPositive,
         authority="SITUATION_KNOWLEDGE_ONLY",provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}}
     if not path then result.reason="FIELD_BOUNDED_PROJECTION_UNAVAILABLE"; return result end
     local x,z,ex,ez=tonumber(path.startX),tonumber(path.startZ),tonumber(path.endX),tonumber(path.endZ)

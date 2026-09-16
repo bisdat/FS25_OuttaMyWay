@@ -29,6 +29,19 @@ local function actionSpaceBridge(candidate)
     return nil
 end
 
+local function actionSpaceRelation(picture,conflictIdentity)
+    if type(conflictIdentity)~="string" then return nil end
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture and picture.spatialConstraintKnowledge or {}) do
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
+            if relation.identity==conflictIdentity then return relation end
+        end
+    end
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(picture and picture.opposedCorridorKnowledge or {}) do
+        if relation.identity==conflictIdentity then return relation end
+    end
+    return nil
+end
+
 function Transition.new(runtime)
     return setmetatable({runtime=runtime},Transition)
 end
@@ -47,6 +60,13 @@ function Transition:transition(picture,evaluated,readiness)
     end
     local preflight,preflightReason=self.runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulation(picture,evaluated,readiness)
     if preflight==nil then return nil,preflightReason end
+    if context=="ROLE_MIGRATION" and preflight.current~=nil
+        and self.runtime.currentResponsibilityAssessment:isCategory1EvacuationProtectionActive(preflight.current) then
+        logInfo("CATEGORY_1_ROLE_MIGRATION_BLOCKED responsibility=%s conflict=%s incumbentRegulated=%s proposedRegulated=%s reason=CATEGORY_1_EVACUATION_PROTECTION",
+            tostring(preflight.current.identity),tostring(bridge.conflictIdentity),
+            tostring(self.runtime.currentResponsibilityAssessment:category1RegulatedAssemblyId(preflight.current) or "UNRESOLVED"),tostring(bridge.regulatedAssemblyId))
+        return nil,"CATEGORY_1_EVACUATION_PROTECTION_FREEZES_ROLES"
+    end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyActionSpaceRegulationDecision(self.runtime,picture,evaluated)
     if applied==nil then
         logWarning("ACTION_SPACE_REGULATION_TRANSITION_REFUSED decision=%s candidate=%s conflict=%s context=%s reason=%s",
@@ -56,6 +76,8 @@ function Transition:transition(picture,evaluated,readiness)
     local currentResponsibility,responsibilityReason=self.runtime.responsibilityTransitionAuthority:establishOrPreserveActionSpaceRegulation(preflight,applied)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
+    self.runtime.currentResponsibilityAssessment:registerActionSpaceRegulation(
+        currentResponsibility,actionSpaceRelation(picture,bridge.conflictIdentity),bridge)
     local disposition=preflight.current==nil and "ESTABLISHED" or "REVALIDATED"
     logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM decision=%s candidate=%s conflict=%s commitment=%s responsibility=%s regulated=%s protected=%s legacyAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
