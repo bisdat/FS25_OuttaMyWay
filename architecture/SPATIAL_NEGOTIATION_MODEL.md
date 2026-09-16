@@ -175,6 +175,40 @@ This is a degraded-entry condition the normal architecture must try to prevent. 
 
 Spatial precedence is temporary and evidence-based.
 
+#### Corner Atlas
+
+A **Corner Atlas** is retained Field World knowledge of positively discovered Category-1 corner space. Corner discovery remains evidence-led: current pairwise Forward-Intersection geometry must positively identify a genuine corner through supported Field-World-bounded continuations whose distinct terminating boundary edges share the same Field World vertex. A middle-of-field intersection does not discover a corner.
+
+Once positively discovered, the corner is not reclassified back to Open Field merely because the pair relationship that exposed it later becomes unresolved, negative, superseded or geometrically different. The atlas entry belongs to the current immutable Field World, not to the discovering pair, Regulation or Resolution Commitment.
+
+> **Corner Detection Can Be Pair-wise; Corner Knowledge Is Spatial.**
+
+A Corner Atlas entry retains, at minimum, the Field World identity, shared corner vertex, incident boundary-edge identities and a positively supported **Corner Envelope** representing the constrained space demonstrated by discovery. Later positive evidence MAY enlarge the known envelope when a wider or otherwise more demanding supported assembly demonstrates additional constrained demand. The known envelope MUST NOT shrink merely because a later interaction is narrower. Any retained envelope remains bounded by the immutable Field World.
+
+> **Known Corner Extent Can Grow; It Does Not Oscillate.**
+
+The Corner Atlas is spatial knowledge, not persistent generic pair history. It does not retain a past yielder, pair right-of-way, future turn route or responsibility identity.
+
+#### Corner Engagement
+
+**Corner Engagement** is current Situation meaning that a worker is entering, occupying, manoeuvring within or exiting a known Corner Envelope in a way that may materially affect another current worker whose supported demand intersects that corner theatre. Engagement belongs to the worker-plus-corner Situation, not to a pair relationship or Current Responsibility.
+
+While Corner Engagement remains current, preserve the engaged worker's native opportunity to reveal intent, turn, reverse, reposition and create space. Another relevant worker outside or approaching the same corner remains the cheaper party to make cautious where temporal coordination is justified. A changing Forward Intersection, Current Excursion, Passage Candidate or Responsibility transition does not by itself erase the Corner Engagement fact.
+
+> **Responsibility Transition != Corner Departure.**
+
+TURNING, reversing and transient heading change by the engaged worker are expected evidence inside the engagement lifecycle. They do not constitute departure and they do not require predicted turn geometry. No timer, travelled-distance tail or width multiplier may manufacture Corner Departure merely because the worker has temporarily moved beyond a guessed virtual boundary.
+
+#### Positive Corner Departure
+
+Corner Engagement retires only from **Positive Corner Departure**. Fresh A8 reacquisition by the same engaged worker is the required gate because it re-establishes GIANTS-owned productive forward-line certainty after manoeuvring uncertainty, but A8 alone is not sufficient proof that the corner is clear.
+
+After fresh A8, the worker's current Field-World-bounded productive continuation must positively demonstrate that its productive demand no longer belongs to the stored corner topology. The normal positive witness is that the remembered corner vertex lies behind the worker's fresh productive progression and the new bounded continuation terminates on a Field World boundary edge that is not incident to that corner. Equivalent representation may be used only if it carries the same positive semantic claim.
+
+> **A8 Reacquisition Is the Departure Gate; Positive Topological Departure Is the Discharge Witness.**
+
+Absence of renewed corner intersection, elapsed time, travelled distance or a narrower current footprint is not Positive Corner Departure. Until positive departure or another explicit fail-safe outcome is established, Situation Assessment must continue to treat the engagement as current constrained-space knowledge.
+
 ### Cooperative Passage foreseeability
 
 Cooperative Passage is foreseeable only while current evidence positively supports all of these conditions:
@@ -232,29 +266,19 @@ Where Intent-Revelation Creep is the accepted temporal policy, its exact magnitu
 
 This is a purpose-bound architectural policy, not a general Regulation tuning parameter.
 
-### Category-1 Evacuation Protection
+### Category-1 Corner Engagement Protection
 
-Category-1 admission and the provisional protected/yielder allocation remain governed by the existing Forward Intersection temporal-allocation policy. Category-1 Evacuation Protection does not create a second admission mechanism, a new Regulation type, a corner route planner or persistent pair history.
+Existing Forward-Intersection timing remains a valid way to discover a Category-1 corner and to make an initial provisional temporal allocation. Once the corner is positively known, however, constrained-space protection is governed by current **Corner Engagement**, not by persistence of the discovering pair relationship or a particular Regulation identity.
 
-While that same Category-1 allocation remains current, fresh Reality showing the protected worker cross from A8-positive productive progression into GIANTS `TURNING` establishes **Protected Manoeuvre Entry**. That event changes the evidence contract of the existing Regulation purpose: the protected worker is now the worker that must remain free to reveal intent, reposition and vacate scarce Category-1 space, while the previously selected yielder remains the regulated party.
+When a worker is engaged with a known Corner Envelope and another current worker's supported progression would materially consume that corner theatre, spatial policy preserves the engaged worker's opportunity to create space and makes the other worker cautious where Regulation is justified. The engaged worker is not made the cheaper yielder merely because FI timing reverses, a Current Excursion appears, Passage becomes foreseeable, or Responsibility Transition changes the current control purpose.
 
-From Protected Manoeuvre Entry until discharge:
+> **Protect the Engaged Corner Occupant, Not the Historical Pair.**
 
-- the protected/yielder roles of that Regulation remain authoritative for the same pair;
-- `TURNING`, reversing, heading change or other native repositioning by the protected worker are expected evidence of the manoeuvre and do not make that worker a valid yielder;
-- Forward Intersection becoming `UNRESOLVED`, becoming geometrically negative, or reappearing with reversed timing roles cannot by itself dissolve or reverse the Category-1 allocation;
-- the existing yielder remains regulated under the accepted Category-1 temporal policy while the protected worker completes the manoeuvre; and
-- no future turn path, corner radius, distance tail or successor relationship is predicted or reserved.
+Corner Engagement creates no new Regulation capability and no permanent right-of-way. Regulation remains the parent's single temporal-coordination mechanism, including the exact 1 km/h Intent-Revelation Creep where that policy is applicable. A successor Resolution may take control of the same workers, but it does not positively discharge the underlying Corner Engagement and must remain compatible with the still-current constrained-space fact.
 
-> **Protected Manoeuvre Entry Freezes Roles; It Does Not Freeze Routes.**
+TURNING, reversing and native repositioning by the engaged worker are expected. They neither require a predicted turn path nor dissolve the corner. Corner Engagement ends only when Situation Assessment establishes Positive Corner Departure from fresh A8-gated topological evidence, or when an explicit supported fail-safe/lifecycle outcome makes the engagement no longer current.
 
-The normal discharge witness is fresh A8 reacquisition by that same protected worker after Protected Manoeuvre Entry. Positive productive working progression means GIANTS has ended the protected repositioning episode and resumed bounded forward productive certainty. That fresh evidence positively discharges the Category-1 evacuation purpose; the old Regulation may then terminate immediately and fresh Situation Assessment may discover ordinary work, a new Forward Intersection, Cooperative Passage or another supported relationship.
-
-> **A8 Reacquisition = Positive Evacuation Discharge.**
-
-A8 that existed before Protected Manoeuvre Entry is not discharge evidence. Likewise, a later unrelated `TURNING` episode cannot activate stale Category-1 protection: Protected Manoeuvre Entry must occur while the same Category-1 allocation is still current.
-
-Before Protected Manoeuvre Entry, the Category-1 allocation remains prospective and may still dissolve through fresh supported evidence under the normal Regulation lifecycle. This Category-1-specific rule makes no claim for Category 2 or open-field Forward Intersection.
+No timer, distance tail, corner-size multiplier, FI negative, responsibility replacement or temporary movement outside a guessed envelope may manufacture discharge.
 
 ### Forward Intersection evidence continuity
 
@@ -266,7 +290,7 @@ Situation Assessment may classify the same Regulation purpose as `WAITING_FOR_EV
 
 This grants no turn-path prediction and creates no `TURNING` route authority. A current Forward Intersection negative is potential dissolution evidence only when its evidence basis is fit for the incumbent-purpose question. A bounded continuation may remain fit for prospective Forward Intersection reasoning while being unfit for incumbent dissolution when current Reality contradicts the stronger conclusion. Absence of a positive contradiction does not by itself prove that an already-established temporal purpose has discharged.
 
-For Category 1, once Protected Manoeuvre Entry has occurred, the more specific Evacuation Protection lifecycle above governs persistence and discharge: Forward Intersection topology no longer has termination or role-reversal authority over that incumbent purpose, and fresh A8 reacquisition by the protected worker supplies the normal positive discharge witness. Outside that Category-1 state, Situation Assessment may positively dissolve or supersede the allocation only from evidence fit for the purpose being ended. Temporary unresolvability or missing continuation evidence may do neither.
+For a known Category-1 corner, Forward Intersection topology does not own corner existence or Corner Engagement retirement. FI may discover the corner and contribute temporal-allocation evidence, but an FI negative, unresolved result or reversed timing allocation cannot erase a still-current engagement. Positive Corner Departure is assessed independently from fresh A8-gated Field World topology. Outside current Corner Engagement, Situation Assessment may positively dissolve or supersede an FI allocation only from evidence fit for the purpose being ended. Temporary unresolvability or missing continuation evidence may do neither.
 
 A bounded fail-safe may force reassessment or escalation if evidence does not recover, but timeout expiry alone must not manufacture a safe or dissolved conclusion.
 
