@@ -233,6 +233,8 @@ Situation Assessment MUST NOT terminate, establish or replace Current Responsibi
 
 Where Architecture permits `WAITING_FOR_EVIDENCE`, that is an evidence-state interpretation within an already-admitted responsibility. It is not a generic new Current Responsibility type and MUST NOT be created merely because evidence is inconvenient.
 
+For an established Forward-Intersection Regulation, a current geometric negative is not by itself positive incumbent-purpose dissolution evidence. Situation Assessment MUST assess whether the evidence basis that produced the negative is fit for the dissolution question. If current realised progression positively contradicts a bounded continuation used to derive that negative, the continuation may remain valid for prospective spatial reasoning but the incumbent dissolution conclusion is `UNRESOLVED`; the same responsibility may remain `WAITING_FOR_EVIDENCE`. Once that positive contradiction is absent and the supported negative remains current, Situation Assessment MAY publish positive dissolution immediately. It MUST NOT require a successor relationship, delay literal or travelled-distance threshold merely to release the incumbent Regulation.
+
 ## Operational Picture semantic contract
 
 The Operational Picture MUST preserve enough meaning for Candidate Support, Constraint Evaluation, Decision, responsibility maintenance and diagnostics without requiring those consumers to reconstruct Situation semantics from raw source modules.
