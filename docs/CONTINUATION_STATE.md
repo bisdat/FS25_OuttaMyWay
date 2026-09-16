@@ -12,138 +12,108 @@ Git owns exact accepted commit chronology. Executable-version owners own build i
 
 Only the copy on accepted `main` is authoritative. On a working branch this file describes the continuation state that would become current if the branch were accepted.
 
-## Current engineering boundary — Issue #170 prospective portfolio admissibility
+## Current engineering boundary — Issue #224 Forward-Intersection dissolution fitness
 
-Issue #170 owns the conformance question **Support Precedence != Admissibility Bypass**.
+Issue #224 owns the Reality-disproved assumption that any current geometric Forward-Intersection `NEGATIVE` is automatically sufficient to positively discharge an already-established Forward-Intersection Regulation.
 
-Accepted `main` at the start of this Engineering Increment is merge `ea9b6fd2fe5300f48ba44f685f5cfaaca394f584` from PR #221, with executable build identity **0.3.0.81**.
+Accepted `main` at the start of this Engineering Increment is merge `deb8a522cb4611811be80240afd1a392f64bd1c9` from PR #225, with executable build identity **0.3.0.82**. PR #225 already made the architectural decision authoritative: prospective Forward-Intersection fitness and incumbent-purpose dissolution fitness are question-relative, and current realised progression that positively contradicts the continuation basis of a geometric negative makes incumbent dissolution `UNRESOLVED` rather than successful.
 
-The active branch advances executable identity to **0.3.0.82** for a bounded correction to prospective Decision scope selection.
+This branch advances executable identity to **0.3.0.83** for the bounded implementation of that decision.
 
-## Established observation
+## Established Reality observation
 
-The accepted prospective-selection chain is:
+The clean `.82` Condor/Patriot Forward-Intersection witness establishes the defect at the manoeuvre-to-successor-continuation boundary:
 
-```text
-Candidate Support
-    -> Candidate Space
-    -> Constraint Evaluation
-    -> Decision
-    -> Responsibility Transition
-```
+- `06:45:34.577` — a positive Forward Intersection establishes Patriot as temporal yielder at exact **1 km/h** while Condor approaches a Category-1 corner;
+- `06:46:01.003` — the Forward Intersection becomes `UNRESOLVED` during Condor's turn and the accepted #37 evidence-continuity rule correctly preserves Regulation;
+- `06:46:13.558` — a newly represented successor continuation makes the Forward-Intersection geometry `NEGATIVE` with `INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS`;
+- `06:46:13.584` — the incumbent Regulation releases and settles as successful;
+- `06:46:13.589` — current physical evidence still shows Condor travelling opposite the newly represented continuation while Field-bounded Future Space already supports the successor intent;
+- `06:46:14.104` — realised physical progression agrees with that continuation; and
+- `06:46:14.465` — fresh Reality establishes a new Forward Intersection with reversed temporal roles.
 
-Current Architecture and primary Specifications establish that mandatory Constraint admissibility precedes Decision compatibility/preference. A Candidate with mandatory FAIL or UNRESOLVED evidence is not admissible, and Decision may not enlarge or bypass that result through preference.
+The demonstrated error is therefore not delayed Forward-Intersection admission and not failure to preserve `UNRESOLVED`. It is **positive incumbent dissolution while the evidence basis producing the geometric negative is physically contradicted**.
 
-Before `.82`, source first computed the globally mandatory-PASS Candidate set, but prospective portfolio policy selected one support group from the complete support-group metadata without receiving that admissible set. Decision then filtered the admissible Candidates to the selected group. A preferred support group could therefore suppress an independently supported mandatory-PASS Candidate in another group even when every Candidate in the preferred group was FAIL or UNRESOLVED.
+Historical `.33` remains valid evidence for #37's `Forward Intersection Unresolved != Forward Intersection Dissolved` correction. Its preserved record does not independently prove realised-travel corroboration at its release boundary, so it is non-discriminating on #224's stronger question.
 
-## Deterministic investigation evidence
+## Accepted architectural decision
 
-Closed, unmerged draft PR #222 was used only as a disposable deterministic probe.
+PR #225 established the current authority contract:
 
-The probe directly supplied the real Decision path with two independently supported groups:
+> **A current Forward-Intersection negative may positively dissolve an incumbent Forward-Intersection Regulation only when the evidence basis that produced that negative is fit for incumbent-purpose dissolution.**
 
-- `FORWARD_INTERSECTION` — the normally preferred group;
-- `PASSAGE` — the lower-precedence group.
+A bounded continuation may remain fit for prospective Forward-Intersection reasoning while being unfit for dissolution when current realised progression positively contradicts it.
 
-With Passage mandatory-PASS:
+This is not Regulation stickiness. Once the contradiction is absent and the supported negative remains current, Situation Assessment may positively dissolve the allocation immediately. No successor relationship, Passage reservation, delay literal, travelled-distance threshold or arbitrary hysteresis period is required.
 
-- Forward Intersection mandatory-FAIL still caused the Forward group to be selected, Passage to remain globally viable but unselected, and Decision to SETTLE;
-- Forward Intersection mandatory-UNRESOLVED still caused the Forward group to be selected, Passage to remain globally viable but unselected, and Decision to WAIT.
+Normal adjacent-corridor, `PARALLEL_OR_COLLINEAR`, opposed/head-on and Cooperative-Passage behaviour is outside this correction unless new Reality evidence demonstrates a separate defect.
 
-The dedicated probe passed because it asserted that current source behaviour. Normal Offline Validation #510 also passed, proving the accepted regression suite did not challenge the condition.
+## `.83` implementation hypothesis — Current Physical Contradiction Vetoes Dissolution
 
-## Historical provenance
+Production Observation already derives current realised travel direction from successive AI-steering-node positions and publishes that raw motion evidence into the Operational Picture. Spatial Constraint Assessment already owns the current Field-World-bounded continuation projection used by Forward Intersection.
 
-The no-fallback behaviour was deliberate, not accidental.
-
-Phase-13 PR #63 moved prospective independent-purpose ordering toward Decision while requiring existing behaviour to be preserved unless Architecture or Reality disproved it. Merged design PR #64 then explicitly preserved the old first-success result: lower-precedence groups were not to become accidental fallback merely because the historically selected group failed or remained unresolved, because the pre-portfolio implementation would never have exposed those lower groups.
-
-The `.19` implementation failed GIANTS Reality for the separate **Support Projection != New Operational Picture** defect. PR #69 / `.20` corrected that defect while deliberately retaining Decision compatibility precedence. `.20` subsequently passed Reality and Phase 13 closed.
-
-The historical rationale for no-fallback was therefore migration behaviour preservation. No current or historical architectural evidence located by #170 establishes that fresh support for a preferred purpose semantically makes another independently supported mandatory-admissible purpose impermissible.
-
-> **Behaviour Preservation != Semantic Exclusion.**
-
-A migration rule that reproduces old first-success control flow does not by itself establish an enduring semantic veto between prospective purposes.
-
-## `.82` implementation hypothesis — Admissibility-Aware Governing Scope Selection
-
-The correction is not a retry/fallback loop.
-
-Prospective Decision compatibility/precedence is applied to support groups represented by **mandatory-admissible Candidates**:
+The `.83` implementation therefore compares those two existing evidence products directly for the demonstrated geometric-negative reason:
 
 ```text
-complete supported portfolio
-        |
-        v
-complete mandatory Constraint verdicts
-        |
-        v
-mandatory-admissible Candidates
-        |
-        v
-groups containing admissible alternatives
-        |
-        v
-Decision compatibility / precedence
-        |
-        v
-selected governing scope
-        |
-        v
-existing within-group policy
-        |
-        v
-selected Candidate or explicit non-selection
+realised position-derived travel direction
+                dot
+exact current FI projection heading
+                 |
+                 +-- dot < 0
+                 |      -> current physical contradiction
+                 |      -> geometric FI remains NEGATIVE
+                 |      -> incumbent dissolution evidence UNRESOLVED
+                 |      -> existing Regulation WAITING_FOR_EVIDENCE
+                 |
+                 `-- no positive contradiction
+                        -> preserve existing geometric-negative dissolution path
+                        -> release immediately
 ```
 
-This preserves established compatibility precedence when competing groups are both admissible. It prevents a group containing no admissible Candidate from acquiring stronger exclusion authority merely because its support exists.
+The criterion is deliberately **opposition**, not general corroboration. Resolution-Margin Demand's separate `alignment < 0.5` rule answers a different projection-fitness question and is not reused here. A weak but still positive alignment is not positive contradiction and must not delay release merely to seek stronger corroboration.
 
-When the complete prospective portfolio has no admissible Candidate, no inadmissible support group is promoted to governing scope. Decision instead uses the complete verdict evidence to produce explicit non-selection:
+The implementation does not consume diagnostic Native Drive command evidence, `targetTravelDot`, the `REVERSING_OR_OPPOSED_TRAVEL` diagnostic classification, or a timer. Missing realised-travel direction likewise does not manufacture stickiness; only current positive contradiction vetoes dissolution.
 
-- unresolved mandatory evidence -> `WAIT_FOR_EVIDENCE`;
-- complete mandatory failure/exhaustion -> `COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED` / SETTLE.
+## Intended source boundary
 
-Candidate Support no longer publishes the historical `lowerPrecedenceConstraintFallback=false` policy token because fallback/precedence is Decision authority, not Candidate-support semantics.
+- `scripts/assessment/SpatialConstraintAssessment.lua` remains owner of current Forward-Intersection Situation meaning. It preserves the geometric `NEGATIVE` and separately publishes incumbent-dissolution evidence fitness for `INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS`.
+- `scripts/assessment/CurrentResponsibilityAssessment.lua` consumes that Situation meaning. `NEGATIVE + incumbent dissolution UNRESOLVED` maps to the existing `PERSIST / WAITING_FOR_EVIDENCE` lifecycle path; other accepted Forward-Intersection negatives retain the existing positive-dissolution path.
+- Bounded Authority, Regulation Control, Passage, Future-Space acquisition and GIANTS routing are unchanged.
 
-## Authority Triad Revalidation
+## Validation contract
 
-- **Architecture — validated unchanged.** `architecture/CANDIDATE_SUPPORT_PROJECTION.md` already defines complete support, mandatory admissibility before Decision, and prohibits preference from bypassing mandatory Constraints. Spatial Negotiation gives no fresh Forward-Intersection support a generic veto over an independently admissible Passage Candidate.
-- **Specification — validated unchanged.** `spec/CANDIDATE_SUPPORT.md`, `spec/CONSTRAINT_EVALUATION.md` and `spec/DECISION.md` already operationalise the accepted ownership boundaries; Decision explicitly states **Support Precedence != Admissibility Bypass**.
-- **Source — changed.** `ProspectivePortfolioDecisionPolicy` now receives mandatory-admissible Candidates and limits compatibility policy to their groups. `DecisionSelector` distinguishes admissible-scope selection from global no-admissible WAIT/SETTLE. `ProspectiveDecisionPortfolioSupport` no longer publishes the historical Decision-policy fallback token.
+The focused offline contract must establish all of the following:
 
-> **Touch One; Validate Three.**
+1. opposite realised progression leaves the current Forward-Intersection geometry `NEGATIVE` while making incumbent dissolution `UNRESOLVED`;
+2. the existing Forward-Intersection Regulation therefore persists as `WAITING_FOR_EVIDENCE`;
+3. weak-but-positive realised alignment does **not** become a corroboration requirement and permits the existing immediate positive-dissolution path;
+4. unavailable realised travel does not by itself manufacture Regulation persistence; and
+5. existing fixed 1 km/h Forward-Intersection waiting authority, supersession and ordinary positive-dissolution contracts remain intact.
 
-## Behavioural Validation Matrix
+GitHub Actions owns ordinary execution of the structural and Lua offline contracts. Offline success can validate the deterministic evidence/lifecycle interpretation but cannot prove the GIANTS live timing or physical outcome.
 
-Focused offline Decision evidence challenges:
+## Required Reality validation
 
-1. preferred Forward Intersection PASS + Passage PASS -> existing Forward precedence remains;
-2. preferred Forward Intersection FAIL + Passage PASS -> Passage remains selectable;
-3. preferred Forward Intersection UNRESOLVED + Passage PASS -> Passage remains selectable;
-4. no admissible Candidate with unresolved mandatory evidence -> explicit WAIT remains;
-5. all Candidates mandatory-FAIL -> explicit SETTLE remains.
+If `.83` passes offline review, targeted in-game validation should reproduce a constrained-space Forward-Intersection handoff and inspect the new dissolution diagnostics.
 
-The full accepted offline suite remains responsible for neighbouring/regression coverage including follower Regulation, Forward Intersection, Cooperative Passage, Action-Space Regulation, Obstruction Relocation, Responsibility Transition and downstream authority/control contracts.
+The target outcome is:
 
-## Offline validation evidence
+```text
+established FI Regulation
+    -> TURNING / existing #37 WAITING continuity
+    -> successor FI geometry becomes NEGATIVE
+    -> realised progression still opposes successor projection
+    -> incumbent remains regulated at 1 km/h
+    -> contradiction disappears
+    -> incumbent releases promptly
+    -> both workers return to ordinary GIANTS work
+    -> any later Passage or Forward Intersection is rediscovered from fresh Reality
+```
 
-Offline Validation **#511** passed on implementation/test head `6ce123e47b4b6fef88163c26b6843377db90f297`:
-
-- Structural contracts — PASS;
-- Lua offline behavioural contracts — PASS, including the new focused Prospective Decision Admissibility contract;
-- focused Obstruction Relocation contract — PASS;
-- changed runtime Lua syntax checks — PASS;
-- Generated source reference — PASS.
-
-A later branch commit restored an unchanged workflow step label only; no executable or test bytes changed after #511. Final PR-head CI remains the merge-gating evidence for the exact review state.
-
-Because `.82` changes which already-supported Candidate may be selected in a condition that previously produced WAIT/SETTLE, offline conformance alone is not a complete GIANTS Reality claim. An owner-performed in-game smoke should challenge ordinary supported traffic behaviour before merge. No Passage geometry, Regulation magnitude, Bounded Authority rule or physical Control mechanism is intentionally changed.
+A result that preserves Regulation materially beyond physical contradiction removal is evidence against the `.83` implementation hypothesis, not justification for adding a timer.
 
 ## Next bounded engineering step
 
-Interpret final PR-head GitHub Actions evidence, then perform the bounded in-game Reality smoke.
+Complete the `.83` source/test increment, inspect exact branch diff and GitHub Actions evidence, then perform the targeted in-game Reality challenge before accepting the runtime correction.
 
-Treat any unexpected physical behaviour as evidence against the implementation hypothesis rather than weakening the admissibility contract to obtain the historical result.
-
-Issue #170 remains open until the accepted correction and required evidence are complete.
+Issue #224 remains open until the implementation and required Reality evidence are complete.

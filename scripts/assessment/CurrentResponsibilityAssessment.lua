@@ -34,6 +34,13 @@ function Assessment:assessActionSpaceRegulation(current,relation)
     end
     if forward then
         if relation.relationshipStatus=="NEGATIVE" then
+            if relation.incumbentDissolutionEvidenceState=="UNRESOLVED" then
+                return {
+                    disposition="PERSIST",
+                    evidenceState="WAITING_FOR_EVIDENCE",
+                    reason=relation.incumbentDissolutionReason or "FORWARD_INTERSECTION_DISSOLUTION_EVIDENCE_UNRESOLVED"
+                }
+            end
             return {
                 disposition="TERMINATE",
                 terminationEvidenceKind="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION",

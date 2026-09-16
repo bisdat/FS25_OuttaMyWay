@@ -5,12 +5,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_forward_intersection_unresolved_evidence_is_waiting_not_dissolution():
     assessment = (ROOT / "scripts" / "assessment" / "CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
+    spatial = (ROOT / "scripts" / "assessment" / "SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
 
     assert 'evidenceState="WAITING_FOR_EVIDENCE"' in assessment
     assert 'relation.relationshipStatus=="NEGATIVE"' in assessment
+    assert 'relation.incumbentDissolutionEvidenceState=="UNRESOLVED"' in assessment
     assert 'terminationEvidenceKind="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"' in assessment
     assert 'terminationEvidenceKind="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"' in assessment
     assert 'FORWARD_INTERSECTION_NO_LONGER_POSITIVELY_SUPPORTED' not in assessment
+
+    assert 'reason~="INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS"' in spatial
+    assert 'incumbentDissolutionEvidenceState' in spatial
+    assert 'REALIZED_PROGRESSION_CONTRADICTS_CURRENT_FORWARD_PROJECTION' in spatial
+    assert 'realizedProgressionToProjectionDot' in spatial
+    assert 'REVERSING_OR_OPPOSED_TRAVEL' not in spatial
+    assert 'targetTravelDot' not in spatial
 
 
 def test_forward_intersection_runtime_requires_positive_terminal_evidence_before_release():
@@ -44,7 +53,7 @@ def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
     authority = (ROOT / "scripts/authority/RegulationBoundedAuthority.lua").read_text()
     assert "local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1" in spatial
     assert "r.regulationSpeedKmh=FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH" in spatial
-    assert "fixedRegulationSpeedKmh=r.regulationSpeedKmh" in spatial
+    assert "fixedRegulationSpeedKmh=r.regulationSpeedKmh" in candidate
     assert "fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh" in candidate
     assert candidate.count("fixedRegulationSpeedKmh") == 2
     assert "local magnitude=bridge.fixedRegulationSpeedKmh" in authority

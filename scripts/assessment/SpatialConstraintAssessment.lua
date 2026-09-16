@@ -64,6 +64,13 @@ local function positiveRate(motion)
     if motion and finite(motion.reportedSpeedMps) and motion.reportedSpeedMps>0 then return motion.reportedSpeedMps,"GIANTS_REPORTED_PROGRESS_RATE" end
     return nil,"POSITIVE_PROGRESS_RATE_UNAVAILABLE"
 end
+local function realizedProgressionToProjectionDot(projection,motion)
+    local tx,tz=tonumber(motion and motion.travelDirectionX),tonumber(motion and motion.travelDirectionZ)
+    if not finite(tx) or not finite(tz) then return nil end
+    local length=math.sqrt(tx*tx+tz*tz)
+    if length<=EPSILON_M then return nil end
+    return (tx/length)*projection.headingX+(tz/length)*projection.headingZ
+end
 local function projection(world,worldKey,id,future,motion)
     local path=continuation(future); local width=motion and motion.nativeFieldWork and motion.nativeFieldWork.workingWidth
     local result={assemblyId=id,assemblyReferenceKey=motion and motion.assemblyReferenceKey,fieldWorldReferenceKey=worldKey,
@@ -77,6 +84,8 @@ local function projection(world,worldKey,id,future,motion)
     local length=math.sqrt(hx*hx+hz*hz); if length<=EPSILON_M then result.reason="PROJECTED_HEADING_INVALID"; return result end
     local edge,reason=edgeForContact(world,{x=ex,z=ez},path.boundarySource); if not edge then result.reason=reason; return result end
     result.currentX=x; result.currentZ=z; result.headingX=hx/length; result.headingZ=hz/length
+    result.realizedProgressionToProjectionDot=realizedProgressionToProjectionDot(result,motion)
+    result.realizedProgressionSource=result.realizedProgressionToProjectionDot~=nil and "POSITION_DERIVED_TRAVEL_DIRECTION" or "UNAVAILABLE"
     result.contactX=ex; result.contactZ=ez; result.boundaryDistanceM=boundaryDistance; result.boundarySource=path.boundarySource
     result.boundaryRingKind=edge.ringKind; result.boundaryRingIndex=edge.ringIndex; result.terminatingBoundaryEdge=edge
     result.incidentVertices={edge.startVertex,edge.endVertex}
@@ -103,6 +112,15 @@ local function intersect(a,b)
     ad=math.max(0,ad); bd=math.max(0,bd)
     return {x=a.currentX+ad*rx,z=a.currentZ+ad*rz,subjectForwardDistanceM=ad,otherForwardDistanceM=bd}
 end
+local function incumbentDissolutionFitness(reason,a,b)
+    if reason~="INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS" then return nil,nil end
+    local subjectContradicts=finite(a.realizedProgressionToProjectionDot) and a.realizedProgressionToProjectionDot<0
+    local otherContradicts=finite(b.realizedProgressionToProjectionDot) and b.realizedProgressionToProjectionDot<0
+    if subjectContradicts or otherContradicts then
+        return "UNRESOLVED","REALIZED_PROGRESSION_CONTRADICTS_CURRENT_FORWARD_PROJECTION"
+    end
+    return "SUPPORTED","CURRENT_FORWARD_PROJECTION_NOT_POSITIVELY_CONTRADICTED"
+end
 local function incumbent(a,b,knowledge)
     for _,r in OuttaMyWay.ValueRecord.ipairs(knowledge or {}) do
         local same=(r.leaderAssemblyId==a.assemblyId and r.followerAssemblyId==b.assemblyId) or (r.leaderAssemblyId==b.assemblyId and r.followerAssemblyId==a.assemblyId)
@@ -123,7 +141,11 @@ local function pairRecord(operationId,a,b,followerKnowledge)
         positiveOnly=true,provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",hypothesis="FORWARD_INTERSECTION"}}
     if a.status~="SUPPORTED" or b.status~="SUPPORTED" then r.reason="FORWARD_CONTINUATION_UNRESOLVED"; return r end
     local x,reason=intersect(a,b)
-    if not x then r.classification="NO_FORWARD_INTERSECTION"; r.relationshipStatus="NEGATIVE"; r.reason=reason; return r end
+    if not x then
+        r.classification="NO_FORWARD_INTERSECTION"; r.relationshipStatus="NEGATIVE"; r.reason=reason
+        r.incumbentDissolutionEvidenceState,r.incumbentDissolutionReason=incumbentDissolutionFitness(reason,a,b)
+        return r
+    end
     r.intersection=x; r.subjectForwardDistanceToIntersectionM=x.subjectForwardDistanceM; r.otherForwardDistanceToIntersectionM=x.otherForwardDistanceM
     r.subjectProgressRateMps=a.progressRateMps; r.otherProgressRateMps=b.progressRateMps
     r.subjectProgressRateSource=a.progressRateSource; r.otherProgressRateSource=b.progressRateSource
@@ -160,12 +182,13 @@ function Assessment:assess(input)
     local relationships={}
     for i=1,OuttaMyWay.ValueRecord.length(projections)-1 do for j=i+1,OuttaMyWay.ValueRecord.length(projections) do
         local r=pairRecord(input.operationId,projections[i],projections[j],input.followerBoundaryKnowledge); relationships[#relationships+1]=r
-        local signature=table.concat({r.classification,r.reason,tostring(r.temporalYielderAssemblyId),tostring(r.spatialOverlay)},"|")
+        local signature=table.concat({r.classification,r.reason,tostring(r.temporalYielderAssemblyId),tostring(r.spatialOverlay),tostring(r.incumbentDissolutionEvidenceState),tostring(r.incumbentDissolutionReason)},"|")
         if self.lastSignatures[r.identity]~=signature then self.lastSignatures[r.identity]=signature; local x=r.intersection or {}
-            logInfo(string.format("FORWARD_INTERSECTION_ASSESSED relationship=%s pair=%s|%s state=%s intersection=(%s,%s) distances=%s|%s rates=%s|%s rateSources=%s|%s times=%s|%s yielder=%s continuing=%s overlay=%s regulation=%s incumbent=%s reason=%s",
+            logInfo(string.format("FORWARD_INTERSECTION_ASSESSED relationship=%s pair=%s|%s state=%s intersection=(%s,%s) distances=%s|%s rates=%s|%s rateSources=%s|%s times=%s|%s yielder=%s continuing=%s overlay=%s regulation=%s incumbent=%s dissolutionState=%s dissolutionReason=%s subjectTravelProjectionDot=%s otherTravelProjectionDot=%s reason=%s",
                 r.identity,tostring(r.subjectAssemblyId),tostring(r.otherAssemblyId),r.relationshipStatus,numberText(x.x),numberText(x.z),numberText(r.subjectForwardDistanceToIntersectionM),numberText(r.otherForwardDistanceToIntersectionM),
                 numberText(r.subjectProgressRateMps),numberText(r.otherProgressRateMps),tostring(r.subjectProgressRateSource),tostring(r.otherProgressRateSource),numberText(r.subjectTimeToIntersectionSec),numberText(r.otherTimeToIntersectionSec),
-                tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason))) end
+                tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),
+                tostring(r.incumbentDissolutionEvidenceState or "UNRESOLVED"),tostring(r.incumbentDissolutionReason or "UNRESOLVED"),numberText(a.realizedProgressionToProjectionDot),numberText(b.realizedProgressionToProjectionDot),tostring(r.reason))) end
     end end
     return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,decisionAuthority=false,controlAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
