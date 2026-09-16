@@ -86,31 +86,39 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     local selectedUnresolved=unresolvedCandidates
     local portfolioChoice=nil
     local portfolioSelectionMissing=false
-    if portfolioBoundary(candidateResult.inventory)~=nil then
-        portfolioChoice=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory)
-        if portfolioChoice==nil or type(portfolioChoice.groupKey)~="string" then
-            portfolioSelectionMissing=true
+    local portfolioHasNoAdmissible=false
+    local isProspectivePortfolio=portfolioBoundary(candidateResult.inventory)~=nil
+    if isProspectivePortfolio then
+        if #viable==0 then
+            portfolioHasNoAdmissible=true
             selectable={}
-            selectedUnresolved={}
+            selectedUnresolved=unresolvedCandidates
         else
-            local groupKey=portfolioChoice.groupKey
-            local filtered={}
-            for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do if candidateGroupKey(candidate)==groupKey then filtered[#filtered+1]=candidate end end
-            selectable=filtered
-            local unresolved={}
-            for _,candidateId in OuttaMyWay.ValueRecord.ipairs(unresolvedCandidates) do
-                local entry=byCandidate[candidateId]
-                if entry~=nil and candidateGroupKey(entry.candidate)==groupKey then unresolved[#unresolved+1]=candidateId end
+            portfolioChoice=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory,viable)
+            if portfolioChoice==nil or type(portfolioChoice.groupKey)~="string" then
+                portfolioSelectionMissing=true
+                selectable={}
+                selectedUnresolved={}
+            else
+                local groupKey=portfolioChoice.groupKey
+                local filtered={}
+                for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do if candidateGroupKey(candidate)==groupKey then filtered[#filtered+1]=candidate end end
+                selectable=filtered
+                local unresolved={}
+                for _,candidateId in OuttaMyWay.ValueRecord.ipairs(unresolvedCandidates) do
+                    local entry=byCandidate[candidateId]
+                    if entry~=nil and candidateGroupKey(entry.candidate)==groupKey then unresolved[#unresolved+1]=candidateId end
+                end
+                selectedUnresolved=unresolved
+                local boundary=groupBoundary(candidateResult.inventory,groupKey)
+                if type(boundary)~="table" then error("Prospective Decision Portfolio selected group lacks support boundary",2) end
+                inventoryForLocalPolicy=projectedInventory(candidateResult.inventory,candidateResult.candidates,groupKey,boundary)
             end
-            selectedUnresolved=unresolved
-            local boundary=groupBoundary(candidateResult.inventory,groupKey)
-            if type(boundary)~="table" then error("Prospective Decision Portfolio selected group lacks support boundary",2) end
-            inventoryForLocalPolicy=projectedInventory(candidateResult.inventory,candidateResult.candidates,groupKey,boundary)
         end
     end
 
     local trafficPolicy=nil
-    if not portfolioSelectionMissing then
+    if not portfolioSelectionMissing and not portfolioHasNoAdmissible then
         trafficPolicy=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(operationalPicture,inventoryForLocalPolicy,selectable)
     end
     local selected=trafficPolicy and trafficPolicy.selected or selectable[1]
@@ -120,7 +128,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     if portfolioSelectionMissing then
         commitmentAction="WAIT"
         nonIntervention={explicit=true,classification="PROSPECTIVE_PORTFOLIO_POLICY_UNRESOLVED"}
-        explanation="Prospective Decision Portfolio was complete but compatibility policy could not identify one governing support group"
+        explanation="Prospective Decision Portfolio contained mandatory-admissible alternatives but compatibility policy could not identify one governing support group"
     elseif trafficPolicy~=nil and trafficPolicy.waitForPreferenceEvidence==true then
         selected=nil
         commitmentAction="WAIT"
@@ -136,18 +144,18 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         else commitmentAction="REVISE" end
         nonIntervention={explicit=nonActuating[selected.capability]==true,classification=selected.capability}
         if portfolioChoice~=nil then
-            explanation="Prospective Decision Portfolio compatibility policy selected the governing support group; local group policy then selected without lower-precedence Constraint fallback"
+            explanation="Prospective Decision Portfolio compatibility policy selected the governing support group from mandatory-admissible alternatives; local group policy then selected within that scope"
         else
             explanation=trafficPolicy~=nil and "Selected earliest supportable Traffic Policeman preference band after explicit earlier-band exhaustion, then minimum comparison cost within that band" or "Selected minimum-cost candidate after every mandatory verdict passed"
         end
     elseif #selectedUnresolved>0 then
         commitmentAction="WAIT"
         nonIntervention={explicit=true,classification="WAIT_FOR_EVIDENCE",unresolvedCandidateIds=selectedUnresolved,selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
-        explanation="No candidate in the selected governing support group passed every mandatory constraint; unresolved evidence remains and lower-precedence groups are not fallback"
+        explanation=portfolioHasNoAdmissible and "No Candidate in the complete prospective portfolio passed every mandatory constraint; unresolved evidence remains" or "No candidate in the selected governing support group passed every mandatory constraint; unresolved evidence remains"
     else
         commitmentAction="SETTLE"
         nonIntervention={explicit=true,classification="COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED",selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
-        explanation=portfolioChoice~=nil and "Selected governing support group contains no admissible candidate; lower-precedence groups are intentionally not fallback" or "Complete supportable Candidate Action Space contains no admissible candidate"
+        explanation=portfolioHasNoAdmissible and "Complete prospective portfolio contains no mandatory-admissible Candidate" or portfolioChoice~=nil and "Selected governing support group contains no admissible candidate" or "Complete supportable Candidate Action Space contains no admissible candidate"
     end
 
     local ranked={}
@@ -157,10 +165,12 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     if portfolioChoice~=nil then
         comparisonBasis={
             rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selectedGroupKey=portfolioChoice.groupKey,selectedFamily=portfolioChoice.family,
-            compatibilityRule=portfolioChoice.rule,compatibilityDetail=portfolioChoice.detail,lowerPrecedenceConstraintFallback=false,localSelection=localBasis
+            compatibilityRule=portfolioChoice.rule,compatibilityDetail=portfolioChoice.detail,admissibilityAwareGroupSelection=true,localSelection=localBasis
         }
     elseif portfolioSelectionMissing then
-        comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="UNRESOLVED",lowerPrecedenceConstraintFallback=false}
+        comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="UNRESOLVED",admissibilityAwareGroupSelection=true}
+    elseif portfolioHasNoAdmissible then
+        comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="NO_MANDATORY_ADMISSIBLE_GROUP",admissibilityAwareGroupSelection=true}
     end
 
     local record=OuttaMyWay.DecisionRecord.new({
@@ -175,7 +185,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         comparisonBasis=comparisonBasis,
         commitmentAction=commitmentAction,
         explanation=explanation,
-        provenance={source="DecisionSelector",operationalPictureId=operationalPicture.identity,candidateInventoryId=candidateResult.inventory.identity,verdictSetId=verdictResult.set.identity,prospectivePortfolio=portfolioChoice~=nil}
+        provenance={source="DecisionSelector",operationalPictureId=operationalPicture.identity,candidateInventoryId=candidateResult.inventory.identity,verdictSetId=verdictResult.set.identity,prospectivePortfolio=isProspectivePortfolio}
     })
     self.publishedCount=self.publishedCount+1
     return record
