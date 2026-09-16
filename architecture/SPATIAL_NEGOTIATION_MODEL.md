@@ -232,6 +232,30 @@ Where Intent-Revelation Creep is the accepted temporal policy, its exact magnitu
 
 This is a purpose-bound architectural policy, not a general Regulation tuning parameter.
 
+### Category-1 Evacuation Protection
+
+Category-1 admission and the provisional protected/yielder allocation remain governed by the existing Forward Intersection temporal-allocation policy. Category-1 Evacuation Protection does not create a second admission mechanism, a new Regulation type, a corner route planner or persistent pair history.
+
+While that same Category-1 allocation remains current, fresh Reality showing the protected worker cross from A8-positive productive progression into GIANTS `TURNING` establishes **Protected Manoeuvre Entry**. That event changes the evidence contract of the existing Regulation purpose: the protected worker is now the worker that must remain free to reveal intent, reposition and vacate scarce Category-1 space, while the previously selected yielder remains the regulated party.
+
+From Protected Manoeuvre Entry until discharge:
+
+- the protected/yielder roles of that Regulation remain authoritative for the same pair;
+- `TURNING`, reversing, heading change or other native repositioning by the protected worker are expected evidence of the manoeuvre and do not make that worker a valid yielder;
+- Forward Intersection becoming `UNRESOLVED`, becoming geometrically negative, or reappearing with reversed timing roles cannot by itself dissolve or reverse the Category-1 allocation;
+- the existing yielder remains regulated under the accepted Category-1 temporal policy while the protected worker completes the manoeuvre; and
+- no future turn path, corner radius, distance tail or successor relationship is predicted or reserved.
+
+> **Protected Manoeuvre Entry Freezes Roles; It Does Not Freeze Routes.**
+
+The normal discharge witness is fresh A8 reacquisition by that same protected worker after Protected Manoeuvre Entry. Positive productive working progression means GIANTS has ended the protected repositioning episode and resumed bounded forward productive certainty. That fresh evidence positively discharges the Category-1 evacuation purpose; the old Regulation may then terminate immediately and fresh Situation Assessment may discover ordinary work, a new Forward Intersection, Cooperative Passage or another supported relationship.
+
+> **A8 Reacquisition = Positive Evacuation Discharge.**
+
+A8 that existed before Protected Manoeuvre Entry is not discharge evidence. Likewise, a later unrelated `TURNING` episode cannot activate stale Category-1 protection: Protected Manoeuvre Entry must occur while the same Category-1 allocation is still current.
+
+Before Protected Manoeuvre Entry, the Category-1 allocation remains prospective and may still dissolve through fresh supported evidence under the normal Regulation lifecycle. This Category-1-specific rule makes no claim for Category 2 or open-field Forward Intersection.
+
 ### Forward Intersection evidence continuity
 
 > **Forward Intersection Unresolved != Forward Intersection Dissolved**
@@ -240,7 +264,9 @@ Once a Forward Intersection temporal allocation has been admitted, loss of suppo
 
 Situation Assessment may classify the same Regulation purpose as `WAITING_FOR_EVIDENCE` and preserve its existing yielder allocation and exact 1 km/h Intent-Revelation Creep while fresh Reality resolves the ambiguity.
 
-This grants no turn-path prediction and creates no `TURNING` route authority. A current Forward Intersection negative may positively dissolve the allocation only when the evidence basis that produced that negative is fit for incumbent-purpose dissolution. A bounded continuation may remain fit for prospective Forward Intersection reasoning while being unfit for dissolution when current realised progression positively contradicts that continuation. In that case the incumbent allocation remains `WAITING_FOR_EVIDENCE` until fresh Reality removes the contradiction or establishes a valid supersession. This does not require a successor relationship, delay literal or travelled-distance threshold: once the contradiction is absent and a supported negative remains current, Situation Assessment may positively dissolve the allocation immediately. An established valid relationship may positively supersede it. Temporary unresolvability or missing continuation evidence may do neither.
+This grants no turn-path prediction and creates no `TURNING` route authority. A current Forward Intersection negative is potential dissolution evidence only when its evidence basis is fit for the incumbent-purpose question. A bounded continuation may remain fit for prospective Forward Intersection reasoning while being unfit for incumbent dissolution when current Reality contradicts the stronger conclusion. Absence of a positive contradiction does not by itself prove that an already-established temporal purpose has discharged.
+
+For Category 1, once Protected Manoeuvre Entry has occurred, the more specific Evacuation Protection lifecycle above governs persistence and discharge: Forward Intersection topology no longer has termination or role-reversal authority over that incumbent purpose, and fresh A8 reacquisition by the protected worker supplies the normal positive discharge witness. Outside that Category-1 state, Situation Assessment may positively dissolve or supersede the allocation only from evidence fit for the purpose being ended. Temporary unresolvability or missing continuation evidence may do neither.
 
 A bounded fail-safe may force reassessment or escalation if evidence does not recover, but timeout expiry alone must not manufacture a safe or dissolved conclusion.
 
