@@ -109,7 +109,7 @@ Within one current Local Operation, Situation Assessment enumerates unordered pa
 
 The scope is rebuilt from current Operation membership and exact active Job Episodes for every Operational Picture. It may carry current Operation, Physical Assembly and exact Job Episode provenance so purpose-specific assessments ask questions about the same current subjects.
 
-It does not retain a generic pair lifecycle, last-positive relationship, cooldown, right-of-way ownership, responsibility or future-route ownership.
+It does not retain a generic pair lifecycle, last-positive relationship, cooldown, right-of-way, responsibility or future-route ownership.
 
 When positive interaction evidence disappears and the relevant representation owns no supported negative conclusion, the current relationship is `UNRESOLVED`. Historical positive evidence is not republished as current Reality.
 
