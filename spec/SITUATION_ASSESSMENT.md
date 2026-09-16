@@ -169,6 +169,7 @@ Spatial Negotiation Architecture specialises Situation Assessment for:
 - Productive Forward-Line Certainty;
 - TURNING uncertainty;
 - Spatial Constraint Overlay;
+- Category-1 Evacuation Protection;
 - Passage foreseeability;
 - follower/Forward Intersection relationships; and
 - current option-space / Resolution-Margin meaning.
@@ -233,7 +234,19 @@ Situation Assessment MUST NOT terminate, establish or replace Current Responsibi
 
 Where Architecture permits `WAITING_FOR_EVIDENCE`, that is an evidence-state interpretation within an already-admitted responsibility. It is not a generic new Current Responsibility type and MUST NOT be created merely because evidence is inconvenient.
 
-For an established Forward-Intersection Regulation, a current geometric negative is not by itself positive incumbent-purpose dissolution evidence. Situation Assessment MUST assess whether the evidence basis that produced the negative is fit for the dissolution question. If current realised progression positively contradicts a bounded continuation used to derive that negative, the continuation may remain valid for prospective spatial reasoning but the incumbent dissolution conclusion is `UNRESOLVED`; the same responsibility may remain `WAITING_FOR_EVIDENCE`. Once that positive contradiction is absent and the supported negative remains current, Situation Assessment MAY publish positive dissolution immediately. It MUST NOT require a successor relationship, delay literal or travelled-distance threshold merely to release the incumbent Regulation.
+For an established Forward-Intersection Regulation, a current geometric negative is not by itself positive incumbent-purpose dissolution evidence. Situation Assessment MUST assess whether the evidence basis that produced the negative is fit for the dissolution question. Positive contradiction may make that evidence unfit; absence of such contradiction does not by itself establish that the temporal purpose has discharged.
+
+For an established **Category-1** allocation, Situation Assessment MUST distinguish the prospective approach phase from **Category-1 Evacuation Protection**:
+
+1. Before Protected Manoeuvre Entry, existing Forward-Intersection and current-purpose evidence may still support, dissolve or supersede the prospective Category-1 allocation under the ordinary Regulation lifecycle.
+2. Protected Manoeuvre Entry is established only when the allocation is still current and its already-protected worker crosses from positively supported A8 productive progression into current GIANTS `TURNING` evidence.
+3. Once Protected Manoeuvre Entry is established, the same responsibility's protected/yielder roles MUST remain current while the protected worker performs that native manoeuvre. Forward Intersection becoming negative or unresolved, or a fresh Forward Intersection assigning reversed timing roles, MUST NOT by itself positively dissolve or reverse that incumbent Category-1 purpose.
+4. During that protected manoeuvre, the protected worker MUST NOT become the regulated choice for the same pair merely because current projection topology changes. The existing yielder remains the Regulation subject under the accepted Category-1 temporal policy.
+5. Positive discharge is established when that same protected worker subsequently reacquires fresh A8 productive progression. That evidence means GIANTS has ended the protected repositioning episode and restored bounded productive certainty; Situation Assessment MAY then publish positive Category-1 basis cessation immediately.
+
+A8 that predates Protected Manoeuvre Entry is not discharge evidence. A later unrelated `TURNING` episode MUST NOT activate a stale Category-1 allocation. The implementation MUST preserve enough responsibility-local evidence to distinguish those events without manufacturing persistent generic pair history.
+
+This contract is Category-1-specific. It makes no equivalent claim for Category 2 or open-field Forward Intersection. It requires neither a successor relationship nor a timer, travelled-distance tail, corner radius or predicted turn path before discharge.
 
 ## Operational Picture semantic contract
 
@@ -250,6 +263,7 @@ Contractually significant classes of content include, as applicable:
 - current pair scope and current relationship classifications;
 - motion/productive-continuation knowledge;
 - follower / trajectory / opposed-corridor / spatial-constraint knowledge;
+- responsibility-local Category-1 Protected Manoeuvre Entry / Evacuation Protection / A8-discharge meaning where applicable;
 - Causal Obstruction knowledge;
 - representation fitness and uncertainty;
 - current responsibility/commitment/open-obligation context needed by assessment consumers;
@@ -301,6 +315,9 @@ Diagnostics MAY expose contradictions, counters and pipeline state. A diagnostic
 - **Pair evidence absent without negative authority** — relationship remains unresolved.
 - **Resolution-Margin witness positive** — publish the current positive demand evidence with its subject, represented claim, bounded horizon, provenance and one-sided claim limits; do not derive a speed or safe-clearance conclusion.
 - **Resolution-Margin witness unavailable/unfit without negative authority** — publish `UNRESOLVED`; do not convert witness loss, Current-Excursion role change or reference-point separation into positive clearance/dissolution.
+- **Category-1 approach allocation current, protected worker has not entered `TURNING`** — ordinary current-purpose support/dissolution/supersession semantics remain available; do not manufacture Evacuation Protection merely from prior Category-1 history.
+- **Category-1 Protected Manoeuvre Entry established** — preserve the incumbent protected/yielder roles through the native manoeuvre; Forward-Intersection topology change alone is not positive discharge or role reversal.
+- **Category-1 protected worker reacquires fresh A8 after Protected Manoeuvre Entry** — publish positive evacuation-purpose basis cessation; no successor relationship or delay literal is required merely to release the incumbent Regulation.
 - **Source unavailable** — retain explicit uncertainty derived from Observation; no fabricated semantic negative.
 - **Conflicting current evidence** — publish contradiction/unresolved meaning or fail closed according to the responsible sub-contract; do not silently choose the interpretation that enables intervention.
 - **Causal obstruction not positively supported** — no Causal Obstruction relationship.
