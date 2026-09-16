@@ -6,9 +6,10 @@ return function(test,equal,fixtures)
     local function sealed(value) return Packet.new({value=value}).value end
     local function canonical(value) return Value.canonical(Packet.new({value=value})) end
     local function world(boundary,islands)
-        local result=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(boundary or {
+        local result,reason=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(boundary or {
             {x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}
         },islands or {},0.1)
+        assert(result,reason)
         result.geometryFingerprint=result.fingerprint
         result.fieldPolygonReferenceKey="field-world-polygon:"..result.canonicalizationVersion..":"..result.fingerprint
         return result
@@ -273,7 +274,7 @@ return function(test,equal,fixtures)
             local values=input()
             values.physicalSpaceEvidence=physical(95,5)
             if kind=="OUTSIDE_FIELD" then values.physicalSpaceEvidence=physical(101,5,0.5)
-            elseif kind=="IN_ISLAND" then values.fieldWorld=world(nil,{{{x=90,z=2},{x=98,z=2},{x=98,z=8},{x=90,z=8}}})
+            elseif kind=="IN_ISLAND" then values.fieldWorld=world(nil,{{points={{x=90,z=2},{x=98,z=2},{x=98,z=8},{x=90,z=8}}}})
             elseif kind=="NO_PERMISSION" then values.physicalSpaceEvidence[1].primitives[1].positiveConflictSupport=false
             else values.physicalSpaceEvidence=physical(95,11,2) end
             local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
