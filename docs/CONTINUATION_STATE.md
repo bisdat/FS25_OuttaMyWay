@@ -126,12 +126,24 @@ Focused offline Decision evidence challenges:
 
 The full accepted offline suite remains responsible for neighbouring/regression coverage including follower Regulation, Forward Intersection, Cooperative Passage, Action-Space Regulation, Obstruction Relocation, Responsibility Transition and downstream authority/control contracts.
 
-Because `.82` changes which already-supported Candidate may be selected in a condition that previously produced WAIT/SETTLE, offline conformance alone is not a complete GIANTS Reality claim. After blocking CI is green, an owner-performed in-game smoke should challenge ordinary supported traffic behaviour before merge. No Passage geometry, Regulation magnitude, Bounded Authority rule or physical Control mechanism is intentionally changed.
+## Offline validation evidence
+
+Offline Validation **#511** passed on implementation/test head `6ce123e47b4b6fef88163c26b6843377db90f297`:
+
+- Structural contracts — PASS;
+- Lua offline behavioural contracts — PASS, including the new focused Prospective Decision Admissibility contract;
+- focused Obstruction Relocation contract — PASS;
+- changed runtime Lua syntax checks — PASS;
+- Generated source reference — PASS.
+
+A later branch commit restored an unchanged workflow step label only; no executable or test bytes changed after #511. Final PR-head CI remains the merge-gating evidence for the exact review state.
+
+Because `.82` changes which already-supported Candidate may be selected in a condition that previously produced WAIT/SETTLE, offline conformance alone is not a complete GIANTS Reality claim. An owner-performed in-game smoke should challenge ordinary supported traffic behaviour before merge. No Passage geometry, Regulation magnitude, Bounded Authority rule or physical Control mechanism is intentionally changed.
 
 ## Next bounded engineering step
 
-Run GitHub Actions on the complete `.82` branch and interpret the independent evidence.
+Interpret final PR-head GitHub Actions evidence, then perform the bounded in-game Reality smoke.
 
-If blocking offline validation is green, review the exact diff and perform the bounded in-game Reality smoke. Treat any unexpected physical behaviour as evidence against the implementation hypothesis rather than weakening the admissibility contract to obtain the historical result.
+Treat any unexpected physical behaviour as evidence against the implementation hypothesis rather than weakening the admissibility contract to obtain the historical result.
 
 Issue #170 remains open until the accepted correction and required evidence are complete.
