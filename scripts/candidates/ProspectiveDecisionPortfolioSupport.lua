@@ -71,7 +71,6 @@ local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,tar
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
 end
 
-
 local function forwardRelationshipCount(picture)
     local count=0
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
@@ -183,7 +182,7 @@ function Support:attach(picture,snapshot)
             mode="PROSPECTIVE_DECISION_PORTFOLIO",supportedCandidateClasses=capabilities,physicalCapabilitiesImplemented=true,
             controlAuthority="SELECTED_GROUP_SUPPORT_BOUNDARY_ONLY",boundedScope="FRESH_INDEPENDENT_CANDIDATE_SUPPORT_GROUPS",
             groups=state.groups,decisionPolicy={kind=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND},
-            incumbentLifecycleCompetition=false,lowerPrecedenceConstraintFallback=false,
+            incumbentLifecycleCompetition=false,
             parentOperationalPictureId=picture.identity,targetOperationalPictureId=targetPictureId
         },
         candidateSpecifications=state.specifications,

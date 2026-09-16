@@ -1,15 +1,32 @@
---- Chooses the governing support scope for one prospective portfolio using Decision-owned compatibility and precedence policy.
+--- Chooses the governing support scope for one prospective portfolio using Decision-owned compatibility and precedence policy over mandatory-admissible alternatives.
 -- Specification Jurisdictions: `DECISION`
 
 OuttaMyWay.ProspectivePortfolioDecisionPolicy={}
 local Policy=OuttaMyWay.ProspectivePortfolioDecisionPolicy
 Policy.KIND="PROSPECTIVE_DECISION_PORTFOLIO_COMPATIBILITY"
 
-local function groupsFor(inventory)
+local function candidateGroupKey(candidate)
+    local group=candidate and candidate.evidenceBasis and candidate.evidenceBasis.candidateSupportGroup or nil
+    return type(group)=="table" and group.groupKey or nil
+end
+
+local function admissibleGroupKeys(candidates)
+    local result={}
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(candidates or {}) do
+        local groupKey=candidateGroupKey(candidate)
+        if type(groupKey)=="string" then result[groupKey]=true end
+    end
+    return result
+end
+
+local function groupsFor(inventory,admissibleCandidates)
     local boundary=inventory and inventory.supportBoundary or nil
     if type(boundary)~="table" or boundary.mode~="PROSPECTIVE_DECISION_PORTFOLIO" then return {} end
+    local admissible=admissibleGroupKeys(admissibleCandidates)
     local result={}
-    for _,group in OuttaMyWay.ValueRecord.ipairs(boundary.groups or {}) do result[#result+1]=group end
+    for _,group in OuttaMyWay.ValueRecord.ipairs(boundary.groups or {}) do
+        if admissible[group.groupKey]==true then result[#result+1]=group end
+    end
     return result
 end
 
@@ -46,8 +63,8 @@ local function choose(group,rule,detail)
     return {groupKey=group.groupKey,rule=rule,detail=detail,family=group.family}
 end
 
-function Policy:selectGroup(inventory)
-    local groups=groupsFor(inventory)
+function Policy:selectGroup(inventory,admissibleCandidates)
+    local groups=groupsFor(inventory,admissibleCandidates)
     if #groups==0 then return nil end
 
     local obstruction=family(groups,"OBSTRUCTION_RELOCATION")[1]
