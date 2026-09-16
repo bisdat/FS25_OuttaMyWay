@@ -151,8 +151,297 @@ local function numberText(v) return v==nil and "UNRESOLVED" or string.format("%.
 local function logInfo(message)
     if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][FORWARD-INTERSECTION] %s",message) else print("[FS25_OuttaMyWay][FORWARD-INTERSECTION] "..message) end
 end
-function Assessment.new() return setmetatable({lastSignatures={}},Assessment) end
-function Assessment:reset() self.lastSignatures={} end
+local function copyKnowledge(value)
+    if type(value)~="table" then return value end
+    local result={}
+    for key,item in OuttaMyWay.ValueRecord.pairs(value) do result[key]=copyKnowledge(item) end
+    return result
+end
+
+-- Atlas Persistence Cannot Outlive Its Identity Evidence. The existing exact
+-- polygon identity is below Operation/equivalence-class lifecycle identity.
+-- An equivalent world with different fingerprints supplies no transfer proof.
+local function atlasPolygonKey(world)
+    if not world or not finite(world.quantizationMetres) or world.quantizationMetres<=0
+        or type(world.canonicalizationVersion)~="string" or type(world.geometryFingerprint)~="string" then return nil end
+    local expected="field-world-polygon:"..world.canonicalizationVersion..":"..world.geometryFingerprint
+    if world.fieldPolygonReferenceKey==expected then return expected end
+end
+
+local function spatialPointKey(vertex,quantumM)
+    -- Same symmetric nearest-quantum rounding as FieldWorldSnapshotRegistry.
+    local function quantize(value)
+        local result=value>=0 and math.floor(value/quantumM+0.5) or math.ceil(value/quantumM-0.5)
+        return result==0 and 0 or result
+    end
+    return string.format("%.0f,%.0f",quantize(vertex.x),quantize(vertex.z))
+end
+
+local function spatialEdgeKey(edge,quantumM)
+    local a,b=spatialPointKey(edge.startVertex,quantumM),spatialPointKey(edge.endVertex,quantumM)
+    if b<a then a,b=b,a end
+    return a.."/"..b
+end
+
+local function cornerEvent(events,kind,entry,details)
+    local event=copyKnowledge(details or {})
+    event.kind=kind; event.cornerKey=entry.cornerKey; event.polygonKey=entry.polygonKey
+    events[#events+1]=event
+    logInfo(string.format("%s polygon=%s corner=%s worker=%s job=%s observation=%s edge=%s extentM=%s cornerAlongAxisM=%s reason=%s",
+        kind,entry.polygonKey,entry.cornerKey,tostring(event.assemblyId or "none"),tostring(event.sourceJobToken or "none"),
+        tostring(event.observationSnapshotId),tostring(event.edgeKey or "none"),numberText(event.extentM),numberText(event.cornerAlongAxisM),tostring(event.reason or "none")))
+end
+
+-- Cross-corridor dimensions are a measurement hypothesis, retaining the raw
+-- width's provisional demand claim. They are neither physical clearance nor a
+-- predicted GIANTS turn path. Only positive larger witnesses change an extent.
+local function learnCorner(atlas,relation,input,events)
+    local quantumM=input.fieldWorld.quantizationMetres
+    local a,b=relation.subjectProjection,relation.otherProjection
+    local vertex=relation.sharedVertex
+    local aKey,bKey=spatialEdgeKey(a.terminatingBoundaryEdge,quantumM),spatialEdgeKey(b.terminatingBoundaryEdge,quantumM)
+    local first,second=aKey,bKey
+    if second<first then first,second=second,first end
+    local key=atlas.polygonKey.."|"..spatialPointKey(vertex,quantumM).."|"..first.."|"..second
+    local entry=atlas.corners[key]
+    if not entry then
+        entry={cornerKey=key,polygonKey=atlas.polygonKey,vertex={x=vertex.x,z=vertex.z},incidentEdges={},
+            discoveryProvenance={observationSnapshotId=input.observationSnapshotId,
+                source="POSITIVE_CATEGORY_1_SHARED_VERTEX_TOPOLOGY",snapshotReferenceKey=input.fieldWorld.representativeSnapshotReferenceKey},
+            envelope={hypothesis="CROSS_CORRIDOR_WORKING_WIDTH",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY",
+                representation="INCIDENT_EDGE_COORDINATE_INTERVALS",
+                containment="INTERSECTION_WITH_FIELD_WORLD",negativeClearanceAuthority=false},enlargementProvenance={}}
+        for _,p in OuttaMyWay.ValueRecord.ipairs({a,b}) do
+            local edge=p.terminatingBoundaryEdge
+            local other=spatialPointKey(edge.startVertex,quantumM)==spatialPointKey(vertex,quantumM) and edge.endVertex or edge.startVertex
+            local lengthM=distance(vertex,other)
+            if lengthM<=EPSILON_M then return end
+            entry.incidentEdges[#entry.incidentEdges+1]={edgeKey=spatialEdgeKey(edge,quantumM),
+                directionX=(other.x-vertex.x)/lengthM,directionZ=(other.z-vertex.z)/lengthM,
+                startVertex={x=vertex.x,z=vertex.z},endVertex={x=other.x,z=other.z},extentState="UNRESOLVED"}
+        end
+        table.sort(entry.incidentEdges,function(left,right) return left.edgeKey<right.edgeKey end)
+        atlas.corners[key]=entry
+        cornerEvent(events,"CORNER_ATLAS_DISCOVERED",entry,{observationSnapshotId=input.observationSnapshotId})
+    end
+    for _,witness in OuttaMyWay.ValueRecord.ipairs({{edgeKey=aKey,corridor=b},{edgeKey=bKey,corridor=a}}) do
+        local corridor=witness.corridor
+        if corridor.provisionalHalfWidthM~=nil then
+            for _,edge in OuttaMyWay.ValueRecord.ipairs(entry.incidentEdges) do
+                if edge.edgeKey==witness.edgeKey and (edge.extentM==nil or corridor.workingWidthM>edge.extentM) then
+                    local motion=byAssembly(input.motionEvidence)[corridor.assemblyId]
+                    local provenance={edgeKey=edge.edgeKey,previousExtentM=edge.extentM,extentM=corridor.workingWidthM,
+                        assemblyId=corridor.assemblyId,source=corridor.workingWidthSource,authority=corridor.workingWidthAuthority,
+                        sourceJobToken=motion and motion.sourceJobToken,
+                        observationSnapshotId=input.observationSnapshotId,futureSpaceIdentity=corridor.futureSpaceIdentity}
+                    edge.extentM=corridor.workingWidthM; edge.extentState="POSITIVELY_LEARNED"
+                    entry.enlargementProvenance[#entry.enlargementProvenance+1]=provenance
+                    cornerEvent(events,"CORNER_ENVELOPE_ENLARGED",entry,provenance)
+                end
+            end
+        end
+    end
+end
+
+local function envelopeVertices(entry)
+    local a,b=entry.incidentEdges[1],entry.incidentEdges[2]
+    if not a.extentM or not b.extentM then return nil end
+    local determinant=a.directionX*b.directionZ-a.directionZ*b.directionX
+    if math.abs(determinant)<=EPSILON_M then return nil end
+    local v=entry.vertex
+    local av={x=v.x+a.directionX*a.extentM,z=v.z+a.directionZ*a.extentM}
+    local bv={x=v.x+b.directionX*b.extentM,z=v.z+b.directionZ*b.extentM}
+    return {v,av,{x=av.x+bv.x-v.x,z=av.z+bv.z-v.z},bv}
+end
+
+local function inEnvelope(p,entry)
+    local a,b=entry.incidentEdges[1],entry.incidentEdges[2]
+    local x,z=p.x-entry.vertex.x,p.z-entry.vertex.z
+    local determinant=a.directionX*b.directionZ-a.directionZ*b.directionX
+    local alongA=(x*b.directionZ-z*b.directionX)/determinant
+    local alongB=(a.directionX*z-a.directionZ*x)/determinant
+    return alongA>=0 and alongA<=a.extentM and alongB>=0 and alongB<=b.extentM
+end
+
+local function nearestOnSegment(p,a,b)
+    local x,z=b.x-a.x,b.z-a.z
+    local squared=x*x+z*z
+    local t=squared>EPSILON_M*EPSILON_M and math.max(0,math.min(1,((p.x-a.x)*x+(p.z-a.z)*z)/squared)) or 0
+    return {x=a.x+t*x,z=a.z+t*z}
+end
+
+local function segmentIntersection(a,b,c,d)
+    local x,z,sx,sz=b.x-a.x,b.z-a.z,d.x-c.x,d.z-c.z
+    local determinant=x*sz-z*sx
+    if math.abs(determinant)<=EPSILON_M then return nil end
+    local qx,qz=c.x-a.x,c.z-a.z
+    local t,u=(qx*sz-qz*sx)/determinant,(qx*z-qz*x)/determinant
+    if t>=0 and t<=1 and u>=0 and u<=1 then return {x=a.x+t*x,z=a.z+t*z} end
+end
+
+-- Positive Overlap Establishes Engagement; Missing Overlap Does Not Establish
+-- Departure. Find a concrete point common to a positive current DISC, the
+-- edge-coordinate envelope and Field World. Boundary candidates also handle
+-- envelopes clipped by concavities/islands; no whole-assembly clearance follows.
+local function overlapWitness(entry,physical,world)
+    local vertices=envelopeVertices(entry)
+    if not vertices then return nil end
+    for _,disc in OuttaMyWay.ValueRecord.ipairs(physical and physical.primitives or {}) do
+        if disc.kind=="DISC" and disc.positiveConflictSupport==true and finite(disc.x) and finite(disc.z)
+            and finite(disc.radius) and disc.radius>=0 then
+            local centre={x=disc.x,z=disc.z}
+            local function witness(p)
+                if p and distance(p,centre)<=disc.radius and inEnvelope(p,entry) then
+                    local containment=OuttaMyWay.FieldWorldSnapshotRegistry.evaluatePositionContainment(world,p.x,p.z)
+                    if containment.resolved and containment.inside then return {primitiveId=disc.identity,x=p.x,z=p.z,
+                        source="POSITIVE_CURRENT_ASSEMBLY_ENVELOPE_OVERLAP",negativeClearanceAuthority=false} end
+                end
+            end
+            local found=witness(centre)
+            if found then return found end
+            local hasEnvelopeOverlap=inEnvelope(centre,entry)
+            for i=1,4 do
+                local a,b=vertices[i],vertices[i%4+1]
+                local nearest=nearestOnSegment(centre,a,b)
+                hasEnvelopeOverlap=hasEnvelopeOverlap or distance(centre,nearest)<=disc.radius
+                found=witness(a) or witness(nearest)
+                if found then return found end
+            end
+            -- Most workers are outside this small envelope. Only an intersecting
+            -- disc needs the more expensive Field World clipping witnesses.
+            if hasEnvelopeOverlap then for _,ring in OuttaMyWay.ValueRecord.ipairs(collectRings(world)) do
+                local count=OuttaMyWay.ValueRecord.length(ring.points)
+                for i=1,count do
+                    local a,b=point(ring.points[i]),point(ring.points[i%count+1])
+                    if a and b then
+                        found=witness(a) or witness(nearestOnSegment(centre,a,b))
+                        if found then return found end
+                        for j=1,4 do
+                            found=witness(segmentIntersection(a,b,vertices[j],vertices[j%4+1]))
+                            if found then return found end
+                        end
+                    end
+                end
+            end end
+        end
+    end
+end
+
+-- Fresh authoritative A8 is only the gate. Both independent topological
+-- witnesses must hold on its current bounded axis; FI and overlap are absent
+-- from this discharge predicate. EPSILON_M is the existing spatial tolerance.
+local function departureEvidence(entry,p,productive,motion,input,engagement)
+    if not engagement.hasObservedManoeuvring then return false,"MANOEUVRING_NOT_OBSERVED",false end
+    if motion.localIntentClassification=="TURNING" or (productive and productive.isTurn==true) then
+        return false,"CURRENT_MANOEUVRING_UNCERTAINTY",false
+    end
+    if not productive or productive.jobToken~=engagement.sourceJobToken or productive.productivePositive~=true
+        or input.observationSnapshotId==nil or input.observationSnapshotId==engagement.manoeuvringObservationSnapshotId
+        or not finite(input.observationEpoch) or not finite(engagement.manoeuvringObservationEpoch)
+        or input.observationEpoch<=engagement.manoeuvringObservationEpoch then
+        return false,"FRESH_A8_NOT_REACQUIRED",false
+    end
+    if p.status~="SUPPORTED" then return false,"BOUNDED_TOPOLOGY_UNRESOLVED",true end
+    local path=continuation(byAssembly(input.futureSpace)[p.assemblyId])
+    if path.intentEpoch~=nil and motion.intentEpoch~=nil and path.intentEpoch~=motion.intentEpoch then
+        return false,"CONTINUATION_INTENT_PROVENANCE_MISMATCH",true
+    end
+    local edgeKey=spatialEdgeKey(p.terminatingBoundaryEdge,input.fieldWorld.quantizationMetres)
+    local alongM=(entry.vertex.x-p.currentX)*p.headingX+(entry.vertex.z-p.currentZ)*p.headingZ
+    for _,edge in OuttaMyWay.ValueRecord.ipairs(entry.incidentEdges) do
+        if edge.edgeKey==edgeKey then return false,"CONTINUATION_TERMINATES_ON_INCIDENT_EDGE",true,alongM,edgeKey end
+    end
+    if alongM>=-EPSILON_M then return false,"CORNER_NOT_POSITIVELY_BEHIND_AXIS",true,alongM,edgeKey end
+    return true,"CORNER_BEHIND_AXIS_AND_NON_INCIDENT_TERMINATION",true,alongM,edgeKey
+end
+
+-- Retained spatial state belongs to this Situation Assessment instance and is
+-- cleared by its map reset, never by pair/Responsibility/Operation turnover.
+-- A departure record is the last dated positive event for that worker/job,
+-- not a claim of perpetual clearance; new positive engagement replaces it.
+-- Publications are detached values. Corner knowledge has no Candidate,
+-- Decision, Responsibility, Bounded Authority or Control authority.
+local function assessCornerKnowledge(self,input,projections,relationships)
+    local polygonKey=atlasPolygonKey(input.fieldWorld)
+    local result={polygonKey=polygonKey,status=polygonKey and "EXACT_POLYGON_IDENTITY_SUPPORTED" or "POLYGON_IDENTITY_UNRESOLVED",
+        atlasEntries={},engagements={},positiveDepartures={},events={},decisionAuthority=false,controlAuthority=false,
+        authority="PASSIVE_SITUATION_KNOWLEDGE_ONLY"}
+    if not polygonKey then return result end
+    local atlas=self.cornerAtlases[polygonKey]
+    if not atlas then atlas={polygonKey=polygonKey,corners={},engagements={},departures={}}; self.cornerAtlases[polygonKey]=atlas end
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(relationships) do
+        if relation.spatialOverlay=="CATEGORY_1_CORNER" then learnCorner(atlas,relation,input,result.events) end
+    end
+    local motions=byAssembly(input.motionEvidence)
+    local productive=byAssembly(input.productiveContinuationKnowledge)
+    local physical=byAssembly(input.physicalSpaceEvidence)
+    local keys={}
+    for key in OuttaMyWay.ValueRecord.pairs(atlas.corners) do keys[#keys+1]=key end
+    table.sort(keys)
+    for _,key in OuttaMyWay.ValueRecord.ipairs(keys) do
+        local entry=atlas.corners[key]
+        result.atlasEntries[#result.atlasEntries+1]=copyKnowledge(entry)
+        local engagements=atlas.engagements[key] or {}; atlas.engagements[key]=engagements
+        local departures=atlas.departures[key] or {}; atlas.departures[key]=departures
+        for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
+            local motion=motions[p.assemblyId]
+            local reference=motion and motion.assemblyReferenceKey
+            local token=motion and motion.sourceJobToken
+            if reference~=nil and token~=nil then
+                local engagement=engagements[reference]
+                if engagement and engagement.sourceJobToken~=token then engagements[reference]=nil; engagement=nil end
+                if departures[reference] and departures[reference].sourceJobToken~=token then departures[reference]=nil end
+                local overlap=overlapWitness(entry,physical[p.assemblyId],input.fieldWorld)
+                -- A still-current positive departure must not oscillate back to
+                -- engagement just because a trailing primitive still overlaps.
+                local departed=departures[reference]
+                local stillDeparted=departed and departureEvidence(entry,p,productive[p.assemblyId],motion,input,departed)==true
+                if not engagement and overlap and not stillDeparted then
+                    engagement={cornerKey=key,polygonKey=polygonKey,assemblyId=p.assemblyId,assemblyReferenceKey=reference,
+                        sourceJobToken=token,establishedObservationSnapshotId=input.observationSnapshotId,
+                        entryEvidence=overlap,hasObservedManoeuvring=false,isDepartureGateOpen=false}
+                    engagements[reference]=engagement; departures[reference]=nil
+                    cornerEvent(result.events,"CORNER_ENGAGEMENT_ESTABLISHED",entry,{assemblyId=p.assemblyId,sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
+                end
+                if engagement then
+                    engagement.assemblyId=p.assemblyId
+                    engagement.currentEvidenceState=overlap and "POSITIVE_CURRENT_OVERLAP" or "RETAINED_WITHOUT_DEPARTURE_EVIDENCE"
+                    local turning=productive[p.assemblyId] and productive[p.assemblyId].jobToken==token and productive[p.assemblyId].isTurn==true
+                    turning=turning or motion.localIntentClassification=="TURNING"
+                    engagement.isCurrentlyManoeuvring=turning==true
+                    if turning then
+                        if not engagement.hasObservedManoeuvring then
+                            cornerEvent(result.events,"CORNER_MANOEUVRING_OBSERVED",entry,{assemblyId=p.assemblyId,sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
+                        end
+                        engagement.hasObservedManoeuvring=true; engagement.manoeuvringObservationSnapshotId=input.observationSnapshotId
+                        engagement.manoeuvringObservationEpoch=input.observationEpoch
+                    end
+                    local positive,reason,gate,alongM,edgeKey=departureEvidence(entry,p,productive[p.assemblyId],motion,input,engagement)
+                    if gate and (not engagement.isDepartureGateOpen or engagement.departureReason~=reason) then
+                        cornerEvent(result.events,"CORNER_DEPARTURE_REASSESSMENT",entry,{assemblyId=p.assemblyId,sourceJobToken=token,
+                            observationSnapshotId=input.observationSnapshotId,reason=reason,cornerAlongAxisM=alongM,edgeKey=edgeKey})
+                    end
+                    engagement.isDepartureGateOpen=gate; engagement.departureReason=reason
+                    engagement.cornerAlongAxisM=alongM; engagement.currentTerminatingEdgeKey=edgeKey
+                    if positive then
+                        engagement.isPositiveDeparture=true
+                        engagement.departureObservationSnapshotId=input.observationSnapshotId
+                        departures[reference]=copyKnowledge(engagement); engagements[reference]=nil
+                        cornerEvent(result.events,"POSITIVE_CORNER_DEPARTURE",entry,{assemblyId=p.assemblyId,sourceJobToken=token,
+                            observationSnapshotId=input.observationSnapshotId,reason=reason,cornerAlongAxisM=alongM,edgeKey=edgeKey})
+                    else
+                        result.engagements[#result.engagements+1]=copyKnowledge(engagement)
+                    end
+                end
+                if departures[reference] then result.positiveDepartures[#result.positiveDepartures+1]=copyKnowledge(departures[reference]) end
+            end
+        end
+    end
+    return result
+end
+
+function Assessment.new() return setmetatable({lastSignatures={},cornerAtlases={}},Assessment) end
+function Assessment:reset() self.lastSignatures={}; self.cornerAtlases={} end
 function Assessment:assess(input)
     local futures,motions=byAssembly(input.futureSpace),byAssembly(input.motionEvidence); local projections={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do projections[#projections+1]=projection(input.fieldWorld,input.fieldWorldReferenceKey,id,futures[id],motions[id]) end
@@ -167,6 +456,7 @@ function Assessment:assess(input)
                 numberText(r.subjectProgressRateMps),numberText(r.otherProgressRateMps),tostring(r.subjectProgressRateSource),tostring(r.otherProgressRateSource),numberText(r.subjectTimeToIntersectionSec),numberText(r.otherTimeToIntersectionSec),
                 tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason))) end
     end end
-    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,decisionAuthority=false,controlAuthority=false,
+    local cornerKnowledge=assessCornerKnowledge(self,input,projections,relationships)
+    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,cornerKnowledge=cornerKnowledge,decisionAuthority=false,controlAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
 end

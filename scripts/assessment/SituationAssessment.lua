@@ -542,7 +542,9 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             local knowledge=self.spatialConstraintAssessment:assess({
                 operationId=operationId,assemblyIds=situation.memberAssemblyIds,
                 fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
-                futureSpace=futureSpace,motionEvidence=motionEvidence,followerBoundaryKnowledge=followerBoundaryKnowledge
+                futureSpace=futureSpace,motionEvidence=motionEvidence,followerBoundaryKnowledge=followerBoundaryKnowledge,
+                observationSnapshotId=snapshot.identity,observationEpoch=snapshot.epoch,productiveContinuationKnowledge=productiveKnowledge,
+                physicalSpaceEvidence=physicalSpaceEvidence
             })
             situation.spatialConstraintKnowledge=knowledge
             spatialConstraintKnowledge[#spatialConstraintKnowledge+1]=knowledge

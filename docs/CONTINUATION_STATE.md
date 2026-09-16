@@ -14,7 +14,9 @@ Only the copy on accepted `main` is authoritative.
 
 Issue #224 began as premature dissolution of Category-1 Forward-Intersection Regulation. GIANTS Reality from TEST build **0.3.0.85** now shows that the deeper missing concept is persistent knowledge of the corner itself rather than longer persistence of one pairwise Regulation responsibility.
 
-Accepted `main` remains executable build **0.3.0.82**. PR #230 / TEST build `.85` remains open and unmerged. Its Offline Validation is green, but Reality has superseded its responsibility-local Category-1 ownership model. `.83` and `.84` remain rejected TEST builds.
+The executable baseline for this increment is accepted **0.3.0.82**. PR #230 / TEST build `.85` is closed without merge. Its Offline Validation was green, but Reality superseded its responsibility-local Category-1 ownership model. `.83` and `.84` remain rejected TEST builds.
+
+The accepted Issue #224 experiment is **0.3.0.86 — Passive Corner Knowledge**. This increment implements Situation-owned knowledge and diagnostics while preserving the baseline's physical traffic semantics. It does not implement downstream Corner Engagement protection yet.
 
 ## Reality discoveries
 
@@ -85,22 +87,24 @@ This architectural correction is Category-1-specific. It does not redesign:
 
 ## Authority Triad state
 
-- **Architecture — corrected by this increment.** Spatial Negotiation now owns Corner Atlas, Corner Envelope, Corner Engagement and Positive Corner Departure as spatial concepts rather than responsibility-local Category-1 history.
-- **Specification — corrected by this increment.** Situation Assessment retains known corner knowledge, assesses current engagement, and requires A8-gated positive topological departure before engagement retirement.
-- **Code — intentionally behind Architecture / Specification.** Accepted executable remains `.82`; PR #230 / `.85` is evidence-bearing but must not be merged as the final implementation of the superseded responsibility-local model.
+- **Architecture — preserved.** Spatial Negotiation owns Corner Atlas, Corner Envelope, Corner Engagement and Positive Corner Departure as spatial concepts rather than responsibility-local Category-1 history.
+- **Specification — preserved.** Situation Assessment owns retained corner knowledge, current engagement and A8-gated positive topological departure.
+- **Code — passive knowledge implemented; behavioural consumption deferred.** `SpatialConstraintAssessment` retains the Atlas and worker/job engagements and publishes detached values under `spatialConstraintKnowledge.cornerKnowledge`. `SituationAssessment` supplies authoritative current productive-continuation knowledge, physical evidence and Observation provenance. Candidate, Decision, Responsibility and Control paths remain unchanged.
 
 > **Reality Updated the Architecture.**
 
 ## Next bounded engineering step
 
-Accept this documentation-only Architecture / Specification correction first. Then whiteboard the smallest implementation mapping using existing Field World topology, existing Category-1 discovery, current worker/A8 evidence and current Situation Assessment.
+Review the passive experiment and challenge its Cross-Corridor Envelope in GIANTS Reality before allowing Regulation to consume Corner Engagement. Offline contracts are registered in the replacement-core harness; GitHub Actions owns their execution and the PR owns the resulting CI evidence. No in-game validation is claimed by this implementation.
 
-The implementation investigation should answer, without adding speculative route prediction:
+The implementation uses the existing exact polygon geometry identity and quantisation basis, independently of Local Operation and equivalence-class turnover. Different fingerprints in an equivalent lifecycle Field World remain unresolved for Atlas reuse. Map/Situation reset clears retained knowledge.
 
-1. where a discovered corner's vertex, incident edges and positively demonstrated envelope should live for the lifetime of the immutable Field World;
-2. how Corner Envelope extent is represented and monotonically enlarged from positive evidence without arbitrary multipliers;
-3. how Situation Assessment determines current Corner Engagement for one worker and any other intersecting worker within the supported three-worker envelope;
-4. how existing Regulation/Resolution candidates consume Corner Engagement without inheriting pair history; and
-5. how fresh A8 plus positive Field World topology publishes Positive Corner Departure.
+The envelope hypothesis uses intervals along the incident-edge directions, intersected with Field World. Each extent learns the other corridor's positive working width monotonically, retaining its provisional demand claim. Positive current assembly overlap establishes engagement; non-overlap cannot discharge it. Fresh A8 must follow the remembered manoeuvring Observation and supply both departure witnesses. A still-current departure witness prevents trailing overlap from immediately recreating the retired engagement.
 
-Primary Reality fixtures remain Condor / Patriot and S416 / Condor. Issue #227 continues separately for Passage recovery containment.
+Primary Reality questions:
+
+1. **Condor / Patriot:** does Condor positively engage the discovered corner, remain engaged through manoeuvring, and depart only on fresh A8 plus the accepted spatial witness?
+2. **S416 / Condor:** does the cross-corridor 36 m / 10 m hypothesis establish S416 engagement before the old FI disappears, preserve it through bumps/reversals and FI/Current-Excursion/Passage changes, and explain departure from fresh topology around the previously observed `17:25:08.965`?
+3. Do later wider positive witnesses enlarge the same envelope without narrower witnesses shrinking it?
+
+Only after these questions are answered should a later increment connect Corner Engagement to existing Regulation. Issue #227 continues separately for Passage recovery containment.
