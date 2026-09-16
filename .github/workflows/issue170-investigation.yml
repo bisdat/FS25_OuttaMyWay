@@ -1,0 +1,34 @@
+name: Issue 170 Investigation
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  decision-probe:
+    name: Issue 170 Decision Probe
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Build validation LuaJIT
+        run: |
+          for tool in git make cc ar; do
+            if ! command -v "$tool" >/dev/null 2>&1; then
+              echo "::error::Validation runtime prerequisite unavailable on hosted runner: $tool"
+              exit 1
+            fi
+          done
+          git clone --quiet https://github.com/LuaJIT/LuaJIT.git "$RUNNER_TEMP/luajit"
+          git -C "$RUNNER_TEMP/luajit" checkout --quiet c525bcb9024510cad9e170e12b6209aedb330f83
+          make -C "$RUNNER_TEMP/luajit" -j2 XCFLAGS=-DLUAJIT_ENABLE_LUA52COMPAT
+          echo "LUAJIT_BIN=$RUNNER_TEMP/luajit/src/luajit" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/luajit/src/luajit" -v
+
+      - name: Run deterministic Decision probe
+        run: "$LUAJIT_BIN tests/replacement_core/issue170_decision_probe.lua"
