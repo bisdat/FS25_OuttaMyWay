@@ -18,7 +18,7 @@ Issue #224 owns the Reality-disproved assumption that any current geometric Forw
 
 Accepted `main` at the start of this Engineering Increment is merge `deb8a522cb4611811be80240afd1a392f64bd1c9` from PR #225, with executable build identity **0.3.0.82**. PR #225 already made the architectural decision authoritative: prospective Forward-Intersection fitness and incumbent-purpose dissolution fitness are question-relative, and current realised progression that positively contradicts the continuation basis of a geometric negative makes incumbent dissolution `UNRESOLVED` rather than successful.
 
-This branch advances executable identity to **0.3.0.83** for the bounded implementation of that decision.
+The current branch revision carries executable identity **0.3.0.84** for the bounded implementation of that decision.
 
 ## Established Reality observation
 
@@ -48,11 +48,11 @@ This is not Regulation stickiness. Once the contradiction is absent and the supp
 
 Normal adjacent-corridor, `PARALLEL_OR_COLLINEAR`, opposed/head-on and Cooperative-Passage behaviour is outside this correction unless new Reality evidence demonstrates a separate defect.
 
-## `.83` implementation hypothesis — Current Physical Contradiction Vetoes Dissolution
+## `.84` implementation hypothesis — Current Physical Contradiction Vetoes Dissolution
 
 Production Observation already derives current realised travel direction from successive AI-steering-node positions and publishes that raw motion evidence into the Operational Picture. Spatial Constraint Assessment already owns the current Field-World-bounded continuation projection used by Forward Intersection.
 
-The `.83` implementation therefore compares those two existing evidence products directly for the demonstrated geometric-negative reason:
+The `.84` implementation therefore compares those two existing evidence products directly for the demonstrated geometric-negative reason:
 
 ```text
 realised position-derived travel direction
@@ -94,7 +94,7 @@ GitHub Actions owns ordinary execution of the structural and Lua offline contrac
 
 ## Required Reality validation
 
-If `.83` passes offline review, targeted in-game validation should reproduce a constrained-space Forward-Intersection handoff and inspect the new dissolution diagnostics.
+If `.84` passes offline review, targeted in-game validation should reproduce a constrained-space Forward-Intersection handoff and inspect the new dissolution diagnostics.
 
 The target outcome is:
 
@@ -110,10 +110,10 @@ established FI Regulation
     -> any later Passage or Forward Intersection is rediscovered from fresh Reality
 ```
 
-A result that preserves Regulation materially beyond physical contradiction removal is evidence against the `.83` implementation hypothesis, not justification for adding a timer.
+A result that preserves Regulation materially beyond physical contradiction removal is evidence against the `.84` implementation hypothesis, not justification for adding a timer.
 
 ## Next bounded engineering step
 
-Complete the `.83` source/test increment, inspect exact branch diff and GitHub Actions evidence, then perform the targeted in-game Reality challenge before accepting the runtime correction.
+Interpret exact PR-head GitHub Actions evidence for `.84`, then perform the targeted in-game Reality challenge before accepting the runtime correction.
 
 Issue #224 remains open until the implementation and required Reality evidence are complete.

@@ -188,7 +188,7 @@ function Assessment:assess(input)
                 r.identity,tostring(r.subjectAssemblyId),tostring(r.otherAssemblyId),r.relationshipStatus,numberText(x.x),numberText(x.z),numberText(r.subjectForwardDistanceToIntersectionM),numberText(r.otherForwardDistanceToIntersectionM),
                 numberText(r.subjectProgressRateMps),numberText(r.otherProgressRateMps),tostring(r.subjectProgressRateSource),tostring(r.otherProgressRateSource),numberText(r.subjectTimeToIntersectionSec),numberText(r.otherTimeToIntersectionSec),
                 tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),
-                tostring(r.incumbentDissolutionEvidenceState or "UNRESOLVED"),tostring(r.incumbentDissolutionReason or "UNRESOLVED"),numberText(a.realizedProgressionToProjectionDot),numberText(b.realizedProgressionToProjectionDot),tostring(r.reason))) end
+                tostring(r.incumbentDissolutionEvidenceState or "UNRESOLVED"),tostring(r.incumbentDissolutionReason or "UNRESOLVED"),numberText(r.subjectProjection.realizedProgressionToProjectionDot),numberText(r.otherProjection.realizedProgressionToProjectionDot),tostring(r.reason))) end
     end end
     return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,decisionAuthority=false,controlAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
