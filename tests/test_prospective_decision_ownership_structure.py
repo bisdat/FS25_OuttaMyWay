@@ -31,19 +31,21 @@ def test_phase13_fresh_portfolio_enumerates_support_groups_without_control_autho
         "FORWARD_INTERSECTION_FAIL_CLOSED",
         "ACTION_SPACE_FAIL_CLOSED",
         "ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION",
-        "lowerPrecedenceConstraintFallback=false",
     ):
         assert token in support
     assert 'OuttaMyWay.ValueRecord.length(picture.commitmentContext or {})>0' in support
+    assert "lowerPrecedenceConstraintFallback" not in support
     for forbidden in ("ControlRequest.new","executeControlRequest","driveInWorldDirection","AIVehicleUtil","g_currentMission"):
         assert forbidden not in support
 
 
-def test_phase13_decision_owns_inter_group_compatibility_and_no_constraint_fallback():
+def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
     policy=read("scripts/decision/ProspectivePortfolioDecisionPolicy.lua")
     selector=read("scripts/decision/DecisionSelector.lua")
     for token in (
         'Policy.KIND="PROSPECTIVE_DECISION_PORTFOLIO_COMPATIBILITY"',
+        "admissibleGroupKeys",
+        "Policy:selectGroup(inventory,admissibleCandidates)",
         'family(groups,"OBSTRUCTION_RELOCATION")',
         "SAME_PAIR_SUPPORTED_PASSAGE_SUCCEEDS_FRESH_FOLLOWER_PURPOSE",
         "UNRELATED_SUPPORTED_PASSAGE_DOES_NOT_SUPERSEDE_FRESH_FOLLOWER_PURPOSE",
@@ -52,13 +54,15 @@ def test_phase13_decision_owns_inter_group_compatibility_and_no_constraint_fallb
     ):
         assert token in policy
     for token in (
-        "ProspectivePortfolioDecisionPolicy:selectGroup",
+        "ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory,viable)",
         "candidateGroupKey(candidate)==groupKey",
         "projectedInventory",
-        "lowerPrecedenceConstraintFallback=false",
-        "Selected governing support group contains no admissible candidate",
+        "admissibilityAwareGroupSelection=true",
+        'selection="NO_MANDATORY_ADMISSIBLE_GROUP"',
     ):
         assert token in selector
+    assert "lowerPrecedenceConstraintFallback" not in policy
+    assert "lowerPrecedenceConstraintFallback" not in selector
     assert "TrafficPolicemanDecisionPolicy:select" in selector
 
 
