@@ -53,7 +53,7 @@ def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
     authority = (ROOT / "scripts/authority/RegulationBoundedAuthority.lua").read_text()
     assert "local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1" in spatial
     assert "r.regulationSpeedKmh=FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH" in spatial
-    assert "fixedRegulationSpeedKmh=r.regulationSpeedKmh" in candidate
+    assert "fixedRegulationSpeedKmh=r.regulationSpeedKmh" in spatial
     assert "fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh" in candidate
     assert candidate.count("fixedRegulationSpeedKmh") == 2
     assert "local magnitude=bridge.fixedRegulationSpeedKmh" in authority
