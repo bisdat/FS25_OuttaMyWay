@@ -71,3 +71,14 @@ def test_corner_engagement_precedes_narrow_fi_dissolution_for_incumbent_allocati
     assert 'CurrentResponsibilityContextSituationAssessment.new' in main
     assert 'cornerKnowledge' not in transition
     assert 'CORNER_ENGAGEMENT' not in transition
+
+
+def test_corner_engagement_does_not_create_new_timeout_or_regulation_type():
+    assessment = (ROOT / "scripts/assessment/CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
+    config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
+    regulation = (ROOT / "scripts/contracts/Regulation.lua").read_text(encoding="utf-8")
+
+    assert "CORNER_TIMEOUT" not in assessment
+    assert "CORNER_TIMEOUT" not in config
+    assert 'kind~="REGULATION"' in regulation
+    assert "CORNER_REGULATION" not in regulation
