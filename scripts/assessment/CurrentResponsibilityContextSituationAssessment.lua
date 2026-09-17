@@ -1,4 +1,5 @@
 --- Publishes each current Situation-owned Operational Picture to incumbent responsibility assessment.
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
 
 -- This adapter composes two existing Situation Assessment collaborators without
 -- introducing a new semantic owner. It does not alter the Operational Picture.

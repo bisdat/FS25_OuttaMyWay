@@ -379,6 +379,7 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) | `REALISES` |
 | [`scripts/contracts/OperationalPicture.lua`](../scripts/contracts/OperationalPicture.lua) | `REALISES` |
 | [`scripts/assessment/ProgressionGeometry.lua`](../scripts/assessment/ProgressionGeometry.lua) | `SUPPORTS` |
+| [`scripts/assessment/CurrentResponsibilityContextSituationAssessment.lua`](../scripts/assessment/CurrentResponsibilityContextSituationAssessment.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
