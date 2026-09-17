@@ -53,3 +53,21 @@ def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
     for path in (ROOT / "scripts").rglob("*.lua"):
         assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in path.read_text(), path
     assert "FORWARD_INTERSECTION_TIMEOUT" not in authority
+
+
+def test_corner_engagement_precedes_narrow_fi_dissolution_for_incumbent_allocation():
+    assessment = (ROOT / "scripts/assessment/CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
+    adapter = (ROOT / "scripts/assessment/CurrentResponsibilityContextSituationAssessment.lua").read_text(encoding="utf-8")
+    main = (ROOT / "scripts/main.lua").read_text(encoding="utf-8")
+    transition = (ROOT / "scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
+
+    assert 'current.provenance.admissionKind~="FORWARD_INTERSECTION"' in assessment
+    assert 'progressActuationOwnership' in assessment
+    assert 'cornerKnowledge.engagements' in assessment
+    assert 'protectedPairAssemblyId' in assessment
+    assert 'CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION' in assessment
+    assert assessment.index('local cornerProtection=self:cornerEngagementProtection(current,relation)') < assessment.index('if relation.relationshipStatus=="NEGATIVE" then')
+    assert 'captureOperationalPicture(picture)' in adapter
+    assert 'CurrentResponsibilityContextSituationAssessment.new' in main
+    assert 'cornerKnowledge' not in transition
+    assert 'CORNER_ENGAGEMENT' not in transition
