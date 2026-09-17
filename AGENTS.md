@@ -53,6 +53,16 @@ When changing code:
 
 A failed hypothesis or test is evidence, not wasted work. Record what was learned.
 
+## Authority Triad Gate
+
+Before proposing, implementing, reviewing, or merging any change that touches `/architecture`, `/spec`, or `/scripts`, read and apply `docs/DOCUMENT_STANDARDS.md`, including **Authority Triad Revalidation — Touch One; Validate Three**.
+
+A Triad-touching change MUST explicitly disposition all three surfaces before merge. Unchanged surfaces may be validated as still correct; do not manufacture edits solely to satisfy the gate.
+
+For any new or changed production source module, verify whether it materially participates in one or more Specification Jurisdictions. Where it does, keep the primary Specification's `Contract participants` classification and the source's reciprocal `Specification Jurisdictions:` acknowledgement coherent. Do not remove a truthful participation declaration merely to satisfy structural tooling; resolve the semantic classification.
+
+This section is routing only. `docs/DOCUMENT_STANDARDS.md` remains the normative authority for the detailed standard.
+
 ## Repository Context Bootstrap
 
 Before interpreting a substantive repository task, classifying an observed defect,
