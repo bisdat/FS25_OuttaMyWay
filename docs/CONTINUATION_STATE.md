@@ -10,11 +10,11 @@ It is **not** a repository-status dashboard. Git owns exact accepted chronology;
 
 Only the copy on accepted `main` is authoritative.
 
-## Current engineering boundary — Issue #234 Corner semantics reconciliation
+## Current engineering boundary — Issue #234 Corner semantics implementation
 
-Issue #234 began from the S416 / Condor case in which operationally significant corner demand remained `OPEN_FIELD` because Corner discovery depended on pairwise Forward-Intersection geometry. The investigation has now established that the existing pairwise/shared-vertex model is too narrow and that the architecture must separate **Field-scoped Corner knowledge**, **assembly-to-Corner demand**, and **temporary right-of-way**.
+Issue #234 began from the S416 / Condor case in which operationally significant corner demand remained `OPEN_FIELD` because Corner discovery depended on pairwise Forward-Intersection geometry. Investigation established that the pairwise/shared-vertex model was too narrow and that the architecture must separate **Field-scoped Corner knowledge**, **assembly-to-Corner demand**, and **temporary right-of-way**.
 
-Accepted `main` remains the implementation baseline. This increment is documentation/contract reconciliation only; it intentionally changes no production source and consumes no TEST build identity.
+The current accepted Architecture and Situation Assessment contract now express that revised Corner model. Production source has not yet been reconciled to it; the next increment is implementation discovery rather than further architectural invention.
 
 ## Current understanding
 
@@ -46,11 +46,11 @@ For S416-class articulated assemblies, the travelled native run-out/alignment di
 
 Once admitted, Corner state owns the decision domain until Positive Corner Departure. Headland positives/negatives, Forward-Intersection changes, transient headings, reverse motion, Passage changes and Responsibility transitions do not discharge the Corner relationship.
 
-Competing Corner Approach Demand is the primary basis for deciding which assembly receives temporary permission to consume the Corner and which assembly is regulated. Headland association, current occupancy/engagement, available alternatives and Resolution Margin may inform that allocation; none is a permanent priority rule.
+Competing Corner Approach Demand is the primary Situation basis from which downstream Decision can choose which assembly receives temporary permission to consume the Corner and which assembly is regulated. Headland association, current occupancy/engagement, available alternatives and Resolution Margin may inform that choice; none is a permanent priority rule.
 
 ### Positive Corner Departure
 
-A8 is the only positive truth of resumed productive work. Everything else remains **still in the Corner** until A8 crosses the correct spatial departure boundary.
+A8 is the positive truth of productive work. Everything remains **still in the Corner** until A8 crosses the correct spatial departure boundary.
 
 Two Reality-derived paths are recognised:
 
@@ -59,17 +59,17 @@ Two Reality-derived paths are recognised:
 
 No elapsed time, guessed travel distance, assembly-length multiplier, headland reclassification, FI negative or Responsibility replacement may manufacture Corner Departure.
 
-## Authority Triad reconciliation
+## Authority Triad state
 
-- **Architecture — change required.** `architecture/SPATIAL_NEGOTIATION_MODEL.md` still defines pairwise FI/shared-vertex Corner discovery and vertex/envelope-based departure semantics. It must be updated to the field-scoped Corner Feature, unilateral demand/admission and A8-crossing model above.
-- **Specification — change required.** `spec/SITUATION_ASSESSMENT.md` still operationalises the old pairwise Corner Discovery and vertex-behind/non-incident-edge discharge contract. It must be reconciled with the revised Architecture.
-- **Source — intentionally unchanged in this increment.** `scripts/assessment/SpatialConstraintAssessment.lua` remains the known implementation gap after the documentation/contract baseline is accepted. Its current `SITUATION_ASSESSMENT` participation remains truthful.
+- **Architecture — reconciled.** `architecture/SPATIAL_NEGOTIATION_MODEL.md` owns the Field-scoped Corner Feature, unilateral demand/admission, decision-dormant in-Corner headland evidence, assembly-specific Corner demand and A8-crossing departure model.
+- **Specification — reconciled.** `spec/SITUATION_ASSESSMENT.md` operationalises those semantics and states the targeted Reality challenges required of an implementation.
+- **Source — known implementation drift.** `scripts/assessment/SpatialConstraintAssessment.lua` still implements the earlier pairwise/shared-vertex discovery and vertex/topology departure mechanism. Its `SITUATION_ASSESSMENT` participation remains truthful, but its mechanism must now be reconciled to the accepted contract.
 
-Tests remain evidence, not Authority-Triad ownership. No executable or in-game validation claim is made by this reconciliation increment.
+Tests remain evidence, not Authority-Triad ownership. The documentation/contract reconciliation makes no executable or in-game validation claim.
 
 ## Next bounded engineering step
 
-Accept the Architecture/Specification reconciliation through normal PR review. Then begin a separate implementation increment from accepted `main` to answer:
+Begin a separate implementation increment from accepted `main` to answer:
 
 > What is the smallest production mechanism that can realise Field-scoped Corner Features, unilateral Corner Approach Demand/Admission, decision-dormant in-Corner headland evidence, assembly-specific Corner demand and A8-positive departure without route prediction or new universal distance literals?
 
