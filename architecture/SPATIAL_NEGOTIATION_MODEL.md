@@ -221,7 +221,7 @@ A second assembly may later join the same **Shared Corner Situation** from its o
 
 Corner Admission establishes retained **Corner Engagement** for the assembly-plus-Corner Situation. Engagement persists while the assembly approaches, occupies, manoeuvres within or exits the Corner decision domain and retires only through Positive Corner Departure or an explicit supported fail-safe/lifecycle outcome.
 
-Once Corner Engagement is established, Corner semantics own the decision domain. The underlying Headland Regime continues to exist as field knowledge but becomes **decision-dormant** for that engaged assembly until Positive Corner Departure. Headland positives and negatives observed during native shuffle, reverse, run-out, alignment or transient geometry are expected to be noisy and MUST NOT revoke, recreate or switch Corner Engagement or right-of-way.
+Once Corner Engagement is established, Corner semantics own the decision domain. The underlying Headland Regime continues to exist as field knowledge but becomes **decision-dormant** for that engaged assembly until Positive Corner Departure. Headland positives and negatives observed during native shuffle, reverse, run-out, alignment or transient geometry are expected to be noisy and MUST NOT by themselves revoke or recreate Corner Engagement or justify a different temporary right-of-way.
 
 > **Semantic Persistence != Decision Relevance**
 
@@ -235,7 +235,7 @@ Working width, physical dimensions and assembly length MUST NOT be collapsed int
 
 > **Working Width != Corner Manoeuvring Demand**
 
-When multiple assemblies positively demand the same Corner Feature, temporary right-of-way is a Situation/Decision question. Current Corner Engagement, Corner Approach Demand, positive Headland Association, available alternatives, Resolution Margin and current space creation may inform which assembly is made cautious. No one evidence class creates a permanent priority rule.
+When multiple assemblies positively demand the same Corner Feature, Situation Assessment publishes the current competing-demand meaning for downstream Decision. Current Corner Engagement, Corner Approach Demand, positive Headland Association, available alternatives, Resolution Margin and current space creation may inform which assembly is made cautious. No one evidence class creates a permanent priority rule.
 
 #### Positive Corner Departure
 
@@ -317,7 +317,7 @@ This is a purpose-bound architectural policy, not a general Regulation tuning pa
 
 Known Corner Features and current Corner Approach Demand/Engagement govern Corner protection; persistence of the discovering pair relationship does not. Forward Intersection may contribute evidence or an initial temporal allocation where supported, but it is neither required for Corner Admission nor authoritative for Corner discharge.
 
-When one assembly is Corner-engaged and another assembly's supported current demand would materially consume the same Corner Feature, spatial policy preserves the engaged assembly's opportunity to create/clear space and makes the cheaper alternative cautious where Regulation is justified. When neither is yet engaged but both have positive Corner Approach Demand, Situation Assessment and Decision allocate temporary right-of-way using current demand, Headland Association, Resolution Margin, available alternatives and intent-revelation value rather than a permanent headland/vehicle-class priority.
+When one assembly is Corner-engaged and another assembly's supported current demand would materially consume the same Corner Feature, spatial policy preserves the engaged assembly's opportunity to create/clear space and makes the cheaper alternative cautious where Regulation is justified. When neither is yet engaged but both have positive Corner Approach Demand, Situation Assessment publishes the competing Corner-demand meaning; downstream Decision allocates temporary right-of-way using current demand, Headland Association, Resolution Margin, available alternatives and intent-revelation value rather than a permanent headland/vehicle-class priority.
 
 A relevant assembly lacking positive Headland Association may still demand the Corner. Where its intent is less constrained or remains unresolved, Regulation may be used to buy time for intent revelation rather than pretending negative headland evidence proves safe separation.
 
