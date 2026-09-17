@@ -10,97 +10,65 @@ It is **not** a repository-status dashboard. Git owns exact accepted chronology;
 
 Only the copy on accepted `main` is authoritative.
 
-## Current engineering boundary — Issue #224 Corner Atlas / Corner Engagement
+## Current engineering boundary — Issue #224 Corner Engagement validation
 
-Issue #224 began as premature dissolution of Category-1 Forward-Intersection Regulation. GIANTS Reality from TEST build **0.3.0.85** now shows that the deeper missing concept is persistent knowledge of the corner itself rather than longer persistence of one pairwise Regulation responsibility.
+Issue #224 began as premature dissolution of Category-1 Forward-Intersection Regulation. GIANTS Reality has since separated two concerns: a validated Condor / Patriot path in which Category-1 discovery successfully activates retained Corner knowledge, and a separate S416 / Condor path in which operationally relevant corner space exists without the current pairwise FI being classified `CATEGORY_1_CORNER`.
 
-Accepted `main` remains executable build **0.3.0.82**. PR #230 / TEST build `.85` remains open and unmerged. Its Offline Validation is green, but Reality has superseded its responsibility-local Category-1 ownership model. `.83` and `.84` remain rejected TEST builds.
+The executable baseline accepted on `main` remains **0.3.0.82**. PR #232 is open and unmerged. Its branch now carries TEST **0.3.0.87** as a bounded behavioural experiment derived from `.86` passive Corner knowledge; `.83` / `.84` remain rejected and `.85` remains closed unmerged evidence.
 
 ## Reality discoveries
 
-### Condor / Patriot `.85`
+### Condor / Patriot `.86A`
 
-`.85` correctly preserved Patriot as yielder while Condor remained in GIANTS `TURNING`, demonstrating that the A8 -> TURNING mechanism can protect the intended worker inside one responsibility. After fresh Condor A8, however, a new open-field Forward Intersection rapidly made Condor the yielder for several seconds. The event was a new responsibility rather than a role-migration leak.
+The `.86A` run positively activated the complete passive Corner lifecycle:
 
-Subsequent geometry review showed that fresh Condor A8 also carried positive topological departure evidence: the remembered corner lay behind Condor's new productive axis and the new bounded continuation terminated on a non-corner Field World edge. This supports A8 as a **departure gate**, not as discharge by itself.
+- Category-1 FI discovered the corner and admitted Patriot as the exact 1 km/h yielder while Condor remained protected;
+- the Corner Atlas was created and the Cross-Corridor envelope learned approximately 36 m / 36 m demand in this two-wide-sprayer fixture;
+- Condor established Corner Occupancy and then Corner Engagement;
+- FI became unresolved while Condor entered manoeuvring, but Corner Engagement persisted through TURNING and reverse movement;
+- fresh post-manoeuvre A8 plus current topology published Positive Corner Departure when the stored corner was behind Condor's new productive axis and the bounded continuation terminated on a non-incident edge; and
+- the old FI Regulation released approximately 13 ms later, before a fresh open-field FI legitimately established a new temporal allocation.
 
-### S416 / Condor `.85`
+This materially increases confidence in Corner Atlas, Occupancy / Engagement persistence and A8-gated Positive Corner Departure. It does **not** validate the S416 / Condor discovery path or the proposed 36 m / 10 m Cross-Corridor envelope.
 
-The S416 fixture exposed the stronger architectural problem. The corner is visibly material before the current FI overlay calls it Category 1; FI/Current-Excursion/Passage responsibilities then change while S416 remains in the corner and `TURNING`. Condor is correctly cautious during some episodes but is released during others before S416 reacquires fresh A8 around `17:25:08.965`.
+### Corner Envelope measurement chatter
 
-The failure is therefore **protection continuity across ephemeral relationship/responsibility changes**, not simply wrong yielder selection. The same run independently reproduces Issue #227's post-crossing recovery target failure; #227 remains a separate Passage concern.
+The same `.86A` run emitted 35 microscopic `CORNER_ENVELOPE_ENLARGED` events while practical learned extent remained approximately 36 m. Issue #233 owns this observation.
 
-> **Responsibility Transition != Corner Departure**
+> **Monotonic Growth != Every Microscopic Measurement Increase Is a Meaningful Transition**
 
-## Accepted architectural direction
+No tolerance or envelope tuning is justified during Issue #224.
 
-### Corner Discovery
+### S416 / Condor discovery boundary
 
-Existing corner discovery remains valid. A Category-1 corner is positively discovered from pairwise Forward-Intersection geometry only where supported Field-World-bounded continuations terminate on distinct boundary edges that share the same Field World vertex. Middle-of-field intersections do not discover corners.
+Earlier `.86` Reality produced no Corner Atlas entry for the important S416 / Condor case because the relevant positive FI remained `OPEN_FIELD`. Therefore pairwise Category-1 FI classification is a valid Corner Discovery path, but is not sufficient as the sole discovery mechanism.
 
-> **Corner Detection Can Be Pair-wise; Corner Knowledge Is Spatial.**
+> **Corner Existence != Pairwise FI Corner Classification**
 
-### Corner Atlas
+This discovery remains intentionally outside the `.87` behavioural experiment. After Condor / Patriot `.87` validation, S416 / Condor Corner Discovery will move to a dedicated issue.
 
-Once positively discovered, the corner becomes retained Field World knowledge for the same immutable Field World. The **Corner Atlas** stores the corner vertex, incident boundary edges and a positively supported **Corner Envelope**. A later FI becoming open-field, negative, unresolved or superseded cannot erase a known corner.
+## TEST 0.3.0.87 hypothesis
 
-The known envelope may expand when later positive evidence demonstrates wider constrained demand; it does not shrink because a subsequent worker or interaction is narrower. The envelope remains bounded by Field World.
+`.87` does not broaden Corner Discovery, change FI geometry, alter initial yielder selection, create a new Regulation type, modify the exact 1 km/h Intent-Revelation Creep, or change Cooperative Passage.
 
-> **Known Corner Extent Can Grow; It Does Not Oscillate.**
+The existing FI Regulation retains ownership of the established temporal allocation. Situation Assessment now supplies the exact current Operational Picture to incumbent responsibility assessment. When the worker protected by that incumbent FI allocation still has current Corner Engagement, that engagement is stronger incumbent-purpose evidence than a narrow FI negative / supersession signal.
 
-Corner Atlas knowledge is not pair history. It does not store an old yielder, right-of-way, Regulation identity or future turn route.
+> **Current Corner Engagement preserves the incumbent FI allocation; Positive Corner Departure restores ordinary FI dissolution authority.**
 
-### Corner Engagement
-
-**Corner Engagement** is current Situation meaning that a worker is entering, occupying, manoeuvring within or exiting a known Corner Envelope in a way that may materially affect another current worker whose supported demand intersects the same corner theatre.
-
-While engagement remains current, preserve the engaged worker's native opportunity to reveal intent, turn, reverse, reposition and create space. Other relevant workers are the cheaper parties to make cautious where temporal coordination is justified. FI topology, Current Excursion, Passage admission and Responsibility Transition do not by themselves retire the engagement.
-
-### Positive Corner Departure
-
-Fresh A8 after manoeuvring uncertainty is the required gate for departure assessment, but A8 alone is not positive corner-clear evidence.
-
-Positive Corner Departure additionally requires current Field World topology showing that the worker's fresh productive continuation no longer belongs to the stored corner. The normal witness is:
-
-- the remembered corner vertex is behind the worker's fresh productive progression; and
-- the bounded continuation terminates on a boundary edge that is not incident to the known corner.
-
-> **A8 Reacquisition Is the Departure Gate; Positive Topological Departure Is the Discharge Witness.**
-
-Timers, travelled-distance tails, arbitrary corner multipliers, temporary movement outside a guessed box, absence of renewed FI or responsibility replacement cannot manufacture departure.
-
-## Scope boundary
-
-This architectural correction is Category-1-specific. It does not redesign:
-
-- existing positive corner discovery;
-- initial Forward-Intersection timing/yielder selection;
-- Category-2 headland/boundary semantics;
-- ordinary open-field or adjacent-lane work;
-- leader/follower Regulation;
-- Cooperative Passage geometry/Bubble lifetime;
-- the exact 1 km/h Intent-Revelation Creep;
-- GIANTS productive routing/native turning; or
-- the supported three-AI-worker Operation envelope.
+The regulated assembly is resolved from the current retained Commitment's progress-actuation ownership. No yielder or right-of-way is copied into the Corner Atlas. Missing current Situation context cannot manufacture persistence.
 
 ## Authority Triad state
 
-- **Architecture — corrected by this increment.** Spatial Negotiation now owns Corner Atlas, Corner Envelope, Corner Engagement and Positive Corner Departure as spatial concepts rather than responsibility-local Category-1 history.
-- **Specification — corrected by this increment.** Situation Assessment retains known corner knowledge, assesses current engagement, and requires A8-gated positive topological departure before engagement retirement.
-- **Code — intentionally behind Architecture / Specification.** Accepted executable remains `.82`; PR #230 / `.85` is evidence-bearing but must not be merged as the final implementation of the superseded responsibility-local model.
-
-> **Reality Updated the Architecture.**
+- **Architecture — ahead of accepted executable and supported by `.86A` Reality.** Spatial Negotiation owns Corner Atlas, Corner Engagement and Positive Corner Departure as worker-plus-space meaning.
+- **Specification — current contract already requires Corner Engagement to survive FI / Responsibility transitions until Positive Corner Departure.**
+- **Code — `.87` experiment on PR #232.** Incumbent FI persistence now consumes current Corner Engagement; accepted `main` remains `.82` until owner review/merge.
 
 ## Next bounded engineering step
 
-Accept this documentation-only Architecture / Specification correction first. Then whiteboard the smallest implementation mapping using existing Field World topology, existing Category-1 discovery, current worker/A8 evidence and current Situation Assessment.
+Run Condor / Patriot against TEST **0.3.0.87** and answer only this behavioural question:
 
-The implementation investigation should answer, without adding speculative route prediction:
+> While Condor remains Corner-engaged through its native manoeuvre, does Patriot remain on the incumbent exact 1 km/h FI allocation until Positive Corner Departure, after which fresh Situation Assessment may release or establish a new relationship from current Reality?
 
-1. where a discovered corner's vertex, incident edges and positively demonstrated envelope should live for the lifetime of the immutable Field World;
-2. how Corner Envelope extent is represented and monotonically enlarged from positive evidence without arbitrary multipliers;
-3. how Situation Assessment determines current Corner Engagement for one worker and any other intersecting worker within the supported three-worker envelope;
-4. how existing Regulation/Resolution candidates consume Corner Engagement without inheriting pair history; and
-5. how fresh A8 plus positive Field World topology publishes Positive Corner Departure.
+Do not use this validation to solve S416 / Condor. If Condor / Patriot validates `.87`, open a dedicated S416 / Condor Corner Discovery issue and resume architectural whiteboarding there.
 
-Primary Reality fixtures remain Condor / Patriot and S416 / Condor. Issue #227 continues separately for Passage recovery containment.
+Issue #233 remains separate measurement-chatter follow-up. Issue #227 remains separate Cooperative Passage recovery-containment work.

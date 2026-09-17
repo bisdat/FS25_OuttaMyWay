@@ -6313,5 +6313,9 @@ test("legacy follower shadow retirement preserves P22 capability retirement", fu
     equal(OuttaMyWay.Prototype22CapabilityGate,nil)
 end)
 
+dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
+    newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
+})
+
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end
