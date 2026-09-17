@@ -1,10 +1,10 @@
 --- Publishes each current Situation-owned Operational Picture to incumbent responsibility assessment.
--- Specification Jurisdictions: `SITUATION_ASSESSMENT`
 
--- This decorator remains inside Situation Assessment. It does not alter the
--- Operational Picture. It gives CurrentResponsibilityAssessment the exact
--- current Situation publication needed to interpret retained responsibilities
--- without copying Corner state into Responsibility Transition.
+-- This adapter composes two existing Situation Assessment collaborators without
+-- introducing a new semantic owner. It does not alter the Operational Picture.
+-- It gives CurrentResponsibilityAssessment the exact current Situation
+-- publication needed to interpret retained responsibilities without copying
+-- Corner state into Responsibility Transition.
 OuttaMyWay.CurrentResponsibilityContextSituationAssessment={}
 local Assessment=OuttaMyWay.CurrentResponsibilityContextSituationAssessment
 Assessment.__index=Assessment
