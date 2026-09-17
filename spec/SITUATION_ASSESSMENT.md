@@ -169,7 +169,8 @@ Spatial Negotiation Architecture specialises Situation Assessment for:
 - Productive Forward-Line Certainty;
 - TURNING uncertainty;
 - Spatial Constraint Overlay;
-- Corner Atlas, Corner Engagement and Positive Corner Departure;
+- Structural Field Shape, Headland Regime and Corner Feature interpretation;
+- Corner Atlas, Headland Association, Corner Approach Demand, Corner Admission, Corner Engagement and Positive Corner Departure;
 - Passage foreseeability;
 - follower/Forward Intersection relationships; and
 - current option-space / Resolution-Margin meaning.
@@ -236,16 +237,20 @@ Where Architecture permits `WAITING_FOR_EVIDENCE`, that is an evidence-state int
 
 For an established Forward-Intersection Regulation, a current geometric negative is not by itself positive incumbent-purpose dissolution evidence. Situation Assessment MUST assess whether the evidence basis that produced the negative is fit for the dissolution question. Positive contradiction may make that evidence unfit; absence of such contradiction does not by itself establish that the temporal purpose has discharged.
 
-For **Category-1 corner space**, Situation Assessment MUST distinguish persistent Field World knowledge from transient interaction and responsibility state:
+For **Category-1 Corner space**, Situation Assessment MUST distinguish persistent Field World knowledge from transient assembly demand, admission, engagement and responsibility state:
 
-1. **Corner Discovery** retains the existing positive topological contract. A current pairwise Forward Intersection may discover a corner only when supported Field-World-bounded continuations terminate on distinct boundary edges sharing the same Field World vertex. A middle-of-field intersection MUST NOT create a Corner Atlas entry.
-2. Once positively discovered, the **Corner Atlas** entry remains valid for the same immutable Field World independently of the pair relationship that discovered it. It MUST retain the corner vertex, incident boundary-edge identities and the positively supported Corner Envelope. Later positive evidence MAY enlarge the known envelope; later narrower interactions MUST NOT shrink it.
-3. **Corner Engagement** is current Situation meaning that a worker is entering, occupying, manoeuvring within or exiting a known Corner Envelope in a way that may materially affect another current worker whose supported demand intersects that corner theatre. Engagement is scoped to worker-plus-corner, not to a persistent pair or Current Responsibility identity.
-4. While Corner Engagement remains current, `TURNING`, reverse movement, heading change, FI topology change, Current Excursion classification, Passage admission or Responsibility Transition MUST NOT by themselves establish Corner Departure. Situation Assessment MUST continue to publish the constrained-space fact so downstream Candidate/Decision/Responsibility processing can keep other relevant workers cautious without requiring pair-history transfer.
-5. **Positive Corner Departure** requires fresh A8 reacquisition by the same engaged worker after manoeuvring uncertainty and positive current Field World evidence that the fresh productive continuation no longer claims the stored corner topology. The normal witness is that the corner vertex lies behind the worker's fresh productive progression and the bounded continuation terminates on a boundary edge not incident to the stored corner. A8 without that positive spatial departure is only the gate for reassessment, not discharge by itself.
-6. Absence of renewed pair intersection, elapsed time, travelled distance, a narrower current assembly, temporary movement beyond a guessed virtual boundary, or responsibility replacement MUST NOT manufacture Positive Corner Departure.
+1. **Corner Feature interpretation is Field-scoped.** The exact Field World polygon remains authoritative for containment, identity and boundary evidence, while Situation Assessment MAY derive Structural Field Shape / Headland Regime meaning so literal sampled vertices are not automatically treated as semantic Corners. A Corner Feature is a bounded structural transition between persistent Headland Regimes. Pairwise Forward Intersection MAY contribute positive evidence but MUST NOT be the sole admission path or the definition of Corner existence.
+2. Once positively established, the **Corner Atlas** entry remains valid for the same immutable Field World independently of the pair or assembly that exposed it. The entry MUST retain sufficient Field World provenance and structural Corner topology/region to identify the same feature. It MUST NOT retain a historical yielder, pair right-of-way, Regulation identity or one discovering assembly's operational envelope as Corner identity.
+3. **Headland Association** MAY provide positive evidence that an assembly is productively associated with a boundary/headland regime relevant to the Corner and MAY increase awareness or inform later temporal allocation. Negative or unresolved Headland Association MUST NOT negate Corner existence or independently positive Corner Approach Demand.
+4. **Corner Approach Demand** is positive only when the assembly's currently supported bounded spatial demand is progressing into a known Corner Feature. Proximity, indefinite continuation extension and reconstructed future routes MUST NOT manufacture the conclusion.
+5. **Corner Admission is unilateral.** Positive Corner Existence plus positive Corner Approach Demand is sufficient for that assembly. No second participant, pairwise Forward Intersection, shared sampled vertex, `TURNING`, reverse manoeuvre or current physical Corner occupancy is required. Admission establishes retained Corner Engagement for the assembly-plus-Corner Situation.
+6. **Corner Engagement owns the in-Corner decision domain until Positive Corner Departure.** During current engagement, Headland Association evidence becomes decision-dormant for that assembly. Positive/negative headland churn, `TURNING`, reverse movement, transient heading, Forward-Intersection topology, Current Excursion classification, Passage admission or Responsibility Transition MUST NOT by themselves revoke, recreate, switch or discharge the Corner state.
+7. **Corner Demand is assembly-specific.** Situation Assessment MUST distinguish the field-scoped Corner Feature from the operational demand an admitted assembly places around it. Productive width MAY support pre-Corner Headland Association; physical width, overall length, articulation and supported current representation MAY materially determine manoeuvring demand. The implementation MUST NOT reduce this to one universal width, length multiplier, radius or predicted articulated turn path.
+8. **Shared Corner Situation does not require shared discovery.** Another assembly may become relevant through its own positive Corner Approach Demand into the already-known Corner Feature. Competing Corner demand is Situation meaning for downstream temporary right-of-way/Regulation choice; Headland Association, current Engagement, available alternatives, Resolution Margin and intent-revelation value MAY inform that choice but MUST NOT create permanent priority.
+9. **Positive Corner Departure requires positive A8 spatial crossing.** A8 is the positive evidence of productive work; without the required A8 crossing the assembly remains in the Corner for decision purposes. For continuous productive traversal, current authoritative A8 must positively cross the field-scoped outgoing Corner boundary. For a manoeuvring traversal that supplies valid forward/reverse transitions, Situation Assessment MAY retain the last such transition position as the stronger assembly-specific departure-boundary anchor; fresh productive A8 must be reacquired and positively cross that boundary before engagement retires.
+10. A traversal with no reversal MUST NOT depend on a direction-transition anchor. Absence of renewed pair intersection, elapsed time, travelled distance, assembly-length/working-width multipliers, headland reclassification, a narrower current assembly, temporary movement beyond a guessed envelope or responsibility replacement MUST NOT manufacture Positive Corner Departure.
 
-Corner Atlas knowledge is not persistent generic pair history and does not preserve a past yielder or right-of-way. Corner Engagement does not create a new Regulation type or Control permission. Situation Assessment owns the current spatial meaning; Candidate Support, Decision, Responsibility Transition and Bounded Authority retain their existing jurisdictions.
+Corner Atlas knowledge is not persistent generic pair history and does not preserve a past yielder or right-of-way. Corner Engagement does not create a new Regulation type or Control permission. Situation Assessment owns current Corner meaning; Candidate Support, Decision, Responsibility Transition and Bounded Authority retain their existing jurisdictions.
 
 This contract is Category-1-specific. It makes no equivalent claim for Category 2 or open-field Forward Intersection and does not predict GIANTS turn paths.
 
@@ -264,7 +269,7 @@ Contractually significant classes of content include, as applicable:
 - current pair scope and current relationship classifications;
 - motion/productive-continuation knowledge;
 - follower / trajectory / opposed-corridor / spatial-constraint knowledge;
-- Corner Atlas entries, current Corner Engagement and A8-gated Positive Corner Departure meaning where applicable;
+- Corner Atlas/Corner Feature knowledge, Headland Association, Corner Approach Demand/Admission, current Corner Engagement, assembly-specific Corner Demand and A8-crossing Positive Corner Departure meaning where applicable;
 - Causal Obstruction knowledge;
 - representation fitness and uncertainty;
 - current responsibility/commitment/open-obligation context needed by assessment consumers;
@@ -316,10 +321,12 @@ Diagnostics MAY expose contradictions, counters and pipeline state. A diagnostic
 - **Pair evidence absent without negative authority** — relationship remains unresolved.
 - **Resolution-Margin witness positive** — publish the current positive demand evidence with its subject, represented claim, bounded horizon, provenance and one-sided claim limits; do not derive a speed or safe-clearance conclusion.
 - **Resolution-Margin witness unavailable/unfit without negative authority** — publish `UNRESOLVED`; do not convert witness loss, Current-Excursion role change or reference-point separation into positive clearance/dissolution.
-- **Known Category-1 corner, no current Corner Engagement** — retain the Corner Atlas entry as Field World knowledge; do not manufacture current constrained-space occupation or Regulation merely from the known corner's existence.
-- **Corner Engagement current** — preserve the current constrained-space fact across Forward-Intersection, Current-Excursion, Passage and Responsibility changes; those changes do not themselves establish Corner Departure.
-- **Engaged worker reacquires fresh A8 after manoeuvring uncertainty** — reassess departure against the stored corner topology; A8 alone is not discharge.
-- **Fresh A8 plus Positive Corner Departure** — publish the corner engagement as retired for that worker; downstream Situation/Decision processing may then reassess any remaining interaction from current Reality.
+- **Known Category-1 Corner Feature, no current Corner Approach Demand/Engagement** — retain the Corner Atlas entry as Field World knowledge; do not manufacture current constrained-space occupation or Regulation merely from the known Corner's existence.
+- **Positive Corner Approach Demand into a known Corner Feature** — Corner Admission may be positive unilaterally; no pairwise quorum or Headland Association gate is required.
+- **Corner Engagement current** — preserve the assembly-plus-Corner fact across Forward-Intersection, Current-Excursion, Passage and Responsibility changes. Headland positives/negatives observed inside the engagement are decision-dormant and MUST NOT manufacture admission, release or right-of-way change.
+- **Engaged assembly has no qualifying A8 spatial crossing** — remain in the Corner for decision purposes; `TURNING`, reverse/run-out, elapsed time and temporary geometry do not establish departure.
+- **Continuous authoritative A8 crosses the field-scoped outgoing Corner boundary** — publish Positive Corner Departure for continuous traversal.
+- **Manoeuvring traversal supplies a last valid direction-transition anchor and fresh A8 later crosses that anchored departure boundary** — publish Positive Corner Departure for that assembly.
 - **Source unavailable** — retain explicit uncertainty derived from Observation; no fabricated semantic negative.
 - **Conflicting current evidence** — publish contradiction/unresolved meaning or fail closed according to the responsible sub-contract; do not silently choose the interpretation that enables intervention.
 - **Causal obstruction not positively supported** — no Causal Obstruction relationship.
@@ -430,6 +437,8 @@ Focused Resolution-Margin validation MUST challenge at least these three boundar
 In-game validation remains required for live GIANTS intent, productive continuation, blocking causality, physical relevance, timing, player claim and any other Situation conclusion whose source evidence depends on engine/runtime Reality.
 
 For Resolution-Margin Demand, a targeted Reality challenge must distinguish the Situation-evidence claim from downstream actuation: demonstrate that the relevant positive represented demand exists in the live encounter, that an unrelated nearby turn does not manufacture demand, and that any later Regulation/Bounded-Authority implementation preserves GIANTS routing while changing only supported temporal coordination.
+
+For Category-1 Corner semantics, targeted Reality validation MUST separately challenge: unilateral Corner Approach Demand/Admission without pairwise discovery; a previously validated pairwise Corner regression; articulated manoeuvring with one or more forward/reverse transitions and A8 crossing of the final transition-anchored departure boundary; continuous productive traversal of a rounded Corner with no reversal; and in-Corner headland positive/negative churn remaining decision-dormant until Positive Corner Departure.
 
 ### Outside this Specification's validation claim
 
