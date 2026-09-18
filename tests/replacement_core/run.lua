@@ -87,6 +87,7 @@ load("scripts/decision/DecisionSelector.lua")
 load("scripts/diagnostics/ArchitectureTrace.lua")
 load("scripts/diagnostics/BoundaryFeaturePersistenceProbe.lua")
 load("scripts/diagnostics/BoundaryTurnTrajectoryProbe.lua")
+load("scripts/diagnostics/BoundaryFeatureLineageProbe.lua")
 load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
@@ -6317,6 +6318,7 @@ end)
 
 dofile(root.."/tests/replacement_core/BoundaryFeaturePersistence.lua")(test,equal)
 dofile(root.."/tests/replacement_core/BoundaryTurnTrajectory.lua")(test,equal)
+dofile(root.."/tests/replacement_core/BoundaryFeatureLineage.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
     newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
