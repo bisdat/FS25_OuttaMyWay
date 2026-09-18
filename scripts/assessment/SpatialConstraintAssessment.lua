@@ -525,7 +525,11 @@ end
 
 local function observeDirectionTransition(engagement,motion,isManoeuvring,input,entry,result)
     local native=motion and motion.nativeFieldWork and motion.nativeFieldWork.nativeDriveCommand or nil
-    local current=native and native.valid==true and native.moveForwards or nil
+    local current=nil
+    if native~=nil and native.valid==true
+        and (native.moveForwards==true or native.moveForwards==false) then
+        current=native.moveForwards
+    end
     if current~=true and current~=false then
         engagement.wasCurrentlyManoeuvring=isManoeuvring==true
         return
