@@ -53,6 +53,7 @@ load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
+load("scripts/assessment/StructuralFieldShapeAssessment.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
@@ -85,9 +86,6 @@ load("scripts/constraints/ConstraintEngine.lua")
 load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
 load("scripts/diagnostics/ArchitectureTrace.lua")
-load("scripts/diagnostics/BoundaryFeaturePersistenceProbe.lua")
-load("scripts/diagnostics/BoundaryTurnTrajectoryProbe.lua")
-load("scripts/diagnostics/BoundaryFeatureLineageProbe.lua")
 load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
@@ -6316,11 +6314,8 @@ test("legacy follower shadow retirement preserves P22 capability retirement", fu
     equal(OuttaMyWay.Prototype22CapabilityGate,nil)
 end)
 
-dofile(root.."/tests/replacement_core/BoundaryFeaturePersistence.lua")(test,equal)
-dofile(root.."/tests/replacement_core/BoundaryTurnTrajectory.lua")(test,equal)
-dofile(root.."/tests/replacement_core/BoundaryFeatureLineage.lua")(test,equal)
 
-dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
+dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)\n\ndofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
     newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
 })
 
