@@ -18,8 +18,8 @@ return function(test,equal)
         local result={}
         for _,vertex in OuttaMyWay.ValueRecord.ipairs(points) do
             result[#result+1]={
-                x=math.floor(vertex.x/quantum+(vertex.x>=0 and 0.5 or -0.5)),
-                z=math.floor(vertex.z/quantum+(vertex.z>=0 and 0.5 or -0.5))
+                x=vertex.x>=0 and math.floor(vertex.x/quantum+0.5) or math.ceil(vertex.x/quantum-0.5),
+                z=vertex.z>=0 and math.floor(vertex.z/quantum+0.5) or math.ceil(vertex.z/quantum-0.5)
             }
         end
         return result
