@@ -59,6 +59,7 @@ OuttaMyWay.runtime.liveRuntimeCoordinator=OuttaMyWay.liveRuntimeCoordinator
 if type(addModEventListener)=="function" then
     -- Runtime capture/process/dispatch is causally upstream of diagnostics.
     addModEventListener(OuttaMyWay.liveRuntimeCoordinator)
+    addModEventListener(OuttaMyWay.boundaryFeaturePersistenceProbe)
     addModEventListener(OuttaMyWay.productiveContinuationProbe)
     addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)
     addModEventListener(OuttaMyWay.regulationControl)
