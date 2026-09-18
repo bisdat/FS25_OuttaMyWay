@@ -218,12 +218,12 @@ local function coordinateKey(value)
     return string.format("%.3f,%.3f",value.x,value.z)
 end
 
-local function featureKey(fieldWorldReferenceKey,ringKind,ringReference,feature,before,after)
+local function featureKey(fieldWorldReferenceKey,ringKind,ringIndex,feature,before,after)
     return table.concat({
         tostring(fieldWorldReferenceKey),
         "corner-feature",
         tostring(ringKind),
-        tostring(ringReference),
+        tostring(ringIndex),
         coordinateKey(before),
         coordinateKey(feature.representativePoint),
         coordinateKey(after)
@@ -252,7 +252,7 @@ local function decorateRing(fieldWorldReferenceKey,ringKind,ringIndex,ringRefere
         feature.ringReference=ringReference
         feature.supportBefore={x=before.x,z=before.z}
         feature.supportAfter={x=after.x,z=after.z}
-        feature.cornerKey=featureKey(fieldWorldReferenceKey,ringKind,ringReference,feature,before,after)
+        feature.cornerKey=featureKey(fieldWorldReferenceKey,ringKind,ringIndex,feature,before,after)
         feature.featureRegion={
             kind="STRUCTURAL_DIRECTION_TRANSITION_SUPPORT",
             representativePoint={x=feature.representativePoint.x,z=feature.representativePoint.z},
