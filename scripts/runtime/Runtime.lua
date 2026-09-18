@@ -55,7 +55,8 @@ local function ownershipAssemblyIds(candidate)
 end
 local function actionSpaceRelation(picture,current)
     if current==nil then return nil end
-    local conflictIdentity=current.provenance and current.provenance.conflictIdentity or nil
+    local provenance=current.provenance or {}
+    local conflictIdentity=provenance.conflictIdentity
     if conflictIdentity==nil then return nil end
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
         if relation.identity==conflictIdentity then return relation end
@@ -63,6 +64,25 @@ local function actionSpaceRelation(picture,current)
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
         for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
             if relation.identity==conflictIdentity then return relation end
+        end
+        local corner=knowledge.cornerKnowledge or {}
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(corner.sharedCornerSituations or {}) do
+            if situation.identity==conflictIdentity then return situation end
+        end
+        if provenance.admissionKind=="CORNER_RIGHT_OF_WAY" and type(provenance.cornerKey)=="string" then
+            local featureCurrent=false
+            for _,entry in OuttaMyWay.ValueRecord.ipairs(corner.atlasEntries or {}) do
+                if entry.cornerKey==provenance.cornerKey then featureCurrent=true break end
+            end
+            if featureCurrent then
+                return {
+                    identity=conflictIdentity,cornerKey=provenance.cornerKey,
+                    classification="SHARED_CORNER_COMPETING_DEMAND_DISSOLVED",
+                    relationshipStatus="NEGATIVE",positiveDissolution=true,
+                    reason="CURRENT_STRUCTURAL_CORNER_REMAINS_KNOWN_WITHOUT_SHARED_COMPETING_DEMAND",
+                    provenance={source="Runtime.actionSpaceRelation",derivedFrom="CURRENT_CORNER_SITUATION"}
+                }
+            end
         end
     end
     return nil
