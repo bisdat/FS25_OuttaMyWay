@@ -572,6 +572,7 @@ local function assessCornerKnowledge(self,input,projections,relationships)
     local motions=byAssembly(input.motionEvidence)
     local productive=byAssembly(input.productiveContinuationKnowledge)
     local futures=byAssembly(input.futureSpace)
+    local physical=byAssembly(input.physicalSpaceEvidence)
     local currentIds={}
     for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do currentIds[p.assemblyId]=true end
 
