@@ -162,18 +162,46 @@ function Probe.analyzeSnapshot(snapshot)
         return result
     end
     local canonical=snapshot.canonicalRootVertices
-    if OuttaMyWay.ValueRecord.length(canonical or {})<4 then
+    local canonicalCount=OuttaMyWay.ValueRecord.length(canonical or {})
+    if canonicalCount<4 then
         local result=Probe.analyzeBoundary(nil)
         result.reason="CANONICAL_ROOT_VERTICES_UNAVAILABLE"
         result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES"
         result.sourceBoundaryPointCount=OuttaMyWay.ValueRecord.length(snapshot.boundary or {})
-        result.canonicalBoundaryPointCount=OuttaMyWay.ValueRecord.length(canonical or {})
+        result.canonicalBoundaryPointCount=canonicalCount
         return result
     end
-    local result=Probe.analyzeBoundary(canonical)
-    result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES"
+    local quantum=tonumber(snapshot.quantizationMetres)
+    if not finite(quantum) or quantum<=0 then
+        local result=Probe.analyzeBoundary(nil)
+        result.reason="CANONICAL_QUANTIZATION_UNAVAILABLE"
+        result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES"
+        result.sourceBoundaryPointCount=OuttaMyWay.ValueRecord.length(snapshot.boundary or {})
+        result.canonicalBoundaryPointCount=canonicalCount
+        result.registryBoundaryPointCount=tonumber(snapshot.boundaryPointCount)
+        return result
+    end
+    local metric={}
+    for index,value in OuttaMyWay.ValueRecord.ipairs(canonical) do
+        local resolved=point(value,index)
+        if resolved==nil then
+            local result=Probe.analyzeBoundary(nil)
+            result.reason="CANONICAL_ROOT_VERTEX_UNRESOLVED"
+            result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES"
+            result.sourceBoundaryPointCount=OuttaMyWay.ValueRecord.length(snapshot.boundary or {})
+            result.canonicalBoundaryPointCount=canonicalCount
+            result.registryBoundaryPointCount=tonumber(snapshot.boundaryPointCount)
+            result.quantizationMetres=quantum
+            return result
+        end
+        metric[#metric+1]={x=resolved.x*quantum,z=resolved.z*quantum}
+    end
+    local result=Probe.analyzeBoundary(metric)
+    result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES_DEQUANTIZED"
+    result.coordinateUnits="WORLD_METRES"
+    result.quantizationMetres=quantum
     result.sourceBoundaryPointCount=OuttaMyWay.ValueRecord.length(snapshot.boundary or {})
-    result.canonicalBoundaryPointCount=OuttaMyWay.ValueRecord.length(canonical)
+    result.canonicalBoundaryPointCount=canonicalCount
     result.registryBoundaryPointCount=tonumber(snapshot.boundaryPointCount)
     return result
 end
@@ -212,8 +240,10 @@ function Probe:_publish(snapshot)
     self.processedSnapshots[snapshot.referenceKey]=true
     local analysis=Probe.analyzeSnapshot(snapshot)
     logInfo(
-        "SNAPSHOT snapshot=%s polygon=%s input=%s sourcePoints=%d canonicalPoints=%d registryPoints=%s status=%s gapRatio=%s gap=%s->%s semanticAuthority=false control=false",
+        "SNAPSHOT snapshot=%s polygon=%s input=%s units=%s quantumM=%s sourcePoints=%d canonicalPoints=%d registryPoints=%s status=%s gapRatio=%s gap=%s->%s semanticAuthority=false control=false",
         tostring(snapshot.referenceKey),tostring(snapshot.fieldPolygonReferenceKey),tostring(analysis.inputSource),
+        tostring(analysis.coordinateUnits or "UNRESOLVED"),
+        analysis.quantizationMetres and string.format("%.3f",analysis.quantizationMetres) or "UNRESOLVED",
         tonumber(analysis.sourceBoundaryPointCount) or 0,tonumber(analysis.canonicalBoundaryPointCount) or 0,
         tostring(analysis.registryBoundaryPointCount or "UNRESOLVED"),tostring(analysis.status),
         analysis.largestScaleGapRatio and string.format("%.3f",analysis.largestScaleGapRatio) or "UNRESOLVED",
