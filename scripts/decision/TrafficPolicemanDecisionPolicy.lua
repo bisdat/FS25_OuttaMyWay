@@ -67,6 +67,59 @@ local function autonomousExhaustionPass(record, picture, governingRequirementKey
     return true, "PASS"
 end
 
+local function finiteNumber(value)
+    return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
+end
+
+local function cornerRightOfWayChoice(entries)
+    if #entries==0 then return nil,false,nil end
+    local cornerCount=0
+    local identity=nil
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(entries) do
+        local evidence=entry.metadata and entry.metadata.cornerRightOfWay or nil
+        if type(evidence)=="table" then
+            cornerCount=cornerCount+1
+            if identity==nil then identity=evidence.sharedCornerIdentity
+            elseif identity~=evidence.sharedCornerIdentity then
+                return nil,true,"MULTIPLE_SHARED_CORNER_IDENTITIES_IN_ONE_DECISION_SCOPE"
+            end
+        end
+    end
+    if cornerCount==0 then return nil,false,nil end
+    if cornerCount~=#entries or #entries~=2 then
+        return nil,true,"SHARED_CORNER_ALLOCATION_REQUIRES_EXACTLY_TWO_ALTERNATIVES"
+    end
+
+    local function protected(entry)
+        local evidence=entry.metadata.cornerRightOfWay
+        return evidence and evidence.protectedParticipant or nil
+    end
+    local a,b=entries[1],entries[2]
+    local ap,bp=protected(a),protected(b)
+    if type(ap)~="table" or type(bp)~="table" then
+        return nil,true,"SHARED_CORNER_PARTICIPANT_EVIDENCE_UNAVAILABLE"
+    end
+
+    if (ap.engagement==true)~=(bp.engagement==true) then
+        return ap.engagement==true and a or b,true,"PROTECT_ALREADY_ADMITTED_CORNER_ENGAGEMENT"
+    end
+
+    if ap.engagement==true and bp.engagement==true then
+        local ae,be=tonumber(ap.establishedObservationEpoch),tonumber(bp.establishedObservationEpoch)
+        if finiteNumber(ae) and finiteNumber(be) and ae~=be then
+            return ae<be and a or b,true,"PROTECT_EARLIER_CURRENT_CORNER_ENGAGEMENT"
+        end
+    end
+
+    if ap.approachDemand==true and bp.approachDemand==true then
+        local ad,bd=tonumber(ap.approachDistanceM),tonumber(bp.approachDistanceM)
+        if finiteNumber(ad) and finiteNumber(bd) and math.abs(ad-bd)>0.001 then
+            return ad<bd and a or b,true,"PROTECT_NEARER_CURRENT_CORNER_APPROACH_DEMAND"
+        end
+    end
+    return nil,true,"SHARED_CORNER_RIGHT_OF_WAY_EVIDENCE_DOES_NOT_DISTINGUISH_ALLOCATION"
+end
+
 local function compareCandidates(a, b)
     if a.rank ~= b.rank then return a.rank < b.rank end
     if a.candidate.comparisonCost ~= b.candidate.comparisonCost then
@@ -134,7 +187,23 @@ function Policy:select(picture, candidateInventory, viableCandidates)
     end
 
     table.sort(selectable, compareCandidates)
-    local selected = selectable[1] and selectable[1].candidate or nil
+    local selectedEntry=nil
+    local cornerScoped=false
+    local cornerRule=nil
+    selectedEntry,cornerScoped,cornerRule=cornerRightOfWayChoice(selectable)
+    local selected=nil
+    if cornerScoped then
+        selected=selectedEntry and selectedEntry.candidate or nil
+        if selected==nil then
+            blocked[#blocked+1]={
+                candidateId="SHARED_CORNER_ALLOCATION",
+                capability="REGULATE_SPEED",
+                missing={{capability="TEMPORARY_RIGHT_OF_WAY_ALLOCATION",reason=cornerRule}}
+            }
+        end
+    else
+        selected=selectable[1] and selectable[1].candidate or nil
+    end
     local rankedSummary = {}
     for _, entry in OuttaMyWay.ValueRecord.ipairs(ranked) do
         rankedSummary[#rankedSummary + 1] = {
@@ -149,7 +218,7 @@ function Policy:select(picture, candidateInventory, viableCandidates)
         selected=selected,
         waitForPreferenceEvidence=selected==nil and #blocked>0,
         governingRequirementKey=governingRequirementKey,
-        rule=Policy.KIND,
+        rule=cornerScoped and ("CORNER_RIGHT_OF_WAY:"..tostring(cornerRule)) or Policy.KIND,
         ranked=rankedSummary,
         blocked=blocked
     }
