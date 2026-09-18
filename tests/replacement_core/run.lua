@@ -6315,7 +6315,9 @@ test("legacy follower shadow retirement preserves P22 capability retirement", fu
 end)
 
 
-dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)\n\ndofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
+dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
+
+dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
     newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
 })
 
