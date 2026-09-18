@@ -70,6 +70,12 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     local obstruction=family(groups,"OBSTRUCTION_RELOCATION")[1]
     if obstruction~=nil then return choose(obstruction,"OUTER_PURPOSE_PRECEDENCE","CURRENT_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC") end
 
+    local cornerFail=family(groups,"CORNER_FAIL_CLOSED")[1]
+    if cornerFail~=nil then return choose(cornerFail,"CORNER_DECISION_DOMAIN_FAIL_CLOSED","SHARED_CORNER_ALLOCATION_AMBIGUITY_PRECEDES_NON_CORNER_LIVE_TRAFFIC") end
+
+    local corner=family(groups,"CORNER_RIGHT_OF_WAY")[1]
+    if corner~=nil then return choose(corner,"CORNER_DECISION_DOMAIN_PRECEDENCE","ADMITTED_SHARED_CORNER_COMPETING_DEMAND_OWNS_DECISION_DOMAIN") end
+
     local followerFail=family(groups,"FOLLOWER_FAIL_CLOSED")[1]
     if followerFail~=nil then return choose(followerFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","FOLLOWER_SAME_CLASS_AMBIGUITY_PRECEDES_OTHER_LIVE_TRAFFIC") end
 
