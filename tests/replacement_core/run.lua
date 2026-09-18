@@ -85,6 +85,7 @@ load("scripts/constraints/ConstraintEngine.lua")
 load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
 load("scripts/diagnostics/ArchitectureTrace.lua")
+load("scripts/diagnostics/BoundaryFeaturePersistenceProbe.lua")
 load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
@@ -6312,6 +6313,8 @@ end)
 test("legacy follower shadow retirement preserves P22 capability retirement", function()
     equal(OuttaMyWay.Prototype22CapabilityGate,nil)
 end)
+
+dofile(root.."/tests/replacement_core/BoundaryFeaturePersistence.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
     newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
