@@ -91,6 +91,7 @@ end
 function Assessment:assessActionSpaceRegulation(current,relation)
     if current==nil then return {disposition="TERMINATE",reason="ACTION_SPACE_REGULATION_NOT_CURRENT"} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     if relation==nil then
         if forward then
             return {
@@ -99,7 +100,35 @@ function Assessment:assessActionSpaceRegulation(current,relation)
                 reason="FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
             }
         end
+        if corner then
+            return {
+                disposition="PERSIST",
+                evidenceState="WAITING_FOR_EVIDENCE",
+                reason="SHARED_CORNER_COMPETING_DEMAND_TEMPORARILY_UNRESOLVED"
+            }
+        end
         return {disposition="PERSIST",reason="ACTION_SPACE_RELATIONSHIP_TEMPORARILY_UNRESOLVED"}
+    end
+    if corner then
+        if relation.positiveDissolution==true or relation.classification=="SHARED_CORNER_COMPETING_DEMAND_DISSOLVED" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION",
+                reason=relation.reason or "SHARED_CORNER_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
+            }
+        end
+        if relation.competingDemand==true and relation.identity==current.provenance.conflictIdentity then
+            return {
+                disposition="PERSIST",
+                evidenceState="SUPPORTED",
+                reason="SHARED_CORNER_COMPETING_DEMAND_REMAINS_POSITIVELY_SUPPORTED"
+            }
+        end
+        return {
+            disposition="PERSIST",
+            evidenceState="WAITING_FOR_EVIDENCE",
+            reason=relation.reason or "SHARED_CORNER_COMPETING_DEMAND_EVIDENCE_TEMPORARILY_UNRESOLVED"
+        }
     end
     if forward then
         local cornerProtection=self:cornerEngagementProtection(current,relation)
