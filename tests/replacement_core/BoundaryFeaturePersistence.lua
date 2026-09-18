@@ -14,6 +14,17 @@ return function(test,equal)
         {x=174.3,z=-488.3},{x=182.8,z=-468.8},{x=228.8,z=-242.8}
     }
 
+    local function quantized(points,quantum)
+        local result={}
+        for _,vertex in OuttaMyWay.ValueRecord.ipairs(points) do
+            result[#result+1]={
+                x=math.floor(vertex.x/quantum+(vertex.x>=0 and 0.5 or -0.5)),
+                z=math.floor(vertex.z/quantum+(vertex.z>=0 and 0.5 or -0.5))
+            }
+        end
+        return result
+    end
+
     local function stageAt(analysis,count)
         for _,stage in OuttaMyWay.ValueRecord.ipairs(analysis.stages or {}) do
             if stage.remainingPointCount==count then return stage end
@@ -101,17 +112,29 @@ return function(test,equal)
             closed[#closed+1]={x=vertex.x,z=vertex.z}
         end
         closed[#closed+1]={x=field10[1].x,z=field10[1].z}
+        local direct=Probe.analyzeBoundary(field10)
         local analysis=Probe.analyzeSnapshot({
             boundary=closed,
-            canonicalRootVertices=field10,
+            canonicalRootVertices=quantized(field10,0.1),
+            quantizationMetres=0.1,
             boundaryPointCount=10
         })
         equal(analysis.status,"SUPPORTED_DIAGNOSTIC_ANALYSIS")
-        equal(analysis.inputSource,"FIELD_WORLD_CANONICAL_ROOT_VERTICES")
+        equal(analysis.inputSource,"FIELD_WORLD_CANONICAL_ROOT_VERTICES_DEQUANTIZED")
+        equal(analysis.coordinateUnits,"WORLD_METRES")
+        equal(analysis.quantizationMetres,0.1)
         equal(analysis.sourceBoundaryPointCount,11)
         equal(analysis.canonicalBoundaryPointCount,10)
         equal(analysis.registryBoundaryPointCount,10)
         equal(analysis.originalPointCount,10)
+        equal(string.format("%.3f",analysis.largestScaleGapBeforeM),string.format("%.3f",direct.largestScaleGapBeforeM))
+        equal(string.format("%.3f",analysis.largestScaleGapAfterM),string.format("%.3f",direct.largestScaleGapAfterM))
+        equal(string.format("%.3f",analysis.largestScaleGapRatio),string.format("%.3f",direct.largestScaleGapRatio))
+        local four=stageAt(analysis,4)
+        local expected=coordinateSet(stageAt(direct,4))
+        for key in OuttaMyWay.ValueRecord.pairs(expected) do
+            equal(coordinateSet(four)[key],true,"de-quantized four-survivor stage missing "..key)
+        end
         if not (analysis.removals[1].removalScaleM>0) then
             error("canonical ring must not manufacture zero-scale closing-duplicate removal")
         end
@@ -123,11 +146,22 @@ return function(test,equal)
             closed[#closed+1]={x=vertex.x,z=vertex.z}
         end
         closed[#closed+1]={x=field10[1].x,z=field10[1].z}
-        local analysis=Probe.analyzeSnapshot({boundary=closed,boundaryPointCount=10})
+        local analysis=Probe.analyzeSnapshot({boundary=closed,quantizationMetres=0.1,boundaryPointCount=10})
         equal(analysis.status,"UNRESOLVED")
         equal(analysis.reason,"CANONICAL_ROOT_VERTICES_UNAVAILABLE")
         equal(analysis.sourceBoundaryPointCount,11)
         equal(analysis.canonicalBoundaryPointCount,0)
+        equal(analysis.semanticAuthority,false)
+    end)
+
+    test("Boundary persistence probe: canonical metric analysis fails closed without quantization scale",function()
+        local analysis=Probe.analyzeSnapshot({
+            boundary=field10,
+            canonicalRootVertices=quantized(field10,0.1),
+            boundaryPointCount=10
+        })
+        equal(analysis.status,"UNRESOLVED")
+        equal(analysis.reason,"CANONICAL_QUANTIZATION_UNAVAILABLE")
         equal(analysis.semanticAuthority,false)
     end)
 
