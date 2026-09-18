@@ -219,7 +219,7 @@ return function(test,equal)
         return OuttaMyWay.OperationalPicture.new({
             identity="OP-CORNER",epoch=1,observationSnapshotId="OBS-CORNER",
             situations={},currentPairAssessmentScope={},
-            identities={assemblies={"AS-A","AS-B"},components={},jobEpisodes={active={},admitted={},ended={}},operations={active={"OR-1"},ended={}},
+            identities={assemblies={"AS-A","AS-B"},components={},jobEpisodes={active={},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
             currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},
             responsibilityRelations={},uncertainty={},representationFitness={},
             provenance={source="CornerSituationKnowledge"},controlOutcomeEvidence={},
