@@ -151,6 +151,33 @@ function Probe.analyzeBoundary(boundary)
     return result
 end
 
+-- Live Field World analysis deliberately consumes the canonical open ring rather
+-- than the source boundary encoding.  A repeated closing point is representation
+-- syntax, not a Boundary Feature, and must not enter the persistence sequence.
+function Probe.analyzeSnapshot(snapshot)
+    if type(snapshot)~="table" then
+        local result=Probe.analyzeBoundary(nil)
+        result.reason="FIELD_WORLD_SNAPSHOT_UNAVAILABLE"
+        result.inputSource="UNAVAILABLE"
+        return result
+    end
+    local canonical=snapshot.canonicalRootVertices
+    if OuttaMyWay.ValueRecord.length(canonical or {})<4 then
+        local result=Probe.analyzeBoundary(nil)
+        result.reason="CANONICAL_ROOT_VERTICES_UNAVAILABLE"
+        result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES"
+        result.sourceBoundaryPointCount=OuttaMyWay.ValueRecord.length(snapshot.boundary or {})
+        result.canonicalBoundaryPointCount=OuttaMyWay.ValueRecord.length(canonical or {})
+        return result
+    end
+    local result=Probe.analyzeBoundary(canonical)
+    result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES"
+    result.sourceBoundaryPointCount=OuttaMyWay.ValueRecord.length(snapshot.boundary or {})
+    result.canonicalBoundaryPointCount=OuttaMyWay.ValueRecord.length(canonical)
+    result.registryBoundaryPointCount=tonumber(snapshot.boundaryPointCount)
+    return result
+end
+
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then
@@ -183,11 +210,12 @@ function Probe:_publish(snapshot)
     if type(snapshot)~="table" or type(snapshot.referenceKey)~="string" then return nil end
     if self.processedSnapshots[snapshot.referenceKey] then return nil end
     self.processedSnapshots[snapshot.referenceKey]=true
-    local analysis=Probe.analyzeBoundary(snapshot.boundary)
+    local analysis=Probe.analyzeSnapshot(snapshot)
     logInfo(
-        "SNAPSHOT snapshot=%s polygon=%s points=%d status=%s gapRatio=%s gap=%s->%s semanticAuthority=false control=false",
-        tostring(snapshot.referenceKey),tostring(snapshot.fieldPolygonReferenceKey),tonumber(analysis.originalPointCount) or 0,
-        tostring(analysis.status),
+        "SNAPSHOT snapshot=%s polygon=%s input=%s sourcePoints=%d canonicalPoints=%d registryPoints=%s status=%s gapRatio=%s gap=%s->%s semanticAuthority=false control=false",
+        tostring(snapshot.referenceKey),tostring(snapshot.fieldPolygonReferenceKey),tostring(analysis.inputSource),
+        tonumber(analysis.sourceBoundaryPointCount) or 0,tonumber(analysis.canonicalBoundaryPointCount) or 0,
+        tostring(analysis.registryBoundaryPointCount or "UNRESOLVED"),tostring(analysis.status),
         analysis.largestScaleGapRatio and string.format("%.3f",analysis.largestScaleGapRatio) or "UNRESOLVED",
         analysis.largestScaleGapBeforeM and string.format("%.3f",analysis.largestScaleGapBeforeM) or "UNRESOLVED",
         analysis.largestScaleGapAfterM and string.format("%.3f",analysis.largestScaleGapAfterM) or "UNRESOLVED"
