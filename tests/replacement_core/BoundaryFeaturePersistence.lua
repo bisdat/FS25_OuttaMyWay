@@ -95,6 +95,42 @@ return function(test,equal)
         equal(analysis.semanticAuthority,false)
     end)
 
+    test("Boundary persistence probe: live snapshot ignores repeated source-ring closure encoding",function()
+        local closed={}
+        for _,vertex in OuttaMyWay.ValueRecord.ipairs(field10) do
+            closed[#closed+1]={x=vertex.x,z=vertex.z}
+        end
+        closed[#closed+1]={x=field10[1].x,z=field10[1].z}
+        local analysis=Probe.analyzeSnapshot({
+            boundary=closed,
+            canonicalRootVertices=field10,
+            boundaryPointCount=10
+        })
+        equal(analysis.status,"SUPPORTED_DIAGNOSTIC_ANALYSIS")
+        equal(analysis.inputSource,"FIELD_WORLD_CANONICAL_ROOT_VERTICES")
+        equal(analysis.sourceBoundaryPointCount,11)
+        equal(analysis.canonicalBoundaryPointCount,10)
+        equal(analysis.registryBoundaryPointCount,10)
+        equal(analysis.originalPointCount,10)
+        if not (analysis.removals[1].removalScaleM>0) then
+            error("canonical ring must not manufacture zero-scale closing-duplicate removal")
+        end
+    end)
+
+    test("Boundary persistence probe: live snapshot fails closed when canonical root ring is unavailable",function()
+        local closed={}
+        for _,vertex in OuttaMyWay.ValueRecord.ipairs(field10) do
+            closed[#closed+1]={x=vertex.x,z=vertex.z}
+        end
+        closed[#closed+1]={x=field10[1].x,z=field10[1].z}
+        local analysis=Probe.analyzeSnapshot({boundary=closed,boundaryPointCount=10})
+        equal(analysis.status,"UNRESOLVED")
+        equal(analysis.reason,"CANONICAL_ROOT_VERTICES_UNAVAILABLE")
+        equal(analysis.sourceBoundaryPointCount,11)
+        equal(analysis.canonicalBoundaryPointCount,0)
+        equal(analysis.semanticAuthority,false)
+    end)
+
     test("Boundary persistence probe: no Corner classification is manufactured",function()
         local analysis=Probe.analyzeBoundary(field10)
         equal(analysis.cornerFeatures,nil)
