@@ -576,6 +576,7 @@ function Source:capture(mission, nowSeconds)
                 assemblyReferenceKey=worker.referenceKey,name=worker.name,sourceJobToken=worker.sourceJobToken,
                 reportedSpeedMps=worker.speedMps,positionDerivedSpeedMps=md.positionDerivedSpeedMps,
                 travelDirectionX=md.travelDirectionX,travelDirectionZ=md.travelDirectionZ,
+                poseX=worker.pose and worker.pose.x or nil,poseZ=worker.pose and worker.pose.z or nil,
                 headingX=worker.pose and worker.pose.dx or nil,headingZ=worker.pose and worker.pose.dz or nil,
                 headingToTravelDot=md.headingToTravelDot,motionClassification=md.classification,motionReason=md.reason,
                 sampleIntervalSeconds=md.sampleIntervalSeconds,blocked=worker.blocked==true,
