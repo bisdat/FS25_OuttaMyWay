@@ -14,15 +14,10 @@ return function(test,equal)
         {x=174.3,z=-488.3},{x=182.8,z=-468.8},{x=228.8,z=-242.8}
     }
 
-    local function quantized(points,quantum)
-        local result={}
-        for _,vertex in OuttaMyWay.ValueRecord.ipairs(points) do
-            result[#result+1]={
-                x=vertex.x>=0 and math.floor(vertex.x/quantum+0.5) or math.ceil(vertex.x/quantum-0.5),
-                z=vertex.z>=0 and math.floor(vertex.z/quantum+0.5) or math.ceil(vertex.z/quantum-0.5)
-            }
-        end
-        return result
+    local function canonicalVertices(points,quantum)
+        local canonical,reason=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(points,{},quantum)
+        if canonical==nil then error(reason or "canonicalization failed") end
+        return canonical.canonicalRootVertices
     end
 
     local function stageAt(analysis,count)
@@ -115,7 +110,7 @@ return function(test,equal)
         local direct=Probe.analyzeBoundary(field10)
         local analysis=Probe.analyzeSnapshot({
             boundary=closed,
-            canonicalRootVertices=quantized(field10,0.1),
+            canonicalRootVertices=canonicalVertices(field10,0.1),
             quantizationMetres=0.1,
             boundaryPointCount=10
         })
@@ -157,7 +152,7 @@ return function(test,equal)
     test("Boundary persistence probe: canonical metric analysis fails closed without quantization scale",function()
         local analysis=Probe.analyzeSnapshot({
             boundary=field10,
-            canonicalRootVertices=quantized(field10,0.1),
+            canonicalRootVertices=canonicalVertices(field10,0.1),
             boundaryPointCount=10
         })
         equal(analysis.status,"UNRESOLVED")
