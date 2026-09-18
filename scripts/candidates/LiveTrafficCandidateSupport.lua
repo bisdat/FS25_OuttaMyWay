@@ -387,11 +387,16 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
         entries={{assemblyId=action.regulatedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
     }
+    local referenceKey=(forward and "forward-intersection-regulation:" or "action-space-regulation:")..tostring(relation.identity)
+    local purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
+        or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}
+    if corner then
+        referenceKey="corner-right-of-way-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
+        purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
+    end
     return {
-        referenceKey=(forward and "forward-intersection-regulation:" or (corner and "corner-right-of-way-regulation:" or "action-space-regulation:"))..tostring(relation.identity)..(corner and (":"..tostring(action.regulatedAssemblyId)) or ""),
-        purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
-            or (corner and {kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
-            or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}),
+        referenceKey=referenceKey,
+        purpose=purpose,
         subject={assemblyId=action.regulatedAssemblyId,assemblyIds={action.regulatedAssemblyId}},capability="REGULATE_SPEED",
         expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,
             elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=fixed,zeroSpeedHoldExpression=not fixed},
