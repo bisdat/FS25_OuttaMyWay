@@ -886,7 +886,7 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
     self.actionSpaceRegulationApplyCount=self.actionSpaceRegulationApplyCount+1; self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(request,"ACCEPTED",{kind=fixedForwardIntersection and "FORWARD_INTERSECTION_REGULATION_ADMITTED"
         or (fixedCornerRightOfWay and "CORNER_RIGHT_OF_WAY_REGULATION_ADMITTED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ENVELOPE_ADMITTED"),
-        capability="REGULATE_SPEED",effectClass=fixedCreep and "INTENT_REVELATION_CREEP" or envelope.effectClass,maxSpeedKmh=initialCap},nil)
+        capability="REGULATE_SPEED",effectClass=(fixedForwardIntersection or fixedCornerRightOfWay) and "INTENT_REVELATION_CREEP" or envelope.effectClass,maxSpeedKmh=initialCap},nil)
     if fixedForwardIntersection then
         logInfo("FORWARD_INTERSECTION_REGULATION_APPLIED commitment=%s relationship=%s yielder=%s continuing=%s cap=1kmh purpose=%s",
             tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId),tostring(bridge.governingPurpose))
