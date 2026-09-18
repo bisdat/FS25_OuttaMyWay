@@ -175,39 +175,86 @@ This is a degraded-entry condition the normal architecture must try to prevent. 
 
 Spatial precedence is temporary and evidence-based.
 
+#### Structural Field Shape, Headland Regime and Corner Feature
+
+The immutable Field World polygon remains authoritative for exact containment, boundary intersection, identity evidence and audit. Situation Assessment may additionally interpret a **Structural Field Shape** from that exact geometry so sampled boundary points are not mistaken for semantic field features.
+
+> **Boundary Sample != Boundary Feature**
+
+> **Sampling Topology != Field Shape Topology**
+
+A **Headland Regime** is a persistent structural domain through which circumferential productive work can continue without a discrete reorientation into a different persistent headland-work direction. A regime may curve; constant heading is not required. A circular or continuously curving field may therefore have one continuous Headland Regime and no discrete Corner Feature.
+
+A **Corner Feature** is a bounded structural transition region where one Headland Regime gives way to another. A Corner is a region/feature, not one sampled polygon vertex. Corner topology follows headland direction-change topology, not bounding-box topology: legitimate features may occur on convex or concave outer boundaries, peninsula tips, recesses or supported internal/island boundaries.
+
+A local boundary perturbation that returns to the same surrounding Headland Regime is not automatically a Corner Feature merely because its sampled polygon contains sharp literal vertices. Conversely, a rounded but localised regime transition may remain a Corner Feature even when GIANTS traverses it continuously without reversing.
+
+The architecture does not prescribe one geometric simplification algorithm, curvature threshold, angle threshold or universal Corner radius. Field-scoped Corner interpretation must be stable across materially equivalent boundary sampling and remain grounded in the exact Field World.
+
 #### Corner Atlas
 
-A **Corner Atlas** is retained Field World knowledge of positively discovered Category-1 corner space. Corner discovery remains evidence-led: current pairwise Forward-Intersection geometry must positively identify a genuine corner through supported Field-World-bounded continuations whose distinct terminating boundary edges share the same Field World vertex. A middle-of-field intersection does not discover a corner.
+A **Corner Atlas** is retained Field World knowledge of positively established Category-1 Corner Features. Corner knowledge is field-scoped and assembly-independent: Corner existence does not require a pair, Forward Intersection, traffic conflict, particular working width or current occupant.
 
-Once positively discovered, the corner is not reclassified back to Open Field merely because the pair relationship that exposed it later becomes unresolved, negative, superseded or geometrically different. The atlas entry belongs to the current immutable Field World, not to the discovering pair, Regulation or Resolution Commitment.
+Pairwise Forward-Intersection geometry remains one possible positive evidence route where it genuinely establishes a Corner Feature, but it is not the definition of Corner existence and no pairwise quorum is required.
 
-> **Corner Detection Can Be Pair-wise; Corner Knowledge Is Spatial.**
+> **Corner Detection May Be Pair-wise; Corner Knowledge Is Spatial.**
 
-A Corner Atlas entry retains, at minimum, the Field World identity, shared corner vertex, incident boundary-edge identities and a positively supported **Corner Envelope** representing the constrained space demonstrated by discovery. Later positive evidence MAY enlarge the known envelope when a wider or otherwise more demanding supported assembly demonstrates additional constrained demand. The known envelope MUST NOT shrink merely because a later interaction is narrower. Any retained envelope remains bounded by the immutable Field World.
+A Corner Atlas entry retains enough Field World provenance and structural Corner topology to identify the same feature and its bounded transition region. Exact representation may include structural boundary/headland-regime relationships and supporting exact polygon evidence; it MUST NOT reduce Corner identity to one discovering pair, one shared sampled vertex, a historical yielder or one assembly's operational envelope.
 
-> **Known Corner Extent Can Grow; It Does Not Oscillate.**
+Distinct Corner Features remain distinct even when their operational demand regions later overlap. The Atlas creates no right-of-way, pair history, future turn route, Regulation identity or Resolution Commitment.
 
-The Corner Atlas is spatial knowledge, not persistent generic pair history. It does not retain a past yielder, pair right-of-way, future turn route or responsibility identity.
+#### Headland Association, Corner Approach Demand and Corner Admission
 
-#### Corner Engagement
+**Headland Association** is positive Situation knowledge that an assembly is productively associated with a boundary/headland regime relevant to a Corner Feature. It raises awareness that native progression may soon become constrained and may inform temporary right-of-way. Negative or unresolved Headland Association does not establish that the Corner is absent and does not negate independently positive Corner Approach Demand; it may instead mean the assembly has more options for safe temporal coordination or intent revelation.
 
-**Corner Engagement** is current Situation meaning that a worker is entering, occupying, manoeuvring within or exiting a known Corner Envelope in a way that may materially affect another current worker whose supported demand intersects that corner theatre. Engagement belongs to the worker-plus-corner Situation, not to a pair relationship or Current Responsibility.
+**Corner Approach Demand** is unilateral assembly-to-Corner Situation meaning that the assembly's currently evidenced bounded spatial demand is progressing into a known Corner Feature. Proximity alone is insufficient. The conclusion must be grounded in current supported demand and MUST NOT be manufactured by indefinitely extending a heading or reconstructing a future GIANTS route until it eventually reaches the Corner.
 
-While Corner Engagement remains current, preserve the engaged worker's native opportunity to reveal intent, turn, reverse, reposition and create space. Another relevant worker outside or approaching the same corner remains the cheaper party to make cautious where temporal coordination is justified. A changing Forward Intersection, Current Excursion, Passage Candidate or Responsibility transition does not by itself erase the Corner Engagement fact.
+**Corner Admission** occurs when Corner Existence and Corner Approach Demand are both positive for that assembly. Headland Association is informative but is not an admission gate. No second assembly, pairwise Forward Intersection, shared terminating vertex, `TURNING` state, reverse manoeuvre or current physical Corner occupancy is required.
 
-> **Responsibility Transition != Corner Departure.**
+> **Evidence Completeness != Evidence Sufficiency**
 
-TURNING, reversing and transient heading change by the engaged worker are expected evidence inside the engagement lifecycle. They do not constitute departure and they do not require predicted turn geometry. No timer, travelled-distance tail or width multiplier may manufacture Corner Departure merely because the worker has temporarily moved beyond a guessed virtual boundary.
+> **No Pairwise Quorum for Corner Admission**
+
+A second assembly may later join the same **Shared Corner Situation** from its own positive demand into the already-known Corner Feature. Shared Corner Situation does not require shared Corner discovery.
+
+#### Corner Engagement and assembly-specific Corner demand
+
+Corner Admission establishes retained **Corner Engagement** for the assembly-plus-Corner Situation. Engagement persists while the assembly approaches, occupies, manoeuvres within or exits the Corner decision domain and retires only through Positive Corner Departure or an explicit supported fail-safe/lifecycle outcome.
+
+Once Corner Engagement is established, Corner semantics own the decision domain. The underlying Headland Regime continues to exist as field knowledge but becomes **decision-dormant** for that engaged assembly until Positive Corner Departure. Headland positives and negatives observed during native shuffle, reverse, run-out, alignment or transient geometry are expected to be noisy and MUST NOT by themselves revoke or recreate Corner Engagement or justify a different temporary right-of-way.
+
+> **Semantic Persistence != Decision Relevance**
+
+A changing Forward Intersection, Current Excursion, Passage Candidate, Responsibility transition, transient heading, reverse movement or temporary excursion outside a guessed geometric envelope does not by itself erase Corner Engagement.
+
+The field-scoped Corner Feature and an assembly's operational demand around it are separate. **Corner Demand** must account for the admitted Physical Assembly's relevant manoeuvring reach, not merely productive working width or instantaneous centre position. Productive width may support pre-Corner Headland Association; physical width, overall length, articulation and current supported representation may dominate the space that must be protected while manoeuvring.
+
+Working width, physical dimensions and assembly length MUST NOT be collapsed into one universal scalar Corner radius or distance tail. Long articulated assemblies may require native run-out/alignment travel substantially greater than their static physical length. Architecture therefore does not require sophisticated predicted articulated swept-volume construction, but it does require Situation Assessment to preserve enough assembly-specific demand that another worker is not authorised into space the engaged assembly still legitimately consumes.
+
+> **Structural Corner Extent != Operational Corner Clearance**
+
+> **Working Width != Corner Manoeuvring Demand**
+
+When multiple assemblies positively demand the same Corner Feature, Situation Assessment publishes the current competing-demand meaning for downstream Decision. Current Corner Engagement, Corner Approach Demand, positive Headland Association, available alternatives, Resolution Margin and current space creation may inform which assembly is made cautious. No one evidence class creates a permanent priority rule.
 
 #### Positive Corner Departure
 
-Corner Engagement retires only from **Positive Corner Departure**. Fresh A8 reacquisition by the same engaged worker is the required gate because it re-establishes GIANTS-owned productive forward-line certainty after manoeuvring uncertainty, but A8 alone is not sufficient proof that the corner is clear.
+Corner Engagement retires only from **Positive Corner Departure**. A8 is the positive evidence of productive work. While productive A8 is absent or the assembly remains in native manoeuvring uncertainty, the assembly remains in the Corner for decision purposes.
 
-After fresh A8, the worker's current Field-World-bounded productive continuation must positively demonstrate that its productive demand no longer belongs to the stored corner topology. The normal positive witness is that the remembered corner vertex lies behind the worker's fresh productive progression and the new bounded continuation terminates on a Field World boundary edge that is not incident to that corner. Equivalent representation may be used only if it carries the same positive semantic claim.
+Fresh or continuously valid A8 is not sufficient by itself. Positive departure requires A8 to cross the correct spatial departure boundary for the traversal actually supplied by Reality.
 
-> **A8 Reacquisition Is the Departure Gate; Positive Topological Departure Is the Discharge Witness.**
+Two evidence forms are recognised:
 
-Absence of renewed corner intersection, elapsed time, travelled distance or a narrower current footprint is not Positive Corner Departure. Until positive departure or another explicit fail-safe outcome is established, Situation Assessment must continue to treat the engagement as current constrained-space knowledge.
+1. **Continuous productive traversal.** On a rounded or otherwise smooth Corner where A8 remains authoritative, departure occurs only when current productive A8 positively crosses the field-scoped outgoing boundary of the known Corner Feature.
+2. **Manoeuvring traversal.** Where GIANTS enters native manoeuvring and supplies forward/reverse transitions, Situation Assessment may retain the **last** valid direction-transition position as the stronger assembly-specific departure-boundary anchor. Fresh productive A8 must be reacquired after manoeuvring uncertainty and positively cross that retained boundary before Corner Engagement may retire.
+
+The final direction-transition anchor is evidence supplied by GIANTS' own manoeuvre, not a predicted turn path. A Corner traversal with no reversal cannot depend on such an anchor and uses the field-scoped outgoing Corner boundary instead.
+
+> **A8 Establishes Productive Continuation; A8 Crossing Establishes Corner Departure**
+
+> **Continuation Established != Corner Cleared**
+
+No elapsed time, travelled-distance literal, assembly-length multiplier, working-width multiplier, headland reclassification, Forward-Intersection negative, responsibility replacement or temporary movement outside a guessed envelope may manufacture Positive Corner Departure. Until the required positive A8 crossing or another explicit fail-safe/lifecycle outcome is established, Situation Assessment continues to publish the Corner Engagement fact.
 
 ### Cooperative Passage foreseeability
 
@@ -268,15 +315,17 @@ This is a purpose-bound architectural policy, not a general Regulation tuning pa
 
 ### Category-1 Corner Engagement Protection
 
-Existing Forward-Intersection timing remains a valid way to discover a Category-1 corner and to make an initial provisional temporal allocation. Once the corner is positively known, however, constrained-space protection is governed by current **Corner Engagement**, not by persistence of the discovering pair relationship or a particular Regulation identity.
+Known Corner Features and current Corner Approach Demand/Engagement govern Corner protection; persistence of the discovering pair relationship does not. Forward Intersection may contribute evidence or an initial temporal allocation where supported, but it is neither required for Corner Admission nor authoritative for Corner discharge.
 
-When a worker is engaged with a known Corner Envelope and another current worker's supported progression would materially consume that corner theatre, spatial policy preserves the engaged worker's opportunity to create space and makes the other worker cautious where Regulation is justified. The engaged worker is not made the cheaper yielder merely because FI timing reverses, a Current Excursion appears, Passage becomes foreseeable, or Responsibility Transition changes the current control purpose.
+When one assembly is Corner-engaged and another assembly's supported current demand would materially consume the same Corner Feature, spatial policy preserves the engaged assembly's opportunity to create/clear space and makes the cheaper alternative cautious where Regulation is justified. When neither is yet engaged but both have positive Corner Approach Demand, Situation Assessment publishes the competing Corner-demand meaning; downstream Decision allocates temporary right-of-way using current demand, Headland Association, Resolution Margin, available alternatives and intent-revelation value rather than a permanent headland/vehicle-class priority.
 
-> **Protect the Engaged Corner Occupant, Not the Historical Pair.**
+A relevant assembly lacking positive Headland Association may still demand the Corner. Where its intent is less constrained or remains unresolved, Regulation may be used to buy time for intent revelation rather than pretending negative headland evidence proves safe separation.
+
+> **Corner Recognition Can Be Unilateral; Corner Allocation Is Situation-wide.**
 
 Corner Engagement creates no new Regulation capability and no permanent right-of-way. Regulation remains the parent's single temporal-coordination mechanism, including the exact 1 km/h Intent-Revelation Creep where that policy is applicable. A successor Resolution may take control of the same workers, but it does not positively discharge the underlying Corner Engagement and must remain compatible with the still-current constrained-space fact.
 
-TURNING, reversing and native repositioning by the engaged worker are expected. They neither require a predicted turn path nor dissolve the corner. Corner Engagement ends only when Situation Assessment establishes Positive Corner Departure from fresh A8-gated topological evidence, or when an explicit supported fail-safe/lifecycle outcome makes the engagement no longer current.
+Inside current Corner Engagement, headland positives/negatives are decision-dormant and MUST NOT alter the Corner allocation. TURNING, reversing, native repositioning, Forward-Intersection changes and transient geometry are expected and do not dissolve the Corner. Corner Engagement ends only when Situation Assessment establishes Positive Corner Departure from the required A8 spatial crossing, or when an explicit supported fail-safe/lifecycle outcome makes the engagement no longer current.
 
 No timer, distance tail, corner-size multiplier, FI negative, responsibility replacement or temporary movement outside a guessed envelope may manufacture discharge.
 
@@ -290,7 +339,7 @@ Situation Assessment may classify the same Regulation purpose as `WAITING_FOR_EV
 
 This grants no turn-path prediction and creates no `TURNING` route authority. A current Forward Intersection negative is potential dissolution evidence only when its evidence basis is fit for the incumbent-purpose question. A bounded continuation may remain fit for prospective Forward Intersection reasoning while being unfit for incumbent dissolution when current Reality contradicts the stronger conclusion. Absence of a positive contradiction does not by itself prove that an already-established temporal purpose has discharged.
 
-For a known Category-1 corner, Forward Intersection topology does not own corner existence or Corner Engagement retirement. FI may discover the corner and contribute temporal-allocation evidence, but an FI negative, unresolved result or reversed timing allocation cannot erase a still-current engagement. Positive Corner Departure is assessed independently from fresh A8-gated Field World topology. Outside current Corner Engagement, Situation Assessment may positively dissolve or supersede an FI allocation only from evidence fit for the purpose being ended. Temporary unresolvability or missing continuation evidence may do neither.
+For a known Category-1 corner, Forward Intersection topology does not own corner existence or Corner Engagement retirement. FI may contribute Corner evidence and temporal-allocation evidence, but an FI negative, unresolved result or reversed timing allocation cannot erase a still-current engagement. Positive Corner Departure is assessed independently from A8 crossing the applicable Corner departure boundary. Outside current Corner Engagement, Situation Assessment may positively dissolve or supersede an FI allocation only from evidence fit for the purpose being ended. Temporary unresolvability or missing continuation evidence may do neither.
 
 A bounded fail-safe may force reassessment or escalation if evidence does not recover, but timeout expiry alone must not manufacture a safe or dissolved conclusion.
 

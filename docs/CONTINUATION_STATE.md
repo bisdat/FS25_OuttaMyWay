@@ -10,65 +10,69 @@ It is **not** a repository-status dashboard. Git owns exact accepted chronology;
 
 Only the copy on accepted `main` is authoritative.
 
-## Current engineering boundary — Issue #224 Corner Engagement validation
+## Current engineering boundary — Issue #234 Corner semantics implementation
 
-Issue #224 began as premature dissolution of Category-1 Forward-Intersection Regulation. GIANTS Reality has since separated two concerns: a validated Condor / Patriot path in which Category-1 discovery successfully activates retained Corner knowledge, and a separate S416 / Condor path in which operationally relevant corner space exists without the current pairwise FI being classified `CATEGORY_1_CORNER`.
+Issue #234 began from the S416 / Condor case in which operationally significant corner demand remained `OPEN_FIELD` because Corner discovery depended on pairwise Forward-Intersection geometry. Investigation established that the pairwise/shared-vertex model was too narrow and that the architecture must separate **Field-scoped Corner knowledge**, **assembly-to-Corner demand**, and **temporary right-of-way**.
 
-The executable baseline accepted on `main` remains **0.3.0.82**. PR #232 is open and unmerged. Its branch now carries TEST **0.3.0.87** as a bounded behavioural experiment derived from `.86` passive Corner knowledge; `.83` / `.84` remain rejected and `.85` remains closed unmerged evidence.
+The current accepted Architecture and Situation Assessment contract now express that revised Corner model. Production source has not yet been reconciled to it; the next increment is implementation discovery rather than further architectural invention.
 
-## Reality discoveries
+## Current understanding
 
-### Condor / Patriot `.86A`
+### Corner Feature and Headland Regime
 
-The `.86A` run positively activated the complete passive Corner lifecycle:
+A **Corner Feature** is a bounded structural transition in the Field World between persistent headland-work regimes. It is field-scoped and does not depend on a pair, a Forward Intersection, one literal polygon vertex or a particular assembly width.
 
-- Category-1 FI discovered the corner and admitted Patriot as the exact 1 km/h yielder while Condor remained protected;
-- the Corner Atlas was created and the Cross-Corridor envelope learned approximately 36 m / 36 m demand in this two-wide-sprayer fixture;
-- Condor established Corner Occupancy and then Corner Engagement;
-- FI became unresolved while Condor entered manoeuvring, but Corner Engagement persisted through TURNING and reverse movement;
-- fresh post-manoeuvre A8 plus current topology published Positive Corner Departure when the stored corner was behind Condor's new productive axis and the bounded continuation terminated on a non-incident edge; and
-- the old FI Regulation released approximately 13 ms later, before a fresh open-field FI legitimately established a new temporal allocation.
+The exact Field World polygon remains authoritative geometry. Structural Corner interpretation must tolerate polygon sampling detail: **Boundary Sample != Boundary Feature** and **Sampling Topology != Field Shape Topology**.
 
-This materially increases confidence in Corner Atlas, Occupancy / Engagement persistence and A8-gated Positive Corner Departure. It does **not** validate the S416 / Condor discovery path or the proposed 36 m / 10 m Cross-Corridor envelope.
+A Headland Regime does not cease to exist inside a Corner. After Corner Admission it becomes decision-dormant until Positive Corner Departure because native manoeuvring can produce many misleading headland positives and negatives.
 
-### Corner Envelope measurement chatter
+> **Semantic Persistence != Decision Relevance**
 
-The same `.86A` run emitted 35 microscopic `CORNER_ENVELOPE_ENLARGED` events while practical learned extent remained approximately 36 m. Issue #233 owns this observation.
+### Corner Approach Demand and Admission
 
-> **Monotonic Growth != Every Microscopic Measurement Increase Is a Meaningful Transition**
+**Corner Approach Demand** is assembly-to-Corner Situation meaning that the assembly's currently evidenced bounded spatial demand is progressing into a known Corner Feature. Proximity alone, indefinite trajectory extension and pairwise intersection are insufficient.
 
-No tolerance or envelope tuning is justified during Issue #224.
+Corner Admission is unilateral. Positive Corner Existence plus positive Corner Approach Demand is sufficient; no second assembly or pairwise quorum is required. Positive Headland Association heightens awareness and may inform later allocation, but negative or unresolved association does not negate Corner existence or Corner Approach Demand.
 
-### S416 / Condor discovery boundary
+> **Corner Existence does not require traffic. Shared Corner Situation does not require shared Corner discovery.**
 
-Earlier `.86` Reality produced no Corner Atlas entry for the important S416 / Condor case because the relevant positive FI remained `OPEN_FIELD`. Therefore pairwise Category-1 FI classification is a valid Corner Discovery path, but is not sufficient as the sole discovery mechanism.
+### Assembly-specific Corner demand
 
-> **Corner Existence != Pairwise FI Corner Classification**
+The Corner Feature is field-scoped; the operational demand placed around it is assembly-specific. Productive width may help establish pre-Corner headland association, while physical width, overall length, articulation and native manoeuvring reach materially affect Corner demand once admitted. Working width alone is not Corner manoeuvring demand.
 
-This discovery remains intentionally outside the `.87` behavioural experiment. After Condor / Patriot `.87` validation, S416 / Condor Corner Discovery will move to a dedicated issue.
+For S416-class articulated assemblies, the travelled native run-out/alignment distance can exceed the static assembly length. OuttaMyWay must not replace that Reality with a guessed length multiplier, universal radius or timer.
 
-## TEST 0.3.0.87 hypothesis
+### Decision ownership while inside the Corner
 
-`.87` does not broaden Corner Discovery, change FI geometry, alter initial yielder selection, create a new Regulation type, modify the exact 1 km/h Intent-Revelation Creep, or change Cooperative Passage.
+Once admitted, Corner state owns the decision domain until Positive Corner Departure. Headland positives/negatives, Forward-Intersection changes, transient headings, reverse motion, Passage changes and Responsibility transitions do not discharge the Corner relationship.
 
-The existing FI Regulation retains ownership of the established temporal allocation. Situation Assessment now supplies the exact current Operational Picture to incumbent responsibility assessment. When the worker protected by that incumbent FI allocation still has current Corner Engagement, that engagement is stronger incumbent-purpose evidence than a narrow FI negative / supersession signal.
+Competing Corner Approach Demand is the primary Situation basis from which downstream Decision can choose which assembly receives temporary permission to consume the Corner and which assembly is regulated. Headland association, current occupancy/engagement, available alternatives and Resolution Margin may inform that choice; none is a permanent priority rule.
 
-> **Current Corner Engagement preserves the incumbent FI allocation; Positive Corner Departure restores ordinary FI dissolution authority.**
+### Positive Corner Departure
 
-The regulated assembly is resolved from the current retained Commitment's progress-actuation ownership. No yielder or right-of-way is copied into the Corner Atlas. Missing current Situation context cannot manufacture persistence.
+A8 is the positive truth of productive work. Everything remains **still in the Corner** until A8 crosses the correct spatial departure boundary.
+
+Two Reality-derived paths are recognised:
+
+- **continuous productive traversal** — A8 remains authoritative through a rounded/smooth Corner and Positive Corner Departure occurs only when productive A8 crosses the field-scoped outgoing Corner boundary;
+- **manoeuvring traversal** — TURNING/reverse/shuffle/run-out may continue without productive A8. When GIANTS provides forward/reverse transitions, retain the **last** such transition position as the stronger assembly-specific departure-boundary anchor. Fresh productive A8 must positively cross that boundary before discharge.
+
+No elapsed time, guessed travel distance, assembly-length multiplier, headland reclassification, FI negative or Responsibility replacement may manufacture Corner Departure.
 
 ## Authority Triad state
 
-- **Architecture — ahead of accepted executable and supported by `.86A` Reality.** Spatial Negotiation owns Corner Atlas, Corner Engagement and Positive Corner Departure as worker-plus-space meaning.
-- **Specification — current contract already requires Corner Engagement to survive FI / Responsibility transitions until Positive Corner Departure.**
-- **Code — `.87` experiment on PR #232.** Incumbent FI persistence now consumes current Corner Engagement; accepted `main` remains `.82` until owner review/merge.
+- **Architecture — reconciled.** `architecture/SPATIAL_NEGOTIATION_MODEL.md` owns the Field-scoped Corner Feature, unilateral demand/admission, decision-dormant in-Corner headland evidence, assembly-specific Corner demand and A8-crossing departure model.
+- **Specification — reconciled.** `spec/SITUATION_ASSESSMENT.md` operationalises those semantics and states the targeted Reality challenges required of an implementation.
+- **Source — known implementation drift.** `scripts/assessment/SpatialConstraintAssessment.lua` still implements the earlier pairwise/shared-vertex discovery and vertex/topology departure mechanism. Its `SITUATION_ASSESSMENT` participation remains truthful, but its mechanism must now be reconciled to the accepted contract.
+
+Tests remain evidence, not Authority-Triad ownership. The documentation/contract reconciliation makes no executable or in-game validation claim.
 
 ## Next bounded engineering step
 
-Run Condor / Patriot against TEST **0.3.0.87** and answer only this behavioural question:
+Begin a separate implementation increment from accepted `main` to answer:
 
-> While Condor remains Corner-engaged through its native manoeuvre, does Patriot remain on the incumbent exact 1 km/h FI allocation until Positive Corner Departure, after which fresh Situation Assessment may release or establish a new relationship from current Reality?
+> What is the smallest production mechanism that can realise Field-scoped Corner Features, unilateral Corner Approach Demand/Admission, decision-dormant in-Corner headland evidence, assembly-specific Corner demand and A8-positive departure without route prediction or new universal distance literals?
 
-Do not use this validation to solve S416 / Condor. If Condor / Patriot validates `.87`, open a dedicated S416 / Condor Corner Discovery issue and resume architectural whiteboarding there.
+The first implementation experiment should preserve current successful Corner behaviour, expose the S416 / Condor case to the new semantics, and be validated against prior Corner scenarios before any broader tuning.
 
-Issue #233 remains separate measurement-chatter follow-up. Issue #227 remains separate Cooperative Passage recovery-containment work.
+Issue #233 remains separate Corner-envelope measurement chatter. Issue #227 remains separate Cooperative Passage recovery/handback work.
