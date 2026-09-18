@@ -6317,9 +6317,7 @@ end)
 
 dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
 
-dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
-    newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
-})
+dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end
