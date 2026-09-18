@@ -197,6 +197,7 @@ function Probe.analyzeSnapshot(snapshot)
         metric[#metric+1]={x=resolved.x*quantum,z=resolved.z*quantum}
     end
     local result=Probe.analyzeBoundary(metric)
+    result.metricBoundary=metric
     result.inputSource="FIELD_WORLD_CANONICAL_ROOT_VERTICES_DEQUANTIZED"
     result.coordinateUnits="WORLD_METRES"
     result.quantizationMetres=quantum
