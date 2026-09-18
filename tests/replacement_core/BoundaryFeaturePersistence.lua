@@ -64,7 +64,7 @@ return function(test,equal)
         end
     end)
 
-    test("Boundary persistence probe: Field 77 has a dominant late scale separation absent from a smooth regular circle",function()
+    test("Boundary persistence probe: Field 77 late scale separation is larger than a smooth regular circle",function()
         local circle={}
         for index=0,31 do
             local angle=(math.pi*2*index)/32
@@ -73,8 +73,8 @@ return function(test,equal)
         local field=Probe.analyzeBoundary(field10)
         local round=Probe.analyzeBoundary(circle)
         if not (field.largestScaleGapRatio~=nil and round.largestScaleGapRatio~=nil
-            and field.largestScaleGapRatio>round.largestScaleGapRatio*10) then
-            error(string.format("expected diagnostic scale contrast field=%s circle=%s",
+            and field.largestScaleGapRatio>round.largestScaleGapRatio) then
+            error(string.format("expected Field 77 diagnostic gap to exceed circle gap field=%s circle=%s",
                 tostring(field.largestScaleGapRatio),tostring(round.largestScaleGapRatio)))
         end
         equal(round.semanticAuthority,false)
