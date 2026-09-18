@@ -79,6 +79,7 @@ local function normalizeMotion(values,map)
         result[#result+1]={
             assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,name=item.name,sourceJobToken=item.sourceJobToken,
             reportedSpeedMps=item.reportedSpeedMps,positionDerivedSpeedMps=item.positionDerivedSpeedMps,
+            poseX=item.poseX,poseZ=item.poseZ,
             travelDirectionX=item.travelDirectionX,travelDirectionZ=item.travelDirectionZ,headingX=item.headingX,headingZ=item.headingZ,
             headingToTravelDot=item.headingToTravelDot,motionClassification=item.motionClassification,motionReason=item.motionReason,
             sampleIntervalSeconds=item.sampleIntervalSeconds,blocked=item.blocked==true,localIntentClassification=item.localIntentClassification,
