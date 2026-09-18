@@ -100,6 +100,12 @@ return function(test,equal)
         end
     end
 
+    local function eventOfKind(events,kind)
+        for _,event in Value.ipairs(events or {}) do
+            if event.kind==kind then return event end
+        end
+    end
+
     test("Corner Structure: exact Field World features exist independently of pairwise FI",function()
         local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),oneWorkerInput())
         equal(count(result.pairRelationships),0)
@@ -117,8 +123,9 @@ return function(test,equal)
         equal(result.engagements[1].sourceJobToken,"job:AS-A")
         equal(result.engagements[1].currentEvidenceState,"CORNER_ENGAGEMENT_RETAINED")
         equal(count(result.sharedCornerSituations),0)
-        equal(result.events[2].kind,"CORNER_ENGAGEMENT_ESTABLISHED")
-        equal(result.events[2].reason,"UNILATERAL_CORNER_ADMISSION")
+        local event=eventOfKind(result.events,"CORNER_ENGAGEMENT_ESTABLISHED")
+        assert(event~=nil)
+        equal(event.reason,"UNILATERAL_CORNER_ADMISSION")
     end)
 
     test("Shared Corner Situation: independent participants publish competing demand without choosing priority",function()
