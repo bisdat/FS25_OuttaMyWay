@@ -66,14 +66,14 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
             end
             if targeted~=true then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_NOT_TARGETED" end
         end
-        return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,admissionKind=bridge.admissionKind},nil
+        return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,admissionKind=bridge.admissionKind,cornerKey=bridge.cornerKey},nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
     if current==nil or current.kind~="REGULATION" or current.provenance.conflictIdentity~=bridge.conflictIdentity
         or current.provenance.retainedCommitmentId~=readiness.commitmentId then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
     end
-    return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,commitmentId=readiness.commitmentId,admissionKind=bridge.admissionKind},nil
+    return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,commitmentId=readiness.commitmentId,admissionKind=bridge.admissionKind,cornerKey=bridge.cornerKey},nil
 end
 
 -- INITIAL establishes the semantic responsibility. REACTIVATION and
@@ -91,7 +91,7 @@ function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
         current=OuttaMyWay.Regulation.new({
             identity=self.runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",
             governingBasis=commitment.governingBasis,
-            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity,admissionKind=preflight.admissionKind}
+            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity,admissionKind=preflight.admissionKind,cornerKey=preflight.cornerKey}
         })
         self.regulationsByCommitmentId[commitment.identity]=current
         return current,nil
