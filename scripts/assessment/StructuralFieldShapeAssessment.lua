@@ -121,6 +121,34 @@ local function analyseRing(vertices)
     end
     table.sort(distinct)
 
+    if #vertices==4 then
+        local structuralStage=result.stages[1]
+        result.structuralStagePointCount=4
+        result.structuralScaleEvidence={
+            distinctRemovalScaleCount=#distinct,
+            selectionRule="EXACT_FOUR_POINT_RING_REQUIRES_NO_SUBORDINATE_SAMPLE_COLLAPSE"
+        }
+        for _,survivor in ipairs(structuralStage.survivors) do
+            if survivor.turnMagnitudeDegrees>EPSILON_M then
+                result.cornerFeatures[#result.cornerFeatures+1]={
+                    representativePoint={x=survivor.x,z=survivor.z},
+                    representativeOriginalIndex=survivor.originalIndex,
+                    supportBeforeOriginalIndex=survivor.previousOriginalIndex,
+                    supportAfterOriginalIndex=survivor.nextOriginalIndex,
+                    supportM=survivor.supportM,
+                    directionChangeMagnitudeDegrees=survivor.turnMagnitudeDegrees,
+                    supportStabilityEvidence="NO_SUBORDINATE_SAMPLING_PRESENT",
+                    structuralStagePointCount=4,
+                    semanticAuthority="POSITIVE_STRUCTURAL_FIELD_SHAPE_EVIDENCE_ONLY",
+                    negativeCornerAuthority=false
+                }
+            end
+        end
+        result.status=#result.cornerFeatures>0 and "POSITIVE_STRUCTURAL_FEATURES_SUPPORTED" or "UNRESOLVED_NO_POSITIVE_STRUCTURAL_FEATURE"
+        result.reason=#result.cornerFeatures>0 and "EXACT_RING_DIRECTION_TRANSITIONS_POSITIVELY_SUPPORTED" or "NO_CONVERGENT_CORNER_FEATURE_EVIDENCE"
+        return result
+    end
+
     local gaps={}
     local lowerScale,upperScale,bestRatio=nil,nil,nil
     local combinedOtherRatio=1
