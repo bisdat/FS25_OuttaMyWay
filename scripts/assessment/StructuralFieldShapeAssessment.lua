@@ -121,22 +121,52 @@ local function analyseRing(vertices)
     end
     table.sort(distinct)
 
+    local gaps={}
     local lowerScale,upperScale,bestRatio=nil,nil,nil
+    local combinedOtherRatio=1
     for index=2,#distinct do
         local before,after=distinct[index-1],distinct[index]
         local ratio=after/before
+        gaps[#gaps+1]={ratio=ratio,before=before,after=after}
         if bestRatio==nil or ratio>bestRatio then
             bestRatio,lowerScale,upperScale=ratio,before,after
         end
     end
+    if bestRatio~=nil then
+        for _,gap in ipairs(gaps) do
+            if gap.before~=lowerScale or gap.after~=upperScale then
+                combinedOtherRatio=combinedOtherRatio*gap.ratio
+            end
+        end
+    end
+
+    -- Boundary Feature Persistence alone is not Corner evidence.  A structural
+    -- scale is promoted only where one relative persistence transition is more
+    -- pronounced than every other multiplicative scale transition combined.
+    -- This is deliberately dimensionless: it introduces no metre, angle,
+    -- curvature or worker-size threshold.  Repeated comparable scale changes
+    -- (the regular-circle control) remain UNRESOLVED rather than manufacturing
+    -- discrete Corner Features.
+    local dominantPersistenceTransition=
+        bestRatio~=nil and bestRatio>combinedOtherRatio+EPSILON_M
+    if not dominantPersistenceTransition then
+        result.structuralScaleEvidence={
+            distinctRemovalScaleCount=#distinct,
+            largestAdjacentScaleRatio=bestRatio,
+            combinedOtherScaleRatio=combinedOtherRatio,
+            lowerRemovalScaleM=lowerScale,
+            upperRemovalScaleM=upperScale,
+            selectionRule="NO_DOMINANT_PERSISTENCE_TRANSITION"
+        }
+        result.reason="PERSISTENCE_SCALE_STRUCTURE_DOES_NOT_SUPPORT_DISCRETE_FEATURE_PROMOTION"
+        return result
+    end
 
     local structuralCount=#vertices
-    if upperScale~=nil then
-        for _,record in ipairs(result.removals) do
-            if record.removalScaleM>=upperScale-EPSILON_M then
-                structuralCount=record.remainingBeforeRemoval
-                break
-            end
+    for _,record in ipairs(result.removals) do
+        if record.removalScaleM>=upperScale-EPSILON_M then
+            structuralCount=record.remainingBeforeRemoval
+            break
         end
     end
     local structuralStage=nil
@@ -167,17 +197,15 @@ local function analyseRing(vertices)
             and first.nextOriginalIndex==last.nextOriginalIndex then
             return true,"STRUCTURAL_SUPPORT_UNCHANGED"
         end
-        for index=2,#trajectory do
-            local before,after=trajectory[index-1],trajectory[index]
-            if after.supportM>before.supportM+EPSILON_M then
-                local turnDenominator=math.max(before.turnMagnitudeDegrees,after.turnMagnitudeDegrees,EPSILON_M)
-                local supportDenominator=math.max(after.supportM,EPSILON_M)
-                local turnChange=math.abs(after.turnMagnitudeDegrees-before.turnMagnitudeDegrees)/turnDenominator
-                local supportGrowth=(after.supportM-before.supportM)/supportDenominator
-                if turnChange+EPSILON_M<supportGrowth then
-                    return true,"SUPPORT_GROWTH_DOMINATES_TURN_CHANGE"
-                end
-            end
+        if last.supportM<=first.supportM+EPSILON_M then
+            return false,"SUPPORT_CHANGED_WITHOUT_POSITIVE_EXPANSION"
+        end
+        local turnDenominator=math.max(first.turnMagnitudeDegrees,last.turnMagnitudeDegrees,EPSILON_M)
+        local supportDenominator=math.max(last.supportM,EPSILON_M)
+        local turnChange=math.abs(last.turnMagnitudeDegrees-first.turnMagnitudeDegrees)/turnDenominator
+        local supportGrowth=(last.supportM-first.supportM)/supportDenominator
+        if turnChange+EPSILON_M<supportGrowth then
+            return true,"SUPPORT_EXPANSION_DOMINATES_DIRECTION_CHANGE"
         end
         return false,"DIRECTION_CHANGE_EVOLVES_WITH_SUPPORT"
     end
@@ -186,9 +214,10 @@ local function analyseRing(vertices)
     result.structuralScaleEvidence={
         distinctRemovalScaleCount=#distinct,
         largestAdjacentScaleRatio=bestRatio,
+        combinedOtherScaleRatio=combinedOtherRatio,
         lowerRemovalScaleM=lowerScale,
         upperRemovalScaleM=upperScale,
-        selectionRule=upperScale and "STAGE_BEFORE_LARGEST_RELATIVE_REMOVAL_SCALE_TRANSITION" or "NO_DISTINCT_SCALE_TRANSITION"
+        selectionRule="STAGE_BEFORE_DOMINANT_RELATIVE_REMOVAL_SCALE_TRANSITION"
     }
 
     for _,survivor in ipairs(structuralStage.survivors) do
@@ -218,15 +247,13 @@ local function coordinateKey(value)
     return string.format("%.3f,%.3f",value.x,value.z)
 end
 
-local function featureKey(fieldWorldReferenceKey,ringKind,ringIndex,feature,before,after)
+local function featureKey(fieldWorldReferenceKey,ringKind,ringIndex,feature)
     return table.concat({
         tostring(fieldWorldReferenceKey),
         "corner-feature",
         tostring(ringKind),
         tostring(ringIndex),
-        coordinateKey(before),
-        coordinateKey(feature.representativePoint),
-        coordinateKey(after)
+        coordinateKey(feature.representativePoint)
     },"|")
 end
 
@@ -252,7 +279,7 @@ local function decorateRing(fieldWorldReferenceKey,ringKind,ringIndex,ringRefere
         feature.ringReference=ringReference
         feature.supportBefore={x=before.x,z=before.z}
         feature.supportAfter={x=after.x,z=after.z}
-        feature.cornerKey=featureKey(fieldWorldReferenceKey,ringKind,ringIndex,feature,before,after)
+        feature.cornerKey=featureKey(fieldWorldReferenceKey,ringKind,ringIndex,feature)
         feature.featureRegion={
             kind="STRUCTURAL_DIRECTION_TRANSITION_SUPPORT",
             representativePoint={x=feature.representativePoint.x,z=feature.representativePoint.z},
