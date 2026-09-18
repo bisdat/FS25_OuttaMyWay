@@ -10,6 +10,7 @@ local Assessment=OuttaMyWay.SpatialConstraintAssessment
 Assessment.__index=Assessment
 local EPSILON_M=0.00001
 local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1
+local CORNER_INTENT_REVELATION_CREEP_KMH = 1
 
 local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
 local function point(v)
@@ -409,7 +410,7 @@ end
 -- current productive A8 bounded continuation positively carries the assembly's
 -- productive corridor into a positively interpreted structural Corner Feature.
 -- No route is extended beyond the current Field World-bounded continuation.
-local function cornerApproachDemand(feature,p,motion,productive,path,input)
+local function cornerApproachDemand(feature,p,motion,productive,path,physical,input)
     if type(feature)~="table" or type(feature.representativePoint)~="table"
         or not motion or not productive or not path or p.status~="SUPPORTED"
         or motion.assemblyReferenceKey==nil or motion.sourceJobToken==nil
@@ -417,24 +418,41 @@ local function cornerApproachDemand(feature,p,motion,productive,path,input)
         or productive.productivePositive~=true or productive.isTurn==true
         or motion.localIntentClassification=="TURNING"
         or (path.intentEpoch~=nil and motion.intentEpoch~=nil and path.intentEpoch~=motion.intentEpoch)
-        or not finite(p.provisionalHalfWidthM) or p.provisionalHalfWidthM<=0 then return nil end
+        or type(physical)~="table" then return nil end
     if feature.ringKind~=p.boundaryRingKind or tonumber(feature.ringIndex)~=tonumber(p.boundaryRingIndex) then return nil end
 
-    local a,b={x=p.currentX,z=p.currentZ},{x=p.contactX,z=p.contactZ}
     local representative=feature.representativePoint
     local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
-    if along<-EPSILON_M or along>p.boundaryDistanceM+p.provisionalHalfWidthM+EPSILON_M then return nil end
-    local parameter,corridorDistance=closestPointParameter(representative,a,b)
-    if corridorDistance>p.provisionalHalfWidthM+EPSILON_M then return nil end
+    if along<-EPSILON_M then return nil end
+
+    local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
+    local best=nil
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
+            local startValue={x=primitive.x,z=primitive.z}
+            local endValue={x=primitive.x+deltaX,z=primitive.z+deltaZ}
+            local parameter,sweepDistance=closestPointParameter(representative,startValue,endValue)
+            if sweepDistance<=primitive.radius+EPSILON_M
+                and (best==nil or sweepDistance<best.sweepDistanceM) then
+                best={
+                    primitiveId=primitive.identity,primitiveRadiusM=primitive.radius,
+                    sweepDistanceM=sweepDistance,closestSweepParameter=parameter,
+                    sweepStart=startValue,sweepEnd=endValue
+                }
+            end
+        end
+    end
+    if best==nil then return nil end
 
     return {
         cornerKey=feature.cornerKey,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
         assemblyId=p.assemblyId,assemblyReferenceKey=motion.assemblyReferenceKey,sourceJobToken=motion.sourceJobToken,
         observationSnapshotId=input.observationSnapshotId,observationEpoch=input.observationEpoch,
         futureSpaceIdentity=p.futureSpaceIdentity,
-        approachDistanceM=math.max(0,along),corridorDistanceM=corridorDistance,
-        corridorHalfWidthM=p.provisionalHalfWidthM,closestContinuationParameter=parameter,
-        witness="CURRENT_PRODUCTIVE_A8_CORRIDOR_INTERSECTS_STRUCTURAL_CORNER_FEATURE",
+        approachDistanceM=math.max(0,along),
+        physicalSweepEvidence=best,
+        witness="CURRENT_PRODUCTIVE_A8_SWEEP_OF_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTS_STRUCTURAL_CORNER_FEATURE",
         negativeClearanceAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
     }
@@ -584,7 +602,7 @@ local function assessCornerKnowledge(self,input,projections,relationships)
         for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
             local motion=motions[p.assemblyId]
             local path=continuation(futures[p.assemblyId])
-            local demand=cornerApproachDemand(feature,p,motion,productive[p.assemblyId],path,input)
+            local demand=cornerApproachDemand(feature,p,motion,productive[p.assemblyId],path,physical[p.assemblyId],input)
             if demand~=nil then
                 demandsByReference[demand.assemblyReferenceKey]=demand
                 result.approachDemands[#result.approachDemands+1]=copyKnowledge(demand)
@@ -703,6 +721,7 @@ local function assessCornerKnowledge(self,input,projections,relationships)
                 operationId=input.operationId,cornerKey=feature.cornerKey,
                 fieldWorldReferenceKey=input.fieldWorldReferenceKey,
                 participants=participantList,competingDemand=true,
+                regulationSpeedKmh=CORNER_INTENT_REVELATION_CREEP_KMH,
                 allocationStatus="UNALLOCATED_SITUATION_MEANING",
                 decisionAuthority=false,controlAuthority=false,
                 provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
