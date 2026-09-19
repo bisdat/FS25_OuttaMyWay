@@ -65,13 +65,13 @@ A bounded unit of engineering purpose whose implementation and effects can be re
 
 Accepted `main` may be newer than the latest canonical release. This is normal. A pull-request merge advances accepted repository state but does not, by itself, declare a canonical release.
 
-### Continuation State
+### Unresolved engineering work
 
-**Continuation State is the compact, replace-in-place description of the project's present engineering boundary: what workstream is active, what is currently understood, what remains unresolved, and what bounded question should be addressed next.**
+**Substantial unresolved engineering work is owned by its GitHub Issue where durable work-item state is useful.** An Issue may retain observations, constraints, hypotheses, failed attempts, remaining questions and bounded next steps without becoming Architecture, Specification or accepted implementation authority.
 
-`CONTINUATION_STATE.md` owns this responsibility. Accepted engineering replaces its contents in place; current state must not become an appended historical ledger. Git owns the chronology of previous Continuation States. The archived historical snapshots in `archive/reconciliation/stale-authority-surface/PROJECT_STATUS.md` and instructions in `archive/reconciliation/stale-authority-surface/ENGINEERING_HANDOVER.md` remain evidence but do not establish current authority.
+Trivial bounded increments do not require an Issue merely to manufacture a “current work” record. The repository owner's current request plus accepted `main` may be sufficient context. Accepted repository state still changes only through reviewed pull-request merge.
 
-GitHub Issues may own a substantial bounded prospective question or piece of work where useful; trivial increments do not require an Issue. An Issue describes work being undertaken, but it does not establish accepted architecture or implementation authority. Accepted repository state still changes through reviewed pull-request merge.
+This avoids **Merge-Induced Continuation Staleness**: a live document whose responsibility is “what comes next” is structurally invalidated whenever accepted work changes that answer. Prospective engineering state belongs with the work item that needs it rather than in a repository-wide mirror.
 
 A **Context Transfer Artifact** is a disposable reconstruction aid used to transfer sufficient working context between collaboration sessions. It does not establish architecture, engineering state, decisions or implementation authority. Chat carry-forwards therefore do not form a permanent accumulating repository document class; any durable discovery they contain is promoted into its responsible repository home.
 
@@ -90,17 +90,19 @@ root working rules
         ↓
 engineering start-here map
         ↓
-Engineering Architecture + Continuation State
+Engineering Architecture
         ↓
 task-relevant architecture / engine / implementation / policy / validation routes
+        +
+responsible GitHub Issue where unresolved work exists
 ```
 
 The bootstrap is responsibility-directed, not an instruction to read every live
 document. Runtime semantic work follows current Architecture; GIANTS/FS25
 behaviour and API assumptions follow Engine Knowledge; implementation placement
 follows the governing primary Specification and its implementation traceability
-into `/scripts`; current engineering or migration state follows Continuation State
-and the responsible Issue where applicable. Configuration, Naming and Testing each
+into `/scripts`; substantial unresolved engineering or migration work follows
+the responsible Issue where one exists. Configuration, Naming and Testing each
 retain their own authoritative routes. A pull-request review also reads the PR and
 linked Issue, changed-file list and governing responsibility documents before
 interpreting the diff.
@@ -274,7 +276,7 @@ Every enduring item has one authoritative home; other documents link rather than
 | Testing methodology / evidence-strength process | `TESTING_METHODOLOGY.md` |
 | Executable offline validation mechanisms and fixtures | root `../tests/` and its `README.md` |
 | Runtime architecture | `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
-| Current engineering continuation | `CONTINUATION_STATE.md` |
+| Substantial unresolved engineering work | responsible GitHub Issue where durable tracking is useful |
 | Current concept state | `CONCEPT_REGISTER.md` |
 | Significant choices and rationale | `DECISION_LOG.md` |
 | Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and `research/` |

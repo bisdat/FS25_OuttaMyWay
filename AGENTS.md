@@ -78,10 +78,10 @@ AGENTS.md
 docs/README.md
     ↓
 docs/ENGINEERING_ARCHITECTURE.md
-    +
-docs/CONTINUATION_STATE.md
     ↓
 task-relevant responsibility routes
+    +
+responsible GitHub Issue where unresolved work exists
 ```
 
 Follow the responsibility routes that can materially affect the question:
@@ -98,8 +98,10 @@ Follow the responsibility routes that can materially affect the question:
   `docs/DOCUMENT_STANDARDS.md`; generated LDoc output is a derived human view
   and cannot replace Architecture, Specification, source documentation, or
   structural conformance;
-- current engineering or migration boundary → `docs/CONTINUATION_STATE.md` and
-  the responsible GitHub Issue where applicable;
+- unresolved engineering or migration work → the responsible GitHub Issue where
+  one exists; substantial work that needs durable observations, constraints,
+  hypotheses, remaining questions or next steps belongs in an Issue, while
+  trivial bounded increments do not require one;
 - Configuration or mixed runtime constants → `architecture/CONFIGURATION.md`;
 - names, vocabulary, identifiers, or new durable terminology →
   `docs/NAMING_CONVENTIONS.md`;
@@ -157,8 +159,10 @@ classifying the observation as NEW.
 
 For runtime/system behaviour, the Repository Context Bootstrap must traverse
 `architecture/README.md`,
-`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, the applicable
-specialised architecture and current Continuation State before implementation.
+`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and the applicable
+specialised architecture before implementation. Where unresolved work is already
+owned by a GitHub Issue, read that Issue as work-item context rather than as
+Architecture or accepted implementation authority.
 Treat historical documents as evidence/provenance where they conflict with
 current accepted architecture.
 
@@ -212,7 +216,8 @@ Protect document responsibilities so documentation does not become another chang
 - root `/architecture`: current system responsibilities and concepts;
 - decision records/log: durable decisions and rationale;
 - engineering journal/research: observations, discoveries, failed hypotheses and evolution;
-- `docs/CONTINUATION_STATE.md`: current, replace-in-place engineering continuation point;
+- GitHub Issues: substantial unresolved work, including observations, constraints,
+  hypotheses, remaining questions and bounded next steps where durable tracking is useful;
 - changelog: release history and externally meaningful change chronology.
 
 Prefer one authoritative home for each piece of architectural knowledge. Link to that authority rather than copying the same explanation into multiple documents that can drift independently.
@@ -227,13 +232,13 @@ Before creating any new live file under `docs/`, all of the following must be tr
 
 1. **Name the durable responsibility.** State in one sentence what enduring responsibility the proposed file would own after the current Issue, phase, tranche, experiment or migration has ended.
 2. **Prove there is no existing owner.** Follow the Repository Context Bootstrap and show why the current responsible document cannot truthfully own the knowledge by update-in-place.
-3. **Classify the content.** Current architecture/state may belong in a live responsible document. Engineering chronology, tranche boundaries, migration plans, implementation hypotheses, audit evidence, validation history and closure narratives belong in Git/PR/Issue history, `CONTINUATION_STATE.md`, `ENGINEERING_JOURNAL.md`, `research/`, or another already-authorised evidence/history surface as appropriate.
+3. **Classify the content.** Current architecture/state may belong in a live responsible document. Engineering chronology, tranche boundaries, migration plans, implementation hypotheses, audit evidence, validation history, unresolved work and closure narratives belong in Git/PR/Issue history, `ENGINEERING_JOURNAL.md`, `research/`, or another already-authorised evidence/history surface as appropriate.
 4. **Reject phase-shaped architecture containers.** A Phase/Step/Tranche/Increment/Audit/Closure document does not become live architecture merely because it contains architectural reasoning. Do not create `PHASE_*`, `STEP_*`, tranche-specific or equivalent live architecture files to record engineering progression unless the repository owner explicitly authorises a new durable document responsibility.
-5. **Record significant discoveries by ownership, not proliferation.** The instruction to record a significant discovery means update its existing authoritative home and, where useful, the Journal/Continuation/PR. It does not mean create a new document.
+5. **Record significant discoveries by ownership, not proliferation.** The instruction to record a significant discovery means update its existing authoritative home and, where useful, the Journal/Issue/PR. It does not mean create a new document.
 6. **Do not justify a file by breadcrumbing it.** First establish durable responsibility; only then add navigation. A README link cannot manufacture authority for a file whose responsibility does not exist.
 7. **Current architecture must be directly readable.** A future engineer must not have to replay Phase N.1 -> N.2 -> N.3 documents or apply chronological deltas to reconstruct the present system. **Current Architecture Should Not Require Historical Reconstruction.**
 
-If any condition is unresolved, **do not create the new live document**. Update the existing responsible owner, use the authorised history/evidence surfaces, or leave the question in Continuation/PR review until ownership is established.
+If any condition is unresolved, **do not create the new live document**. Update the existing responsible owner, use the authorised history/evidence surfaces, or leave the question in the responsible Issue/PR review until ownership is established.
 
 This is the operational form of **Engineering Increment Documentation != Durable Architecture** and the repository's existing Stranded Live Knowledge / stale-responsibility rules.
 

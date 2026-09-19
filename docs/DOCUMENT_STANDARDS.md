@@ -25,7 +25,7 @@ Validation evidence
 
 Tests and Reality challenge the claims made through those surfaces. Tests do not acquire semantic authority merely because they pass. Reality remains capable of disproving Architecture, Specification, implementation and test assumptions.
 
-`/docs` is the separate engineering-knowledge and governance surface. It owns standards, method, continuation, naming, testing methodology, reusable engine knowledge, research/evidence routes, decision records and other project knowledge whose responsibility is not System Architecture, Specification or production mechanism.
+`/docs` is the separate engineering-knowledge and governance surface. It owns standards, method, naming, testing methodology, reusable engine knowledge, research/evidence routes, decision records and other project knowledge whose responsibility is not System Architecture, Specification or production mechanism.
 
 Surface READMEs provide entrance, explanation and navigation. They MUST NOT become competing owners of normative standards defined here.
 
@@ -460,7 +460,7 @@ A future engineer MUST be able to reconstruct the current architecture directly 
 
 `/architecture` MUST remain readable as an engineering surface for humans. Machine-readable traceability MAY support it, but metadata MUST NOT replace the explanation required to understand the architecture.
 
-`/docs` is the separate engineering-knowledge and governance surface. It owns engineering method, continuation, standards, naming, validation methodology, engine knowledge, research/evidence routes, decision/journal records and other project knowledge whose responsibility is not System Architecture. `/docs` MUST NOT be used as a synonym for Architecture.
+`/docs` is the separate engineering-knowledge and governance surface. It owns engineering method, standards, naming, validation methodology, engine knowledge, research/evidence routes, decision/journal records and other project knowledge whose responsibility is not System Architecture. `/docs` MUST NOT be used as a synonym for Architecture.
 
 > **Documentation Surface != Architecture Surface.**
 
