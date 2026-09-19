@@ -9,8 +9,7 @@ The archive is intentionally absent under the Archive Navigation Exemption.
 
 Root `../AGENTS.md` requires substantive engineering work to enter through this
 map after reading the root working rules. Establish current engineering governance
-and continuation first, then follow only the responsibility routes relevant to
-the task. Runtime semantic work normally continues through Architecture;
+first, then follow only the responsibility routes relevant to the task. Runtime semantic work normally continues through Architecture;
 implementation-contract and current source-placement work continues through
 [`/spec`](../spec/README.md) and the governing Specification's implementation
 traceability; GIANTS/FS25 behaviour or API assumptions continue through Engine
@@ -26,7 +25,6 @@ observation is classified as new.
 - [Project Vision](../architecture/PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity, scope, and product-level direction.
 - [Engineering Architecture](ENGINEERING_ARCHITECTURE.md) — engineering method, repository authority, knowledge governance, and canonicalisation.
 - [Current Concept Register](CONCEPT_REGISTER.md) — thin index of accepted, deferred, and rejected current concepts.
-- [Continuation State](CONTINUATION_STATE.md) — replace-in-place current concern, established understanding, and next engineering boundary.
 - [Scope and Validation Envelope](SCOPE_AND_VALIDATION_ENVELOPE.md) — supported, boundary-characterisation, and no-claim boundaries and their validation obligations.
 - [Testing Methodology](TESTING_METHODOLOGY.md) — how claims are challenged and evidence strength increases.
 

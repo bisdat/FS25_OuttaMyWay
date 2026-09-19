@@ -6,7 +6,7 @@
 
 - [ ] Root `AGENTS.md` followed.
 - [ ] `docs/README.md` Repository Context Bootstrap route followed.
-- [ ] Current Engineering Architecture + Continuation State checked.
+- [ ] Current Engineering Architecture checked; responsible Issue reviewed where applicable.
 - [ ] Applicable architecture / Engine Knowledge / Implementation Map / Configuration / Naming / Testing responsibility documents checked.
 - [ ] Relevant Knowledge Sweep performed across current docs/source/tests and applicable open + closed Issues / PR history.
 - [ ] Observed problem classified: **N/A / NEW / KNOWN OPEN / REGRESSION / HISTORICAL**.

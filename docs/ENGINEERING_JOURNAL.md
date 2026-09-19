@@ -5097,3 +5097,32 @@ Discovery retained:
 > **Corner Arrival Evidence != Current Corner Approach Demand**
 
 Decision: restore the .105 runtime and TEST identity; retain only truthful documentation corrections; leave Issue #240 open for a later increment. The .106 experiment remains historical evidence and makes no accepted runtime claim.
+
+
+## 2026-09-19 — Continuation State retired after Merge-Induced Continuation Staleness
+
+**Observation:** `docs/CONTINUATION_STATE.md` had become a perennially stale mirror of “what next”. Repository history shows frequent “advance continuation” edits, including a documentation-only PR immediately after PR #239 solely because merging #239 invalidated the pre-merge Continuation text.
+
+The problem was structural rather than missed maintenance. The document's defining responsibility — current workstream, current understanding, unresolved boundary and next bounded step — changed whenever accepted work changed the answer. Keeping the file truthful therefore required repeated repository edits whose only purpose was to mirror state already owned elsewhere.
+
+**Ownership review:**
+
+- accepted repository state is the exact current `main`;
+- current system meaning is owned by Architecture;
+- implementation-facing obligations are owned by Specification;
+- current mechanism is owned by source;
+- evidence and failed hypotheses are owned by the Engineering Journal / Research / tests;
+- substantial unresolved observations, constraints, hypotheses, remaining questions and next steps are naturally owned by the responsible GitHub Issue;
+- trivial bounded increments need no durable work item merely to state what is being worked on.
+
+Issue #240 already contained the Corner observations, constraints, failed `.106` experiment and the discovery **Corner Arrival Evidence != Current Corner Approach Demand**. No unique current knowledge depended on Continuation State after the Stranded Live Knowledge check.
+
+**Discoveries:**
+
+> **Merge-Induced Continuation Staleness**
+
+> **Prospective Engineering State Belongs With Its Work Item**
+
+**Decision:** retire `docs/CONTINUATION_STATE.md` as a live repository responsibility. Remove it from Repository Context Bootstrap, Architecture/docs navigation, PR review checklist and structural governance expectations. GitHub Issues own substantial unresolved work where durable tracking is useful; trivial increments may proceed directly from accepted `main` and the owner's bounded request. Issues remain work-item context, not Architecture or accepted implementation authority.
+
+Historical Journal/archive references to Continuation State remain historical evidence and are not rewritten.

@@ -18,7 +18,6 @@ def test_repository_context_bootstrap_routes_current_responsibilities():
         "Repository Context Bootstrap",
         "docs/README.md",
         "docs/ENGINEERING_ARCHITECTURE.md",
-        "docs/CONTINUATION_STATE.md",
         "architecture/README.md",
         "docs/engine/README.md",
         "docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md",
@@ -28,7 +27,7 @@ def test_repository_context_bootstrap_routes_current_responsibilities():
         "/scripts",
         "source-documentation or generated implementation-reference work",
         "docs/DOCUMENT_STANDARDS.md",
-        "current engineering or migration boundary",
+        "responsible GitHub Issue",
         "docs/TESTING_METHODOLOGY.md",
         "tests/AGENTS.md",
     )
@@ -36,6 +35,9 @@ def test_repository_context_bootstrap_routes_current_responsibilities():
         assert token in agents
 
     assert "docs/IMPLEMENTATION_MAP.md" not in agents
+    assert "docs/CONTINUATION_STATE.md" not in agents
+    assert "Continuation State" not in agents
+    assert not (ROOT / "docs" / "CONTINUATION_STATE.md").exists()
     assert "strangler state" not in agents
 
 

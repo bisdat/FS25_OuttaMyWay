@@ -48,8 +48,9 @@ child.
 
 Current implementation placement is reached through the governing primary
 Specifications under [`/spec`](../spec/README.md) and their implementation
-traceability into `/scripts`. The active engineering boundary is owned by the
-[Continuation State](../docs/CONTINUATION_STATE.md).
+traceability into `/scripts`. Substantial unresolved engineering work is owned
+by the responsible GitHub Issue where one exists; Issues provide work-item
+context but do not become Architecture or accepted implementation authority.
 
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's current responsibility model, not as implementation chronology.
