@@ -5492,7 +5492,7 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     local vehicleA={rootNode=1301}; local vehicleB={rootNode=1302}
     function vehicleA:getAISteeringNode() return self.rootNode end
     function vehicleB:getAISteeringNode() return self.rootNode end
-    local positions={[1301]={0,0,3},[1302]={0,0,17}}
+    local positions={[1301]={0,0,3},[1302]={4,0,17}}
     local directions={[1301]={0,1},[1302]={0,-1}}
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
@@ -5506,12 +5506,19 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
-        passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
+        passageArrangement={
+            identity="PA-REBASE",subjectLateralOffsetM=0,otherLateralOffsetM=0,
+            nominalInterAssemblyClearanceM=1,
+            subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
+            subjectDirectionalPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"},
+            otherDirectionalPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+        },
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
         participants={},
-        guide={identity="PG-REBASE",entryOrigins={subject={x=0,z=0},other={x=0,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
-            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-0.5,z=18,radiusM=1}},
-            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=4,radiusM=1},other={assemblyId="AS-B",x=-1,z=16,radiusM=1}}
+        guide={identity="PG-REBASE",entryOrigins={subject={x=0,z=0},other={x=4,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0,z=2,radiusM=1},other={assemblyId="AS-B",x=4,z=18,radiusM=1}},
+            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=0,z=4,radiusM=1},other={assemblyId="AS-B",x=4,z=16,radiusM=1}},
+            {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=8,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=0,z=8,radiusM=1},other={assemblyId="AS-B",x=4,z=12,radiusM=1}}
         }}
     }
     control.run.participants={control.run.a,control.run.b}
@@ -5522,6 +5529,55 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     equal(math.abs(first.other.z-15)<0.0001,true)
     equal(first.subject.z>positions[1301][3],true)
     equal(first.other.z<positions[1302][3],true)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed lateral arrangement before movement",function()
+    local vehicleA={rootNode=1311}; local vehicleB={rootNode=1312}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1311]={0,0,3},[1312]={0.7,0,17}}
+    local directions={[1311]={0,1},[1312]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+    local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+        return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+    end}}
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE-SIDE-FLIP",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        passageArrangement={
+            identity="PA-REBASE-SIDE-FLIP",relationSign=-1,subjectLateralOffsetM=1,otherLateralOffsetM=-1,
+            nominalInterAssemblyClearanceM=1,policyRequiredSeparationM=3,
+            subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
+            subjectDirectionalPassageEnvelope=envelope,otherDirectionalPassageEnvelope=envelope,
+            subjectConfiguration={configurationProfileId="TRANSIT-A"},otherConfiguration={configurationProfileId="TRANSIT-B"}
+        },
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
+        participants={},
+        guide={identity="PG-REBASE-SIDE-FLIP",entryOrigins={subject={x=0,z=0},other={x=-4,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-4.5,z=18,radiusM=1}},
+            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=4,radiusM=1},other={assemblyId="AS-B",x=-5,z=16,radiusM=1}},
+            {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=8,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=8,radiusM=1},other={assemblyId="AS-B",x=-5,z=12,radiusM=1}}
+        }}
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local ok,reason=control:_rebasePassageGuide(control.run)
+    equal(ok,true); equal(reason,nil)
+    assert(string.find(control.run.guide.identity,"execution-adapted",1,true)~=nil)
+    assert(string.find(control.run.passageArrangement.identity,"execution-adapted",1,true)~=nil)
+    equal(control.run.passageArrangement.relationSign,1)
+    equal(control.run.passageArrangement.subjectLateralOffsetM<0,true)
+    equal(control.run.passageArrangement.otherLateralOffsetM>0,true)
+    local sweepOk,sweepReason=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(
+        control.run.guide,control.run.passageArrangement)
+    equal(sweepOk,true); equal(sweepReason,nil)
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
