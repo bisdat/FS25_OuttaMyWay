@@ -675,7 +675,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
     if dispatch.status=="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=nil,nil
-        if self.responsibilityTransitionAuthority:matchesActionSpacePassage(evaluated) then
+        if self.responsibilityTransitionAuthority:matchesActionSpacePassage(picture,evaluated) then
             applied,reason=self.responsibilityTransitionAuthority:replaceActionSpaceRegulationWithCooperativePassage(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.regulationBoundedAuthority)
         elseif self.responsibilityTransitionAuthority:matchesFollowerPassage(picture,evaluated) then

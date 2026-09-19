@@ -337,7 +337,8 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
     local corner=hasPrefix(responsibility,"corner-right-of-way:")
     local settlementMode=nil
-    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION" then
+    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
+        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY" then
         settlementMode="BASIS_CESSATION"
     elseif forward then
         local evidenceKind=evidence and evidence.kind or nil
@@ -706,7 +707,7 @@ end
 -- purpose (for example Follower Boundary protection) is succeeded by the joint
 -- TS015 Reposition; the fresh restoration/handoff obligation and both progress
 -- authority tokens are then attached to that same Commitment.
-function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
+function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,semantics)
     if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
     local candidate=selectedCandidate(evaluated)
     if candidate==nil or candidate.capability~="REPOSITION" or type(candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge)~="table" then
@@ -727,6 +728,21 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
     local commitmentId=application.commitmentId
     local record=runtime.commitments:get(commitmentId)
     if record==nil or record.state~="ACTIVE" then return nil,"COOPERATIVE_PASSAGE_REVISED_COMMITMENT_NOT_ACTIVE" end
+
+    if semantics and semantics.rebindCommitmentPurpose==true then
+        local currentRequirement=record.governingBasis and record.governingBasis.responsibilityKey or ""
+        local successorBasis=candidate.evidenceBasis and candidate.evidenceBasis.governingBasis or nil
+        local successorRequirement=successorBasis and successorBasis.responsibilityKey or ""
+        if not hasPrefix(currentRequirement,"corner-right-of-way:")
+            or not hasPrefix(successorRequirement,"cooperative-passage:") then
+            return nil,"COOPERATIVE_PASSAGE_PURPOSE_REBIND_NOT_AUTHORISED"
+        end
+        record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{
+            objective=candidate.purpose,
+            governingBasis=successorBasis,
+            epoch=runtime.epochs:next()
+        }))
+    end
 
     local obligation=nil
     for _,open in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do

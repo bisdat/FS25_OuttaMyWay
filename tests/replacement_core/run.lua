@@ -6120,6 +6120,86 @@ test("Phase13 direct Cooperative Passage substrate targeting is purpose and Job-
 end)
 
 
+test("Corner Right-of-Way Regulation can succeed into same-pair Cooperative Passage with a different conflict identity",function()
+    local runtime=newDecisionRuntime()
+    local cornerRequirement="corner-right-of-way:shared-corner:OR-1:C1"
+    local passageRequirement="cooperative-passage:opposed-corridor:OR-1:AS-00001:AS-00002"
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="CORNER_RIGHT_OF_WAY"},
+        governingBasis={responsibilityKey=cornerRequirement,operationIds={"OR-1"},sourceIntentIds={"JE-1","JE-2"}},
+        progressAssemblyIds={"AS-00001"}
+    })
+    local cornerObligation=runtime.obligations:create({
+        origin={kind="TRAFFIC_INTERVENTION"},
+        basis={kind="CORNER_RIGHT_OF_WAY",conflictIdentity="shared-corner:OR-1:C1",cornerKey="C1",admissionKind="CORNER_RIGHT_OF_WAY"},
+        ownerCommitmentId=admitted.commitment.identity,
+        requiredOutcome={kind="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES",conflictIdentity="shared-corner:OR-1:C1"},
+        requiredAuthority={capabilities={"REGULATE_SPEED"}},
+        evidenceContract={kind="FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION"},
+        ownershipClass="CONTINUITY",terminalDependency=true
+    })
+    local commitment=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(admitted.commitment,{
+        obligationIds={cornerObligation.identity},epoch=runtime.epochs:next()
+    }))
+    local current=OuttaMyWay.Regulation.new({
+        identity=runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",governingBasis=commitment.governingBasis,
+        provenance={source="test",retainedCommitmentId=commitment.identity,conflictIdentity="shared-corner:OR-1:C1",
+            admissionKind="CORNER_RIGHT_OF_WAY",cornerKey="C1",operationId="OR-1",
+            regulatedAssemblyId="AS-00001",protectedAssemblyId="AS-00002"}
+    })
+    runtime.responsibilityTransitionAuthority.regulationsByCommitmentId[commitment.identity]=current
+
+    local move=candidateSpec("corner-to-passage","REPOSITION",1)
+    move.purpose={kind="COOPERATIVE_PASSAGE",result="RESOLVE_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_BY_SUFFICIENT_LOCAL_PASSAGE"}
+    move.subject={assemblyIds={"AS-00001","AS-00002"}}
+    move.evidenceBasis.governingBasis={responsibilityKey=passageRequirement,operationIds={"OR-1"},sourceIntentIds={"JE-1","JE-2"}}
+    move.evidenceBasis.progressActuationOwnership={assemblyIds={"AS-00001","AS-00002"}}
+    move.evidenceBasis.effectiveActuationComposition={
+        identity="EC-CORNER-PASSAGE",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},
+        entries={
+            {assemblyId="AS-00001",commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true},
+            {assemblyId="AS-00002",commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true}
+        }
+    }
+    move.evidenceBasis.cooperativePassageBridge={
+        architecture="COOPERATIVE_PASSAGE",governingRequirementKey=passageRequirement,operationId="OR-1",
+        conflictIdentity="opposed-corridor:OR-1:AS-00001:AS-00002",assemblyIds={"AS-00001","AS-00002"},
+        subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002"
+    }
+    move.obligationsCreated={
+        {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId="AS-00001"},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId="AS-00001"},
+            requiredAuthority={capabilities={"REPOSITION"}},evidenceContract={kind="PASSAGE"},ownershipClass="ORIGIN_BOUND",terminalDependency=true},
+        {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId="AS-00002"},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId="AS-00002"},
+            requiredAuthority={capabilities={"REPOSITION"}},evidenceContract={kind="PASSAGE"},ownershipClass="ORIGIN_BOUND",terminalDependency=true}
+    }
+
+    local picture=decisionPicture({move},{commitmentContext={{commitmentId=commitment.identity,governingBasis=commitment.governingBasis}}})
+    local evaluated=runtime:evaluateSealedOperationalPicture(picture)
+    equal(evaluated.decision.commitmentAction,"REVISE")
+    equal(runtime.responsibilityTransitionAuthority:matchesActionSpacePassage(picture,evaluated),true)
+    local readiness={status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=evaluated.decision.selectedCandidateId}
+    local preflight,reason=runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulationForCooperativePassage(picture,evaluated,readiness)
+    if preflight==nil then error(tostring(reason)) end
+    equal(preflight.rebindCommitmentPurpose,true)
+    equal(preflight.conflictIdentity,"shared-corner:OR-1:C1")
+
+    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(
+        runtime,picture,evaluated,{rebindCommitmentPurpose=true})
+    if applied==nil then error(tostring(applyReason)) end
+    equal(applied.commitment.governingBasis.responsibilityKey,passageRequirement)
+    equal(#runtime.obligations:openForOwner(commitment.identity),3)
+
+    local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(
+        runtime,commitment.identity,
+        {conflictIdentity="shared-corner:OR-1:C1",reason="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"},
+        {kind="COOPERATIVE_PASSAGE_CORNER_RIGHT_OF_WAY_SUCCESSION"})
+    if settled==nil then error(tostring(settleReason)) end
+    equal(#settled.remainingObligations,2)
+    equal(settled.terminal,nil)
+end)
+
 test("Forward Intersection evidence continuity distinguishes waiting, dissolution and supersession",function()
     local assessment=OuttaMyWay.CurrentResponsibilityAssessment.new()
     local current={provenance={admissionKind="FORWARD_INTERSECTION",retainedCommitmentId="CM-FI",conflictIdentity="FI-CONTINUITY"}}

@@ -65,7 +65,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     end
     local participantIds,participantReason=passageRoles(candidate)
     if participantIds==nil then return nil,participantReason end
-    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(self.runtime,picture,evaluated)
+    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(self.runtime,picture,evaluated,semantics)
     if applied==nil then
         logWarning("COOPERATIVE_PASSAGE_TRANSITION_REFUSED decision=%s candidate=%s reason=COMMITMENT_APPLICATION_FAILED detail=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(reason))
