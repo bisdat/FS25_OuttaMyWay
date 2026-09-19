@@ -6154,6 +6154,7 @@ test("Corner Right-of-Way Regulation can succeed into same-pair Cooperative Pass
     move.subject={assemblyIds={"AS-00001","AS-00002"}}
     move.evidenceBasis.governingBasis={responsibilityKey=passageRequirement,operationIds={"OR-1"},sourceIntentIds={"JE-1","JE-2"}}
     move.evidenceBasis.progressActuationOwnership={assemblyIds={"AS-00001","AS-00002"}}
+    move.representationFitness={requirements={{representationId="REP-CORNER-PASSAGE",acceptedStates={"CURRENTLY_FIT"}}}}
     move.evidenceBasis.effectiveActuationComposition={
         identity="EC-CORNER-PASSAGE",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},
         entries={
@@ -6175,7 +6176,14 @@ test("Corner Right-of-Way Regulation can succeed into same-pair Cooperative Pass
             requiredAuthority={capabilities={"REPOSITION"}},evidenceContract={kind="PASSAGE"},ownershipClass="ORIGIN_BOUND",terminalDependency=true}
     }
 
-    local picture=decisionPicture({move},{commitmentContext={{commitmentId=commitment.identity,governingBasis=commitment.governingBasis}}})
+    local picture=decisionPicture({move},{
+        commitmentContext={{commitmentId=commitment.identity,governingBasis=commitment.governingBasis}},
+        representationFitness={{
+            representationId="REP-CORNER-PASSAGE",assemblyId="AS-00001",question="COOPERATIVE_PASSAGE",
+            assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"COOPERATIVE_PASSAGE"},
+            coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={source="fixture"}
+        }}
+    })
     local evaluated=runtime:evaluateSealedOperationalPicture(picture)
     equal(evaluated.decision.commitmentAction,"REVISE")
     equal(runtime.responsibilityTransitionAuthority:matchesActionSpacePassage(picture,evaluated),true)
