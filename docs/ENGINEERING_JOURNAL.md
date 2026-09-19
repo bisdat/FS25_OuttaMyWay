@@ -4958,3 +4958,27 @@ Regression coverage now distinguishes (a) a local boundary contact whose structu
 **Implementation decision:** `.100` backs out `.99`'s boundary-distance admission gate. Situation Assessment publishes positive current Corner Occupancy from current positive Physical-Assembly evidence, may admit Engagement from occupancy when Reality is already inside constrained Corner space, and publishes native time-to-Corner from current Corner Approach Demand. Decision consumes those fields in Occupancy -> native-arrival order. Existing 1 km/h Corner Regulation alternatives, Responsibility Transition, role-migration capability, Passage succession and Positive Corner Departure remain the mechanisms.
 
 No new diagnostics/probes are introduced. `.99` is not a valid Reality candidate and must not be tested.
+
+## 2026-09-19 — `.100` Reality: Corner Arrival Priority PASS; Passage execution rebase preserves stale lateral arrangement
+
+**Observe — Corner:** the first Condor / Patriot Corner validates `.100` Corner Arrival Priority. Condor is positively current in constrained Corner space and is protected; Patriot receives the fixed 1 km/h Corner Regulation. The intended first-corner allocation is therefore a Reality PASS.
+
+**Observe — later Cooperative Passage:** the same run cannot reach the S416 / Condor Corner because Condor / Patriot Passage `CM-00002` physically jams after Condor has swerved around the slight protruding hedge and recovered only partially toward its lane.
+
+At `08:11:20.326` Candidate Support selected a valid Passage at about `79.75 m` separation with current lateral separation `3.63 m`, required centreline separation `5.19 m` and offsets approximately `+0.78 / -0.78 m`. Passage Responsibility transition and native approach both succeed.
+
+At `08:11:25.887` the pair reaches the `22.08 m` Passage Entry boundary, both are captured/held, and both Transit configurations settle. At `08:11:42.854` Control captures actual execution origins — Condor approximately `(148.05,-532.55)`, Patriot approximately `(142.75,-548.93)` — while preserving the earlier Passage frame/offset geometry and logging `guideRebased=true geometryUnchanged=true`.
+
+Reconstruction in the guide's own lateral frame shows that the pair's side relationship materially changed during native approach: planned entry origins represented roughly `-3.8 m` signed lateral separation, while actual execution origins represented only about `+0.7 m` and therefore the opposite side ordering. Preserving the old `+0.78 / -0.78 m` lateral offsets makes the retained guide drive the pair back through one another rather than create the required separation.
+
+By `08:11:46.936` current pair evidence is positively interacting (`currentFootprint=true`, represented distance about `5.366 m` against `5.492 m` required), while Passage Control remains in `GUIDE_CROSSING_WINDOW_EXIT` with `failure=none`. Video confirms physical nose/side interference and a mutual block.
+
+**Existing discovery strengthened:** **Execution-Origin Rebase != Arrangement Revalidation** / **Guide Rebase != Geometry Revalidation**. This is the same unresolved implementation debt already owned by Issue #116; `.100` supplies a stronger actual-collision witness and shows that ordinary native approach, including obstacle/hedge avoidance, can materially change or reverse Passage side ordering before execution.
+
+**Architecture / Specification:** no new rule is required. `COOPERATIVE_PASSAGE` already requires fresh post-Transit Reality before geometry-dependent movement and explicitly says that rebasing coordinates while preserving stale lateral/clearance assumptions is insufficient. It permits an independently supported adaptation while the lateral allocation remains prospective.
+
+**Implementation `.101`:** `LocalPassagePlanner` now owns execution-boundary pair-sweep revalidation and fresh supported adaptation. `CooperativePassageControl` rebases to actual stopped/folded execution origins, tests the retained arrangement against fresh Transit geometry/orientation, and uses it unchanged only if still supported. If stale, Planner recomputes the current lateral relation, facing extents, minimum-burden offset alternatives and Development/Crossing/Recovery guide from the actual execution origins, then requires the normal pair-sweep contract to PASS before returning an adapted guide. Control performs its existing Field/third-party preflight on that Planner-supported result. If no retained or adapted arrangement is supported, Control fails held before moving either worker.
+
+Regression coverage reproduces a planned negative-side Passage whose actual execution origins have crossed to the positive side. The stale retained offsets must be rejected; the adapted arrangement must switch relation sign, reverse the corrective offset directions and independently pass the pair-sweep contract.
+
+Issue #227 remains separate: this `.100` failure occurs before successful crossing/recovery and is not the post-crossing recovery-target defect owned there.
