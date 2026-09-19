@@ -5039,4 +5039,25 @@ The accepted Cooperative Passage Architecture and Specification already require 
 A focused regression deliberately supplies a prospective Transit envelope that rejects a close captured guide while a smaller current folded configuration profile supports the same guide. The old prospective-only check must reject; the execution-boundary check using exact current profiles must pass and record CURRENT_REALISED_TRANSIT_CONFIGURATION.
 
 **Scope:** no Entry Boundary / braking model change; no clearance-literal change; no Passage guide-shape change; no FI timing change; no Corner change; no weakening of .101 stale-arrangement protection. The earlier .103 capture-timing diagnosis is superseded unless later Reality independently demonstrates a capture-control defect after execution revalidation consumes realised configuration geometry.
+## 2026-09-19 — `.104` Reality: realised Transit evidence works; Capture Initiation still consumes Passage reserve
+
+**Observe:** `.104` reaches the new realised-Transit execution path successfully. The earlier Condor / Patriot Passage `CM-00002` adapts at `14:01:30.156` with `geometry=REALISED_TRANSIT`, both participants on folded `configuration:3`, then completes. Condor / S416 `CM-00004` also reports `COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED ... geometry=REALISED_TRANSIT` and succeeds.
+
+The final Condor / Patriot `CM-00006` still fails after both fold successfully. Candidate selection occurs at about 78.52 m with Entry Boundary 23.05 m and near-zero lateral separation. Control waits until 22.97 m before beginning Hold. About 1.07 s later the pair is still physically settling at 15.98 m; all-stop/configuration starts at about 15.82 m. The pair remains stationary while folding, then execution adaptation has insufficient Development room and correctly refuses the resulting guide.
+
+Comparison with the successful earlier pair is decisive: `CM-00002` reaches execution at 16.57 m but already has 3.31 m natural lateral separation and therefore needs only about 2.51 m additional lateral correction. The final pair is almost centreline-on-centreline and must create essentially the full realised Transit separation before crossing. Same longitudinal distance does not imply same Development demand.
+
+**Discovery:** **Passage Entry Boundary != Capture Initiation Boundary.**
+
+Supporting implementation statement:
+
+> **Current Closing Progression Consumes Disposable Approach Margin.**
+
+This is not a new architectural rule. `SPATIAL_NEGOTIATION_MODEL` and `COOPERATIVE_PASSAGE` already require current closing progression to determine how quickly disposable margin is consumed and require capture before independent approach makes the accepted Passage unsupported. Control was still using the spatial Entry Boundary itself as the Hold-start trigger.
+
+**Implementation `.105`:** keep Candidate geometry, Entry Boundary and the 3 m Entry Control Allowance unchanged. Passage Approach now evaluates current physical closing progression from each participant's realised travel speed projected onto its committed approach axis. If the pair is already at the Entry Boundary, behaviour is unchanged. Otherwise Hold begins when time-to-Entry under current positive closing progression is at or below the empirical 1.0 s Capture Acquisition Horizon. The horizon is Control-response calibration, not a braking-distance model; the separate 3 m Entry Control Allowance remains spatial reserve for the remaining acquisition/settling tail.
+
+Focused regression proves a 30 m separation / 20 m Entry Boundary pair at 25 km/h each enters Settling before crossing the boundary, while the existing zero-closing fixture remains native until the literal Entry Boundary.
+
+**Scope:** no Passage clearance change, no realised-Transit rollback, no FI/Corner change, no guide-shape change, no Regulation magnitude change and no braking-distance literal. `.104`'s realised-geometry correction remains retained because Reality validates that evidence path even though it was not sufficient to resolve the final encounter.
 

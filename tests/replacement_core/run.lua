@@ -5558,7 +5558,7 @@ test("Direct Cooperative Passage failure removes semantic Resolution Commitment"
 end)
 
 
-test("Cooperative Passage: Passage Approach stays native until Entry Boundary then begins settling",function()
+test("Cooperative Passage: Passage Approach with no positive closing stays native until Entry Boundary then begins settling",function()
     local vehicleA={rootNode=1201,lastSpeedReal=0,job={token="JOB-A"}}
     local vehicleB={rootNode=1202,lastSpeedReal=0,job={token="JOB-B"}}
     function vehicleA:getAISteeringNode() return self.rootNode end
@@ -5593,6 +5593,45 @@ test("Cooperative Passage: Passage Approach stays native until Entry Boundary th
     g_time=1250
     control:update(16)
     equal(control.run.phase,"SETTLING"); equal(holds,2)
+    g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
+end)
+
+test("Cooperative Passage: positive current closing starts capture before Entry Boundary when acquisition horizon is reached",function()
+    local vehicleA={rootNode=1211,lastSpeedReal=25/3600,movingDirection=1,job={token="JOB-A"}}
+    local vehicleB={rootNode=1212,lastSpeedReal=25/3600,movingDirection=1,job={token="JOB-B"}}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1211]={0,0,0},[1212]={0,0,30}}
+    local directions={[1211]={0,1},[1212]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldCurrentJob,oldJobToken=OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.currentJob=function(vehicle) return vehicle.job end
+    OuttaMyWay.LiveAIJobEvidence.jobToken=function(job) return job and job.token end
+    local holds=0
+    local donor={
+        holdMechanism={setHold=function() holds=holds+1; return true end,release=function() return true end,getCallCount=function() return 1 end},
+        driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationMechanism={getState=function() return nil end,getEvidence=function() return {allDeployed=true,allFolded=false} end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-TIME-AWARE-CAPTURE",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
+        passageEntry={boundarySeparationM=20},thirdPartyConstraints={},failureReason=nil,
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",startJobToken="JOB-A",startForwardX=0,startForwardZ=1},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",startJobToken="JOB-B",startForwardX=0,startForwardZ=-1},
+        participants={}
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local oldTime=g_time; g_time=1000
+    control:update(16)
+    equal(control.run.phase,"SETTLING"); equal(holds,2)
+    equal(control.run.captureClosingRateMps>13,true)
+    equal(control.run.captureTimeToBoundaryS<1,true)
+    equal(control.run.captureTimeToBoundaryS>0,true)
     g_time=oldTime
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken

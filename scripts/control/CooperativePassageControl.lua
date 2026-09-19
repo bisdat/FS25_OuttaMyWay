@@ -23,6 +23,11 @@ local COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
 local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 local COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
+-- Empirical Control-response horizon, not a braking-distance model. Reality
+-- shows Passage Hold can require about one second before both workers are
+-- physically settled; current closing progression therefore starts capture
+-- before disposable approach margin is consumed.
+local COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S = 1.0
 local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 -- Longitudinal completion on the captured axis, not a Passage Guide target radius.
 local COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M = 1.0
@@ -376,6 +381,23 @@ function Control:_passageLongitudinalSeparation(run)
     return math.max(0,(aAhead+bAhead)*0.5),pa,pb
 end
 
+local function passageClosingContributionMps(participant,currentPose)
+    if participant==nil or participant.vehicle==nil or currentPose==nil then return 0 end
+    local speed=math.abs(tonumber(participant.vehicle.lastSpeedReal) or 0)*1000
+    if speed<=0 then return 0 end
+    local travelSign=(tonumber(participant.vehicle.movingDirection) or 1)<0 and -1 or 1
+    local travelX,travelZ=currentPose.dx*travelSign,currentPose.dz*travelSign
+    local axisX,axisZ=tonumber(participant.startForwardX),tonumber(participant.startForwardZ)
+    if axisX==nil or axisZ==nil then return 0 end
+    local projection=dot(travelX,travelZ,axisX,axisZ)
+    return math.max(0,speed*projection)
+end
+
+function Control:_passageApproachClosingRateMps(run,pa,pb)
+    if run==nil or pa==nil or pb==nil then return 0 end
+    return passageClosingContributionMps(run.a,pa)+passageClosingContributionMps(run.b,pb)
+end
+
 function Control:_beginPassageSettling(run,reason)
     local held={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
@@ -388,8 +410,11 @@ function Control:_beginPassageSettling(run,reason)
     end
     self:_setPhase(run,"SETTLING",g_time or 0)
     local separation=self:_passageLongitudinalSeparation(run)
-    logInfo("COOPERATIVE_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm action=HOLD_THEN_CONFIGURE",
-        tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1)
+    logInfo("COOPERATIVE_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm closingRate=%.2fmps timeToBoundary=%s action=HOLD_THEN_CONFIGURE",
+        tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",
+        tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1,
+        tonumber(run.captureClosingRateMps) or 0,
+        run.captureTimeToBoundaryS and string.format("%.2fs",run.captureTimeToBoundaryS) or "n/a")
     return true,nil
 end
 
@@ -1201,8 +1226,9 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         local settleOk,settleReason=self:_beginPassageSettling(run,"ENTRY_READY_AT_SELECTION")
         if not settleOk then self.run=nil; return false,settleReason end
     else
-        logInfo("COOPERATIVE_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm",
-            tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1)
+        logInfo("COOPERATIVE_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm captureAcquisitionHorizon=%.2fs",
+            tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,
+            tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1,COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S)
     end
     local arrangement=bridge.passageArrangement or {}
     local excursion=run.passageExcursion or {}
@@ -1262,12 +1288,20 @@ function Control:update(dt)
     end
 
     if run.phase=="PASSAGE_APPROACH" then
-        local longitudinal=self:_passageLongitudinalSeparation(run)
+        local longitudinal,pa,pb=self:_passageLongitudinalSeparation(run)
         if longitudinal==nil then self:_failHeld("PASSAGE_APPROACH_LONGITUDINAL_SEPARATION_UNAVAILABLE"); return end
         local boundary=tonumber(run.passageEntry and run.passageEntry.boundarySeparationM)
         if boundary==nil then self:_failHeld("PASSAGE_ENTRY_BOUNDARY_UNAVAILABLE"); return end
-        if longitudinal<=boundary then
-            local ok,reason=self:_beginPassageSettling(run,"ENTRY_BOUNDARY_REACHED")
+        local captureHorizon=COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S
+        local closingRate=self:_passageApproachClosingRateMps(run,pa,pb)
+        local margin=longitudinal-boundary
+        local timeToBoundary=(closingRate>0.001 and margin>0) and (margin/closingRate) or nil
+        local captureDue=longitudinal<=boundary or (timeToBoundary~=nil and timeToBoundary<=captureHorizon)
+        if captureDue then
+            run.captureClosingRateMps=closingRate
+            run.captureTimeToBoundaryS=timeToBoundary
+            local triggerReason=longitudinal<=boundary and "ENTRY_BOUNDARY_REACHED" or "CAPTURE_ACQUISITION_HORIZON_REACHED"
+            local ok,reason=self:_beginPassageSettling(run,triggerReason)
             if not ok then self:_failHeld(reason) end
         end
     elseif run.phase=="SETTLING" then

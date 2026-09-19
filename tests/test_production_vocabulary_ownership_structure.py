@@ -389,6 +389,8 @@ def test_cooperative_passage_control_owns_execution_calibration():
          "_assemblyAxisSettled", "local headingMinDot="),
         ("COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH", "0.25",
          "_allStopped", "local limit="),
+        ("COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S", "1.0",
+         "update", "local captureHorizon="),
         ("COOPERATIVE_PASSAGE_HEARTBEAT_MS", "1000",
          "update", "self.nextHeartbeatMs=nowMs+"),
     )
@@ -405,6 +407,7 @@ def test_cooperative_passage_control_owns_execution_calibration():
     assert "run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS" in passage
     for use in (
         "actualSpeedKmh(p.vehicle)>limit",
+        "timeToBoundary<=captureHorizon",
         "math.abs(vehicleLateral)>lateralTolerance",
         "vehicleHeadingDot<headingMinDot",
         "memberHeadingDot<headingMinDot",
