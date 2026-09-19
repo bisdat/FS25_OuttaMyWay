@@ -587,10 +587,29 @@ function Control:_rebasePassageGuide(run)
             or type(planner.adaptExecutionGuide)~="function" then
             return false,"PASSAGE_EXECUTION_REVALIDATION_UNAVAILABLE"
         end
-        local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(guide,arrangement)
+        local observationSource=self.runtime and self.runtime.liveObservationSource or nil
+        if observationSource==nil or type(observationSource.getTrackedRepresentation)~="function" then
+            return false,"PASSAGE_EXECUTION_REALISED_TRANSIT_OBSERVATION_UNAVAILABLE"
+        end
+        local function realisedRepresentation(participant)
+            local representation=observationSource:getTrackedRepresentation(participant.referenceKey)
+            if type(representation)~="table" then return nil,"CURRENT_REALISED_TRANSIT_REPRESENTATION_UNAVAILABLE:"..tostring(participant.assemblyId) end
+            if representation.assemblyReferenceKey~=participant.referenceKey or representation.sourceJobToken~=participant.startJobToken then
+                return nil,"CURRENT_REALISED_TRANSIT_REPRESENTATION_JOB_EPISODE_MISMATCH:"..tostring(participant.assemblyId)
+            end
+            return representation,nil
+        end
+        local subjectRepresentation,subjectRepresentationReason=realisedRepresentation(subjectParticipant)
+        if subjectRepresentation==nil then return false,subjectRepresentationReason end
+        local otherRepresentation,otherRepresentationReason=realisedRepresentation(otherParticipant)
+        if otherRepresentation==nil then return false,otherRepresentationReason end
+
+        local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(
+            guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
         if not retainedOk then
             local adapted,adaptReason=planner.adaptExecutionGuide(
-                guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId)
+                guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId,
+                subjectRepresentation,otherRepresentation)
             if adapted==nil then
                 return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
                     ..":ADAPTATION:"..tostring(adaptReason)
@@ -601,14 +620,17 @@ function Control:_rebasePassageGuide(run)
             run.passageArrangement=arrangement
             run.passageExcursion=adapted.passageExcursion or run.passageExcursion
             geometryUnchanged=false
-            logInfo("COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s",
+            logInfo("COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s",
                 tostring(run.commitmentId),tostring(retainedReason),
                 tonumber(adapted.currentSignedSeparationM) or 0,tonumber(adapted.currentLongitudinalSeparationM) or 0,
                 originalSubjectOffset,originalOtherOffset,
                 tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,
-                tonumber(arrangement.policyRequiredSeparationM) or 0,tostring(adapted.selectedIndex),tostring(adapted.authority))
+                tonumber(arrangement.policyRequiredSeparationM) or 0,tostring(adapted.selectedIndex),tostring(adapted.authority),
+                tostring(adapted.subjectConfigurationProfileId),tostring(adapted.otherConfigurationProfileId))
         else
             guide.pairSweepSupport=retainedEvidence or guide.pairSweepSupport
+            logInfo("COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED commitment=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s retainedArrangement=true",
+                tostring(run.commitmentId),tostring(subjectRepresentation.configurationProfileId),tostring(otherRepresentation.configurationProfileId))
         end
     end
 
@@ -628,8 +650,8 @@ function Control:_rebasePassageGuide(run)
     if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
     -- The captured Passage execution pose is the Axis Return reference frame, not an
     -- articulation pose which Recovery must reproduce. Alignment is observed
-    -- later against the stable Passage axis. Fresh physical heading is used only
-    -- to test the prospective Transit envelope before geometry-dependent motion.
+    -- later against the stable Passage axis. Execution validity uses the current
+    -- Observation-owned realised Transit configuration geometry before motion.
     run.guide=guide
     local ok,reason=self:_preflightPassageGuide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end

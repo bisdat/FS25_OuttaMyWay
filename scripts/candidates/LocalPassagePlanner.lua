@@ -388,12 +388,12 @@ local function directionalRectangleClearance(ax,az,bx,bz,guide,aEnvelope,bEnvelo
 end
 
 local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearanceM,aEnvelope,bEnvelope)
-    if type(aDiscs)~="table" or type(bDiscs)~="table" then return false,"CONFIGURATION_CONDITIONED_PAIR_SWEEP_PHYSICAL_UNAVAILABLE" end
+    local directional=directionalEnvelopeValid(aEnvelope) and directionalEnvelopeValid(bEnvelope)
+    if not directional and (type(aDiscs)~="table" or type(bDiscs)~="table") then return false,"CONFIGURATION_CONDITIONED_PAIR_SWEEP_PHYSICAL_UNAVAILABLE" end
     local minimum=math.huge
     local minimumCrossing=math.huge
     local minimumOutsideCrossing=math.huge
     local samples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG
-    local directional=directionalEnvelopeValid(aEnvelope) and directionalEnvelopeValid(bEnvelope)
     local entryOrigins=guide.entryOrigins or {}
     local previous={
         subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
@@ -531,7 +531,21 @@ local function segmentAgainstThirdParty(ax,az,bx,bz,participantDiscs,third,nomin
     return true,{minimumRepresentedClearanceM=minimum}
 end
 
-function Planner.validateRebasedGuidePairSweep(guide,arrangement)
+local function realisedExecutionGeometry(representation,space,role)
+    if type(representation)~="table" then return nil,tostring(role).."_REALISED_TRANSIT_REPRESENTATION_UNAVAILABLE" end
+    local envelope=directionalEnvelopeValid(representation.directionalPassageEnvelope) and representation.directionalPassageEnvelope or nil
+    local discs,discReason=OuttaMyWay.PairSpecificPassageClearance.relativeDiscs({primitives=representation.worldPrimitives},space)
+    if envelope==nil and discs==nil then
+        return nil,tostring(role).."_REALISED_TRANSIT_GEOMETRY_UNAVAILABLE:"..tostring(discReason)
+    end
+    return {
+        directionalEnvelope=envelope,discs=discs,
+        configurationProfileId=representation.configurationProfileId,
+        representationBasis=envelope~=nil and "CURRENT_REALISED_TRANSIT_DIRECTIONAL_ENVELOPE" or "CURRENT_REALISED_TRANSIT_REPRESENTED_DISCS"
+    },nil
+end
+
+function Planner.validateRebasedGuidePairSweep(guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
     if type(guide)~="table" or type(guide.entryOrigins)~="table" then
         return false,"REBASED_PASSAGE_GUIDE_ENTRY_ORIGINS_UNAVAILABLE"
     end
@@ -549,15 +563,41 @@ function Planner.validateRebasedGuidePairSweep(guide,arrangement)
         or not finite(tonumber(otherOrigin.x)) or not finite(tonumber(otherOrigin.z)) then
         return false,"REBASED_PASSAGE_GUIDE_ENTRY_ORIGINS_UNRESOLVED"
     end
-    return pairSweepSupport(
-        guide,
-        {occupancy={x=subjectOrigin.x,z=subjectOrigin.z}},
-        {occupancy={x=otherOrigin.x,z=otherOrigin.z}},
-        arrangement.subjectPassageDiscs,
-        arrangement.otherPassageDiscs,
-        nominal,
-        arrangement.subjectDirectionalPassageEnvelope,
-        arrangement.otherDirectionalPassageEnvelope)
+
+    local subjectSpace={occupancy={x=subjectOrigin.x,z=subjectOrigin.z}}
+    local otherSpace={occupancy={x=otherOrigin.x,z=otherOrigin.z}}
+    local subjectDiscs=arrangement.subjectPassageDiscs
+    local otherDiscs=arrangement.otherPassageDiscs
+    local subjectEnvelope=arrangement.subjectDirectionalPassageEnvelope
+    local otherEnvelope=arrangement.otherDirectionalPassageEnvelope
+    local realised=false
+    local subjectProfileId=nil
+    local otherProfileId=nil
+
+    if subjectRepresentation~=nil or otherRepresentation~=nil or subjectPose~=nil or otherPose~=nil then
+        if type(subjectPose)~="table" or type(otherPose)~="table" then
+            return false,"REALISED_TRANSIT_EXECUTION_POSE_UNAVAILABLE"
+        end
+        subjectSpace={occupancy={x=subjectPose.x,z=subjectPose.z,headingX=subjectPose.dx,headingZ=subjectPose.dz}}
+        otherSpace={occupancy={x=otherPose.x,z=otherPose.z,headingX=otherPose.dx,headingZ=otherPose.dz}}
+        local subjectGeometry,subjectReason=realisedExecutionGeometry(subjectRepresentation,subjectSpace,"SUBJECT")
+        if subjectGeometry==nil then return false,subjectReason end
+        local otherGeometry,otherReason=realisedExecutionGeometry(otherRepresentation,otherSpace,"OTHER")
+        if otherGeometry==nil then return false,otherReason end
+        subjectDiscs,otherDiscs=subjectGeometry.discs,otherGeometry.discs
+        subjectEnvelope,otherEnvelope=subjectGeometry.directionalEnvelope,otherGeometry.directionalEnvelope
+        subjectProfileId,otherProfileId=subjectGeometry.configurationProfileId,otherGeometry.configurationProfileId
+        realised=true
+    end
+
+    local supported,reason,evidence=pairSweepSupport(
+        guide,subjectSpace,otherSpace,subjectDiscs,otherDiscs,nominal,subjectEnvelope,otherEnvelope)
+    if type(evidence)=="table" then
+        evidence.executionGeometryBasis=realised and "CURRENT_REALISED_TRANSIT_CONFIGURATION" or "RETAINED_PROSPECTIVE_TRANSIT_CONFIGURATION"
+        evidence.subjectConfigurationProfileId=subjectProfileId
+        evidence.otherConfigurationProfileId=otherProfileId
+    end
+    return supported,reason,evidence
 end
 
 local function thirdPartyGuideSupport(guide,aSpace,bSpace,aDiscs,bDiscs,picture,conflict,nominalClearanceM,aEnvelope,bEnvelope)
@@ -733,7 +773,7 @@ local function arrangementCandidates(currentSigned,pairClearance)
 end
 
 
-function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId)
+function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation)
     if type(retainedGuide)~="table" or type(retainedGuide.executionFrame)~="table" then
         return nil,"RETAINED_PASSAGE_EXECUTION_FRAME_UNAVAILABLE"
     end
@@ -756,38 +796,40 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
     if rightLength<=0.0001 then return nil,"RETAINED_PASSAGE_LATERAL_AXIS_UNRESOLVED" end
     rightX,rightZ=rightX/rightLength,rightZ/rightLength
 
-    local subjectEnvelope=retainedArrangement.subjectDirectionalPassageEnvelope
-    local otherEnvelope=retainedArrangement.otherDirectionalPassageEnvelope
-    if not directionalEnvelopeValid(subjectEnvelope) or not directionalEnvelopeValid(otherEnvelope) then
-        return nil,"RETAINED_TRANSIT_DIRECTIONAL_ENVELOPE_UNAVAILABLE"
-    end
-    local subjectDiscs=retainedArrangement.subjectPassageDiscs
-    local otherDiscs=retainedArrangement.otherPassageDiscs
-    if type(subjectDiscs)~="table" or type(otherDiscs)~="table" then
-        return nil,"RETAINED_PASSAGE_DISC_GEOMETRY_UNAVAILABLE"
-    end
     local nominal=tonumber(retainedArrangement.nominalInterAssemblyClearanceM)
     if not finite(nominal) or nominal<=0 then return nil,"RETAINED_PASSAGE_NOMINAL_CLEARANCE_UNAVAILABLE" end
 
     local subjectSpace={occupancy={x=subjectPose.x,z=subjectPose.z,headingX=subjectPose.dx,headingZ=subjectPose.dz}}
     local otherSpace={occupancy={x=otherPose.x,z=otherPose.z,headingX=otherPose.dx,headingZ=otherPose.dz}}
+    local subjectGeometry,subjectGeometryReason=realisedExecutionGeometry(subjectRepresentation,subjectSpace,"SUBJECT")
+    if subjectGeometry==nil then return nil,subjectGeometryReason end
+    local otherGeometry,otherGeometryReason=realisedExecutionGeometry(otherRepresentation,otherSpace,"OTHER")
+    if otherGeometry==nil then return nil,otherGeometryReason end
+    local subjectEnvelope,otherEnvelope=subjectGeometry.directionalEnvelope,otherGeometry.directionalEnvelope
+    local subjectDiscs,otherDiscs=subjectGeometry.discs,otherGeometry.discs
     local subjectTrajectory={establishedDirectionX=subjectForwardX,establishedDirectionZ=subjectForwardZ}
     local otherTrajectory={establishedDirectionX=otherForwardX,establishedDirectionZ=otherForwardZ}
     local currentSigned=(otherPose.x-subjectPose.x)*rightX+(otherPose.z-subjectPose.z)*rightZ
 
     local function selection(source,envelope,discs,space,sideSign)
-        local facing=directionalFacingExtent(envelope,space,rightX,rightZ,sideSign)
+        local facing=nil
+        if directionalEnvelopeValid(envelope) then
+            facing=directionalFacingExtent(envelope,space,rightX,rightZ,sideSign)
+        else
+            local support=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
+            if support~=nil then facing=sideSign>0 and math.max(0,tonumber(support.maxOffsetM) or 0) or math.max(0,-(tonumber(support.minOffsetM) or 0)) end
+        end
         if not finite(facing) then return nil end
         return {
             mode="TRANSIT_REQUIRED",discs=discs,directionalEnvelope=envelope,
             currentFacingM=facing,selectedFacingM=facing,releaseM=0,
             configurationProfileId=source and source.configurationProfileId or nil,
-            authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"
+            authority="CURRENT_REALISED_TRANSIT_CONFIGURATION_GEOMETRY"
         }
     end
     local function relation(sign)
-        local subjectSelection=selection(retainedArrangement.subjectConfiguration,subjectEnvelope,subjectDiscs,subjectSpace,sign)
-        local otherSelection=selection(retainedArrangement.otherConfiguration,otherEnvelope,otherDiscs,otherSpace,-sign)
+        local subjectSelection=selection(subjectGeometry,subjectEnvelope,subjectDiscs,subjectSpace,sign)
+        local otherSelection=selection(otherGeometry,otherEnvelope,otherDiscs,otherSpace,-sign)
         if subjectSelection==nil or otherSelection==nil then return nil end
         local contact=subjectSelection.selectedFacingM+otherSelection.selectedFacingM
         return {
@@ -797,7 +839,7 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
             policyRequiredSeparationM=contact+nominal,
             subjectConfiguration=subjectSelection,otherConfiguration=otherSelection,
             subjectDirectionalPassageEnvelope=subjectEnvelope,otherDirectionalPassageEnvelope=otherEnvelope,
-            representationBasis="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationReleasedSpaceM=0
+            representationBasis="CURRENT_REALISED_TRANSIT_CONFIGURATION_GEOMETRY",configurationReleasedSpaceM=0
         }
     end
     local positive,negative=relation(1),relation(-1)
@@ -811,8 +853,8 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
         nominalInterAssemblyClearanceM=nominal,policyRequiredSeparationM=currentRelation.policyRequiredSeparationM,
         policyReserveM=math.abs(currentSigned)-currentRelation.policyRequiredSeparationM,
         positiveRelation=positive,negativeRelation=negative,
-        representationBasis="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",
-        planningGeometrySource="FRESH_EXECUTION_TRANSIT_BASE",
+        representationBasis="CURRENT_REALISED_TRANSIT_CONFIGURATION_GEOMETRY",
+        planningGeometrySource="FRESH_EXECUTION_REALISED_TRANSIT_CONFIGURATION",
         coverageComplete=false,negativeClearanceAuthority=false
     }
     local longitudinal=longitudinalPairSeparation(subjectSpace,otherSpace,subjectTrajectory,otherTrajectory)
@@ -871,6 +913,8 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
                             crossingWindowBasis=geometry.crossingWindowBasis
                         },
                         currentSignedSeparationM=currentSigned,currentLongitudinalSeparationM=longitudinal,
+                        subjectConfigurationProfileId=subjectGeometry.configurationProfileId,
+                        otherConfigurationProfileId=otherGeometry.configurationProfileId,
                         selectedIndex=index,rejectedBeforeSelection=rejected,
                         authority="COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION",
                         reason="FRESH_EXECUTION_ORIGIN_PAIR_SWEEP_SUPPORTED"

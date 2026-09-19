@@ -5014,4 +5014,29 @@ Issue #227 remains separate: this `.100` failure occurs before successful crossi
 **Regression contract:** establish a fixed FI Regulation on A/B, then present a supported Cooperative Passage for the same pair whose opposed-corridor conflict identity is deliberately different. Require one retained Commitment, distinct predecessor/successor `RS-*` identities, FI obligation settlement and physical lease release before Passage Control, Cooperative Passage governing-basis rebinding, and successful joint dispatch.
 
 **Reality boundary:** `.103` must first preserve the `.102` fixed-role migration PASS and the earlier Passage/Corner regressions, then demonstrate that the final Condor / Patriot Passage emits atomic `RESPONSIBILITY_REPLACED` and begins before encounter space is consumed. The later near-zero-rate FI oscillation is downstream until that succession path is corrected. Issue #240 remains the separate Corner re-entry / remote-demand workstream.
+## 2026-09-19 — .103 Reality correction: prospective Transit geometry was reused as execution geometry
+
+**Owner correction:** the initial .103 interpretation incorrectly treated post-configuration pair-sweep rejection as proof that no Passage arrangement remained physically supportable. That conclusion exceeded the evidence. The same Condor / Patriot pair had already realised Transit configuration and completed an earlier Passage in the same run; the final failure therefore required inspection of what .101 actually revalidated.
+
+**Positive .103 result retained:** Forward-Intersection → Cooperative-Passage responsibility succession is Reality-validated. CM-00006 replaces RS-00007 with RS-00008 atomically before Passage Control and no longer reproduces the .102 NO_DISPATCH defect.
+
+**Source finding:** Candidate planning correctly uses cached TRANSIT_BASE as prospective geometry. After physical folding, AssemblyRepresentationCache publishes the current configuration profile, including current directionalPassageEnvelope, current represented primitives and exact Job-Episode provenance. In .103, both Condor and Patriot reach stable configuration:3 profiles before execution revalidation; those same folded profile identities were already observed during the earlier successful Condor / Patriot Passage.
+
+The .101 execution path refreshed execution origins and current headings, but LocalPassagePlanner.adaptExecutionGuide() continued to use the retained arrangement's prospective cached Transit envelopes and retained Passage discs. Control supplied no current realised configuration representation to either retained-guide pair-sweep validation or adaptation.
+
+The failure therefore meant only that the final stopped origins could not satisfy the retained/prospective Transit envelope under the current guide construction. It did not establish that the actually folded assemblies lacked a supported Passage.
+
+**Discovery:** **Prospective Transit Geometry != Realised Transit Geometry.**
+
+Equivalent execution-boundary statement:
+
+> **Fresh Execution Pose != Fresh Execution Geometry.**
+
+The accepted Cooperative Passage Architecture and Specification already require fresh realised Transit geometry after configuration settlement. No architecture change is needed.
+
+**Implementation .104:** keep prospective TRANSIT_BASE planning unchanged. At the execution-origin boundary, CooperativePassageControl now obtains each exact participant Job Episode's current Observation-owned assembly representation. Retained-guide pair-sweep validation and any execution adaptation use the current realised configuration's directional Passage envelope and current represented primitives. If exact current realised geometry is unavailable or belongs to a different Job Episode, execution still fails closed. Control does not rediscover geometry and Planner remains the geometry owner.
+
+A focused regression deliberately supplies a prospective Transit envelope that rejects a close captured guide while a smaller current folded configuration profile supports the same guide. The old prospective-only check must reject; the execution-boundary check using exact current profiles must pass and record CURRENT_REALISED_TRANSIT_CONFIGURATION.
+
+**Scope:** no Entry Boundary / braking model change; no clearance-literal change; no Passage guide-shape change; no FI timing change; no Corner change; no weakening of .101 stale-arrangement protection. The earlier .103 capture-timing diagnosis is superseded unless later Reality independently demonstrates a capture-control defect after execution revalidation consumes realised configuration geometry.
 

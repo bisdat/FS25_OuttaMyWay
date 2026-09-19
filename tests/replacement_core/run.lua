@@ -5598,6 +5598,14 @@ test("Cooperative Passage: Passage Approach stays native until Entry Boundary th
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
 end)
 
+local function realisedTransitTestRepresentation(referenceKey,jobToken,profileId,envelope,x,z)
+    return {
+        assemblyReferenceKey=referenceKey,sourceJobToken=jobToken,configurationProfileId=profileId,
+        directionalPassageEnvelope=envelope,
+        worldPrimitives={{identity=profileId..":disc",kind="DISC",x=x,z=z,radius=0.5,positiveConflictSupport=true}}
+    }
+end
+
 test("Cooperative Passage: execution-origin capture rebases short Development ahead of stopped participants",function()
     local vehicleA={rootNode=1301}; local vehicleB={rootNode=1302}
     function vehicleA:getAISteeringNode() return self.rootNode end
@@ -5610,9 +5618,16 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
-    local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
-        return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
-    end}}
+    local testEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local runtime={
+        assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+            return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+        end},
+        liveObservationSource={getTrackedRepresentation=function(self,referenceKey)
+            if referenceKey=="REF-A" then return realisedTransitTestRepresentation("REF-A","JOB-A","REAL-A",testEnvelope,positions[1301][1],positions[1301][3]) end
+            if referenceKey=="REF-B" then return realisedTransitTestRepresentation("REF-B","JOB-B","REAL-B",testEnvelope,positions[1302][1],positions[1302][3]) end
+        end}
+    }
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
@@ -5654,11 +5669,17 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
-    local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
-        return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
-    end}}
-    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+    local runtime={
+        assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+            return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+        end},
+        liveObservationSource={getTrackedRepresentation=function(self,referenceKey)
+            if referenceKey=="REF-A" then return realisedTransitTestRepresentation("REF-A","JOB-A","REAL-A",envelope,positions[1311][1],positions[1311][3]) end
+            if referenceKey=="REF-B" then return realisedTransitTestRepresentation("REF-B","JOB-B","REAL-B",envelope,positions[1312][1],positions[1312][3]) end
+        end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE-SIDE-FLIP",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
         passageArrangement={
@@ -5688,6 +5709,62 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     local sweepOk,sweepReason=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(
         control.run.guide,control.run.passageArrangement)
     equal(sweepOk,true); equal(sweepReason,nil)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("Cooperative Passage: realised Transit configuration geometry can preserve a close captured Passage rejected by prospective Transit base",function()
+    local vehicleA={rootNode=1321}; local vehicleB={rootNode=1322}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1321]={0,0,0},[1322]={0,0,12}}
+    local directions={[1321]={0,1},[1322]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+
+    local prospective={minRightM=-2,maxRightM=2,minForwardM=-4,maxForwardM=4,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+    local realised={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local runtime={
+        assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+            return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+        end},
+        liveObservationSource={getTrackedRepresentation=function(self,referenceKey)
+            if referenceKey=="REF-A" then return realisedTransitTestRepresentation("REF-A","JOB-A","FOLDED-A",realised,0,0) end
+            if referenceKey=="REF-B" then return realisedTransitTestRepresentation("REF-B","JOB-B","FOLDED-B",realised,0,12) end
+        end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    local arrangement={
+        identity="PA-REALISED-TRANSIT",relationSign=1,subjectLateralOffsetM=2.5,otherLateralOffsetM=-2.5,
+        nominalInterAssemblyClearanceM=1,policyRequiredSeparationM=5,
+        subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
+        subjectDirectionalPassageEnvelope=prospective,otherDirectionalPassageEnvelope=prospective,
+        subjectConfiguration={configurationProfileId="PROSPECTIVE-A"},otherConfiguration={configurationProfileId="PROSPECTIVE-B"}
+    }
+    local guide={identity="PG-REALISED-TRANSIT",entryOrigins={subject={x=0,z=0},other={x=0,z=12}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+        {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2.5,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=1.25,z=2.5,radiusM=1},other={assemblyId="AS-B",x=-1.25,z=9.5,radiusM=1}},
+        {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=5,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=2.5,z=5,radiusM=1},other={assemblyId="AS-B",x=-2.5,z=7,radiusM=1}},
+        {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=7,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=2.5,z=7,radiusM=1},other={assemblyId="AS-B",x=-2.5,z=5,radiusM=1}}
+    }}
+    local staleOk=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(guide,arrangement)
+    equal(staleOk,false)
+
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REALISED-TRANSIT",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        passageArrangement=arrangement,
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
+        participants={},guide=guide
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local ok,reason=control:_rebasePassageGuide(control.run)
+    equal(ok,true); equal(reason,nil)
+    equal(control.run.guide.pairSweepSupport.executionGeometryBasis,"CURRENT_REALISED_TRANSIT_CONFIGURATION")
+    equal(control.run.guide.pairSweepSupport.subjectConfigurationProfileId,"FOLDED-A")
+    equal(control.run.guide.pairSweepSupport.otherConfigurationProfileId,"FOLDED-B")
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
