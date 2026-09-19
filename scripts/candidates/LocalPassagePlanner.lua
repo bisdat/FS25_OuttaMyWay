@@ -527,6 +527,35 @@ local function segmentAgainstThirdParty(ax,az,bx,bz,participantDiscs,third,nomin
     return true,{minimumRepresentedClearanceM=minimum}
 end
 
+function Planner.validateRebasedGuidePairSweep(guide,arrangement)
+    if type(guide)~="table" or type(guide.entryOrigins)~="table" then
+        return false,"REBASED_PASSAGE_GUIDE_ENTRY_ORIGINS_UNAVAILABLE"
+    end
+    if type(arrangement)~="table" then
+        return false,"RETAINED_PASSAGE_ARRANGEMENT_UNAVAILABLE"
+    end
+    local nominal=tonumber(arrangement.nominalInterAssemblyClearanceM)
+    if not finite(nominal) or nominal<=0 then
+        return false,"RETAINED_PASSAGE_NOMINAL_CLEARANCE_UNAVAILABLE"
+    end
+    local subjectOrigin=guide.entryOrigins.subject
+    local otherOrigin=guide.entryOrigins.other
+    if type(subjectOrigin)~="table" or type(otherOrigin)~="table"
+        or not finite(tonumber(subjectOrigin.x)) or not finite(tonumber(subjectOrigin.z))
+        or not finite(tonumber(otherOrigin.x)) or not finite(tonumber(otherOrigin.z)) then
+        return false,"REBASED_PASSAGE_GUIDE_ENTRY_ORIGINS_UNRESOLVED"
+    end
+    return pairSweepSupport(
+        guide,
+        {occupancy={x=subjectOrigin.x,z=subjectOrigin.z}},
+        {occupancy={x=otherOrigin.x,z=otherOrigin.z}},
+        arrangement.subjectPassageDiscs,
+        arrangement.otherPassageDiscs,
+        nominal,
+        arrangement.subjectDirectionalPassageEnvelope,
+        arrangement.otherDirectionalPassageEnvelope)
+end
+
 local function thirdPartyGuideSupport(guide,aSpace,bSpace,aDiscs,bDiscs,picture,conflict,nominalClearanceM,aEnvelope,bEnvelope)
     local members=operationMembers(picture,conflict.operationId)
     if #members<=2 then return true,nil,{thirdPartyConstraintCount=0,constraints={}} end
