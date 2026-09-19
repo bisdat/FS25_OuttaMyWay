@@ -933,6 +933,77 @@ test("Traffic Policeman Regulation requires explicit Observe exhaustion from the
     equal(result.decision.comparisonBasis.rankedCandidates[1].preferenceRank,2)
 end)
 
+local function cornerPolicyCandidate(name,regulatedId,protectedId,protectedParticipant,requirement,representationId)
+    local candidate=candidateSpec(name,"REGULATE_SPEED",0,regulatedId)
+    local metadata=trafficPreference(candidate,requirement)
+    metadata.exhaustionEvidence.CONTINUE_OBSERVATION=bandExhaustion("OP-DECISION",requirement,"CONTINUE_OBSERVATION")
+    metadata.cornerRightOfWay={
+        sharedCornerIdentity="shared-corner:test",cornerKey="corner:test",
+        regulatedAssemblyId=regulatedId,protectedAssemblyId=protectedId,
+        regulatedParticipant={assemblyId=regulatedId},
+        protectedParticipant=protectedParticipant
+    }
+    candidate.representationFitness={requirements={{representationId=representationId,acceptedStates={"CURRENTLY_FIT"}}}}
+    candidate.evidenceBasis.effectiveActuationComposition={
+        identity="EC-"..name,epoch=1,relevantAssemblyIds={regulatedId,protectedId},
+        entries={{assemblyId=regulatedId,commitmentId="CM-"..name,capability="REGULATE_SPEED",progressActuation=true}}
+    }
+    return candidate
+end
+
+local function cornerPolicyPicture(candidates,requirement)
+    local fitness={}
+    for _,candidate in ipairs(candidates) do
+        local representation=candidate.representationFitness.requirements[1]
+        fitness[#fitness+1]={
+            representationId=representation.representationId,assemblyId=candidate.subject.assemblyId,
+            question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},
+            coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}
+        }
+    end
+    return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
+end
+
+test("Corner Right-of-Way protects current constrained Corner occupant rather than earlier Engagement",function()
+    local requirement="corner-right-of-way:shared-corner:test"
+    local protectA=cornerPolicyCandidate("corner-protect-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",engagement=true,establishedObservationEpoch=100,
+        currentConstrainedCornerOccupancy=true,timeToCornerSec=20
+    },requirement,"REP-CORNER-A")
+    local protectB=cornerPolicyCandidate("corner-protect-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",engagement=true,establishedObservationEpoch=1,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=5
+    },requirement,"REP-CORNER-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do
+        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_CURRENT_CONSTRAINED_CORNER_OCCUPANT")
+end)
+
+test("Corner Right-of-Way protects earlier native arrival regardless of Engagement age",function()
+    local requirement="corner-right-of-way:shared-corner:test"
+    local protectA=cornerPolicyCandidate("corner-arrival-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",engagement=true,establishedObservationEpoch=100,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=8
+    },requirement,"REP-CORNER-ARRIVAL-A")
+    local protectB=cornerPolicyCandidate("corner-arrival-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",engagement=true,establishedObservationEpoch=1,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=12
+    },requirement,"REP-CORNER-ARRIVAL-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do
+        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_EARLIER_CURRENT_CORNER_ARRIVAL")
+end)
+
 test("Traffic Policeman exhaustion evidence cannot be reused from an older Operational Picture",function()
     local requirement="traffic:EN-1"
     local regulate=candidateSpec("stale-regulation","REGULATE_SPEED",5)
