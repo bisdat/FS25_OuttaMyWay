@@ -733,7 +733,9 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
         local currentRequirement=record.governingBasis and record.governingBasis.responsibilityKey or ""
         local successorBasis=candidate.evidenceBasis and candidate.evidenceBasis.governingBasis or nil
         local successorRequirement=successorBasis and successorBasis.responsibilityKey or ""
-        if not hasPrefix(currentRequirement,"corner-right-of-way:")
+        local predecessorSupportsRebind=hasPrefix(currentRequirement,"corner-right-of-way:")
+            or hasPrefix(currentRequirement,"forward-intersection-regulation:")
+        if not predecessorSupportsRebind
             or not hasPrefix(successorRequirement,"cooperative-passage:") then
             return nil,"COOPERATIVE_PASSAGE_PURPOSE_REBIND_NOT_AUTHORISED"
         end

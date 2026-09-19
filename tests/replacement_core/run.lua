@@ -3939,6 +3939,62 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     equal(requests[#requests].target.operation,"RELEASE"); equal(type(responsibilityId),"string")
 end)
 
+test("Forward Intersection Regulation same-pair Passage replaces responsibility across Situation identities",function()
+    local runtime=autonomousHeadOnRuntime(); local regulationRequests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local initial=forwardIntersectionPicture(true)
+    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(admitted.forwardIntersection,true)
+    local commitmentId=admitted.commitment.identity
+    local predecessorResponsibilityId=admitted.currentResponsibility.identity
+    local predecessorConflictId=admitted.currentResponsibility.provenance.conflictIdentity
+    local predecessorObligation=runtime.obligations:openForOwner(commitmentId)[1]
+    equal(predecessorObligation.basis.kind,"FORWARD_INTERSECTION_INTENT_REVELATION")
+
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
+    values.identity="OP-FORWARD-INTERSECTION-PASSAGE-SUCCESSION"; values.epoch=794
+    values.commitmentContext={{commitmentId=commitmentId}}
+    passagePicture=OuttaMyWay.OperationalPicture.new(values)
+
+    local accepted=nil
+    local cooperativeControl={}
+    function cooperativeControl:setCompletionHandler(fn) end
+    function cooperativeControl:isActive() return false end
+    function cooperativeControl:executeJointRequests(a,b,candidate)
+        equal(#regulationRequests,2)
+        equal(regulationRequests[2].target.operation,"RELEASE")
+        equal(runtime.obligations:get(predecessorObligation.identity).status,"SETTLED")
+        accepted={a,b,candidate}
+        return true,"COOPERATIVE_PASSAGE_STARTED"
+    end
+    runtime:setCooperativePassageControl(cooperativeControl)
+
+    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    local passageCandidate=passageSupported.candidateSupportEvidence.candidateSpecifications[1]
+    local passageBridge=passageCandidate.evidenceBasis.cooperativePassageBridge
+    equal(passageBridge.conflictIdentity~=predecessorConflictId,true)
+    local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
+    equal(passageEval.decision.commitmentAction,"REVISE")
+
+    local dispatched=runtime:dispatchEvaluatedOperationalPicture(passageSupported,passageEval)
+    equal(dispatched.status,"ACCEPTED")
+    equal(dispatched.commitment.identity,commitmentId)
+    equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(dispatched.currentResponsibility.identity~=predecessorResponsibilityId,true)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
+    equal(runtime.obligations:get(predecessorObligation.identity).status,"SETTLED")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
+    equal(string.sub(runtime.commitments:get(commitmentId).governingBasis.responsibilityKey,1,20),"cooperative-passage:")
+    equal(#accepted,3)
+end)
+
 test("Forward Intersection fixed creep role migration does not require a Resolution-Space envelope",function()
     local runtime=autonomousHeadOnRuntime(); local requests={}
     local capability={}

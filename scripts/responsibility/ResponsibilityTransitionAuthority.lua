@@ -129,23 +129,29 @@ function Authority:actionSpacePassagePredecessor(picture,evaluated)
     if exact~=nil then return exact,"SAME_CONFLICT_IDENTITY" end
 
     local matched=nil
+    local matchedKind=nil
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         local current=self:getCurrentRegulation(context.commitmentId)
-        if current~=nil and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+        local kind=current and current.provenance and current.provenance.admissionKind or nil
+        local participantScoped=kind=="CORNER_RIGHT_OF_WAY" or kind=="FORWARD_INTERSECTION"
+        if current~=nil and participantScoped
             and sameTwoParticipants(current,bridge)
             and (current.provenance.operationId==nil or bridge.operationId==nil or current.provenance.operationId==bridge.operationId) then
-            if matched~=nil and matched.identity~=current.identity then return nil,"MULTIPLE_CORNER_PASSAGE_PREDECESSORS" end
+            if matched~=nil and matched.identity~=current.identity then return nil,"MULTIPLE_PARTICIPANT_SCOPED_PASSAGE_PREDECESSORS" end
             matched=current
+            matchedKind=kind
         end
     end
-    if matched~=nil then return matched,"SAME_PAIR_CORNER_RIGHT_OF_WAY" end
+    if matched~=nil then
+        return matched,matchedKind=="CORNER_RIGHT_OF_WAY" and "SAME_PAIR_CORNER_RIGHT_OF_WAY" or "SAME_PAIR_FORWARD_INTERSECTION"
+    end
     return nil
 end
 
 -- A Passage may succeed either the established opposed-conflict Regulation
--- carrying the same conflict identity or a Corner Right-of-Way Regulation over
--- the same two current participants. Corner Situation identity and opposed-
--- corridor conflict identity answer different questions and need not match.
+-- carrying the same conflict identity or a participant-scoped Corner Right-of-Way /
+-- Forward Intersection Regulation over the same two current participants.
+-- Situation identity is evidence provenance; it is not Responsibility succession identity.
 function Authority:replaceActionSpaceRegulationWithCooperativePassage(picture,evaluated,readiness,passageTransition,regulationAuthority)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
     local current=self:actionSpacePassagePredecessor(picture,evaluated)
@@ -581,8 +587,12 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
     end
 
     local corner=current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local forwardIntersection=current.provenance.admissionKind=="FORWARD_INTERSECTION"
     if corner and not sameTwoParticipants(current,bridge) then
         return nil,"CORNER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
+    end
+    if forwardIntersection and not sameTwoParticipants(current,bridge) then
+        return nil,"FORWARD_INTERSECTION_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
     end
 
     local obligationId=nil
@@ -591,9 +601,11 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
         local outcome=obligation.requiredOutcome
         local actionSpace=type(basis)=="table" and basis.kind=="ACTION_SPACE_REGULATION"
             and type(outcome)=="table" and outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
+        local forwardIntersectionIntent=type(basis)=="table" and basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION"
+            and type(outcome)=="table" and outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
         local cornerRightOfWay=type(basis)=="table" and basis.kind=="CORNER_RIGHT_OF_WAY"
             and type(outcome)=="table" and outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
-        if (actionSpace or cornerRightOfWay) and basis.conflictIdentity==current.provenance.conflictIdentity then
+        if (actionSpace or forwardIntersectionIntent or cornerRightOfWay) and basis.conflictIdentity==current.provenance.conflictIdentity then
             obligationId=obligation.identity
             break
         end
@@ -604,7 +616,7 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
         conflictIdentity=current.provenance.conflictIdentity,
         obligationId=obligationId,
         predecessorAdmissionKind=current.provenance.admissionKind,
-        rebindCommitmentPurpose=corner
+        rebindCommitmentPurpose=corner or forwardIntersection
     },nil
 end
 
@@ -613,8 +625,10 @@ function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitmen
     local current=self:getCurrentRegulation(commitment and commitment.identity)
     if current==nil or bridge==nil then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
     local corner=current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local forwardIntersection=current.provenance.admissionKind=="FORWARD_INTERSECTION"
     if corner and not sameTwoParticipants(current,bridge) then return nil,"CORNER_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
-    if not corner and current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
+    if forwardIntersection and not sameTwoParticipants(current,bridge) then return nil,"FORWARD_INTERSECTION_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
+    if not corner and not forwardIntersection and current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
 
     local supersessionReason=corner
         and "COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
