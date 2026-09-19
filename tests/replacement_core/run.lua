@@ -3939,6 +3939,60 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     equal(requests[#requests].target.operation,"RELEASE"); equal(type(responsibilityId),"string")
 end)
 
+test("Forward Intersection fixed creep role migration does not require a Resolution-Space envelope",function()
+    local runtime=autonomousHeadOnRuntime(); local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local initial=forwardIntersectionPicture(true)
+    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.status,"ACCEPTED")
+    local commitmentId=admitted.commitment.identity
+    local responsibilityId=admitted.currentResponsibility.identity
+    local status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
+    equal(status.currentCapKmh,1)
+    equal(status.regulatedReferenceKey,"vehicle-root:201")
+    equal(status.remainingOrdinaryM,nil)
+
+    local values=OuttaMyWay.ValueRecord.toTable(initial)
+    values.identity="OP-FORWARD-INTERSECTION-ROLE-MIGRATION"; values.epoch=793
+    values.commitmentContext={{commitmentId=commitmentId,governingBasis={responsibilityKey="forward-intersection-regulation:forward-intersection:OR-1:AS-A:AS-B"}}}
+    local relation=values.spatialConstraintKnowledge[1].pairRelationships[1]
+    relation.temporalYielderAssemblyId="AS-A"; relation.temporalYielderReferenceKey="vehicle-root:101"
+    relation.continuingAssemblyId="AS-B"; relation.continuingReferenceKey="vehicle-root:201"
+    relation.actionSpaceConservation.regulatedAssemblyId="AS-A"
+    relation.actionSpaceConservation.regulatedReferenceKey="vehicle-root:101"
+    relation.actionSpaceConservation.protectedAssemblyId="AS-B"
+    relation.actionSpaceConservation.protectedReferenceKey="vehicle-root:201"
+    local changed=OuttaMyWay.OperationalPicture.new(values)
+    local changedSupported=runtime.liveTrafficCandidateSupport:attach(changed,headOnTestSnapshot())
+    local changedEval=runtime:evaluateSealedOperationalPicture(changedSupported)
+    equal(changedEval.decision.commitmentAction,"MAINTAIN")
+    local migrated=runtime:dispatchEvaluatedOperationalPicture(changedSupported,changedEval)
+    equal(migrated.status,"ROLE_MIGRATED")
+    equal(migrated.forwardIntersection,true)
+    equal(migrated.currentResponsibility.identity,responsibilityId)
+    equal(migrated.commitmentId,commitmentId)
+
+    status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
+    equal(status.active,true)
+    equal(status.currentCapKmh,1)
+    equal(status.regulatedReferenceKey,"vehicle-root:101")
+    equal(status.remainingOrdinaryM,nil)
+    equal(status.roleMigrationCount,1)
+    equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
+    equal(runtime.authorities:ownerOf("AS-B"),nil)
+    equal(#requests,3)
+    equal(requests[1].target.operation,"APPLY"); equal(requests[1].target.vehicleReferenceKey,"vehicle-root:201")
+    equal(requests[2].target.operation,"APPLY"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:101"); equal(requests[2].target.maxSpeedKmh,1)
+    equal(requests[3].target.operation,"RELEASE"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
+end)
+
 test("Pre-productive intent relevance crosses Candidate as Regulation only and cannot become Cooperative Passage",function()
     local runtime=autonomousHeadOnRuntime()
     local values=OuttaMyWay.ValueRecord.toTable(actionSpaceRegulationPicture())
