@@ -260,6 +260,10 @@ The final direction-transition anchor is evidence supplied by GIANTS' own manoeu
 
 No elapsed time, travelled-distance literal, assembly-length multiplier, working-width multiplier, headland reclassification, Forward-Intersection negative, responsibility replacement or temporary movement outside a guessed envelope may manufacture Positive Corner Departure. Until the required positive A8 crossing or another explicit fail-safe/lifecycle outcome is established, Situation Assessment continues to publish the Corner Engagement fact.
 
+Positive Corner Departure settles **that traversal's** Engagement. It is historical evidence of a completed traversal, not permanent negative authority over the same assembly-plus-Corner relationship. Fresh later Corner Approach Demand or current Corner Occupancy may establish a new Engagement in the same Job Episode.
+
+> **Positive Corner Departure != Permanent Same-Job Corner Exclusion**
+
 ### Cooperative Passage foreseeability
 
 Cooperative Passage is foreseeable only while current evidence positively supports all of these conditions:

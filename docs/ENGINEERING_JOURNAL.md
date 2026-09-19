@@ -5061,3 +5061,26 @@ Focused regression proves a 30 m separation / 20 m Entry Boundary pair at 25 km/
 
 **Scope:** no Passage clearance change, no realised-Transit rollback, no FI/Corner change, no guide-shape change, no Regulation magnitude change and no braking-distance literal. `.104`'s realised-geometry correction remains retained because Reality validates that evidence path even though it was not sufficient to resolve the final encounter.
 
+
+
+## 2026-09-19 — pre-merge Triad audit folds Issue #240 into PR #239 as TEST `.106`
+
+**Observe:** the final `.105` Passage/Corner scenario is a GIANTS Reality PASS, but the pre-merge Authority-Triad review found two already-recorded Corner source disagreements still live in `SpatialConstraintAssessment`: retained Positive Departure acted as a same-Job admission tombstone, and full Field-World-bounded productive continuation could still manufacture Corner Approach Demand hundreds of metres before the assembly currently consumed that Corner. Both were already evidenced by `.101` and owned by Issue #240.
+
+**Historical correction:** `.99`'s locality hypothesis was withdrawn before Reality because the first `.98` Corner failure had been misclassified as an admission problem when it was actually a priority problem. It was not disproved by Reality. `.100` then discovered the missing independent concept — **Current Corner Occupancy** — and validated Occupancy -> native-arrival priority. The two ideas are compatible:
+
+> **Current Corner Approach Demand != Eventual Field-Boundary Contact.**
+
+> **Current Corner Occupancy != Predicted Corner Approach.**
+
+**Decision:** TEST `.106` restores an assembly-specific locality bound for **Approach Demand only**. The productive A8 boundary contact must already lie within current positive Physical-Assembly reach before the bounded continuation may establish current Corner Approach Demand. This uses represented current assembly reach rather than a universal distance/time literal or predicted turn route. Positive current Corner Occupancy remains an independent unilateral admission route and therefore preserves the `.100/.105` first-corner result when Reality already occupies constrained space.
+
+**Second decision:** Positive Corner Departure settles one traversal's Engagement, not all future traversals of that Corner within the Job Episode.
+
+> **Positive Corner Departure != Permanent Same-Job Corner Exclusion.**
+
+When fresh current Approach Demand or Occupancy later appears for the same assembly-plus-Corner, Situation Assessment discards the historical departure as live admission authority and establishes a new Engagement. No timeout or cooldown re-arms the Corner.
+
+**Validation design:** the focused Corner fixture now (1) rejects a geometrically compatible boundary contact tens of metres beyond current physical reach, (2) accepts the same structural relationship when the boundary is inside assembly-specific current reach, (3) retains independent turning Occupancy admission, and (4) proves that fresh same-Job Occupancy can re-establish Engagement after a positive continuous-traversal departure. Existing Corner Arrival Priority, fixed 1 km/h Regulation, FI lifecycle, Passage planning/control and `.105` capture mechanics are unchanged.
+
+**Authority Triad:** Architecture gains an explicit repeated-traversal clarification; Situation Assessment Specification operationalises it; Source is changed to conform. The existing Architecture/Specification prohibition on indefinite continuation remains unchanged. `CONTINUATION_STATE.md` is replaced from the stale pre-implementation Issue #234 state with the `.106` validation boundary.

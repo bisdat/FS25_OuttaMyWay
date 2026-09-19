@@ -2,9 +2,12 @@
 -- Specification Jurisdictions: `CONTROL`, `COOPERATIVE_PASSAGE`
 
 -- Cooperative Passage bounded Control executes an already-established pair plan.
--- It may remain in PASSAGE_APPROACH until the Candidate Entry Boundary, then
--- settles/configures the pair and instantiates the guide from actual execution
--- origins before forward-only point pursuit. TRANSIT_BASE participants always
+-- PASSAGE_APPROACH remains GIANTS-native while disposable approach margin is
+-- safe; current positive closing may begin Hold before the Candidate Entry
+-- Boundary when the empirical Capture Acquisition Horizon is reached. The Entry
+-- Boundary remains the literal fallback trigger. Control then settles/configures
+-- the pair and instantiates the guide from actual execution origins before
+-- forward-only point pursuit. TRANSIT_BASE participants always
 -- request Transit and wait only for positive native fold-motion settlement. Final
 -- Recovery restores whole-assembly axis alignment, performs one-at-a-time Axis
 -- Return, then completes participant-specific restore/handoff. The captured member

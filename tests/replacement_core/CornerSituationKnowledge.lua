@@ -62,10 +62,10 @@ return function(test,equal)
         return {
             operationId="OR-1",fieldWorldReferenceKey="FW-1",fieldWorld=world(),
             assemblyIds={"AS-A"},observationSnapshotId="OBS-1",observationEpoch=1,
-            futureSpace={future("AS-A",95,50,95,0)},
-            motionEvidence={motion("AS-A",{moveForwards=true,poseX=95,poseZ=50})},
+            futureSpace={future("AS-A",95,5,95,0)},
+            motionEvidence={motion("AS-A",{moveForwards=true,poseX=95,poseZ=5})},
             productiveContinuationKnowledge={productive("AS-A")},
-            physicalSpaceEvidence={physical("AS-A",100,50,1)},
+            physicalSpaceEvidence={physical("AS-A",100,5,1)},
             followerBoundaryKnowledge={}
         }
     end
@@ -74,17 +74,17 @@ return function(test,equal)
         local values=oneWorkerInput()
         values.assemblyIds={"AS-A","AS-B"}
         values.futureSpace={
-            future("AS-A",95,50,95,0),
-            future("AS-B",50,5,100,5)
+            future("AS-A",95,5,95,0),
+            future("AS-B",95,5,100,5)
         }
         values.motionEvidence={
-            motion("AS-A",{moveForwards=true,poseX=95,poseZ=50,speedMps=5}),
-            motion("AS-B",{moveForwards=true,poseX=50,poseZ=5,speedMps=4})
+            motion("AS-A",{moveForwards=true,poseX=95,poseZ=5,speedMps=5}),
+            motion("AS-B",{moveForwards=true,poseX=95,poseZ=5,speedMps=4})
         }
         values.productiveContinuationKnowledge={productive("AS-A"),productive("AS-B")}
         values.physicalSpaceEvidence={
-            physical("AS-A",100,50,1),
-            physical("AS-B",50,0,1)
+            physical("AS-A",100,5,1),
+            physical("AS-B",95,0,1)
         }
         return values
     end
@@ -116,7 +116,7 @@ return function(test,equal)
         equal(result.cornerKnowledge.controlAuthority,false)
     end)
 
-    test("Corner Admission: assembly-specific physical reach admits a structural Corner region without literal representative-point sweep",function()
+    test("Corner Admission: distant Field-World boundary contact does not manufacture current Corner demand",function()
         local values=oneWorkerInput()
         values.futureSpace={future("AS-A",90,50,90,0)}
         values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=50,nativeMaxSpeedKmh=18})}
@@ -129,6 +129,23 @@ return function(test,equal)
             negativeClearanceAuthority=false
         }}
         local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.approachDemands),0)
+        equal(count(result.engagements),0)
+    end)
+
+    test("Corner Admission: local boundary contact inside current physical reach establishes current demand without representative-point sweep",function()
+        local values=oneWorkerInput()
+        values.futureSpace={future("AS-A",90,10,90,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=10,nativeMaxSpeedKmh=18})}
+        values.physicalSpaceEvidence={{
+            assemblyId="AS-A",
+            primitives={{
+                identity="DISC-AS-A-REAR",kind="DISC",positiveConflictSupport=true,
+                x=90,z=0,radius=1
+            }},
+            negativeClearanceAuthority=false
+        }}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
         equal(count(result.approachDemands),1)
         equal(count(result.engagements),1)
         equal(result.approachDemands[1].witness,
@@ -136,9 +153,11 @@ return function(test,equal)
         equal(result.approachDemands[1].physicalSweepEvidence,nil)
         equal(result.approachDemands[1].physicalDemandEvidence.mode,"BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH")
         equal(result.approachDemands[1].physicalDemandEvidence.currentPhysicalReach.reachM,11)
+        equal(result.approachDemands[1].physicalDemandEvidence.localDemandHorizonM,11)
+        equal(result.approachDemands[1].physicalDemandEvidence.boundaryDistanceM,10)
         equal(result.approachDemands[1].physicalDemandEvidence.contactDistanceToFeatureM,10)
-        equal(result.approachDemands[1].arrivalDistanceM,50)
-        equal(result.approachDemands[1].timeToCornerSec,10)
+        equal(result.approachDemands[1].arrivalDistanceM,10)
+        equal(result.approachDemands[1].timeToCornerSec,2)
         equal(result.approachDemands[1].arrivalRateSource,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED")
     end)
 
@@ -231,6 +250,35 @@ return function(test,equal)
         equal(count(result.engagements),0)
         equal(count(result.positiveDepartures),1)
         equal(result.positiveDepartures[1].departureReason,"CONTINUOUS_A8_CROSSED_FIELD_SCOPED_CORNER_BOUNDARY")
+    end)
+
+    test("Corner Re-entry: fresh same-Job occupancy replaces historical Positive Departure",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new()
+        local values=oneWorkerInput()
+        assess(assessment,values)
+
+        values.observationSnapshotId="OBS-2"; values.observationEpoch=2
+        values.futureSpace={future("AS-A",90,10,0,10)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=10})}
+        values.productiveContinuationKnowledge={productive("AS-A")}
+        values.physicalSpaceEvidence={}
+        local departed=assess(assessment,values).cornerKnowledge
+        equal(count(departed.engagements),0)
+        equal(count(departed.positiveDepartures),1)
+
+        values.observationSnapshotId="OBS-3"; values.observationEpoch=3
+        values.futureSpace={}
+        values.motionEvidence={motion("AS-A",{intent="TURNING",moveForwards=false,poseX=100,poseZ=0,nativeMaxSpeedKmh=4})}
+        values.productiveContinuationKnowledge={productive("AS-A",{positive=false,isTurn=true})}
+        values.physicalSpaceEvidence={physical("AS-A",100,0,1)}
+        local reentered=assess(assessment,values).cornerKnowledge
+        equal(count(reentered.occupancies),1)
+        equal(count(reentered.engagements),1)
+        equal(count(reentered.positiveDepartures),0)
+        equal(reentered.engagements[1].sourceJobToken,"job:AS-A")
+        local event=eventOfKind(reentered.events,"CORNER_ENGAGEMENT_ESTABLISHED")
+        assert(event~=nil)
+        equal(event.reason,"UNILATERAL_CORNER_OCCUPANCY_ADMISSION_AFTER_POSITIVE_DEPARTURE")
     end)
 
     test("Corner Departure: final native direction transition becomes the stronger crossing anchor",function()
