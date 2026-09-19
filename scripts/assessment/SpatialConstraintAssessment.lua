@@ -406,10 +406,36 @@ local function closestPointParameter(pointValue,a,b)
     return t,distance(pointValue,nearest)
 end
 
+local function currentPhysicalReachEvidence(physical,p)
+    local origin={x=p.currentX,z=p.currentZ}
+    local best=nil
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical and physical.primitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
+            local centreDistanceM=distance(origin,{x=primitive.x,z=primitive.z})
+            local reachM=centreDistanceM+primitive.radius
+            if best==nil or reachM>best.reachM+EPSILON_M then
+                best={
+                    primitiveId=primitive.identity,
+                    primitiveRadiusM=primitive.radius,
+                    centreDistanceFromA8M=centreDistanceM,
+                    reachM=reachM
+                }
+            end
+        end
+    end
+    return best
+end
+
 -- Corner Approach Demand is unilateral.  It is established only when the
 -- current productive A8 bounded continuation positively carries the assembly's
--- productive corridor into a positively interpreted structural Corner Feature.
--- No route is extended beyond the current Field World-bounded continuation.
+-- current physical demand into a positively interpreted structural Corner
+-- Feature.  Direct translated primitive contact remains the strongest witness.
+-- Where that misses the feature's representative point, the bounded Field World
+-- contact may still establish demand when it lies inside the assembly-specific
+-- reach already represented by current positive physical primitives.  This is
+-- bounded current demand, not a predicted GIANTS turn route and not a universal
+-- Corner radius.
 local function cornerApproachDemand(feature,p,motion,productive,path,physical,input)
     if type(feature)~="table" or type(feature.representativePoint)~="table"
         or not motion or not productive or not path or p.status~="SUPPORTED"
@@ -426,7 +452,7 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
     if along<-EPSILON_M then return nil end
 
     local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
-    local best=nil
+    local translatedIntersection=nil
     for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
         if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
             and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
@@ -434,8 +460,8 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
             local endValue={x=primitive.x+deltaX,z=primitive.z+deltaZ}
             local parameter,sweepDistance=closestPointParameter(representative,startValue,endValue)
             if sweepDistance<=primitive.radius+EPSILON_M
-                and (best==nil or sweepDistance<best.sweepDistanceM) then
-                best={
+                and (translatedIntersection==nil or sweepDistance<translatedIntersection.sweepDistanceM) then
+                translatedIntersection={
                     primitiveId=primitive.identity,primitiveRadiusM=primitive.radius,
                     sweepDistanceM=sweepDistance,closestSweepParameter=parameter,
                     sweepStart=startValue,sweepEnd=endValue
@@ -443,7 +469,16 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
             end
         end
     end
-    if best==nil then return nil end
+
+    local physicalReach=currentPhysicalReachEvidence(physical,p)
+    local contactDistanceToFeatureM=distance(representative,{x=p.contactX,z=p.contactZ})
+    local reachSupported=physicalReach~=nil
+        and contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
+    if translatedIntersection==nil and not reachSupported then return nil end
+
+    local witness=translatedIntersection~=nil
+        and "CURRENT_PRODUCTIVE_A8_SWEEP_OF_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTS_STRUCTURAL_CORNER_FEATURE"
+        or "CURRENT_PRODUCTIVE_A8_BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH_OF_STRUCTURAL_CORNER_FEATURE"
 
     return {
         cornerKey=feature.cornerKey,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
@@ -451,8 +486,15 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
         observationSnapshotId=input.observationSnapshotId,observationEpoch=input.observationEpoch,
         futureSpaceIdentity=p.futureSpaceIdentity,
         approachDistanceM=math.max(0,along),
-        physicalSweepEvidence=best,
-        witness="CURRENT_PRODUCTIVE_A8_SWEEP_OF_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTS_STRUCTURAL_CORNER_FEATURE",
+        physicalSweepEvidence=translatedIntersection,
+        physicalDemandEvidence={
+            mode=translatedIntersection~=nil and "TRANSLATED_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTION"
+                or "BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH",
+            boundaryContact={x=p.contactX,z=p.contactZ},
+            contactDistanceToFeatureM=contactDistanceToFeatureM,
+            currentPhysicalReach=physicalReach
+        },
+        witness=witness,
         negativeClearanceAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
     }

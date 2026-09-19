@@ -115,6 +115,46 @@ return function(test,equal)
         equal(result.cornerKnowledge.controlAuthority,false)
     end)
 
+    test("Corner Admission: assembly-specific physical reach admits a structural Corner region without literal representative-point sweep",function()
+        local values=oneWorkerInput()
+        values.futureSpace={future("AS-A",90,50,90,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=50})}
+        values.physicalSpaceEvidence={{
+            assemblyId="AS-A",
+            primitives={{
+                identity="DISC-AS-A-REAR",kind="DISC",positiveConflictSupport=true,
+                x=90,z=40,radius=1
+            }},
+            negativeClearanceAuthority=false
+        }}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.approachDemands),1)
+        equal(count(result.engagements),1)
+        equal(result.approachDemands[1].witness,
+            "CURRENT_PRODUCTIVE_A8_BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH_OF_STRUCTURAL_CORNER_FEATURE")
+        equal(result.approachDemands[1].physicalSweepEvidence,nil)
+        equal(result.approachDemands[1].physicalDemandEvidence.mode,"BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH")
+        equal(result.approachDemands[1].physicalDemandEvidence.currentPhysicalReach.reachM,11)
+        equal(result.approachDemands[1].physicalDemandEvidence.contactDistanceToFeatureM,10)
+    end)
+
+    test("Corner Admission: physical reach keeps same-edge demand bounded to the structural Corner region",function()
+        local values=oneWorkerInput()
+        values.futureSpace={future("AS-A",80,50,80,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=80,poseZ=50})}
+        values.physicalSpaceEvidence={{
+            assemblyId="AS-A",
+            primitives={{
+                identity="DISC-AS-A-REAR",kind="DISC",positiveConflictSupport=true,
+                x=80,z=40,radius=1
+            }},
+            negativeClearanceAuthority=false
+        }}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.approachDemands),0)
+        equal(count(result.engagements),0)
+    end)
+
     test("Corner Admission: one assembly independently establishes approach demand and Engagement",function()
         local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),oneWorkerInput()).cornerKnowledge
         equal(count(result.approachDemands),1)
