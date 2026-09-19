@@ -4944,3 +4944,17 @@ No new diagnostics or probes are added. Corner admission, Corner allocation, Pas
 **Decision:** `.99` makes assembly-specific physical reach bound the forward extent of Corner Admission as well as the Corner Feature region. A productive A8 boundary contact is eligible to establish Corner Approach Demand only when the boundary itself is already within the assembly's current positive physical reach. Inside that local demand horizon, direct translated primitive intersection remains the strongest witness and the existing contact-within-physical-reach fallback still handles a structural representative offset from the assembly's centreline. No universal distance, time threshold, working-width proxy or predicted turn path is added.
 
 Regression coverage now distinguishes (a) a local boundary contact whose structural representative lies within assembly-specific reach from (b) the same geometrically compatible contact tens of metres away; only the local case may establish Corner Approach Demand/Engagement. Shared-Corner allocation and Positive Corner Departure logic are unchanged.
+
+## 2026-09-19 — Owner correction: Corner Engagement Age != Corner Arrival Priority
+
+**Correction:** the `.99` local-demand-horizon interpretation is withdrawn before in-game Reality. The owner clarified the `.98` first Corner observation: Condor was already within constrained Corner space and should never have been the regulated participant; Patriot should have yielded. For S416 / Condor, temporary priority belongs to whichever participant is closest **in time** to consuming the Corner, with the other regulated.
+
+**Source finding:** `TrafficPolicemanDecisionPolicy.cornerRightOfWayChoice()` protected the earlier `establishedObservationEpoch` whenever both participants had Corner Engagement. That made lifecycle admission age the right-of-way rule. `SpatialConstraintAssessment` also exposed an `occupancies` product but did not populate it, so Decision could not positively distinguish a worker already consuming constrained Corner space from one merely admitted earlier.
+
+**Discovery:** **Corner Engagement Age != Corner Arrival Priority.** Engagement records lifecycle continuity. Temporary right-of-way is current temporal ordering.
+
+**Architecture decision:** use **Corner Arrival Priority**. Positive current Corner Occupancy is immediate arrival and receives temporary right-of-way over a competing non-occupant. Otherwise compare current supported time-to-Corner under native/unrestricted progression opportunity; protect the earlier arrival and regulate the later arrival. Existing Regulation must not bias its own priority by reducing realised speed. Engagement establishment age is never a priority signal.
+
+**Implementation decision:** `.100` backs out `.99`'s boundary-distance admission gate. Situation Assessment publishes positive current Corner Occupancy from current positive Physical-Assembly evidence, may admit Engagement from occupancy when Reality is already inside constrained Corner space, and publishes native time-to-Corner from current Corner Approach Demand. Decision consumes those fields in Occupancy -> native-arrival order. Existing 1 km/h Corner Regulation alternatives, Responsibility Transition, role-migration capability, Passage succession and Positive Corner Departure remain the mechanisms.
+
+No new diagnostics/probes are introduced. `.99` is not a valid Reality candidate and must not be tested.
