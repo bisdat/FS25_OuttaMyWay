@@ -10,51 +10,63 @@ It is **not** a repository-status dashboard. Git owns exact accepted chronology;
 
 Only the copy on accepted `main` is authoritative.
 
-## Current engineering boundary — PR #239 pre-merge closure
+## Accepted repository state after PR #239
 
-PR #239's validated runtime candidate is TEST **0.3.0.105**.
+PR #239 has been merged into `main`.
 
-TEST `.105` is a GIANTS Reality PASS for the intended PR scope:
+- accepted `main` merge commit: `8021052dde9370d12270e41dddff3b36ee205197`;
+- accepted runtime identity: TEST **0.3.0.105**;
+- this ordinary merge advances Accepted Repository State and does **not** itself create a new canonical release;
+- the merged runtime is the same behaviour that received GIANTS Reality PASS before merge; the later `.106` Corner-locality experiment was reverted before acceptance.
 
-- Structural Field Shape / Corner Feature discovery remains field-scoped;
-- current Corner Occupancy and Corner Arrival Priority protect the worker already in constrained Corner space, otherwise the earlier native/unrestricted arrival;
-- fixed Corner and Forward-Intersection Regulation use the exact 1 km/h Intent-Revelation Creep without Resolution-Space envelope dependence;
-- fixed Forward-Intersection role migration is supported;
-- same-pair Forward-Intersection Regulation can be atomically succeeded by Cooperative Passage despite different Situation identities;
-- Cooperative Passage revalidates stale arrangements from fresh execution origins;
-- realised Transit geometry is consumed at the execution boundary; and
-- current positive closing may start Passage capture before the literal Entry Boundary so disposable approach margin is not consumed while Hold settles.
+The accepted Corner / Cooperative Passage implementation therefore includes:
 
-The later TEST `0.3.0.106` experiment is **not** part of the accepted candidate. It attempted to resolve Issue #240 inside PR #239 by making Corner Approach Demand physically local. Two GIANTS Reality runs disproved that implementation because it also removed the early native Corner-arrival evidence needed for correct S416 / Condor allocation. The branch has therefore returned to the `.105` runtime behavior.
+- field-scoped Structural Field Shape / Corner Feature knowledge;
+- current Corner Occupancy and Corner Arrival Priority;
+- fixed 1 km/h Corner and Forward-Intersection Intent-Revelation Creep;
+- fixed Forward-Intersection role migration;
+- same-pair Forward-Intersection Regulation -> Cooperative Passage responsibility succession across different Situation identities;
+- Cooperative Passage execution-origin arrangement revalidation;
+- realised Transit geometry at the execution boundary; and
+- time-aware Passage capture before the literal Entry Boundary when current positive closing would otherwise consume disposable approach margin.
 
-## Issue #240 — deferred, still open
+## Current engineering boundary — Issue #240
 
-Issue #240 remains a real but separate Corner-model question:
+Issue #240 remains open and is now a **separate post-PR #239 engineering question**, not accepted implementation debt to be repaired retrospectively inside the merged increment.
+
+The current source still exposes two Corner-model tensions:
 
 - full Field-World-bounded A8 continuation can establish Corner demand earlier than is semantically desirable; and
-- retained Positive Corner Departure may block later same-Job re-entry to the same structural Corner.
+- retained Positive Corner Departure may block a later same-Job re-entry to the same structural Corner.
 
-The failed `.106` experiment added a further discovery:
+The failed `.106` experiment established an additional distinction:
 
 > **Corner Arrival Evidence != Current Corner Approach Demand**
 
-The next #240 investigation must separate prospective/current-supported **Corner Arrival Evidence** from local **Corner Approach Demand / Occupancy** and retained **Corner Engagement**. It must not restore remote retained Corner demand merely to recover correct arrival ordering.
+The locality hypothesis itself was not useless: remote retained Corner demand remains suspect. What Reality disproved was using the same locality gate to suppress the native/unrestricted arrival evidence required for correct S416 / Condor temporary priority.
 
-#240 is deliberately **not** a merge condition for PR #239. Its implementation remains for a later engineering increment from accepted `main`.
+The next investigation must therefore keep these concepts separate:
 
-## Authority Triad disposition for PR #239
+1. **Corner Arrival Evidence** — prospective/current-supported native timing toward a known Corner;
+2. **Corner Approach Demand / Occupancy** — current spatial consumption/admission evidence;
+3. **Corner Engagement** — retained traversal lifecycle state.
 
-- **Architecture — validated for PR #239 scope.** Current Structural Corner, Corner Arrival Priority, Regulation and Cooperative Passage responsibilities remain the intended model.
-- **Specification — validated for PR #239 scope.** The governing contracts remain the authority for current implementation and for the still-open #240 discrepancy.
-- **Source — restored to the Reality-validated `.105` implementation.** The only post-`.105` source change retained is corrected module documentation in `CooperativePassageControl.lua`; it does not change runtime behavior.
-- **Tests — evidence, not authority.** The `.106` experiment and its failure remain historical validation evidence and do not redefine the accepted contract.
+Do not restore remote retained demand merely to recover correct arrival ordering, and do not let implementation convenience collapse these concepts back together.
+
+## Authority status
+
+- **Architecture** remains current authority for Corner semantics and Cooperative Passage.
+- **Specification** remains current implementation-facing contract.
+- **Source** on accepted `main` is the Reality-validated `.105` implementation.
+- **Issue #240** records unresolved evidence against that implementation and must be treated as a fresh engineering increment rather than as retroactive authority over PR #239.
+- **Tests and the failed `.106` run** remain evidence, not architecture.
 
 ## Next bounded engineering step
 
-Complete the final PR #239 merge-gate review against the restored `.105` runtime and current documentation.
+Resume Issue #240 from accepted `main` using:
 
-If the repository-side checks remain green, PR #239 may be merged only on explicit repository-owner instruction.
+`Observe -> Discuss -> Hypothesise -> Implement -> Validate -> Record -> Repeat`
 
-After PR #239 is accepted, Issue #240 can resume as a separate Observe -> Discuss -> Hypothesise increment from accepted `main`.
+Begin with the semantic boundary among Corner Arrival Evidence, local Corner Approach Demand / Occupancy, and retained Corner Engagement before proposing another source change.
 
-Issue #227 remains separate Cooperative Passage recovery/handback work.
+Issue #227 remains a separate Cooperative Passage recovery/handback workstream.
