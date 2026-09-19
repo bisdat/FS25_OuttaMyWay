@@ -530,32 +530,91 @@ function Control:_rebasePassageGuide(run)
     local sfx,sfz=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
     local ofx,ofz=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
     if rightX==nil or rightZ==nil or sfx==nil or sfz==nil or ofx==nil or ofz==nil then return false,"PASSAGE_EXECUTION_FRAME_UNAVAILABLE" end
+
     local pa,pb=legLive(run.a) and pose(run.a.vehicle) or nil,legLive(run.b) and pose(run.b.vehicle) or nil
     if legLive(run.a) and pa==nil then return false,"PASSAGE_EXECUTION_ORIGIN_POSE_UNAVAILABLE:"..tostring(run.a.assemblyId) end
     if legLive(run.b) and pb==nil then return false,"PASSAGE_EXECUTION_ORIGIN_POSE_UNAVAILABLE:"..tostring(run.b.assemblyId) end
+
     local arrangement=run.passageArrangement or {}
-    local subjectOffset=tonumber(arrangement.subjectLateralOffsetM) or 0
-    local otherOffset=tonumber(arrangement.otherLateralOffsetM) or 0
+    local originalSubjectOffset=tonumber(arrangement.subjectLateralOffsetM) or 0
+    local originalOtherOffset=tonumber(arrangement.otherLateralOffsetM) or 0
     local subjectParticipant=(run.a.assemblyId==run.subjectAssemblyId) and run.a or run.b
     local otherParticipant=(run.a.assemblyId==run.otherAssemblyId) and run.a or run.b
     local poses={[run.a.assemblyId]=pa,[run.b.assemblyId]=pb}
     local subjectPose,otherPose=poses[run.subjectAssemblyId],poses[run.otherAssemblyId]
     if legLive(subjectParticipant) and subjectPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE:"..tostring(run.subjectAssemblyId) end
     if legLive(otherParticipant) and otherPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE:"..tostring(run.otherAssemblyId) end
+
     local oldOrigins=guide.entryOrigins or {}
     guide.entryOrigins={}
     if subjectPose~=nil then guide.entryOrigins.subject={x=subjectPose.x,z=subjectPose.z}
     elseif type(oldOrigins.subject)=="table" then guide.entryOrigins.subject=copyValue(oldOrigins.subject) end
     if otherPose~=nil then guide.entryOrigins.other={x=otherPose.x,z=otherPose.z}
     elseif type(oldOrigins.other)=="table" then guide.entryOrigins.other=copyValue(oldOrigins.other) end
+
+    if subjectPose~=nil then
+        frame.subjectEnvelopeForwardX,frame.subjectEnvelopeForwardZ=subjectPose.dx,subjectPose.dz
+    end
+    if otherPose~=nil then
+        frame.otherEnvelopeForwardX,frame.otherEnvelopeForwardZ=otherPose.dx,otherPose.dz
+    end
+    guide.executionFrame=frame
+
+    local subjectOffset=originalSubjectOffset
+    local otherOffset=originalOtherOffset
     for index,gate in ipairs(guide.gates or {}) do
         local forward=tonumber(gate.forwardM) or 0
         local fraction=tonumber(gate.lateralFraction) or 0
         local radius=tonumber(gate.radiusM) or 1
         gate.index=index
-        if subjectPose~=nil then gate.subject={assemblyId=run.subjectAssemblyId,x=subjectPose.x+sfx*forward+rightX*(fraction*subjectOffset),z=subjectPose.z+sfz*forward+rightZ*(fraction*subjectOffset),radiusM=radius} end
-        if otherPose~=nil then gate.other={assemblyId=run.otherAssemblyId,x=otherPose.x+ofx*forward+rightX*(fraction*otherOffset),z=otherPose.z+ofz*forward+rightZ*(fraction*otherOffset),radiusM=radius} end
+        if subjectPose~=nil then
+            gate.subject={assemblyId=run.subjectAssemblyId,
+                x=subjectPose.x+sfx*forward+rightX*(fraction*subjectOffset),
+                z=subjectPose.z+sfz*forward+rightZ*(fraction*subjectOffset),radiusM=radius}
+        end
+        if otherPose~=nil then
+            gate.other={assemblyId=run.otherAssemblyId,
+                x=otherPose.x+ofx*forward+rightX*(fraction*otherOffset),
+                z=otherPose.z+ofz*forward+rightZ*(fraction*otherOffset),radiusM=radius}
+        end
     end
+
+    local geometryUnchanged=true
+    local adaptation=nil
+    if legLive(subjectParticipant) and legLive(otherParticipant) then
+        local planner=OuttaMyWay.LocalPassagePlanner
+        if type(planner)~="table" or type(planner.validateRebasedGuidePairSweep)~="function"
+            or type(planner.adaptExecutionGuide)~="function" then
+            return false,"PASSAGE_EXECUTION_REVALIDATION_UNAVAILABLE"
+        end
+        local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(guide,arrangement)
+        if not retainedOk then
+            local adapted,adaptReason=planner.adaptExecutionGuide(
+                guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId)
+            if adapted==nil then
+                return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
+                    ..":ADAPTATION:"..tostring(adaptReason)
+            end
+            adaptation=adapted
+            guide=adapted.guide
+            arrangement=adapted.arrangement
+            run.passageArrangement=arrangement
+            run.passageExcursion=adapted.passageExcursion or run.passageExcursion
+            geometryUnchanged=false
+            logInfo("COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s",
+                tostring(run.commitmentId),tostring(retainedReason),
+                tonumber(adapted.currentSignedSeparationM) or 0,tonumber(adapted.currentLongitudinalSeparationM) or 0,
+                originalSubjectOffset,originalOtherOffset,
+                tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,
+                tonumber(arrangement.policyRequiredSeparationM) or 0,tostring(adapted.selectedIndex),tostring(adapted.authority))
+        else
+            guide.pairSweepSupport=retainedEvidence or guide.pairSweepSupport
+        end
+    end
+
+    local finalFrame=guide.executionFrame or {}
+    sfx,sfz=tonumber(finalFrame.subjectForwardX),tonumber(finalFrame.subjectForwardZ)
+    ofx,ofz=tonumber(finalFrame.otherForwardX),tonumber(finalFrame.otherForwardZ)
     if subjectPose~=nil then
         subjectParticipant.executionOriginX,subjectParticipant.executionOriginZ=subjectPose.x,subjectPose.z
         subjectParticipant.axisForwardX,subjectParticipant.axisForwardZ=sfx,sfz
@@ -564,21 +623,26 @@ function Control:_rebasePassageGuide(run)
         otherParticipant.executionOriginX,otherParticipant.executionOriginZ=otherPose.x,otherPose.z
         otherParticipant.axisForwardX,otherParticipant.axisForwardZ=ofx,ofz
     end
+
     local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
     if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
     -- The captured Passage execution pose is the Axis Return reference frame, not an
-    -- articulation pose which Recovery must reproduce.  Alignment is observed
-    -- later against this captured axis; do not freeze member lateral offsets or
-    -- member headings here as an execution target.
+    -- articulation pose which Recovery must reproduce. Alignment is observed
+    -- later against the stable Passage axis. Fresh physical heading is used only
+    -- to test the prospective Transit envelope before geometry-dependent motion.
     run.guide=guide
     local ok,reason=self:_preflightPassageGuide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
+
     local oldSubject=oldOrigins.subject or {}; local oldOther=oldOrigins.other or {}
-    logInfo("COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=true",
-        tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),subjectPose and subjectPose.x or 0,subjectPose and subjectPose.z or 0,
+    logInfo("COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=%s executionRevalidated=true",
+        tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),
+        subjectPose and subjectPose.x or 0,subjectPose and subjectPose.z or 0,
         oldSubject.x and string.format("%.2f",oldSubject.x) or "n/a",oldSubject.z and string.format("%.2f",oldSubject.z) or "n/a",
-        otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),otherPose and otherPose.x or 0,otherPose and otherPose.z or 0,
-        oldOther.x and string.format("%.2f",oldOther.x) or "n/a",oldOther.z and string.format("%.2f",oldOther.z) or "n/a")
+        otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),
+        otherPose and otherPose.x or 0,otherPose and otherPose.z or 0,
+        oldOther.x and string.format("%.2f",oldOther.x) or "n/a",oldOther.z and string.format("%.2f",oldOther.z) or "n/a",
+        tostring(geometryUnchanged))
     return true,nil
 end
 
