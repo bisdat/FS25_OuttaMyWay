@@ -739,6 +739,38 @@ test("Bounded Authority accepts Candidate-supplied composition identity without 
     equal(runtime.boundedAuthority:validateRequest(request,current.identity),true)
 end)
 
+test("Corner Right-of-Way initial Regulation applies fixed creep without Resolution-Space envelope",function()
+    local runtime,commitment,token,current=boundedAuthorityRegulationFixture({
+        responsibilityKey="corner-right-of-way:shared-corner:test",
+        conflictIdentity="shared-corner:test",
+        assemblyId="AS-BA-A"
+    })
+    local dispatcher=runtime.regulationBoundedAuthority
+    runtime:setRegulationControl({executeControlRequest=function(self,request,candidate)
+        equal(request.target.ownerTag,"CORNER_RIGHT_OF_WAY")
+        equal(request.target.maxSpeedKmh,1.0)
+        return true,"ACCEPTED"
+    end})
+    local candidate=boundedAuthorityCandidate("CA-CORNER-INITIAL")
+    local bridge=actionSpaceBridge({
+        conflictIdentity="shared-corner:test",
+        regulatedAssemblyId="AS-BA-A",regulatedReferenceKey="ref:ba-a",
+        protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b"
+    })
+    bridge.admissionKind="CORNER_RIGHT_OF_WAY"
+    bridge.fixedRegulationSpeedKmh=1.0
+    bridge.separationM=nil
+    bridge.nativeUnrestrictedKmh=nil
+    local result=dispatcher:_continueActionSpaceRegulationInitial({epoch=220},boundedAuthorityEvaluated(candidate),candidate,bridge,{
+        commitment=commitment,authorityToken=token,authorityAcquired=true,currentResponsibility=current
+    })
+    equal(result.status,"ACCEPTED")
+    equal(result.cornerRightOfWay,true)
+    equal(dispatcher.actionSpaceRegulationLease.currentCapKmh,1.0)
+    equal(dispatcher.actionSpaceRegulationLease.progressionEnvelope,nil)
+    equal(dispatcher.actionSpaceRegulationLease.fixedCornerRightOfWay,true)
+end)
+
 test("Rejected fresh Bounded Authority grant is released before return",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
     local dispatcher=runtime.regulationBoundedAuthority

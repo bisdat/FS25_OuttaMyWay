@@ -848,22 +848,19 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
     local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"
     local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"
     local envelope,envelopeReason=nil,nil
-    if not fixedForwardIntersection then
+    if not fixedForwardIntersection and not fixedCornerRightOfWay then
         envelope,envelopeReason=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh)
-    end
-    if fixedCornerRightOfWay then
-        -- Corner right-of-way is a fixed Situation-owned creep, not a
-        -- Resolution-Space envelope. The generic establishment attempt above is
-        -- deliberately discarded so the pre-existing Forward-Intersection
-        -- branch remains structurally unchanged.
-        envelope,envelopeReason=nil,nil
     end
     if not fixedForwardIntersection and not fixedCornerRightOfWay and envelope==nil then
         if applied.authorityAcquired then OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,applied.commitment.identity,bridge.regulatedAssemblyId,{reason="ACTION_SPACE_REGULATION_ENVELOPE_ESTABLISH_FAILED:"..tostring(envelopeReason),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(applied.commitment.identity,bridge.regulatedAssemblyId,"ACTION_SPACE_REGULATION")}) end
         return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_ENVELOPE_ESTABLISH_FAILED:"..tostring(envelopeReason),actionSpaceRegulation=true}
     end
-    local initialCap=fixedForwardIntersection and bridge.fixedRegulationSpeedKmh or (tonumber(envelope.capKmh) or 0)
-    if fixedCornerRightOfWay then initialCap=bridge.fixedRegulationSpeedKmh end
+    local initialCap=nil
+    if fixedForwardIntersection or fixedCornerRightOfWay then
+        initialCap=bridge.fixedRegulationSpeedKmh
+    else
+        initialCap=tonumber(envelope.capKmh) or 0
+    end
     local ownerTag=fixedForwardIntersection and FORWARD_INTERSECTION_OWNER_TAG
         or (fixedCornerRightOfWay and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG)
     local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",ownerTag,initialCap,applied.currentResponsibility)

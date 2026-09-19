@@ -4920,3 +4920,15 @@ Source tracing identifies the implementation boundary: Action-Space Regulation -
 **Decision:** `.97` makes Action-Space-to-Passage predecessor matching participant-aware. Exact opposed-conflict identity remains valid; additionally, one current `CORNER_RIGHT_OF_WAY` Regulation may be the Passage predecessor when its regulated/protected pair exactly matches the two Passage participants in the same Operation. Responsibility Transition then rebinds the retained generic Commitment substrate from the Corner governing basis to the selected Cooperative Passage governing basis, creates the two Passage Leg obligations, neutralizes the predecessor Regulation lease, settles the Corner Regulation obligation by basis cessation, replaces the semantic Regulation responsibility with the Passage Resolution Commitment, and leaves Corner Engagement itself untouched in Situation Assessment.
 
 No new diagnostic/probe path is added. Passage planning, Passage geometry, Corner admission geometry, Corner departure semantics and #227 recovery/handback behaviour are unchanged.
+
+## 2026-09-19 — .97 Reality: fixed Corner Regulation dereferences absent Resolution-Space envelope
+
+**Observe:** `.97` establishes the first shared Corner Right-of-Way responsibility for Condor / Patriot at `06:34:39.846`, then immediately raises `RegulationBoundedAuthority.lua:865: attempt to index nil with 'capKmh'`. The retained Commitment and Regulation responsibility have already been published, but physical Regulation application does not complete. Later, at `06:35:06.075`, the same pair has a valid selected Cooperative Passage at about 78.95 m and all logged mandatory Passage constraints pass; no Passage succession begins, and the pair eventually blocks after the viable local Passage interval is consumed.
+
+**Discover:** **Fixed Regulation != Resolution-Space Envelope.** Forward-Intersection and Corner Right-of-Way Regulation use a fixed Situation-owned 1 km/h creep. They do not require the elastic Resolution-Space Progression Envelope used by ordinary Action-Space Regulation.
+
+**Interpretation:** the `.97` Corner-to-Passage succession change is not yet tested by Reality. The earlier Corner Regulation control fault leaves a half-applied incumbent before the encounter ever reaches the Passage handoff. The downstream absence of Passage transition is therefore not evidence against the `.97` succession design.
+
+**Decision:** `.98` removes generic Resolution-Space envelope establishment and `capKmh` access from fixed Forward-Intersection / Corner Right-of-Way initial Regulation. Their initial cap is taken directly from the already-validated fixed Regulation magnitude. Ordinary Action-Space Regulation retains the elastic envelope path unchanged. A direct behavioural regression executes initial Corner Right-of-Way Regulation with no separation/native-speed envelope inputs and requires accepted 1 km/h Control plus a Corner lease with no progression envelope.
+
+No new diagnostics or probes are added. Corner admission, Corner allocation, Passage planning/geometry, `.97` same-pair Corner-to-Passage succession and #227 recovery/handback behaviour are unchanged.
