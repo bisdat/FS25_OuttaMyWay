@@ -314,46 +314,46 @@ return function(test,equal)
         }
     end
 
-    test("Corner Decision: existing Engagement receives temporary right-of-way before an approaching entrant",function()
+    test("Corner Decision: retained Engagement age cannot outrank the only current supported arrival",function()
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
             assemblyId="AS-A",engagement=true,approachDemand=false,establishedObservationEpoch=1
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
-            assemblyId="AS-B",engagement=false,approachDemand=true,approachDistanceM=5
+            assemblyId="AS-B",engagement=false,approachDemand=true,timeToCornerSec=5
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
-        equal(decision.selected.identity,"CA-PROTECT-A")
-        equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_ALREADY_ADMITTED_CORNER_ENGAGEMENT")
+        equal(decision.selected.identity,"CA-PROTECT-B")
+        equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_ONLY_CURRENT_SUPPORTED_CORNER_ARRIVAL")
     end)
 
-    test("Corner Decision: when both are engaged, earlier current admission receives temporary right-of-way",function()
+    test("Corner Decision: current arrival time outranks Engagement establishment age",function()
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
-            assemblyId="AS-A",engagement=true,approachDemand=true,establishedObservationEpoch=1,approachDistanceM=8
+            assemblyId="AS-A",engagement=true,approachDemand=true,establishedObservationEpoch=1,timeToCornerSec=8
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
-            assemblyId="AS-B",engagement=true,approachDemand=true,establishedObservationEpoch=2,approachDistanceM=3
+            assemblyId="AS-B",engagement=true,approachDemand=true,establishedObservationEpoch=2,timeToCornerSec=3
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
-        equal(decision.selected.identity,"CA-PROTECT-A")
-        equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_EARLIER_CURRENT_CORNER_ENGAGEMENT")
+        equal(decision.selected.identity,"CA-PROTECT-B")
+        equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_EARLIER_CURRENT_CORNER_ARRIVAL")
     end)
 
-    test("Corner Decision: unresolved symmetric evidence waits rather than inventing priority",function()
+    test("Corner Decision: unresolved symmetric arrival evidence waits rather than inventing priority",function()
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
-            assemblyId="AS-A",engagement=false,approachDemand=true,approachDistanceM=5
+            assemblyId="AS-A",engagement=false,approachDemand=true,timeToCornerSec=5
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
-            assemblyId="AS-B",engagement=false,approachDemand=true,approachDistanceM=5
+            assemblyId="AS-B",engagement=false,approachDemand=true,timeToCornerSec=5
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
         equal(decision.selected,nil)
         equal(decision.waitForPreferenceEvidence,true)
-        equal(decision.rule,"CORNER_RIGHT_OF_WAY:SHARED_CORNER_RIGHT_OF_WAY_EVIDENCE_DOES_NOT_DISTINGUISH_ALLOCATION")
+        equal(decision.rule,"CORNER_RIGHT_OF_WAY:SHARED_CORNER_ARRIVAL_PRIORITY_UNRESOLVED")
     end)
 end
