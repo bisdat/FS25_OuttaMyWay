@@ -682,13 +682,18 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
         return {status="MAINTAINED",reason="ACTION_SPACE_REGULATION_ROLE_MIGRATION_NEW_AUTHORITY_TOKEN_UNAVAILABLE",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
     end
 
+    local fixedForward=bridge.admissionKind=="FORWARD_INTERSECTION"
     local fixedCorner=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local fixed=fixedForward or fixedCorner
     local rebased,rebaseReason=nil,nil
     local newCap=nil
-    if fixedCorner then
+    if fixed then
         newCap=tonumber(bridge.fixedRegulationSpeedKmh)
         if newCap==nil or newCap<=0 then
-            return {status="MAINTAINED",reason="CORNER_RIGHT_OF_WAY_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
+            return {status="MAINTAINED",
+                reason=fixedForward and "FORWARD_INTERSECTION_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE"
+                    or "CORNER_RIGHT_OF_WAY_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE",
+                actionSpaceRegulation=true,commitmentId=lease.commitmentId}
         end
     else
         local envelopeCopy=OuttaMyWay.ResolutionSpaceProgressionEnvelope.snapshot(lease.progressionEnvelope)
@@ -705,7 +710,8 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
         newCap=tonumber(rebased.capKmh) or 0
     end
 
-    local newOwnerTag=fixedCorner and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG
+    local newOwnerTag=fixedForward and FORWARD_INTERSECTION_OWNER_TAG
+        or (fixedCorner and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG)
     local newRequest,newRequestReason=self:_regulationRequest(
         picture,evaluated,candidate,applied.commitment,newToken,bridge,"APPLY",
         newOwnerTag,newCap,applied.currentResponsibility)
@@ -749,7 +755,9 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     local preserveOld=self:_otherRegulationPurposeOwnsAuthority(lease.commitmentId,lease.regulatedAssemblyId,"ACTION_SPACE_REGULATION")
     OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(
         self.runtime,lease.commitmentId,lease.regulatedAssemblyId,
-        {reason=fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ROLE_MIGRATED",preserveAuthority=preserveOld})
+        {reason=fixedForward and "FORWARD_INTERSECTION_ROLE_MIGRATED"
+            or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ROLE_MIGRATED"),
+         preserveAuthority=preserveOld})
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,"ACTION_SPACE_REGULATION_ROLE_MIGRATED")
 
     local oldRegulatedAssemblyId=lease.regulatedAssemblyId
@@ -768,14 +776,23 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     lease.requestId=newRequest.identity
     lease.currentCapKmh=newCap
     lease.progressionEnvelope=rebased
+    lease.fixedForwardIntersection=fixedForward
     lease.fixedCornerRightOfWay=fixedCorner
     lease.nativeClosureContributionKmh=bridge.nativeClosureContributionKmh
     lease.nativeMoveForwards=bridge.nativeMoveForwards
     self.actionSpaceRegulationRoleMigrationCount=(self.actionSpaceRegulationRoleMigrationCount or 0)+1
     self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(newRequest,"ACCEPTED",{
-        kind=fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_ROLE_MIGRATED_AND_ENVELOPE_REBASED",
-        capability="REGULATE_SPEED",effectClass=fixedCorner and "INTENT_REVELATION_CREEP" or rebased.effectClass,maxSpeedKmh=newCap},nil)
+        kind=fixedForward and "FORWARD_INTERSECTION_ROLE_MIGRATED"
+            or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_ROLE_MIGRATED_AND_ENVELOPE_REBASED"),
+        capability="REGULATE_SPEED",effectClass=fixed and "INTENT_REVELATION_CREEP" or rebased.effectClass,maxSpeedKmh=newCap},nil)
+    if fixedForward then
+        logInfo("FORWARD_INTERSECTION_ROLE_MIGRATED commitment=%s relationship=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
+            tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(oldRegulatedAssemblyId),
+            tostring(lease.regulatedAssemblyId),tostring(oldProtectedAssemblyId),tostring(lease.protectedAssemblyId),newCap)
+        return {status="ROLE_MIGRATED",reason="FORWARD_INTERSECTION_CURRENT_SITUATION_REASSIGNED_TEMPORAL_YIELDER",
+            request=newRequest,releaseRequest=oldRequest,outcome=outcome,actionSpaceRegulation=true,forwardIntersection=true,commitmentId=lease.commitmentId}
+    end
     if fixedCorner then
         logInfo("CORNER_RIGHT_OF_WAY_ROLE_MIGRATED commitment=%s situation=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
             tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(oldRegulatedAssemblyId),
