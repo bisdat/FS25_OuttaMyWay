@@ -100,24 +100,21 @@ local function cornerRightOfWayChoice(entries)
         return nil,true,"SHARED_CORNER_PARTICIPANT_EVIDENCE_UNAVAILABLE"
     end
 
-    if (ap.engagement==true)~=(bp.engagement==true) then
-        return ap.engagement==true and a or b,true,"PROTECT_ALREADY_ADMITTED_CORNER_ENGAGEMENT"
+    local ao=ap.currentConstrainedCornerOccupancy==true
+    local bo=bp.currentConstrainedCornerOccupancy==true
+    if ao~=bo then
+        return ao and a or b,true,"PROTECT_CURRENT_CONSTRAINED_CORNER_OCCUPANT"
     end
 
-    if ap.engagement==true and bp.engagement==true then
-        local ae,be=tonumber(ap.establishedObservationEpoch),tonumber(bp.establishedObservationEpoch)
-        if finiteNumber(ae) and finiteNumber(be) and ae~=be then
-            return ae<be and a or b,true,"PROTECT_EARLIER_CURRENT_CORNER_ENGAGEMENT"
-        end
+    local at,bt=tonumber(ap.timeToCornerSec),tonumber(bp.timeToCornerSec)
+    if finiteNumber(at) and finiteNumber(bt) and at~=bt then
+        return at<bt and a or b,true,"PROTECT_EARLIER_CURRENT_CORNER_ARRIVAL"
+    end
+    if finiteNumber(at)~=(finiteNumber(bt)) then
+        return finiteNumber(at) and a or b,true,"PROTECT_ONLY_CURRENT_SUPPORTED_CORNER_ARRIVAL"
     end
 
-    if ap.approachDemand==true and bp.approachDemand==true then
-        local ad,bd=tonumber(ap.approachDistanceM),tonumber(bp.approachDistanceM)
-        if finiteNumber(ad) and finiteNumber(bd) and math.abs(ad-bd)>0.001 then
-            return ad<bd and a or b,true,"PROTECT_NEARER_CURRENT_CORNER_APPROACH_DEMAND"
-        end
-    end
-    return nil,true,"SHARED_CORNER_RIGHT_OF_WAY_EVIDENCE_DOES_NOT_DISTINGUISH_ALLOCATION"
+    return nil,true,"SHARED_CORNER_ARRIVAL_PRIORITY_UNRESOLVED"
 end
 
 local function compareCandidates(a, b)
