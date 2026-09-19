@@ -541,8 +541,8 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     assert "rightX,rightZ,nominalClearanceM)" in helper
     assert "local margin=tonumber(nominalClearanceM)" in helper
     assert re.findall(r"function Planner\.([^\n]+)", planner) == [
-        "validateRebasedGuidePairSweep(guide,arrangement)",
-        "adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId)",
+        "validateRebasedGuidePairSweep(guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)",
+        "adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation)",
         "planConflict(picture,snapshot,conflict)", "plan(picture,snapshot)"
     ]
     # Counterfactual Test Input != Supported Runtime Policy: no harness retains
