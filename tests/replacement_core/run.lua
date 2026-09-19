@@ -1237,6 +1237,23 @@ test("live source admits GIANTS Job identities from activeJobVehicles",function(
 end)
 
 
+test("live Field World handoff preserves canonical geometry into Structural Field Shape",function()
+    withFakeLiveGlobals(function(mission)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        if type(raw.fieldWorld.canonicalRootRing)~="string" then error("live Field World omitted canonical root ring") end
+        equal(OuttaMyWay.ValueRecord.length(raw.fieldWorld.canonicalRootVertices),4)
+        equal(OuttaMyWay.ValueRecord.length(raw.fieldWorld.canonicalIslandRings),0)
+
+        local processed=runtime:processSealedObservation(raw)
+        equal(OuttaMyWay.ValueRecord.length(processed.operation.activeOperationIds),1)
+        equal(OuttaMyWay.ValueRecord.length(processed.picture.spatialConstraintKnowledge),1)
+        local cornerKnowledge=processed.picture.spatialConstraintKnowledge[1].cornerKnowledge
+        equal(cornerKnowledge.status,"POSITIVE_STRUCTURAL_FIELD_SHAPE_SUPPORTED")
+        equal(OuttaMyWay.ValueRecord.length(cornerKnowledge.atlasEntries),4)
+    end)
+end)
+
 test("Operation participation waits for latched productive Job-Episode commencement and survives later turns",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions,strategies)
         mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}

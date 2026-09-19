@@ -4882,3 +4882,13 @@ This correction changes tests and engineering record only. It changes no
 production executable bytes and therefore remains `0.3.0.46 TEST — OBSTRUCTION
 RELOCATION CONTROL NAMING`; no `.47` identity is consumed. Protected CI must
 revalidate the corrected PR head.
+
+## 2026-09-19 — .94 Reality exposes canonical Field World handoff loss
+
+**Observe:** .94 Field 77 Reality captured both the established 10-point boundary and an equivalent 11-point sampling, and Field World Equivalence resolved them to the same Field World. The run produced no production Corner lifecycle events — not even CORNER_ATLAS_DISCOVERED — while no OuttaMyWay Lua exception occurred. Source tracing showed that LiveObservationSource published the representative boundary and quantization metadata but omitted the representative snapshot's canonical root geometry required by StructuralFieldShapeAssessment.
+
+**Discover:** **Field World Summary != Canonical Field World Geometry.** An identity-resolved summary does not preserve canonical structural evidence merely because it refers to the same Field World. **Direct Module Fixture != Runtime Integration Contract.** Direct Structural Field Shape fixtures had proved the assessment algorithm with canonical input but had not proved the live Observation-to-Situation handoff.
+
+**Interpretation:** Reality did not disprove the accepted Corner architecture or the Structural Field Shape interpretation. The production chain remained dormant because Observation composition dropped already-established canonical geometry before Situation Assessment consumed it.
+
+**Decision:** .95 preserves the representative immutable Field World's canonical root/island ring evidence in the published Observation, clarifies that obligation in the Observation Specification, and adds an end-to-end live-source-to-Situation regression proving Structural Field Shape receives the runtime-shaped evidence. No Corner geometry algorithm, temporary right-of-way policy, Regulation, Control or Passage behaviour is intentionally changed. The S416/Condor Cooperative Passage recovery/handback condition remains Issue #227 and is excluded from this increment.
