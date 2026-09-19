@@ -430,12 +430,14 @@ end
 -- Corner Approach Demand is unilateral.  It is established only when the
 -- current productive A8 bounded continuation positively carries the assembly's
 -- current physical demand into a positively interpreted structural Corner
--- Feature.  Direct translated primitive contact remains the strongest witness.
--- Where that misses the feature's representative point, the bounded Field World
--- contact may still establish demand when it lies inside the assembly-specific
--- reach already represented by current positive physical primitives.  This is
--- bounded current demand, not a predicted GIANTS turn route and not a universal
--- Corner radius.
+-- Feature.  The Field World boundary contact must itself already lie within the
+-- assembly-specific current physical reach; an arbitrarily distant A8-to-boundary
+-- continuation is topology, not current Corner demand.  Within that local demand
+-- horizon, direct translated primitive contact remains the strongest witness.
+-- Where that misses the feature's representative point, the local boundary
+-- contact may still establish demand when the feature lies inside the same
+-- assembly-specific physical reach.  No predicted GIANTS turn route, universal
+-- distance literal, working-width substitution or elapsed-time gate is created.
 local function cornerApproachDemand(feature,p,motion,productive,path,physical,input)
     if type(feature)~="table" or type(feature.representativePoint)~="table"
         or not motion or not productive or not path or p.status~="SUPPORTED"
@@ -450,6 +452,12 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
     local representative=feature.representativePoint
     local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
     if along<-EPSILON_M then return nil end
+
+    local physicalReach=currentPhysicalReachEvidence(physical,p)
+    if physicalReach==nil or not finite(p.boundaryDistanceM)
+        or p.boundaryDistanceM>physicalReach.reachM+EPSILON_M then
+        return nil
+    end
 
     local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
     local translatedIntersection=nil
@@ -470,10 +478,8 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
         end
     end
 
-    local physicalReach=currentPhysicalReachEvidence(physical,p)
     local contactDistanceToFeatureM=distance(representative,{x=p.contactX,z=p.contactZ})
-    local reachSupported=physicalReach~=nil
-        and contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
+    local reachSupported=contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
     if translatedIntersection==nil and not reachSupported then return nil end
 
     local witness=translatedIntersection~=nil
@@ -491,8 +497,10 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
             mode=translatedIntersection~=nil and "TRANSLATED_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTION"
                 or "BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH",
             boundaryContact={x=p.contactX,z=p.contactZ},
+            boundaryDistanceM=p.boundaryDistanceM,
             contactDistanceToFeatureM=contactDistanceToFeatureM,
-            currentPhysicalReach=physicalReach
+            currentPhysicalReach=physicalReach,
+            localDemandHorizonM=physicalReach.reachM
         },
         witness=witness,
         negativeClearanceAuthority=false,

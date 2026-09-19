@@ -61,10 +61,10 @@ return function(test,equal)
         return {
             operationId="OR-1",fieldWorldReferenceKey="FW-1",fieldWorld=world(),
             assemblyIds={"AS-A"},observationSnapshotId="OBS-1",observationEpoch=1,
-            futureSpace={future("AS-A",95,50,95,0)},
-            motionEvidence={motion("AS-A",{moveForwards=true,poseX=95,poseZ=50})},
+            futureSpace={future("AS-A",95,5,95,0)},
+            motionEvidence={motion("AS-A",{moveForwards=true,poseX=95,poseZ=5})},
             productiveContinuationKnowledge={productive("AS-A")},
-            physicalSpaceEvidence={physical("AS-A",100,50,1)},
+            physicalSpaceEvidence={physical("AS-A",100,5,1)},
             followerBoundaryKnowledge={}
         }
     end
@@ -73,17 +73,17 @@ return function(test,equal)
         local values=oneWorkerInput()
         values.assemblyIds={"AS-A","AS-B"}
         values.futureSpace={
-            future("AS-A",95,50,95,0),
-            future("AS-B",50,5,100,5)
+            future("AS-A",95,5,95,0),
+            future("AS-B",95,5,100,5)
         }
         values.motionEvidence={
-            motion("AS-A",{moveForwards=true,poseX=95,poseZ=50,speedMps=5}),
-            motion("AS-B",{moveForwards=true,poseX=50,poseZ=5,speedMps=4})
+            motion("AS-A",{moveForwards=true,poseX=95,poseZ=5,speedMps=5}),
+            motion("AS-B",{moveForwards=true,poseX=95,poseZ=5,speedMps=4})
         }
         values.productiveContinuationKnowledge={productive("AS-A"),productive("AS-B")}
         values.physicalSpaceEvidence={
-            physical("AS-A",100,50,1),
-            physical("AS-B",50,0,1)
+            physical("AS-A",100,5,1),
+            physical("AS-B",95,0,1)
         }
         return values
     end
@@ -115,15 +115,15 @@ return function(test,equal)
         equal(result.cornerKnowledge.controlAuthority,false)
     end)
 
-    test("Corner Admission: assembly-specific physical reach admits a structural Corner region without literal representative-point sweep",function()
+    test("Corner Admission: assembly-specific local physical reach admits a structural Corner region without literal representative-point sweep",function()
         local values=oneWorkerInput()
-        values.futureSpace={future("AS-A",90,50,90,0)}
-        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=50})}
+        values.futureSpace={future("AS-A",90,5,90,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=5})}
         values.physicalSpaceEvidence={{
             assemblyId="AS-A",
             primitives={{
                 identity="DISC-AS-A-REAR",kind="DISC",positiveConflictSupport=true,
-                x=90,z=40,radius=1
+                x=90,z=16,radius=1
             }},
             negativeClearanceAuthority=false
         }}
@@ -134,8 +134,26 @@ return function(test,equal)
             "CURRENT_PRODUCTIVE_A8_BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH_OF_STRUCTURAL_CORNER_FEATURE")
         equal(result.approachDemands[1].physicalSweepEvidence,nil)
         equal(result.approachDemands[1].physicalDemandEvidence.mode,"BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH")
-        equal(result.approachDemands[1].physicalDemandEvidence.currentPhysicalReach.reachM,11)
+        equal(result.approachDemands[1].physicalDemandEvidence.currentPhysicalReach.reachM,12)
+        equal(result.approachDemands[1].physicalDemandEvidence.boundaryDistanceM,5)
         equal(result.approachDemands[1].physicalDemandEvidence.contactDistanceToFeatureM,10)
+    end)
+
+    test("Corner Admission: distant A8 boundary contact cannot manufacture current Corner demand",function()
+        local values=oneWorkerInput()
+        values.futureSpace={future("AS-A",90,50,90,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=50})}
+        values.physicalSpaceEvidence={{
+            assemblyId="AS-A",
+            primitives={{
+                identity="DISC-AS-A-REAR",kind="DISC",positiveConflictSupport=true,
+                x=90,z=61,radius=1
+            }},
+            negativeClearanceAuthority=false
+        }}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.approachDemands),0)
+        equal(count(result.engagements),0)
     end)
 
     test("Corner Admission: physical reach keeps same-edge demand bounded to the structural Corner region",function()
