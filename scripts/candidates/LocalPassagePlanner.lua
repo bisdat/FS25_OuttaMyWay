@@ -220,7 +220,7 @@ local function longitudinalSupport(discs,directionalEnvelope,space,trajectory,ro
     return support,nil
 end
 
-local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpace,longitudinalSeparationM)
+local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpace,longitudinalSeparationM,executionCaptured)
     local aLong,aReason=longitudinalSupport(arrangement.subjectPassageDiscs,arrangement.subjectDirectionalPassageEnvelope,aSpace,aTrajectory,"SUBJECT")
     if aLong==nil then return nil,aReason end
     local bLong,bReason=longitudinalSupport(arrangement.otherPassageDiscs,arrangement.otherDirectionalPassageEnvelope,bSpace,bTrajectory,"OTHER")
@@ -240,7 +240,7 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
     local entryBoundary=frontOverlap+2*development+entryAllowance
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
-    local entryReady=currentSeparation<=entryBoundary
+    local entryReady=executionCaptured==true or currentSeparation<=entryBoundary
     local approachPerParticipant=entryReady and 0 or math.max(0,(currentSeparation-entryBoundary)*0.5)
     local plannedEntrySeparation=entryReady and currentSeparation or entryBoundary
     local postDevelopmentSeparation=math.max(0,plannedEntrySeparation-2*development)
@@ -379,8 +379,8 @@ end
 local function directionalRectangleClearance(ax,az,bx,bz,guide,aEnvelope,bEnvelope)
     if not directionalEnvelopeValid(aEnvelope) or not directionalEnvelopeValid(bEnvelope) then return nil end
     local frame=guide.executionFrame or {}
-    local afx,afz=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
-    local bfx,bfz=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
+    local afx,afz=tonumber(frame.subjectEnvelopeForwardX or frame.subjectForwardX),tonumber(frame.subjectEnvelopeForwardZ or frame.subjectForwardZ)
+    local bfx,bfz=tonumber(frame.otherEnvelopeForwardX or frame.otherForwardX),tonumber(frame.otherEnvelopeForwardZ or frame.otherForwardZ)
     if not finite(afx) or not finite(afz) or not finite(bfx) or not finite(bfz) then return nil end
     local a=rectangleCorners(ax,az,afx,afz,aEnvelope); local b=rectangleCorners(bx,bz,bfx,bfz,bEnvelope)
     if a==nil or b==nil then return nil end
@@ -484,7 +484,11 @@ local function directionalRectangleToDiscClearance(x,z,envelope,guide,role,disc)
     local bounds=directionalEnvelopeBounds(envelope); local frame=guide.executionFrame or {}
     if bounds==nil then return nil end
     local fx,fz
-    if role=="subject" then fx,fz=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ) else fx,fz=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ) end
+    if role=="subject" then
+        fx,fz=tonumber(frame.subjectEnvelopeForwardX or frame.subjectForwardX),tonumber(frame.subjectEnvelopeForwardZ or frame.subjectForwardZ)
+    else
+        fx,fz=tonumber(frame.otherEnvelopeForwardX or frame.otherForwardX),tonumber(frame.otherEnvelopeForwardZ or frame.otherForwardZ)
+    end
     local dx,dz,r=tonumber(disc.x) and tonumber(disc.x)-x or nil,tonumber(disc.z) and tonumber(disc.z)-z or nil,tonumber(disc.radius)
     if not finite(fx) or not finite(fz) or not finite(dx) or not finite(dz) or not finite(r) then return nil end
     local length=math.sqrt(fx*fx+fz*fz); if length<=0.0001 then return nil end
@@ -726,6 +730,161 @@ local function arrangementCandidates(currentSigned,pairClearance)
         return a.subjectLateralOffsetM<b.subjectLateralOffsetM
     end)
     return result
+end
+
+
+function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId)
+    if type(retainedGuide)~="table" or type(retainedGuide.executionFrame)~="table" then
+        return nil,"RETAINED_PASSAGE_EXECUTION_FRAME_UNAVAILABLE"
+    end
+    if type(retainedArrangement)~="table" then return nil,"RETAINED_PASSAGE_ARRANGEMENT_UNAVAILABLE" end
+    for _,poseValue in ipairs({subjectPose,otherPose}) do
+        if type(poseValue)~="table" or not finite(tonumber(poseValue.x)) or not finite(tonumber(poseValue.z))
+            or not finite(tonumber(poseValue.dx)) or not finite(tonumber(poseValue.dz)) then
+            return nil,"CURRENT_EXECUTION_POSE_UNAVAILABLE"
+        end
+    end
+    local frame=retainedGuide.executionFrame
+    local rightX,rightZ=tonumber(frame.sharedRightX),tonumber(frame.sharedRightZ)
+    local subjectForwardX,subjectForwardZ=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
+    local otherForwardX,otherForwardZ=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
+    if not finite(rightX) or not finite(rightZ) or not finite(subjectForwardX) or not finite(subjectForwardZ)
+        or not finite(otherForwardX) or not finite(otherForwardZ) then
+        return nil,"RETAINED_PASSAGE_EXECUTION_FRAME_UNRESOLVED"
+    end
+    local rightLength=math.sqrt(rightX*rightX+rightZ*rightZ)
+    if rightLength<=0.0001 then return nil,"RETAINED_PASSAGE_LATERAL_AXIS_UNRESOLVED" end
+    rightX,rightZ=rightX/rightLength,rightZ/rightLength
+
+    local subjectEnvelope=retainedArrangement.subjectDirectionalPassageEnvelope
+    local otherEnvelope=retainedArrangement.otherDirectionalPassageEnvelope
+    if not directionalEnvelopeValid(subjectEnvelope) or not directionalEnvelopeValid(otherEnvelope) then
+        return nil,"RETAINED_TRANSIT_DIRECTIONAL_ENVELOPE_UNAVAILABLE"
+    end
+    local subjectDiscs=retainedArrangement.subjectPassageDiscs
+    local otherDiscs=retainedArrangement.otherPassageDiscs
+    if type(subjectDiscs)~="table" or type(otherDiscs)~="table" then
+        return nil,"RETAINED_PASSAGE_DISC_GEOMETRY_UNAVAILABLE"
+    end
+    local nominal=tonumber(retainedArrangement.nominalInterAssemblyClearanceM)
+    if not finite(nominal) or nominal<=0 then return nil,"RETAINED_PASSAGE_NOMINAL_CLEARANCE_UNAVAILABLE" end
+
+    local subjectSpace={occupancy={x=subjectPose.x,z=subjectPose.z,headingX=subjectPose.dx,headingZ=subjectPose.dz}}
+    local otherSpace={occupancy={x=otherPose.x,z=otherPose.z,headingX=otherPose.dx,headingZ=otherPose.dz}}
+    local subjectTrajectory={establishedDirectionX=subjectForwardX,establishedDirectionZ=subjectForwardZ}
+    local otherTrajectory={establishedDirectionX=otherForwardX,establishedDirectionZ=otherForwardZ}
+    local currentSigned=(otherPose.x-subjectPose.x)*rightX+(otherPose.z-subjectPose.z)*rightZ
+
+    local function selection(source,envelope,discs,space,sideSign)
+        local facing=directionalFacingExtent(envelope,space,rightX,rightZ,sideSign)
+        if not finite(facing) then return nil end
+        return {
+            mode="TRANSIT_REQUIRED",discs=discs,directionalEnvelope=envelope,
+            currentFacingM=facing,selectedFacingM=facing,releaseM=0,
+            configurationProfileId=source and source.configurationProfileId or nil,
+            authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"
+        }
+    end
+    local function relation(sign)
+        local subjectSelection=selection(retainedArrangement.subjectConfiguration,subjectEnvelope,subjectDiscs,subjectSpace,sign)
+        local otherSelection=selection(retainedArrangement.otherConfiguration,otherEnvelope,otherDiscs,otherSpace,-sign)
+        if subjectSelection==nil or otherSelection==nil then return nil end
+        local contact=subjectSelection.selectedFacingM+otherSelection.selectedFacingM
+        return {
+            relationSign=sign,
+            subjectFacingExtentM=subjectSelection.selectedFacingM,otherFacingExtentM=otherSelection.selectedFacingM,
+            physicalContactThresholdM=contact,nominalInterAssemblyClearanceM=nominal,
+            policyRequiredSeparationM=contact+nominal,
+            subjectConfiguration=subjectSelection,otherConfiguration=otherSelection,
+            subjectDirectionalPassageEnvelope=subjectEnvelope,otherDirectionalPassageEnvelope=otherEnvelope,
+            representationBasis="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationReleasedSpaceM=0
+        }
+    end
+    local positive,negative=relation(1),relation(-1)
+    if positive==nil or negative==nil then return nil,"CURRENT_TRANSIT_FACING_EXTENT_UNAVAILABLE" end
+    local currentRelation=currentSigned>=0 and positive or negative
+    local pairClearance={
+        currentSignedSeparationM=currentSigned,currentLateralSeparationM=math.abs(currentSigned),
+        currentRelationSign=currentRelation.relationSign,
+        subjectFacingExtentM=currentRelation.subjectFacingExtentM,otherFacingExtentM=currentRelation.otherFacingExtentM,
+        physicalContactThresholdM=currentRelation.physicalContactThresholdM,
+        nominalInterAssemblyClearanceM=nominal,policyRequiredSeparationM=currentRelation.policyRequiredSeparationM,
+        policyReserveM=math.abs(currentSigned)-currentRelation.policyRequiredSeparationM,
+        positiveRelation=positive,negativeRelation=negative,
+        representationBasis="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",
+        planningGeometrySource="FRESH_EXECUTION_TRANSIT_BASE",
+        coverageComplete=false,negativeClearanceAuthority=false
+    }
+    local longitudinal=longitudinalPairSeparation(subjectSpace,otherSpace,subjectTrajectory,otherTrajectory)
+    if not finite(longitudinal) then return nil,"CURRENT_EXECUTION_LONGITUDINAL_SEPARATION_UNRESOLVED" end
+
+    local conflict={
+        identity=tostring(retainedArrangement.identity or retainedGuide.identity or "cooperative-passage")..":execution-adaptation",
+        subjectAssemblyId=subjectAssemblyId,otherAssemblyId=otherAssemblyId,
+        supportedCorridorOverlap={sharedRightX=rightX,sharedRightZ=rightZ}
+    }
+    local rejected={}
+    local arrangements=arrangementCandidates(currentSigned,pairClearance)
+    for index,arrangement in ipairs(arrangements) do
+        local geometry,geometryReason=excursionGeometry(
+            arrangement,subjectTrajectory,otherTrajectory,subjectSpace,otherSpace,longitudinal,true)
+        if geometry~=nil then
+            local guide,guideReason=makeGuide(
+                conflict,subjectTrajectory,otherTrajectory,subjectSpace,otherSpace,
+                arrangement.subjectLateralOffsetM,arrangement.otherLateralOffsetM,geometry)
+            if guide~=nil then
+                guide.executionFrame.subjectEnvelopeForwardX=subjectPose.dx
+                guide.executionFrame.subjectEnvelopeForwardZ=subjectPose.dz
+                guide.executionFrame.otherEnvelopeForwardX=otherPose.dx
+                guide.executionFrame.otherEnvelopeForwardZ=otherPose.dz
+                local supported,sweepReason,sweepEvidence=pairSweepSupport(
+                    guide,subjectSpace,otherSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominal,
+                    arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
+                if supported then
+                    arrangement.identity=tostring(retainedArrangement.identity or "cooperative-passage-arrangement")..":execution-adapted:"..tostring(index)
+                    arrangement.currentSignedSeparationM=currentSigned
+                    arrangement.currentLateralSeparationM=math.abs(currentSigned)
+                    arrangement.targetCentrelineSeparationM=arrangement.policyRequiredSeparationM
+                    arrangement.currentRelationPolicyReserveM=pairClearance.policyReserveM
+                    arrangement.currentPolicyReserveM=pairClearance.policyReserveM
+                    arrangement.directionalPassageEnvelopeBasis=pairClearance.representationBasis
+                    arrangement.passageGeometrySource=pairClearance.planningGeometrySource
+                    arrangement.configurationReduction="TRANSIT_ALREADY_REALISED"
+                    arrangement.pairwisePassageEconomy={
+                        combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,
+                        tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"
+                    }
+                    guide.identity=tostring(retainedGuide.identity or "cooperative-passage-guide")..":execution-adapted:"..tostring(index)
+                    guide.pairSweepSupport=sweepEvidence
+                    return {
+                        guide=guide,arrangement=arrangement,
+                        passageExcursion={
+                            model=geometry.model,clearanceDeficitM=geometry.clearanceDeficitM,
+                            maximumParticipantLateralExcursionM=geometry.maximumParticipantLateralExcursionM,
+                            developmentDistanceM=geometry.developmentDistanceM,recoveryDistanceM=geometry.recoveryDistanceM,
+                            totalForwardDistanceM=geometry.totalForwardDistanceM,
+                            crossingWindowEntrySeparationM=geometry.crossingWindowEntrySeparationM,
+                            crossingWindowRearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
+                            crossingWindowForwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
+                            subjectFrontExtentM=geometry.subjectFrontExtentM,subjectRearExtentM=geometry.subjectRearExtentM,
+                            otherFrontExtentM=geometry.otherFrontExtentM,otherRearExtentM=geometry.otherRearExtentM,
+                            crossingWindowBasis=geometry.crossingWindowBasis
+                        },
+                        currentSignedSeparationM=currentSigned,currentLongitudinalSeparationM=longitudinal,
+                        selectedIndex=index,rejectedBeforeSelection=rejected,
+                        authority="COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION",
+                        reason="FRESH_EXECUTION_ORIGIN_PAIR_SWEEP_SUPPORTED"
+                    },nil
+                end
+                rejected[#rejected+1]={index=index,reason=sweepReason or "PAIR_SWEEP_UNSUPPORTED"}
+            else
+                rejected[#rejected+1]={index=index,reason=guideReason}
+            end
+        else
+            rejected[#rejected+1]={index=index,reason=geometryReason}
+        end
+    end
+    return nil,"NO_FRESH_EXECUTION_PASSAGE_ARRANGEMENT_SUPPORTED"
 end
 
 local function planConflict(picture,snapshot,conflict)
