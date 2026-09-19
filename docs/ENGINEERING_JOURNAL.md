@@ -5084,3 +5084,16 @@ When fresh current Approach Demand or Occupancy later appears for the same assem
 **Validation design:** the focused Corner fixture now (1) rejects a geometrically compatible boundary contact tens of metres beyond current physical reach, (2) accepts the same structural relationship when the boundary is inside assembly-specific current reach, (3) retains independent turning Occupancy admission, and (4) proves that fresh same-Job Occupancy can re-establish Engagement after a positive continuous-traversal departure. Existing Corner Arrival Priority, fixed 1 km/h Regulation, FI lifecycle, Passage planning/control and `.105` capture mechanics are unchanged.
 
 **Authority Triad:** Architecture gains an explicit repeated-traversal clarification; Situation Assessment Specification operationalises it; Source is changed to conform. The existing Architecture/Specification prohibition on indefinite continuation remains unchanged. `CONTINUATION_STATE.md` is replaced from the stale pre-implementation Issue #234 state with the `.106` validation boundary.
+
+
+## 2026-09-19 — owner correction after .106
+
+The owner clarified that Issue #240 was not intended to be implemented inside PR #239. The intended action was to remove it from the merge gate: close it if obsolete, otherwise retain it for later.
+
+Two .106 runs regressed the S416 / Condor Corner allocation. The physical-reach locality gate removed Condor's early native Corner-arrival evidence, leaving Forward Intersection to use his temporarily low realised post-turn rate and select him to yield. The Corner Decision comparator itself was unchanged.
+
+Discovery retained:
+
+> **Corner Arrival Evidence != Current Corner Approach Demand**
+
+Decision: restore the .105 runtime and TEST identity; retain only truthful documentation corrections; leave Issue #240 open for a later increment. The .106 experiment remains historical evidence and makes no accepted runtime claim.

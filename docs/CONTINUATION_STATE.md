@@ -10,71 +10,51 @@ It is **not** a repository-status dashboard. Git owns exact accepted chronology;
 
 Only the copy on accepted `main` is authoritative.
 
-## Current engineering boundary — PR #239 final Corner / Passage closure
+## Current engineering boundary — PR #239 pre-merge closure
 
-PR #239 now contains the complete implementation candidate for the Structural Field Shape Corner lifecycle discovered through Issue #234, the subsequent Corner Arrival Priority corrections, the Cooperative Passage execution corrections through TEST `0.3.0.105`, and the two remaining Corner lifecycle defects recorded in Issue #240.
+PR #239's validated runtime candidate is TEST **0.3.0.105**.
 
-The latest executable candidate is TEST **0.3.0.106**. It is not yet an accepted repository state and requires independent CI plus GIANTS Reality validation before PR #239 may be treated as merge-ready.
+TEST `.105` is a GIANTS Reality PASS for the intended PR scope:
 
-## Current understanding
+- Structural Field Shape / Corner Feature discovery remains field-scoped;
+- current Corner Occupancy and Corner Arrival Priority protect the worker already in constrained Corner space, otherwise the earlier native/unrestricted arrival;
+- fixed Corner and Forward-Intersection Regulation use the exact 1 km/h Intent-Revelation Creep without Resolution-Space envelope dependence;
+- fixed Forward-Intersection role migration is supported;
+- same-pair Forward-Intersection Regulation can be atomically succeeded by Cooperative Passage despite different Situation identities;
+- Cooperative Passage revalidates stale arrangements from fresh execution origins;
+- realised Transit geometry is consumed at the execution boundary; and
+- current positive closing may start Passage capture before the literal Entry Boundary so disposable approach margin is not consumed while Hold settles.
 
-### Structural Corner knowledge and current demand
+The later TEST `0.3.0.106` experiment is **not** part of the accepted candidate. It attempted to resolve Issue #240 inside PR #239 by making Corner Approach Demand physically local. Two GIANTS Reality runs disproved that implementation because it also removed the early native Corner-arrival evidence needed for correct S416 / Condor allocation. The branch has therefore returned to the `.105` runtime behavior.
 
-Field-scoped Structural Field Shape establishes persistent Corner Features independently of traffic. Current assembly demand remains separate:
+## Issue #240 — deferred, still open
 
-- **Corner Occupancy** is positive present Physical-Assembly evidence and independently admits Corner Engagement when Reality already consumes the feature.
-- **Corner Approach Demand** requires current productive A8 plus assembly-specific current physical reach into the structural Corner. A full Field-World-bounded continuation to a distant boundary is topology, not present Corner demand.
-- no universal Corner radius, distance tail, timer or predicted GIANTS turn route is introduced.
+Issue #240 remains a real but separate Corner-model question:
 
-This restores the valid locality insight first explored in `.99` without regressing the `.100/.105` discovery that an already-present Corner occupant must be protected independently of approach prediction.
+- full Field-World-bounded A8 continuation can establish Corner demand earlier than is semantically desirable; and
+- retained Positive Corner Departure may block later same-Job re-entry to the same structural Corner.
 
-> **Field-Bounded Continuation To A Corner != Current Corner Approach Demand**
+The failed `.106` experiment added a further discovery:
 
-### Corner lifecycle and repeated traversal
+> **Corner Arrival Evidence != Current Corner Approach Demand**
 
-Positive Corner Departure settles one traversal's retained Engagement. It does not permanently exclude the same assembly from the same structural Corner for the rest of the GIANTS Job Episode.
+The next #240 investigation must separate prospective/current-supported **Corner Arrival Evidence** from local **Corner Approach Demand / Occupancy** and retained **Corner Engagement**. It must not restore remote retained Corner demand merely to recover correct arrival ordering.
 
-Fresh later Corner Approach Demand or current Corner Occupancy supersedes the historical departure record and establishes a new Engagement.
+#240 is deliberately **not** a merge condition for PR #239. Its implementation remains for a later engineering increment from accepted `main`.
 
-> **Positive Corner Departure != Permanent Same-Job Corner Exclusion**
+## Authority Triad disposition for PR #239
 
-### Corner allocation
-
-Shared Corner Decision remains current-evidence based:
-
-1. positive current constrained Corner Occupancy is arrival now and receives temporary right-of-way over a non-occupant;
-2. otherwise compare supported native/unrestricted time-to-Corner;
-3. protect the earlier arrival and regulate the later at the fixed 1 km/h Intent-Revelation Creep;
-4. Corner Engagement age is lifecycle provenance, not priority evidence.
-
-### Cooperative Passage state retained
-
-The `.101-.105` corrections remain part of the same PR:
-
-- execution-origin rebase does not preserve stale Passage arrangement authority;
-- realised Transit configuration geometry is consumed at the execution boundary;
-- fixed Forward-Intersection Regulation role migration does not depend on Resolution-Space envelopes;
-- same-pair Forward Intersection Regulation may be atomically succeeded by Cooperative Passage despite different conflict identities;
-- current positive closing progression may require Passage capture before the literal Entry Boundary, using the 1.0 s Control-response Capture Acquisition Horizon while preserving the separate 3 m Entry Control Allowance.
-
-TEST `0.3.0.105` is a GIANTS Reality PASS for those Passage/Corner-allocation paths. TEST `0.3.0.106` changes only the Issue #240 Corner demand/re-entry semantics plus documentation.
-
-## Authority Triad state
-
-- **Architecture — reconciled.** `architecture/SPATIAL_NEGOTIATION_MODEL.md` owns Structural Corner semantics, current demand/occupancy, Corner Arrival Priority, traversal-scoped Positive Departure and same-Job re-admission.
-- **Specification — reconciled.** `spec/SITUATION_ASSESSMENT.md` operationalises local current Corner Approach Demand, independent Occupancy admission, traversal-scoped departure and fresh re-entry.
-- **Source — implementation candidate reconciled.** `scripts/assessment/SpatialConstraintAssessment.lua` now bounds Approach Demand by assembly-specific current physical reach and permits fresh demand/occupancy to replace a prior departure record. Acceptance still depends on CI and GIANTS Reality.
-- **Tests — evidence, not authority.** Focused Corner fixtures distinguish distant bounded continuation from local current demand and challenge same-Job Occupancy re-entry after Positive Departure.
+- **Architecture — validated for PR #239 scope.** Current Structural Corner, Corner Arrival Priority, Regulation and Cooperative Passage responsibilities remain the intended model.
+- **Specification — validated for PR #239 scope.** The governing contracts remain the authority for current implementation and for the still-open #240 discrepancy.
+- **Source — restored to the Reality-validated `.105` implementation.** The only post-`.105` source change retained is corrected module documentation in `CooperativePassageControl.lua`; it does not change runtime behavior.
+- **Tests — evidence, not authority.** The `.106` experiment and its failure remain historical validation evidence and do not redefine the accepted contract.
 
 ## Next bounded engineering step
 
-Validate TEST `0.3.0.106` without broadening PR #239:
+Complete the final PR #239 merge-gate review against the restored `.105` runtime and current documentation.
 
-1. GitHub Actions must pass the repository Structural and Lua offline behavioural contracts.
-2. GIANTS Reality must preserve the validated `.105` first Condor/Patriot Corner, S416/Condor Corner, all three Cooperative Passages and final Corner allocation.
-3. The log must no longer show Corner Engagement being established hundreds of metres away solely because A8's Field-World-bounded continuation eventually contacts that Corner.
-4. A later same-Job return to a positively departed structural Corner must be able to establish a new Engagement from fresh local demand or current Occupancy.
+If the repository-side checks remain green, PR #239 may be merged only on explicit repository-owner instruction.
 
-If those checks pass, close Issue #240 with PR #239, perform the final documentation/merge-gate review, and merge only on explicit repository-owner instruction.
+After PR #239 is accepted, Issue #240 can resume as a separate Observe -> Discuss -> Hypothesise increment from accepted `main`.
 
 Issue #227 remains separate Cooperative Passage recovery/handback work.

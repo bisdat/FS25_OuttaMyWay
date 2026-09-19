@@ -472,16 +472,12 @@ end
 -- Corner Approach Demand is unilateral.  It is established only when the
 -- current productive A8 bounded continuation positively carries the assembly's
 -- current physical demand into a positively interpreted structural Corner
--- Feature.  The Field World boundary contact must itself already lie within the
--- assembly-specific current physical reach; an arbitrarily distant A8-to-boundary
--- continuation is topology, not current Corner demand.  Within that local demand
--- horizon, direct translated primitive contact remains the strongest witness.
--- Where that misses the feature's representative point, the local boundary
--- contact may still establish demand when the feature lies inside the same
--- assembly-specific physical reach.  Current Corner Occupancy remains an
--- independent admission route when Reality already consumes the feature.  No
--- predicted GIANTS turn route, universal distance literal, working-width
--- substitution or elapsed-time gate is created.
+-- Feature.  Direct translated primitive contact remains the strongest witness.
+-- Where that misses the feature's representative point, the bounded Field World
+-- contact may still establish demand when it lies inside the assembly-specific
+-- reach already represented by current positive physical primitives.  This is
+-- bounded current demand, not a predicted GIANTS turn route and not a universal
+-- Corner radius.
 local function cornerApproachDemand(feature,p,motion,productive,path,physical,input)
     if type(feature)~="table" or type(feature.representativePoint)~="table"
         or not motion or not productive or not path or p.status~="SUPPORTED"
@@ -496,12 +492,6 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
     local representative=feature.representativePoint
     local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
     if along<-EPSILON_M then return nil end
-
-    local physicalReach=currentPhysicalReachEvidence(physical,p)
-    if physicalReach==nil or not finite(p.boundaryDistanceM)
-        or p.boundaryDistanceM>physicalReach.reachM+EPSILON_M then
-        return nil
-    end
 
     local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
     local translatedIntersection=nil
@@ -522,8 +512,10 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
         end
     end
 
+    local physicalReach=currentPhysicalReachEvidence(physical,p)
     local contactDistanceToFeatureM=distance(representative,{x=p.contactX,z=p.contactZ})
-    local reachSupported=contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
+    local reachSupported=physicalReach~=nil
+        and contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
     if translatedIntersection==nil and not reachSupported then return nil end
 
     local witness=translatedIntersection~=nil
@@ -553,10 +545,8 @@ local function cornerApproachDemand(feature,p,motion,productive,path,physical,in
             mode=translatedIntersection~=nil and "TRANSLATED_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTION"
                 or "BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH",
             boundaryContact={x=p.contactX,z=p.contactZ},
-            boundaryDistanceM=p.boundaryDistanceM,
             contactDistanceToFeatureM=contactDistanceToFeatureM,
-            currentPhysicalReach=physicalReach,
-            localDemandHorizonM=physicalReach.reachM
+            currentPhysicalReach=physicalReach
         },
         witness=witness,
         negativeClearanceAuthority=false,
@@ -758,12 +748,7 @@ local function assessCornerKnowledge(self,input,projections,relationships)
                 local demand=demandsByReference[reference]
                 local occupancy=currentOccupancies[reference]
                 local departed=departures[reference]
-                if engagement==nil and (demand~=nil or occupancy~=nil) then
-                    -- Positive Departure settles one traversal.  It is not a same-Job
-                    -- tombstone: fresh current demand/occupancy is stronger current
-                    -- Situation evidence and begins a new Engagement.
-                    local readmission=departed~=nil
-                    if readmission then departures[reference]=nil end
+                if engagement==nil and (demand~=nil or occupancy~=nil) and departed==nil then
                     engagement={
                         cornerKey=feature.cornerKey,polygonKey=input.fieldWorldReferenceKey,
                         assemblyId=p.assemblyId,assemblyReferenceKey=reference,sourceJobToken=token,
@@ -775,12 +760,10 @@ local function assessCornerKnowledge(self,input,projections,relationships)
                         hasObservedManoeuvring=false,isDepartureGateOpen=false
                     }
                     engagements[reference]=engagement
-                    local reason=occupancy~=nil and "UNILATERAL_CORNER_OCCUPANCY_ADMISSION" or "UNILATERAL_CORNER_ADMISSION"
-                    if readmission then reason=reason.."_AFTER_POSITIVE_DEPARTURE" end
                     cornerEvent(result.events,"CORNER_ENGAGEMENT_ESTABLISHED",entry,{
                         assemblyId=p.assemblyId,sourceJobToken=token,
                         observationSnapshotId=input.observationSnapshotId,
-                        reason=reason
+                        reason=occupancy~=nil and "UNILATERAL_CORNER_OCCUPANCY_ADMISSION" or "UNILATERAL_CORNER_ADMISSION"
                     })
                 end
 
