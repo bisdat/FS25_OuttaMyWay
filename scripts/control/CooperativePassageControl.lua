@@ -2,9 +2,12 @@
 -- Specification Jurisdictions: `CONTROL`, `COOPERATIVE_PASSAGE`
 
 -- Cooperative Passage bounded Control executes an already-established pair plan.
--- It may remain in PASSAGE_APPROACH until the Candidate Entry Boundary, then
--- settles/configures the pair and instantiates the guide from actual execution
--- origins before forward-only point pursuit. TRANSIT_BASE participants always
+-- PASSAGE_APPROACH remains GIANTS-native while disposable approach margin is
+-- safe; current positive closing may begin Hold before the Candidate Entry
+-- Boundary when the empirical Capture Acquisition Horizon is reached. The Entry
+-- Boundary remains the literal fallback trigger. Control then settles/configures
+-- the pair and instantiates the guide from actual execution origins before
+-- forward-only point pursuit. TRANSIT_BASE participants always
 -- request Transit and wait only for positive native fold-motion settlement. Final
 -- Recovery restores whole-assembly axis alignment, performs one-at-a-time Axis
 -- Return, then completes participant-specific restore/handoff. The captured member
@@ -23,6 +26,11 @@ local COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
 local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 local COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
+-- Empirical Control-response horizon, not a braking-distance model. Reality
+-- shows Passage Hold can require about one second before both workers are
+-- physically settled; current closing progression therefore starts capture
+-- before disposable approach margin is consumed.
+local COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S = 1.0
 local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 -- Longitudinal completion on the captured axis, not a Passage Guide target radius.
 local COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M = 1.0
@@ -376,6 +384,23 @@ function Control:_passageLongitudinalSeparation(run)
     return math.max(0,(aAhead+bAhead)*0.5),pa,pb
 end
 
+local function passageClosingContributionMps(participant,currentPose)
+    if participant==nil or participant.vehicle==nil or currentPose==nil then return 0 end
+    local speed=math.abs(tonumber(participant.vehicle.lastSpeedReal) or 0)*1000
+    if speed<=0 then return 0 end
+    local travelSign=(tonumber(participant.vehicle.movingDirection) or 1)<0 and -1 or 1
+    local travelX,travelZ=currentPose.dx*travelSign,currentPose.dz*travelSign
+    local axisX,axisZ=tonumber(participant.startForwardX),tonumber(participant.startForwardZ)
+    if axisX==nil or axisZ==nil then return 0 end
+    local projection=dot(travelX,travelZ,axisX,axisZ)
+    return math.max(0,speed*projection)
+end
+
+function Control:_passageApproachClosingRateMps(run,pa,pb)
+    if run==nil or pa==nil or pb==nil then return 0 end
+    return passageClosingContributionMps(run.a,pa)+passageClosingContributionMps(run.b,pb)
+end
+
 function Control:_beginPassageSettling(run,reason)
     local held={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
@@ -388,8 +413,11 @@ function Control:_beginPassageSettling(run,reason)
     end
     self:_setPhase(run,"SETTLING",g_time or 0)
     local separation=self:_passageLongitudinalSeparation(run)
-    logInfo("COOPERATIVE_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm action=HOLD_THEN_CONFIGURE",
-        tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1)
+    logInfo("COOPERATIVE_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm closingRate=%.2fmps timeToBoundary=%s action=HOLD_THEN_CONFIGURE",
+        tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",
+        tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1,
+        tonumber(run.captureClosingRateMps) or 0,
+        run.captureTimeToBoundaryS and string.format("%.2fs",run.captureTimeToBoundaryS) or "n/a")
     return true,nil
 end
 
@@ -530,32 +558,113 @@ function Control:_rebasePassageGuide(run)
     local sfx,sfz=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
     local ofx,ofz=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
     if rightX==nil or rightZ==nil or sfx==nil or sfz==nil or ofx==nil or ofz==nil then return false,"PASSAGE_EXECUTION_FRAME_UNAVAILABLE" end
+
     local pa,pb=legLive(run.a) and pose(run.a.vehicle) or nil,legLive(run.b) and pose(run.b.vehicle) or nil
     if legLive(run.a) and pa==nil then return false,"PASSAGE_EXECUTION_ORIGIN_POSE_UNAVAILABLE:"..tostring(run.a.assemblyId) end
     if legLive(run.b) and pb==nil then return false,"PASSAGE_EXECUTION_ORIGIN_POSE_UNAVAILABLE:"..tostring(run.b.assemblyId) end
+
     local arrangement=run.passageArrangement or {}
-    local subjectOffset=tonumber(arrangement.subjectLateralOffsetM) or 0
-    local otherOffset=tonumber(arrangement.otherLateralOffsetM) or 0
+    local originalSubjectOffset=tonumber(arrangement.subjectLateralOffsetM) or 0
+    local originalOtherOffset=tonumber(arrangement.otherLateralOffsetM) or 0
     local subjectParticipant=(run.a.assemblyId==run.subjectAssemblyId) and run.a or run.b
     local otherParticipant=(run.a.assemblyId==run.otherAssemblyId) and run.a or run.b
     local poses={[run.a.assemblyId]=pa,[run.b.assemblyId]=pb}
     local subjectPose,otherPose=poses[run.subjectAssemblyId],poses[run.otherAssemblyId]
     if legLive(subjectParticipant) and subjectPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE:"..tostring(run.subjectAssemblyId) end
     if legLive(otherParticipant) and otherPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE:"..tostring(run.otherAssemblyId) end
+
     local oldOrigins=guide.entryOrigins or {}
     guide.entryOrigins={}
     if subjectPose~=nil then guide.entryOrigins.subject={x=subjectPose.x,z=subjectPose.z}
     elseif type(oldOrigins.subject)=="table" then guide.entryOrigins.subject=copyValue(oldOrigins.subject) end
     if otherPose~=nil then guide.entryOrigins.other={x=otherPose.x,z=otherPose.z}
     elseif type(oldOrigins.other)=="table" then guide.entryOrigins.other=copyValue(oldOrigins.other) end
+
+    if subjectPose~=nil then
+        frame.subjectEnvelopeForwardX,frame.subjectEnvelopeForwardZ=subjectPose.dx,subjectPose.dz
+    end
+    if otherPose~=nil then
+        frame.otherEnvelopeForwardX,frame.otherEnvelopeForwardZ=otherPose.dx,otherPose.dz
+    end
+    guide.executionFrame=frame
+
+    local subjectOffset=originalSubjectOffset
+    local otherOffset=originalOtherOffset
     for index,gate in ipairs(guide.gates or {}) do
         local forward=tonumber(gate.forwardM) or 0
         local fraction=tonumber(gate.lateralFraction) or 0
         local radius=tonumber(gate.radiusM) or 1
         gate.index=index
-        if subjectPose~=nil then gate.subject={assemblyId=run.subjectAssemblyId,x=subjectPose.x+sfx*forward+rightX*(fraction*subjectOffset),z=subjectPose.z+sfz*forward+rightZ*(fraction*subjectOffset),radiusM=radius} end
-        if otherPose~=nil then gate.other={assemblyId=run.otherAssemblyId,x=otherPose.x+ofx*forward+rightX*(fraction*otherOffset),z=otherPose.z+ofz*forward+rightZ*(fraction*otherOffset),radiusM=radius} end
+        if subjectPose~=nil then
+            gate.subject={assemblyId=run.subjectAssemblyId,
+                x=subjectPose.x+sfx*forward+rightX*(fraction*subjectOffset),
+                z=subjectPose.z+sfz*forward+rightZ*(fraction*subjectOffset),radiusM=radius}
+        end
+        if otherPose~=nil then
+            gate.other={assemblyId=run.otherAssemblyId,
+                x=otherPose.x+ofx*forward+rightX*(fraction*otherOffset),
+                z=otherPose.z+ofz*forward+rightZ*(fraction*otherOffset),radiusM=radius}
+        end
     end
+
+    local geometryUnchanged=true
+    local adaptation=nil
+    if legLive(subjectParticipant) and legLive(otherParticipant) then
+        local planner=OuttaMyWay.LocalPassagePlanner
+        if type(planner)~="table" or type(planner.validateRebasedGuidePairSweep)~="function"
+            or type(planner.adaptExecutionGuide)~="function" then
+            return false,"PASSAGE_EXECUTION_REVALIDATION_UNAVAILABLE"
+        end
+        local observationSource=self.runtime and self.runtime.liveObservationSource or nil
+        if observationSource==nil or type(observationSource.getTrackedRepresentation)~="function" then
+            return false,"PASSAGE_EXECUTION_REALISED_TRANSIT_OBSERVATION_UNAVAILABLE"
+        end
+        local function realisedRepresentation(participant)
+            local representation=observationSource:getTrackedRepresentation(participant.referenceKey)
+            if type(representation)~="table" then return nil,"CURRENT_REALISED_TRANSIT_REPRESENTATION_UNAVAILABLE:"..tostring(participant.assemblyId) end
+            if representation.assemblyReferenceKey~=participant.referenceKey or representation.sourceJobToken~=participant.startJobToken then
+                return nil,"CURRENT_REALISED_TRANSIT_REPRESENTATION_JOB_EPISODE_MISMATCH:"..tostring(participant.assemblyId)
+            end
+            return representation,nil
+        end
+        local subjectRepresentation,subjectRepresentationReason=realisedRepresentation(subjectParticipant)
+        if subjectRepresentation==nil then return false,subjectRepresentationReason end
+        local otherRepresentation,otherRepresentationReason=realisedRepresentation(otherParticipant)
+        if otherRepresentation==nil then return false,otherRepresentationReason end
+
+        local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(
+            guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
+        if not retainedOk then
+            local adapted,adaptReason=planner.adaptExecutionGuide(
+                guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId,
+                subjectRepresentation,otherRepresentation)
+            if adapted==nil then
+                return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
+                    ..":ADAPTATION:"..tostring(adaptReason)
+            end
+            adaptation=adapted
+            guide=adapted.guide
+            arrangement=adapted.arrangement
+            run.passageArrangement=arrangement
+            run.passageExcursion=adapted.passageExcursion or run.passageExcursion
+            geometryUnchanged=false
+            logInfo("COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s",
+                tostring(run.commitmentId),tostring(retainedReason),
+                tonumber(adapted.currentSignedSeparationM) or 0,tonumber(adapted.currentLongitudinalSeparationM) or 0,
+                originalSubjectOffset,originalOtherOffset,
+                tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,
+                tonumber(arrangement.policyRequiredSeparationM) or 0,tostring(adapted.selectedIndex),tostring(adapted.authority),
+                tostring(adapted.subjectConfigurationProfileId),tostring(adapted.otherConfigurationProfileId))
+        else
+            guide.pairSweepSupport=retainedEvidence or guide.pairSweepSupport
+            logInfo("COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED commitment=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s retainedArrangement=true",
+                tostring(run.commitmentId),tostring(subjectRepresentation.configurationProfileId),tostring(otherRepresentation.configurationProfileId))
+        end
+    end
+
+    local finalFrame=guide.executionFrame or {}
+    sfx,sfz=tonumber(finalFrame.subjectForwardX),tonumber(finalFrame.subjectForwardZ)
+    ofx,ofz=tonumber(finalFrame.otherForwardX),tonumber(finalFrame.otherForwardZ)
     if subjectPose~=nil then
         subjectParticipant.executionOriginX,subjectParticipant.executionOriginZ=subjectPose.x,subjectPose.z
         subjectParticipant.axisForwardX,subjectParticipant.axisForwardZ=sfx,sfz
@@ -564,21 +673,26 @@ function Control:_rebasePassageGuide(run)
         otherParticipant.executionOriginX,otherParticipant.executionOriginZ=otherPose.x,otherPose.z
         otherParticipant.axisForwardX,otherParticipant.axisForwardZ=ofx,ofz
     end
+
     local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
     if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
     -- The captured Passage execution pose is the Axis Return reference frame, not an
-    -- articulation pose which Recovery must reproduce.  Alignment is observed
-    -- later against this captured axis; do not freeze member lateral offsets or
-    -- member headings here as an execution target.
+    -- articulation pose which Recovery must reproduce. Alignment is observed
+    -- later against the stable Passage axis. Execution validity uses the current
+    -- Observation-owned realised Transit configuration geometry before motion.
     run.guide=guide
     local ok,reason=self:_preflightPassageGuide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
+
     local oldSubject=oldOrigins.subject or {}; local oldOther=oldOrigins.other or {}
-    logInfo("COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=true",
-        tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),subjectPose and subjectPose.x or 0,subjectPose and subjectPose.z or 0,
+    logInfo("COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=%s executionRevalidated=true",
+        tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),
+        subjectPose and subjectPose.x or 0,subjectPose and subjectPose.z or 0,
         oldSubject.x and string.format("%.2f",oldSubject.x) or "n/a",oldSubject.z and string.format("%.2f",oldSubject.z) or "n/a",
-        otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),otherPose and otherPose.x or 0,otherPose and otherPose.z or 0,
-        oldOther.x and string.format("%.2f",oldOther.x) or "n/a",oldOther.z and string.format("%.2f",oldOther.z) or "n/a")
+        otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),
+        otherPose and otherPose.x or 0,otherPose and otherPose.z or 0,
+        oldOther.x and string.format("%.2f",oldOther.x) or "n/a",oldOther.z and string.format("%.2f",oldOther.z) or "n/a",
+        tostring(geometryUnchanged))
     return true,nil
 end
 
@@ -1115,8 +1229,9 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         local settleOk,settleReason=self:_beginPassageSettling(run,"ENTRY_READY_AT_SELECTION")
         if not settleOk then self.run=nil; return false,settleReason end
     else
-        logInfo("COOPERATIVE_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm",
-            tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1)
+        logInfo("COOPERATIVE_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm captureAcquisitionHorizon=%.2fs",
+            tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,
+            tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1,COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S)
     end
     local arrangement=bridge.passageArrangement or {}
     local excursion=run.passageExcursion or {}
@@ -1176,12 +1291,20 @@ function Control:update(dt)
     end
 
     if run.phase=="PASSAGE_APPROACH" then
-        local longitudinal=self:_passageLongitudinalSeparation(run)
+        local longitudinal,pa,pb=self:_passageLongitudinalSeparation(run)
         if longitudinal==nil then self:_failHeld("PASSAGE_APPROACH_LONGITUDINAL_SEPARATION_UNAVAILABLE"); return end
         local boundary=tonumber(run.passageEntry and run.passageEntry.boundarySeparationM)
         if boundary==nil then self:_failHeld("PASSAGE_ENTRY_BOUNDARY_UNAVAILABLE"); return end
-        if longitudinal<=boundary then
-            local ok,reason=self:_beginPassageSettling(run,"ENTRY_BOUNDARY_REACHED")
+        local captureHorizon=COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S
+        local closingRate=self:_passageApproachClosingRateMps(run,pa,pb)
+        local margin=longitudinal-boundary
+        local timeToBoundary=(closingRate>0.001 and margin>0) and (margin/closingRate) or nil
+        local captureDue=longitudinal<=boundary or (timeToBoundary~=nil and timeToBoundary<=captureHorizon)
+        if captureDue then
+            run.captureClosingRateMps=closingRate
+            run.captureTimeToBoundaryS=timeToBoundary
+            local triggerReason=longitudinal<=boundary and "ENTRY_BOUNDARY_REACHED" or "CAPTURE_ACQUISITION_HORIZON_REACHED"
+            local ok,reason=self:_beginPassageSettling(run,triggerReason)
             if not ok then self:_failHeld(reason) end
         end
     elseif run.phase=="SETTLING" then

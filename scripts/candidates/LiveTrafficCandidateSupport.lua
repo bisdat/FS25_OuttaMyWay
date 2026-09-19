@@ -226,6 +226,63 @@ local function forwardIntersectionRecord(picture)
     return actionable[1],nil
 end
 
+local function sharedCornerSituations(picture)
+    local result={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        local corner=knowledge.cornerKnowledge or {}
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(corner.sharedCornerSituations or {}) do
+            if situation.competingDemand==true and type(situation.identity)=="string"
+                and type(situation.cornerKey)=="string" then
+                result[#result+1]=situation
+            end
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
+local function sharedCornerSituation(picture,identity)
+    local matches=sharedCornerSituations(picture)
+    if identity~=nil then
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(matches) do
+            if situation.identity==identity then return situation,nil end
+        end
+        return nil,"SHARED_CORNER_SITUATION_NOT_FOUND"
+    end
+    if #matches==0 then return nil,nil end
+    if #matches>1 then return nil,"MULTIPLE_SHARED_CORNER_SITUATIONS" end
+    return matches[1],nil
+end
+
+local function cornerParticipantByAssembly(situation,assemblyId)
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
+        if participant.assemblyId==assemblyId then return participant end
+    end
+end
+
+local function cornerActionItem(situation,regulated,protected)
+    local relation={
+        identity=situation.identity,operationId=situation.operationId,
+        classification="SHARED_CORNER_COMPETING_DEMAND",relationshipStatus="POSITIVE",
+        subjectAssemblyId=regulated.assemblyId,otherAssemblyId=protected.assemblyId,
+        subjectReferenceKey=regulated.assemblyReferenceKey,otherReferenceKey=protected.assemblyReferenceKey,
+        cooperativePassageEligible=false,cornerKey=situation.cornerKey,
+        fieldWorldReferenceKey=situation.fieldWorldReferenceKey
+    }
+    local action={
+        status="REGULATE_SUPPORTED",supported=true,admissionKind="CORNER_RIGHT_OF_WAY",
+        regulatedAssemblyId=regulated.assemblyId,regulatedReferenceKey=regulated.assemblyReferenceKey,
+        protectedAssemblyId=protected.assemblyId,protectedReferenceKey=protected.assemblyReferenceKey,
+        regulationSpeedKmh=situation.regulationSpeedKmh,nativeUnrestrictedKmh=situation.regulationSpeedKmh,
+        governingPurpose="PRESERVE_SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY",
+        reason="SHARED_CORNER_COMPETING_DEMAND_REQUIRES_TEMPORARY_RIGHT_OF_WAY_ALLOCATION",
+        roleBasis="DECISION_ALLOCATED_SHARED_CORNER_RIGHT_OF_WAY",
+        cornerKey=situation.cornerKey
+    }
+    return {relation=relation,action=action,cornerSituation=situation,
+        regulatedParticipant=regulated,protectedParticipant=protected}
+end
+
 local function actionSpaceExistingCommitmentForRequirement(pictureValues,requirement)
     local contexts=pictureValues.commitmentContext or {}
     local match=nil
@@ -252,18 +309,26 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
     local relation=item.relation
     local action=item.action
     local representationId="action-space-regulation:"..tostring(relation.identity)..":"..tostring(pictureId)
+    if action.admissionKind=="CORNER_RIGHT_OF_WAY" then
+        representationId=representationId..":"..tostring(action.regulatedAssemblyId)
+    end
     values.representationFitness=values.representationFitness or {}
     values.representationFitness[#values.representationFitness+1]={
         representationId=representationId,
         assemblyId=action.regulatedAssemblyId,
-        question=action.admissionKind=="FORWARD_INTERSECTION" and "FORWARD_INTERSECTION_TEMPORAL_REGULATION" or "ACTION_SPACE_REGULATION",
-        assessmentHorizon=action.admissionKind=="FORWARD_INTERSECTION" and "CURRENT_POSITIVELY_SUPPORTED_FIELD_BOUNDED_FORWARD_CONTINUATIONS" or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE"),
+        question=action.admissionKind=="FORWARD_INTERSECTION" and "FORWARD_INTERSECTION_TEMPORAL_REGULATION"
+            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),
+        assessmentHorizon=action.admissionKind=="FORWARD_INTERSECTION" and "CURRENT_POSITIVELY_SUPPORTED_FIELD_BOUNDED_FORWARD_CONTINUATIONS"
+            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "CURRENT_SHARED_CORNER_ENGAGEMENT_AND_APPROACH_DEMAND"
+            or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE")),
         state="USABLE_WITH_UNCERTAINTY",
         claimPermissions={"REGULATE_SPEED_TO_PRESERVE_LOCAL_PASSAGE_ACTION_SPACE","ESCALATE_REALIZED_INSUFFICIENT_REGULATION_TO_ZERO_SPEED_HOLD"},
         coverage={complete=false,conservative=false},
         uncertainty={"RELATIONSHIP_MAY_CHANGE_BEFORE_PASSAGE_SUPPORT","NO_EVENTUAL_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","REGULATION_RATE_IS_IMPLEMENTATION_CALIBRATION"},
-        validityDependencies=action.admissionKind=="FORWARD_INTERSECTION" and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","POSITIVE_FORWARD_INTERSECTION","POSITIVE_PROGRESS_RATES"} or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"},
-        provenance={source=action.admissionKind=="FORWARD_INTERSECTION" and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
+        validityDependencies=action.admissionKind=="FORWARD_INTERSECTION" and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","POSITIVE_FORWARD_INTERSECTION","POSITIVE_PROGRESS_RATES"}
+            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and {"POSITIVE_STRUCTURAL_CORNER_FEATURE","CURRENT_CORNER_ENGAGEMENT_OR_APPROACH_DEMAND","SHARED_CORNER_COMPETING_DEMAND"}
+            or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"}),
+        provenance={source=(action.admissionKind=="FORWARD_INTERSECTION" or action.admissionKind=="CORNER_RIGHT_OF_WAY") and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
     }
     return representationId
 end
@@ -272,6 +337,8 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local relation=item.relation
     local action=item.action
     local forward=action.admissionKind=="FORWARD_INTERSECTION"
+    local corner=action.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local fixed=forward or corner
     local constraints={}
     for _,id in ipairs(mandatory) do constraints[id]=actionSpaceRegulationPacket("Action-Space Regulation constraint",{conflictIdentity=relation.identity,relationshipClassification=relation.classification}) end
     constraints.FIELD_WORLD_CONTAINMENT=actionSpaceRegulationPacket(
@@ -281,7 +348,9 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         "No displacement transition is commanded; Regulation only bounds one participant's GIANTS-native progression while the active opposed relationship retains passage Action Space",
         {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,routeAuthority=false,admissionKind=action.admissionKind})
     constraints.REPRESENTATION_FITNESS=actionSpaceRegulationPacket(
-        forward and "Situation positively supports one Forward Intersection within both Field-World-bounded continuations and positive timing evidence" or "Situation positively supports an active opposed relationship, current physical corridor coupling, positive closure and bounded local-passage proximity",
+        forward and "Situation positively supports one Forward Intersection within both Field-World-bounded continuations and positive timing evidence"
+            or (corner and "Situation positively supports one Structural Corner Feature with current competing participant demand; Candidate Support enumerates both temporary right-of-way allocations without choosing one"
+            or "Situation positively supports an active opposed relationship, current physical corridor coupling, positive closure and bounded local-passage proximity"),
         {currentCorridorOverlap=action.currentCorridorOverlap,separationM=action.separationM,maxSeparationM=action.maxSeparationM,negativeClearanceAuthority=false,admissionKind=action.admissionKind})
     constraints.CONTROL_CAPABILITY_AVAILABILITY=actionSpaceRegulationPacket(
         "The production Regulation lease can express the Bounded-Authority-owned Resolution-Space Progression Envelope while GIANTS retains route, steering and direction; a zero integer cap is Hold as the terminal magnitude of the same envelope",
@@ -290,7 +359,9 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         "The protected participant remains GIANTS-native; an active pre-productive entrant is protected as unresolved native intent rather than folded/repositioned. Only the current Operation member selected by Situation is temporarily regulated, and that actuation role may migrate under the same unresolved obligation when Situation changes",
         {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,roleBasis=action.roleBasis,roleAssignmentMutable=true,protectedProductiveCommencementPending=(action.protectedAssemblyId==relation.subjectAssemblyId and relation.subjectProductiveCommencementPending==true) or (action.protectedAssemblyId==relation.otherAssemblyId and relation.otherProductiveCommencementPending==true)})
     constraints.PROGRESS_PRESERVATION=actionSpaceRegulationPacket(
-        forward and "Fixed 1 km/h Intent-Revelation Creep maximises practical revelation time while fresh Situation owns prompt release" or "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Bounded Authority owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression",
+        forward and "Fixed 1 km/h Intent-Revelation Creep maximises practical revelation time while fresh Situation owns prompt release"
+            or (corner and "Fixed 1 km/h Intent-Revelation Creep preserves the Decision-allocated temporary Corner right-of-way while GIANTS retains route, steering and direction"
+            or "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Bounded Authority owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression"),
         {nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,progressionEnvelope="ZERO_TERMINAL_POLICY_TRAJECTORY",reverseCreatedReserveSpendable=false,reposition=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=actionSpaceRegulationPacket(
         "The bounded Regulation and any later Established-conflict Passage share one pair-scoped conflict governing requirement",
@@ -316,12 +387,19 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
         entries={{assemblyId=action.regulatedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
     }
+    local referenceKey=(forward and "forward-intersection-regulation:" or "action-space-regulation:")..tostring(relation.identity)
+    local purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
+        or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}
+    if corner then
+        referenceKey="corner-right-of-way-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
+        purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
+    end
     return {
-        referenceKey=(forward and "forward-intersection-regulation:" or "action-space-regulation:")..tostring(relation.identity),
-        purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"} or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"},
+        referenceKey=referenceKey,
+        purpose=purpose,
         subject={assemblyId=action.regulatedAssemblyId,assemblyIds={action.regulatedAssemblyId}},capability="REGULATE_SPEED",
         expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,
-            elasticProgressionEnvelope=not forward,fixedIntentRevelationCreep=forward,zeroSpeedHoldExpression=not forward},
+            elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=fixed,zeroSpeedHoldExpression=not fixed},
         evidenceBasis={
             constraintEvidence=constraints,
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
@@ -329,17 +407,23 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             progressActuationOwnership={assemblyIds={action.regulatedAssemblyId}},effectiveActuationComposition=composition,
             trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
                 CONTINUE_OBSERVATION={result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,capability="CONTINUE_OBSERVATION",
-                    reason="The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope",
+                    reason=corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
+                        or "The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope",
                     evidence={actionSpaceConservation=action},provenance={source="LiveTrafficCandidateSupport",authority="ACTION_SPACE_REGULATION_OBSERVE_EXHAUSTION"}}
-            }},
+            },cornerRightOfWay=corner and {
+                sharedCornerIdentity=relation.identity,cornerKey=action.cornerKey,
+                regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
+                regulatedParticipant=item.regulatedParticipant,protectedParticipant=item.protectedParticipant
+            } or nil},
             actionSpaceRegulationBridge={
                 action="APPLY",architecture="ACTION_SPACE_REGULATION",conflictIdentity=relation.identity,operationId=relation.operationId,
                 governingRequirementKey=governingRequirementKey,existingCommitmentId=existingCommitmentId,
                 regulatedAssemblyId=action.regulatedAssemblyId,regulatedReferenceKey=action.regulatedReferenceKey,
                 protectedAssemblyId=protectedAssemblyId,protectedReferenceKey=protectedReferenceKey,
                 excursionAssemblyId=action.excursionAssemblyId,excursionReferenceKey=action.excursionReferenceKey,admissionKind=action.admissionKind,
+                cornerKey=action.cornerKey,
                 nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,
-                fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh,
+                fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh or action.regulationSpeedKmh,
                 nativeClosureContributionKmh=action.nativeClosureContributionKmh,nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,nativeMoveForwards=action.nativeMoveForwards,
                 governingPurpose=action.governingPurpose,separationM=action.separationM,actionSpaceReason=action.reason,
                 cooperativePassageEligible=relation.cooperativePassageEligible~=false,
@@ -352,11 +436,11 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         invalidationConditions={{kind="POSITIVE_RELATIONSHIP_DISSOLUTION"},{kind="COOPERATIVE_PASSAGE_SUCCESSION"},{kind="JOB_EPISODE_CHANGE"}},
         reversibility={physicalEffect=true,releaseOnPurposeExpiry=true},
         obligationsCreated={{
-            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or "ACTION_SPACE_REGULATION",conflictIdentity=relation.identity},
-            basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION" or "ACTION_SPACE_REGULATION",conflictIdentity=relation.identity,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
-            requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",conflictIdentity=relation.identity},
+            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),conflictIdentity=relation.identity},
+            basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
+            requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES" or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"),conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
-            evidenceContract={kind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED" or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION",absenceDoesNotRetire=not forward},
+            evidenceContract={kind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED" or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION" or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"),absenceDoesNotRetire=not forward and not corner},
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
@@ -718,6 +802,43 @@ local function projectedOpposedRelation(picture,relationshipIdentity)
     return nil
 end
 
+local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targetPictureId,situation)
+    local participants={}
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
+        if type(participant.assemblyId)=="string" and type(participant.assemblyReferenceKey)=="string" then
+            participants[#participants+1]=participant
+        end
+    end
+    table.sort(participants,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    if #participants~=2 then return nil,"SHARED_CORNER_RIGHT_OF_WAY_REQUIRES_EXACTLY_TWO_CURRENT_PARTICIPANTS" end
+
+    local requirement="corner-right-of-way:"..tostring(situation.identity)
+    local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
+    if existingReason~=nil then return nil,existingReason end
+    local baseline=#(values.representationFitness or {})
+    local specifications={}
+    for index=1,2 do
+        local regulated=participants[index]
+        local protected=participants[index==1 and 2 or 1]
+        local item=cornerActionItem(situation,regulated,protected)
+        local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
+        specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
+            targetPictureId,values,item,requirement,existing,representationId)
+    end
+    logInfo("CORNER_RIGHT_OF_WAY_CANDIDATES_SUPPORTED situation=%s corner=%s participants=%s/%s targetPicture=%s decisionAllocation=true",
+        tostring(situation.identity),tostring(situation.cornerKey),tostring(participants[1].assemblyId),
+        tostring(participants[2].assemblyId),tostring(targetPictureId))
+    return {
+        supportBoundary={mode="CORNER_RIGHT_OF_WAY",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,
+            controlAuthority="FIXED_INTENT_REVELATION_CREEP",boundedScope="CURRENT_SHARED_STRUCTURAL_CORNER_COMPETING_DEMAND",
+            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        candidateSpecifications=specifications,
+        representationFitness=projectedFitnessAdditions(values,baseline),
+        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,
+            targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="CORNER_RIGHT_OF_WAY_CANDIDATE_SUPPORT"}
+    },nil
+end
+
 local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
     local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "cooperative-passage:")..tostring(item.relation.identity)
     local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
@@ -767,6 +888,12 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
             representationFitness=projectedFitnessAdditions(values,baseline),
             provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="FOLLOWER_BOUNDARY"}
         },nil
+    end
+
+    if projection.kind=="CORNER_RIGHT_OF_WAY" then
+        local situation,reason=sharedCornerSituation(picture,projection.sharedCornerIdentity)
+        if situation==nil then return nil,reason or "NO_SHARED_CORNER_COMPETING_DEMAND" end
+        return projectedCornerRightOfWayGroup(self,picture,snapshot,values,targetPictureId,situation)
     end
 
     if projection.kind=="FORWARD_INTERSECTION" then

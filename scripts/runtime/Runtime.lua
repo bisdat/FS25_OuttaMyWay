@@ -55,7 +55,8 @@ local function ownershipAssemblyIds(candidate)
 end
 local function actionSpaceRelation(picture,current)
     if current==nil then return nil end
-    local conflictIdentity=current.provenance and current.provenance.conflictIdentity or nil
+    local provenance=current.provenance or {}
+    local conflictIdentity=provenance.conflictIdentity
     if conflictIdentity==nil then return nil end
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
         if relation.identity==conflictIdentity then return relation end
@@ -63,6 +64,25 @@ local function actionSpaceRelation(picture,current)
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
         for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
             if relation.identity==conflictIdentity then return relation end
+        end
+        local corner=knowledge.cornerKnowledge or {}
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(corner.sharedCornerSituations or {}) do
+            if situation.identity==conflictIdentity then return situation end
+        end
+        if provenance.admissionKind=="CORNER_RIGHT_OF_WAY" and type(provenance.cornerKey)=="string" then
+            local featureCurrent=false
+            for _,entry in OuttaMyWay.ValueRecord.ipairs(corner.atlasEntries or {}) do
+                if entry.cornerKey==provenance.cornerKey then featureCurrent=true break end
+            end
+            if featureCurrent then
+                return {
+                    identity=conflictIdentity,cornerKey=provenance.cornerKey,
+                    classification="SHARED_CORNER_COMPETING_DEMAND_DISSOLVED",
+                    relationshipStatus="NEGATIVE",positiveDissolution=true,
+                    reason="CURRENT_STRUCTURAL_CORNER_REMAINS_KNOWN_WITHOUT_SHARED_COMPETING_DEMAND",
+                    provenance={source="Runtime.actionSpaceRelation",derivedFrom="CURRENT_CORNER_SITUATION"}
+                }
+            end
         end
     end
     return nil
@@ -355,6 +375,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local conflictIdentity=current and current.provenance and current.provenance.conflictIdentity or nil
     if type(commitmentId)~="string" or type(conflictIdentity)~="string" then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",actionSpaceRegulation=true} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     if forward
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION" then
@@ -367,17 +388,28 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             commitmentId=commitmentId
         }
     end
+    if corner and assessment.terminationEvidenceKind~="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION" then
+        return {
+            status="NO_DISPATCH",
+            reason="CORNER_RIGHT_OF_WAY_TERMINATION_EVIDENCE_REQUIRED",
+            detail=assessment.reason,
+            actionSpaceRegulation=true,
+            cornerRightOfWay=true,
+            commitmentId=commitmentId
+        }
+    end
     local status=self.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,assessment.reason)
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        local settlementKind=forward and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY"
+        local settlementKind=forward and assessment.terminationEvidenceKind
+            or (corner and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY")
         OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,
             conflictIdentity=conflictIdentity,
-            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION",
+            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION" or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
         })
     end
@@ -643,7 +675,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
     if dispatch.status=="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=nil,nil
-        if self.responsibilityTransitionAuthority:matchesActionSpacePassage(evaluated) then
+        if self.responsibilityTransitionAuthority:matchesActionSpacePassage(picture,evaluated) then
             applied,reason=self.responsibilityTransitionAuthority:replaceActionSpaceRegulationWithCooperativePassage(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.regulationBoundedAuthority)
         elseif self.responsibilityTransitionAuthority:matchesFollowerPassage(picture,evaluated) then

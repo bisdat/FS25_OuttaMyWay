@@ -165,9 +165,11 @@ The overlay may influence whether temporal coordination is justified, which part
 
 Constrained-space occupancy creates an **evacuation preference**. Preserve the occupant's native opportunity to reveal intent and vacate; regulate a relevant worker in less-constrained space where necessary. Do not immobilise the party that must move to free scarce space when another can cheaply wait outside it.
 
+For Category-1 Corner competition, positive current Corner Occupancy is **arrival now**. The occupant receives temporary right-of-way over a competing non-occupant so it can create or clear scarce space.
+
 #### Neither worker inside, both approaching
 
-Choose the provisional allocation that preserves more Resolution Margin and intent-revelation time. Do not reduce this to in-field position, agronomy, leader/follower identity or nearest-to-corner priority.
+For Category-1 Corner competition, use **Corner Arrival Priority**: compare the participants' current supported time-to-Corner under unrestricted/native progression opportunity, protect the earlier arrival and regulate the later arrival. This is temporal ordering, not geometric nearest-to-corner distance. Corner Engagement age, agronomy and leader/follower identity are not priority evidence.
 
 #### Both workers inside Category 1
 
@@ -209,7 +211,9 @@ Distinct Corner Features remain distinct even when their operational demand regi
 
 **Corner Approach Demand** is unilateral assembly-to-Corner Situation meaning that the assembly's currently evidenced bounded spatial demand is progressing into a known Corner Feature. Proximity alone is insufficient. The conclusion must be grounded in current supported demand and MUST NOT be manufactured by indefinitely extending a heading or reconstructing a future GIANTS route until it eventually reaches the Corner.
 
-**Corner Admission** occurs when Corner Existence and Corner Approach Demand are both positive for that assembly. Headland Association is informative but is not an admission gate. No second assembly, pairwise Forward Intersection, shared terminating vertex, `TURNING` state, reverse manoeuvre or current physical Corner occupancy is required.
+**Corner Occupancy** is positive current Physical-Assembly evidence that the assembly already consumes a known Corner Feature. It is stronger temporal evidence than approach because the constrained space is already occupied. Absence of a positive occupancy witness is not negative-clearance authority.
+
+**Corner Admission** occurs when Corner Existence and either Corner Approach Demand or positive current Corner Occupancy are established for that assembly. Headland Association is informative but is not an admission gate. No second assembly, pairwise Forward Intersection, shared terminating vertex, `TURNING` state or reverse manoeuvre is required.
 
 > **Evidence Completeness != Evidence Sufficiency**
 
@@ -235,7 +239,7 @@ Working width, physical dimensions and assembly length MUST NOT be collapsed int
 
 > **Working Width != Corner Manoeuvring Demand**
 
-When multiple assemblies positively demand the same Corner Feature, Situation Assessment publishes the current competing-demand meaning for downstream Decision. Current Corner Engagement, Corner Approach Demand, positive Headland Association, available alternatives, Resolution Margin and current space creation may inform which assembly is made cautious. No one evidence class creates a permanent priority rule.
+When multiple assemblies positively demand the same Corner Feature, Situation Assessment publishes current competing-demand evidence for downstream Decision, including positive current Corner Occupancy and current supported native time-to-Corner where available. Decision applies Corner Arrival Priority: an occupant is protected over a non-occupant; otherwise the earlier supported arrival is protected and the later arrival is made cautious. Engagement establishment time is lifecycle provenance only and MUST NOT be used as right-of-way priority. The allocation remains current Situation ordering rather than permanent vehicle or pair priority.
 
 #### Positive Corner Departure
 
@@ -317,7 +321,7 @@ This is a purpose-bound architectural policy, not a general Regulation tuning pa
 
 Known Corner Features and current Corner Approach Demand/Engagement govern Corner protection; persistence of the discovering pair relationship does not. Forward Intersection may contribute evidence or an initial temporal allocation where supported, but it is neither required for Corner Admission nor authoritative for Corner discharge.
 
-When one assembly is Corner-engaged and another assembly's supported current demand would materially consume the same Corner Feature, spatial policy preserves the engaged assembly's opportunity to create/clear space and makes the cheaper alternative cautious where Regulation is justified. When neither is yet engaged but both have positive Corner Approach Demand, Situation Assessment publishes the competing Corner-demand meaning; downstream Decision allocates temporary right-of-way using current demand, Headland Association, Resolution Margin, available alternatives and intent-revelation value rather than a permanent headland/vehicle-class priority.
+When one assembly currently occupies constrained Corner space and another assembly's supported current demand competes for Corner progress, spatial policy preserves the occupant's opportunity to create/clear space and makes the non-occupant cautious where Regulation is justified. Otherwise Situation Assessment publishes the participants' current supported native time-to-Corner and downstream Decision protects the earlier arrival while regulating the later arrival. Engagement age does not confer priority, and the rule creates no permanent headland/vehicle-class or pair right-of-way.
 
 A relevant assembly lacking positive Headland Association may still demand the Corner. Where its intent is less constrained or remains unresolved, Regulation may be used to buy time for intent revelation rather than pretending negative headland evidence proves safe separation.
 

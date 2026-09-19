@@ -53,6 +53,7 @@ load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
+load("scripts/assessment/StructuralFieldShapeAssessment.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
@@ -738,6 +739,38 @@ test("Bounded Authority accepts Candidate-supplied composition identity without 
     equal(runtime.boundedAuthority:validateRequest(request,current.identity),true)
 end)
 
+test("Corner Right-of-Way initial Regulation applies fixed creep without Resolution-Space envelope",function()
+    local runtime,commitment,token,current=boundedAuthorityRegulationFixture({
+        responsibilityKey="corner-right-of-way:shared-corner:test",
+        conflictIdentity="shared-corner:test",
+        assemblyId="AS-BA-A"
+    })
+    local dispatcher=runtime.regulationBoundedAuthority
+    runtime:setRegulationControl({executeControlRequest=function(self,request,candidate)
+        equal(request.target.ownerTag,"CORNER_RIGHT_OF_WAY")
+        equal(request.target.maxSpeedKmh,1.0)
+        return true,"ACCEPTED"
+    end})
+    local candidate=boundedAuthorityCandidate("CA-CORNER-INITIAL")
+    local bridge=actionSpaceBridge({
+        conflictIdentity="shared-corner:test",
+        regulatedAssemblyId="AS-BA-A",regulatedReferenceKey="ref:ba-a",
+        protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b"
+    })
+    bridge.admissionKind="CORNER_RIGHT_OF_WAY"
+    bridge.fixedRegulationSpeedKmh=1.0
+    bridge.separationM=nil
+    bridge.nativeUnrestrictedKmh=nil
+    local result=dispatcher:_continueActionSpaceRegulationInitial({epoch=220},boundedAuthorityEvaluated(candidate),candidate,bridge,{
+        commitment=commitment,authorityToken=token,authorityAcquired=true,currentResponsibility=current
+    })
+    equal(result.status,"ACCEPTED")
+    equal(result.cornerRightOfWay,true)
+    equal(dispatcher.actionSpaceRegulationLease.currentCapKmh,1.0)
+    equal(dispatcher.actionSpaceRegulationLease.progressionEnvelope,nil)
+    equal(dispatcher.actionSpaceRegulationLease.fixedCornerRightOfWay,true)
+end)
+
 test("Rejected fresh Bounded Authority grant is released before return",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
     local dispatcher=runtime.regulationBoundedAuthority
@@ -898,6 +931,77 @@ test("Traffic Policeman Regulation requires explicit Observe exhaustion from the
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
     equal(result.decision.selectedCandidateId,result.candidates[1].identity)
     equal(result.decision.comparisonBasis.rankedCandidates[1].preferenceRank,2)
+end)
+
+local function cornerPolicyCandidate(name,regulatedId,protectedId,protectedParticipant,requirement,representationId)
+    local candidate=candidateSpec(name,"REGULATE_SPEED",0,regulatedId)
+    local metadata=trafficPreference(candidate,requirement)
+    metadata.exhaustionEvidence.CONTINUE_OBSERVATION=bandExhaustion("OP-DECISION",requirement,"CONTINUE_OBSERVATION")
+    metadata.cornerRightOfWay={
+        sharedCornerIdentity="shared-corner:test",cornerKey="corner:test",
+        regulatedAssemblyId=regulatedId,protectedAssemblyId=protectedId,
+        regulatedParticipant={assemblyId=regulatedId},
+        protectedParticipant=protectedParticipant
+    }
+    candidate.representationFitness={requirements={{representationId=representationId,acceptedStates={"CURRENTLY_FIT"}}}}
+    candidate.evidenceBasis.effectiveActuationComposition={
+        identity="EC-"..name,epoch=1,relevantAssemblyIds={regulatedId,protectedId},
+        entries={{assemblyId=regulatedId,commitmentId="CM-"..name,capability="REGULATE_SPEED",progressActuation=true}}
+    }
+    return candidate
+end
+
+local function cornerPolicyPicture(candidates,requirement)
+    local fitness={}
+    for _,candidate in ipairs(candidates) do
+        local representation=candidate.representationFitness.requirements[1]
+        fitness[#fitness+1]={
+            representationId=representation.representationId,assemblyId=candidate.subject.assemblyId,
+            question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},
+            coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}
+        }
+    end
+    return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
+end
+
+test("Corner Right-of-Way protects current constrained Corner occupant rather than earlier Engagement",function()
+    local requirement="corner-right-of-way:shared-corner:test"
+    local protectA=cornerPolicyCandidate("corner-protect-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",engagement=true,establishedObservationEpoch=100,
+        currentConstrainedCornerOccupancy=true,timeToCornerSec=20
+    },requirement,"REP-CORNER-A")
+    local protectB=cornerPolicyCandidate("corner-protect-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",engagement=true,establishedObservationEpoch=1,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=5
+    },requirement,"REP-CORNER-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do
+        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_CURRENT_CONSTRAINED_CORNER_OCCUPANT")
+end)
+
+test("Corner Right-of-Way protects earlier native arrival regardless of Engagement age",function()
+    local requirement="corner-right-of-way:shared-corner:test"
+    local protectA=cornerPolicyCandidate("corner-arrival-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",engagement=true,establishedObservationEpoch=100,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=8
+    },requirement,"REP-CORNER-ARRIVAL-A")
+    local protectB=cornerPolicyCandidate("corner-arrival-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",engagement=true,establishedObservationEpoch=1,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=12
+    },requirement,"REP-CORNER-ARRIVAL-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do
+        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_EARLIER_CURRENT_CORNER_ARRIVAL")
 end)
 
 test("Traffic Policeman exhaustion evidence cannot be reused from an older Operational Picture",function()
@@ -1235,6 +1339,23 @@ test("live source admits GIANTS Job identities from activeJobVehicles",function(
     end)
 end)
 
+
+test("live Field World handoff preserves canonical geometry into Structural Field Shape",function()
+    withFakeLiveGlobals(function(mission)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        if type(raw.fieldWorld.canonicalRootRing)~="string" then error("live Field World omitted canonical root ring") end
+        equal(OuttaMyWay.ValueRecord.length(raw.fieldWorld.canonicalRootVertices),4)
+        equal(OuttaMyWay.ValueRecord.length(raw.fieldWorld.canonicalIslandRings),0)
+
+        local processed=runtime:processSealedObservation(raw)
+        equal(OuttaMyWay.ValueRecord.length(processed.operation.activeOperationIds),1)
+        equal(OuttaMyWay.ValueRecord.length(processed.picture.spatialConstraintKnowledge),1)
+        local cornerKnowledge=processed.picture.spatialConstraintKnowledge[1].cornerKnowledge
+        equal(cornerKnowledge.status,"POSITIVE_STRUCTURAL_FIELD_SHAPE_SUPPORTED")
+        equal(OuttaMyWay.ValueRecord.length(cornerKnowledge.atlasEntries),4)
+    end)
+end)
 
 test("Operation participation waits for latched productive Job-Episode commencement and survives later turns",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions,strategies)
@@ -3818,6 +3939,116 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     equal(requests[#requests].target.operation,"RELEASE"); equal(type(responsibilityId),"string")
 end)
 
+test("Forward Intersection Regulation same-pair Passage replaces responsibility across Situation identities",function()
+    local runtime=autonomousHeadOnRuntime(); local regulationRequests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local initial=forwardIntersectionPicture(true)
+    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(admitted.forwardIntersection,true)
+    local commitmentId=admitted.commitment.identity
+    local predecessorResponsibilityId=admitted.currentResponsibility.identity
+    local predecessorConflictId=admitted.currentResponsibility.provenance.conflictIdentity
+    local predecessorObligation=runtime.obligations:openForOwner(commitmentId)[1]
+    equal(predecessorObligation.basis.kind,"FORWARD_INTERSECTION_INTENT_REVELATION")
+
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
+    values.identity="OP-FORWARD-INTERSECTION-PASSAGE-SUCCESSION"; values.epoch=794
+    values.commitmentContext={{commitmentId=commitmentId}}
+    passagePicture=OuttaMyWay.OperationalPicture.new(values)
+
+    local accepted=nil
+    local cooperativeControl={}
+    function cooperativeControl:setCompletionHandler(fn) end
+    function cooperativeControl:isActive() return false end
+    function cooperativeControl:executeJointRequests(a,b,candidate)
+        equal(#regulationRequests,2)
+        equal(regulationRequests[2].target.operation,"RELEASE")
+        equal(runtime.obligations:get(predecessorObligation.identity).status,"SETTLED")
+        accepted={a,b,candidate}
+        return true,"COOPERATIVE_PASSAGE_STARTED"
+    end
+    runtime:setCooperativePassageControl(cooperativeControl)
+
+    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    local passageCandidate=passageSupported.candidateSupportEvidence.candidateSpecifications[1]
+    local passageBridge=passageCandidate.evidenceBasis.cooperativePassageBridge
+    equal(passageBridge.conflictIdentity~=predecessorConflictId,true)
+    local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
+    equal(passageEval.decision.commitmentAction,"REVISE")
+
+    local dispatched=runtime:dispatchEvaluatedOperationalPicture(passageSupported,passageEval)
+    equal(dispatched.status,"ACCEPTED")
+    equal(dispatched.commitment.identity,commitmentId)
+    equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(dispatched.currentResponsibility.identity~=predecessorResponsibilityId,true)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
+    equal(runtime.obligations:get(predecessorObligation.identity).status,"SETTLED")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
+    equal(string.sub(runtime.commitments:get(commitmentId).governingBasis.responsibilityKey,1,20),"cooperative-passage:")
+    equal(#accepted,3)
+end)
+
+test("Forward Intersection fixed creep role migration does not require a Resolution-Space envelope",function()
+    local runtime=autonomousHeadOnRuntime(); local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local initial=forwardIntersectionPicture(true)
+    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.status,"ACCEPTED")
+    local commitmentId=admitted.commitment.identity
+    local responsibilityId=admitted.currentResponsibility.identity
+    local status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
+    equal(status.currentCapKmh,1)
+    equal(status.regulatedReferenceKey,"vehicle-root:201")
+    equal(status.remainingOrdinaryM,nil)
+
+    local values=OuttaMyWay.ValueRecord.toTable(initial)
+    values.identity="OP-FORWARD-INTERSECTION-ROLE-MIGRATION"; values.epoch=793
+    values.commitmentContext={{commitmentId=commitmentId,governingBasis={responsibilityKey="forward-intersection-regulation:forward-intersection:OR-1:AS-A:AS-B"}}}
+    local relation=values.spatialConstraintKnowledge[1].pairRelationships[1]
+    relation.temporalYielderAssemblyId="AS-A"; relation.temporalYielderReferenceKey="vehicle-root:101"
+    relation.continuingAssemblyId="AS-B"; relation.continuingReferenceKey="vehicle-root:201"
+    relation.actionSpaceConservation.regulatedAssemblyId="AS-A"
+    relation.actionSpaceConservation.regulatedReferenceKey="vehicle-root:101"
+    relation.actionSpaceConservation.protectedAssemblyId="AS-B"
+    relation.actionSpaceConservation.protectedReferenceKey="vehicle-root:201"
+    local changed=OuttaMyWay.OperationalPicture.new(values)
+    local changedSupported=runtime.liveTrafficCandidateSupport:attach(changed,headOnTestSnapshot())
+    local changedEval=runtime:evaluateSealedOperationalPicture(changedSupported)
+    equal(changedEval.decision.commitmentAction,"MAINTAIN")
+    local migrated=runtime:dispatchEvaluatedOperationalPicture(changedSupported,changedEval)
+    equal(migrated.status,"ROLE_MIGRATED")
+    equal(migrated.forwardIntersection,true)
+    equal(migrated.currentResponsibility.identity,responsibilityId)
+    equal(migrated.commitmentId,commitmentId)
+
+    status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
+    equal(status.active,true)
+    equal(status.currentCapKmh,1)
+    equal(status.regulatedReferenceKey,"vehicle-root:101")
+    equal(status.remainingOrdinaryM,nil)
+    equal(status.roleMigrationCount,1)
+    equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
+    equal(runtime.authorities:ownerOf("AS-B"),nil)
+    equal(#requests,3)
+    equal(requests[1].target.operation,"APPLY"); equal(requests[1].target.vehicleReferenceKey,"vehicle-root:201")
+    equal(requests[2].target.operation,"APPLY"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:101"); equal(requests[2].target.maxSpeedKmh,1)
+    equal(requests[3].target.operation,"RELEASE"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
+end)
+
 test("Pre-productive intent relevance crosses Candidate as Regulation only and cannot become Cooperative Passage",function()
     local runtime=autonomousHeadOnRuntime()
     local values=OuttaMyWay.ValueRecord.toTable(actionSpaceRegulationPicture())
@@ -5327,7 +5558,7 @@ test("Direct Cooperative Passage failure removes semantic Resolution Commitment"
 end)
 
 
-test("Cooperative Passage: Passage Approach stays native until Entry Boundary then begins settling",function()
+test("Cooperative Passage: Passage Approach with no positive closing stays native until Entry Boundary then begins settling",function()
     local vehicleA={rootNode=1201,lastSpeedReal=0,job={token="JOB-A"}}
     local vehicleB={rootNode=1202,lastSpeedReal=0,job={token="JOB-B"}}
     function vehicleA:getAISteeringNode() return self.rootNode end
@@ -5367,11 +5598,58 @@ test("Cooperative Passage: Passage Approach stays native until Entry Boundary th
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
 end)
 
+test("Cooperative Passage: positive current closing starts capture before Entry Boundary when acquisition horizon is reached",function()
+    local vehicleA={rootNode=1211,lastSpeedReal=25/3600,movingDirection=1,job={token="JOB-A"}}
+    local vehicleB={rootNode=1212,lastSpeedReal=25/3600,movingDirection=1,job={token="JOB-B"}}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1211]={0,0,0},[1212]={0,0,30}}
+    local directions={[1211]={0,1},[1212]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldCurrentJob,oldJobToken=OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.currentJob=function(vehicle) return vehicle.job end
+    OuttaMyWay.LiveAIJobEvidence.jobToken=function(job) return job and job.token end
+    local holds=0
+    local donor={
+        holdMechanism={setHold=function() holds=holds+1; return true end,release=function() return true end,getCallCount=function() return 1 end},
+        driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationMechanism={getState=function() return nil end,getEvidence=function() return {allDeployed=true,allFolded=false} end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-TIME-AWARE-CAPTURE",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
+        passageEntry={boundarySeparationM=20},thirdPartyConstraints={},failureReason=nil,
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",startJobToken="JOB-A",startForwardX=0,startForwardZ=1},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",startJobToken="JOB-B",startForwardX=0,startForwardZ=-1},
+        participants={}
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local oldTime=g_time; g_time=1000
+    control:update(16)
+    equal(control.run.phase,"SETTLING"); equal(holds,2)
+    equal(control.run.captureClosingRateMps>13,true)
+    equal(control.run.captureTimeToBoundaryS<1,true)
+    equal(control.run.captureTimeToBoundaryS>0,true)
+    g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
+end)
+
+local function realisedTransitTestRepresentation(referenceKey,jobToken,profileId,envelope,x,z)
+    return {
+        assemblyReferenceKey=referenceKey,sourceJobToken=jobToken,configurationProfileId=profileId,
+        directionalPassageEnvelope=envelope,
+        worldPrimitives={{identity=profileId..":disc",kind="DISC",x=x,z=z,radius=0.5,positiveConflictSupport=true}}
+    }
+end
+
 test("Cooperative Passage: execution-origin capture rebases short Development ahead of stopped participants",function()
     local vehicleA={rootNode=1301}; local vehicleB={rootNode=1302}
     function vehicleA:getAISteeringNode() return self.rootNode end
     function vehicleB:getAISteeringNode() return self.rootNode end
-    local positions={[1301]={0,0,3},[1302]={0,0,17}}
+    local positions={[1301]={0,0,3},[1302]={4,0,17}}
     local directions={[1301]={0,1},[1302]={0,-1}}
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
@@ -5379,18 +5657,32 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
-    local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
-        return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
-    end}}
+    local testEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local runtime={
+        assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+            return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+        end},
+        liveObservationSource={getTrackedRepresentation=function(self,referenceKey)
+            if referenceKey=="REF-A" then return realisedTransitTestRepresentation("REF-A","JOB-A","REAL-A",testEnvelope,positions[1301][1],positions[1301][3]) end
+            if referenceKey=="REF-B" then return realisedTransitTestRepresentation("REF-B","JOB-B","REAL-B",testEnvelope,positions[1302][1],positions[1302][3]) end
+        end}
+    }
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
-        passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
+        passageArrangement={
+            identity="PA-REBASE",subjectLateralOffsetM=0,otherLateralOffsetM=0,
+            nominalInterAssemblyClearanceM=1,
+            subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
+            subjectDirectionalPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"},
+            otherDirectionalPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+        },
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
         participants={},
-        guide={identity="PG-REBASE",entryOrigins={subject={x=0,z=0},other={x=0,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
-            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-0.5,z=18,radiusM=1}},
-            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=4,radiusM=1},other={assemblyId="AS-B",x=-1,z=16,radiusM=1}}
+        guide={identity="PG-REBASE",entryOrigins={subject={x=0,z=0},other={x=4,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0,z=2,radiusM=1},other={assemblyId="AS-B",x=4,z=18,radiusM=1}},
+            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=0,z=4,radiusM=1},other={assemblyId="AS-B",x=4,z=16,radiusM=1}},
+            {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=8,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=0,z=8,radiusM=1},other={assemblyId="AS-B",x=4,z=12,radiusM=1}}
         }}
     }
     control.run.participants={control.run.a,control.run.b}
@@ -5401,6 +5693,117 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     equal(math.abs(first.other.z-15)<0.0001,true)
     equal(first.subject.z>positions[1301][3],true)
     equal(first.other.z<positions[1302][3],true)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed lateral arrangement before movement",function()
+    local vehicleA={rootNode=1311}; local vehicleB={rootNode=1312}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1311]={0,0,3},[1312]={0.7,0,17}}
+    local directions={[1311]={0,1},[1312]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+    local runtime={
+        assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+            return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+        end},
+        liveObservationSource={getTrackedRepresentation=function(self,referenceKey)
+            if referenceKey=="REF-A" then return realisedTransitTestRepresentation("REF-A","JOB-A","REAL-A",envelope,positions[1311][1],positions[1311][3]) end
+            if referenceKey=="REF-B" then return realisedTransitTestRepresentation("REF-B","JOB-B","REAL-B",envelope,positions[1312][1],positions[1312][3]) end
+        end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE-SIDE-FLIP",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        passageArrangement={
+            identity="PA-REBASE-SIDE-FLIP",relationSign=-1,subjectLateralOffsetM=1,otherLateralOffsetM=-1,
+            nominalInterAssemblyClearanceM=1,policyRequiredSeparationM=3,
+            subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
+            subjectDirectionalPassageEnvelope=envelope,otherDirectionalPassageEnvelope=envelope,
+            subjectConfiguration={configurationProfileId="TRANSIT-A"},otherConfiguration={configurationProfileId="TRANSIT-B"}
+        },
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
+        participants={},
+        guide={identity="PG-REBASE-SIDE-FLIP",entryOrigins={subject={x=0,z=0},other={x=-4,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-4.5,z=18,radiusM=1}},
+            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=4,radiusM=1},other={assemblyId="AS-B",x=-5,z=16,radiusM=1}},
+            {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=8,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=8,radiusM=1},other={assemblyId="AS-B",x=-5,z=12,radiusM=1}}
+        }}
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local ok,reason=control:_rebasePassageGuide(control.run)
+    equal(ok,true); equal(reason,nil)
+    assert(string.find(control.run.guide.identity,"execution-adapted",1,true)~=nil)
+    assert(string.find(control.run.passageArrangement.identity,"execution-adapted",1,true)~=nil)
+    equal(control.run.passageArrangement.relationSign,1)
+    equal(control.run.passageArrangement.subjectLateralOffsetM<0,true)
+    equal(control.run.passageArrangement.otherLateralOffsetM>0,true)
+    local sweepOk,sweepReason=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(
+        control.run.guide,control.run.passageArrangement)
+    equal(sweepOk,true); equal(sweepReason,nil)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("Cooperative Passage: realised Transit configuration geometry can preserve a close captured Passage rejected by prospective Transit base",function()
+    local vehicleA={rootNode=1321}; local vehicleB={rootNode=1322}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1321]={0,0,0},[1322]={0,0,12}}
+    local directions={[1321]={0,1},[1322]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+
+    local prospective={minRightM=-2,maxRightM=2,minForwardM=-4,maxForwardM=4,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
+    local realised={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local runtime={
+        assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+            return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+        end},
+        liveObservationSource={getTrackedRepresentation=function(self,referenceKey)
+            if referenceKey=="REF-A" then return realisedTransitTestRepresentation("REF-A","JOB-A","FOLDED-A",realised,0,0) end
+            if referenceKey=="REF-B" then return realisedTransitTestRepresentation("REF-B","JOB-B","FOLDED-B",realised,0,12) end
+        end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    local arrangement={
+        identity="PA-REALISED-TRANSIT",relationSign=1,subjectLateralOffsetM=2.5,otherLateralOffsetM=-2.5,
+        nominalInterAssemblyClearanceM=1,policyRequiredSeparationM=5,
+        subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
+        subjectDirectionalPassageEnvelope=prospective,otherDirectionalPassageEnvelope=prospective,
+        subjectConfiguration={configurationProfileId="PROSPECTIVE-A"},otherConfiguration={configurationProfileId="PROSPECTIVE-B"}
+    }
+    local guide={identity="PG-REALISED-TRANSIT",entryOrigins={subject={x=0,z=0},other={x=0,z=12}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+        {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2.5,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=1.25,z=2.5,radiusM=1},other={assemblyId="AS-B",x=-1.25,z=9.5,radiusM=1}},
+        {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=5,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=2.5,z=5,radiusM=1},other={assemblyId="AS-B",x=-2.5,z=7,radiusM=1}},
+        {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=7,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=2.5,z=7,radiusM=1},other={assemblyId="AS-B",x=-2.5,z=5,radiusM=1}}
+    }}
+    local staleOk=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(guide,arrangement)
+    equal(staleOk,false)
+
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REALISED-TRANSIT",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        passageArrangement=arrangement,
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
+        participants={},guide=guide
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local ok,reason=control:_rebasePassageGuide(control.run)
+    equal(ok,true); equal(reason,nil)
+    equal(control.run.guide.pairSweepSupport.executionGeometryBasis,"CURRENT_REALISED_TRANSIT_CONFIGURATION")
+    equal(control.run.guide.pairSweepSupport.subjectConfigurationProfileId,"FOLDED-A")
+    equal(control.run.guide.pairSweepSupport.otherConfigurationProfileId,"FOLDED-B")
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
@@ -6102,6 +6505,94 @@ test("Phase13 direct Cooperative Passage substrate targeting is purpose and Job-
 end)
 
 
+test("Corner Right-of-Way Regulation can succeed into same-pair Cooperative Passage with a different conflict identity",function()
+    local runtime=newDecisionRuntime()
+    local cornerRequirement="corner-right-of-way:shared-corner:OR-1:C1"
+    local passageRequirement="cooperative-passage:opposed-corridor:OR-1:AS-00001:AS-00002"
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="CORNER_RIGHT_OF_WAY"},
+        governingBasis={responsibilityKey=cornerRequirement,operationIds={"OR-1"},sourceIntentIds={"JE-1","JE-2"}},
+        progressAssemblyIds={"AS-00001"}
+    })
+    local cornerObligation=runtime.obligations:create({
+        origin={kind="TRAFFIC_INTERVENTION"},
+        basis={kind="CORNER_RIGHT_OF_WAY",conflictIdentity="shared-corner:OR-1:C1",cornerKey="C1",admissionKind="CORNER_RIGHT_OF_WAY"},
+        ownerCommitmentId=admitted.commitment.identity,
+        requiredOutcome={kind="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES",conflictIdentity="shared-corner:OR-1:C1"},
+        requiredAuthority={capabilities={"REGULATE_SPEED"}},
+        evidenceContract={kind="FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION"},
+        ownershipClass="CONTINUITY",terminalDependency=true
+    })
+    local commitment=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(admitted.commitment,{
+        obligationIds={cornerObligation.identity},epoch=runtime.epochs:next()
+    }))
+    local current=OuttaMyWay.Regulation.new({
+        identity=runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",governingBasis=commitment.governingBasis,
+        provenance={source="test",retainedCommitmentId=commitment.identity,conflictIdentity="shared-corner:OR-1:C1",
+            admissionKind="CORNER_RIGHT_OF_WAY",cornerKey="C1",operationId="OR-1",
+            regulatedAssemblyId="AS-00001",protectedAssemblyId="AS-00002"}
+    })
+    runtime.responsibilityTransitionAuthority.regulationsByCommitmentId[commitment.identity]=current
+
+    local move=candidateSpec("corner-to-passage","REPOSITION",1)
+    move.purpose={kind="COOPERATIVE_PASSAGE",result="RESOLVE_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_BY_SUFFICIENT_LOCAL_PASSAGE"}
+    move.subject={assemblyIds={"AS-00001","AS-00002"}}
+    move.evidenceBasis.governingBasis={responsibilityKey=passageRequirement,operationIds={"OR-1"},sourceIntentIds={"JE-1","JE-2"}}
+    move.evidenceBasis.progressActuationOwnership={assemblyIds={"AS-00001","AS-00002"}}
+    move.representationFitness={requirements={{representationId="REP-CORNER-PASSAGE",acceptedStates={"CURRENTLY_FIT"}}}}
+    move.evidenceBasis.effectiveActuationComposition={
+        identity="EC-CORNER-PASSAGE",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},
+        entries={
+            {assemblyId="AS-00001",commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true},
+            {assemblyId="AS-00002",commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true}
+        }
+    }
+    move.evidenceBasis.cooperativePassageBridge={
+        architecture="COOPERATIVE_PASSAGE",governingRequirementKey=passageRequirement,operationId="OR-1",
+        conflictIdentity="opposed-corridor:OR-1:AS-00001:AS-00002",assemblyIds={"AS-00001","AS-00002"},
+        subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002"
+    }
+    move.obligationsCreated={
+        {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId="AS-00001"},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId="AS-00001"},
+            requiredAuthority={capabilities={"REPOSITION"}},evidenceContract={kind="PASSAGE"},ownershipClass="ORIGIN_BOUND",terminalDependency=true},
+        {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId="AS-00002"},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId="AS-00002"},
+            requiredAuthority={capabilities={"REPOSITION"}},evidenceContract={kind="PASSAGE"},ownershipClass="ORIGIN_BOUND",terminalDependency=true}
+    }
+
+    local picture=decisionPicture({move},{
+        commitmentContext={{commitmentId=commitment.identity,governingBasis=commitment.governingBasis}},
+        representationFitness={{
+            representationId="REP-CORNER-PASSAGE",assemblyId="AS-00001",question="COOPERATIVE_PASSAGE",
+            assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"COOPERATIVE_PASSAGE"},
+            coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={source="fixture"}
+        }}
+    })
+    local evaluated=runtime:evaluateSealedOperationalPicture(picture)
+    equal(evaluated.decision.commitmentAction,"REVISE")
+    equal(runtime.responsibilityTransitionAuthority:matchesActionSpacePassage(picture,evaluated),true)
+    local readiness={status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=evaluated.decision.selectedCandidateId}
+    local preflight,reason=runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulationForCooperativePassage(picture,evaluated,readiness)
+    if preflight==nil then error(tostring(reason)) end
+    equal(preflight.rebindCommitmentPurpose,true)
+    equal(preflight.conflictIdentity,"shared-corner:OR-1:C1")
+
+    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(
+        runtime,picture,evaluated,{rebindCommitmentPurpose=true})
+    if applied==nil then error(tostring(applyReason)) end
+    equal(applied.commitment.governingBasis.responsibilityKey,passageRequirement)
+    equal(#runtime.obligations:openForOwner(commitment.identity),3)
+
+    local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(
+        runtime,commitment.identity,
+        {conflictIdentity="shared-corner:OR-1:C1",reason="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"},
+        {kind="COOPERATIVE_PASSAGE_CORNER_RIGHT_OF_WAY_SUCCESSION"})
+    if settled==nil then error(tostring(settleReason)) end
+    equal(#settled.remainingObligations,2)
+    equal(settled.terminal,nil)
+end)
+
 test("Forward Intersection evidence continuity distinguishes waiting, dissolution and supersession",function()
     local assessment=OuttaMyWay.CurrentResponsibilityAssessment.new()
     local current={provenance={admissionKind="FORWARD_INTERSECTION",retainedCommitmentId="CM-FI",conflictIdentity="FI-CONTINUITY"}}
@@ -6313,9 +6804,10 @@ test("legacy follower shadow retirement preserves P22 capability retirement", fu
     equal(OuttaMyWay.Prototype22CapabilityGate,nil)
 end)
 
-dofile(root.."/tests/replacement_core/PassiveCornerKnowledge.lua")(test,equal,{
-    newRuntime=autonomousHeadOnRuntime,picture=forwardIntersectionPicture,snapshot=headOnTestSnapshot
-})
+
+dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
+
+dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end

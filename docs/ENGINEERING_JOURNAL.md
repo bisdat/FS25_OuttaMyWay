@@ -4882,3 +4882,218 @@ This correction changes tests and engineering record only. It changes no
 production executable bytes and therefore remains `0.3.0.46 TEST — OBSTRUCTION
 RELOCATION CONTROL NAMING`; no `.47` identity is consumed. Protected CI must
 revalidate the corrected PR head.
+
+## 2026-09-19 — .94 Reality exposes canonical Field World handoff loss
+
+**Observe:** .94 Field 77 Reality captured both the established 10-point boundary and an equivalent 11-point sampling, and Field World Equivalence resolved them to the same Field World. The run produced no production Corner lifecycle events — not even CORNER_ATLAS_DISCOVERED — while no OuttaMyWay Lua exception occurred. Source tracing showed that LiveObservationSource published the representative boundary and quantization metadata but omitted the representative snapshot's canonical root geometry required by StructuralFieldShapeAssessment.
+
+**Discover:** **Field World Summary != Canonical Field World Geometry.** An identity-resolved summary does not preserve canonical structural evidence merely because it refers to the same Field World. **Direct Module Fixture != Runtime Integration Contract.** Direct Structural Field Shape fixtures had proved the assessment algorithm with canonical input but had not proved the live Observation-to-Situation handoff.
+
+**Interpretation:** Reality did not disprove the accepted Corner architecture or the Structural Field Shape interpretation. The production chain remained dormant because Observation composition dropped already-established canonical geometry before Situation Assessment consumed it.
+
+**Decision:** .95 preserves the representative immutable Field World's canonical root/island ring evidence in the published Observation, clarifies that obligation in the Observation Specification, and adds an end-to-end live-source-to-Situation regression proving Structural Field Shape receives the runtime-shaped evidence. No Corner geometry algorithm, temporary right-of-way policy, Regulation, Control or Passage behaviour is intentionally changed. The S416/Condor Cooperative Passage recovery/handback condition remains Issue #227 and is excluded from this increment.
+
+## 2026-09-19 — .95 Reality: structural Corner exists, S416 demand misses the representative point
+
+**Observe:** `.95` proves the production Structural Field Shape path is live. Field 77 publishes four structural Corner Atlas entries. Condor independently enters Corner Engagement at the lower-right feature, remains engaged through native manoeuvring, records forward/reverse transitions, and publishes Positive Corner Departure only after fresh A8 crosses the final transition anchor. In the same run S416 approaches the lower-left structural Corner productively with about 14.6 m of bounded continuation remaining, then enters its native turn/reverse sequence, but no lower-left S416 Corner Engagement is established.
+
+The earlier #234 reconstruction and the `.95` trace agree on the geometry: S416's bounded productive continuation terminates about 6 m from the lower-left structural representative while its current Physical Assembly has materially larger positively represented reach. The `.95` production admission rule nevertheless requires one straight-translated positive DISC primitive to intersect the single structural representative point.
+
+**Discover:** **Representative Corner Point != Corner Feature Region.** Structural Field Shape correctly identifies the feature, but assembly-to-Corner demand must consume the bounded structural transition as assembly-specific space rather than reduce the feature back to a literal point test.
+
+**Interpretation:** the accepted Architecture and Situation Assessment contract are not disproved. They already require a Corner Feature to be a bounded structural transition region and permit physical width, overall length, articulation and supported current representation to determine assembly-specific Corner demand. `.95` implements that contract too narrowly.
+
+**Decision:** `.96` keeps direct translated primitive intersection as the strongest admission witness and adds a bounded production path: when current productive A8 terminates at the Field World within the assembly's own positively represented current physical reach of the known structural Corner Feature, Corner Approach Demand is positive. Physical reach is derived from current positive DISC primitives relative to the current A8 reference; no working-width substitution, universal Corner radius, route prediction, timer or guessed length multiplier is introduced. A same-edge negative control proves that arbitrary boundary approach remains outside Corner Admission when the structural feature lies beyond that assembly-specific reach.
+
+The intended behavioural consequence for the S416 / Condor case is that S416 can enter retained lower-left Corner Engagement before its native TURNING/reverse sequence. Existing Forward-Intersection Regulation can then remain protected by current Corner Engagement through FI topology loss under the already-accepted Responsibility logic. Cooperative Passage recovery remains #227 and is not changed here.
+
+## 2026-09-19 — .96 Reality: Corner Regulation blocks valid same-pair Passage succession
+
+**Observe:** the first `.96` Condor / Patriot encounter establishes a shared lower-right Corner Right-of-Way Regulation at `06:15:13.910`, regulating Condor and protecting Patriot. Later the same two workers form an Established Opposed Corridor Conflict. At `06:15:40.367` Candidate Support finds a valid Cooperative Passage at about 79.6 m separation and the selected Passage Candidate passes all mandatory constraints. Supported Passage clearance remains positive repeatedly down to about 13.9 m. No Passage Commitment, Responsibility transition, Bubble or Control start occurs. At about 11.6 m the local Passage search becomes unsupported, and both GIANTS workers become blocked.
+
+Source tracing identifies the implementation boundary: Action-Space Regulation -> Passage succession currently requires `Regulation.provenance.conflictIdentity == cooperativePassageBridge.conflictIdentity`. That is true for opposed-conflict Regulation but false for Corner Right-of-Way, whose predecessor identity is `shared-corner:*` while the successor Passage identity is `opposed-corridor:*`.
+
+**Discover:** **Same Pair Successor != Same Conflict Identity.** Corner allocation and Cooperative Passage are different semantic questions over the same workers. A valid Passage Resolution must be able to succeed a current Corner Regulation for the same two participants without pretending their Situation identities are identical.
+
+**Interpretation:** `.96` Corner admission itself is not disproved by this failure. It exposed a previously unreachable integration defect between the new Corner Regulation path and the already-existing Cooperative Passage responsibility succession path. Architecture already permits a successor Resolution to take control of the same workers while explicitly retaining the underlying Corner Engagement fact.
+
+**Decision:** `.97` makes Action-Space-to-Passage predecessor matching participant-aware. Exact opposed-conflict identity remains valid; additionally, one current `CORNER_RIGHT_OF_WAY` Regulation may be the Passage predecessor when its regulated/protected pair exactly matches the two Passage participants in the same Operation. Responsibility Transition then rebinds the retained generic Commitment substrate from the Corner governing basis to the selected Cooperative Passage governing basis, creates the two Passage Leg obligations, neutralizes the predecessor Regulation lease, settles the Corner Regulation obligation by basis cessation, replaces the semantic Regulation responsibility with the Passage Resolution Commitment, and leaves Corner Engagement itself untouched in Situation Assessment.
+
+No new diagnostic/probe path is added. Passage planning, Passage geometry, Corner admission geometry, Corner departure semantics and #227 recovery/handback behaviour are unchanged.
+
+## 2026-09-19 — .97 Reality: fixed Corner Regulation dereferences absent Resolution-Space envelope
+
+**Observe:** `.97` establishes the first shared Corner Right-of-Way responsibility for Condor / Patriot at `06:34:39.846`, then immediately raises `RegulationBoundedAuthority.lua:865: attempt to index nil with 'capKmh'`. The retained Commitment and Regulation responsibility have already been published, but physical Regulation application does not complete. Later, at `06:35:06.075`, the same pair has a valid selected Cooperative Passage at about 78.95 m and all logged mandatory Passage constraints pass; no Passage succession begins, and the pair eventually blocks after the viable local Passage interval is consumed.
+
+**Discover:** **Fixed Regulation != Resolution-Space Envelope.** Forward-Intersection and Corner Right-of-Way Regulation use a fixed Situation-owned 1 km/h creep. They do not require the elastic Resolution-Space Progression Envelope used by ordinary Action-Space Regulation.
+
+**Interpretation:** the `.97` Corner-to-Passage succession change is not yet tested by Reality. The earlier Corner Regulation control fault leaves a half-applied incumbent before the encounter ever reaches the Passage handoff. The downstream absence of Passage transition is therefore not evidence against the `.97` succession design.
+
+**Decision:** `.98` removes generic Resolution-Space envelope establishment and `capKmh` access from fixed Forward-Intersection / Corner Right-of-Way initial Regulation. Their initial cap is taken directly from the already-validated fixed Regulation magnitude. Ordinary Action-Space Regulation retains the elastic envelope path unchanged. A direct behavioural regression executes initial Corner Right-of-Way Regulation with no separation/native-speed envelope inputs and requires accepted 1 km/h Control plus a Corner lease with no progression envelope.
+
+No new diagnostics or probes are added. Corner admission, Corner allocation, Passage planning/geometry, `.97` same-pair Corner-to-Passage succession and #227 recovery/handback behaviour are unchanged.
+
+## 2026-09-19 — .98 Reality: distant bounded A8 contact manufactured current Corner demand
+
+**Observe:** Cooperative Passage itself succeeds in `.98`, and fixed Corner Regulation applies without the `.97` Lua fault. Corner allocation remains behaviourally wrong. The lower-right Corner `(132.3,-701.3)` admits Patriot while its represented assembly is still about 289 m from that structural feature, then admits Condor while Condor is physically beside the upper-right Corner, about 456 m from the lower-right feature. At the lower-left Corner `(-40.8,-677.8)`, S416 is admitted about 330 m early; Condor is later admitted from the lower-right, about 170 m away; Patriot is then admitted to the same lower-left Corner while about 463 m away. Those distant retained engagements keep the shared lower-left competing-demand Situation alive after S416's positive departure, so Condor remains at the fixed 1 km/h Corner regulation until S416 later reaches it and both become blocked.
+
+**Discover:** **Boundary Contact != Current Corner Demand.** A Field-World-bounded A8 may legitimately identify the eventual boundary contact of current productive continuation, but that topological fact does not mean the assembly currently consumes the Corner Feature hundreds of metres ahead. `.96` converted an eventual boundary contact into present Corner demand by checking only contact-to-feature compatibility against assembly physical reach.
+
+**Interpretation:** the accepted Architecture is explicit that Corner Approach Demand is current bounded spatial demand and MUST NOT be manufactured by indefinitely extending a heading until it reaches the Corner. `.98` Reality therefore disproves the `.96` implementation, not the architecture. The apparent wrong first-corner priority and the later sticky Condor regulation are downstream consequences of false distant Corner Engagements; adding role-flip or release exceptions would preserve the wrong Situation meaning.
+
+**Decision:** `.99` makes assembly-specific physical reach bound the forward extent of Corner Admission as well as the Corner Feature region. A productive A8 boundary contact is eligible to establish Corner Approach Demand only when the boundary itself is already within the assembly's current positive physical reach. Inside that local demand horizon, direct translated primitive intersection remains the strongest witness and the existing contact-within-physical-reach fallback still handles a structural representative offset from the assembly's centreline. No universal distance, time threshold, working-width proxy or predicted turn path is added.
+
+Regression coverage now distinguishes (a) a local boundary contact whose structural representative lies within assembly-specific reach from (b) the same geometrically compatible contact tens of metres away; only the local case may establish Corner Approach Demand/Engagement. Shared-Corner allocation and Positive Corner Departure logic are unchanged.
+
+## 2026-09-19 — Owner correction: Corner Engagement Age != Corner Arrival Priority
+
+**Correction:** the `.99` local-demand-horizon interpretation is withdrawn before in-game Reality. The owner clarified the `.98` first Corner observation: Condor was already within constrained Corner space and should never have been the regulated participant; Patriot should have yielded. For S416 / Condor, temporary priority belongs to whichever participant is closest **in time** to consuming the Corner, with the other regulated.
+
+**Source finding:** `TrafficPolicemanDecisionPolicy.cornerRightOfWayChoice()` protected the earlier `establishedObservationEpoch` whenever both participants had Corner Engagement. That made lifecycle admission age the right-of-way rule. `SpatialConstraintAssessment` also exposed an `occupancies` product but did not populate it, so Decision could not positively distinguish a worker already consuming constrained Corner space from one merely admitted earlier.
+
+**Discovery:** **Corner Engagement Age != Corner Arrival Priority.** Engagement records lifecycle continuity. Temporary right-of-way is current temporal ordering.
+
+**Architecture decision:** use **Corner Arrival Priority**. Positive current Corner Occupancy is immediate arrival and receives temporary right-of-way over a competing non-occupant. Otherwise compare current supported time-to-Corner under native/unrestricted progression opportunity; protect the earlier arrival and regulate the later arrival. Existing Regulation must not bias its own priority by reducing realised speed. Engagement establishment age is never a priority signal.
+
+**Implementation decision:** `.100` backs out `.99`'s boundary-distance admission gate. Situation Assessment publishes positive current Corner Occupancy from current positive Physical-Assembly evidence, may admit Engagement from occupancy when Reality is already inside constrained Corner space, and publishes native time-to-Corner from current Corner Approach Demand. Decision consumes those fields in Occupancy -> native-arrival order. Existing 1 km/h Corner Regulation alternatives, Responsibility Transition, role-migration capability, Passage succession and Positive Corner Departure remain the mechanisms.
+
+No new diagnostics/probes are introduced. `.99` is not a valid Reality candidate and must not be tested.
+
+## 2026-09-19 — `.100` Reality: Corner Arrival Priority PASS; Passage execution rebase preserves stale lateral arrangement
+
+**Observe — Corner:** the first Condor / Patriot Corner validates `.100` Corner Arrival Priority. Condor is positively current in constrained Corner space and is protected; Patriot receives the fixed 1 km/h Corner Regulation. The intended first-corner allocation is therefore a Reality PASS.
+
+**Observe — later Cooperative Passage:** the same run cannot reach the S416 / Condor Corner because Condor / Patriot Passage `CM-00002` physically jams after Condor has swerved around the slight protruding hedge and recovered only partially toward its lane.
+
+At `08:11:20.326` Candidate Support selected a valid Passage at about `79.75 m` separation with current lateral separation `3.63 m`, required centreline separation `5.19 m` and offsets approximately `+0.78 / -0.78 m`. Passage Responsibility transition and native approach both succeed.
+
+At `08:11:25.887` the pair reaches the `22.08 m` Passage Entry boundary, both are captured/held, and both Transit configurations settle. At `08:11:42.854` Control captures actual execution origins — Condor approximately `(148.05,-532.55)`, Patriot approximately `(142.75,-548.93)` — while preserving the earlier Passage frame/offset geometry and logging `guideRebased=true geometryUnchanged=true`.
+
+Reconstruction in the guide's own lateral frame shows that the pair's side relationship materially changed during native approach: planned entry origins represented roughly `-3.8 m` signed lateral separation, while actual execution origins represented only about `+0.7 m` and therefore the opposite side ordering. Preserving the old `+0.78 / -0.78 m` lateral offsets makes the retained guide drive the pair back through one another rather than create the required separation.
+
+By `08:11:46.936` current pair evidence is positively interacting (`currentFootprint=true`, represented distance about `5.366 m` against `5.492 m` required), while Passage Control remains in `GUIDE_CROSSING_WINDOW_EXIT` with `failure=none`. Video confirms physical nose/side interference and a mutual block.
+
+**Existing discovery strengthened:** **Execution-Origin Rebase != Arrangement Revalidation** / **Guide Rebase != Geometry Revalidation**. This is the same unresolved implementation debt already owned by Issue #116; `.100` supplies a stronger actual-collision witness and shows that ordinary native approach, including obstacle/hedge avoidance, can materially change or reverse Passage side ordering before execution.
+
+**Architecture / Specification:** no new rule is required. `COOPERATIVE_PASSAGE` already requires fresh post-Transit Reality before geometry-dependent movement and explicitly says that rebasing coordinates while preserving stale lateral/clearance assumptions is insufficient. It permits an independently supported adaptation while the lateral allocation remains prospective.
+
+**Implementation `.101`:** `LocalPassagePlanner` now owns execution-boundary pair-sweep revalidation and fresh supported adaptation. `CooperativePassageControl` rebases to actual stopped/folded execution origins, tests the retained arrangement against fresh Transit geometry/orientation, and uses it unchanged only if still supported. If stale, Planner recomputes the current lateral relation, facing extents, minimum-burden offset alternatives and Development/Crossing/Recovery guide from the actual execution origins, then requires the normal pair-sweep contract to PASS before returning an adapted guide. Control performs its existing Field/third-party preflight on that Planner-supported result. If no retained or adapted arrangement is supported, Control fails held before moving either worker.
+
+Regression coverage reproduces a planned negative-side Passage whose actual execution origins have crossed to the positive side. The stale retained offsets must be rejected; the adapted arrangement must switch relation sign, reverse the corrective offset directions and independently pass the pair-sweep contract.
+
+Issue #227 remains separate: this `.100` failure occurs before successful crossing/recovery and is not the post-crossing recovery-target defect owned there.
+
+## 2026-09-19 — `.101` Reality: successful prior Passage/S416 Corner; final fixed-FI role migration FAIL
+
+**Positive validation:** `.101` loads correctly. The earlier Condor / Patriot Cooperative Passage completes through `COOPERATIVE_PASSAGE_GUIDE_COMPLETE`, participant handback and `PAIR_CONTEXT_DISSOLVED`. The S416 / Condor Shared Corner then allocates Condor temporary right-of-way, regulates S416 at fixed 1 km/h, later releases on loss of shared competing demand, and the subsequent Condor / S416 Passage also completes through handback. The `.101` execution-origin Passage adaptation therefore survives GIANTS Reality in the earlier passage.
+
+**Final failure observation:** Patriot establishes a new Corner Engagement at `08:49:33.370`. At `08:49:34.126` a Forward Intersection between Condor (`AS-00001`) and Patriot (`AS-00002`) initially allocates Patriot as temporal yielder and applies fixed 1 km/h Regulation. One assessment later (`08:49:34.386`) fresh FI timing reverses the allocation: Condor should yield and Patriot should continue.
+
+**Implementation defect:** every attempted role migration from Patriot to Condor fails with `ACTION_SPACE_REGULATION_ROLE_REBASE_FAILED:RESOLUTION_SPACE_ENVELOPE_STATE_UNAVAILABLE`. The initial `.98` fixed-Regulation correction bypassed the elastic `ResolutionSpaceProgressionEnvelope` for Forward Intersection and Corner Right-of-Way admission, but `_continueActionSpaceRegulationRoleMigration()` only recognised fixed Corner Right-of-Way. Fixed Forward Intersection therefore fell into the elastic role-rebase branch even though its lease intentionally has no progression envelope. The semantic Responsibility repeatedly asks to regulate Condor while the physical 1 km/h lease remains on Patriot until FI dissolution at `08:49:44.156`.
+
+**Discovery:** **Fixed Regulation Role Migration != Resolution-Space Envelope.** This is the role-migration counterpart of `.98`'s **Fixed Regulation != Resolution-Space Envelope** discovery.
+
+**Downstream consequence:** after the stale Patriot Regulation finally releases, Action-Space Regulation correctly protects Patriot and regulates Condor, but the pair has already consumed encounter space asymmetrically. Cooperative Passage `CM-00006` is selected and captured; after Transit settlement `.101` correctly returns to fresh Reality and refuses to execute because neither the retained nor a fresh adapted arrangement can satisfy the pair-sweep contract. The final Passage failure is therefore a correct `.101` fail-closed response to space already consumed upstream, not a failure of execution adaptation.
+
+**Implementation `.102`:** fixed Forward Intersection now follows the same fixed-magnitude role-migration family as Corner Right-of-Way. Role reassignment uses the current validated `fixedRegulationSpeedKmh`, creates the new fixed owner lease, releases the old lease/authority, preserves the same Commitment and Responsibility identity, and does not construct or rebase a Resolution-Space envelope. A behavioural regression establishes an FI lease on B, reverses the temporal yielder to A, and requires physical authority to migrate B -> A at 1 km/h with no progression envelope.
+
+**Separate Corner lifecycle evidence (recorded, not changed in `.102`):** the same log shows two distinct concerns that must not be conflated with the immediate role-migration fault. First, a positive Corner Departure is retained as a same-Job tombstone and currently prevents re-admission to that same structural Corner on a later traversal. Second, full Field-World-bounded A8 continuation can establish Corner Approach Demand for a Corner hundreds of metres away, despite the Specification forbidding indefinite continuation from manufacturing current Corner demand. These observations require their own architectural treatment; `.102` deliberately leaves Corner admission/engagement semantics unchanged so the validated S416 / Condor path is not destabilised while fixing the demonstrated Bounded Authority defect.
+
+## 2026-09-19 — `.102` Reality: fixed-FI role migration PASS; FI → Passage succession blocked by conflict-identity equality
+
+**Positive validation:** `.102` removes the `.101` fixed Forward-Intersection role-migration failure. The final Condor / Patriot FI keeps one retained Commitment / Regulation Responsibility while physical fixed 1 km/h authority migrates between yielders using `FORWARD_INTERSECTION_ROLE_MIGRATED`; no `RESOLUTION_SPACE_ENVELOPE_STATE_UNAVAILABLE` role-rebase failure remains. Earlier `.101`-validated Condor / Patriot Passage adaptation, S416 / Condor Corner allocation and Condor / S416 Passage also remain healthy.
+
+**Failure observation:** the final Condor / Patriot FI establishes `CM-00006` / `RS-00007` under relationship `forward-intersection:OR-00001:AS-00001:AS-00002`. At `10:44:17.160`, fresh Reality selects a valid Cooperative Passage for the same Operation and same two assemblies under `opposed-corridor:OR-00001:AS-00001:AS-00002`; all mandatory constraints PASS, including Responsibility Compatibility, but Runtime records `boundedDispatch=NO_DISPATCH`. The incumbent fixed FI lease therefore continues while Patriot closes, until local Passage space is exhausted.
+
+**Source diagnosis:** the accepted Responsibility Transition architecture already permits atomic Regulation → Resolution replacement and explicitly treats conflict identity as evidence provenance rather than Responsibility identity. Production `actionSpacePassagePredecessor()` nevertheless recognised a different-identity same-pair predecessor only for Corner Right-of-Way. Forward Intersection therefore missed the replacement route and fell into direct Resolution continuation, which cannot truthfully reuse a retained Regulation Commitment as an already-current Resolution. The existing succession preflight also omitted the `FORWARD_INTERSECTION_INTENT_REVELATION / FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED` obligation family, and retained-purpose rebinding authorised Corner → Passage but not FI → Passage.
+
+**Discovery:** **Responsibility Succession != Conflict-Identity Equality.** A fixed Forward-Intersection Regulation and a later opposed-corridor Cooperative Passage answer different Situation questions and therefore legitimately carry different Situation identities. When fresh Reality supports the Passage for the same current pair in the same Operation, identity inequality must not hide the incumbent Regulation from the already-accepted atomic succession authority.
+
+**Implementation `.103`:** preserve exact-conflict Action-Space succession unchanged, and extend the existing participant-scoped succession family from Corner Right-of-Way to Forward Intersection. Same-pair/same-Operation FI may now be located as the Passage predecessor; preflight recognises its open FI continuity obligation; retained purpose may be rebound from `forward-intersection-regulation:*` to the selected `cooperative-passage:*` basis; predecessor physical authority/obligation cleanup remains mandatory before the new Resolution Responsibility is exposed to Passage Control. No FI timing/yielder policy, fixed 1 km/h magnitude, Passage geometry/planning, Corner semantics or Control mechanics are changed.
+
+**Regression contract:** establish a fixed FI Regulation on A/B, then present a supported Cooperative Passage for the same pair whose opposed-corridor conflict identity is deliberately different. Require one retained Commitment, distinct predecessor/successor `RS-*` identities, FI obligation settlement and physical lease release before Passage Control, Cooperative Passage governing-basis rebinding, and successful joint dispatch.
+
+**Reality boundary:** `.103` must first preserve the `.102` fixed-role migration PASS and the earlier Passage/Corner regressions, then demonstrate that the final Condor / Patriot Passage emits atomic `RESPONSIBILITY_REPLACED` and begins before encounter space is consumed. The later near-zero-rate FI oscillation is downstream until that succession path is corrected. Issue #240 remains the separate Corner re-entry / remote-demand workstream.
+## 2026-09-19 — .103 Reality correction: prospective Transit geometry was reused as execution geometry
+
+**Owner correction:** the initial .103 interpretation incorrectly treated post-configuration pair-sweep rejection as proof that no Passage arrangement remained physically supportable. That conclusion exceeded the evidence. The same Condor / Patriot pair had already realised Transit configuration and completed an earlier Passage in the same run; the final failure therefore required inspection of what .101 actually revalidated.
+
+**Positive .103 result retained:** Forward-Intersection → Cooperative-Passage responsibility succession is Reality-validated. CM-00006 replaces RS-00007 with RS-00008 atomically before Passage Control and no longer reproduces the .102 NO_DISPATCH defect.
+
+**Source finding:** Candidate planning correctly uses cached TRANSIT_BASE as prospective geometry. After physical folding, AssemblyRepresentationCache publishes the current configuration profile, including current directionalPassageEnvelope, current represented primitives and exact Job-Episode provenance. In .103, both Condor and Patriot reach stable configuration:3 profiles before execution revalidation; those same folded profile identities were already observed during the earlier successful Condor / Patriot Passage.
+
+The .101 execution path refreshed execution origins and current headings, but LocalPassagePlanner.adaptExecutionGuide() continued to use the retained arrangement's prospective cached Transit envelopes and retained Passage discs. Control supplied no current realised configuration representation to either retained-guide pair-sweep validation or adaptation.
+
+The failure therefore meant only that the final stopped origins could not satisfy the retained/prospective Transit envelope under the current guide construction. It did not establish that the actually folded assemblies lacked a supported Passage.
+
+**Discovery:** **Prospective Transit Geometry != Realised Transit Geometry.**
+
+Equivalent execution-boundary statement:
+
+> **Fresh Execution Pose != Fresh Execution Geometry.**
+
+The accepted Cooperative Passage Architecture and Specification already require fresh realised Transit geometry after configuration settlement. No architecture change is needed.
+
+**Implementation .104:** keep prospective TRANSIT_BASE planning unchanged. At the execution-origin boundary, CooperativePassageControl now obtains each exact participant Job Episode's current Observation-owned assembly representation. Retained-guide pair-sweep validation and any execution adaptation use the current realised configuration's directional Passage envelope and current represented primitives. If exact current realised geometry is unavailable or belongs to a different Job Episode, execution still fails closed. Control does not rediscover geometry and Planner remains the geometry owner.
+
+A focused regression deliberately supplies a prospective Transit envelope that rejects a close captured guide while a smaller current folded configuration profile supports the same guide. The old prospective-only check must reject; the execution-boundary check using exact current profiles must pass and record CURRENT_REALISED_TRANSIT_CONFIGURATION.
+
+**Scope:** no Entry Boundary / braking model change; no clearance-literal change; no Passage guide-shape change; no FI timing change; no Corner change; no weakening of .101 stale-arrangement protection. The earlier .103 capture-timing diagnosis is superseded unless later Reality independently demonstrates a capture-control defect after execution revalidation consumes realised configuration geometry.
+## 2026-09-19 — `.104` Reality: realised Transit evidence works; Capture Initiation still consumes Passage reserve
+
+**Observe:** `.104` reaches the new realised-Transit execution path successfully. The earlier Condor / Patriot Passage `CM-00002` adapts at `14:01:30.156` with `geometry=REALISED_TRANSIT`, both participants on folded `configuration:3`, then completes. Condor / S416 `CM-00004` also reports `COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED ... geometry=REALISED_TRANSIT` and succeeds.
+
+The final Condor / Patriot `CM-00006` still fails after both fold successfully. Candidate selection occurs at about 78.52 m with Entry Boundary 23.05 m and near-zero lateral separation. Control waits until 22.97 m before beginning Hold. About 1.07 s later the pair is still physically settling at 15.98 m; all-stop/configuration starts at about 15.82 m. The pair remains stationary while folding, then execution adaptation has insufficient Development room and correctly refuses the resulting guide.
+
+Comparison with the successful earlier pair is decisive: `CM-00002` reaches execution at 16.57 m but already has 3.31 m natural lateral separation and therefore needs only about 2.51 m additional lateral correction. The final pair is almost centreline-on-centreline and must create essentially the full realised Transit separation before crossing. Same longitudinal distance does not imply same Development demand.
+
+**Discovery:** **Passage Entry Boundary != Capture Initiation Boundary.**
+
+Supporting implementation statement:
+
+> **Current Closing Progression Consumes Disposable Approach Margin.**
+
+This is not a new architectural rule. `SPATIAL_NEGOTIATION_MODEL` and `COOPERATIVE_PASSAGE` already require current closing progression to determine how quickly disposable margin is consumed and require capture before independent approach makes the accepted Passage unsupported. Control was still using the spatial Entry Boundary itself as the Hold-start trigger.
+
+**Implementation `.105`:** keep Candidate geometry, Entry Boundary and the 3 m Entry Control Allowance unchanged. Passage Approach now evaluates current physical closing progression from each participant's realised travel speed projected onto its committed approach axis. If the pair is already at the Entry Boundary, behaviour is unchanged. Otherwise Hold begins when time-to-Entry under current positive closing progression is at or below the empirical 1.0 s Capture Acquisition Horizon. The horizon is Control-response calibration, not a braking-distance model; the separate 3 m Entry Control Allowance remains spatial reserve for the remaining acquisition/settling tail.
+
+Focused regression proves a 30 m separation / 20 m Entry Boundary pair at 25 km/h each enters Settling before crossing the boundary, while the existing zero-closing fixture remains native until the literal Entry Boundary.
+
+**Scope:** no Passage clearance change, no realised-Transit rollback, no FI/Corner change, no guide-shape change, no Regulation magnitude change and no braking-distance literal. `.104`'s realised-geometry correction remains retained because Reality validates that evidence path even though it was not sufficient to resolve the final encounter.
+
+
+
+## 2026-09-19 — pre-merge Triad audit folds Issue #240 into PR #239 as TEST `.106`
+
+**Observe:** the final `.105` Passage/Corner scenario is a GIANTS Reality PASS, but the pre-merge Authority-Triad review found two already-recorded Corner source disagreements still live in `SpatialConstraintAssessment`: retained Positive Departure acted as a same-Job admission tombstone, and full Field-World-bounded productive continuation could still manufacture Corner Approach Demand hundreds of metres before the assembly currently consumed that Corner. Both were already evidenced by `.101` and owned by Issue #240.
+
+**Historical correction:** `.99`'s locality hypothesis was withdrawn before Reality because the first `.98` Corner failure had been misclassified as an admission problem when it was actually a priority problem. It was not disproved by Reality. `.100` then discovered the missing independent concept — **Current Corner Occupancy** — and validated Occupancy -> native-arrival priority. The two ideas are compatible:
+
+> **Current Corner Approach Demand != Eventual Field-Boundary Contact.**
+
+> **Current Corner Occupancy != Predicted Corner Approach.**
+
+**Decision:** TEST `.106` restores an assembly-specific locality bound for **Approach Demand only**. The productive A8 boundary contact must already lie within current positive Physical-Assembly reach before the bounded continuation may establish current Corner Approach Demand. This uses represented current assembly reach rather than a universal distance/time literal or predicted turn route. Positive current Corner Occupancy remains an independent unilateral admission route and therefore preserves the `.100/.105` first-corner result when Reality already occupies constrained space.
+
+**Second decision:** Positive Corner Departure settles one traversal's Engagement, not all future traversals of that Corner within the Job Episode.
+
+> **Positive Corner Departure != Permanent Same-Job Corner Exclusion.**
+
+When fresh current Approach Demand or Occupancy later appears for the same assembly-plus-Corner, Situation Assessment discards the historical departure as live admission authority and establishes a new Engagement. No timeout or cooldown re-arms the Corner.
+
+**Validation design:** the focused Corner fixture now (1) rejects a geometrically compatible boundary contact tens of metres beyond current physical reach, (2) accepts the same structural relationship when the boundary is inside assembly-specific current reach, (3) retains independent turning Occupancy admission, and (4) proves that fresh same-Job Occupancy can re-establish Engagement after a positive continuous-traversal departure. Existing Corner Arrival Priority, fixed 1 km/h Regulation, FI lifecycle, Passage planning/control and `.105` capture mechanics are unchanged.
+
+**Authority Triad:** Architecture gains an explicit repeated-traversal clarification; Situation Assessment Specification operationalises it; Source is changed to conform. The existing Architecture/Specification prohibition on indefinite continuation remains unchanged. `CONTINUATION_STATE.md` is replaced from the stale pre-implementation Issue #234 state with the `.106` validation boundary.
+
+
+## 2026-09-19 — owner correction after .106
+
+The owner clarified that Issue #240 was not intended to be implemented inside PR #239. The intended action was to remove it from the merge gate: close it if obsolete, otherwise retain it for later.
+
+Two .106 runs regressed the S416 / Condor Corner allocation. The physical-reach locality gate removed Condor's early native Corner-arrival evidence, leaving Forward Intersection to use his temporarily low realised post-turn rate and select him to yield. The Corner Decision comparator itself was unchanged.
+
+Discovery retained:
+
+> **Corner Arrival Evidence != Current Corner Approach Demand**
+
+Decision: restore the .105 runtime and TEST identity; retain only truthful documentation corrections; leave Issue #240 open for a later increment. The .106 experiment remains historical evidence and makes no accepted runtime claim.

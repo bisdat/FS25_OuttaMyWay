@@ -71,6 +71,20 @@ local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,tar
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
 end
 
+local function sharedCornerSituations(picture)
+    local result={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        local corner=knowledge.cornerKnowledge or {}
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(corner.sharedCornerSituations or {}) do
+            if situation.competingDemand==true and type(situation.identity)=="string" then
+                result[#result+1]=situation
+            end
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
 local function forwardRelationshipCount(picture)
     local count=0
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
@@ -124,6 +138,19 @@ function Support:attach(picture,snapshot)
         appendGroup(state,follower,family,"follower",1)
     elseif type(followerReason)=="string" and string.find(followerReason,"MULTIPLE_SIMULTANEOUS_FOLLOWER_BOUNDARY_CONTEXTS",1,true) then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"FOLLOWER_FAIL_CLOSED",followerReason,1)
+    end
+
+    local sharedCorners=sharedCornerSituations(picture)
+    if #sharedCorners==1 then
+        local corner,cornerReason=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{kind="CORNER_RIGHT_OF_WAY",sharedCornerIdentity=sharedCorners[1].identity},targetPictureId,targetEpoch)
+        if modeOfGroup(corner)=="CORNER_RIGHT_OF_WAY" then
+            appendGroup(state,corner,"CORNER_RIGHT_OF_WAY","corner-right-of-way:"..tostring(sharedCorners[1].identity),1)
+        elseif cornerReason~=nil then
+            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"CORNER_FAIL_CLOSED",cornerReason,1)
+        end
+    elseif #sharedCorners>1 then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"CORNER_FAIL_CLOSED","MULTIPLE_SHARED_CORNER_SITUATIONS",1)
     end
 
     local forwardCount=forwardRelationshipCount(picture)

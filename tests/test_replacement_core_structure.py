@@ -1059,8 +1059,11 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     assert establish_call in initial
     assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in config
     assert 'local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"' in initial
-    assert f"if not fixedForwardIntersection then\n        envelope,envelopeReason={establish_call}\n    end" in initial
-    assert "local initialCap=fixedForwardIntersection and bridge.fixedRegulationSpeedKmh or (tonumber(envelope.capKmh) or 0)" in initial
+    assert 'local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"' in initial
+    assert f"if not fixedForwardIntersection and not fixedCornerRightOfWay then\n        envelope,envelopeReason={establish_call}\n    end" in initial
+    assert "if fixedForwardIntersection or fixedCornerRightOfWay then" in initial
+    assert "initialCap=bridge.fixedRegulationSpeedKmh" in initial
+    assert "initialCap=tonumber(envelope.capKmh) or 0" in initial
     assert 'D0146_RESOLUTION_SPACE_REGULATION_KMH' not in config
     assert 'actionSpaceMaxSeparationM' not in situation
     assert 'actionSpaceRegulationKmh' not in situation

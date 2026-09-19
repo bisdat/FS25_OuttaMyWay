@@ -101,6 +101,12 @@ Absence, source failure or unsupported access MUST remain unresolved/unavailable
 
 Evidence that requires provenance, source or freshness limits for truthful interpretation MUST retain them through publication. A downstream consumer MUST NOT be forced to reconstruct provenance from source topology or call order.
 
+### Established canonical evidence survives composition
+
+When an upstream identity or capture service has already established a canonical geometry representation for an immutable Field World, Observation MUST preserve that canonical geometry evidence and its quantization context through the published Field World evidence when downstream Assessment relies on it. A convenience summary such as boundary coordinates MUST NOT silently replace the established canonical representation or force downstream Assessment to re-canonicalize a different representation.
+
+> **Field World Summary != Canonical Field World Geometry**
+
 ### Publication does not mutate Reality
 
 Observation acquisition and publication MUST NOT perform Control, alter GIANTS progression, acquire responsibility or change the observed world in order to make evidence easier to classify.

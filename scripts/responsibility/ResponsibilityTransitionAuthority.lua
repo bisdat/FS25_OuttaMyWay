@@ -66,14 +66,16 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
             end
             if targeted~=true then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_NOT_TARGETED" end
         end
-        return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,admissionKind=bridge.admissionKind},nil
+        return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,admissionKind=bridge.admissionKind,cornerKey=bridge.cornerKey,
+            operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId},nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
     if current==nil or current.kind~="REGULATION" or current.provenance.conflictIdentity~=bridge.conflictIdentity
         or current.provenance.retainedCommitmentId~=readiness.commitmentId then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
     end
-    return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,commitmentId=readiness.commitmentId,admissionKind=bridge.admissionKind},nil
+    return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,commitmentId=readiness.commitmentId,admissionKind=bridge.admissionKind,cornerKey=bridge.cornerKey,
+        operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId},nil
 end
 
 -- INITIAL establishes the semantic responsibility. REACTIVATION and
@@ -91,7 +93,9 @@ function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
         current=OuttaMyWay.Regulation.new({
             identity=self.runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",
             governingBasis=commitment.governingBasis,
-            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity,admissionKind=preflight.admissionKind}
+            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity,
+                admissionKind=preflight.admissionKind,cornerKey=preflight.cornerKey,operationId=preflight.operationId,
+                regulatedAssemblyId=preflight.regulatedAssemblyId,protectedAssemblyId=preflight.protectedAssemblyId}
         })
         self.regulationsByCommitmentId[commitment.identity]=current
         return current,nil
@@ -103,14 +107,55 @@ function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
     return current,nil
 end
 
--- The Action-Space donor replacement boundary. The retained
--- Commitment succession and dispatcher cleanup are subordinate collaborators;
--- neither owns the semantic R1 -> R2 boundary.
+local function sameTwoParticipants(current,bridge)
+    local provenance=current and current.provenance or nil
+    local ids=bridge and bridge.assemblyIds or nil
+    if provenance==nil or OuttaMyWay.ValueRecord.length(ids or {})~=2 then return false end
+    local regulated=provenance.regulatedAssemblyId
+    local protected=provenance.protectedAssemblyId
+    if type(regulated)~="string" or type(protected)~="string" or regulated==protected then return false end
+    local seen={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(ids) do
+        if type(id)~="string" or seen[id] then return false end
+        seen[id]=true
+    end
+    return seen[regulated]==true and seen[protected]==true
+end
+
+function Authority:actionSpacePassagePredecessor(picture,evaluated)
+    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
+    if bridge==nil or bridge.architecture~="COOPERATIVE_PASSAGE" then return nil end
+    local exact=self:findRegulation("conflictIdentity",bridge.conflictIdentity)
+    if exact~=nil then return exact,"SAME_CONFLICT_IDENTITY" end
+
+    local matched=nil
+    local matchedKind=nil
+    for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
+        local current=self:getCurrentRegulation(context.commitmentId)
+        local kind=current and current.provenance and current.provenance.admissionKind or nil
+        local participantScoped=kind=="CORNER_RIGHT_OF_WAY" or kind=="FORWARD_INTERSECTION"
+        if current~=nil and participantScoped
+            and sameTwoParticipants(current,bridge)
+            and (current.provenance.operationId==nil or bridge.operationId==nil or current.provenance.operationId==bridge.operationId) then
+            if matched~=nil and matched.identity~=current.identity then return nil,"MULTIPLE_PARTICIPANT_SCOPED_PASSAGE_PREDECESSORS" end
+            matched=current
+            matchedKind=kind
+        end
+    end
+    if matched~=nil then
+        return matched,matchedKind=="CORNER_RIGHT_OF_WAY" and "SAME_PAIR_CORNER_RIGHT_OF_WAY" or "SAME_PAIR_FORWARD_INTERSECTION"
+    end
+    return nil
+end
+
+-- A Passage may succeed either the established opposed-conflict Regulation
+-- carrying the same conflict identity or a participant-scoped Corner Right-of-Way /
+-- Forward Intersection Regulation over the same two current participants.
+-- Situation identity is evidence provenance; it is not Responsibility succession identity.
 function Authority:replaceActionSpaceRegulationWithCooperativePassage(picture,evaluated,readiness,passageTransition,regulationAuthority)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
-    local current=self:findRegulation("conflictIdentity",bridge and bridge.conflictIdentity)
-    if current==nil or bridge==nil or bridge.architecture~="COOPERATIVE_PASSAGE"
-        or current.provenance.conflictIdentity~=bridge.conflictIdentity then
+    local current=self:actionSpacePassagePredecessor(picture,evaluated)
+    if current==nil or bridge==nil or bridge.architecture~="COOPERATIVE_PASSAGE" then
         return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_PREDECESSOR_MISMATCH"
     end
     local preflight,preflightReason=self:preflightActionSpaceRegulationForCooperativePassage(picture,evaluated,readiness)
@@ -138,7 +183,10 @@ end
 -- retained revision and predecessor cleanup have both succeeded.
 function Authority:replaceRegulationWithCooperativePassage(current,preflight,picture,evaluated,readiness,passageTransition,regulationAuthority,cleanupMethod)
     local successorIdentity=self.runtime.identities:issue("RESPONSIBILITY")
-    local applied,reason=passageTransition:transition(picture,evaluated,readiness,{responsibilityIdentity=successorIdentity,deferResponsibilityExposureLog=true})
+    local applied,reason=passageTransition:transition(picture,evaluated,readiness,{
+        responsibilityIdentity=successorIdentity,deferResponsibilityExposureLog=true,
+        rebindCommitmentPurpose=preflight.rebindCommitmentPurpose==true
+    })
     if applied==nil then return nil,reason end
     if applied.commitment.identity~=preflight.commitmentId then
         return nil,"REGULATION_PASSAGE_RETAINED_COMMITMENT_CHANGED"
@@ -152,11 +200,9 @@ function Authority:replaceRegulationWithCooperativePassage(current,preflight,pic
     return applied,nil
 end
 
-function Authority:matchesActionSpacePassage(evaluated)
-    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
-    local current=self:findRegulation("conflictIdentity",bridge and bridge.conflictIdentity)
-    return current~=nil and bridge~=nil and bridge.architecture=="COOPERATIVE_PASSAGE"
-        and current.provenance.conflictIdentity==bridge.conflictIdentity
+function Authority:matchesActionSpacePassage(picture,evaluated)
+    local current=self:actionSpacePassagePredecessor(picture,evaluated)
+    return current~=nil
 end
 
 -- These keys locate implementation substrate; RS-* remains the identity.
@@ -524,40 +570,78 @@ function Authority:replaceFollowerRegulationWithCooperativePassage(picture,evalu
 end
 
 function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,evaluated,readiness)
+    local candidate=selectedCandidate(evaluated)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
-    local current=self:findRegulation("conflictIdentity",bridge and bridge.conflictIdentity)
-    if current==nil or bridge==nil or readiness==nil or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"
-        or bridge.architecture~="COOPERATIVE_PASSAGE" or current.provenance.retainedCommitmentId==nil then
+    local current=self:actionSpacePassagePredecessor(picture,evaluated)
+    if current==nil or bridge==nil or candidate==nil or readiness==nil or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"
+        or bridge.architecture~="COOPERATIVE_PASSAGE" or current.provenance.retainedCommitmentId==nil
+        or candidate.identity~=readiness.candidateId then
         return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
     end
     local targeted=false
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if context.commitmentId==current.provenance.retainedCommitmentId then targeted=true break end
     end
-    if targeted~=true then return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUCCESSION_NOT_TARGETED" end
+    if targeted~=true or OuttaMyWay.ValueRecord.length(picture.commitmentContext or {})~=1 then
+        return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUCCESSION_NOT_TARGETED"
+    end
+
+    local corner=current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local forwardIntersection=current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    if corner and not sameTwoParticipants(current,bridge) then
+        return nil,"CORNER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
+    end
+    if forwardIntersection and not sameTwoParticipants(current,bridge) then
+        return nil,"FORWARD_INTERSECTION_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
+    end
+
     local obligationId=nil
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(current.provenance.retainedCommitmentId)) do
         local basis=obligation.basis
         local outcome=obligation.requiredOutcome
-        if type(basis)=="table" and basis.kind=="ACTION_SPACE_REGULATION" and basis.conflictIdentity==current.provenance.conflictIdentity
-            and type(outcome)=="table" and outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then
+        local actionSpace=type(basis)=="table" and basis.kind=="ACTION_SPACE_REGULATION"
+            and type(outcome)=="table" and outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
+        local forwardIntersectionIntent=type(basis)=="table" and basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION"
+            and type(outcome)=="table" and outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
+        local cornerRightOfWay=type(basis)=="table" and basis.kind=="CORNER_RIGHT_OF_WAY"
+            and type(outcome)=="table" and outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
+        if (actionSpace or forwardIntersectionIntent or cornerRightOfWay) and basis.conflictIdentity==current.provenance.conflictIdentity then
             obligationId=obligation.identity
             break
         end
     end
     if obligationId==nil then return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_OPEN_PREDECESSOR_OBLIGATION_UNAVAILABLE" end
-    return {commitmentId=current.provenance.retainedCommitmentId,conflictIdentity=current.provenance.conflictIdentity,obligationId=obligationId},nil
+    return {
+        commitmentId=current.provenance.retainedCommitmentId,
+        conflictIdentity=current.provenance.conflictIdentity,
+        obligationId=obligationId,
+        predecessorAdmissionKind=current.provenance.admissionKind,
+        rebindCommitmentPurpose=corner or forwardIntersection
+    },nil
 end
 
 function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitment,evaluated,regulationAuthority,picture)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
-    local current=self:findRegulation("conflictIdentity",bridge and bridge.conflictIdentity)
-    if current==nil or bridge==nil or current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
-    local neutralized=regulationAuthority and regulationAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,"COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION") or nil
+    local current=self:getCurrentRegulation(commitment and commitment.identity)
+    if current==nil or bridge==nil then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
+    local corner=current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local forwardIntersection=current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    if corner and not sameTwoParticipants(current,bridge) then return nil,"CORNER_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
+    if forwardIntersection and not sameTwoParticipants(current,bridge) then return nil,"FORWARD_INTERSECTION_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
+    if not corner and not forwardIntersection and current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
+
+    local supersessionReason=corner
+        and "COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
+        or "COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
+    local neutralized=regulationAuthority and regulationAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,supersessionReason) or nil
     if neutralized==nil or neutralized.status~="RELEASED" then return nil,"ACTION_SPACE_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
     local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self.runtime,commitment.identity,{
-        conflictIdentity=current.provenance.conflictIdentity,reason="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
-    },{kind="COOPERATIVE_PASSAGE_ESTABLISHED_CONFLICT_SUCCESSION",conflictIdentity=current.provenance.conflictIdentity})
+        conflictIdentity=current.provenance.conflictIdentity,reason=supersessionReason
+    },{
+        kind=corner and "COOPERATIVE_PASSAGE_CORNER_RIGHT_OF_WAY_SUCCESSION" or "COOPERATIVE_PASSAGE_ESTABLISHED_CONFLICT_SUCCESSION",
+        conflictIdentity=current.provenance.conflictIdentity,
+        successorConflictIdentity=bridge.conflictIdentity
+    })
     if settled==nil then
         logInfo("ACTION_SPACE_REGULATION_PASSAGE_SUPERSESSION commitment=%s conflict=%s physicalLeaseCleared=true obligationSettlement=%s",tostring(commitment.identity),tostring(current.provenance.conflictIdentity),tostring(reason))
     end

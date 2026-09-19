@@ -10,6 +10,7 @@ local Assessment=OuttaMyWay.SpatialConstraintAssessment
 Assessment.__index=Assessment
 local EPSILON_M=0.00001
 local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1
+local CORNER_INTENT_REVELATION_CREEP_KMH = 1
 
 local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
 local function point(v)
@@ -395,128 +396,492 @@ end
 -- not a claim of perpetual clearance; new positive engagement replaces it.
 -- Publications are detached values. Corner knowledge has no Candidate,
 -- Decision, Responsibility, Bounded Authority or Control authority.
-local function assessCornerKnowledge(self,input,projections,relationships)
-    local polygonKey=atlasPolygonKey(input.fieldWorld)
-    local result={polygonKey=polygonKey,status=polygonKey and "EXACT_POLYGON_IDENTITY_SUPPORTED" or "POLYGON_IDENTITY_UNRESOLVED",
-        atlasEntries={},occupancies={},engagements={},positiveDepartures={},events={},decisionAuthority=false,controlAuthority=false,
-        authority="PASSIVE_SITUATION_KNOWLEDGE_ONLY"}
-    if not polygonKey then return result end
-    local atlas=self.cornerAtlases[polygonKey]
-    if not atlas then atlas={polygonKey=polygonKey,corners={},occupancies={},engagements={},departures={}}; self.cornerAtlases[polygonKey]=atlas end
-    for _,relation in OuttaMyWay.ValueRecord.ipairs(relationships) do
-        if relation.spatialOverlay=="CATEGORY_1_CORNER" then learnCorner(atlas,relation,input,result.events) end
+local function closestPointParameter(pointValue,a,b)
+    local dx,dz=b.x-a.x,b.z-a.z
+    local squared=dx*dx+dz*dz
+    if squared<=EPSILON_M*EPSILON_M then return 0,distance(pointValue,a) end
+    local t=((pointValue.x-a.x)*dx+(pointValue.z-a.z)*dz)/squared
+    if t<0 then t=0 elseif t>1 then t=1 end
+    local nearest={x=a.x+t*dx,z=a.z+t*dz}
+    return t,distance(pointValue,nearest)
+end
+
+local function currentPhysicalReachEvidence(physical,p)
+    local origin={x=p.currentX,z=p.currentZ}
+    local best=nil
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical and physical.primitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
+            local centreDistanceM=distance(origin,{x=primitive.x,z=primitive.z})
+            local reachM=centreDistanceM+primitive.radius
+            if best==nil or reachM>best.reachM+EPSILON_M then
+                best={
+                    primitiveId=primitive.identity,
+                    primitiveRadiusM=primitive.radius,
+                    centreDistanceFromA8M=centreDistanceM,
+                    reachM=reachM
+                }
+            end
+        end
     end
+    return best
+end
+
+local function nativeCornerProgressRate(motion)
+    local native=motion and motion.nativeFieldWork and motion.nativeFieldWork.nativeDriveCommand or nil
+    local nativeKmh=native and tonumber(native.maxSpeedKmh) or nil
+    if native~=nil and native.valid==true and finite(nativeKmh) and nativeKmh>0 then
+        return nativeKmh/3.6,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED",nativeKmh
+    end
+    return nil,"GIANTS_NATIVE_PROGRESS_OPPORTUNITY_UNAVAILABLE",nil
+end
+
+-- Current Corner Occupancy is positive physical Reality, not a predicted turn
+-- route. Missing overlap has no negative-clearance authority.
+local function currentCornerOccupancy(feature,physical,motion,input)
+    if type(feature)~="table" or type(feature.representativePoint)~="table"
+        or type(physical)~="table" or motion==nil or type(motion.assemblyId)~="string"
+        or type(motion.assemblyReferenceKey)~="string" then return nil end
+    local representative=feature.representativePoint
+    local quantum=tonumber(input and input.fieldWorld and input.fieldWorld.quantizationMetres) or 0
+    local tolerance=math.max(0,quantum)*math.sqrt(2)
+    local best=nil
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
+            local centreDistanceM=distance(representative,{x=primitive.x,z=primitive.z})
+            local clearanceM=centreDistanceM-primitive.radius
+            if clearanceM<=tolerance+EPSILON_M and (best==nil or clearanceM<best.clearanceM) then
+                best={
+                    cornerKey=feature.cornerKey,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+                    assemblyId=motion.assemblyId,assemblyReferenceKey=motion.assemblyReferenceKey,
+                    sourceJobToken=motion.sourceJobToken,observationSnapshotId=input.observationSnapshotId,
+                    observationEpoch=input.observationEpoch,primitiveId=primitive.identity,
+                    primitiveRadiusM=primitive.radius,centreDistanceToCornerM=centreDistanceM,
+                    clearanceM=clearanceM,quantizationToleranceM=tolerance,
+                    witness="CURRENT_POSITIVE_PHYSICAL_PRIMITIVE_OVERLAPS_STRUCTURAL_CORNER_FEATURE",
+                    negativeClearanceAuthority=false,
+                    provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
+                }
+            end
+        end
+    end
+    return best
+end
+
+-- Corner Approach Demand is unilateral.  It is established only when the
+-- current productive A8 bounded continuation positively carries the assembly's
+-- current physical demand into a positively interpreted structural Corner
+-- Feature.  Direct translated primitive contact remains the strongest witness.
+-- Where that misses the feature's representative point, the bounded Field World
+-- contact may still establish demand when it lies inside the assembly-specific
+-- reach already represented by current positive physical primitives.  This is
+-- bounded current demand, not a predicted GIANTS turn route and not a universal
+-- Corner radius.
+local function cornerApproachDemand(feature,p,motion,productive,path,physical,input)
+    if type(feature)~="table" or type(feature.representativePoint)~="table"
+        or not motion or not productive or not path or p.status~="SUPPORTED"
+        or motion.assemblyReferenceKey==nil or motion.sourceJobToken==nil
+        or productive.jobToken~=motion.sourceJobToken
+        or productive.productivePositive~=true or productive.isTurn==true
+        or motion.localIntentClassification=="TURNING"
+        or (path.intentEpoch~=nil and motion.intentEpoch~=nil and path.intentEpoch~=motion.intentEpoch)
+        or type(physical)~="table" then return nil end
+    if feature.ringKind~=p.boundaryRingKind or tonumber(feature.ringIndex)~=tonumber(p.boundaryRingIndex) then return nil end
+
+    local representative=feature.representativePoint
+    local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
+    if along<-EPSILON_M then return nil end
+
+    local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
+    local translatedIntersection=nil
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
+            local startValue={x=primitive.x,z=primitive.z}
+            local endValue={x=primitive.x+deltaX,z=primitive.z+deltaZ}
+            local parameter,sweepDistance=closestPointParameter(representative,startValue,endValue)
+            if sweepDistance<=primitive.radius+EPSILON_M
+                and (translatedIntersection==nil or sweepDistance<translatedIntersection.sweepDistanceM) then
+                translatedIntersection={
+                    primitiveId=primitive.identity,primitiveRadiusM=primitive.radius,
+                    sweepDistanceM=sweepDistance,closestSweepParameter=parameter,
+                    sweepStart=startValue,sweepEnd=endValue
+                }
+            end
+        end
+    end
+
+    local physicalReach=currentPhysicalReachEvidence(physical,p)
+    local contactDistanceToFeatureM=distance(representative,{x=p.contactX,z=p.contactZ})
+    local reachSupported=physicalReach~=nil
+        and contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
+    if translatedIntersection==nil and not reachSupported then return nil end
+
+    local witness=translatedIntersection~=nil
+        and "CURRENT_PRODUCTIVE_A8_SWEEP_OF_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTS_STRUCTURAL_CORNER_FEATURE"
+        or "CURRENT_PRODUCTIVE_A8_BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH_OF_STRUCTURAL_CORNER_FEATURE"
+    local arrivalDistanceM=p.boundaryDistanceM
+    if translatedIntersection~=nil and finite(translatedIntersection.closestSweepParameter) and finite(p.boundaryDistanceM) then
+        arrivalDistanceM=math.max(0,math.min(1,translatedIntersection.closestSweepParameter))*p.boundaryDistanceM
+    end
+    local arrivalRateMps,arrivalRateSource,nativeMaxSpeedKmh=nativeCornerProgressRate(motion)
+    local timeToCornerSec=nil
+    if finite(arrivalDistanceM) and arrivalDistanceM>=0 and finite(arrivalRateMps) and arrivalRateMps>0 then
+        timeToCornerSec=arrivalDistanceM/arrivalRateMps
+    end
+
+    return {
+        cornerKey=feature.cornerKey,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+        assemblyId=p.assemblyId,assemblyReferenceKey=motion.assemblyReferenceKey,sourceJobToken=motion.sourceJobToken,
+        observationSnapshotId=input.observationSnapshotId,observationEpoch=input.observationEpoch,
+        futureSpaceIdentity=p.futureSpaceIdentity,
+        approachDistanceM=math.max(0,along),
+        arrivalDistanceM=arrivalDistanceM,timeToCornerSec=timeToCornerSec,
+        arrivalRateMps=arrivalRateMps,arrivalRateSource=arrivalRateSource,
+        nativeMaxSpeedKmh=nativeMaxSpeedKmh,
+        physicalSweepEvidence=translatedIntersection,
+        physicalDemandEvidence={
+            mode=translatedIntersection~=nil and "TRANSLATED_POSITIVE_PHYSICAL_PRIMITIVE_INTERSECTION"
+                or "BOUNDARY_CONTACT_WITHIN_CURRENT_PHYSICAL_REACH",
+            boundaryContact={x=p.contactX,z=p.contactZ},
+            contactDistanceToFeatureM=contactDistanceToFeatureM,
+            currentPhysicalReach=physicalReach
+        },
+        witness=witness,
+        negativeClearanceAuthority=false,
+        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
+    }
+end
+
+local function featureEntry(feature,input)
+    local entry=copyKnowledge(feature)
+    entry.polygonKey=input.fieldWorldReferenceKey
+    entry.vertex={x=feature.representativePoint.x,z=feature.representativePoint.z}
+    entry.discoveryProvenance={
+        observationSnapshotId=input.observationSnapshotId,
+        source="POSITIVE_STRUCTURAL_FIELD_SHAPE",
+        fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+        snapshotReferenceKey=input.fieldWorld and input.fieldWorld.representativeSnapshotReferenceKey
+    }
+    return entry
+end
+
+local function positiveProductiveA8(productive,motion,engagement,input)
+    return productive~=nil and motion~=nil
+        and productive.jobToken==engagement.sourceJobToken
+        and productive.productivePositive==true and productive.isTurn~=true
+        and motion.localIntentClassification~="TURNING"
+        and finite(input.observationEpoch)
+end
+
+local function featureBehindCurrentA8(feature,p)
+    if p.status~="SUPPORTED" then return false,nil end
+    local representative=feature.representativePoint
+    local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
+    return along<-EPSILON_M,along
+end
+
+-- Positive Corner Departure is a current A8 crossing witness.  When GIANTS
+-- reveals a forward/reverse transition during retained Corner Engagement, the
+-- last such transition is the stronger assembly-specific anchor.  Otherwise
+-- the field-scoped structural feature crossing remains the conservative path.
+local function cornerDepartureEvidence(feature,p,productive,motion,input,engagement,currentDemand,currentOccupancy)
+    if currentOccupancy~=nil then return false,"CORNER_OCCUPANCY_REMAINS_POSITIVE",false end
+    if currentDemand~=nil then return false,"CORNER_APPROACH_DEMAND_REMAINS_POSITIVE",false end
+    if not positiveProductiveA8(productive,motion,engagement,input) then
+        return false,"FRESH_PRODUCTIVE_A8_UNAVAILABLE",false
+    end
+    if input.observationEpoch<=tonumber(engagement.establishedObservationEpoch or -math.huge) then
+        return false,"A8_NOT_FRESHER_THAN_CORNER_ADMISSION",false
+    end
+
+    local transition=engagement.finalDirectionTransition
+    if type(transition)=="table" and finite(transition.x) and finite(transition.z) then
+        local along=(transition.x-p.currentX)*p.headingX+(transition.z-p.currentZ)*p.headingZ
+        if along<-EPSILON_M then
+            return true,"A8_CROSSED_FINAL_MANOEUVRE_DIRECTION_TRANSITION_BOUNDARY",true,along
+        end
+        return false,"FINAL_DIRECTION_TRANSITION_BOUNDARY_NOT_CROSSED",true,along
+    end
+
+    if engagement.hasObservedManoeuvring==true
+        and finite(engagement.manoeuvringObservationEpoch)
+        and input.observationEpoch<=engagement.manoeuvringObservationEpoch then
+        return false,"A8_NOT_FRESHER_THAN_MANOEUVRING_EVIDENCE",false
+    end
+
+    local crossed,along=featureBehindCurrentA8(feature,p)
+    if crossed then
+        return true,engagement.hasObservedManoeuvring==true
+            and "A8_CROSSED_FIELD_SCOPED_CORNER_BOUNDARY_AFTER_MANOEUVRING"
+            or "CONTINUOUS_A8_CROSSED_FIELD_SCOPED_CORNER_BOUNDARY",true,along
+    end
+    return false,"FIELD_SCOPED_CORNER_BOUNDARY_NOT_CROSSED",true,along
+end
+
+local function observeDirectionTransition(engagement,motion,isManoeuvring,input,entry,result)
+    local native=motion and motion.nativeFieldWork and motion.nativeFieldWork.nativeDriveCommand or nil
+    local current=nil
+    if native~=nil and native.valid==true
+        and (native.moveForwards==true or native.moveForwards==false) then
+        current=native.moveForwards
+    end
+    if current~=true and current~=false then
+        engagement.wasCurrentlyManoeuvring=isManoeuvring==true
+        return
+    end
+    local previous=engagement.lastNativeMoveForwards
+    if previous~=nil and previous~=current
+        and (isManoeuvring==true or engagement.wasCurrentlyManoeuvring==true)
+        and finite(motion.poseX) and finite(motion.poseZ) then
+        engagement.finalDirectionTransition={
+            x=motion.poseX,z=motion.poseZ,
+            fromMoveForwards=previous,toMoveForwards=current,
+            observationSnapshotId=input.observationSnapshotId,
+            observationEpoch=input.observationEpoch,
+            source="GIANTS_IMMEDIATE_NATIVE_DIRECTION_TRANSITION"
+        }
+        cornerEvent(result.events,"CORNER_DIRECTION_TRANSITION_OBSERVED",entry,{
+            assemblyId=engagement.assemblyId,sourceJobToken=engagement.sourceJobToken,
+            observationSnapshotId=input.observationSnapshotId,
+            reason=previous and "FORWARD_TO_REVERSE" or "REVERSE_TO_FORWARD"
+        })
+    end
+    engagement.lastNativeMoveForwards=current
+    engagement.wasCurrentlyManoeuvring=isManoeuvring==true
+end
+
+local function assessCornerKnowledge(self,input,projections,relationships)
+    local shape=self.structuralFieldShapeAssessment:assess(input.fieldWorld,input.fieldWorldReferenceKey)
+    local result={
+        fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+        polygonKey=input.fieldWorldReferenceKey,
+        status=shape.status,
+        structuralFieldShape=copyKnowledge(shape),
+        atlasEntries={},approachDemands={},occupancies={},engagements={},positiveDepartures={},sharedCornerSituations={},events={},
+        decisionAuthority=false,controlAuthority=false,authority="SITUATION_KNOWLEDGE_ONLY"
+    }
+    if OuttaMyWay.ValueRecord.length(shape.cornerFeatures or {})==0 then return result end
+
+    local atlas=self.cornerAtlases[input.fieldWorldReferenceKey]
+    if atlas==nil then
+        atlas={fieldWorldReferenceKey=input.fieldWorldReferenceKey,engagements={},departures={},publishedFeatures={}}
+        self.cornerAtlases[input.fieldWorldReferenceKey]=atlas
+    end
+
     local motions=byAssembly(input.motionEvidence)
     local productive=byAssembly(input.productiveContinuationKnowledge)
-    local physical=byAssembly(input.physicalSpaceEvidence)
     local futures=byAssembly(input.futureSpace)
+    local physical=byAssembly(input.physicalSpaceEvidence)
     local currentIds={}
     for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do currentIds[p.assemblyId]=true end
-    local keys={}
-    for key in OuttaMyWay.ValueRecord.pairs(atlas.corners) do keys[#keys+1]=key end
-    table.sort(keys)
-    for _,key in OuttaMyWay.ValueRecord.ipairs(keys) do
-        local entry=atlas.corners[key]
+
+    local occupanciesByCorner={}
+    local constrainedOccupancyByAssembly={}
+    for _,feature in OuttaMyWay.ValueRecord.ipairs(shape.cornerFeatures or {}) do
+        local byReference={}
+        occupanciesByCorner[feature.cornerKey]=byReference
+        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do
+            local motion=motions[assemblyId]
+            local occupancy=currentCornerOccupancy(feature,physical[assemblyId],motion,input)
+            if occupancy~=nil then
+                byReference[occupancy.assemblyReferenceKey]=occupancy
+                result.occupancies[#result.occupancies+1]=copyKnowledge(occupancy)
+                local existing=constrainedOccupancyByAssembly[assemblyId]
+                if existing==nil or occupancy.clearanceM<existing.clearanceM then
+                    constrainedOccupancyByAssembly[assemblyId]=occupancy
+                end
+            end
+        end
+    end
+
+    for _,feature in OuttaMyWay.ValueRecord.ipairs(shape.cornerFeatures or {}) do
+        local entry=featureEntry(feature,input)
         result.atlasEntries[#result.atlasEntries+1]=copyKnowledge(entry)
-        local engagements=atlas.engagements[key] or {}; atlas.engagements[key]=engagements
-        local departures=atlas.departures[key] or {}; atlas.departures[key]=departures
-        local previousOccupancies=atlas.occupancies[key] or {}
-        local occupancies={}; atlas.occupancies[key]=occupancies
-        -- Current Operation membership is lifecycle-owned. Atlas survival does
-        -- not resurrect worker state after that worker leaves current membership.
+        if atlas.publishedFeatures[feature.cornerKey]~=true then
+            atlas.publishedFeatures[feature.cornerKey]=true
+            cornerEvent(result.events,"CORNER_ATLAS_DISCOVERED",entry,{
+                observationSnapshotId=input.observationSnapshotId,
+                reason="POSITIVE_STRUCTURAL_FIELD_SHAPE"
+            })
+        end
+
+        local engagements=atlas.engagements[feature.cornerKey] or {}
+        atlas.engagements[feature.cornerKey]=engagements
+        local departures=atlas.departures[feature.cornerKey] or {}
+        atlas.departures[feature.cornerKey]=departures
+        local currentOccupancies=occupanciesByCorner[feature.cornerKey] or {}
+
         for reference,record in OuttaMyWay.ValueRecord.pairs(engagements) do
             if not currentIds[record.assemblyId] then engagements[reference]=nil end
         end
         for reference,record in OuttaMyWay.ValueRecord.pairs(departures) do
             if not currentIds[record.assemblyId] then departures[reference]=nil end
         end
-        local demandWitnesses={}
-        for _,other in OuttaMyWay.ValueRecord.ipairs(projections) do
-            local witness=cornerDemandWitness(entry,other,motions[other.assemblyId],productive[other.assemblyId],
-                continuation(futures[other.assemblyId]),input)
-            if witness then demandWitnesses[#demandWitnesses+1]=witness end
+
+        local demandsByReference={}
+        for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
+            local motion=motions[p.assemblyId]
+            local path=continuation(futures[p.assemblyId])
+            local demand=cornerApproachDemand(feature,p,motion,productive[p.assemblyId],path,physical[p.assemblyId],input)
+            if demand~=nil then
+                demandsByReference[demand.assemblyReferenceKey]=demand
+                result.approachDemands[#result.approachDemands+1]=copyKnowledge(demand)
+            end
         end
+
         for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
             local motion=motions[p.assemblyId]
             local reference=motion and motion.assemblyReferenceKey
             local token=motion and motion.sourceJobToken
             if reference~=nil and token~=nil then
                 local engagement=engagements[reference]
-                if engagement and engagement.sourceJobToken~=token then engagements[reference]=nil; engagement=nil end
-                if departures[reference] and departures[reference].sourceJobToken~=token then departures[reference]=nil end
-                local overlap=overlapWitness(entry,physical[p.assemblyId],input.fieldWorld)
-                -- A still-current positive departure must not oscillate back to
-                -- engagement just because a trailing primitive still overlaps.
+                if engagement~=nil and engagement.sourceJobToken~=token then
+                    engagements[reference]=nil
+                    engagement=nil
+                end
+                if departures[reference]~=nil and departures[reference].sourceJobToken~=token then
+                    departures[reference]=nil
+                end
+
+                local demand=demandsByReference[reference]
+                local occupancy=currentOccupancies[reference]
                 local departed=departures[reference]
-                local stillDeparted=departed and departureEvidence(entry,p,productive[p.assemblyId],motion,input,departed)==true
-                -- Occupancy-only evidence is current, never inferred from a
-                -- missing DISC. Genuine Engagement has its own continuity rule.
-                if overlap then
-                    local occupancy={cornerKey=key,polygonKey=polygonKey,assemblyId=p.assemblyId,assemblyReferenceKey=reference,
-                        sourceJobToken=token,observationSnapshotId=input.observationSnapshotId,overlapEvidence=overlap,
-                        negativeClearanceAuthority=false}
-                    occupancies[reference]=occupancy
-                    result.occupancies[#result.occupancies+1]=copyKnowledge(occupancy)
-                    local previous=previousOccupancies[reference]
-                    if not previous or previous.sourceJobToken~=token then
-                        cornerEvent(result.events,"CORNER_OCCUPANCY_ESTABLISHED",entry,{assemblyId=p.assemblyId,
-                            sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
-                    end
+                if engagement==nil and (demand~=nil or occupancy~=nil) and departed==nil then
+                    engagement={
+                        cornerKey=feature.cornerKey,polygonKey=input.fieldWorldReferenceKey,
+                        assemblyId=p.assemblyId,assemblyReferenceKey=reference,sourceJobToken=token,
+                        establishedObservationSnapshotId=input.observationSnapshotId,
+                        establishedObservationEpoch=input.observationEpoch,
+                        approachEvidence=copyKnowledge(demand),occupancyEvidence=copyKnowledge(occupancy),
+                        relevanceEvidenceState=occupancy~=nil and "POSITIVE_CURRENT_CORNER_OCCUPANCY" or "POSITIVE_CORNER_APPROACH_DEMAND",
+                        currentEvidenceState="CORNER_ENGAGEMENT_RETAINED",
+                        hasObservedManoeuvring=false,isDepartureGateOpen=false
+                    }
+                    engagements[reference]=engagement
+                    cornerEvent(result.events,"CORNER_ENGAGEMENT_ESTABLISHED",entry,{
+                        assemblyId=p.assemblyId,sourceJobToken=token,
+                        observationSnapshotId=input.observationSnapshotId,
+                        reason=occupancy~=nil and "UNILATERAL_CORNER_OCCUPANCY_ADMISSION" or "UNILATERAL_CORNER_ADMISSION"
+                    })
                 end
-                local relevantDemand={}
-                for _,witness in OuttaMyWay.ValueRecord.ipairs(demandWitnesses) do
-                    if witness.assemblyId~=p.assemblyId and witness.assemblyReferenceKey~=reference then
-                        relevantDemand[#relevantDemand+1]=witness
-                    end
-                end
-                if not engagement and overlap and #relevantDemand>0 and not stillDeparted then
-                    engagement={cornerKey=key,polygonKey=polygonKey,assemblyId=p.assemblyId,assemblyReferenceKey=reference,
-                        sourceJobToken=token,establishedObservationSnapshotId=input.observationSnapshotId,
-                        entryEvidence=overlap,establishingDemandEvidence=copyKnowledge(relevantDemand),hasObservedManoeuvring=false,isDepartureGateOpen=false}
-                    engagements[reference]=engagement; departures[reference]=nil
-                    cornerEvent(result.events,"CORNER_ENGAGEMENT_ESTABLISHED",entry,{assemblyId=p.assemblyId,sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
-                end
-                if engagement then
+
+                if engagement~=nil then
                     engagement.assemblyId=p.assemblyId
-                    engagement.currentRelevantDemand=copyKnowledge(relevantDemand)
-                    engagement.relevanceEvidenceState=#relevantDemand>0 and "POSITIVE_CURRENT_DEMAND" or "UNRESOLVED_RETAINED_ENGAGEMENT"
-                    engagement.currentEvidenceState=overlap and "POSITIVE_CURRENT_OVERLAP" or "RETAINED_WITHOUT_DEPARTURE_EVIDENCE"
-                    local turning=productive[p.assemblyId] and productive[p.assemblyId].jobToken==token and productive[p.assemblyId].isTurn==true
+                    engagement.currentApproachDemand=copyKnowledge(demand)
+                    engagement.currentOccupancy=copyKnowledge(occupancy)
+                    engagement.relevanceEvidenceState=occupancy~=nil and "POSITIVE_CURRENT_CORNER_OCCUPANCY"
+                        or (demand~=nil and "POSITIVE_CURRENT_CORNER_APPROACH_DEMAND" or "RETAINED_CORNER_ENGAGEMENT")
+                    local turning=productive[p.assemblyId] and productive[p.assemblyId].jobToken==token
+                        and productive[p.assemblyId].isTurn==true
                     turning=turning or motion.localIntentClassification=="TURNING"
                     engagement.isCurrentlyManoeuvring=turning==true
                     if turning then
-                        if not engagement.hasObservedManoeuvring then
-                            cornerEvent(result.events,"CORNER_MANOEUVRING_OBSERVED",entry,{assemblyId=p.assemblyId,sourceJobToken=token,observationSnapshotId=input.observationSnapshotId})
+                        if engagement.hasObservedManoeuvring~=true then
+                            cornerEvent(result.events,"CORNER_MANOEUVRING_OBSERVED",entry,{
+                                assemblyId=p.assemblyId,sourceJobToken=token,
+                                observationSnapshotId=input.observationSnapshotId
+                            })
                         end
-                        engagement.hasObservedManoeuvring=true; engagement.manoeuvringObservationSnapshotId=input.observationSnapshotId
+                        engagement.hasObservedManoeuvring=true
+                        engagement.manoeuvringObservationSnapshotId=input.observationSnapshotId
                         engagement.manoeuvringObservationEpoch=input.observationEpoch
                     end
-                    local positive,reason,gate,alongM,edgeKey=departureEvidence(entry,p,productive[p.assemblyId],motion,input,engagement)
-                    if gate and (not engagement.isDepartureGateOpen or engagement.departureReason~=reason) then
-                        cornerEvent(result.events,"CORNER_DEPARTURE_REASSESSMENT",entry,{assemblyId=p.assemblyId,sourceJobToken=token,
-                            observationSnapshotId=input.observationSnapshotId,reason=reason,cornerAlongAxisM=alongM,edgeKey=edgeKey})
-                    end
-                    engagement.isDepartureGateOpen=gate; engagement.departureReason=reason
-                    engagement.cornerAlongAxisM=alongM; engagement.currentTerminatingEdgeKey=edgeKey
+                    observeDirectionTransition(engagement,motion,turning,input,entry,result)
+
+                    local positive,reason,gate,alongM=cornerDepartureEvidence(
+                        feature,p,productive[p.assemblyId],motion,input,engagement,demand,occupancy)
+                    engagement.isDepartureGateOpen=gate
+                    engagement.departureReason=reason
+                    engagement.cornerAlongAxisM=alongM
+                    engagement.currentEvidenceState=turning and "CORNER_MANOEUVRING"
+                        or (positive and "POSITIVE_CORNER_DEPARTURE" or "CORNER_ENGAGEMENT_RETAINED")
                     if positive then
                         engagement.isPositiveDeparture=true
                         engagement.departureObservationSnapshotId=input.observationSnapshotId
-                        departures[reference]=copyKnowledge(engagement); engagements[reference]=nil
-                        cornerEvent(result.events,"POSITIVE_CORNER_DEPARTURE",entry,{assemblyId=p.assemblyId,sourceJobToken=token,
-                            observationSnapshotId=input.observationSnapshotId,reason=reason,cornerAlongAxisM=alongM,edgeKey=edgeKey})
+                        engagement.departureObservationEpoch=input.observationEpoch
+                        departures[reference]=copyKnowledge(engagement)
+                        engagements[reference]=nil
+                        cornerEvent(result.events,"POSITIVE_CORNER_DEPARTURE",entry,{
+                            assemblyId=p.assemblyId,sourceJobToken=token,
+                            observationSnapshotId=input.observationSnapshotId,
+                            reason=reason,cornerAlongAxisM=alongM
+                        })
                     else
                         result.engagements[#result.engagements+1]=copyKnowledge(engagement)
                     end
                 end
-                if departures[reference] then result.positiveDepartures[#result.positiveDepartures+1]=copyKnowledge(departures[reference]) end
+                if departures[reference]~=nil then
+                    result.positiveDepartures[#result.positiveDepartures+1]=copyKnowledge(departures[reference])
+                end
             end
+        end
+
+        local participants={}
+        for _,engagement in OuttaMyWay.ValueRecord.pairs(engagements) do
+            local currentDemand=demandsByReference[engagement.assemblyReferenceKey]
+            local currentOccupancy=currentOccupancies[engagement.assemblyReferenceKey]
+            local constrainedOccupancy=constrainedOccupancyByAssembly[engagement.assemblyId]
+            participants[engagement.assemblyId]={
+                assemblyId=engagement.assemblyId,assemblyReferenceKey=engagement.assemblyReferenceKey,
+                engagement=true,approachDemand=currentDemand~=nil,
+                currentCornerOccupancy=currentOccupancy~=nil,
+                currentConstrainedCornerOccupancy=constrainedOccupancy~=nil,
+                occupiedCornerKey=constrainedOccupancy and constrainedOccupancy.cornerKey or nil,
+                timeToCornerSec=currentDemand and currentDemand.timeToCornerSec or nil,
+                arrivalDistanceM=currentDemand and currentDemand.arrivalDistanceM or nil,
+                arrivalRateSource=currentDemand and currentDemand.arrivalRateSource or nil,
+                nativeMaxSpeedKmh=currentDemand and currentDemand.nativeMaxSpeedKmh or nil,
+                establishedObservationEpoch=engagement.establishedObservationEpoch
+            }
+        end
+        for reference,demand in OuttaMyWay.ValueRecord.pairs(demandsByReference) do
+            local item=participants[demand.assemblyId]
+            if item==nil then
+                local constrainedOccupancy=constrainedOccupancyByAssembly[demand.assemblyId]
+                item={
+                    assemblyId=demand.assemblyId,assemblyReferenceKey=reference,engagement=false,approachDemand=true,
+                    currentCornerOccupancy=currentOccupancies[reference]~=nil,
+                    currentConstrainedCornerOccupancy=constrainedOccupancy~=nil,
+                    occupiedCornerKey=constrainedOccupancy and constrainedOccupancy.cornerKey or nil
+                }
+                participants[demand.assemblyId]=item
+            else
+                item.approachDemand=true
+            end
+            item.approachDistanceM=demand.approachDistanceM
+            item.timeToCornerSec=demand.timeToCornerSec
+            item.arrivalDistanceM=demand.arrivalDistanceM
+            item.arrivalRateSource=demand.arrivalRateSource
+            item.nativeMaxSpeedKmh=demand.nativeMaxSpeedKmh
+        end
+        local participantList={}
+        for _,item in OuttaMyWay.ValueRecord.pairs(participants) do participantList[#participantList+1]=item end
+        table.sort(participantList,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+        if #participantList>=2 then
+            result.sharedCornerSituations[#result.sharedCornerSituations+1]={
+                identity="shared-corner:"..tostring(input.operationId)..":"..tostring(feature.cornerKey),
+                operationId=input.operationId,cornerKey=feature.cornerKey,
+                fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+                participants=participantList,competingDemand=true,
+                regulationSpeedKmh=CORNER_INTENT_REVELATION_CREEP_KMH,
+                allocationStatus="UNALLOCATED_SITUATION_MEANING",
+                decisionAuthority=false,controlAuthority=false,
+                provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
+            }
         end
     end
     return result
 end
 
-function Assessment.new() return setmetatable({lastSignatures={},cornerAtlases={}},Assessment) end
-function Assessment:reset() self.lastSignatures={}; self.cornerAtlases={} end
+function Assessment.new()
+    return setmetatable({lastSignatures={},cornerAtlases={},structuralFieldShapeAssessment=OuttaMyWay.StructuralFieldShapeAssessment.new()},Assessment)
+end
+function Assessment:reset()
+    self.lastSignatures={}; self.cornerAtlases={}
+    if self.structuralFieldShapeAssessment~=nil then self.structuralFieldShapeAssessment:reset() end
+end
 function Assessment:assess(input)
     local futures,motions=byAssembly(input.futureSpace),byAssembly(input.motionEvidence); local projections={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do projections[#projections+1]=projection(input.fieldWorld,input.fieldWorldReferenceKey,id,futures[id],motions[id]) end

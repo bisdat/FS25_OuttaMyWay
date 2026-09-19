@@ -49,7 +49,10 @@ def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
     assert candidate.count("fixedRegulationSpeedKmh") == 2
     assert "local magnitude=bridge.fixedRegulationSpeedKmh" in authority
     assert 'if type(magnitude)~="number" or magnitude~=magnitude or magnitude<=0 or magnitude==math.huge then return nil end' in authority
-    assert "local initialCap=fixedForwardIntersection and bridge.fixedRegulationSpeedKmh or (tonumber(envelope.capKmh) or 0)" in authority
+    assert 'local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"' in authority
+    assert "if fixedForwardIntersection or fixedCornerRightOfWay then" in authority
+    assert "initialCap=bridge.fixedRegulationSpeedKmh" in authority
+    assert "initialCap=tonumber(envelope.capKmh) or 0" in authority
     for path in (ROOT / "scripts").rglob("*.lua"):
         assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in path.read_text(), path
     assert "FORWARD_INTERSECTION_TIMEOUT" not in authority

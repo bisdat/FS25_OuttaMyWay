@@ -263,8 +263,8 @@ local function findActionSpaceRegulationObligation(runtime,commitmentId,conflict
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         local basis=obligation.basis
         local outcome=obligation.requiredOutcome
-        local supportedBasis=type(basis)=="table" and (basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION")
-        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED")
+        local supportedBasis=type(basis)=="table" and (basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION" or basis.kind=="CORNER_RIGHT_OF_WAY")
+        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES")
         if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
@@ -299,7 +299,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
     if obligation==nil then
         local specification=nil
         for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
-            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED") then specification=item break end
+            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES") then specification=item break end
         end
         if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
@@ -335,8 +335,10 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_LIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
+    local corner=hasPrefix(responsibility,"corner-right-of-way:")
     local settlementMode=nil
-    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION" then
+    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
+        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY" then
         settlementMode="BASIS_CESSATION"
     elseif forward then
         local evidenceKind=evidence and evidence.kind or nil
@@ -360,11 +362,11 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner
     if #remaining==0 and ownedTrafficPurpose then
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-        local terminalEvidenceKind="ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"
+        local terminalEvidenceKind=corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED" or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"
         if forward then
             terminalEvidenceKind=(evidence and evidence.kind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
@@ -394,7 +396,7 @@ end
 
 local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"forward-intersection-regulation:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
 end
 
 local function endedDependency(record,ended)
@@ -705,7 +707,7 @@ end
 -- purpose (for example Follower Boundary protection) is succeeded by the joint
 -- TS015 Reposition; the fresh restoration/handoff obligation and both progress
 -- authority tokens are then attached to that same Commitment.
-function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
+function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,semantics)
     if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
     local candidate=selectedCandidate(evaluated)
     if candidate==nil or candidate.capability~="REPOSITION" or type(candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge)~="table" then
@@ -726,6 +728,23 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
     local commitmentId=application.commitmentId
     local record=runtime.commitments:get(commitmentId)
     if record==nil or record.state~="ACTIVE" then return nil,"COOPERATIVE_PASSAGE_REVISED_COMMITMENT_NOT_ACTIVE" end
+
+    if semantics and semantics.rebindCommitmentPurpose==true then
+        local currentRequirement=record.governingBasis and record.governingBasis.responsibilityKey or ""
+        local successorBasis=candidate.evidenceBasis and candidate.evidenceBasis.governingBasis or nil
+        local successorRequirement=successorBasis and successorBasis.responsibilityKey or ""
+        local predecessorSupportsRebind=hasPrefix(currentRequirement,"corner-right-of-way:")
+            or hasPrefix(currentRequirement,"forward-intersection-regulation:")
+        if not predecessorSupportsRebind
+            or not hasPrefix(successorRequirement,"cooperative-passage:") then
+            return nil,"COOPERATIVE_PASSAGE_PURPOSE_REBIND_NOT_AUTHORISED"
+        end
+        record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{
+            objective=candidate.purpose,
+            governingBasis=successorBasis,
+            epoch=runtime.epochs:next()
+        }))
+    end
 
     local obligation=nil
     for _,open in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
