@@ -74,6 +74,26 @@ The implementation MAY use accepted comparison cost, preference bands, compatibi
 
 A deterministic tie-break is allowed only where semantic preference is otherwise equivalent or Architecture explicitly permits deterministic ordering. It MUST NOT manufacture semantic preference where ambiguity is required to fail closed.
 
+### Shared Corner Arrival Priority
+
+When Candidate Support supplies the two admissible temporary right-of-way Regulation alternatives for one Shared Corner Situation, Decision owns the current allocation.
+
+Decision MUST apply **Corner Arrival Priority** from current Situation evidence:
+
+1. if exactly one participant has positive current constrained Corner Occupancy, protect that participant and regulate the non-occupant;
+2. otherwise, when both participants have current supported time-to-Corner under native/unrestricted progression opportunity, protect the earlier arrival and regulate the later arrival;
+3. if only one participant has current supported arrival evidence and neither is a current occupant, that positive current arrival evidence MAY be preferred over a participant represented only by retained lifecycle state;
+4. Corner Engagement establishment epoch/age MUST NOT be used as right-of-way priority; and
+5. current realised speed after Regulation MUST NOT feed back as the arrival-rate basis for the same allocation.
+
+Fresh occupancy or arrival evidence MAY support role reassignment while the Shared Corner Situation remains current. Headland churn, reverse/turn state by itself, vehicle class, agronomy, historical leader/follower identity and deterministic Candidate identity MUST NOT manufacture a different Corner priority.
+
+If occupancy/arrival evidence is semantically tied or unresolved and no accepted incumbent-preservation rule distinguishes the alternatives, Decision MUST produce explicit non-selection rather than invent priority.
+
+> **Corner Engagement Age != Corner Arrival Priority.**
+
+> **Occupied Corner = Arrival Now.**
+
 ### Explicit non-selection
 
 A Decision MUST produce an explicit semantic outcome even when no Candidate is selected.
