@@ -165,7 +165,7 @@ The overlay may influence whether temporal coordination is justified, which part
 
 Constrained-space occupancy creates an **evacuation preference**. Preserve the occupant's native opportunity to reveal intent and vacate; regulate a relevant worker in less-constrained space where necessary. Do not immobilise the party that must move to free scarce space when another can cheaply wait outside it.
 
-For Category-1 Corner competition, positive current Corner Occupancy is **arrival now**. The occupant receives temporary right-of-way over a competing non-occupant so it can create or clear scarce space.
+For Category-1 Corner competition, positive current Corner Occupancy is **arrival now**. Once positive evidence establishes that an engaged assembly has arrived in the Corner decision domain, that arrival establishes **Corner Incumbency** until Positive Corner Departure or another explicit supported terminal outcome. The incumbent receives temporary right-of-way over a competing non-incumbent so it can create or clear scarce space. Corner Incumbency does not require continuous geometric re-proof while the same engaged traversal remains current.
 
 #### Neither worker inside, both approaching
 
@@ -209,9 +209,21 @@ Distinct Corner Features remain distinct even when their operational demand regi
 
 **Headland Association** is positive Situation knowledge that an assembly is productively associated with a boundary/headland regime relevant to a Corner Feature. It raises awareness that native progression may soon become constrained and may inform temporary right-of-way. Negative or unresolved Headland Association does not establish that the Corner is absent and does not negate independently positive Corner Approach Demand; it may instead mean the assembly has more options for safe temporal coordination or intent revelation.
 
+**Corner Arrival Evidence** is prospective assembly-to-Corner Situation evidence that supports native/unrestricted time-to-Corner for a known Corner Feature. It may become available before local Corner Approach Demand and MUST remain distinct from current/local demand so early temporal ordering does not manufacture current constrained-space consumption.
+
 **Corner Approach Demand** is unilateral assembly-to-Corner Situation meaning that the assembly's currently evidenced bounded spatial demand is progressing into a known Corner Feature. Proximity alone is insufficient. The conclusion must be grounded in current supported demand and MUST NOT be manufactured by indefinitely extending a heading or reconstructing a future GIANTS route until it eventually reaches the Corner.
 
+> **Corner Arrival Evidence != Current Corner Approach Demand**
+
 **Corner Occupancy** is positive current Physical-Assembly evidence that the assembly already consumes a known Corner Feature. It is stronger temporal evidence than approach because the constrained space is already occupied. Absence of a positive occupancy witness is not negative-clearance authority.
+
+**Corner Incumbency** is retained Situation meaning that an engaged assembly has positively arrived in the Corner decision domain and has not positively departed it. Current Corner Occupancy may establish incumbency, but once established, incumbency does not require repeated geometric overlap with one representative point or any other continuously re-proved occupancy witness. `TURNING`, reverse movement, transient heading, Forward-Intersection churn and temporary loss of current Approach Demand or time-to-Corner do not undo arrival. Positive Corner Departure is the normal discharge authority.
+
+> **Established Corner Arrival Persists Until Positive Departure**
+
+> **Corner Incumbency Does Not Require Continuous Geometric Re-Proof**
+
+> **TURNING Removes Current Approach Timing; It Does Not Undo Arrival**
 
 **Corner Admission** occurs when Corner Existence and either Corner Approach Demand or positive current Corner Occupancy are established for that assembly. Headland Association is informative but is not an admission gate. No second assembly, pairwise Forward Intersection, shared terminating vertex, `TURNING` state or reverse manoeuvre is required.
 
@@ -239,11 +251,11 @@ Working width, physical dimensions and assembly length MUST NOT be collapsed int
 
 > **Working Width != Corner Manoeuvring Demand**
 
-When multiple assemblies positively demand the same Corner Feature, Situation Assessment publishes current competing-demand evidence for downstream Decision, including positive current Corner Occupancy and current supported native time-to-Corner where available. Decision applies Corner Arrival Priority: an occupant is protected over a non-occupant; otherwise the earlier supported arrival is protected and the later arrival is made cautious. Engagement establishment time is lifecycle provenance only and MUST NOT be used as right-of-way priority. The allocation remains current Situation ordering rather than permanent vehicle or pair priority.
+When multiple assemblies become relevant to the same Corner Feature, Situation Assessment publishes current competing-demand evidence for downstream Decision, including Corner Incumbency, current positive Corner Occupancy where available, and current supported native/unrestricted time-to-Corner where available. Decision applies Corner Arrival Priority: an incumbent is protected over a non-incumbent; when neither participant is incumbent, the earlier supported arrival is protected and the later arrival is made cautious. Current Occupancy is one positive route to establish arrival/incumbency; loss of a fresh occupancy witness after arrival MUST NOT demote an incumbent before Positive Corner Departure. Engagement establishment time is lifecycle provenance only and MUST NOT be used as right-of-way priority. The allocation remains current Situation ordering rather than permanent vehicle or pair priority.
 
 #### Positive Corner Departure
 
-Corner Engagement retires only from **Positive Corner Departure**. A8 is the positive evidence of productive work. While productive A8 is absent or the assembly remains in native manoeuvring uncertainty, the assembly remains in the Corner for decision purposes.
+Corner Engagement retires only from **Positive Corner Departure**. A8 is the positive evidence of productive work. While productive A8 is absent or the assembly remains in native manoeuvring uncertainty, an incumbent assembly remains in the Corner for decision purposes; loss of current approach timing does not make a later prospective arrival the incumbent.
 
 Fresh or continuously valid A8 is not sufficient by itself. Positive departure requires A8 to cross the correct spatial departure boundary for the traversal actually supplied by Reality.
 
