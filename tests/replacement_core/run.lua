@@ -2767,7 +2767,7 @@ local function buildFollowerBoundaryPicture(record,commitmentId)
     if commitmentId~=nil then contexts={{commitmentId=commitmentId}} end
     return OuttaMyWay.OperationalPicture.new({
         identity="OP-FOLLOWER-BOUNDARY-"..tostring(record.reason).."-"..tostring(record.controlMagnitude and record.controlMagnitude.maxAdmissibleFollowerKmh or "x"),epoch=410,observationSnapshotId="OS-HEADON",
-        situations={},currentPairAssessmentScope={},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        situations={},currentPairAssessmentScope={{pairReferenceKey="live-pair:vehicle-root:C:vehicle-root:P",subjectAssemblyId="AS-C",otherAssemblyId="AS-P",subjectJobEpisodeId="JE-C",otherJobEpisodeId="JE-P"}},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
         motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},followerBoundaryKnowledge={record},
         provenance={source="follower-boundary-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=contexts,diagnostics={}
@@ -2812,6 +2812,10 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     equal(admitted.currentResponsibility.kind,"REGULATION")
     equal(admitted.currentResponsibility.provenance.source,"FollowerBoundaryResponsibilityTransition")
     local commitmentId=admitted.commitment.identity
+    equal(admitted.commitment.governingBasis.dependentPairReferenceKey,"live-pair:vehicle-root:C:vehicle-root:P")
+    equal(#admitted.commitment.governingBasis.dependentJobEpisodeIds,2)
+    equal(admitted.commitment.governingBasis.dependentJobEpisodeIds[1],"JE-C")
+    equal(admitted.commitment.governingBasis.dependentJobEpisodeIds[2],"JE-P")
     equal(responsibilityId~=commitmentId,true)
     local open=runtime.obligations:openForOwner(commitmentId)
     equal(#open,1)
@@ -2915,6 +2919,54 @@ test("Follower Boundary: follower Regulation retains current responsibility and 
     local admitted=runtime:dispatchEvaluatedOperationalPicture(first,firstEval)
     local commitmentId=admitted.commitment.identity
     equal(runtime.authorities:ownerOf("AS-P"),commitmentId)
+end)
+
+
+test("Job-Episode Dependency Collapse: Follower Regulation ends and physically releases when either exact pair Job Episode ends", function()
+    local runtime=autonomousHeadOnRuntime()
+    local physical={FOLLOWER_BOUNDARY=true}
+    local clears={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate)
+        if request.target.operation=="APPLY" then
+            physical[request.target.ownerTag]=true
+            return true,"APPLIED"
+        end
+        if request.target.operation=="RELEASE" then
+            clears[#clears+1]={referenceKey=request.target.vehicleReferenceKey,ownerTag=request.target.ownerTag}
+            if physical[request.target.ownerTag]~=true then return false,"OWNER_LEASE_NOT_PRESENT" end
+            physical[request.target.ownerTag]=nil
+            return true,"RELEASED"
+        end
+        return false,"UNSUPPORTED"
+    end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag)
+        clears[#clears+1]={referenceKey=referenceKey,ownerTag=ownerTag}
+        if physical[ownerTag]~=true then return false,"OWNER_LEASE_NOT_PRESENT" end
+        physical[ownerTag]=nil
+        return true,"CONTROL_CLEANUP_RELEASED"
+    end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local first=runtime.liveTrafficCandidateSupport:attach(buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(12,nil,nil),nil),headOnTestSnapshot())
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(first,runtime:evaluateSealedOperationalPicture(first))
+    equal(admitted.status,"ACCEPTED")
+    local commitmentId=admitted.commitment.identity
+    equal(physical.FOLLOWER_BOUNDARY,true)
+
+    local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(
+        runtime,{endedEpisodeIds={"JE-C"},observationSnapshotId="OBS-FOLLOWER-JOB-END"},{identity="OBS-FOLLOWER-JOB-END"})
+
+    equal(#result,1)
+    equal(result[1].commitmentId,commitmentId)
+    equal(result[1].endedJobEpisodeId,"JE-C")
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,false)
+    equal(physical.FOLLOWER_BOUNDARY,nil)
+    equal(clears[#clears].ownerTag,"FOLLOWER_BOUNDARY")
+    equal(clears[#clears].referenceKey,"vehicle-root:P")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
 end)
 
 
