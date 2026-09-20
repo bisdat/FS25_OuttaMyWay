@@ -90,6 +90,7 @@ load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
+load("scripts/diagnostics/CornerArrivalFeatureProbe.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
 load("scripts/diagnostics/ProductiveContinuationProbe.lua")
 load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
@@ -964,14 +965,14 @@ local function cornerPolicyPicture(candidates,requirement)
     return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
 end
 
-test("Corner Right-of-Way protects current constrained Corner occupant rather than earlier Engagement",function()
+test("Corner Right-of-Way protects incumbent over earlier non-incumbent arrival",function()
     local requirement="corner-right-of-way:shared-corner:test"
     local protectA=cornerPolicyCandidate("corner-protect-A","AS-00002","AS-00001",{
-        assemblyId="AS-00001",engagement=true,establishedObservationEpoch=100,
-        currentConstrainedCornerOccupancy=true,timeToCornerSec=20
+        assemblyId="AS-00001",engagement=true,cornerIncumbent=true,establishedObservationEpoch=100,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=nil
     },requirement,"REP-CORNER-A")
     local protectB=cornerPolicyCandidate("corner-protect-B","AS-00001","AS-00002",{
-        assemblyId="AS-00002",engagement=true,establishedObservationEpoch=1,
+        assemblyId="AS-00002",engagement=false,cornerIncumbent=false,establishedObservationEpoch=1,
         currentConstrainedCornerOccupancy=false,timeToCornerSec=5
     },requirement,"REP-CORNER-B")
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({protectA,protectB},requirement))
@@ -981,7 +982,7 @@ test("Corner Right-of-Way protects current constrained Corner occupant rather th
     end
     assert(selected~=nil)
     equal(selected.subject.assemblyId,"AS-00002")
-    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_CURRENT_CONSTRAINED_CORNER_OCCUPANT")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_CORNER_INCUMBENT")
 end)
 
 test("Corner Right-of-Way protects earlier native arrival regardless of Engagement age",function()
@@ -6921,6 +6922,8 @@ end)
 dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
+
+dofile(root.."/tests/replacement_core/CornerArrivalFeatureProbe.lua")(test,equal)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end
