@@ -5322,3 +5322,5 @@ Because the reconstructed branch again changes executable/runtime source relativ
 > **Validated Meaning Survives Rebase; Stale Implementation Bytes Do Not**
 
 The next Reality work remains #240 evidence-oriented validation. Exact recreation of the historical `.107` final-corner choreography is not required because correct Bubble Bullet Time may legitimately alter downstream encounter phase.
+
+Because the branch was force-reset while PR #247 was open, GitHub temporarily closed the zero-diff PR before the rebuilt commits were applied. The PR was then reopened on the reconstructed head. A fresh Offline Validation run is required for these `.111` bytes; validation results from the pre-rebuild `.108` head are not transferable.
