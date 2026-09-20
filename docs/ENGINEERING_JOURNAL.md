@@ -5155,3 +5155,14 @@ Named discoveries:
 **Implementation mismatch recorded in #240:** current source continuously derives occupancy from DISC overlap with the Corner Feature's representative point and couples current time-to-Corner to Corner Approach Demand. The failed `.106` experiment showed that merely making Approach Demand local can destroy useful earlier arrival evidence. The correction therefore requires a semantic split, not a larger geometric point/radius or a locality literal.
 
 **Work-item decomposition:** #240 now owns Corner Arrival Evidence / Approach Demand / Incumbency / Engagement separation and the `.105` collision. Same-Job same-Corner re-entry after a completed Positive Departure is extracted to #244 so its tombstone lifecycle can be implemented and validated independently.
+
+
+## 2026-09-20 — post-#245 Triad correction: Decision contract still named fresh Occupancy
+
+**Observation:** after PR #245 merged, pre-implementation Authority-Triad revalidation found that `spec/DECISION.md` still defined Shared Corner Arrival Priority as fresh current constrained Corner Occupancy > arrival timing. Accepted Spatial Architecture and Situation Assessment had already changed the durable meaning to **Corner Incumbency**: positively arrived and not positively departed.
+
+This was contract drift left by the #245 increment. It matters because Decision must consume the retained Situation fact rather than reconstructing "already arrived" from a fresh geometric overlap witness.
+
+> **Accepted Situation Meaning Must Cross the Decision Boundary Unchanged.**
+
+**Correction:** update only the Decision Specification. Candidate Support architecture/specification remains correct because it still enumerates both supported temporary right-of-way alternatives without choosing one. Runtime source remains unchanged in this documentation-only correction and is still non-conforming pending Issue #240 implementation.

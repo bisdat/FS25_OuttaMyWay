@@ -80,19 +80,23 @@ When Candidate Support supplies the two admissible temporary right-of-way Regula
 
 Decision MUST apply **Corner Arrival Priority** from current Situation evidence:
 
-1. if exactly one participant has positive current constrained Corner Occupancy, protect that participant and regulate the non-occupant;
+1. if exactly one participant has positive **Corner Incumbency**, protect that incumbent and regulate the non-incumbent;
 2. otherwise, when both participants have current supported time-to-Corner under native/unrestricted progression opportunity, protect the earlier arrival and regulate the later arrival;
-3. if only one participant has current supported arrival evidence and neither is a current occupant, that positive current arrival evidence MAY be preferred over a participant represented only by retained lifecycle state;
+3. if only one participant has current supported Corner Arrival Evidence and neither participant is incumbent, that positive arrival evidence MAY be preferred over a participant represented only by retained lifecycle state;
 4. Corner Engagement establishment epoch/age MUST NOT be used as right-of-way priority; and
 5. current realised speed after Regulation MUST NOT feed back as the arrival-rate basis for the same allocation.
 
-Fresh occupancy or arrival evidence MAY support role reassignment while the Shared Corner Situation remains current. Headland churn, reverse/turn state by itself, vehicle class, agronomy, historical leader/follower identity and deterministic Candidate identity MUST NOT manufacture a different Corner priority.
+Corner Incumbency is Situation-owned meaning that an engaged assembly has positively arrived in the Corner decision domain and has not positively departed. Decision MUST consume that fact rather than reconstructing incumbency from fresh geometric Occupancy, `TURNING`, representative-point overlap or Engagement age.
 
-If occupancy/arrival evidence is semantically tied or unresolved and no accepted incumbent-preservation rule distinguishes the alternatives, Decision MUST produce explicit non-selection rather than invent priority.
+Fresh Situation evidence may change prospective arrival ordering while neither participant is incumbent. Once one participant is incumbent, loss of a fresh Occupancy witness, loss of current Approach Demand/time-to-Corner, `TURNING`, reverse motion or Forward-Intersection churn MUST NOT by itself demote that participant before Situation Assessment publishes Positive Corner Departure or another explicit supported terminal outcome.
+
+If incumbency/arrival evidence is semantically tied or unresolved and no accepted incumbent-preservation rule distinguishes the alternatives, Decision MUST produce explicit non-selection rather than invent priority.
 
 > **Corner Engagement Age != Corner Arrival Priority.**
 
-> **Occupied Corner = Arrival Now.**
+> **Corner Incumbency = Arrival Already Established.**
+
+> **Fresh Occupancy Evidence != Continuing Arrival Authority.**
 
 ### Explicit non-selection
 
