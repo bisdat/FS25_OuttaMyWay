@@ -5166,3 +5166,30 @@ This was contract drift left by the #245 increment. It matters because Decision 
 > **Accepted Situation Meaning Must Cross the Decision Boundary Unchanged.**
 
 **Correction:** update only the Decision Specification. Candidate Support architecture/specification remains correct because it still enumerates both supported temporary right-of-way alternatives without choosing one. Runtime source remains unchanged in this documentation-only correction and is still non-conforming pending Issue #240 implementation.
+
+
+## 2026-09-20 — TEST .109 owner-scoped Regulation cleanup
+
+TEST `.108` revalidated #243 through Corner Right-of-Way rather than the original Follower-Boundary fixture. Condor's Job Episode ended, `JOB_EPISODE_DEPENDENCY_COLLAPSE` terminalised the dependent Commitment and reported authority release, yet Patriot remained physically capped near 1 km/h.
+
+Source inspection locates the defect below semantic lifecycle:
+
+- dependency collapse already invokes `RegulationBoundedAuthority:retireTrafficLeasesForCommitment(...)` before terminal settlement;
+- Action-Space-family leases retain the physical owner tag used to create them;
+- ordinary Action-Space uses `ACTION_SPACE_REGULATION`;
+- Forward Intersection uses `FORWARD_INTERSECTION_INTENT_REVELATION`;
+- Corner Right-of-Way uses `CORNER_RIGHT_OF_WAY`;
+- `NativeDriveMechanism.clearRegulationLease(...)` correctly permits an owner to clear only its own lease; but
+- generic dependency cleanup incorrectly asks to clear every Action-Space-family lease as `ACTION_SPACE_REGULATION`.
+
+Therefore Corner/FI cleanup removes semantic bookkeeping while leaving the purpose-specific physical lease untouched.
+
+> **Retained Lease Identity Must Include Its Physical Owner Identity At Cleanup**
+
+> **Cleanup Requested != Cleanup Confirmed**
+
+Authority-Triad review finds no missing architecture or specification. Existing Bounded Authority, Regulation and Control contracts already require responsibility-ending cleanup, authority-narrowing relinquishment after permission expiry and owner-scoped composable speed leases.
+
+TEST `.109` is consequently a minimal implementation correction: dependency-collapse cleanup uses the retained Action-Space lease `ownerTag`, with `ACTION_SPACE_REGULATION` only as a compatibility fallback where retained owner identity is absent. Offline regression covers both `CORNER_RIGHT_OF_WAY` and `FORWARD_INTERSECTION_INTENT_REVELATION` through the full Job-Episode dependency-collapse path and fails unless the exact owner-scoped physical lease is removed.
+
+No Corner Situation, Decision, Regulation policy, speed magnitude, Bubble Bullet Time, Passage or Job lifecycle semantics change.
