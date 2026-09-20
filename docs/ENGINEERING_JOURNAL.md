@@ -5216,3 +5216,19 @@ TEST `.110` keeps the `.109` physical owner-tag cleanup and adds exact Follower 
 Offline regression exercises real Follower admission, asserts the exact dependency provenance, ends one of those exact Job Episodes, and requires the Commitment, Current Regulation responsibility, retained Follower lease and strict physical `FOLLOWER_BOUNDARY` lease all to retire.
 
 No Follower ordering policy, magnitude calculation, Corner policy, Passage behavior or GIANTS job ownership changes.
+
+### GIANTS Reality validation — PASS
+
+The short Patriot/Condor replay validated the same lifecycle physically:
+
+- immediately before Patriot's Job Episode ends, Condor is still restricted by the current Follower lease to about 11.36 km/h while GIANTS continues to command 25.00 km/h;
+- at `12:57:15.729`, Field Witness contains only Condor;
+- at `12:57:15.732`, `FOLLOWER_BOUNDARY_DEPENDENT_COMMITMENT_TERMINATED` records `JOB_EPISODE_DEPENDENCY_CEASED` for `CM-00001`;
+- the same observation records `JOB_EPISODE_DEPENDENCY_COLLAPSE ... endedEpisode=JE-00002 ... terminal=SUCCEEDED`;
+- at `12:57:15.747`, Patriot is no longer an active Job member and the former pair is excluded as `OTHER_NOT_ACTIVE_JOB_MEMBER`;
+- Condor then accelerates without a stale OMW cap and reaches ~24.99 km/h by `12:57:17.745` under the unchanged GIANTS 25.00 km/h native command.
+
+This validates the two #243 defects together: exact pair lifecycle dependency now reaches whole-purpose collapse, and physical Regulation cleanup no longer leaves a stale owner lease.
+
+> **Pair-Owned Regulation Ends With Its Exact Pair Lifecycle Basis**
+
