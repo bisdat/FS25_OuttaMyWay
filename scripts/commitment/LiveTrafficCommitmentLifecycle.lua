@@ -396,7 +396,7 @@ end
 
 local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:") or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
 end
 
 local function endedDependency(record,ended)

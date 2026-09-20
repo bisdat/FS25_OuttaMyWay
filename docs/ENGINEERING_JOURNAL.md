@@ -5166,3 +5166,69 @@ This was contract drift left by the #245 increment. It matters because Decision 
 > **Accepted Situation Meaning Must Cross the Decision Boundary Unchanged.**
 
 **Correction:** update only the Decision Specification. Candidate Support architecture/specification remains correct because it still enumerates both supported temporary right-of-way alternatives without choosing one. Runtime source remains unchanged in this documentation-only correction and is still non-conforming pending Issue #240 implementation.
+
+
+## 2026-09-20 — TEST .109 owner-scoped Regulation cleanup
+
+TEST `.108` revalidated #243 through Corner Right-of-Way rather than the original Follower-Boundary fixture. Condor's Job Episode ended, `JOB_EPISODE_DEPENDENCY_COLLAPSE` terminalised the dependent Commitment and reported authority release, yet Patriot remained physically capped near 1 km/h.
+
+Source inspection locates the defect below semantic lifecycle:
+
+- dependency collapse already invokes `RegulationBoundedAuthority:retireTrafficLeasesForCommitment(...)` before terminal settlement;
+- Action-Space-family leases retain the physical owner tag used to create them;
+- ordinary Action-Space uses `ACTION_SPACE_REGULATION`;
+- Forward Intersection uses `FORWARD_INTERSECTION_INTENT_REVELATION`;
+- Corner Right-of-Way uses `CORNER_RIGHT_OF_WAY`;
+- `NativeDriveMechanism.clearRegulationLease(...)` correctly permits an owner to clear only its own lease; but
+- generic dependency cleanup incorrectly asks to clear every Action-Space-family lease as `ACTION_SPACE_REGULATION`.
+
+Therefore Corner/FI cleanup removes semantic bookkeeping while leaving the purpose-specific physical lease untouched.
+
+> **Retained Lease Identity Must Include Its Physical Owner Identity At Cleanup**
+
+> **Cleanup Requested != Cleanup Confirmed**
+
+Authority-Triad review finds no missing architecture or specification. Existing Bounded Authority, Regulation and Control contracts already require responsibility-ending cleanup, authority-narrowing relinquishment after permission expiry and owner-scoped composable speed leases.
+
+TEST `.109` is consequently a minimal implementation correction: dependency-collapse cleanup uses the retained Action-Space lease `ownerTag`, with `ACTION_SPACE_REGULATION` only as a compatibility fallback where retained owner identity is absent. Offline regression covers both `CORNER_RIGHT_OF_WAY` and `FORWARD_INTERSECTION_INTENT_REVELATION` through the full Job-Episode dependency-collapse path and fails unless the exact owner-scoped physical lease is removed.
+
+No Corner Situation, Decision, Regulation policy, speed magnitude, Bubble Bullet Time, Passage or Job lifecycle semantics change.
+
+
+## 2026-09-20 — TEST .110 Follower Regulation joins exact Job-Episode dependency collapse
+
+TEST `.109` disproved the assumption that the retained-owner cleanup correction completed #243. Patriot/Condor entered Follower Boundary Regulation at `12:17:21.225`; Patriot positively ended its active Job Episode at `12:17:34.993`, but no `JOB_EPISODE_DEPENDENCY_COLLAPSE` occurred for the Follower Commitment. Condor remained physically capped around 11.4–11.5 km/h against a 25 km/h native command.
+
+Source inspection exposed a separate upstream lifecycle gap:
+
+- Follower Candidate invalidation already declares `JOB_EPISODE_CHANGE`;
+- its governing basis did not retain the exact current pair reference or exact pair Job Episode IDs; and
+- generic Job-Episode dependency collapse did not recognise `follower-boundary:` Regulation responsibilities.
+
+> **Declared Job-Episode Invalidation != Owned Job-Episode Dependency**
+
+> **Pair-Owned Regulation Must Retain The Exact Pair Lifecycle It Depends On**
+
+Architecture/Specification remain unchanged. Regulation already terminates when Job Episode/Operation lifecycle removes its governing basis, and Current Pair Assessment Scope already owns exact active Job Episodes.
+
+TEST `.110` keeps the `.109` physical owner-tag cleanup and adds exact Follower dependency ownership at admission. Follower Candidate governing basis now records the current pair reference and both exact current Job Episode IDs from Current Pair Assessment Scope; generic dependency collapse now recognises `follower-boundary:`.
+
+Offline regression exercises real Follower admission, asserts the exact dependency provenance, ends one of those exact Job Episodes, and requires the Commitment, Current Regulation responsibility, retained Follower lease and strict physical `FOLLOWER_BOUNDARY` lease all to retire.
+
+No Follower ordering policy, magnitude calculation, Corner policy, Passage behavior or GIANTS job ownership changes.
+
+### GIANTS Reality validation — PASS
+
+The short Patriot/Condor replay validated the same lifecycle physically:
+
+- immediately before Patriot's Job Episode ends, Condor is still restricted by the current Follower lease to about 11.36 km/h while GIANTS continues to command 25.00 km/h;
+- at `12:57:15.729`, Field Witness contains only Condor;
+- at `12:57:15.732`, `FOLLOWER_BOUNDARY_DEPENDENT_COMMITMENT_TERMINATED` records `JOB_EPISODE_DEPENDENCY_CEASED` for `CM-00001`;
+- the same observation records `JOB_EPISODE_DEPENDENCY_COLLAPSE ... endedEpisode=JE-00002 ... terminal=SUCCEEDED`;
+- at `12:57:15.747`, Patriot is no longer an active Job member and the former pair is excluded as `OTHER_NOT_ACTIVE_JOB_MEMBER`;
+- Condor then accelerates without a stale OMW cap and reaches ~24.99 km/h by `12:57:17.745` under the unchanged GIANTS 25.00 km/h native command.
+
+This validates the two #243 defects together: exact pair lifecycle dependency now reaches whole-purpose collapse, and physical Regulation cleanup no longer leaves a stale owner lease.
+
+> **Pair-Owned Regulation Ends With Its Exact Pair Lifecycle Basis**
+
