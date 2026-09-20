@@ -5126,3 +5126,32 @@ Issue #240 already contained the Corner observations, constraints, failed `.106`
 **Decision:** retire `docs/CONTINUATION_STATE.md` as a live repository responsibility. Remove it from Repository Context Bootstrap, Architecture/docs navigation, PR review checklist and structural governance expectations. GitHub Issues own substantial unresolved work where durable tracking is useful; trivial increments may proceed directly from accepted `main` and the owner's bounded request. Issues remain work-item context, not Architecture or accepted implementation authority.
 
 Historical Journal/archive references to Continuation State remain historical evidence and are not rewritten.
+
+
+## 2026-09-20 — Corner Incumbency: arrival persists until positive A8 departure
+
+**Reality correction:** a new owner-supplied `.105` log/video shows S416 already manoeuvring in the lower-left Field 77 Corner while Condor remains remote. Situation Assessment later gives Condor the only finite current Corner-arrival timing, Decision protects Condor, and S416 is regulated at 1 km/h inside the Corner until the machines physically converge.
+
+The failure is not Structural Corner discovery (#234), the closed FI-incumbent lifecycle (#224), or Passage recovery (#227). The known Corner exists and S416's retained Corner Engagement is still current. The decisive missing meaning is whether that engaged traversal has already **arrived**.
+
+**Owner correction:** once the system knows the Corner, knows S416 has arrived/manoeuvred there, and has no Positive Corner Departure, it does not need to continuously re-prove geometric occupancy. A8 already owns the positive departure contract.
+
+Named discoveries:
+
+> **Established Corner Arrival Persists Until Positive Departure**
+
+> **Corner Incumbency Does Not Require Continuous Geometric Re-Proof**
+
+> **TURNING Removes Current Approach Timing; It Does Not Undo Arrival**
+
+**Architectural lineage:** this is a correction of a seam introduced during the Corner-model evolution, not a wholly new policy. PR #229 (2026-09-16) had already made the pair-specific Category-1 rule explicit: after Protected Manoeuvre Entry, the protected worker remained protected through `TURNING`, reverse and native repositioning until positive discharge. PR #232 (merged 2026-09-17) replaced that pair-specific runtime mechanism with retained Corner Engagement and stronger positive spatial A8 departure evidence, but did not update Architecture or Specification. PR #239 (merged 2026-09-19) subsequently promoted the field-scoped Corner model into Architecture/Specification, including that Corner Engagement owns the in-Corner decision domain until Positive Corner Departure and that an engaged assembly without the required A8 crossing remains in the Corner for decision purposes. However, the new right-of-way rule separately used fresh **current Corner Occupancy** ahead of arrival timing. The retained "already arrived" fact was therefore not carried into the priority product, allowing the implementation to demote an engaged manoeuvring worker when point-overlap occupancy disappeared.
+
+> **Persistent In-Corner Meaning Was Recorded; Persistent Arrival Priority Was Not.**
+
+**Architectural distinction:** prospective **Corner Arrival Evidence**, current/local **Corner Approach Demand**, retained **Corner Incumbency** and lifecycle **Corner Engagement** are separate meanings. Corner Incumbency names the previously implicit retained-arrival meaning: an engaged assembly has positively arrived in the Corner decision domain and has not positively departed. It is not Engagement age. An approaching Engagement is not automatically incumbent.
+
+**Priority consequence:** when one participant is incumbent and the other is not, protect the incumbent. Only when neither participant is incumbent does native/unrestricted time-to-Corner order the competing arrivals. Existing Regulation's reduced realised speed remains non-authoritative for that arrival ordering.
+
+**Implementation mismatch recorded in #240:** current source continuously derives occupancy from DISC overlap with the Corner Feature's representative point and couples current time-to-Corner to Corner Approach Demand. The failed `.106` experiment showed that merely making Approach Demand local can destroy useful earlier arrival evidence. The correction therefore requires a semantic split, not a larger geometric point/radius or a locality literal.
+
+**Work-item decomposition:** #240 now owns Corner Arrival Evidence / Approach Demand / Incumbency / Engagement separation and the `.105` collision. Same-Job same-Corner re-entry after a completed Positive Departure is extracted to #244 so its tombstone lifecycle can be implemented and validated independently.
