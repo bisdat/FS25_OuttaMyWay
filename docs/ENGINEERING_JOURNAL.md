@@ -5193,3 +5193,26 @@ Authority-Triad review finds no missing architecture or specification. Existing 
 TEST `.109` is consequently a minimal implementation correction: dependency-collapse cleanup uses the retained Action-Space lease `ownerTag`, with `ACTION_SPACE_REGULATION` only as a compatibility fallback where retained owner identity is absent. Offline regression covers both `CORNER_RIGHT_OF_WAY` and `FORWARD_INTERSECTION_INTENT_REVELATION` through the full Job-Episode dependency-collapse path and fails unless the exact owner-scoped physical lease is removed.
 
 No Corner Situation, Decision, Regulation policy, speed magnitude, Bubble Bullet Time, Passage or Job lifecycle semantics change.
+
+
+## 2026-09-20 — TEST .110 Follower Regulation joins exact Job-Episode dependency collapse
+
+TEST `.109` disproved the assumption that the retained-owner cleanup correction completed #243. Patriot/Condor entered Follower Boundary Regulation at `12:17:21.225`; Patriot positively ended its active Job Episode at `12:17:34.993`, but no `JOB_EPISODE_DEPENDENCY_COLLAPSE` occurred for the Follower Commitment. Condor remained physically capped around 11.4–11.5 km/h against a 25 km/h native command.
+
+Source inspection exposed a separate upstream lifecycle gap:
+
+- Follower Candidate invalidation already declares `JOB_EPISODE_CHANGE`;
+- its governing basis did not retain the exact current pair reference or exact pair Job Episode IDs; and
+- generic Job-Episode dependency collapse did not recognise `follower-boundary:` Regulation responsibilities.
+
+> **Declared Job-Episode Invalidation != Owned Job-Episode Dependency**
+
+> **Pair-Owned Regulation Must Retain The Exact Pair Lifecycle It Depends On**
+
+Architecture/Specification remain unchanged. Regulation already terminates when Job Episode/Operation lifecycle removes its governing basis, and Current Pair Assessment Scope already owns exact active Job Episodes.
+
+TEST `.110` keeps the `.109` physical owner-tag cleanup and adds exact Follower dependency ownership at admission. Follower Candidate governing basis now records the current pair reference and both exact current Job Episode IDs from Current Pair Assessment Scope; generic dependency collapse now recognises `follower-boundary:`.
+
+Offline regression exercises real Follower admission, asserts the exact dependency provenance, ends one of those exact Job Episodes, and requires the Commitment, Current Regulation responsibility, retained Follower lease and strict physical `FOLLOWER_BOUNDARY` lease all to retire.
+
+No Follower ordering policy, magnitude calculation, Corner policy, Passage behavior or GIANTS job ownership changes.
