@@ -965,7 +965,7 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
     end
     local actionSpace=self.actionSpaceRegulationLease
     if actionSpace~=nil and actionSpace.commitmentId==commitmentId then
-        clear(actionSpace.regulatedReferenceKey,ACTION_SPACE_REGULATION_OWNER_TAG)
+        clear(actionSpace.regulatedReferenceKey,actionSpace.ownerTag or ACTION_SPACE_REGULATION_OWNER_TAG)
         self.actionSpaceRegulationLease=nil
         self.actionSpaceRegulationReleaseCount=self.actionSpaceRegulationReleaseCount+1
         released=released+1
