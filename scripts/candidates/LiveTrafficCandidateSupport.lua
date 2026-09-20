@@ -584,9 +584,10 @@ local function followerSpecification(pictureId,pictureValues,record,representati
     local constraints=followerConstraints(record,physicalCandidate)
     local preference=nil
     if capability~="CONTINUE_UNCHANGED" then preference={primaryResolution=true,governingRequirementKey=requirement,exhaustionEvidence=exhaustion} end
+    local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,record.leaderAssemblyId,record.followerAssemblyId,nil)
     local evidence={
         constraintEvidence=constraints,
-        governingBasis={responsibilityKey=requirement,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
+        governingBasis={responsibilityKey=requirement,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
         maintainsExistingCommitment=existing or (#(pictureValues.commitmentContext or {})==1),
         existingProgressMayContinue=true,
         trafficPolicemanPreference=preference,
