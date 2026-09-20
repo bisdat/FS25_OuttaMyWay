@@ -5324,3 +5324,27 @@ Because the reconstructed branch again changes executable/runtime source relativ
 The next Reality work remains #240 evidence-oriented validation. Exact recreation of the historical `.107` final-corner choreography is not required because correct Bubble Bullet Time may legitimately alter downstream encounter phase.
 
 Because the branch was force-reset while PR #247 was open, GitHub temporarily closed the zero-diff PR before the rebuilt commits were applied. The PR was then reopened on the reconstructed head. A fresh Offline Validation run is required for these `.111` bytes; validation results from the pre-rebuild `.108` head are not transferable.
+
+
+## 2026-09-20 — TEST .112 projected Passage rejection visibility
+
+TEST `.111` reaches a final Condor/S416 established opposed conflict without Cooperative Passage ever becoming a Candidate. By `13:42:49.655` the pair is only ~17.74 m apart, mutually facing and still positively passage-eligible; shortly afterward both become GIANTS-blocked.
+
+The prospective portfolio already asks `LocalPassagePlanner.planConflict(...)` for each opposed relationship. The planner returns three values:
+
+`plan, reason, rejected`
+
+but the projected support path consumed only `plan, reason`. When Passage planning failed and Action-Space Regulation remained supportable, the portfolio retained the Action-Space alternative while silently discarding the planner's already-computed rejection detail.
+
+> **Missing Passage Candidate != Passage Rejected For A Known Reason**
+
+> **Projected Support Must Preserve Rejection Evidence Until The Failing Boundary Is Known**
+
+TEST `.112` changes diagnostics only. The projected opposed-relationship path now retains the third `rejected` return for logging and publishes signature-stable engineering telemetry:
+
+- `COOPERATIVE_PASSAGE_PROJECTED_REJECTED` — conflict identity, classification, passage eligibility, top planner reason and whether Action-Space Regulation remains a fallback;
+- `COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL` — existing per-arrangement clearance/guide/field/sweep/third-party evidence already computed by the planner.
+
+A successful projected Passage clears only its diagnostic rejection signature. Candidate support, portfolio composition, Decision precedence, Passage geometry, FI policy, Responsibility, Authority and Control are unchanged.
+
+The purpose of the build is discriminating evidence for #250: identify the first Passage-support gate that fails before any semantic correction is proposed.
