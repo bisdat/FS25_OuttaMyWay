@@ -6295,6 +6295,67 @@ test("Job-Episode Dependency Collapse: ended Job Episode collapses dependent qui
 end)
 
 
+test("Job-Episode Dependency Collapse: purpose-specific Regulation owner lease is physically retired",function()
+    local ownerTags={"CORNER_RIGHT_OF_WAY","FORWARD_INTERSECTION_INTENT_REVELATION"}
+    for index,ownerTag in OuttaMyWay.ValueRecord.ipairs(ownerTags) do
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local endedEpisodeId="JE-ENDED-"..tostring(index)
+        local dependent=runtime.commitments:create({
+            objective={kind="ACTION_SPACE_REGULATION"},
+            governingBasis={
+                responsibilityKey="cooperative-passage:OWNER-CLEANUP-"..tostring(index),
+                dependentPairReferenceKey="pair:OWNER-CLEANUP-"..tostring(index),
+                dependentJobEpisodeIds={endedEpisodeId,"JE-KEEP-"..tostring(index)}
+            },
+            situationDependencies={"SITUATION-OWNER-CLEANUP-"..tostring(index)}
+        })
+        local obligation=runtime.obligations:create({
+            origin={kind="TRAFFIC_INTERVENTION"},
+            basis={kind="ACTION_SPACE_REGULATION",conflictIdentity="OWNER-CLEANUP-"..tostring(index)},
+            ownerCommitmentId=dependent.identity,
+            requiredOutcome={kind="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"},
+            requiredAuthority={capabilities={"REGULATE_SPEED"}},
+            evidenceContract={kind="POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"},
+            ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
+        })
+        dependent=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(
+            dependent,{obligationIds={obligation.identity},epoch=runtime.epochs:next()}))
+
+        local physicalLeases={[ownerTag]=true}
+        local clearedReferenceKey=nil
+        local clearedOwnerTag=nil
+        runtime.regulationBoundedAuthority.regulationControl={
+            clearRegulationLeaseByReference=function(self,referenceKey,requestedOwnerTag)
+                clearedReferenceKey=referenceKey
+                clearedOwnerTag=requestedOwnerTag
+                if physicalLeases[requestedOwnerTag]~=true then return false,"OWNER_LEASE_NOT_PRESENT" end
+                physicalLeases[requestedOwnerTag]=nil
+                return true,"CONTROL_CLEANUP_RELEASED"
+            end
+        }
+        runtime.regulationBoundedAuthority.actionSpaceRegulationLease={
+            commitmentId=dependent.identity,
+            conflictIdentity="OWNER-CLEANUP-"..tostring(index),
+            regulatedAssemblyId="AS-A",
+            regulatedReferenceKey="REF-A",
+            ownerTag=ownerTag,
+            actuationActive=true
+        }
+
+        local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(
+            runtime,{endedEpisodeIds={endedEpisodeId},observationSnapshotId="OBS-OWNER-CLEANUP-"..tostring(index)},
+            {identity="OBS-OWNER-CLEANUP-"..tostring(index)})
+
+        equal(#result,1)
+        equal(runtime.commitments:get(dependent.identity).state,"SUCCEEDED")
+        equal(clearedReferenceKey,"REF-A")
+        equal(clearedOwnerTag,ownerTag)
+        equal(physicalLeases[ownerTag],nil)
+        equal(runtime.regulationBoundedAuthority.actionSpaceRegulationLease,nil)
+    end
+end)
+
+
 local function spatialFuture(assemblyId,startX,startZ,endX,endZ,headingX,headingZ,boundaryDistance)
     return {
         identity="future:"..assemblyId,assemblyId=assemblyId,
