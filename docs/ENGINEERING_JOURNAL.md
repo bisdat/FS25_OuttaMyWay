@@ -5350,35 +5350,49 @@ A successful projected Passage clears only its diagnostic rejection signature. C
 The purpose of the build is discriminating evidence for #250: identify the first Passage-support gate that fails before any semantic correction is proposed.
 
 
-## 2026-09-20 — TEST .112 proves supported Passage starvation by incumbent FI Regulation
+## 2026-09-20 — TEST .112 proves Regulation pre-empts a supported Passage
 
-TEST `.112` resolves the uncertainty left by the final `.111` Condor/S416 head-on block.
+TEST `.112` resolves the final `.111` Condor/S416 head-on failure and corrects an initially mistaken interpretation.
 
-At `14:45:31.795`, the new projected-Passage diagnostic first reports only `ESTABLISHED_CONFLICT_NOT_YET_LOCAL`; no arrangement search has yet run.
+The failed encounter is **Condor Endurance II / S 416 only**. Contemporaneous third-worker Regulation records are implementation evidence, not a legitimate competing pairwise Resolution model.
 
-Fresh Reality then changes materially:
+At `14:45:31.795`, projected Condor/S416 Passage is initially rejected only as `ESTABLISHED_CONFLICT_NOT_YET_LOCAL`.
 
-- `14:45:37.857` — Patriot/S416 Forward Intersection is positive at ~528.63 m separation, with position-derived times ~671.4 s and ~21.7 s;
-- `14:45:37.906` — the FI Regulation Candidate is supported;
-- `14:45:37.916` — **Condor/S416 Cooperative Passage is positively supported** at ~79.75 m separation on the same fresh portfolio cycle;
-- `14:45:37.944` — Decision establishes FI Regulation `CM-00004`, not the Passage;
-- `14:45:37.951` — Condor/S416 are an established mutually-facing opposed conflict inside local Passage Action Space;
-- after `CM-00004` exists, Runtime sees incumbent `commitmentContext` and stops using the fresh Prospective Decision Portfolio, routing through incumbent single-purpose lifecycle support instead;
-- `14:45:44.381` — Condor/S416 remain established/passable at ~17.20 m separation;
-- both then become GIANTS-blocked without Passage execution. Video confirms the head-on stop.
+Fresh Reality then reaches the normal Passage boundary:
 
-The first failing boundary is therefore **not Passage planning**. A valid Passage Candidate existed.
+- `14:45:37.916` — **Condor/S416 Cooperative Passage is positively supported** at `79.75 m`, `entryReady=false`;
+- `14:45:37.951` — the pair remains an established, passage-eligible, mutually facing opposed conflict with positive corridor overlap and local Action-Space consumption;
+- no Condor/S416 Passage commitment is created;
+- no `COOPERATIVE_PASSAGE_APPROACH_START` is emitted;
+- `14:45:44.381` — the pair remains established/passable at `17.203 m`, with Condor already GIANTS-blocked;
+- both subsequently stop head-on without Passage execution.
 
-Current `ProspectivePortfolioDecisionPolicy` applies the implementation rule `FORWARD_INTERSECTION_BEFORE_PASSAGE_WITHOUT_FOLLOWER_PURPOSE`. That choice establishes a Regulation Current Responsibility, after which incumbent lifecycle gating prevents fresh consideration of the independently supported Passage successor.
+The same `.112` run supplies a decisive comparison fixture:
 
-> **Supported Resolution != Selected Resolution**
+- `14:42:29.180` — an earlier Cooperative Passage is supported at `78.84 m`, also with `entryReady=false`;
+- `14:42:29.189` — that Passage is committed;
+- `14:42:29.193` — `COOPERATIVE_PASSAGE_APPROACH_START` begins at `78.72 m`.
 
-> **Incumbent Regulation Must Not Monopolise Fresh Successor Selection**
+Therefore `entryReady=false` is not a reason to continue shaping rather than commit. The failed Condor/S416 pair had reached the same supported Passage / native approach phase boundary as the successful fixture.
 
-> **Current Responsibility Persistence Requires Revalidation Against Positively Supported Supersession**
+The accepted architecture already defines the relationship correctly:
 
-This does not prove a blanket `Passage > Forward Intersection` rule. The architectural question is successor compatibility: when current Regulation A/B coexists with fresh supported Passage B/C, sharing participant B, what positive evidence justifies atomically replacing the temporal Regulation with the pairwise Resolution while A becomes the Passage's independent third traffic party under Bubble Bullet Time?
+- Regulation is temporal coordination before Passage, including intent revelation and Passage-theatre shaping;
+- Regulation changes timing only;
+- **stop shaping once Passage is sufficiently viable; least intervention wins**;
+- Cooperative Passage is a distinct pairwise Resolution Commitment;
+- once the Bubble forms, any independent third active worker is serialized at exactly 1 km/h Bullet Time and its relationships with Bubble participants are deferred for the Resolution Epoch.
 
-Issue #250 owns this question. Issue #248 remains separate: the FI still uses position-derived realised rates and later role migration, but #250's failure exists even if the FI itself is considered valid.
+There is therefore no architectural state of `A/B Regulation + B/C Passage` as competing peer responsibilities. That earlier interpretation is withdrawn.
 
-No semantic implementation change follows directly from `.112`; the next step is architectural whiteboarding of Regulation-to-Resolution supersession.
+The source defect exposed by Reality is that the prospective Decision policy may select an unrelated Regulation group before an already supported/admissible Passage group. The current token `FORWARD_INTERSECTION_BEFORE_PASSAGE_WITHOUT_FOLLOWER_PURPOSE` is implementation evidence of that ordering error; the unrelated worker is not part of the failed encounter's semantic model.
+
+> **Regulation Is A Pre-Passage Tool, Not A Competing Resolution**
+
+> **Supported Passage Ends Passage-Shaping Regulation**
+
+> **Passage Commitment Serializes Independent Traffic Into Bullet Time**
+
+> **Supported Passage Must Not Be Pre-Empted By Unrelated Regulation Ordering**
+
+Issue #250 owns the correction. Do not change Passage geometry, entry/capture semantics or invent cross-pair responsibility succession. The next design question is the narrow Decision rule at the existing supported/admissible Passage boundary.
