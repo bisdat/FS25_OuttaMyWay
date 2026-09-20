@@ -5168,6 +5168,76 @@ This was contract drift left by the #245 increment. It matters because Decision 
 **Correction:** update only the Decision Specification. Candidate Support architecture/specification remains correct because it still enumerates both supported temporary right-of-way alternatives without choosing one. Runtime source remains unchanged in this documentation-only correction and is still non-conforming pending Issue #240 implementation.
 
 
+## 2026-09-20 — TEST .107 Corner Arrival / Incumbency implementation
+
+**Implementation hypothesis:** accepted Corner Architecture/Specification from PRs #245 and #246 can be realised without a new Corner geometry model by separating prospective Corner Arrival Evidence from local Corner Approach Demand and retaining an explicit traversal-scoped Corner Incumbency fact once positive arrival is established.
+
+TEST `0.3.0.107` therefore makes these bounded changes:
+
+- `SpatialConstraintAssessment` now publishes prospective **Corner Arrival Evidence** from the existing field-bounded A8-to-Corner relationship even when the Corner is still remote;
+- **Corner Approach Demand** is the local subset whose supported arrival distance is within the assembly-specific current physical reach, preserving the useful locality lesson from failed TEST `.106` without deleting early arrival timing;
+- an admitted Corner Engagement becomes **Corner Incumbent** when positive current Corner Occupancy exists or when the locally engaged assembly enters native `TURNING`;
+- once established, the incumbent fact is retained on that Engagement until the existing Positive Corner Departure path retires it;
+- Shared Corner Situation publishes incumbency and prospective arrival timing independently; and
+- `TrafficPolicemanDecisionPolicy` protects one incumbent over a non-incumbent before comparing native/unrestricted arrival times.
+
+This deliberately does **not** implement Issue #244. The retained Positive Departure tombstone remains unchanged so same-Job same-Corner re-entry can be corrected and validated independently.
+
+**Regression design:** executable Corner contracts now separately prove (1) remote bounded A8 preserves native arrival timing without local Approach Demand or Engagement, (2) local arrival within assembly-specific current reach admits, (3) Occupancy establishes incumbency, (4) local Engagement followed by `TURNING` establishes and retains incumbency without a fresh occupancy witness, (5) an incumbent plus a remote prospective arrival produces one Shared Corner Situation, and (6) Decision protects the incumbent over that remote arrival while retaining the existing rule that Engagement age alone is not priority.
+
+**Authority Triad disposition:** Spatial Architecture and Situation Assessment Specification remain unchanged from accepted PR #245; the Shared Corner Decision contract is the accepted #246 correction. Together they are the governing contract. Source changes are limited to Situation Assessment realisation, Corner Decision consumption and truthful Candidate evidence metadata. Candidate Support Architecture/Specification remains unchanged in responsibility: Candidate Support still enumerates both temporary right-of-way alternatives; Decision still owns allocation and now consumes the accepted incumbent fact before arrival timing.
+
+**Reality boundary:** offline validation can prove deterministic evidence separation and Decision ordering, but cannot establish that live GIANTS observations promote S416 to incumbency at the correct moment. GIANTS Reality must replay the failing `.105` S416/Condor Corner episode and previously passed Corner fixtures before #240 can close.
+
+## 2026-09-20 — TEST .108 diagnostic: feature-relative Corner Arrival
+
+**Reality input:** TEST `.107` validates the retained Corner Incumbency correction at the initial S416 / Condor Corner but fails later at the known structural Corner `228.800,-242.800`. Condor and S416 carry positive Field-World-bounded progression toward that area, yet no Shared Corner Situation is published before collision.
+
+The final approach gives a stronger geometric observation than "near the Corner". At `07:58:16.676`:
+
+- Condor has about `101.760 m` of supported straight progression remaining. Reconstructing its logged current pose/heading and boundary distance places its terminating contact at approximately `(225.12,-260.62)`, on the incident boundary run immediately before structural Corner `(228.8,-242.8)`, about `18.2 m` from the representative point.
+- S416 has about `23.585 m` remaining. Its corresponding terminating contact is approximately `(222.78,-241.82)`, on the other incident boundary run, about `6.1 m` from the same representative point.
+
+Those contacts lie on opposite structural supports of the same known Corner while both workers are still productively settled and far enough away for useful temporal coordination.
+
+**Hypothesis:** representative-point intersection is not the right prospective question. A Corner Feature is already architecturally the transition between two persistent Headland Regimes. Current bounded progression may therefore establish feature-relative arrival when the current positive Physical Assembly, translated only along its already-supported Field-World-bounded straight continuation, would consume both incident structural supports of the known Corner.
+
+> **Corner Existence Solved != Corner Arrival Evidence Solved**
+
+> **Corner Arrival Evidence May Be Feature-Relative Rather Than Representative-Point-Relative**
+
+This hypothesis predicts no GIANTS turn route. It translates current positive physical primitives only along the already-supported A8 continuation to the terminating Field World boundary contact.
+
+**TEST `.108`:** add a diagnostic-only `CornerArrivalFeatureProbe`. For each current supported projection and known structural Corner on the same ring, it translates current positive Physical Assembly DISC primitives to the supported boundary-contact pose and measures them against the two structural support segments currently retained by Structural Field Shape. It reports:
+
+- terminal claim consumes both structural supports;
+- terminal claim consumes one structural support; or
+- no report when neither support is consumed.
+
+The structural support segments are explicitly a **diagnostic proxy** for the architecturally named incident Headland Regimes. The probe has no Situation, Candidate, Decision, Responsibility, Bounded Authority or Control authority and no production consumer.
+
+**Discriminating Reality target:** reproduce the final Condor / S416 approach. If both workers report `TERMINAL_PHYSICAL_ASSEMBLY_CONSUMES_BOTH_STRUCTURAL_SUPPORTS` for Corner `228.800,-242.800` before current production Corner Arrival/Approach evidence appears, confidence increases that the missing semantic relationship is feature-relative terminal Corner demand. If they do not, the hypothesis is disproved or the current structural-support proxy is insufficient; do not tune a radius or silently promote the probe.
+
+The separate Condor / Patriot Forward-Intersection Regulation oscillation is tracked in #248 and is not part of this experiment.
+
+## 2026-09-20 — Bubble Bullet Time invalidates fixed downstream timing fixtures
+
+TEST `.108` explains why the historical `.107` final Condor/S416 Corner coincidence did not repeat.
+
+At `09:22:59.467`, Condor/Patriot Cooperative Passage `CM-00008` positively acquired supporting Regulation authority for S416 under `COOPERATIVE_PASSAGE_BUBBLE_BULLET_TIME` and applied the architectural fixed **1.00 km/h Intent-Revelation Creep**. S416's GIANTS native command remained up to 18 km/h while realised progression remained approximately 1.2 km/h for substantial parts of the Resolution Epoch. Bullet Time did not release until `09:25:10.128`, when the Passage Resolution ended.
+
+The resulting shift in S416's later arrival phase is expected behaviour from accepted architecture, not perturbation from the diagnostic Corner-arrival probe.
+
+> **Correct Upstream Coordination Changes Downstream Encounter Phase**
+
+> **Validation Must Follow Evidence, Not Choreography**
+
+The former validation wording that implicitly required Condor and S416 to recreate the exact `.107` simultaneous approach to Corner `228.800,-242.800` is therefore withdrawn. Corner Arrival Evidence is architecturally unilateral; its Reality validation must be per assembly. Shared-Corner Decision validation should use any natural overlap of independently supported Corner demands rather than one historical timing coincidence.
+
+Bubble Bullet Time must remain enabled during such validation. Disabling correct upstream coordination merely to recreate a collision would test a different system.
+
+The `.108` dual-support diagnostic remains evidence only. It must not become a worker-width-dependent definition of Corner Arrival: wide and narrow Physical Assemblies can consume two incident structural supports at different stages. The missing production concept remains feature-relative Corner association, not a universal width/radius predicate.
+
 ## 2026-09-20 — TEST .109 owner-scoped Regulation cleanup
 
 TEST `.108` revalidated #243 through Corner Right-of-Way rather than the original Follower-Boundary fixture. Condor's Job Episode ended, `JOB_EPISODE_DEPENDENCY_COLLAPSE` terminalised the dependent Commitment and reported authority release, yet Patriot remained physically capped near 1 km/h.
@@ -5232,3 +5302,23 @@ This validates the two #243 defects together: exact pair lifecycle dependency no
 
 > **Pair-Owned Regulation Ends With Its Exact Pair Lifecycle Basis**
 
+
+
+## 2026-09-20 — TEST .111 rebuild of #247 on accepted .110 main
+
+PR #249 / TEST `.110` merged to `main` as `d1fc056124a92e9a06f72706458910b5ccdaa491`, making the older #247 branch structurally stale and conflict-prone.
+
+The previous #247 head was preserved as `backup/issue-240-pre-rebase-108`, then `fix/issue-240-corner-incumbency` was rebuilt directly from accepted `main`.
+
+The rebuild preserves:
+
+- the GIANTS-Reality-validated `.107` Corner Incumbency semantics and Decision consumption;
+- the `.108` diagnostic-only feature-relative Corner Arrival probe;
+- the `.110` exact pair Job-Episode Regulation lifecycle and owner-scoped physical cleanup now accepted on `main`;
+- no stale pre-#249 Candidate Support, test harness, version or Journal bytes.
+
+Because the reconstructed branch again changes executable/runtime source relative to accepted `.110`, its TEST identity advances to **0.3.0.111**.
+
+> **Validated Meaning Survives Rebase; Stale Implementation Bytes Do Not**
+
+The next Reality work remains #240 evidence-oriented validation. Exact recreation of the historical `.107` final-corner choreography is not required because correct Bubble Bullet Time may legitimately alter downstream encounter phase.
