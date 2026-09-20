@@ -205,7 +205,7 @@ A Corner Atlas entry retains enough Field World provenance and structural Corner
 
 Distinct Corner Features remain distinct even when their operational demand regions later overlap. The Atlas creates no right-of-way, pair history, future turn route, Regulation identity or Resolution Commitment.
 
-#### Headland Association, Corner Approach Demand and Corner Admission
+#### Headland Association, Corner Arrival Evidence, Approach Demand, Incumbency and Admission
 
 **Headland Association** is positive Situation knowledge that an assembly is productively associated with a boundary/headland regime relevant to a Corner Feature. It raises awareness that native progression may soon become constrained and may inform temporary right-of-way. Negative or unresolved Headland Association does not establish that the Corner is absent and does not negate independently positive Corner Approach Demand; it may instead mean the assembly has more options for safe temporal coordination or intent revelation.
 
