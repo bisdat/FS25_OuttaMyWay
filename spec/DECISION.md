@@ -170,6 +170,36 @@ Cross-group compatibility and within-group preference are both Decision authorit
 
 They MUST remain separate from Candidate Support completeness and mandatory Constraint meaning even when current source implements them through several policy helpers.
 
+### Spatial live-traffic stage transition
+
+For active-worker spatial negotiation, Decision MUST preserve the established progression owned by the [Spatial Negotiation Architecture](../architecture/SPATIAL_NEGOTIATION_MODEL.md):
+
+```text
+GIANTS native progression
+        |
+        v
+tactical Regulation
+        |
+        v
+Cooperative Passage
+```
+
+Follower, Forward Intersection, Action-Space and Corner-derived right-of-way are reasons or allocations within the tactical **Regulation** stage. They MAY govern while no supported, mandatory-admissible Cooperative Passage is available and temporal shaping is still required. They are not peer strategic successors that acquire a generic right to defeat Passage through implementation-family ordering.
+
+When a Cooperative Passage Candidate is supported for the current Decision Picture and passes every applicable mandatory Constraint, Decision MUST NOT select an ordinary live-traffic Regulation scope instead merely because Follower, Forward Intersection, Action-Space or Corner Regulation appears earlier in an implementation ordering. This is the implementation-facing Decision consequence of the architectural rule:
+
+> **Stop shaping once Passage is sufficiently viable; least intervention wins.**
+
+Corner Engagement and other current Situation facts remain real after Passage selection. If those facts make the proposed Passage unsupported, unsafe or incompatible, that conclusion must be expressed through the owning support or mandatory-admissibility contract rather than recreated as an unrelated Decision-family precedence.
+
+Before Bubble Formation, independently occupied third-party space essential to the proposed pairwise Resolution may prevent Passage support or admissibility. After Bubble Formation, the independent third active worker is managed by the Cooperative Passage contract's Resolution-Epoch **1 km/h Bullet Time**. An unrelated pre-commit Regulation preference MUST NOT substitute for that lifecycle.
+
+Passage entry-control readiness, capture phase or other post-selection execution detail MUST NOT be used as cross-purpose Decision precedence. In particular, whether a supported Passage will initially enter native `PASSAGE_APPROACH` or immediate settling does not decide whether Passage outranks tactical Regulation.
+
+If several Cooperative Passage groups are simultaneously supported and mandatory-admissible, Decision still requires an accepted architecture-backed comparator among those Passage conflicts, or explicit non-selection where no such comparator exists. This stage-transition rule does not manufacture a Passage-to-Passage ordering.
+
+> **Tactical Regulation Enables Passage; It Does Not Compete With Viable Passage.**
+
 A policy MAY intentionally choose non-selection over an admissible alternative only when the accepted Architecture or Decision contract positively defines that policy. An implementation-local ordering token or legacy precedence rule is not sufficient authority.
 
 ## Durable invariants
@@ -259,7 +289,9 @@ Current implementation routes include:
 
 Current policy helper names and ordering are implementation topology. The Specification owns the semantic distinction between supported admissibility, compatibility/preference, explicit non-selection and downstream transition intent.
 
-The current `ProspectivePortfolioDecisionPolicy` selects a support group from Candidate-inventory metadata without receiving the mandatory verdict set, after which `DecisionSelector` filters viable Candidates to that chosen group. That source ordering is a **conformance question**, not normative authority: it must not be used to weaken the architectural rule that Decision chooses among supported, constraint-admissible alternatives.
+The current `DecisionSelector` first derives the mandatory-admissible Candidate set and passes that set to `ProspectivePortfolioDecisionPolicy`; the policy now excludes support groups that contain no admissible Candidate. That is the accepted admissibility-aware correction from the earlier prospective-selection defect.
+
+The same policy still contains executable historical cross-purpose ordering, including fixed Follower / Forward-Intersection / Action-Space / Corner family precedence around Cooperative Passage and a nearest-by-initial-separation Passage choice. Those source rules remain **conformance questions**, not normative authority. In particular, a legacy or compatibility token MUST NOT permit tactical Regulation to suppress a supported, mandatory-admissible Passage contrary to the Spatial Negotiation stage transition above.
 
 ## Validation route
 
@@ -274,6 +306,8 @@ The current `ProspectivePortfolioDecisionPolicy` selects a support group from Ca
 Additional replacement-core structural tests protect explicit non-intervention, exact identity binding and Responsibility Transition ordering where Decision products cross into lifecycle change.
 
 A targeted conformance test is required for **Support Precedence != Admissibility Bypass**: when one supported group's Candidates fail mandatory Constraints while another supported group contains an admissible Candidate, Decision must follow the accepted admissibility-aware compatibility contract rather than suppressing the admissible Candidate through source ordering alone.
+
+Targeted conformance must also challenge **Tactical Regulation Enables Passage; It Does Not Compete With Viable Passage**: once one Cooperative Passage is supported and mandatory-admissible, an unrelated Follower, Forward-Intersection, Action-Space or Corner Regulation group must not win solely through cross-family ordering. Passage entry-control readiness must remain outside selection precedence.
 
 ### Offline behavioural/conformance validation
 
