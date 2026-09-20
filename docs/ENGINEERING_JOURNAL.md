@@ -5348,3 +5348,37 @@ TEST `.112` changes diagnostics only. The projected opposed-relationship path no
 A successful projected Passage clears only its diagnostic rejection signature. Candidate support, portfolio composition, Decision precedence, Passage geometry, FI policy, Responsibility, Authority and Control are unchanged.
 
 The purpose of the build is discriminating evidence for #250: identify the first Passage-support gate that fails before any semantic correction is proposed.
+
+
+## 2026-09-20 — TEST .112 proves supported Passage starvation by incumbent FI Regulation
+
+TEST `.112` resolves the uncertainty left by the final `.111` Condor/S416 head-on block.
+
+At `14:45:31.795`, the new projected-Passage diagnostic first reports only `ESTABLISHED_CONFLICT_NOT_YET_LOCAL`; no arrangement search has yet run.
+
+Fresh Reality then changes materially:
+
+- `14:45:37.857` — Patriot/S416 Forward Intersection is positive at ~528.63 m separation, with position-derived times ~671.4 s and ~21.7 s;
+- `14:45:37.906` — the FI Regulation Candidate is supported;
+- `14:45:37.916` — **Condor/S416 Cooperative Passage is positively supported** at ~79.75 m separation on the same fresh portfolio cycle;
+- `14:45:37.944` — Decision establishes FI Regulation `CM-00004`, not the Passage;
+- `14:45:37.951` — Condor/S416 are an established mutually-facing opposed conflict inside local Passage Action Space;
+- after `CM-00004` exists, Runtime sees incumbent `commitmentContext` and stops using the fresh Prospective Decision Portfolio, routing through incumbent single-purpose lifecycle support instead;
+- `14:45:44.381` — Condor/S416 remain established/passable at ~17.20 m separation;
+- both then become GIANTS-blocked without Passage execution. Video confirms the head-on stop.
+
+The first failing boundary is therefore **not Passage planning**. A valid Passage Candidate existed.
+
+Current `ProspectivePortfolioDecisionPolicy` applies the implementation rule `FORWARD_INTERSECTION_BEFORE_PASSAGE_WITHOUT_FOLLOWER_PURPOSE`. That choice establishes a Regulation Current Responsibility, after which incumbent lifecycle gating prevents fresh consideration of the independently supported Passage successor.
+
+> **Supported Resolution != Selected Resolution**
+
+> **Incumbent Regulation Must Not Monopolise Fresh Successor Selection**
+
+> **Current Responsibility Persistence Requires Revalidation Against Positively Supported Supersession**
+
+This does not prove a blanket `Passage > Forward Intersection` rule. The architectural question is successor compatibility: when current Regulation A/B coexists with fresh supported Passage B/C, sharing participant B, what positive evidence justifies atomically replacing the temporal Regulation with the pairwise Resolution while A becomes the Passage's independent third traffic party under Bubble Bullet Time?
+
+Issue #250 owns this question. Issue #248 remains separate: the FI still uses position-derived realised rates and later role migration, but #250's failure exists even if the FI itself is considered valid.
+
+No semantic implementation change follows directly from `.112`; the next step is architectural whiteboarding of Regulation-to-Resolution supersession.
