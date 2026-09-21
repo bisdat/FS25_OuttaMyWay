@@ -36,7 +36,7 @@ local function cooperativePassagePacket(reason,evidence,applicable)
 end
 
 function Support.new(identityRegistry,epochSequence,passiveSupport)
-    return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil},Support)
+    return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil,projectedPassageRejectionTraceKeys={}},Support)
 end
 
 -- Retained API for LiveRuntimeCoordinator compatibility. The retired prototype
@@ -319,14 +319,14 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
         question=action.admissionKind=="FORWARD_INTERSECTION" and "FORWARD_INTERSECTION_TEMPORAL_REGULATION"
             or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),
         assessmentHorizon=action.admissionKind=="FORWARD_INTERSECTION" and "CURRENT_POSITIVELY_SUPPORTED_FIELD_BOUNDED_FORWARD_CONTINUATIONS"
-            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "CURRENT_SHARED_CORNER_ENGAGEMENT_AND_APPROACH_DEMAND"
+            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "CURRENT_SHARED_CORNER_INCUMBENCY_OR_PROSPECTIVE_ARRIVAL_EVIDENCE"
             or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE")),
         state="USABLE_WITH_UNCERTAINTY",
         claimPermissions={"REGULATE_SPEED_TO_PRESERVE_LOCAL_PASSAGE_ACTION_SPACE","ESCALATE_REALIZED_INSUFFICIENT_REGULATION_TO_ZERO_SPEED_HOLD"},
         coverage={complete=false,conservative=false},
         uncertainty={"RELATIONSHIP_MAY_CHANGE_BEFORE_PASSAGE_SUPPORT","NO_EVENTUAL_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","REGULATION_RATE_IS_IMPLEMENTATION_CALIBRATION"},
         validityDependencies=action.admissionKind=="FORWARD_INTERSECTION" and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","POSITIVE_FORWARD_INTERSECTION","POSITIVE_PROGRESS_RATES"}
-            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and {"POSITIVE_STRUCTURAL_CORNER_FEATURE","CURRENT_CORNER_ENGAGEMENT_OR_APPROACH_DEMAND","SHARED_CORNER_COMPETING_DEMAND"}
+            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and {"POSITIVE_STRUCTURAL_CORNER_FEATURE","CURRENT_CORNER_INCUMBENCY_OR_SUPPORTED_ARRIVAL_EVIDENCE","SHARED_CORNER_COMPETING_DEMAND"}
             or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"}),
         provenance={source=(action.admissionKind=="FORWARD_INTERSECTION" or action.admissionKind=="CORNER_RIGHT_OF_WAY") and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
     }
@@ -687,6 +687,32 @@ local function passageRejectionTelemetry(allRejected)
     return signature,text
 end
 
+
+-- Diagnostic-only visibility for the prospective portfolio path.  The
+-- per-conflict planner already computes bounded rejection evidence; projected
+-- support must not make that evidence disappear merely because Action-Space
+-- Regulation remains independently supportable.  This helper owns no Candidate,
+-- Decision, Responsibility, Authority or Control meaning.
+local function traceProjectedPassageRejection(self,relation,reason,rejected,fallbackActionSpaceSupported)
+    if type(relation)~="table" or type(relation.identity)~="string" then return end
+    local allRejected={{conflictIdentity=relation.identity,reason=reason,rejected=rejected or {}}}
+    local rejectionKey,rejectionText=passageRejectionTelemetry(allRejected)
+    local signature=table.concat({
+        tostring(reason or "UNRESOLVED"),
+        tostring(rejectionKey or "NO_DETAIL"),
+        tostring(fallbackActionSpaceSupported==true)
+    },"|")
+    if self.projectedPassageRejectionTraceKeys[relation.identity]~=signature then
+        self.projectedPassageRejectionTraceKeys[relation.identity]=signature
+        logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTED conflict=%s classification=%s passageEligible=%s fallbackActionSpaceSupported=%s %s",
+            tostring(relation.identity),tostring(relation.classification),tostring(relation.cooperativePassageEligible~=false),
+            tostring(fallbackActionSpaceSupported==true),tostring(rejectionText or ("reason="..tostring(reason))))
+        for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(allRejected)) do
+            logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL %s",clearanceTrace)
+        end
+    end
+end
+
 local function finiteNumber(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -909,10 +935,13 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         if relation==nil then return nil,"PROJECTED_OPPOSED_RELATIONSHIP_NOT_FOUND" end
 
         local passageReason=nil
+        local passageRejected=nil
         if relation.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" and relation.cooperativePassageEligible~=false then
-            local plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(picture,snapshot,relation)
+            local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.planConflict(picture,snapshot,relation)
             passageReason=reason
+            passageRejected=rejected
             if plan~=nil then
+                self.projectedPassageRejectionTraceKeys[relation.identity]=nil
                 if type(plan.progressiveSearch)=="table" then
                     plan.progressiveSearch.conflictSelection="ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION"
                 end
@@ -930,8 +959,12 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         end
 
         local action=relation.actionSpaceConservation
-        if (relation.classification=="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT" or relation.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
-            and type(action)=="table" and action.status=="REGULATE_SUPPORTED" and action.supported==true then
+        local actionSpaceSupported=(relation.classification=="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT" or relation.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+            and type(action)=="table" and action.status=="REGULATE_SUPPORTED" and action.supported==true
+        if passageReason~=nil then
+            traceProjectedPassageRejection(self,relation,passageReason,passageRejected,actionSpaceSupported)
+        end
+        if actionSpaceSupported then
             return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,{relation=relation,action=action})
         end
         return nil,passageReason or "PROJECTED_OPPOSED_RELATIONSHIP_HAS_NO_SUPPORTED_CANDIDATE"

@@ -100,10 +100,10 @@ local function cornerRightOfWayChoice(entries)
         return nil,true,"SHARED_CORNER_PARTICIPANT_EVIDENCE_UNAVAILABLE"
     end
 
-    local ao=ap.currentConstrainedCornerOccupancy==true
-    local bo=bp.currentConstrainedCornerOccupancy==true
-    if ao~=bo then
-        return ao and a or b,true,"PROTECT_CURRENT_CONSTRAINED_CORNER_OCCUPANT"
+    local ai=ap.cornerIncumbent==true
+    local bi=bp.cornerIncumbent==true
+    if ai~=bi then
+        return ai and a or b,true,"PROTECT_CORNER_INCUMBENT"
     end
 
     local at,bt=tonumber(ap.timeToCornerSec),tonumber(bp.timeToCornerSec)

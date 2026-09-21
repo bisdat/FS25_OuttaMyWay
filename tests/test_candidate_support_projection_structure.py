@@ -68,3 +68,15 @@ def test_projection_uses_one_obstruction_family_without_control_mechanics():
     assert "OBSTRUCTION_RELOCATION" in portfolio
     for forbidden in ("driveInWorldDirection", "AIVehicleUtil", "TerminalEgressControl", "ObstructionRelocationControl"):
         assert forbidden not in portfolio
+
+
+def test_projected_passage_rejection_evidence_is_diagnostic_only_and_preserved():
+    live=read("scripts/candidates/LiveTrafficCandidateSupport.lua")
+    assert "local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.planConflict(picture,snapshot,relation)" in live
+    assert "traceProjectedPassageRejection(self,relation,passageReason,passageRejected,actionSpaceSupported)" in live
+    assert "COOPERATIVE_PASSAGE_PROJECTED_REJECTED" in live
+    assert "COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL" in live
+    assert "fallbackActionSpaceSupported" in live
+    helper=live[live.index("local function traceProjectedPassageRejection"):live.index("local function finiteNumber")]
+    for forbidden in ("CandidateAction.new","DecisionRecord.new","ControlRequest.new","executeControlRequest","ResponsibilityTransition","BoundedAuthority"):
+        assert forbidden not in helper

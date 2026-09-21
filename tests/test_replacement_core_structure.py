@@ -1968,3 +1968,16 @@ def test_issue112_retired_completed_worker_donor_is_not_active_source_topology()
 def test_current_lua_harness_contains_no_decision_provenance_tokens():
     harness = (ROOT / "tests" / "replacement_core" / "run.lua").read_text(encoding="utf-8")
     assert re.search(r"d-?\d{4}", harness, re.IGNORECASE) is None
+
+
+def test_issue240_corner_arrival_feature_probe_is_diagnostic_only():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    probe=(ROOT/"scripts"/"diagnostics"/"CornerArrivalFeatureProbe.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    assert "scripts/diagnostics/CornerArrivalFeatureProbe.lua" in main
+    assert main.index("scripts/diagnostics/CornerArrivalFeatureProbe.lua") < main.index("scripts/diagnostics/PassiveLiveValidator.lua")
+    assert "CornerArrivalFeatureProbe.new()" in validator
+    for token in ("CandidateSpace","TrafficPolicemanDecisionPolicy","ResponsibilityTransition","BoundedAuthority","RegulationControl","ControlRequest"):
+        assert token not in probe
+    for token in ("semanticAuthority=false","decisionAuthority=false","controlAuthority=false","diagnosticOnly=true"):
+        assert token in probe
