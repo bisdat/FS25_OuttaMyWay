@@ -1970,14 +1970,27 @@ def test_current_lua_harness_contains_no_decision_provenance_tokens():
     assert re.search(r"d-?\d{4}", harness, re.IGNORECASE) is None
 
 
-def test_issue240_corner_arrival_feature_probe_is_diagnostic_only():
+def test_projected_passage_rejection_clearance_telemetry_is_bound_before_runtime_use():
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    definition=support.index("local function passageClearanceRejectionTelemetry")
+    caller=support.index("local function traceProjectedPassageRejection")
+    assert definition < caller
+    assert "ipairs(passageClearanceRejectionTelemetry(allRejected))" in support
+
+
+def test_issue240_feature_relative_corner_arrival_is_production_situation_meaning_and_probe_is_retired():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    probe=(ROOT/"scripts"/"diagnostics"/"CornerArrivalFeatureProbe.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    assert "scripts/diagnostics/CornerArrivalFeatureProbe.lua" in main
-    assert main.index("scripts/diagnostics/CornerArrivalFeatureProbe.lua") < main.index("scripts/diagnostics/PassiveLiveValidator.lua")
-    assert "CornerArrivalFeatureProbe.new()" in validator
-    for token in ("CandidateSpace","TrafficPolicemanDecisionPolicy","ResponsibilityTransition","BoundedAuthority","RegulationControl","ControlRequest"):
-        assert token not in probe
-    for token in ("semanticAuthority=false","decisionAuthority=false","controlAuthority=false","diagnosticOnly=true"):
-        assert token in probe
+    assessment=(ROOT/"scripts"/"assessment"/"SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
+    assert not (ROOT/"scripts"/"diagnostics"/"CornerArrivalFeatureProbe.lua").exists()
+    assert not (ROOT/"tests"/"replacement_core"/"CornerArrivalFeatureProbe.lua").exists()
+    assert "CornerArrivalFeatureProbe" not in main
+    assert "CornerArrivalFeatureProbe" not in validator
+    for token in (
+        "terminalEdgeCornerAssociation",
+        "UNIQUE_NEAREST_STRUCTURAL_CORNER_ENDPOINT_ON_TERMINATING_BOUNDARY_EDGE",
+        "PRODUCTIVE_A8_TERMINATING_EDGE_ASSOCIATES_WITH_STRUCTURAL_CORNER_FEATURE",
+        "headlandAssociations",
+    ):
+        assert token in assessment
+    assert "workingWidthM" not in assessment[assessment.index("local function terminalEdgeCornerAssociation"):assessment.index("-- Current Corner Occupancy")]

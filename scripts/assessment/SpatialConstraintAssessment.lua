@@ -152,6 +152,10 @@ local function numberText(v) return v==nil and "UNRESOLVED" or string.format("%.
 local function logInfo(message)
     if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][FORWARD-INTERSECTION] %s",message) else print("[FS25_OuttaMyWay][FORWARD-INTERSECTION] "..message) end
 end
+local function logCornerInfo(message)
+    if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] %s",message)
+    else print("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] "..message) end
+end
 local function copyKnowledge(value)
     if type(value)~="table" then return value end
     local result={}
@@ -436,6 +440,69 @@ local function nativeCornerProgressRate(motion)
     return nil,"GIANTS_NATIVE_PROGRESS_OPPORTUNITY_UNAVAILABLE",nil
 end
 
+-- Headland Association is positive feature-relative topology, not a predicted
+-- turn. A current bounded A8 already owns one exact terminating Field-World edge.
+-- Where one or both endpoints of that edge are accepted Structural Corner
+-- Features, associate the terminal contact with the uniquely nearer Corner
+-- endpoint. Equal-distance endpoints remain unresolved. This introduces no
+-- universal radius, worker-width rule or continuation beyond the bounded A8.
+local function terminalEdgeCornerAssociation(p,features,input)
+    local edge=p and p.terminatingBoundaryEdge or nil
+    if p==nil or p.status~="SUPPORTED" or type(edge)~="table"
+        or not finite(p.contactX) or not finite(p.contactZ)
+        or type(edge.startVertex)~="table" or type(edge.endVertex)~="table" then return nil end
+
+    local quantum=tonumber(input and input.fieldWorld and input.fieldWorld.quantizationMetres) or 0
+    local tolerance=math.max(0,quantum)*math.sqrt(2)+EPSILON_M
+    local contact={x=p.contactX,z=p.contactZ}
+    local candidates={}
+    for _,feature in OuttaMyWay.ValueRecord.ipairs(features or {}) do
+        local representative=feature and feature.representativePoint or nil
+        if type(representative)=="table"
+            and feature.ringKind==p.boundaryRingKind
+            and tonumber(feature.ringIndex)==tonumber(p.boundaryRingIndex) then
+            local startDistance=distance(representative,edge.startVertex)
+            local endDistance=distance(representative,edge.endVertex)
+            local endpoint=nil
+            if startDistance<=tolerance then endpoint="START"
+            elseif endDistance<=tolerance then endpoint="END" end
+            if endpoint~=nil then
+                candidates[#candidates+1]={
+                    cornerKey=feature.cornerKey,
+                    fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+                    assemblyId=p.assemblyId,
+                    assemblyReferenceKey=p.assemblyReferenceKey,
+                    futureSpaceIdentity=p.futureSpaceIdentity,
+                    terminatingBoundaryEdgeKey=edge.edgeKey,
+                    terminatingBoundaryEndpoint=endpoint,
+                    boundaryContact={x=p.contactX,z=p.contactZ},
+                    contactDistanceToCornerM=distance(contact,representative),
+                    quantizationToleranceM=tolerance,
+                    witness="BOUNDED_A8_TERMINATING_EDGE_INCIDENT_TO_STRUCTURAL_CORNER_FEATURE",
+                    negativeCornerAuthority=false,
+                    provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
+                }
+            end
+        end
+    end
+    if #candidates==0 then return nil end
+    table.sort(candidates,function(a,b)
+        if math.abs(a.contactDistanceToCornerM-b.contactDistanceToCornerM)>tolerance then
+            return a.contactDistanceToCornerM<b.contactDistanceToCornerM
+        end
+        return tostring(a.cornerKey)<tostring(b.cornerKey)
+    end)
+    if #candidates>1
+        and math.abs(candidates[1].contactDistanceToCornerM-candidates[2].contactDistanceToCornerM)<=tolerance then
+        return nil
+    end
+    local selected=candidates[1]
+    selected.reason=#candidates>1
+        and "UNIQUE_NEAREST_STRUCTURAL_CORNER_ENDPOINT_ON_TERMINATING_BOUNDARY_EDGE"
+        or "ONLY_STRUCTURAL_CORNER_ENDPOINT_ON_TERMINATING_BOUNDARY_EDGE"
+    return selected
+end
+
 -- Current Corner Occupancy is positive physical Reality, not a predicted turn
 -- route. Missing overlap has no negative-clearance authority.
 local function currentCornerOccupancy(feature,physical,motion,input)
@@ -473,7 +540,8 @@ end
 -- knowledge independently from current/local Corner Approach Demand.  The
 -- bounded A8 continuation may reach a known Corner well before the assembly is
 -- locally consuming it; that is arrival evidence, not current Corner demand.
-local function cornerArrivalEvidence(feature,p,motion,productive,path,physical,input)
+local function cornerArrivalEvidence(feature,p,motion,productive,path,physical,input,association)
+    local featureAssociation=type(association)=="table" and association.cornerKey==feature.cornerKey and association or nil
     if type(feature)~="table" or type(feature.representativePoint)~="table"
         or not motion or not productive or not path or p.status~="SUPPORTED"
         or motion.assemblyReferenceKey==nil or motion.sourceJobToken==nil
@@ -481,40 +549,47 @@ local function cornerArrivalEvidence(feature,p,motion,productive,path,physical,i
         or productive.productivePositive~=true or productive.isTurn==true
         or motion.localIntentClassification=="TURNING"
         or (path.intentEpoch~=nil and motion.intentEpoch~=nil and path.intentEpoch~=motion.intentEpoch)
-        or type(physical)~="table" then return nil end
+        or (featureAssociation==nil and type(physical)~="table") then return nil end
     if feature.ringKind~=p.boundaryRingKind or tonumber(feature.ringIndex)~=tonumber(p.boundaryRingIndex) then return nil end
 
     local representative=feature.representativePoint
-    local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
-    if along<-EPSILON_M then return nil end
-
-    local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
     local translatedIntersection=nil
-    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
-        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
-            and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
-            local startValue={x=primitive.x,z=primitive.z}
-            local endValue={x=primitive.x+deltaX,z=primitive.z+deltaZ}
-            local parameter,sweepDistance=closestPointParameter(representative,startValue,endValue)
-            if sweepDistance<=primitive.radius+EPSILON_M
-                and (translatedIntersection==nil or sweepDistance<translatedIntersection.sweepDistanceM) then
-                translatedIntersection={
-                    primitiveId=primitive.identity,primitiveRadiusM=primitive.radius,
-                    sweepDistanceM=sweepDistance,closestSweepParameter=parameter,
-                    sweepStart=startValue,sweepEnd=endValue
-                }
+    local physicalReach=nil
+    local contactDistanceToFeatureM=distance(representative,{x=p.contactX,z=p.contactZ})
+
+    if featureAssociation==nil then
+        local along=(representative.x-p.currentX)*p.headingX+(representative.z-p.currentZ)*p.headingZ
+        if along<-EPSILON_M then return nil end
+
+        local deltaX,deltaZ=p.contactX-p.currentX,p.contactZ-p.currentZ
+        for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
+            if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+                and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) and primitive.radius>=0 then
+                local startValue={x=primitive.x,z=primitive.z}
+                local endValue={x=primitive.x+deltaX,z=primitive.z+deltaZ}
+                local parameter,sweepDistance=closestPointParameter(representative,startValue,endValue)
+                if sweepDistance<=primitive.radius+EPSILON_M
+                    and (translatedIntersection==nil or sweepDistance<translatedIntersection.sweepDistanceM) then
+                    translatedIntersection={
+                        primitiveId=primitive.identity,primitiveRadiusM=primitive.radius,
+                        sweepDistanceM=sweepDistance,closestSweepParameter=parameter,
+                        sweepStart=startValue,sweepEnd=endValue
+                    }
+                end
             end
         end
+
+        physicalReach=currentPhysicalReachEvidence(physical,p)
+        local boundaryContactSupportsFeature=physicalReach~=nil
+            and contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
+        if translatedIntersection==nil and not boundaryContactSupportsFeature then return nil end
+    elseif type(physical)=="table" then
+        physicalReach=currentPhysicalReachEvidence(physical,p)
     end
 
-    local physicalReach=currentPhysicalReachEvidence(physical,p)
-    local contactDistanceToFeatureM=distance(representative,{x=p.contactX,z=p.contactZ})
-    local boundaryContactSupportsFeature=physicalReach~=nil
-        and contactDistanceToFeatureM<=physicalReach.reachM+EPSILON_M
-    if translatedIntersection==nil and not boundaryContactSupportsFeature then return nil end
-
     local arrivalDistanceM=p.boundaryDistanceM
-    if translatedIntersection~=nil and finite(translatedIntersection.closestSweepParameter) and finite(p.boundaryDistanceM) then
+    if featureAssociation==nil and translatedIntersection~=nil
+        and finite(translatedIntersection.closestSweepParameter) and finite(p.boundaryDistanceM) then
         arrivalDistanceM=math.max(0,math.min(1,translatedIntersection.closestSweepParameter))*p.boundaryDistanceM
     end
     local arrivalRateMps,arrivalRateSource,nativeMaxSpeedKmh=nativeCornerProgressRate(motion)
@@ -531,15 +606,18 @@ local function cornerArrivalEvidence(feature,p,motion,productive,path,physical,i
         arrivalDistanceM=arrivalDistanceM,timeToCornerSec=timeToCornerSec,
         arrivalRateMps=arrivalRateMps,arrivalRateSource=arrivalRateSource,
         nativeMaxSpeedKmh=nativeMaxSpeedKmh,
+        headlandAssociation=featureAssociation and copyKnowledge(featureAssociation) or nil,
         physicalSweepEvidence=translatedIntersection,
         physicalDemandEvidence={
             boundaryContact={x=p.contactX,z=p.contactZ},
             contactDistanceToFeatureM=contactDistanceToFeatureM,
             currentPhysicalReach=physicalReach
         },
-        witness=translatedIntersection~=nil
-            and "PRODUCTIVE_A8_BOUNDED_SWEEP_SUPPORTS_PROSPECTIVE_CORNER_ARRIVAL"
-            or "PRODUCTIVE_A8_BOUNDARY_CONTACT_SUPPORTS_PROSPECTIVE_CORNER_ARRIVAL",
+        witness=featureAssociation~=nil
+            and "PRODUCTIVE_A8_TERMINATING_EDGE_ASSOCIATES_WITH_STRUCTURAL_CORNER_FEATURE"
+            or (translatedIntersection~=nil
+                and "PRODUCTIVE_A8_BOUNDED_SWEEP_SUPPORTS_PROSPECTIVE_CORNER_ARRIVAL"
+                or "PRODUCTIVE_A8_BOUNDARY_CONTACT_SUPPORTS_PROSPECTIVE_CORNER_ARRIVAL"),
         negativeClearanceAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}
     }
@@ -607,6 +685,10 @@ local function cornerDepartureEvidence(feature,p,productive,motion,input,engagem
     if input.observationEpoch<=tonumber(engagement.establishedObservationEpoch or -math.huge) then
         return false,"A8_NOT_FRESHER_THAN_CORNER_ADMISSION",false
     end
+    if p==nil or not finite(p.currentX) or not finite(p.currentZ)
+        or not finite(p.headingX) or not finite(p.headingZ) then
+        return false,"CURRENT_A8_SPATIAL_PROJECTION_UNAVAILABLE",false
+    end
 
     local transition=engagement.finalDirectionTransition
     if type(transition)=="table" and finite(transition.x) and finite(transition.z) then
@@ -671,7 +753,7 @@ local function assessCornerKnowledge(self,input,projections,relationships)
         polygonKey=input.fieldWorldReferenceKey,
         status=shape.status,
         structuralFieldShape=copyKnowledge(shape),
-        atlasEntries={},arrivalEvidence={},approachDemands={},occupancies={},engagements={},positiveDepartures={},sharedCornerSituations={},events={},
+        atlasEntries={},headlandAssociations={},arrivalEvidence={},approachDemands={},occupancies={},engagements={},positiveDepartures={},sharedCornerSituations={},events={},
         decisionAuthority=false,controlAuthority=false,authority="SITUATION_KNOWLEDGE_ONLY"
     }
     if OuttaMyWay.ValueRecord.length(shape.cornerFeatures or {})==0 then return result end
@@ -687,7 +769,15 @@ local function assessCornerKnowledge(self,input,projections,relationships)
     local futures=byAssembly(input.futureSpace)
     local physical=byAssembly(input.physicalSpaceEvidence)
     local currentIds={}
-    for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do currentIds[p.assemblyId]=true end
+    local associationByAssembly={}
+    for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
+        currentIds[p.assemblyId]=true
+        local association=terminalEdgeCornerAssociation(p,shape.cornerFeatures,input)
+        if association~=nil then
+            associationByAssembly[p.assemblyId]=association
+            result.headlandAssociations[#result.headlandAssociations+1]=copyKnowledge(association)
+        end
+    end
 
     local occupanciesByCorner={}
     local constrainedOccupancyByAssembly={}
@@ -737,7 +827,7 @@ local function assessCornerKnowledge(self,input,projections,relationships)
         for _,p in OuttaMyWay.ValueRecord.ipairs(projections) do
             local motion=motions[p.assemblyId]
             local path=continuation(futures[p.assemblyId])
-            local arrival=cornerArrivalEvidence(feature,p,motion,productive[p.assemblyId],path,physical[p.assemblyId],input)
+            local arrival=cornerArrivalEvidence(feature,p,motion,productive[p.assemblyId],path,physical[p.assemblyId],input,associationByAssembly[p.assemblyId])
             if arrival~=nil then
                 arrivalsByReference[arrival.assemblyReferenceKey]=arrival
                 result.arrivalEvidence[#result.arrivalEvidence+1]=copyKnowledge(arrival)
@@ -950,6 +1040,22 @@ function Assessment:assess(input)
                 tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason))) end
     end end
     local cornerKnowledge=assessCornerKnowledge(self,input,projections,relationships)
+    for _,association in OuttaMyWay.ValueRecord.ipairs(cornerKnowledge.headlandAssociations or {}) do
+        local key="headland-association:"..tostring(input.operationId)..":"..tostring(association.assemblyId)
+        local signature=table.concat({
+            tostring(association.cornerKey),
+            tostring(association.terminatingBoundaryEdgeKey),
+            tostring(association.reason)
+        },"|")
+        if self.lastSignatures[key]~=signature then
+            self.lastSignatures[key]=signature
+            logCornerInfo(string.format(
+                "HEADLAND_ASSOCIATION operation=%s assembly=%s ref=%s corner=%s edge=%s contactDistanceToCornerM=%s basis=%s reason=%s negativeCornerAuthority=false decisionAuthority=false controlAuthority=false",
+                tostring(input.operationId),tostring(association.assemblyId),tostring(association.assemblyReferenceKey),
+                tostring(association.cornerKey),tostring(association.terminatingBoundaryEdgeKey),
+                numberText(association.contactDistanceToCornerM),tostring(association.witness),tostring(association.reason)))
+        end
+    end
     return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,cornerKnowledge=cornerKnowledge,decisionAuthority=false,controlAuthority=false,
         provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
 end

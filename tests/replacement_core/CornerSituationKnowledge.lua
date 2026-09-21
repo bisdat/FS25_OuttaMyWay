@@ -135,6 +135,69 @@ return function(test,equal)
         equal(result.arrivalEvidence[1].arrivalDistanceM,50)
         equal(result.arrivalEvidence[1].timeToCornerSec,10)
         equal(result.arrivalEvidence[1].arrivalRateSource,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED")
+        equal(count(result.headlandAssociations),1)
+        equal(result.arrivalEvidence[1].witness,
+            "PRODUCTIVE_A8_TERMINATING_EDGE_ASSOCIATES_WITH_STRUCTURAL_CORNER_FEATURE")
+    end)
+
+    test("Corner Arrival Evidence: terminating edge chooses unique nearer structural Corner without width evidence",function()
+        local values=oneWorkerInput()
+        values.futureSpace={future("AS-A",75,50,75,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=75,poseZ=50,nativeMaxSpeedKmh=18})}
+        values.physicalSpaceEvidence={}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.headlandAssociations),1)
+        equal(count(result.arrivalEvidence),1)
+        equal(count(result.approachDemands),0)
+        equal(count(result.engagements),0)
+        equal(result.headlandAssociations[1].reason,
+            "UNIQUE_NEAREST_STRUCTURAL_CORNER_ENDPOINT_ON_TERMINATING_BOUNDARY_EDGE")
+        equal(result.headlandAssociations[1].contactDistanceToCornerM,25)
+        equal(result.arrivalEvidence[1].witness,
+            "PRODUCTIVE_A8_TERMINATING_EDGE_ASSOCIATES_WITH_STRUCTURAL_CORNER_FEATURE")
+        equal(result.arrivalEvidence[1].arrivalDistanceM,50)
+        equal(result.arrivalEvidence[1].timeToCornerSec,10)
+    end)
+
+    test("Corner Arrival Evidence: equidistant structural Corner endpoints remain unresolved",function()
+        local values=oneWorkerInput()
+        values.futureSpace={future("AS-A",50,50,50,0)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=50,poseZ=50,nativeMaxSpeedKmh=18})}
+        values.physicalSpaceEvidence={}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.headlandAssociations),0)
+        equal(count(result.arrivalEvidence),0)
+        equal(count(result.approachDemands),0)
+        equal(count(result.engagements),0)
+    end)
+
+    test("Shared Corner Situation: independent feature-relative terminal-edge arrivals compose without pairwise FI",function()
+        local values=oneWorkerInput()
+        values.assemblyIds={"AS-A","AS-B"}
+        values.futureSpace={
+            future("AS-A",75,50,75,0),
+            future("AS-B",50,25,100,25)
+        }
+        values.motionEvidence={
+            motion("AS-A",{moveForwards=true,poseX=75,poseZ=50,nativeMaxSpeedKmh=18}),
+            motion("AS-B",{moveForwards=true,poseX=50,poseZ=25,nativeMaxSpeedKmh=25})
+        }
+        values.productiveContinuationKnowledge={productive("AS-A"),productive("AS-B")}
+        values.physicalSpaceEvidence={}
+        local result=assess(OuttaMyWay.SpatialConstraintAssessment.new(),values).cornerKnowledge
+        equal(count(result.headlandAssociations),2)
+        equal(count(result.arrivalEvidence),2)
+        equal(count(result.approachDemands),0)
+        equal(count(result.engagements),0)
+        equal(count(result.sharedCornerSituations),1)
+        local shared=result.sharedCornerSituations[1]
+        equal(count(shared.participants),2)
+        local byId={}
+        for _,participant in Value.ipairs(shared.participants) do byId[participant.assemblyId]=participant end
+        equal(byId["AS-A"].cornerArrivalEvidence,true)
+        equal(byId["AS-B"].cornerArrivalEvidence,true)
+        equal(byId["AS-A"].timeToCornerSec,10)
+        equal(math.floor(byId["AS-B"].timeToCornerSec*100+0.5)/100,7.2)
     end)
 
     test("Corner Approach Demand: local arrival within physical reach admits without representative-point sweep",function()
@@ -313,9 +376,15 @@ return function(test,equal)
         equal(turning.engagements[1].finalDirectionTransition.toMoveForwards,true)
 
         values.observationSnapshotId="OBS-4"; values.observationEpoch=4
-        values.futureSpace={future("AS-A",80,10,0,10)}
+        values.futureSpace={}
         values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=80,poseZ=10})}
         values.productiveContinuationKnowledge={productive("AS-A")}
+        local transitional=assess(assessment,values).cornerKnowledge
+        equal(count(transitional.engagements),1)
+        equal(count(transitional.positiveDepartures),0)
+
+        values.observationSnapshotId="OBS-5"; values.observationEpoch=5
+        values.futureSpace={future("AS-A",80,10,0,10)}
         local result=assess(assessment,values).cornerKnowledge
         equal(count(result.engagements),0)
         equal(count(result.positiveDepartures),1)

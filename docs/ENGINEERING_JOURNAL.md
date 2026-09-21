@@ -5598,3 +5598,144 @@ TEST identity advances to **0.3.0.115**.
 
 
 Validation provenance: PR #255 was temporarily retargeted to `main` solely so the repository's normal pull-request Offline Validation workflow could execute the exact TEST `.115` head. This changes no executable claim or TEST identity; the working PR remains logically stacked on the accepted `.113` predecessor until that predecessor is merged.
+
+
+## 2026-09-21 — TEST .116 promotes feature-relative Corner Arrival from exact terminating-edge topology
+
+TEST `.115` validates the repaired Passage pipeline and the Resolution-Margin quiescence correction, but a later Condor/S416 encounter again reaches known structural Corner `228.800,-242.800` without any Shared Corner Regulation from roughly `07:57:15` onward.
+
+The downstream system recovers:
+
+- ordinary Current-Excursion Action-Space Regulation appears only at `07:57:46.143`;
+- Condor establishes current Corner Incumbency at `07:57:53.570`;
+- Cooperative Passage supersedes Regulation at `07:57:58.424`;
+- the Passage later succeeds.
+
+This isolates the remaining defect upstream of Candidate/Decision/Regulation and reproduces the unresolved #240 evidence seam first exposed by `.107/.108`.
+
+The retained diagnostic `CornerArrivalFeatureProbe` again observed terminal physical demand near the same known Corner well before production Corner meaning appeared. In `.115`:
+
+- S416's bounded A8 terminal contact was approximately `(225.303,-259.684)`, ~17.24 m from the Corner representative point;
+- Condor later produced a terminal contact approximately `(225.094,-260.713)`, ~18.29 m from the same Corner;
+- the diagnostic probe remained correctly non-authoritative.
+
+The diagnostic result itself is **not** promoted. Earlier #240 evidence already established that dual-support physical consumption is width-sensitive and cannot define Corner Arrival generically.
+
+The missing stable production fact is already present in current Situation input:
+
+> **A bounded productive continuation terminates on an exact Field-World edge.**
+
+Structural Field Shape independently identifies accepted Corner Features at Field-World boundary vertices. TEST `.116` therefore introduces **feature-relative terminating-edge association**:
+
+1. for one supported bounded A8, inspect its exact terminating Field-World edge;
+2. identify accepted Structural Corner Features coincident with that edge's endpoints;
+3. if exactly one structural Corner endpoint exists, associate the continuation with it;
+4. if both endpoints are Structural Corners, choose the uniquely nearer endpoint from the actual terminal contact;
+5. if the two endpoints are materially equidistant at Field-World quantisation tolerance, remain unresolved.
+
+This is current topology only. It does not:
+
+- extend the A8 beyond the Field-World boundary;
+- predict a GIANTS turn;
+- introduce a universal Corner radius or distance;
+- use working width or Physical Assembly width to choose the Corner;
+- manufacture local Corner Approach Demand, Occupancy or Incumbency.
+
+Positive association is published as **Headland Association**. It may support prospective Corner Arrival Evidence using the existing bounded A8 distance and native/unrestricted speed. Local Approach Demand remains separately gated by the existing assembly-specific current physical reach.
+
+Named discoveries:
+
+> **Feature-Relative Corner Arrival != Representative-Point Intersection**
+
+> **Terminating-Edge Topology Can Associate Arrival Without Predicting A Turn**
+
+> **Worker Geometry May Shape Local Demand; It Must Not Choose The Structural Corner**
+
+> **Equal Structural Endpoints Mean Unresolved, Not Arbitrary Priority**
+
+The implementation also retires `CornerArrivalFeatureProbe` and its focused fixture/listener. Its engineering question is now answered by production Situation meaning; keeping the probe would leave completed research machinery live.
+
+Authority Triad disposition:
+
+- **Architecture:** validated unchanged. Architecture already defines Corner Feature as a region rather than one representative point, names Headland Association, separates Corner Arrival from local Approach Demand, and forbids route prediction/universal radii.
+- **Specification:** clarified so exact bounded terminating-edge topology may establish feature-relative Headland Association and prospective Arrival while ties remain unresolved.
+- **Source:** `SpatialConstraintAssessment` now publishes the association and consumes it for prospective Arrival; the retired diagnostic probe is removed.
+- **Tests:** focused contracts challenge unique-nearest association, exact midpoint ambiguity, width-independent Arrival and Shared Corner composition from two unilateral feature-relative arrivals.
+
+TEST identity advances to **0.3.0.116**.
+
+
+## 2026-09-21 — TEST .116 Reality validates feature-relative Corner meaning but exposes two runtime error boundaries; TEST .117 closes them
+
+Owner-supplied TEST `.116` log is behaviorally encouraging but does **not** satisfy the runtime validation gate because OuttaMyWay emitted seven runtime errors.
+
+Positive Reality evidence from `.116`:
+
+- production `HEADLAND_ASSOCIATION` is now published from exact terminating-edge topology for multiple workers and structural Corners;
+- Shared Corner right-of-way Candidates are published in live GIANTS Reality, including Condor/S416 at structural Corner `228.800,-242.800`;
+- at `09:42:46.607`, Corner Regulation is created for Condor/S416, initially regulating S416 / protecting Condor;
+- one cycle later the current temporal allocation changes and Corner Regulation role migration updates the physical yielder rather than creating a second responsibility;
+- at `09:42:47.188`, Cooperative Passage supersedes that tactical Corner Regulation;
+- four Cooperative Passage commitments terminate `SUCCEEDED` across the run.
+
+This is direct Reality support for the `.116` feature-relative Corner concept even though the exact `.115` choreography did not replay.
+
+Two deterministic runtime defects were also exposed.
+
+### Runtime defect A — projected Passage rejection telemetry local binding
+
+Four errors occurred at `LiveTrafficCandidateSupport.lua:710`:
+
+`attempt to call a nil value`
+
+The runtime path was diagnostic-only `COOPERATIVE_PASSAGE_PROJECTED_REJECTED`. Source review found that `traceProjectedPassageRejection()` called local helper `passageClearanceRejectionTelemetry` before that local was declared. Under Lua lexical scoping, the earlier function body resolved the identifier as a global and therefore observed `nil` only when this rejection-detail path was exercised in GIANTS Reality.
+
+TEST `.117` forward-declares the local helper before the caller and assigns the implementation later. No Candidate, Decision, Responsibility or Passage behavior changes.
+
+Named discovery:
+
+> **Offline Source Presence != Runtime Lexical Binding**
+
+### Runtime defect B — Corner departure before fresh A8 spatial projection is complete
+
+Three errors occurred at `SpatialConstraintAssessment.lua:691` immediately after S416's `REVERSE_TO_FORWARD` Corner direction transition:
+
+`attempt to perform arithmetic (sub) on number and nil`
+
+The Engagement correctly retained its final GIANTS direction-transition anchor. Fresh productive A8 returned before the current bounded spatial projection had republished finite `currentX/currentZ/headingX/headingZ`. The departure evaluator attempted to compare the retained transition anchor against this incomplete projection.
+
+Reality supplied the correct semantic answer one observation later, once the bounded A8 projection became complete: Positive Corner Departure was then established normally.
+
+TEST `.117` therefore treats incomplete fresh A8 spatial projection as unresolved departure evidence:
+
+`CURRENT_A8_SPATIAL_PROJECTION_UNAVAILABLE`
+
+The retained Corner Engagement remains current until the next complete positive projection can prove crossing. This is fail-closed and changes no Corner geometry, timing threshold or departure definition.
+
+Named discovery:
+
+> **Productive A8 Reacquisition != Spatially Complete A8 Projection**
+
+> **Incomplete Departure Evidence Retains Engagement**
+
+Focused validation now covers the transitional observation explicitly: after a direction transition, productive A8 with no bounded Future-Space projection must retain Corner Engagement and publish no Positive Departure; the subsequent complete bounded A8 may then prove the existing departure condition.
+
+Authority Triad disposition:
+
+- **Architecture:** unchanged.
+- **Specification:** unchanged; accepted Positive Corner Departure already requires positive A8 spatial crossing rather than mere productive-state return.
+- **Source:** two bounded runtime correctness fixes only.
+- **Tests:** add regression evidence for incomplete post-transition A8 projection and Lua helper binding order.
+
+TEST identity advances to **0.3.0.117**.
+
+
+### Offline Validation #706 structural correction — TEST .118
+
+The first .117 Offline Validation run failed one structural contract because the runtime-safe forward declaration changed the syntactic form of the existing clearance-telemetry helper. The underlying runtime diagnosis remained correct, but the existing test deliberately inspects that helper to verify telemetry consumes planner evidence without making extra planning calls.
+
+Rather than weaken that established contract, the source was reorganised so the full local `passageClearanceRejectionTelemetry()` implementation is lexically defined before `traceProjectedPassageRejection()`. This is clearer and preserves both runtime binding and the earlier no-extra-planner-calls structural invariant.
+
+Because this executable source changed after the published .117 head, build identity advances again rather than reusing .117.
+
+TEST identity: **0.3.0.118**.

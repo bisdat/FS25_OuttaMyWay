@@ -90,7 +90,6 @@ load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
-load("scripts/diagnostics/CornerArrivalFeatureProbe.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
 load("scripts/diagnostics/ProductiveContinuationProbe.lua")
 load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
@@ -7184,7 +7183,6 @@ dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
 
-dofile(root.."/tests/replacement_core/CornerArrivalFeatureProbe.lua")(test,equal)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end
