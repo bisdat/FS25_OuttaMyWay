@@ -47,18 +47,34 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
         "admissibleGroupKeys",
         "Policy:selectGroup(inventory,admissibleCandidates)",
         'family(groups,"OBSTRUCTION_RELOCATION")',
+        'family(groups,"PASSAGE")',
+        "SPATIAL_NEGOTIATION_STAGE_TRANSITION",
+        "SUPPORTED_ADMISSIBLE_PASSAGE_ENDS_TACTICAL_REGULATION",
+        "MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR",
+        "TACTICAL_REGULATION_SINGLE_PURPOSE",
+        "MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR",
+        "TACTICAL_SUPPORT_FAIL_CLOSED",
+    ):
+        assert token in policy
+    for retired in (
+        "LEGACY_LIVE_TRAFFIC_COMPATIBILITY",
+        "LEGACY_LIVE_TRAFFIC_PRECEDENCE",
+        "LEGACY_LIVE_TRAFFIC_FAIL_CLOSED",
         "SAME_PAIR_SUPPORTED_PASSAGE_SUCCEEDS_FRESH_FOLLOWER_PURPOSE",
         "UNRELATED_SUPPORTED_PASSAGE_DOES_NOT_SUPERSEDE_FRESH_FOLLOWER_PURPOSE",
         "FORWARD_INTERSECTION_BEFORE_PASSAGE_WITHOUT_FOLLOWER_PURPOSE",
         "NEAREST_SUPPORTED_PASSAGE_BEFORE_ACTION_SPACE_REGULATION",
+        "ACTION_SPACE_REGULATION_BEFORE_FRESH_FOLLOWER_FALLBACK_WHEN_NO_PASSAGE",
     ):
-        assert token in policy
+        assert retired not in policy
     for token in (
         "ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory,viable)",
         "candidateGroupKey(candidate)==groupKey",
         "projectedInventory",
         "admissibilityAwareGroupSelection=true",
         'selection="NO_MANDATORY_ADMISSIBLE_GROUP"',
+        "portfolioPolicyReason",
+        "reason=portfolioPolicyReason",
     ):
         assert token in selector
     assert "lowerPrecedenceConstraintFallback" not in policy

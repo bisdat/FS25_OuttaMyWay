@@ -85,6 +85,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     local selectable=viable
     local selectedUnresolved=unresolvedCandidates
     local portfolioChoice=nil
+    local portfolioPolicyReason=nil
     local portfolioSelectionMissing=false
     local portfolioHasNoAdmissible=false
     local isProspectivePortfolio=portfolioBoundary(candidateResult.inventory)~=nil
@@ -94,7 +95,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
             selectable={}
             selectedUnresolved=unresolvedCandidates
         else
-            portfolioChoice=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory,viable)
+            portfolioChoice,portfolioPolicyReason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory,viable)
             if portfolioChoice==nil or type(portfolioChoice.groupKey)~="string" then
                 portfolioSelectionMissing=true
                 selectable={}
@@ -127,8 +128,8 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     local explanation
     if portfolioSelectionMissing then
         commitmentAction="WAIT"
-        nonIntervention={explicit=true,classification="PROSPECTIVE_PORTFOLIO_POLICY_UNRESOLVED"}
-        explanation="Prospective Decision Portfolio contained mandatory-admissible alternatives but compatibility policy could not identify one governing support group"
+        nonIntervention={explicit=true,classification="PROSPECTIVE_PORTFOLIO_POLICY_UNRESOLVED",reason=portfolioPolicyReason}
+        explanation="Prospective Decision Portfolio contained mandatory-admissible alternatives but compatibility policy could not identify one governing support group: "..tostring(portfolioPolicyReason or "UNSPECIFIED")
     elseif trafficPolicy~=nil and trafficPolicy.waitForPreferenceEvidence==true then
         selected=nil
         commitmentAction="WAIT"
@@ -168,7 +169,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
             compatibilityRule=portfolioChoice.rule,compatibilityDetail=portfolioChoice.detail,admissibilityAwareGroupSelection=true,localSelection=localBasis
         }
     elseif portfolioSelectionMissing then
-        comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="UNRESOLVED",admissibilityAwareGroupSelection=true}
+        comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="UNRESOLVED",reason=portfolioPolicyReason,admissibilityAwareGroupSelection=true}
     elseif portfolioHasNoAdmissible then
         comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="NO_MANDATORY_ADMISSIBLE_GROUP",admissibilityAwareGroupSelection=true}
     end

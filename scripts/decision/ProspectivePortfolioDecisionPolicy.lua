@@ -41,21 +41,12 @@ local function family(groups,name)
     return result
 end
 
-local function nearestPassage(groups)
-    local passages=family(groups,"PASSAGE")
-    table.sort(passages,function(a,b)
-        local sa,sb=tonumber(a.initialSeparationM) or math.huge,tonumber(b.initialSeparationM) or math.huge
-        if math.abs(sa-sb)>0.001 then return sa<sb end
-        return tostring(a.conflictIdentity or a.groupKey)<tostring(b.conflictIdentity or b.groupKey)
-    end)
-    return passages[1]
-end
-
-local function samePair(follower,passage)
-    if type(follower)~="table" or type(passage)~="table" then return false end
-    local ids={}
-    for _,id in OuttaMyWay.ValueRecord.ipairs(passage.assemblyIds or {}) do ids[id]=true end
-    return ids[follower.leaderAssemblyId]==true and ids[follower.followerAssemblyId]==true
+local function families(groups,names)
+    local result={}
+    for _,name in ipairs(names) do
+        for _,group in ipairs(family(groups,name)) do result[#result+1]=group end
+    end
+    return result
 end
 
 local function choose(group,rule,detail)
@@ -65,50 +56,70 @@ end
 
 function Policy:selectGroup(inventory,admissibleCandidates)
     local groups=groupsFor(inventory,admissibleCandidates)
-    if #groups==0 then return nil end
+    if #groups==0 then return nil,"NO_MANDATORY_ADMISSIBLE_SUPPORT_GROUP" end
 
     local obstruction=family(groups,"OBSTRUCTION_RELOCATION")[1]
-    if obstruction~=nil then return choose(obstruction,"OUTER_PURPOSE_PRECEDENCE","CURRENT_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC") end
-
-    local cornerFail=family(groups,"CORNER_FAIL_CLOSED")[1]
-    if cornerFail~=nil then return choose(cornerFail,"CORNER_DECISION_DOMAIN_FAIL_CLOSED","SHARED_CORNER_ALLOCATION_AMBIGUITY_PRECEDES_NON_CORNER_LIVE_TRAFFIC") end
-
-    local corner=family(groups,"CORNER_RIGHT_OF_WAY")[1]
-    if corner~=nil then return choose(corner,"CORNER_DECISION_DOMAIN_PRECEDENCE","ADMITTED_SHARED_CORNER_COMPETING_DEMAND_OWNS_DECISION_DOMAIN") end
-
-    local followerFail=family(groups,"FOLLOWER_FAIL_CLOSED")[1]
-    if followerFail~=nil then return choose(followerFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","FOLLOWER_SAME_CLASS_AMBIGUITY_PRECEDES_OTHER_LIVE_TRAFFIC") end
-
-    local followerRetire=family(groups,"FOLLOWER_RETIRE")[1]
-    if followerRetire~=nil then return choose(followerRetire,"LEGACY_LIVE_TRAFFIC_PRECEDENCE","FOLLOWER_RETIREMENT_BEFORE_OTHER_LIVE_TRAFFIC") end
-
-    local follower=family(groups,"FOLLOWER")[1]
-    local passage=nearestPassage(groups)
-    local actionFail=family(groups,"ACTION_SPACE_FAIL_CLOSED")[1]
-    local actions=family(groups,"ACTION_SPACE")
-
-    if follower~=nil then
-        if passage~=nil then
-            if samePair(follower,passage) then
-                return choose(passage,"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","SAME_PAIR_SUPPORTED_PASSAGE_SUCCEEDS_FRESH_FOLLOWER_PURPOSE")
-            end
-            return choose(follower,"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","UNRELATED_SUPPORTED_PASSAGE_DOES_NOT_SUPERSEDE_FRESH_FOLLOWER_PURPOSE")
-        end
-        if actionFail~=nil then return choose(actionFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","MULTIPLE_ACTION_SPACE_CONTEXTS_BEFORE_FOLLOWER_FALLBACK") end
-        if #actions==1 then return choose(actions[1],"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","ACTION_SPACE_REGULATION_BEFORE_FRESH_FOLLOWER_FALLBACK_WHEN_NO_PASSAGE") end
-        return choose(follower,"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","FRESH_FOLLOWER_FALLBACK")
+    if obstruction~=nil then
+        return choose(obstruction,"OUTER_PURPOSE_PRECEDENCE","CURRENT_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC")
     end
 
-    local forwardFail=family(groups,"FORWARD_INTERSECTION_FAIL_CLOSED")[1]
-    if forwardFail~=nil then return choose(forwardFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","MULTIPLE_FORWARD_INTERSECTION_CONTEXTS") end
-    local forward=family(groups,"FORWARD_INTERSECTION")[1]
-    if forward~=nil then return choose(forward,"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","FORWARD_INTERSECTION_BEFORE_PASSAGE_WITHOUT_FOLLOWER_PURPOSE") end
+    -- Spatial Negotiation is a stage transition, not a peer-purpose ordering:
+    -- once one Cooperative Passage is supported and mandatory-admissible,
+    -- tactical Regulation has completed its job and must not pre-empt Passage.
+    local passages=family(groups,"PASSAGE")
+    if #passages==1 then
+        return choose(passages[1],"SPATIAL_NEGOTIATION_STAGE_TRANSITION","SUPPORTED_ADMISSIBLE_PASSAGE_ENDS_TACTICAL_REGULATION")
+    end
+    if #passages>1 then
+        return nil,"MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR"
+    end
 
-    if passage~=nil then return choose(passage,"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","NEAREST_SUPPORTED_PASSAGE_BEFORE_ACTION_SPACE_REGULATION") end
-    if actionFail~=nil then return choose(actionFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","MULTIPLE_ACTION_SPACE_CONTEXTS") end
-    if #actions==1 then return choose(actions[1],"LEGACY_LIVE_TRAFFIC_COMPATIBILITY","SINGLE_ACTION_SPACE_REGULATION") end
+    -- Corner allocation remains an explicitly architected tactical Regulation
+    -- decision domain while no viable Passage has yet been reached.
+    local cornerFail=family(groups,"CORNER_FAIL_CLOSED")[1]
+    if cornerFail~=nil then
+        return choose(cornerFail,"CORNER_DECISION_DOMAIN_FAIL_CLOSED","SHARED_CORNER_ALLOCATION_AMBIGUITY_PRECEDES_NON_CORNER_LIVE_TRAFFIC")
+    end
+
+    local corner=family(groups,"CORNER_RIGHT_OF_WAY")[1]
+    if corner~=nil then
+        return choose(corner,"CORNER_DECISION_DOMAIN_PRECEDENCE","ADMITTED_SHARED_CORNER_COMPETING_DEMAND_OWNS_DECISION_DOMAIN")
+    end
+
+    -- Same-class ambiguity is fail-closed support meaning, not a preference
+    -- among otherwise supportable tactical purposes.
+    local failClosed=families(groups,{
+        "FOLLOWER_FAIL_CLOSED",
+        "FORWARD_INTERSECTION_FAIL_CLOSED",
+        "ACTION_SPACE_FAIL_CLOSED"
+    })
+    if #failClosed==1 then
+        return choose(failClosed[1],"TACTICAL_SUPPORT_FAIL_CLOSED",failClosed[1].failClosedReason or "TACTICAL_SUPPORT_AMBIGUITY")
+    end
+    if #failClosed>1 then
+        return nil,"MULTIPLE_TACTICAL_SUPPORT_AMBIGUITIES"
+    end
+
+    -- Without Passage or a Corner-owned allocation, current Architecture does
+    -- not define a cross-family preference among independent tactical
+    -- Regulation purposes. One unambiguous purpose may proceed; several must
+    -- remain explicit non-selection rather than recreate legacy ordering.
+    local tactical=families(groups,{
+        "FOLLOWER_RETIRE",
+        "FOLLOWER",
+        "FORWARD_INTERSECTION",
+        "ACTION_SPACE"
+    })
+    if #tactical==1 then
+        return choose(tactical[1],"TACTICAL_REGULATION_SINGLE_PURPOSE","ONLY_SUPPORTED_ADMISSIBLE_TACTICAL_REGULATION_PURPOSE")
+    end
+    if #tactical>1 then
+        return nil,"MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR"
+    end
 
     local fallback=family(groups,"PASSIVE_FALLBACK")[1]
-    if fallback~=nil then return choose(fallback,"PROSPECTIVE_PORTFOLIO_PASSIVE_FALLBACK","NO_FRESH_PHYSICAL_PURPOSE") end
-    return nil
+    if fallback~=nil then
+        return choose(fallback,"PROSPECTIVE_PORTFOLIO_PASSIVE_FALLBACK","NO_FRESH_PHYSICAL_PURPOSE")
+    end
+    return nil,"NO_COMPATIBLE_GOVERNING_SUPPORT_GROUP"
 end

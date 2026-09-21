@@ -5396,3 +5396,101 @@ The source defect exposed by Reality is that the prospective Decision policy may
 > **Supported Passage Must Not Be Pre-Empted By Unrelated Regulation Ordering**
 
 Issue #250 owns the correction. Do not change Passage geometry, entry/capture semantics or invent cross-pair responsibility succession. The next design question is the narrow Decision rule at the existing supported/admissible Passage boundary.
+
+
+## 2026-09-21 — TEST .113 removes legacy live-traffic ordering from prospective Decision
+
+Issue #251 audited the executable cross-purpose rules in `ProspectivePortfolioDecisionPolicy` after TEST `.112` demonstrated that Forward-Intersection Regulation could pre-empt an already supported Condor/S416 Cooperative Passage.
+
+PR #252 clarified the existing Decision contract without changing Architecture: active-worker Spatial Negotiation remains **GIANTS native progression -> tactical Regulation -> Cooperative Passage**. Follower, Forward Intersection, Action-Space and Corner right-of-way are tactical Regulation purposes or allocations. They are not peer strategic successors that may defeat a supported, mandatory-admissible Passage through implementation ordering.
+
+TEST `.113` makes source conform to that contract.
+
+The prospective Decision policy now:
+
+- preserves current Causal Obstruction outer-purpose handling;
+- selects one supported, mandatory-admissible Cooperative Passage before any tactical Regulation family;
+- refuses to choose among several supported/admissible Passage groups because current Architecture defines no Passage-to-Passage comparator;
+- retains the explicitly architected Corner decision domain only while no viable Passage exists;
+- preserves same-class support ambiguity as fail-closed meaning rather than a legacy traffic preference;
+- selects one unambiguous non-Corner tactical Regulation purpose when it is the only such purpose; and
+- explicitly returns non-selection when several unrelated tactical Regulation purposes coexist without an accepted comparator.
+
+The following executable legacy policy is removed rather than renamed:
+
+- same-pair Passage special-casing over Follower;
+- unrelated Follower over Passage;
+- Forward Intersection over Passage;
+- nearest-by-current-separation Passage selection;
+- Action-Space over Follower fallback; and
+- fixed Follower/FI/Action-Space family fallback ordering.
+
+> **Tactical Regulation Enables Passage; It Does Not Compete With Viable Passage**
+
+> **No Comparator Means Non-Selection, Not Hidden Ordering**
+
+`DecisionSelector` now retains the policy's explicit non-selection reason in the Decision record so absence of a governing scope is auditable instead of appearing as an unspecified policy miss.
+
+Offline regression now directly challenges:
+
+- Passage over simultaneous Follower/FI/Action-Space/Corner tactical shaping;
+- multiple Passage candidates failing closed without a distance comparator;
+- multiple unrelated tactical purposes failing closed without cross-family precedence;
+- one tactical purpose remaining selectable before Passage support exists;
+- Corner retaining its architected stage-2 decision domain before Passage; and
+- same-class ambiguity remaining explicit fail-closed support meaning.
+
+Because this changes executable Decision behaviour on top of the `.112` evidence branch, the TEST identity advances to **0.3.0.113**.
+
+Authority Triad disposition:
+
+- **Architecture:** validated unchanged; the Spatial Negotiation stage model already owns this meaning.
+- **Specification:** PR #252 accepted the implementation-facing Decision contract.
+- **Source:** changed here to conform.
+- **Tests:** changed as evidence; previously encoded legacy ordering is deliberately retired.
+
+After PR #247 and PR #252 were both accepted, the #253 implementation branch was rebuilt directly on accepted `main` at `a041604eaf758413e280ebb5f28d8813157eca7e`. The resulting `.113` diff contains only the Decision correction, focused regression evidence, build identity and this engineering record; no stale stacked ancestry remains.
+
+GIANTS Reality remains required. The discriminating replay is the `.112` final Condor/S416 encounter: once their Passage is supported and mandatory-admissible, Decision must select Passage, `entryReady=false` must enter `PASSAGE_APPROACH`, and independent Patriot must be handled only through the resulting Resolution-Epoch Bullet Time contract.
+
+
+### Offline Validation #691 — stale focused precedence contract exposed
+
+Offline Validation run #691 produced a useful failure rather than an implementation contradiction.
+
+The full replacement-core behavioural harness passed **348/348**. Structural contracts and generated source reference also passed. The only failing executable fixture was `tests/replacement_core/prospective_decision_admissibility.lua`, whose BOTH-PASS case still asserted:
+
+> existing Forward Intersection precedence must survive when both groups are admissible
+
+That fixture originated from the earlier admissibility-bypass correction and legitimately proves that mandatory admissibility is evaluated before inter-group choice. It also accidentally froze the then-existing Forward-Intersection-before-Passage ordering as part of the same test.
+
+PR #252 has now explicitly rejected that ordering. The focused fixture is therefore corrected rather than production source being changed:
+
+- Forward Intersection PASS + Passage PASS -> Passage wins through `SPATIAL_NEGOTIATION_STAGE_TRANSITION`;
+- Forward Intersection PASS + Passage FAIL -> Forward Intersection Regulation remains selectable;
+- Forward Intersection FAIL/UNRESOLVED + Passage PASS -> Passage remains selectable;
+- no mandatory-admissible group retains the existing WAIT/SETTLE semantics.
+
+> **Regression Coverage Can Preserve An Unvalidated Policy**
+
+> **Admissibility Before Preference != Historical Preference Is Correct**
+
+No runtime source or TEST identity changes result from #691. TEST remains **0.3.0.113**.
+
+
+### Offline Validation #692 — two-level Decision provenance clarified
+
+Offline Validation run #692 again passed Structural contracts, generated source reference, and the main replacement-core behavioural harness (**348/348**). The remaining failure was in the corrected focused prospective-admissibility fixture.
+
+The selected Candidate was now correct: supported mandatory-admissible Passage won over Forward-Intersection Regulation. The failing assertion instead expected `comparisonBasis.rule` to equal the inner stage-transition rule.
+
+Current Decision provenance is intentionally two-level:
+
+- `comparisonBasis.rule` = `PROSPECTIVE_DECISION_PORTFOLIO_COMPATIBILITY` — the outer policy that governed inter-group selection;
+- `comparisonBasis.compatibilityRule` = `SPATIAL_NEGOTIATION_STAGE_TRANSITION` or `TACTICAL_REGULATION_SINGLE_PURPOSE` — the semantic rule selected inside that policy.
+
+The focused fixture now asserts that established representation rather than flattening the two meanings.
+
+> **Policy Provenance != Inner Compatibility Rule**
+
+No runtime source or TEST identity changes result from #692. TEST remains **0.3.0.113**.
