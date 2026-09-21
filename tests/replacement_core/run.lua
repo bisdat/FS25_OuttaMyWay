@@ -1065,6 +1065,28 @@ test("Prospective Decision: one supported admissible Passage ends Follower FI Ac
     equal(choice.detail,"SUPPORTED_ADMISSIBLE_PASSAGE_ENDS_TACTICAL_REGULATION")
 end)
 
+test("Prospective Decision: viable Passage supersedes an admissible retained tactical Regulation",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1,{existingCommitmentId="CM-FI"}),
+        prospectiveGroup("passage:a-b","PASSAGE",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"passage:a-b")
+    equal(choice.rule,"SPATIAL_NEGOTIATION_STAGE_TRANSITION")
+end)
+
+test("Prospective Decision: retained tactical Regulation remains governing when no Passage is viable",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1,{existingCommitmentId="CM-FI"}),
+        prospectiveGroup("action","ACTION_SPACE",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"forward")
+    equal(choice.rule,"RETAIN_CURRENT_TACTICAL_REGULATION")
+end)
+
 test("Prospective Decision: multiple supported admissible Passages fail closed without a distance comparator",function()
     local inventory,candidates=prospectivePortfolioPolicyFixture({
         prospectiveGroup("passage:a-b","PASSAGE",1,{initialSeparationM=20}),
@@ -4034,6 +4056,31 @@ local function forwardIntersectionPicture(positive)
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
+local function unrelatedForwardIntersectionPicture()
+    local values=OuttaMyWay.ValueRecord.toTable(forwardIntersectionPicture(true))
+    values.identity="OP-FORWARD-INTERSECTION-UNRELATED"
+    values.identities.assemblies={"AS-A","AS-B","AS-C"}
+    values.identities.jobEpisodes.active={"JE-A","JE-B","JE-C"}
+    values.currentPairAssessmentScope={{
+        pairReferenceKey="vehicle-root:201|vehicle-root:301",operationId="OR-1",
+        subjectAssemblyId="AS-C",otherAssemblyId="AS-B",
+        subjectReferenceKey="vehicle-root:301",otherReferenceKey="vehicle-root:201",
+        subjectJobEpisodeId="JE-C",otherJobEpisodeId="JE-B",episodeSignature="JE-B|JE-C",
+        relationshipStatus="POSITIVE",relationship="FORWARD_INTERSECTION",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="POSITIVE",
+        currentInteractionEvidencePresent=true,evidence={sourceInteractionReferenceKeys={},negativeClearanceAuthority=false},
+        provenance={source="unrelated-forward-intersection-test",ephemeral=true,persistentPairHistory=false}
+    }}
+    local relation=values.spatialConstraintKnowledge[1].pairRelationships[1]
+    relation.identity="forward-intersection:OR-1:AS-B:AS-C"
+    relation.subjectAssemblyId="AS-C"; relation.otherAssemblyId="AS-B"
+    relation.subjectReferenceKey="vehicle-root:301"; relation.otherReferenceKey="vehicle-root:201"
+    relation.actionSpaceConservation.regulatedAssemblyId="AS-B"
+    relation.actionSpaceConservation.regulatedReferenceKey="vehicle-root:201"
+    relation.actionSpaceConservation.protectedAssemblyId="AS-C"
+    relation.actionSpaceConservation.protectedReferenceKey="vehicle-root:301"
+    return OuttaMyWay.OperationalPicture.new(values)
+end
+
 test("Forward Intersection admission fails closed without a positive finite Candidate magnitude",function()
     local runtime=autonomousHeadOnRuntime()
     runtime:setRegulationControl({})
@@ -4133,6 +4180,77 @@ test("Forward Intersection Regulation same-pair Passage replaces responsibility 
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
     equal(string.sub(runtime.commitments:get(commitmentId).governingBasis.responsibilityKey,1,20),"cooperative-passage:")
     equal(#accepted,3)
+end)
+
+test("Viable Passage replaces unrelated live Forward Intersection without incumbent timing suppressing Candidate support",function()
+    local runtime=autonomousHeadOnRuntime()
+    local regulationRequests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate)
+        regulationRequests[#regulationRequests+1]=request
+        return true,"ACCEPTED"
+    end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local predecessorPicture=unrelatedForwardIntersectionPicture()
+    local predecessorSupported=runtime.liveTrafficCandidateSupport:attach(predecessorPicture,headOnTestSnapshot())
+    local predecessorEval=runtime:evaluateSealedOperationalPicture(predecessorSupported)
+    local predecessor=runtime:dispatchEvaluatedOperationalPicture(predecessorSupported,predecessorEval)
+    equal(predecessor.status,"ACCEPTED")
+    equal(predecessor.forwardIntersection,true)
+    local predecessorCommitmentId=predecessor.commitment.identity
+    local predecessorResponsibilityId=predecessor.currentResponsibility.identity
+    equal(runtime.authorities:ownerOf("AS-B"),predecessorCommitmentId)
+
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
+    values.identity="OP-CROSS-CONTEXT-PASSAGE"
+    values.epoch=805
+    values.commitmentContext={{commitmentId=predecessorCommitmentId,governingBasis=runtime.commitments:get(predecessorCommitmentId).governingBasis}}
+    values.identities.assemblies={"AS-A","AS-B","AS-C"}
+    values.identities.jobEpisodes.active={"JE-A","JE-B","JE-C"}
+    local fi=OuttaMyWay.ValueRecord.toTable(unrelatedForwardIntersectionPicture()).spatialConstraintKnowledge[1]
+    values.spatialConstraintKnowledge={fi}
+    passagePicture=OuttaMyWay.OperationalPicture.new(values)
+
+    local accepted=nil
+    local cooperativeControl={}
+    function cooperativeControl:setCompletionHandler(fn) self.handler=fn end
+    function cooperativeControl:isActive() return false end
+    function cooperativeControl:executeJointRequests(a,b,candidate)
+        accepted={a,b,candidate}
+        return true,"COOPERATIVE_PASSAGE_STARTED"
+    end
+    runtime:setCooperativePassageControl(cooperativeControl)
+
+    local portfolio=runtime.prospectiveDecisionPortfolioSupport:attach(passagePicture,passageSnapshot)
+    equal(portfolio.candidateSupportEvidence.supportBoundary.mode,"PROSPECTIVE_DECISION_PORTFOLIO")
+    local evaluated=runtime:evaluateSealedOperationalPicture(portfolio)
+    local selected=nil
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates) do
+        if candidate.identity==evaluated.decision.selectedCandidateId then selected=candidate break end
+    end
+    equal(selected.capability,"REPOSITION")
+    equal(evaluated.decision.comparisonBasis.compatibilityRule,"SPATIAL_NEGOTIATION_STAGE_TRANSITION")
+    equal(evaluated.decision.commitmentAction,"REVISE")
+
+    local dispatched=runtime:dispatchEvaluatedOperationalPicture(portfolio,evaluated)
+    equal(dispatched.status,"ACCEPTED")
+    equal(dispatched.commitment.identity~=predecessorCommitmentId,true)
+    equal(dispatched.currentResponsibility.identity~=predecessorResponsibilityId,true)
+    equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(runtime.commitments:get(predecessorCommitmentId).state,"SUPERSEDED_BY_NEW_INTENT")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(predecessorCommitmentId),nil)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
+    equal(runtime.authorities:ownerOf("AS-B"),dispatched.commitment.identity)
+    equal(#accepted,3)
+    local releaseSeen=false
+    for _,request in ipairs(regulationRequests) do
+        if request.target.operation=="RELEASE" then releaseSeen=true break end
+    end
+    equal(releaseSeen,true)
 end)
 
 test("Forward Intersection fixed creep role migration does not require a Resolution-Space envelope",function()
@@ -4723,7 +4841,54 @@ test("Protected Intent-Revelation Locality: Action-Space Regulation bare NO_CURR
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
 end)
 
-test("Action-Space Regulation positive NOT_REQUIRED quiesces actuation while the relationship Commitment remains active",function()
+test("Resolution-Margin Demand: pair-local positive witness prevents Action-Space quiescence across transient non-closing",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local active=actionSpaceRegulationPicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(#requests,1)
+    local commitmentId=admitted.commitment.identity
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-ACTION-SPACE-REGULATION-RESOLUTION-MARGIN-RETAINED"; values.epoch=7985; values.commitmentContext={{commitmentId=commitmentId}}
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="NO_OPPOSED_CONFLICT"
+    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
+    relation.currentClosing={resolved=true,separationM=28,closingRateMps=-0.5,currentDirectionDot=0.25}
+    relation.currentClosingPositive=false; relation.currentNonClosingPositive=true
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
+    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    values.resolutionMarginDemandKnowledge={{
+        identity="resolution-margin-demand:OR-00001:AS-B:CURRENT_SPACE|AS-A",
+        status="POSITIVE_WITNESS_WITHIN_LOCAL_INTENT",operationId="OR-00001",
+        subjectAssemblyId="AS-B",subjectReferenceKey="vehicle-root:201",
+        representedClaim={class="CURRENT_SPACE",identity="CURRENT-SPACE-AS-A",targetAssemblyId="AS-A",targetReferenceKey="vehicle-root:101"},
+        knownWitnessEntryM=12,
+        claimLimits={positiveRepresentedDemandOnly=true,negativeClearanceAuthority=false,safeClearanceAuthority=false,stoppingDistanceAuthority=false,speedAuthority=false,routePredictionAuthority=false},
+        provenance={source="test",authority="POSITIVE_RESOLUTION_MARGIN_DEMAND_ONLY"}
+    }}
+    local transient=OuttaMyWay.OperationalPicture.new(values)
+    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
+    local maintained=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
+    equal(maintained.status=="MAINTAINED" or maintained.status=="ENVELOPE_UPDATED",true)
+    local releaseCount=0
+    for _,request in ipairs(requests) do if request.target.operation=="RELEASE" then releaseCount=releaseCount+1 end end
+    equal(releaseCount,0)
+    local status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
+    equal(status.active,true); equal(status.actuationActive,true); equal(status.quiescenceCount,0)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+end)
+
+test("Action-Space Regulation positive NOT_REQUIRED quiesces without pair-local Resolution-Margin Demand",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
     local capability={}
@@ -4751,6 +4916,15 @@ test("Action-Space Regulation positive NOT_REQUIRED quiesces actuation while the
     relation.currentClosing=nil; relation.currentClosingPositive=false; relation.currentNonClosingPositive=false
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
     relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    values.resolutionMarginDemandKnowledge={{
+        identity="resolution-margin-demand:OR-00001:AS-A:CURRENT_SPACE|AS-B",
+        status="POSITIVE_WITNESS_WITHIN_LOCAL_INTENT",operationId="OR-00001",
+        subjectAssemblyId="AS-A",subjectReferenceKey="vehicle-root:101",
+        representedClaim={class="CURRENT_SPACE",identity="CURRENT-SPACE-AS-B",targetAssemblyId="AS-B",targetReferenceKey="vehicle-root:201"},
+        knownWitnessEntryM=9,
+        claimLimits={positiveRepresentedDemandOnly=true,negativeClearanceAuthority=false,safeClearanceAuthority=false,stoppingDistanceAuthority=false,speedAuthority=false,routePredictionAuthority=false},
+        provenance={source="test",authority="POSITIVE_RESOLUTION_MARGIN_DEMAND_ONLY"}
+    }}
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)

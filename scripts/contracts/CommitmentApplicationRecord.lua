@@ -1,4 +1,4 @@
-local allowed = { CREATE=true, MAINTAIN=true, REVISE=true, WAIT=true, SETTLE=true, NO_MUTATION=true }
+local allowed = { CREATE=true, MAINTAIN=true, REVISE=true, REPLACE=true, WAIT=true, SETTLE=true, NO_MUTATION=true }
 OuttaMyWay.CommitmentApplicationRecord = OuttaMyWay.ValueRecord.register(
     "CommitmentApplicationRecord",
     OuttaMyWay.ValueRecord.define(

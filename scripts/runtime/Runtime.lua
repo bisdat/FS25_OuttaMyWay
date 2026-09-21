@@ -681,6 +681,9 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         elseif self.responsibilityTransitionAuthority:matchesFollowerPassage(picture,evaluated) then
             applied,reason=self.responsibilityTransitionAuthority:replaceFollowerRegulationWithCooperativePassage(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.regulationBoundedAuthority)
+        elseif self.responsibilityTransitionAuthority:matchesIndependentRegulationPassage(picture,evaluated) then
+            applied,reason=self.responsibilityTransitionAuthority:replaceIndependentRegulationWithCooperativePassage(
+                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.regulationBoundedAuthority)
         else
             applied,reason=self.responsibilityTransitionAuthority:transitionCooperativePassageResolution(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition)
@@ -697,16 +700,29 @@ end
 
 function Runtime:processLiveObservation(raw)
     local processed=self:processSealedObservation(raw)
+    -- Tactical Regulation remains inside the same prospective Decision surface
+    -- as fresh GIANTS-native traffic. An already-active Resolution is different:
+    -- its own decision horizon remains authoritative and ordinary independent
+    -- traffic negotiation stays deferred until that Resolution dissolves.
+    local contexts=processed.picture.commitmentContext or {}
+    local activeResolution=false
+    for _,context in OuttaMyWay.ValueRecord.ipairs(contexts) do
+        if type(context.commitmentId)=="string"
+            and self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(context.commitmentId)~=nil then
+            activeResolution=true
+            break
+        end
+    end
+
     local supported=nil
-    if OuttaMyWay.ValueRecord.length(processed.picture.commitmentContext or {})>0 then
-        -- Incumbent lifecycle gating remains exactly on the accepted path.
+    if activeResolution then
         supported=self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)
         if supported==nil then supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot) end
     else
         supported=self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)
         if supported==nil then
-            -- Conservative escape hatch only; a fresh Portfolio helper normally
-            -- returns either a Portfolio or the existing passive support.
+            -- Conservative escape hatch only; the Portfolio helper normally
+            -- returns either a complete Portfolio or the existing passive support.
             supported=self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)
             if supported==nil then supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot) end
         end

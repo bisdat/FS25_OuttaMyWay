@@ -149,6 +149,8 @@ The exact helper sequence is not normative. The ordering constraints are.
 
 A replacement path MUST NOT use a temporary GIANTS-AI responsibility merely to simplify implementation if Architecture supports direct atomic replacement.
 
+Where a selected Cooperative Passage supersedes a current tactical Regulation whose retained Commitment is not a valid substrate for the new pairwise Resolution, Responsibility Transition MUST perform a cross-context replacement rather than suppress the successor. The predecessor physical effect must be neutralised, its authority relinquished, a fresh successor Commitment established, and the predecessor terminalised as superseded within the same runtime transition cycle before successor physical dispatch.
+
 ## Durable invariants
 
 ### Exclusive lifecycle authority

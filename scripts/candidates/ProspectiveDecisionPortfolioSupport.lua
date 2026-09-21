@@ -18,7 +18,7 @@ local function candidateMetadata(specification,family,groupKey,ordinal,boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
-        assemblyIds=bridge.assemblyIds
+        assemblyIds=bridge.assemblyIds,existingCommitmentId=bridge.existingCommitmentId or evidence.existingCommitmentId
     }
     for key,value in pairs(extra or {}) do metadata[key]=value end
     evidence.candidateSupportGroup=metadata
@@ -39,7 +39,7 @@ local function descriptorFromSpecification(specification,family,groupKey,ordinal
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
-        assemblyIds=bridge.assemblyIds
+        assemblyIds=bridge.assemblyIds,existingCommitmentId=bridge.existingCommitmentId or evidence.existingCommitmentId
     }
     for key,value in pairs(extra or {}) do descriptor[key]=value end
     return descriptor
@@ -112,11 +112,6 @@ end
 function Support:attach(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
-    if OuttaMyWay.ValueRecord.length(picture.commitmentContext or {})>0 then
-        self.lastStatus="INCUMBENT_CONTEXT_REQUIRES_EXISTING_SINGLE_PURPOSE_PATH"
-        return nil
-    end
-
     local targetPictureId=self.identities:issue("PICTURE")
     local targetEpoch=self.epochs:next()
     local baseValues=OuttaMyWay.ValueRecord.toTable(picture)

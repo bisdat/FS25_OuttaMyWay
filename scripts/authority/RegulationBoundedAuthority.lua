@@ -515,12 +515,43 @@ local function actionSpaceCurrentSeparation(picture,lease,relation,bridge)
     return separation
 end
 
+-- Resolution-Margin Demand is one-sided Situation evidence, not speed authority.
+-- For an already-active Action-Space Regulation lease, a positive pair-local
+-- witness proves only that the regulated subject's supported native progression
+-- is still consuming the protected subject's represented Current Space/Demand.
+-- That is sufficient to veto quiescence, but never to derive a magnitude.
+local function pairLocalResolutionMarginDemand(picture,lease)
+    if lease==nil or type(lease.regulatedAssemblyId)~="string" then return nil end
+    local protectedId=lease.protectedAssemblyId or lease.excursionAssemblyId
+    if type(protectedId)~="string" then return nil end
+    for _,witness in OuttaMyWay.ValueRecord.ipairs(picture and picture.resolutionMarginDemandKnowledge or {}) do
+        local claim=witness and witness.representedClaim or nil
+        if witness~=nil
+            and witness.status=="POSITIVE_WITNESS_WITHIN_LOCAL_INTENT"
+            and witness.subjectAssemblyId==lease.regulatedAssemblyId
+            and type(claim)=="table"
+            and claim.targetAssemblyId==protectedId then
+            return witness
+        end
+    end
+    return nil
+end
+
 -- Witness Absence Is Not Quiescence Authority. Situation owns the
--- interpretation of raw GIANTS intent evidence and publishes a pair-local veto
--- naming assemblies whose native intent is still being revealed. Control only
--- asks whether the currently protected participant is covered by that veto.
+-- interpretation of raw GIANTS intent evidence and publishes pair-local facts.
+-- Bounded Authority may narrow an existing lease only when current Situation
+-- evidence does not positively show that the exact regulated/protected pair still
+-- consumes Resolution Margin or remains inside protected intent revelation.
 local function actionSpaceRegulationQuiescenceSupported(picture,lease,action)
     if type(action)~="table" or action.status~="NOT_REQUIRED" then return false,"ACTION_SPACE_REGULATION_CURRENT_ACTION_SPACE_NOT_POSITIVELY_NOT_REQUIRED" end
+    local marginDemand=pairLocalResolutionMarginDemand(picture,lease)
+    if marginDemand~=nil then
+        local claim=marginDemand.representedClaim or {}
+        logInfo("ACTION_SPACE_REGULATION_QUIESCENCE_VETO commitment=%s conflict=%s regulated=%s protected=%s demand=%s claimClass=%s reason=POSITIVE_PAIR_LOCAL_RESOLUTION_MARGIN_DEMAND",
+            tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),
+            tostring(marginDemand.identity),tostring(claim.class))
+        return false,"POSITIVE_PAIR_LOCAL_RESOLUTION_MARGIN_DEMAND_RETAINS_ACTION_SPACE_ACTUATION"
+    end
     if action.reason~="NO_CURRENT_EXCURSION" then return true,action.reason end
     local veto=action.intentRevelationQuiescenceVeto
     local protectedId=lease and (lease.protectedAssemblyId or lease.excursionAssemblyId) or nil
