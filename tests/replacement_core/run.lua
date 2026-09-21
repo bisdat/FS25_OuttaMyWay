@@ -1031,6 +1031,93 @@ test("Traffic Policeman escalation requires participant-complete autonomous-spac
     equal(result.decision.commitmentAction,"SETTLE")
 end)
 
+local function prospectivePortfolioPolicyFixture(groups)
+    local candidates={}
+    for _,group in ipairs(groups) do
+        candidates[#candidates+1]={
+            identity="CA-"..tostring(group.groupKey),
+            evidenceBasis={candidateSupportGroup={groupKey=group.groupKey}}
+        }
+    end
+    return {
+        supportBoundary={mode="PROSPECTIVE_DECISION_PORTFOLIO",groups=groups}
+    },candidates
+end
+
+local function prospectiveGroup(groupKey,family,ordinal,extra)
+    local group={groupKey=groupKey,family=family,enumerationOrdinal=ordinal or 1}
+    for key,value in pairs(extra or {}) do group[key]=value end
+    return group
+end
+
+test("Prospective Decision: one supported admissible Passage ends Follower FI Action-Space and Corner tactical shaping",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("follower","FOLLOWER",1),
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1),
+        prospectiveGroup("action","ACTION_SPACE",1),
+        prospectiveGroup("corner","CORNER_RIGHT_OF_WAY",1),
+        prospectiveGroup("passage:condor-s416","PASSAGE",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"passage:condor-s416")
+    equal(choice.rule,"SPATIAL_NEGOTIATION_STAGE_TRANSITION")
+    equal(choice.detail,"SUPPORTED_ADMISSIBLE_PASSAGE_ENDS_TACTICAL_REGULATION")
+end)
+
+test("Prospective Decision: multiple supported admissible Passages fail closed without a distance comparator",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("passage:a-b","PASSAGE",1,{initialSeparationM=20}),
+        prospectiveGroup("passage:b-c","PASSAGE",2,{initialSeparationM=80})
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(choice,nil)
+    equal(reason,"MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR")
+end)
+
+test("Prospective Decision: multiple unrelated tactical Regulation purposes do not manufacture cross-family precedence",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("follower","FOLLOWER",1),
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(choice,nil)
+    equal(reason,"MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR")
+end)
+
+test("Prospective Decision: one tactical Regulation purpose remains selectable before Passage support exists",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"forward")
+    equal(choice.rule,"TACTICAL_REGULATION_SINGLE_PURPOSE")
+end)
+
+test("Prospective Decision: Corner retains its architected tactical decision domain only before viable Passage",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("corner","CORNER_RIGHT_OF_WAY",1),
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"corner")
+    equal(choice.rule,"CORNER_DECISION_DOMAIN_PRECEDENCE")
+end)
+
+test("Prospective Decision: same-class support ambiguity remains explicit fail-closed rather than preference",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("fail-closed:follower","FOLLOWER_FAIL_CLOSED",1,{failClosedReason="MULTIPLE_SIMULTANEOUS_FOLLOWER_BOUNDARY_CONTEXTS"}),
+        prospectiveGroup("forward","FORWARD_INTERSECTION",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"fail-closed:follower")
+    equal(choice.rule,"TACTICAL_SUPPORT_FAIL_CLOSED")
+    equal(choice.detail,"MULTIPLE_SIMULTANEOUS_FOLLOWER_BOUNDARY_CONTEXTS")
+end)
+
 
 local function headOnTestSnapshot()
     return OuttaMyWay.ObservationSnapshot.new({
