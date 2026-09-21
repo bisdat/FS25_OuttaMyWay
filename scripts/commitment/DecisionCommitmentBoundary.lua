@@ -109,6 +109,38 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
     return admitted
 end
 
+function Boundary:admitReplacement(picture,decisionResult,predecessorCommitmentId)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    local decision=decisionResult and decisionResult.decision or nil
+    OuttaMyWay.ValueRecord.assertType(decision,"DecisionRecord")
+    if decision.operationalPictureId~=picture.identity then error("Decision belongs to another Operational Picture",2) end
+    if decision.candidateInventoryId~=decisionResult.candidateInventory.identity then error("Decision inventory mismatch",2) end
+    if decision.mandatoryVerdictSetId~=decisionResult.verdictSet.identity then error("Decision verdict-set mismatch",2) end
+    if decision.commitmentAction~="REVISE" then error("Commitment replacement requires successor Decision REVISE intent",2) end
+    local context=targetContext(picture)
+    if context==nil or context.commitmentId~=predecessorCommitmentId then error("Commitment replacement predecessor context mismatch",2) end
+    local predecessor=self.commitments:get(predecessorCommitmentId)
+    if predecessor==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(predecessor.state) then error("Commitment replacement predecessor is not live",2) end
+    local candidate=selectedCandidate(decision,decisionResult.candidates)
+    if candidate==nil then error("Commitment replacement requires selected successor Candidate",2) end
+
+    local admitted=self:_admitFromCandidate(picture,decision,candidate)
+    local createdObligationIds,authorityTokenIds={},{}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(admitted.obligationIds or {}) do createdObligationIds[#createdObligationIds+1]=id end
+    for _,token in OuttaMyWay.ValueRecord.ipairs(admitted.authorityTokens or {}) do authorityTokenIds[#authorityTokenIds+1]=token.identity end
+    local application=OuttaMyWay.CommitmentApplicationRecord.new({
+        identity=self.identities:issue("COMMITMENT_APPLICATION"),epoch=self.epochs:next(),decisionId=decision.identity,
+        action="REPLACE",commitmentId=admitted.commitment.identity,selectedCandidateId=candidate.identity,
+        previousState=predecessor.state,resultingState=admitted.commitment.state,
+        createdObligationIds=createdObligationIds,authorityTokenIds=authorityTokenIds,
+        effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,
+        explanation="Admitted one successor Commitment after Responsibility Transition preflight neutralised the incumbent tactical Regulation",
+        provenance={source="DecisionCommitmentBoundary",operationalPictureId=picture.identity,predecessorCommitmentId=predecessorCommitmentId}
+    })
+    self.publishedCount=self.publishedCount+1
+    return application
+end
+
 function Boundary:apply(picture,decisionResult)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     local decision = decisionResult.decision

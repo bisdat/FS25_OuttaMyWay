@@ -54,6 +54,15 @@ local function choose(group,rule,detail)
     return {groupKey=group.groupKey,rule=rule,detail=detail,family=group.family}
 end
 
+local function retainedCurrentGroups(groups)
+    local result={}
+    for _,group in ipairs(groups) do
+        if type(group.existingCommitmentId)=="string" then result[#result+1]=group end
+    end
+    table.sort(result,function(a,b) return tostring(a.groupKey)<tostring(b.groupKey) end)
+    return result
+end
+
 function Policy:selectGroup(inventory,admissibleCandidates)
     local groups=groupsFor(inventory,admissibleCandidates)
     if #groups==0 then return nil,"NO_MANDATORY_ADMISSIBLE_SUPPORT_GROUP" end
@@ -72,6 +81,17 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     end
     if #passages>1 then
         return nil,"MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR"
+    end
+
+    -- A live tactical Regulation remains the governing stage-2 purpose when no
+    -- Passage is yet viable. Portfolio enumeration must not manufacture a new
+    -- cross-purpose switch merely because fresh alternatives coexist.
+    local retained=retainedCurrentGroups(groups)
+    if #retained==1 then
+        return choose(retained[1],"RETAIN_CURRENT_TACTICAL_REGULATION","NO_SUPPORTED_ADMISSIBLE_PASSAGE_AND_CURRENT_REGULATION_REMAINS_ADMISSIBLE")
+    end
+    if #retained>1 then
+        return nil,"MULTIPLE_RETAINED_TACTICAL_REGULATION_GROUPS"
     end
 
     -- Corner allocation remains an explicitly architected tactical Regulation

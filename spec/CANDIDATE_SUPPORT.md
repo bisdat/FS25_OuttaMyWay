@@ -66,6 +66,8 @@ Purpose-local precedence MAY suppress another expression of the **same governing
 
 A **Prospective Decision Portfolio** is the complete set of independently supportable fresh Candidate-support groups admitted for one Decision Picture.
 
+An already-current tactical Regulation responsibility does not remove fresh successor support from that portfolio. Candidate Support MUST continue to expose independently supportable Cooperative Passage or other fresh purposes while retaining the incumbent Regulation group as current context. An already-active Resolution remains outside ordinary prospective traffic renegotiation until its own decision horizon permits it.
+
 Portfolio composition owns completeness, not preference.
 
 The portfolio MUST make its declared boundary explicit and MUST either:

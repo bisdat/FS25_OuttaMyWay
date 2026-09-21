@@ -51,11 +51,13 @@ def test_dispatch_order_is_portfolio_then_cold_then_existing():
     assert "evaluated=normalized" in dispatch
     assert "self:_dispatchObstructionRelocation" in dispatch
 
-def test_fresh_and_incumbent_live_cycle_split_is_preserved():
+def test_tactical_regulation_uses_fresh_portfolio_while_active_resolution_keeps_its_decision_horizon():
     runtime=read("scripts/runtime/Runtime.lua")
     process=runtime[runtime.index("function Runtime:processLiveObservation(raw)"):runtime.index("function Runtime:runReplay(fixture)")]
-    assert "OuttaMyWay.ValueRecord.length(processed.picture.commitmentContext or {})>0" in process
+    assert "activeResolution" in process
+    assert "getCurrentResolutionCommitment" in process
     assert "self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)" in process
+    assert process.index("if activeResolution then") < process.index("self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)")
     assert "self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)" in process
     assert "self.terminalEgressCandidateSupport" not in process
     assert "self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)" in process

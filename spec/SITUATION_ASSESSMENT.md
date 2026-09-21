@@ -413,7 +413,7 @@ Current implementation routes include:
 - [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) — current specialised semantic persistence/dissolution interpretation for established Regulation purposes; and
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) plus [`scripts/main.lua`](../scripts/main.lua) — current orchestration/composition placing the final Situation Assessment product after Observation and Operation lifecycle, before Candidate/Constraint/Decision.
 
-Production Situation Assessment now publishes Resolution-Margin Demand Evidence directly from current sealed evidence. The retained `ProgressionPreservationProbe` remains non-authoritative diagnostic instrumentation and is not imported into the semantic production path. In build `.79`, no Candidate, Decision, Responsibility, Bounded Authority or Control source consumes the new Situation field; this increment establishes the semantic bridge only.
+Production Situation Assessment publishes Resolution-Margin Demand Evidence directly from current sealed evidence. The retained `ProgressionPreservationProbe` remains non-authoritative diagnostic instrumentation and is not imported into the semantic production path. Current Bounded Authority may consume only the existence and exact pair identity of a positive Resolution-Margin witness to prevent quiescence of an already-active Regulation effect; it does not consume witness distance as clearance or magnitude authority.
 
 No single assessment helper owns the whole Situation Assessment Jurisdiction.
 
@@ -439,7 +439,7 @@ Focused Resolution-Margin validation MUST challenge at least these three boundar
 
 1. **Positive target:** supported native progression has a positive represented Current-Space/Demand witness within its bounded horizon before, during or after a Current-Excursion classification window; the Situation evidence follows the represented demand rather than requiring that proxy relationship.
 2. **Negative neighbour:** a nearby or `TURNING` worker with no positive represented witness on the subject's supported progression does not create positive Resolution-Margin Demand merely from proximity, turn state or shared Local Operation membership.
-3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space semantics retain their accepted relationship, role-allocation and Regulation lifecycle meaning when equivalent evidence is supplied. In `.79`, structural validation additionally requires that downstream runtime layers do not consume the new evidence at all.
+3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space semantics retain their accepted relationship, role-allocation and Regulation lifecycle meaning when equivalent evidence is supplied. Downstream consumption is limited to the Bounded-Authority quiescence boundary: a positive exact-pair witness may keep an already-active Regulation effect from becoming quiescent, while witness distance remains prohibited as speed, stopping-distance or safe-clearance authority.
 
 ### Targeted in-game Reality validation
 

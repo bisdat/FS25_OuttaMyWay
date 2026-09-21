@@ -5494,3 +5494,107 @@ The focused fixture now asserts that established representation rather than flat
 > **Policy Provenance != Inner Compatibility Rule**
 
 No runtime source or TEST identity changes result from #692. TEST remains **0.3.0.113**.
+
+
+## 2026-09-21 — TEST .114 closes the Action-Space quiescence gap with existing Resolution-Margin evidence
+
+TEST `.113` fixed the earlier supported-Passage selection defect, then exposed a later Condor/S416 collision around `06:09:22`.
+
+The decisive sequence was not a new Corner-priority failure:
+
+- Action-Space Regulation correctly regulated S416 and protected turning Condor;
+- S416 reached the intended 1 km/h creep;
+- physical Regulation was then quiesced on `CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING` while the semantic relationship remained explicitly retained;
+- S416 accelerated back toward native field speed;
+- Condor later established and retained Corner Incumbency correctly, but too late to repair the already-open physical-protection gap.
+
+Relevant Knowledge Sweep found closed Issue #216 had already observed the same class of failure in TEST `.78`: a turning-worker collision after Action-Space Regulation became quiescent. That investigation produced and implemented the generic Situation concept **Resolution-Margin Demand Evidence** in `.79`, but deliberately stopped before any downstream physical consumer was added.
+
+The `.113` Reality failure is therefore a continuation of that unfinished seam rather than another Corner-specific defect.
+
+TEST `.114` consumes the already-authoritative Situation evidence at exactly one downstream boundary:
+
+- if an Action-Space Regulation lease is already active;
+- and the regulated assembly has a positive Resolution-Margin Demand witness whose represented target is the exact protected assembly;
+- then Bounded Authority refuses to quiesce that existing physical Regulation effect solely because the trajectory-specific Action-Space proxy temporarily reports `NOT_REQUIRED`.
+
+The witness does **not**:
+
+- create Regulation;
+- choose the regulated subject;
+- tighten or create a speed effect;
+- use `knownWitnessEntryM` as safe clearance, stopping distance, or speed authority; or
+- create any Corner-specific rule.
+
+An unrelated or reverse-direction Resolution-Margin witness does not retain the lease.
+
+> **Positive Resolution-Margin Demand May Retain Permission; It Does Not Define Magnitude**
+
+> **Current Excursion Is A Proxy; Resolution-Margin Demand Is The Generic Spatial-Demand Witness**
+
+> **Pair-Local Demand Retains Existing Protection Without Manufacturing New Authority**
+
+This is the constructive generic correction sought by #254 and the historical #216 evidence.
+
+Authority Triad disposition:
+
+- **Architecture:** validated unchanged. Situation still owns current spatial meaning; Regulation remains temporal coordination; Bounded Authority owns current physical permission; Control remains downstream.
+- **Specification:** Bounded Authority and Situation Assessment clarified to expose the already-supported downstream use of positive pair-local Resolution-Margin evidence as a quiescence veto only.
+- **Source:** `RegulationBoundedAuthority` now consumes exact-pair witness existence at the quiescence boundary.
+- **Tests:** focused behavioural coverage challenges both the positive exact-pair retention case and the negative reverse-direction case; structural coverage prevents Resolution-Margin witness distance from becoming physical magnitude authority.
+
+TEST identity advances to **0.3.0.114**.
+
+
+## 2026-09-21 — TEST .114 exposes incumbent-timing Decision bifurcation; TEST .115 removes it
+
+TEST `.114` did not reach the later quiescence condition it was built to challenge. The new `ACTION_SPACE_REGULATION_QUIESCENCE_VETO` path was not exercised.
+
+Instead, a small timing perturbation caused Patriot/S416 Forward-Intersection Regulation `CM-00004` to become current before Condor/S416 reached the normal Passage-support window. At approximately the same ~79 m Condor/S416 separation where `.113` had published and committed Cooperative Passage, `.114` published no Passage Candidate and the pair closed into blockage.
+
+Source review exposed a hidden two-engine Decision split:
+
+- with no live Commitment, Runtime used the complete Prospective Decision Portfolio, where `.113` correctly makes one supported/admissible Passage end tactical Regulation;
+- with any live Commitment, Runtime bypassed the Portfolio entirely and used the incumbent single-purpose Candidate path;
+- `ProspectiveDecisionPortfolioSupport` duplicated that incumbent-context exclusion;
+- downstream Responsibility Transition could replace Regulation with Passage only when the predecessor happened to describe the same pair/substrate.
+
+Therefore `.113` corrected Decision precedence only on the fresh-scope path. An unrelated tactical Regulation formed slightly earlier could suppress Passage **before Decision ever saw it**.
+
+Named discoveries:
+
+> **Incumbent Timing Must Not Select The Decision Architecture**
+
+> **Portfolio Completeness Must Survive Tactical Regulation**
+
+> **A Viable Successor Must Be Discoverable While Its Predecessor Is Live**
+
+> **Supported Passage Can Be Suppressed Before Decision**
+
+TEST `.115` removes that timing dependency generically:
+
+1. fresh GIANTS-native traffic and current tactical Regulation use the same complete prospective portfolio;
+2. active Resolution Commitments retain their specialised decision horizon and do not re-enter ordinary negotiation;
+3. one supported/admissible Passage still wins the accepted Regulation -> Passage stage transition;
+4. while no Passage is viable, one current admissible tactical Regulation remains governing rather than being displaced by arbitrary fresh tactical alternatives;
+5. when the selected Passage pair differs from the current Regulation pair/substrate, Responsibility Transition performs a cross-context replacement:
+   - predecessor physical Regulation is neutralised;
+   - predecessor progress authority is relinquished;
+   - a fresh Passage Commitment is admitted for the selected pair;
+   - predecessor Regulation is terminalised as superseded rather than falsely satisfied;
+   - successor Resolution becomes current before Passage physical dispatch;
+   - independent third traffic is then eligible for the existing Bubble Bullet-Time contract.
+
+The `.114` Resolution-Margin quiescence correction remains in `.115`; it is not claimed as Reality-validated by the failed `.114` run.
+
+Authority Triad disposition:
+
+- **Architecture:** validated unchanged. The accepted three-stage model and atomic Responsibility replacement already require this behaviour.
+- **Specification:** Candidate Support and Responsibility Transition clarified so tactical Regulation cannot hide fresh successor support and cross-context Passage replacement is explicit.
+- **Source:** Candidate Support, Decision policy, Runtime integration, Commitment application/lifecycle and Responsibility Transition corrected as one bounded conformance increment.
+- **Tests:** portfolio policy now challenges retained-Regulation + Passage and retained-Regulation-without-Passage cases; replacement-core coverage challenges unrelated FI Regulation -> fresh Passage Commitment succession.
+
+TEST identity advances to **0.3.0.115**.
+
+
+Validation provenance: PR #255 was temporarily retargeted to `main` solely so the repository's normal pull-request Offline Validation workflow could execute the exact TEST `.115` head. This changes no executable claim or TEST identity; the working PR remains logically stacked on the accepted `.113` predecessor until that predecessor is merged.

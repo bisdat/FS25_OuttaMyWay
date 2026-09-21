@@ -233,7 +233,8 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     local obligation=findFollowerBoundaryObligation(runtime,commitmentId,bridge.pairKey)
     local settledId=nil
     if obligation~=nil then
-        local mode="SATISFACTION"
+        local evidenceKind=evidence and evidence.kind or nil
+        local mode=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION" and "BASIS_CESSATION" or "SATISFACTION"
         runtime.obligations:settle(obligation.identity,mode,evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT",reason=bridge.reason})
         settledId=obligation.identity
     end
@@ -242,9 +243,16 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local terminal=nil
     if #remaining==0 and hasPrefix(responsibility,"follower-boundary:") then
-        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT"},provenance={source="LiveTrafficCommitmentLifecycle"}})
-        local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-        terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind="FOLLOWER_BOUNDARY_PURPOSE_POSITIVELY_RETIRED",pairKey=bridge.pairKey,reason=bridge.reason})
+        local evidenceKind=evidence and evidence.kind or nil
+        local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
+        local verdict=runtime.governingBasisEvaluator:evaluate(record,{
+            kind=crossContext and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_SATISFIED",
+            evidence=evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT"},
+            provenance={source="LiveTrafficCommitmentLifecycle"}})
+        runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
+        terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{
+            kind=crossContext and "FOLLOWER_BOUNDARY_RESPONSIBILITY_POSITIVELY_SUPERSEDED" or "FOLLOWER_BOUNDARY_PURPOSE_POSITIVELY_RETIRED",
+            pairKey=bridge.pairKey,reason=bridge.reason})
         record=terminal
     end
     logInfo("FOLLOWER_BOUNDARY_PURPOSE_RETIRED commitment=%s pair=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
@@ -364,11 +372,17 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local terminal=nil
     local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner
     if #remaining==0 and ownedTrafficPurpose then
-        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
+        local evidenceKind=evidence and evidence.kind or nil
+        local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
+        local verdict=runtime.governingBasisEvaluator:evaluate(record,{
+            kind=crossContext and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_SATISFIED",
+            evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},
+            provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-        local terminalEvidenceKind=corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED" or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"
-        if forward then
-            terminalEvidenceKind=(evidence and evidence.kind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
+        local terminalEvidenceKind=crossContext and "TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
+            or (corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED" or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED")
+        if forward and not crossContext then
+            terminalEvidenceKind=(evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
                 or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
         end
@@ -722,6 +736,25 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
         return result,reason
     end
     if action~="REVISE" then return nil,"COOPERATIVE_PASSAGE_DECISION_NOT_CREATE_OR_REVISE" end
+
+    if semantics and type(semantics.freshReplacementPredecessorCommitmentId)=="string" then
+        local application=runtime.decisionCommitmentBoundary:admitReplacement(
+            picture,evaluated,semantics.freshReplacementPredecessorCommitmentId)
+        if application==nil or type(application.commitmentId)~="string" then
+            return nil,"COOPERATIVE_PASSAGE_REPLACEMENT_COMMITMENT_APPLICATION_UNRESOLVED"
+        end
+        local record=runtime.commitments:get(application.commitmentId)
+        if record==nil or record.state~="ACTIVE" then return nil,"COOPERATIVE_PASSAGE_REPLACEMENT_COMMITMENT_NOT_ACTIVE" end
+        local obligation=nil
+        for _,open in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
+            if isCooperativePassageObligation(open) then obligation=open break end
+        end
+        if obligation==nil then return nil,"COOPERATIVE_PASSAGE_REPLACEMENT_OBLIGATION_UNAVAILABLE" end
+        logInfo("COOPERATIVE_PASSAGE_REPLACEMENT_CREATE decision=%s predecessor=%s successor=%s owners=%d",
+            tostring(evaluated.decision.identity),tostring(semantics.freshReplacementPredecessorCommitmentId),
+            tostring(record.identity),OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
+        return {application=application,commitment=record,cooperativePassageObligation=obligation},nil
+    end
 
     local application=runtime.decisionCommitmentBoundary:apply(picture,evaluated)
     if application==nil or type(application.commitmentId)~="string" then return nil,"COOPERATIVE_PASSAGE_COMMITMENT_REVISION_UNRESOLVED" end

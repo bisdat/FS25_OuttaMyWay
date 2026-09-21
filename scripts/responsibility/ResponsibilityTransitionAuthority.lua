@@ -122,6 +122,41 @@ local function sameTwoParticipants(current,bridge)
     return seen[regulated]==true and seen[protected]==true
 end
 
+local function passagePairKey(evaluated)
+    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
+    local ids={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(bridge and bridge.assemblyIds or {}) do
+        if type(id)~="string" then return nil end
+        ids[#ids+1]=id
+    end
+    if #ids~=2 or ids[1]==ids[2] then return nil end
+    table.sort(ids)
+    return table.concat(ids,"|")
+end
+
+local function cooperativePassageCandidateConsistent(candidate,bridge)
+    if candidate==nil or candidate.capability~="REPOSITION" or type(bridge)~="table" then
+        return false,"COOPERATIVE_PASSAGE_SUCCESSOR_CONTEXT_INVALID"
+    end
+    local owned=ownershipAssemblyIds(candidate)
+    if #owned~=2 or owned[1]==owned[2] then
+        return false,"COOPERATIVE_PASSAGE_SUCCESSOR_OWNERSHIP_INVALID"
+    end
+    local participants={}
+    local participantCount=0
+    for _,id in OuttaMyWay.ValueRecord.ipairs(bridge.assemblyIds or {}) do
+        if type(id)~="string" or participants[id] then
+            return false,"COOPERATIVE_PASSAGE_SUCCESSOR_PARTICIPANTS_INVALID"
+        end
+        participants[id]=true
+        participantCount=participantCount+1
+    end
+    if participantCount~=2 or not participants[owned[1]] or not participants[owned[2]] then
+        return false,"COOPERATIVE_PASSAGE_SUCCESSOR_PARTICIPANTS_MISMATCH"
+    end
+    return true,nil
+end
+
 function Authority:actionSpacePassagePredecessor(picture,evaluated)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
     if bridge==nil or bridge.architecture~="COOPERATIVE_PASSAGE" then return nil end
@@ -542,12 +577,113 @@ function Authority:establishOrPreserveFollowerRegulation(preflight,applied)
 end
 
 function Authority:matchesFollowerPassage(picture,evaluated)
-    if selectedBridge(evaluated,"cooperativePassageBridge")==nil then return false end
+    local targetPairKey=passagePairKey(evaluated)
+    if targetPairKey==nil then return false end
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         local current=self:getCurrentRegulation(context.commitmentId)
-        if current~=nil and current.provenance.pairKey~=nil then return true end
+        if current~=nil and current.provenance.pairKey==targetPairKey then return true end
     end
     return false
+end
+
+function Authority:independentRegulationPassagePredecessor(picture,evaluated)
+    local candidate=selectedCandidate(evaluated)
+    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
+    local consistent=cooperativePassageCandidateConsistent(candidate,bridge)
+    if consistent~=true then return nil end
+    if self:actionSpacePassagePredecessor(picture,evaluated)~=nil or self:matchesFollowerPassage(picture,evaluated) then return nil end
+    local contexts=picture and picture.commitmentContext or {}
+    if OuttaMyWay.ValueRecord.length(contexts)~=1 then return nil end
+    local context=contexts[1]
+    if type(context.commitmentId)~="string" then return nil end
+    return self:getCurrentRegulation(context.commitmentId)
+end
+
+function Authority:matchesIndependentRegulationPassage(picture,evaluated)
+    return self:independentRegulationPassagePredecessor(picture,evaluated)~=nil
+end
+
+function Authority:replaceIndependentRegulationWithCooperativePassage(picture,evaluated,readiness,passageTransition,regulationAuthority)
+    local current=self:independentRegulationPassagePredecessor(picture,evaluated)
+    local candidate=selectedCandidate(evaluated)
+    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
+    if current==nil or candidate==nil or bridge==nil or readiness==nil
+        or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"
+        or candidate.identity~=readiness.candidateId then
+        return nil,"INDEPENDENT_REGULATION_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    local consistent,consistencyReason=cooperativePassageCandidateConsistent(candidate,bridge)
+    if consistent~=true then return nil,consistencyReason end
+    local predecessorId=current.provenance and current.provenance.retainedCommitmentId or nil
+    if type(predecessorId)~="string" then return nil,"INDEPENDENT_REGULATION_PASSAGE_PREDECESSOR_COMMITMENT_UNAVAILABLE" end
+    local predecessor=self.runtime.commitments:get(predecessorId)
+    if predecessor==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(predecessor.state) then
+        return nil,"INDEPENDENT_REGULATION_PASSAGE_PREDECESSOR_NOT_LIVE"
+    end
+    if regulationAuthority==nil then return nil,"INDEPENDENT_REGULATION_PASSAGE_REGULATION_AUTHORITY_UNAVAILABLE" end
+
+    local neutralized=nil
+    if type(current.provenance.pairKey)=="string" then
+        local preflight,preflightReason=regulationAuthority:preflightFollowerBoundaryNeutralization(predecessorId,current.provenance.pairKey)
+        if preflight==nil then return nil,preflightReason end
+        neutralized=regulationAuthority:neutralizeFollowerBoundaryPhysical(
+            picture,evaluated,candidate,"COOPERATIVE_PASSAGE_SUPERSEDES_UNRELATED_TACTICAL_REGULATION")
+    else
+        local conflictIdentity=current.provenance and current.provenance.conflictIdentity or nil
+        if type(conflictIdentity)~="string" then return nil,"INDEPENDENT_REGULATION_PASSAGE_PREDECESSOR_CONFLICT_UNAVAILABLE" end
+        local preflight,preflightReason=regulationAuthority:preflightActionSpaceNeutralization(predecessorId,conflictIdentity)
+        if preflight==nil then return nil,preflightReason end
+        neutralized=regulationAuthority:neutralizeActionSpaceRegulationPhysical(
+            picture,evaluated,"COOPERATIVE_PASSAGE_SUPERSEDES_UNRELATED_TACTICAL_REGULATION")
+    end
+    if neutralized==nil or neutralized.status~="RELEASED" then
+        return nil,"INDEPENDENT_REGULATION_PASSAGE_PHYSICAL_NEUTRALIZATION_FAILED"
+    end
+
+    -- Release predecessor progress ownership before Bubble Formation so the
+    -- successor pair and its third-party Bullet Time can acquire fresh authority.
+    for _,token in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(predecessorId)) do
+        if self.runtime.authorities:validate(token)==true then
+            OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(
+                self.runtime,predecessorId,token.assemblyId,
+                {reason="COOPERATIVE_PASSAGE_CROSS_CONTEXT_PREDECESSOR_NEUTRALIZED",preserveAuthority=false})
+        end
+    end
+
+    local successorIdentity=self.runtime.identities:issue("RESPONSIBILITY")
+    local applied,reason=passageTransition:transition(picture,evaluated,readiness,{
+        responsibilityIdentity=successorIdentity,deferResponsibilityExposureLog=true,
+        freshReplacementPredecessorCommitmentId=predecessorId
+    })
+    if applied==nil then return nil,reason end
+
+    local retired,retireReason=nil,nil
+    if type(current.provenance.pairKey)=="string" then
+        retired,retireReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(
+            self.runtime,predecessorId,
+            {pairKey=current.provenance.pairKey,reason="COOPERATIVE_PASSAGE_SUPERSEDES_UNRELATED_TACTICAL_REGULATION"},
+            {kind="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION",successorCommitmentId=applied.commitment.identity})
+    else
+        retired,retireReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(
+            self.runtime,predecessorId,
+            {conflictIdentity=current.provenance.conflictIdentity,reason="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"},
+            {kind="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION",successorCommitmentId=applied.commitment.identity})
+    end
+    if retired==nil or retired.terminal==nil then
+        if type(self.runtime.onCooperativePassageCompletion)=="function" then
+            self.runtime:onCooperativePassageCompletion({
+                status="FAILED",commitmentId=applied.commitment.identity,
+                evidence={kind="PREDECESSOR_REGULATION_SUPERSESSION_FAILED",reason=retireReason}
+            })
+        end
+        return nil,retireReason or "INDEPENDENT_REGULATION_PASSAGE_PREDECESSOR_SETTLEMENT_FAILED"
+    end
+
+    self.regulationsByCommitmentId[predecessorId]=nil
+    self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
+    logInfo("RESPONSIBILITY_REPLACED predecessor=%s predecessorKind=REGULATION predecessorCommitment=%s successor=%s successorKind=RESOLUTION_COMMITMENT successorCommitment=%s crossContext=true atomicCycle=true beforePhysicalDispatch=true",
+        tostring(current.identity),tostring(predecessorId),tostring(applied.currentResponsibility.identity),tostring(applied.commitment.identity))
+    return applied,nil
 end
 
 function Authority:replaceFollowerRegulationWithCooperativePassage(picture,evaluated,readiness,passageTransition,regulationAuthority)

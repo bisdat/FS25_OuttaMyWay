@@ -137,6 +137,12 @@ Replacing a grant for current magnitude/role MUST retire or otherwise prevent us
 
 When the semantic responsibility remains current but positive physical actuation is not currently required or supportable, Bounded Authority may release its grant and leave the responsibility quiescent.
 
+Quiescence requires current evidence that the physical effect is no longer required or supportable. Loss of one purpose-local trajectory proxy MUST NOT be treated as quiescence authority when current Situation evidence positively shows that the exact controlled subject's supported native progression still consumes the protected subject's represented Current Space or Demand.
+
+A positive pair-local Resolution-Margin Demand witness MAY therefore veto quiescence of an already-active Regulation effect. That witness does **not** create Regulation, choose the controlled subject, authorise a new or tighter speed effect, or turn `knownWitnessEntryM` into safe clearance, stopping distance or a speed target. Existing responsibility and Bounded-Authority magnitude policy remain the owners of those decisions.
+
+> **Positive Resolution-Margin Demand May Retain Permission; It Does Not Define Magnitude.**
+
 Quiescence is not semantic termination.
 
 ### Participant-scoped release

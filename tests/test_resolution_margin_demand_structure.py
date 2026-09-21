@@ -48,8 +48,8 @@ def test_resolution_margin_evidence_is_one_sided_and_uses_neutral_geometry():
     assert "ControlRequest" not in source
 
 
-def test_no_downstream_runtime_layer_consumes_resolution_margin_in_079():
-    forbidden_roots = (
+def test_resolution_margin_downstream_consumption_is_bounded_to_quiescence_veto():
+    downstream_roots = (
         "scripts/candidates",
         "scripts/decision",
         "scripts/constraints",
@@ -59,8 +59,16 @@ def test_no_downstream_runtime_layer_consumes_resolution_margin_in_079():
         "scripts/control",
     )
     consumers = []
-    for root in forbidden_roots:
+    for root in downstream_roots:
         for path in (ROOT / root).rglob("*.lua"):
             if "resolutionMarginDemandKnowledge" in path.read_text(encoding="utf-8"):
                 consumers.append(str(path.relative_to(ROOT)))
-    assert consumers == []
+    assert consumers == ["scripts/authority/RegulationBoundedAuthority.lua"]
+
+    authority = text("scripts/authority/RegulationBoundedAuthority.lua")
+    assert "pairLocalResolutionMarginDemand" in authority
+    assert 'witness.status=="POSITIVE_WITNESS_WITHIN_LOCAL_INTENT"' in authority
+    assert "witness.subjectAssemblyId==lease.regulatedAssemblyId" in authority
+    assert "claim.targetAssemblyId==protectedId" in authority
+    assert "knownWitnessEntryM" not in authority
+    assert "POSITIVE_PAIR_LOCAL_RESOLUTION_MARGIN_DEMAND_RETAINS_ACTION_SPACE_ACTUATION" in authority

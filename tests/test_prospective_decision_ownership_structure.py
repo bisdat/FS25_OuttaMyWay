@@ -33,7 +33,8 @@ def test_phase13_fresh_portfolio_enumerates_support_groups_without_control_autho
         "ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION",
     ):
         assert token in support
-    assert 'OuttaMyWay.ValueRecord.length(picture.commitmentContext or {})>0' in support
+    assert "INCUMBENT_CONTEXT_REQUIRES_EXISTING_SINGLE_PURPOSE_PATH" not in support
+    assert "existingCommitmentId" in support
     assert "lowerPrecedenceConstraintFallback" not in support
     for forbidden in ("ControlRequest.new","executeControlRequest","driveInWorldDirection","AIVehicleUtil","g_currentMission"):
         assert forbidden not in support
@@ -52,6 +53,8 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
         "SUPPORTED_ADMISSIBLE_PASSAGE_ENDS_TACTICAL_REGULATION",
         "MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR",
         "TACTICAL_REGULATION_SINGLE_PURPOSE",
+        "RETAIN_CURRENT_TACTICAL_REGULATION",
+        "MULTIPLE_RETAINED_TACTICAL_REGULATION_GROUPS",
         "MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR",
         "TACTICAL_SUPPORT_FAIL_CLOSED",
     ):
@@ -82,17 +85,21 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
     assert "TrafficPolicemanDecisionPolicy:select" in selector
 
 
-def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispatch_boundary():
+def test_phase13_runtime_uses_one_portfolio_across_fresh_and_tactical_regulation_scope_but_preserves_active_resolution_horizon():
     runtime=read("scripts/runtime/Runtime.lua")
     for token in (
         "prospectiveDecisionPortfolioSupport",
-        'OuttaMyWay.ValueRecord.length(processed.picture.commitmentContext or {})>0',
+        "activeResolution",
+        "getCurrentResolutionCommitment",
         'boundary.mode=="PROSPECTIVE_DECISION_PORTFOLIO"',
         "selectedGroupBoundary",
         "values.supportBoundary=localBoundary",
         "evaluated=normalized",
+        "matchesIndependentRegulationPassage",
+        "replaceIndependentRegulationWithCooperativePassage",
     ):
         assert token in runtime
+    assert "INCUMBENT_CONTEXT_REQUIRES_EXISTING_SINGLE_PURPOSE_PATH" not in runtime
     assert "obstructionRelocationCandidateSupport" in runtime
     assert "completedObstructionCandidateSupport" not in runtime
     assert "runtime.terminalEgressCandidateSupport=" not in runtime
