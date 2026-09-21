@@ -5476,3 +5476,21 @@ PR #252 has now explicitly rejected that ordering. The focused fixture is theref
 > **Admissibility Before Preference != Historical Preference Is Correct**
 
 No runtime source or TEST identity changes result from #691. TEST remains **0.3.0.113**.
+
+
+### Offline Validation #692 — two-level Decision provenance clarified
+
+Offline Validation run #692 again passed Structural contracts, generated source reference, and the main replacement-core behavioural harness (**348/348**). The remaining failure was in the corrected focused prospective-admissibility fixture.
+
+The selected Candidate was now correct: supported mandatory-admissible Passage won over Forward-Intersection Regulation. The failing assertion instead expected `comparisonBasis.rule` to equal the inner stage-transition rule.
+
+Current Decision provenance is intentionally two-level:
+
+- `comparisonBasis.rule` = `PROSPECTIVE_DECISION_PORTFOLIO_COMPATIBILITY` — the outer policy that governed inter-group selection;
+- `comparisonBasis.compatibilityRule` = `SPATIAL_NEGOTIATION_STAGE_TRANSITION` or `TACTICAL_REGULATION_SINGLE_PURPOSE` — the semantic rule selected inside that policy.
+
+The focused fixture now asserts that established representation rather than flattening the two meanings.
+
+> **Policy Provenance != Inner Compatibility Rule**
+
+No runtime source or TEST identity changes result from #692. TEST remains **0.3.0.113**.
