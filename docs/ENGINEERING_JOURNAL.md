@@ -5449,4 +5449,6 @@ Authority Triad disposition:
 - **Source:** changed here to conform.
 - **Tests:** changed as evidence; previously encoded legacy ordering is deliberately retired.
 
+After PR #247 and PR #252 were both accepted, the #253 implementation branch was rebuilt directly on accepted `main` at `a041604eaf758413e280ebb5f28d8813157eca7e`. The resulting `.113` diff contains only the Decision correction, focused regression evidence, build identity and this engineering record; no stale stacked ancestry remains.
+
 GIANTS Reality remains required. The discriminating replay is the `.112` final Condor/S416 encounter: once their Passage is supported and mandatory-admissible, Decision must select Passage, `entryReady=false` must enter `PASSAGE_APPROACH`, and independent Patriot must be handled only through the resulting Resolution-Epoch Bullet Time contract.
