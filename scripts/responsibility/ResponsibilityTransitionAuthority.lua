@@ -134,6 +134,29 @@ local function passagePairKey(evaluated)
     return table.concat(ids,"|")
 end
 
+local function cooperativePassageCandidateConsistent(candidate,bridge)
+    if candidate==nil or candidate.capability~="REPOSITION" or type(bridge)~="table" then
+        return false,"COOPERATIVE_PASSAGE_SUCCESSOR_CONTEXT_INVALID"
+    end
+    local owned=ownershipAssemblyIds(candidate)
+    if #owned~=2 or owned[1]==owned[2] then
+        return false,"COOPERATIVE_PASSAGE_SUCCESSOR_OWNERSHIP_INVALID"
+    end
+    local participants={}
+    local participantCount=0
+    for _,id in OuttaMyWay.ValueRecord.ipairs(bridge.assemblyIds or {}) do
+        if type(id)~="string" or participants[id] then
+            return false,"COOPERATIVE_PASSAGE_SUCCESSOR_PARTICIPANTS_INVALID"
+        end
+        participants[id]=true
+        participantCount=participantCount+1
+    end
+    if participantCount~=2 or not participants[owned[1]] or not participants[owned[2]] then
+        return false,"COOPERATIVE_PASSAGE_SUCCESSOR_PARTICIPANTS_MISMATCH"
+    end
+    return true,nil
+end
+
 function Authority:actionSpacePassagePredecessor(picture,evaluated)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
     if bridge==nil or bridge.architecture~="COOPERATIVE_PASSAGE" then return nil end
@@ -564,7 +587,10 @@ function Authority:matchesFollowerPassage(picture,evaluated)
 end
 
 function Authority:independentRegulationPassagePredecessor(picture,evaluated)
-    if selectedBridge(evaluated,"cooperativePassageBridge")==nil then return nil end
+    local candidate=selectedCandidate(evaluated)
+    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
+    local consistent=cooperativePassageCandidateConsistent(candidate,bridge)
+    if consistent~=true then return nil end
     if self:actionSpacePassagePredecessor(picture,evaluated)~=nil or self:matchesFollowerPassage(picture,evaluated) then return nil end
     local contexts=picture and picture.commitmentContext or {}
     if OuttaMyWay.ValueRecord.length(contexts)~=1 then return nil end
@@ -586,6 +612,8 @@ function Authority:replaceIndependentRegulationWithCooperativePassage(picture,ev
         or candidate.identity~=readiness.candidateId then
         return nil,"INDEPENDENT_REGULATION_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
     end
+    local consistent,consistencyReason=cooperativePassageCandidateConsistent(candidate,bridge)
+    if consistent~=true then return nil,consistencyReason end
     local predecessorId=current.provenance and current.provenance.retainedCommitmentId or nil
     if type(predecessorId)~="string" then return nil,"INDEPENDENT_REGULATION_PASSAGE_PREDECESSOR_COMMITMENT_UNAVAILABLE" end
     local predecessor=self.runtime.commitments:get(predecessorId)
