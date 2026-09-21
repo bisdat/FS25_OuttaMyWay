@@ -5452,3 +5452,27 @@ Authority Triad disposition:
 After PR #247 and PR #252 were both accepted, the #253 implementation branch was rebuilt directly on accepted `main` at `a041604eaf758413e280ebb5f28d8813157eca7e`. The resulting `.113` diff contains only the Decision correction, focused regression evidence, build identity and this engineering record; no stale stacked ancestry remains.
 
 GIANTS Reality remains required. The discriminating replay is the `.112` final Condor/S416 encounter: once their Passage is supported and mandatory-admissible, Decision must select Passage, `entryReady=false` must enter `PASSAGE_APPROACH`, and independent Patriot must be handled only through the resulting Resolution-Epoch Bullet Time contract.
+
+
+### Offline Validation #691 — stale focused precedence contract exposed
+
+Offline Validation run #691 produced a useful failure rather than an implementation contradiction.
+
+The full replacement-core behavioural harness passed **348/348**. Structural contracts and generated source reference also passed. The only failing executable fixture was `tests/replacement_core/prospective_decision_admissibility.lua`, whose BOTH-PASS case still asserted:
+
+> existing Forward Intersection precedence must survive when both groups are admissible
+
+That fixture originated from the earlier admissibility-bypass correction and legitimately proves that mandatory admissibility is evaluated before inter-group choice. It also accidentally froze the then-existing Forward-Intersection-before-Passage ordering as part of the same test.
+
+PR #252 has now explicitly rejected that ordering. The focused fixture is therefore corrected rather than production source being changed:
+
+- Forward Intersection PASS + Passage PASS -> Passage wins through `SPATIAL_NEGOTIATION_STAGE_TRANSITION`;
+- Forward Intersection PASS + Passage FAIL -> Forward Intersection Regulation remains selectable;
+- Forward Intersection FAIL/UNRESOLVED + Passage PASS -> Passage remains selectable;
+- no mandatory-admissible group retains the existing WAIT/SETTLE semantics.
+
+> **Regression Coverage Can Preserve An Unvalidated Policy**
+
+> **Admissibility Before Preference != Historical Preference Is Correct**
+
+No runtime source or TEST identity changes result from #691. TEST remains **0.3.0.113**.
