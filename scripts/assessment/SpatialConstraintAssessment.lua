@@ -855,8 +855,10 @@ local function assessCornerKnowledge(self,input,projections,relationships)
 
                 local demand=demandsByReference[reference]
                 local occupancy=currentOccupancies[reference]
-                local departed=departures[reference]
-                if engagement==nil and (demand~=nil or occupancy~=nil) and departed==nil then
+                -- A retained Positive Corner Departure records the completed traversal.
+                -- Fresh positive admission evidence may establish a later traversal in
+                -- the same Job Episode; historical departure is not an admission veto.
+                if engagement==nil and (demand~=nil or occupancy~=nil) then
                     engagement={
                         cornerKey=feature.cornerKey,polygonKey=input.fieldWorldReferenceKey,
                         assemblyId=p.assemblyId,assemblyReferenceKey=reference,sourceJobToken=token,

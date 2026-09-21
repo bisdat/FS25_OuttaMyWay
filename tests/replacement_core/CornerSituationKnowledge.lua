@@ -357,6 +357,56 @@ return function(test,equal)
         equal(result.positiveDepartures[1].departureReason,"CONTINUOUS_A8_CROSSED_FIELD_SCOPED_CORNER_BOUNDARY")
     end)
 
+    test("Corner Departure: retained same-Job history does not veto fresh re-entry",function()
+        local assessment=OuttaMyWay.SpatialConstraintAssessment.new()
+        local values=oneWorkerInput()
+        assess(assessment,values)
+
+        values.observationSnapshotId="OBS-2"; values.observationEpoch=2
+        values.futureSpace={future("AS-A",90,10,0,10)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=10})}
+        values.productiveContinuationKnowledge={productive("AS-A")}
+        values.physicalSpaceEvidence={}
+        local departed=assess(assessment,values).cornerKnowledge
+        equal(count(departed.engagements),0)
+        equal(count(departed.positiveDepartures),1)
+        equal(departed.positiveDepartures[1].departureObservationSnapshotId,"OBS-2")
+
+        values.observationSnapshotId="OBS-3"; values.observationEpoch=3
+        values.futureSpace={}; values.physicalSpaceEvidence={}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=50,poseZ=50})}
+        local quiet=assess(assessment,values).cornerKnowledge
+        equal(count(quiet.approachDemands),0)
+        equal(count(quiet.occupancies),0)
+        equal(count(quiet.engagements),0)
+        equal(count(quiet.positiveDepartures),1)
+        equal(quiet.positiveDepartures[1].departureObservationSnapshotId,"OBS-2")
+
+        values.observationSnapshotId="OBS-4"; values.observationEpoch=4
+        values.futureSpace={future("AS-A",90,10,90,0,4)}
+        values.motionEvidence={motion("AS-A",{moveForwards=true,poseX=90,poseZ=10,nativeMaxSpeedKmh=18,intentEpoch=4})}
+        values.productiveContinuationKnowledge={productive("AS-A")}
+        values.physicalSpaceEvidence={{
+            assemblyId="AS-A",
+            primitives={{
+                identity="DISC-AS-A-REAR",kind="DISC",positiveConflictSupport=true,
+                x=90,z=0,radius=1
+            }},
+            negativeClearanceAuthority=false
+        }}
+        local reentered=assess(assessment,values).cornerKnowledge
+        equal(count(reentered.approachDemands),1)
+        equal(count(reentered.engagements),1)
+        equal(reentered.engagements[1].sourceJobToken,"job:AS-A")
+        equal(reentered.engagements[1].establishedObservationSnapshotId,"OBS-4")
+        equal(reentered.engagements[1].cornerIncumbent,false)
+        equal(count(reentered.positiveDepartures),1)
+        equal(reentered.positiveDepartures[1].departureObservationSnapshotId,"OBS-2")
+        local event=eventOfKind(reentered.events,"CORNER_ENGAGEMENT_ESTABLISHED")
+        assert(event~=nil)
+        equal(event.reason,"UNILATERAL_CORNER_ADMISSION")
+    end)
+
     test("Corner Departure: final native direction transition becomes the stronger crossing anchor",function()
         local assessment=OuttaMyWay.SpatialConstraintAssessment.new()
         local values=oneWorkerInput()
