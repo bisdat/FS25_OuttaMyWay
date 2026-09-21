@@ -5595,3 +5595,6 @@ Authority Triad disposition:
 - **Tests:** portfolio policy now challenges retained-Regulation + Passage and retained-Regulation-without-Passage cases; replacement-core coverage challenges unrelated FI Regulation -> fresh Passage Commitment succession.
 
 TEST identity advances to **0.3.0.115**.
+
+
+Validation provenance: PR #255 was temporarily retargeted to `main` solely so the repository's normal pull-request Offline Validation workflow could execute the exact TEST `.115` head. This changes no executable claim or TEST identity; the working PR remains logically stacked on the accepted `.113` predecessor until that predecessor is merged.
