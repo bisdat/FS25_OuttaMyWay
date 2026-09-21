@@ -688,31 +688,6 @@ local function passageRejectionTelemetry(allRejected)
 end
 
 
--- Diagnostic-only visibility for the prospective portfolio path.  The
--- per-conflict planner already computes bounded rejection evidence; projected
--- support must not make that evidence disappear merely because Action-Space
--- Regulation remains independently supportable.  This helper owns no Candidate,
--- Decision, Responsibility, Authority or Control meaning.
-local function traceProjectedPassageRejection(self,relation,reason,rejected,fallbackActionSpaceSupported)
-    if type(relation)~="table" or type(relation.identity)~="string" then return end
-    local allRejected={{conflictIdentity=relation.identity,reason=reason,rejected=rejected or {}}}
-    local rejectionKey,rejectionText=passageRejectionTelemetry(allRejected)
-    local signature=table.concat({
-        tostring(reason or "UNRESOLVED"),
-        tostring(rejectionKey or "NO_DETAIL"),
-        tostring(fallbackActionSpaceSupported==true)
-    },"|")
-    if self.projectedPassageRejectionTraceKeys[relation.identity]~=signature then
-        self.projectedPassageRejectionTraceKeys[relation.identity]=signature
-        logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTED conflict=%s classification=%s passageEligible=%s fallbackActionSpaceSupported=%s %s",
-            tostring(relation.identity),tostring(relation.classification),tostring(relation.cooperativePassageEligible~=false),
-            tostring(fallbackActionSpaceSupported==true),tostring(rejectionText or ("reason="..tostring(reason))))
-        for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(allRejected)) do
-            logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL %s",clearanceTrace)
-        end
-    end
-end
-
 local function finiteNumber(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -778,6 +753,31 @@ local function passageClearanceRejectionTelemetry(allRejected)
         end
     end
     return lines
+end
+
+-- Diagnostic-only visibility for the prospective portfolio path.  The
+-- per-conflict planner already computes bounded rejection evidence; projected
+-- support must not make that evidence disappear merely because Action-Space
+-- Regulation remains independently supportable.  This helper owns no Candidate,
+-- Decision, Responsibility, Authority or Control meaning.
+local function traceProjectedPassageRejection(self,relation,reason,rejected,fallbackActionSpaceSupported)
+    if type(relation)~="table" or type(relation.identity)~="string" then return end
+    local allRejected={{conflictIdentity=relation.identity,reason=reason,rejected=rejected or {}}}
+    local rejectionKey,rejectionText=passageRejectionTelemetry(allRejected)
+    local signature=table.concat({
+        tostring(reason or "UNRESOLVED"),
+        tostring(rejectionKey or "NO_DETAIL"),
+        tostring(fallbackActionSpaceSupported==true)
+    },"|")
+    if self.projectedPassageRejectionTraceKeys[relation.identity]~=signature then
+        self.projectedPassageRejectionTraceKeys[relation.identity]=signature
+        logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTED conflict=%s classification=%s passageEligible=%s fallbackActionSpaceSupported=%s %s",
+            tostring(relation.identity),tostring(relation.classification),tostring(relation.cooperativePassageEligible~=false),
+            tostring(fallbackActionSpaceSupported==true),tostring(rejectionText or ("reason="..tostring(reason))))
+        for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(allRejected)) do
+            logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL %s",clearanceTrace)
+        end
+    end
 end
 
 local function passageClearanceSelectedTelemetry(plan)

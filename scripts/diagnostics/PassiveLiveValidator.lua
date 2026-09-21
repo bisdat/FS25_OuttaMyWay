@@ -72,7 +72,7 @@ local function futureSpaceRelationships(picture)
 end
 function Validator.new(runtime)
     return setmetatable({
-        runtime=runtime,progressionPreservationProbe=nil,cornerArrivalFeatureProbe=OuttaMyWay.CornerArrivalFeatureProbe.new(),
+        runtime=runtime,progressionPreservationProbe=nil,
         elapsed=0,lastLogAt=-math.huge,lastSignature=nil,records={},errorCount=0,
         acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
         futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={}
@@ -81,11 +81,11 @@ end
 function Validator:setProgressionPreservationProbe(probe) self.progressionPreservationProbe=probe end
 function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
-    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset(); self.cornerArrivalFeatureProbe:reset()
+    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset()
     logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before trace publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
-    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset(); self.cornerArrivalFeatureProbe:reset()
+    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset()
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
@@ -110,7 +110,6 @@ function Validator:_record(raw,live)
     local capability=selectedCapability(evaluated)
     local passCandidates,unresolvedCandidates,failedCandidates=candidateVerdictSummary(evaluated)
     if self.progressionPreservationProbe~=nil then self.progressionPreservationProbe:observe(processed.snapshot,supported,evaluated,raw.timestamp) end
-    if self.cornerArrivalFeatureProbe~=nil then self.cornerArrivalFeatureProbe:observe(supported) end
     local diagnostics=supported.diagnostics or {}; local counters=diagnostics.counters or {}; local assessedFutureSpaceRelationships=futureSpaceRelationships(supported)
     local dispatch=live.controlDispatch or {}; local request=dispatch.request; local outcome=dispatch.outcome
     local record=OuttaMyWay.PassiveLiveTraceRecord.new({
