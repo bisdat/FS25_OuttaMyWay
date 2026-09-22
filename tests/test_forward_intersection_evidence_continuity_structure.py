@@ -119,3 +119,20 @@ def test_forward_intersection_never_physically_regulates_current_corner_incumben
     assert 'local fixedForward=bridge.admissionKind=="FORWARD_INTERSECTION"' in authority
     assert 'lease.fixedForwardIntersection=fixedForward' in authority
     assert 'fixed and "INTENT_REVELATION_CREEP" or envelope.effectClass' in authority
+
+
+def test_category_1_corner_incumbency_is_generic_regulation_ineligibility():
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    policy = (ROOT / "scripts" / "decision" / "TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+
+    assert 'if operation=="APPLY" and currentCornerIncumbency(picture,assemblyId)~=nil then' in authority
+    assert '"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"' in authority
+    assert 'currentCornerIncumbency(picture,lease.followerAssemblyId)' in authority
+    assert 'currentCornerIncumbency(picture,bridge.followerAssemblyId)' in authority
+    assert 'migrationAwayFromCorner' in authority
+    assert 'currentCornerIncumbency(picture,bridge.regulatedAssemblyId)' in authority
+    assert 'RELOCATION_SERIALIZATION' in authority
+    assert 'requiresCornerEvacuation' in policy
+    assert 'currentConstrainedCornerOccupancy==true' in policy
+    assert '"REGULATE_ONLY_NON_CORNER_OCCUPANT"' in policy
+    assert '"BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION"' in policy

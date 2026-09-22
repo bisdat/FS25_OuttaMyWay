@@ -10,6 +10,7 @@ local Authority = OuttaMyWay.RegulationBoundedAuthority
 Authority.__index = Authority
 
 local RELOCATION_SERIALIZATION_OWNER_TAG="RELOCATION_SERIALIZATION"
+local currentCornerIncumbency
 
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
@@ -119,7 +120,16 @@ function Authority:_applyRelocationSerialization(picture,evaluated,candidate,com
     local protected=bridge.relocationSerializationBeneficiaries or {}
     if OuttaMyWay.ValueRecord.length(protected)==0 then return false,"RELOCATION_SERIALIZATION_AUTHORISING_DEMAND_UNAVAILABLE" end
     if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then return false,"RELOCATION_SERIALIZATION_CONTROL_CAPABILITY_UNAVAILABLE" end
-    if self.relocationSerializationLeases[commitment.identity]~=nil then return true,"ALREADY_PROTECTED" end
+    local existingLeases=self.relocationSerializationLeases[commitment.identity]
+    if existingLeases~=nil then
+        for _,lease in ipairs(existingLeases) do
+            if currentCornerIncumbency(picture,lease.assemblyId)~=nil then
+                self:_releaseRelocationSerialization(commitment.identity,"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION")
+                return false,"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"
+            end
+        end
+        return true,"ALREADY_PROTECTED"
+    end
     local leases={}
     local function rollbackLeases(reason)
         for _,lease in ipairs(leases) do
@@ -168,6 +178,9 @@ function Authority:_regulationRequest(picture,evaluated,candidate,commitment,tok
     if operation=="APPLY" and speed==nil then speed=1.0 end
     local assemblyId=bridge.progressAssemblyId or bridge.followerAssemblyId or bridge.regulatedAssemblyId
     local referenceKey=bridge.progressReferenceKey or bridge.followerReferenceKey or bridge.regulatedReferenceKey
+    if operation=="APPLY" and currentCornerIncumbency(picture,assemblyId)~=nil then
+        return nil,"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"
+    end
     local target={kind="REGULATION_LEASE",operation=operation,vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
         maxSpeedKmh=operation=="APPLY" and speed or nil,governingPurpose=bridge.governingPurpose}
     local boundedAuthorityId=nil
@@ -269,7 +282,7 @@ end
 -- must retain native evacuation opportunity until Positive Corner Departure.
 -- Forward-Intersection Regulation may remain semantically relevant, but Bounded
 -- Authority must not grant or retain a restrictive FI lease on that incumbent.
-local function currentCornerIncumbency(picture,assemblyId)
+currentCornerIncumbency=function(picture,assemblyId)
     if picture==nil or type(assemblyId)~="string" then return nil end
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
         local corner=knowledge.cornerKnowledge or {}
@@ -404,11 +417,23 @@ end
 
 function Authority:assessFollowerBoundaryPermission(picture,evaluated,candidate,semanticAssessment)
     local bridge=followerBoundaryBridge(candidate)
+    local lease=self.followerBoundaryLease
     if semanticAssessment~=nil and semanticAssessment.disposition=="TERMINATE" then return nil end
+    if lease~=nil and currentCornerIncumbency(picture,lease.followerAssemblyId)~=nil then
+        if lease.actuationActive~=false then
+            return self:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,{
+                reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"
+            })
+        end
+        return {status="QUIESCENT",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",followerBoundary=true,commitmentId=lease.commitmentId}
+    end
     if bridge~=nil and bridge.action=="PRESERVE" then
         return self:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
     end
     if bridge==nil or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then return nil end
+    if currentCornerIncumbency(picture,bridge.followerAssemblyId)~=nil then
+        return {status="NO_DISPATCH",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",followerBoundary=true}
+    end
     if self.regulationControl==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
     return {status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,pairKey=bridge.pairKey,followerAssemblyId=bridge.followerAssemblyId,followerBoundary=true}
 end
@@ -879,13 +904,17 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
         local relationshipReason=semanticAssessment and semanticAssessment.reason or nil
         if semanticAssessment==nil or semanticAssessment.disposition=="PERSIST" then
             local regulatedCorner=currentCornerIncumbency(picture,lease.regulatedAssemblyId)
-            if lease.admissionKind=="FORWARD_INTERSECTION" and regulatedCorner~=nil then
+            local proposedCorner=bridge and currentCornerIncumbency(picture,bridge.regulatedAssemblyId) or nil
+            local migrationAwayFromCorner=regulatedCorner~=nil and lease.actuationActive~=false
+                and bridge~=nil and bridge.conflictIdentity==lease.conflictIdentity
+                and bridge.regulatedAssemblyId~=lease.regulatedAssemblyId and proposedCorner==nil
+            if regulatedCorner~=nil and not migrationAwayFromCorner then
                 if lease.actuationActive~=false then
                     return self:_quiesceActionSpaceRegulationActuation(
                         picture,evaluated,lease,relation,
                         {reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"})
                 end
-                return {status="QUIESCENT",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true,forwardIntersection=true,commitmentId=lease.commitmentId}
+                return {status="QUIESCENT",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
             end
             local actuationState,action=actionSpaceRegulationActuationState(relation)
             if actuationState=="NOT_REQUIRED" then
@@ -899,9 +928,8 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
                 return {status="QUIESCENT",reason=quiescenceReason,actionSpaceRegulation=true,commitmentId=lease.commitmentId}
             end
             if lease.actuationActive==false then
-                if bridge~=nil and bridge.admissionKind=="FORWARD_INTERSECTION"
-                    and currentCornerIncumbency(picture,bridge.regulatedAssemblyId)~=nil then
-                    return {status="QUIESCENT",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true,forwardIntersection=true,commitmentId=lease.commitmentId}
+                if bridge~=nil and currentCornerIncumbency(picture,bridge.regulatedAssemblyId)~=nil then
+                    return {status="QUIESCENT",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
                 end
                 if actuationState=="SUPPORTED" and bridge~=nil then
                     if bridge.conflictIdentity~=lease.conflictIdentity then
@@ -916,8 +944,7 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
                 return {status="QUIESCENT",reason=relationshipReason or "ACTION_SPACE_REGULATION_RELATIONSHIP_RETAINED_CURRENT_ACTUATION_NOT_SUPPORTED",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
             end
             if bridge~=nil and bridge.conflictIdentity==lease.conflictIdentity and bridge.regulatedAssemblyId~=lease.regulatedAssemblyId then
-                if bridge.admissionKind=="FORWARD_INTERSECTION"
-                    and currentCornerIncumbency(picture,bridge.regulatedAssemblyId)~=nil then
+                if currentCornerIncumbency(picture,bridge.regulatedAssemblyId)~=nil then
                     return self:_updateActionSpaceRegulationEnvelope(
                         picture,evaluated,candidate,lease,relation,
                         "CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION")
@@ -939,9 +966,8 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
     end
 
     if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil end
-    if bridge.admissionKind=="FORWARD_INTERSECTION"
-        and currentCornerIncumbency(picture,bridge.regulatedAssemblyId)~=nil then
-        return {status="NO_DISPATCH",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true,forwardIntersection=true}
+    if currentCornerIncumbency(picture,bridge.regulatedAssemblyId)~=nil then
+        return {status="NO_DISPATCH",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true}
     end
     if self.regulationControl==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",actionSpaceRegulation=true} end
     return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="INITIAL",candidateId=candidate.identity,
