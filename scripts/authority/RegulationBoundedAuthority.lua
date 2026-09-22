@@ -252,6 +252,19 @@ local function actionSpaceRegulationActuationState(relation)
     return "UNRESOLVED",action
 end
 
+-- CurrentResponsibilityAssessment already protects an established Corner
+-- traversal from Forward-Intersection churn. Bounded Authority must honour that
+-- current Situation meaning before replacing the physical regulated subject.
+local function forwardIntersectionCornerProtectionRetainsCurrentSubject(lease,bridge,semanticAssessment)
+    if lease==nil or bridge==nil or lease.admissionKind~="FORWARD_INTERSECTION"
+        or bridge.admissionKind~="FORWARD_INTERSECTION"
+        or type(semanticAssessment)~="table" or semanticAssessment.evidenceState~="CORNER_ENGAGEMENT" then return false end
+    local protection=semanticAssessment.cornerProtection
+    if type(protection)~="table" then return false end
+    return protection.regulatedAssemblyId==lease.regulatedAssemblyId
+        and protection.protectedAssemblyId==bridge.regulatedAssemblyId
+end
+
 local function followerBoundaryRecord(picture,lease)
     for _,record in OuttaMyWay.ValueRecord.ipairs(picture.followerBoundaryKnowledge or {}) do
         if lease==nil or record.pairKey==lease.pairKey then return record end
@@ -872,6 +885,11 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
                 return {status="QUIESCENT",reason=relationshipReason or "ACTION_SPACE_REGULATION_RELATIONSHIP_RETAINED_CURRENT_ACTUATION_NOT_SUPPORTED",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
             end
             if bridge~=nil and bridge.conflictIdentity==lease.conflictIdentity and bridge.regulatedAssemblyId~=lease.regulatedAssemblyId then
+                if forwardIntersectionCornerProtectionRetainsCurrentSubject(lease,bridge,semanticAssessment) then
+                    return self:_updateActionSpaceRegulationEnvelope(
+                        picture,evaluated,candidate,lease,relation,
+                        "CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION")
+                end
                 if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then
                     return {status="MAINTAINED",reason="ACTION_SPACE_REGULATION_ROLE_MIGRATION_CONTROL_CAPABILITY_UNAVAILABLE",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
                 end

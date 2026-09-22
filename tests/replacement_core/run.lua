@@ -6755,11 +6755,17 @@ local function spatialFuture(assemblyId,startX,startZ,endX,endZ,headingX,heading
     }
 end
 
-local function spatialMotion(assemblyId,widthM,speedMps)
+local function spatialMotion(assemblyId,widthM,speedMps,nativeMaxSpeedKmh)
     local workingWidth
     if widthM~=nil then workingWidth={available=true,widthMetres=widthM,source="GIANTS_WORKING_WIDTH_ACCESSOR",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"} end
-    return {assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,reportedSpeedMps=speedMps,
-        nativeFieldWork={workingWidth=workingWidth}}
+    local nativeKmh=nativeMaxSpeedKmh
+    if nativeKmh==nil and speedMps~=nil then nativeKmh=speedMps*3.6 end
+    local nativeDriveCommand={
+        available=nativeKmh~=nil,valid=nativeKmh~=nil,moveForwards=true,maxSpeedKmh=nativeKmh,
+        authority="IMMEDIATE_NATIVE_FIELD_WORKER_DRIVE_COMMAND_ONLY"
+    }
+    return {assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,reportedSpeedMps=speedMps,positionDerivedSpeedMps=speedMps,
+        nativeFieldWork={workingWidth=workingWidth,nativeDriveCommand=nativeDriveCommand}}
 end
 
 local function spatialNear(actual,expected,tolerance)
@@ -6834,6 +6840,22 @@ test("Forward Intersection missing motion leaves temporal allocation unresolved 
     equal(knowledge.boundaryTransitionProjections[1].status,"SUPPORTED")
     equal(knowledge.pairRelationships[1].classification,"FORWARD_INTERSECTION")
     equal(knowledge.pairRelationships[1].temporalAllocationStatus,"UNRESOLVED")
+end)
+
+test("Forward Intersection temporal ordering ignores OuttaMyWay-altered realised speed",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",10,60,100,60,1,0,90),spatialFuture("AS-B",90,90,0,45,-0.89442719,-0.44721360,100.62305899),
+        spatialMotion("AS-A",6,1,18),spatialMotion("AS-B",6,10,18))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION")
+    equal(relation.spatialOverlay,"OPEN_FIELD")
+    spatialNear(relation.subjectProgressRateMps,5)
+    spatialNear(relation.otherProgressRateMps,5)
+    equal(relation.subjectProgressRateSource,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED")
+    equal(relation.otherProgressRateSource,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED")
+    -- Realised speed would make AS-A the later arrival; equal native opportunities
+    -- correctly leave the farther participant AS-B as the temporal yielder.
+    equal(relation.temporalYielderAssemblyId,"AS-B")
 end)
 
 
@@ -7085,6 +7107,46 @@ test("Forward Intersection evidence continuity distinguishes waiting, dissolutio
     local successor=assessment:assessActionSpaceRegulation(current,superseded)
     equal(successor.disposition,"TERMINATE")
     equal(successor.terminationEvidenceKind,"FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
+end)
+
+test("Forward Intersection Corner engagement blocks role migration onto the protected Corner worker",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    local lease={
+        commitmentId="CM-FI-CORNER",conflictIdentity="FI-CORNER",admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId="AS-OUTSIDE",regulatedReferenceKey="vehicle-root:outside",
+        protectedAssemblyId="AS-CORNER",protectedReferenceKey="vehicle-root:corner",
+        governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
+        actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity="FI-CORNER",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
+        actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
+        reason="GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION"
+    }
+    local candidate={
+        identity="CA-FI-CORNER",capability="REGULATE_SPEED",
+        evidenceBasis={actionSpaceRegulationBridge={
+            conflictIdentity="FI-CORNER",admissionKind="FORWARD_INTERSECTION",
+            regulatedAssemblyId="AS-CORNER",regulatedReferenceKey="vehicle-root:corner",
+            protectedAssemblyId="AS-OUTSIDE",protectedReferenceKey="vehicle-root:outside",
+            fixedRegulationSpeedKmh=1,governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME"
+        }}
+    }
+    local evaluated={decision={selectedCandidateId=candidate.identity,epoch=1},candidates={candidate}}
+    local picture={opposedCorridorKnowledge={},spatialConstraintKnowledge={{pairRelationships={relation}}}}
+    local semantic={
+        disposition="PERSIST",evidenceState="CORNER_ENGAGEMENT",
+        reason="CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION",
+        cornerProtection={regulatedAssemblyId="AS-OUTSIDE",protectedAssemblyId="AS-CORNER",cornerKey="C1"}
+    }
+    local result=authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semantic)
+    equal(result.status,"MAINTAINED")
+    equal(result.reason,"CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION")
+    equal(lease.regulatedAssemblyId,"AS-OUTSIDE")
+    equal(lease.protectedAssemblyId,"AS-CORNER")
+    equal(lease.currentCapKmh,1)
 end)
 
 test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-kmh lease",function()

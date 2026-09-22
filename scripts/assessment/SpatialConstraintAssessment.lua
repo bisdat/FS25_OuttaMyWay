@@ -60,10 +60,16 @@ end
 local function continuation(future)
     for _,v in OuttaMyWay.ValueRecord.ipairs(future and future.alternatives or {}) do if v.kind=="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION" then return v end end
 end
-local function positiveRate(motion)
-    if motion and finite(motion.positionDerivedSpeedMps) and motion.positionDerivedSpeedMps>0 then return motion.positionDerivedSpeedMps,"POSITION_DERIVED_PROGRESS_RATE" end
-    if motion and finite(motion.reportedSpeedMps) and motion.reportedSpeedMps>0 then return motion.reportedSpeedMps,"GIANTS_REPORTED_PROGRESS_RATE" end
-    return nil,"POSITIVE_PROGRESS_RATE_UNAVAILABLE"
+-- Forward-Intersection temporal ordering asks what GIANTS currently permits the
+-- worker to do natively. Realised speed is downstream of OuttaMyWay Regulation
+-- and therefore cannot re-arbitrate the Regulation that produced it.
+local function nativeProgressOpportunity(motion)
+    local native=motion and motion.nativeFieldWork and motion.nativeFieldWork.nativeDriveCommand or nil
+    local nativeKmh=native and tonumber(native.maxSpeedKmh) or nil
+    if native~=nil and native.valid==true and finite(nativeKmh) and nativeKmh>0 then
+        return nativeKmh/3.6,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED"
+    end
+    return nil,"GIANTS_NATIVE_PROGRESS_OPPORTUNITY_UNAVAILABLE"
 end
 local function projection(world,worldKey,id,future,motion)
     local path=continuation(future); local width=motion and motion.nativeFieldWork and motion.nativeFieldWork.workingWidth
@@ -84,7 +90,7 @@ local function projection(world,worldKey,id,future,motion)
     result.workingWidthM=width and tonumber(width.widthMetres); result.workingWidthSource=width and width.source or "UNAVAILABLE"
     result.workingWidthAuthority=width and width.authority or "PROVISIONAL_DEMAND_SEED_INPUT_ONLY"
     if width and width.available==true and finite(result.workingWidthM) and result.workingWidthM>0 then result.provisionalHalfWidthM=result.workingWidthM/2 end
-    result.progressRateMps,result.progressRateSource=positiveRate(motion)
+    result.progressRateMps,result.progressRateSource=nativeProgressOpportunity(motion)
     if result.progressRateMps then result.provisionalTimeToBoundarySec=boundaryDistance/result.progressRateMps end
     result.status="SUPPORTED"; result.reason="FIELD_BOUNDARY_TRANSITION_PROJECTION_SUPPORTED"; return result
 end
@@ -432,12 +438,10 @@ local function currentPhysicalReachEvidence(physical,p)
 end
 
 local function nativeCornerProgressRate(motion)
+    local rate,source=nativeProgressOpportunity(motion)
     local native=motion and motion.nativeFieldWork and motion.nativeFieldWork.nativeDriveCommand or nil
-    local nativeKmh=native and tonumber(native.maxSpeedKmh) or nil
-    if native~=nil and native.valid==true and finite(nativeKmh) and nativeKmh>0 then
-        return nativeKmh/3.6,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED",nativeKmh
-    end
-    return nil,"GIANTS_NATIVE_PROGRESS_OPPORTUNITY_UNAVAILABLE",nil
+    local nativeKmh=rate~=nil and native and tonumber(native.maxSpeedKmh) or nil
+    return rate,source,nativeKmh
 end
 
 -- Headland Association is positive feature-relative topology, not a predicted
