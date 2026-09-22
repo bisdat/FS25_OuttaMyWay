@@ -477,7 +477,7 @@ return function(test,equal)
         })
     end
 
-    local function regulationCandidate(id,requirement,protected)
+    local function regulationCandidate(id,requirement,protected,regulated)
         return {
             identity=id,capability="REGULATE_SPEED",comparisonCost=0,
             evidenceBasis={trafficPolicemanPreference={
@@ -488,7 +488,8 @@ return function(test,equal)
                 }},
                 cornerRightOfWay={
                     sharedCornerIdentity="shared-corner:OR-1:C1",
-                    protectedParticipant=protected
+                    protectedParticipant=protected,
+                    regulatedParticipant=regulated
                 }
             }}
         }
@@ -498,9 +499,13 @@ return function(test,equal)
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
             assemblyId="AS-A",engagement=true,cornerIncumbent=true,approachDemand=false
+        },{
+            assemblyId="AS-B",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
             assemblyId="AS-B",engagement=false,cornerArrivalEvidence=true,approachDemand=false,timeToCornerSec=5
+        },{
+            assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
@@ -512,9 +517,13 @@ return function(test,equal)
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
             assemblyId="AS-A",engagement=true,approachDemand=false,establishedObservationEpoch=1
+        },{
+            assemblyId="AS-B",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
             assemblyId="AS-B",engagement=false,approachDemand=true,timeToCornerSec=5
+        },{
+            assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
@@ -526,9 +535,13 @@ return function(test,equal)
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
             assemblyId="AS-A",engagement=true,approachDemand=true,establishedObservationEpoch=1,timeToCornerSec=8
+        },{
+            assemblyId="AS-B",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
             assemblyId="AS-B",engagement=true,approachDemand=true,establishedObservationEpoch=2,timeToCornerSec=3
+        },{
+            assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
@@ -540,9 +553,13 @@ return function(test,equal)
         local requirement="corner-right-of-way:shared-corner:OR-1:C1"
         local protectA=regulationCandidate("CA-PROTECT-A",requirement,{
             assemblyId="AS-A",engagement=false,approachDemand=true,timeToCornerSec=5
+        },{
+            assemblyId="AS-B",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local protectB=regulationCandidate("CA-PROTECT-B",requirement,{
             assemblyId="AS-B",engagement=false,approachDemand=true,timeToCornerSec=5
+        },{
+            assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
         local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})

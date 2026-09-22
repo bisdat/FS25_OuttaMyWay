@@ -112,7 +112,7 @@ def test_bounded_authority_honours_corner_protection_before_fi_role_migration():
 def test_forward_intersection_never_physically_regulates_current_corner_incumbent():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
 
-    assert "local function currentCornerIncumbency(picture,assemblyId)" in authority
+    assert "currentCornerIncumbency=function(picture,assemblyId)" in authority
     assert 'engagement.cornerIncumbent==true' in authority
     assert authority.count('"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"') >= 4
     assert 'lease.ownerTag or ACTION_SPACE_REGULATION_OWNER_TAG' in authority
