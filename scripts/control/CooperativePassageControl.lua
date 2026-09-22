@@ -34,6 +34,9 @@ local COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S = 1.0
 local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 -- Longitudinal completion on the captured axis, not a Passage Guide target radius.
 local COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M = 1.0
+-- Smallest-change runout experiment: retain existing readiness semantics but
+-- cap each forward settlement command so Reality is re-evaluated after a short step.
+local COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M = 5.0
 
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
@@ -790,15 +793,16 @@ function Control:_startRunoutChunk(run,participant)
     if pp==nil then return false,"ALIGNMENT_RUNOUT_POSE_UNAVAILABLE" end
     local length=envelopeLength(participant.transitPassageEnvelope)
     if length==nil or length<=0 then return false,"ALIGNMENT_RUNOUT_TRANSIT_LENGTH_UNAVAILABLE" end
-    local tx,tz=pp.x+participant.axisForwardX*length,pp.z+participant.axisForwardZ*length
+    local stepDistance=math.min(length,COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M)
+    local tx,tz=pp.x+participant.axisForwardX*stepDistance,pp.z+participant.axisForwardZ*stepDistance
     local inside,fieldReason=fieldResolvedAt(tx,tz)
     if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
     local tolerance=COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M
-    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+length,run.speedKmh,true,tolerance)
+    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+stepDistance,run.speedKmh,true,tolerance)
     if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
     participant.runoutActive=true
-    logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm derivedFrom=TRANSIT_ASSEMBLY_LENGTH",tostring(run.commitmentId),participant.name,length,progress+length)
+    logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm transitLength=%.2fm derivedFrom=MAX_5M_REASSESSMENT_STEP",tostring(run.commitmentId),participant.name,stepDistance,progress+stepDistance,length)
     return true,nil
 end
 
