@@ -446,7 +446,7 @@ def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners
     for participant in ("subject", "other"):
         assert re.search(rf"gate\.{participant}=\{{[^\n]+radiusM=gate\.radiusM\}}", guide)
 
-    for method, station, forwards in (("_startRunoutChunk", "progress+length", "true"),
+    for method, station, forwards in (("_startRunoutChunk", "progress+stepDistance", "true"),
                                       ("_beginAxisReturn", "0", "false")):
         block = passage.split(f"function Control:{method}(", 1)[1].split("\nfunction Control:", 1)[0]
         assert f"local tolerance={tolerance}" in block

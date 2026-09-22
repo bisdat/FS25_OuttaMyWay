@@ -6278,6 +6278,46 @@ test("Cooperative Passage Leg: vacatur before execution-origin rebase preserves 
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
+test("Cooperative Passage: Alignment Runout step is capped at five metres before readiness reassessment",function()
+    local oldTranslation=getWorldTranslation
+    local oldDirection=localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) return 0,0,10 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId="FIELD-TEST"} end
+
+    local captured=nil
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},
+        driveMechanism={
+            setAxisTravel=function(self,vehicle,originX,originZ,axisX,axisZ,targetStation,speedKmh,forward,tolerance)
+                captured={targetStation=targetStation,forward=forward,tolerance=tolerance}
+                return true,nil
+            end
+        },
+        configurationMechanism={}
+    })
+    local participant={
+        vehicle={rootNode=1},name="long",
+        executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,
+        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-18,maxForwardM=18}
+    }
+    local ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-5M"},participant)
+    equal(ok,true); equal(reason,nil)
+    equal(captured.targetStation,15)
+    equal(captured.forward,true)
+    equal(captured.tolerance,1)
+
+    participant.transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2}
+    captured=nil
+    ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-SHORT"},participant)
+    equal(ok,true); equal(reason,nil)
+    equal(captured.targetStation,14)
+
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
 test("Cooperative Passage: settling accepts owned Hold plus physical stationary state even when GIANTS refused before PermissionGate",function()
     local vehicleA={rootNode=1351,lastSpeedReal=0}; local vehicleB={rootNode=1352,lastSpeedReal=0}
     local held={[vehicleA]=true,[vehicleB]=true}

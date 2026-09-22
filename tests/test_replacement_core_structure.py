@@ -1996,3 +1996,11 @@ def test_issue240_feature_relative_corner_arrival_is_production_situation_meanin
     ):
         assert token in assessment
     assert "workingWidthM" not in assessment[assessment.index("local function terminalEdgeCornerAssociation"):assessment.index("-- Current Corner Occupancy")]
+
+
+def test_issue227_runout_uses_five_metre_maximum_reassessment_step_from_124_lifecycle():
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    assert re.search(r"^local COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M = 5\.0$", control, re.M)
+    assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M)" in control
+    assert "progress+stepDistance" in control
+    assert "derivedFrom=MAX_5M_REASSESSMENT_STEP" in control
