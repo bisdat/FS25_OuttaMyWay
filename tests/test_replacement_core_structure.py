@@ -2004,3 +2004,28 @@ def test_issue227_runout_uses_five_metre_maximum_reassessment_step_from_124_life
     assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M)" in control
     assert "progress+stepDistance" in control
     assert "derivedFrom=MAX_5M_REASSESSMENT_STEP" in control
+
+
+def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    mechanism=(ROOT/"scripts"/"control"/"mechanisms"/"TransitConfigurationMechanism.lua").read_text(encoding="utf-8")
+    assert re.search(r"^local COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS = 10000$", control, re.M)
+    assert "COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS" not in control
+    assert "function Control:_phaseCompletionResidual(run)" in control
+    assert "function Control:_progressWatchdogStatus(run,nowMs)" in control
+    for residual in (
+        "APPROACH_BOUNDARY_MARGIN_M",
+        "SETTLING_COMPLETION_UNITS",
+        "TRANSIT_CONFIGURATION_ACTUATOR_DISTANCE",
+        "GUIDE_TARGET_DISTANCE_M",
+        "RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS",
+        "AXIS_RETURN_STATION_DISTANCE_M",
+        "RESTORE_ACTUATOR_DISTANCE",
+        "RETURN_CLEARANCE_DEFICIT_M",
+    ):
+        assert residual in control
+    assert "RETURN_CLEARANCE_EXHAUSTED" not in control
+    assert "SKIP_AXIS_RETURN_AND_RESTORE" not in control
+    assert "PROGRESS_WATCHDOG_NO_COMPLETION_PROGRESS" in control
+    assert "semanticTerminality=false" in control
+    assert "completionResidual" in mechanism

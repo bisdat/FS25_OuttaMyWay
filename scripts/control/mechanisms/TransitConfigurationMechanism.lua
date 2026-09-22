@@ -198,11 +198,14 @@ end
 
 function Mechanism:getCachedTransitSettlement(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
-    if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,exhausted=false,actuatorCount=0,settledCount=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
+    if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,exhausted=false,actuatorCount=0,settledCount=0,completionResidual=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
     local settledCount=0
+    local completionResidual=0
+    local residualAvailable=true
     for _,actuator in ipairs(state.transitActuatorStates or {}) do
         local value=foldTime(actuator.object)
         local target=tonumber(actuator.targetFoldAnimTime)
+        if value~=nil and target~=nil then completionResidual=completionResidual+math.abs(target-value) else residualAvailable=false end
         local settled=value~=nil and target~=nil and ((target>=0.5 and value>=0.999) or (target<0.5 and value<=0.001))
         actuator.settled=settled==true
         if settled then settledCount=settledCount+1 end
@@ -212,7 +215,7 @@ function Mechanism:getCachedTransitSettlement(vehicle)
     local timeout=tonumber(state.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     local normal=actuatorCount>0 and settledCount==actuatorCount
     local exhausted=not normal and elapsed>=timeout
-    return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
+    return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,completionResidual=residualAvailable and completionResidual or nil,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
 end
 
 -- Cooperative Passage restoration is symmetrical with cached Transit actuation.
@@ -247,14 +250,17 @@ end
 
 function Mechanism:getCachedRestoreSettlement(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
-    if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,normal=true,exhausted=false,actuatorCount=0,settledCount=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
+    if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,normal=true,exhausted=false,actuatorCount=0,settledCount=0,completionResidual=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
     local actuators=state.restoreActuatorStates or {}
     local actuatorCount=#actuators
-    if state.restoreRequestedAt==nil or actuatorCount==0 then return {settled=true,normal=true,exhausted=false,actuatorCount=actuatorCount,settledCount=actuatorCount,elapsedMs=0,timeoutMs=tonumber(state.settlementTimeoutMs) or 0,reason="NO_PHYSICAL_TRANSIT_CHANGE_TO_RESTORE"} end
+    if state.restoreRequestedAt==nil or actuatorCount==0 then return {settled=true,normal=true,exhausted=false,actuatorCount=actuatorCount,settledCount=actuatorCount,completionResidual=0,elapsedMs=0,timeoutMs=tonumber(state.settlementTimeoutMs) or 0,reason="NO_PHYSICAL_TRANSIT_CHANGE_TO_RESTORE"} end
     local settledCount=0
+    local completionResidual=0
+    local residualAvailable=true
     for _,actuator in ipairs(actuators) do
         local value=foldTime(actuator.object)
         local target=tonumber(actuator.targetFoldAnimTime)
+        if value~=nil and target~=nil then completionResidual=completionResidual+math.abs(target-value) else residualAvailable=false end
         local settled=value~=nil and target~=nil and ((target>=0.5 and value>=0.999) or (target<0.5 and value<=0.001))
         actuator.settled=settled==true
         if settled then settledCount=settledCount+1 end
@@ -263,7 +269,7 @@ function Mechanism:getCachedRestoreSettlement(vehicle)
     local timeout=tonumber(state.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     local normal=settledCount==actuatorCount
     local exhausted=not normal and elapsed>=timeout
-    return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "RESTORE_ACTUATORS_SETTLED" or (exhausted and "RESTORE_FOLD_SETTLEMENT_EXHAUSTED" or "RESTORE_ACTUATORS_PENDING")}
+    return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,completionResidual=residualAvailable and completionResidual or nil,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "RESTORE_ACTUATORS_SETTLED" or (exhausted and "RESTORE_FOLD_SETTLEMENT_EXHAUSTED" or "RESTORE_ACTUATORS_PENDING")}
 end
 
 function Mechanism:finishCachedTransitRestore(vehicle)
