@@ -6300,13 +6300,14 @@ test("Cooperative Passage: aligned participant advances only remaining Return-St
     local participant={
         vehicle={rootNode=1},name="aligned",executionOriginX=0,executionOriginZ=0,
         axisForwardX=0,axisForwardZ=1,
-        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2}
+        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-6,maxForwardM=6}
     }
     local evidence={progressM=10,rearStationM=8,otherReturnLimitM=11}
     local ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-MIN-STAGE"},participant,"RETURN_STAGING_CLEARANCE_NOT_YET_ESTABLISHED",evidence)
     equal(ok,true); equal(reason,nil)
     -- Remaining staging is 3 m. Add the existing 1 m Axis Travel station tolerance,
-    -- so target station is current 10 + 4 = 14 m, not a whole 4 m Transit length by coincidence.
+    -- so target station is current 10 + 4 = 14 m. Whole Transit length is 12 m
+    -- and would have produced target station 22 m.
     equal(captured.targetStation,14)
     equal(captured.forward,true)
     equal(captured.tolerance,1)
