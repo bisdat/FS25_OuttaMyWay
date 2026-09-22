@@ -7109,6 +7109,48 @@ test("Forward Intersection evidence continuity distinguishes waiting, dissolutio
     equal(successor.terminationEvidenceKind,"FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
 end)
 
+test("Forward Intersection regulated Corner incumbent is quiesced for native evacuation",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    local clearedOwnerTag=nil
+    authority.regulationControl={
+        clearRegulationLeaseByReference=function(_,referenceKey,ownerTag)
+            equal(referenceKey,"vehicle-root:corner")
+            clearedOwnerTag=ownerTag
+            return true,"CONTROL_CLEANUP_RELEASED"
+        end
+    }
+    local lease={
+        commitmentId="CM-FI-INCUMBENT",conflictIdentity="FI-INCUMBENT",admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId="AS-CORNER",regulatedReferenceKey="vehicle-root:corner",
+        protectedAssemblyId="AS-OUTSIDE",protectedReferenceKey="vehicle-root:outside",
+        governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
+        ownerTag="FORWARD_INTERSECTION_INTENT_REVELATION",
+        actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity="FI-INCUMBENT",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
+        actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
+        reason="GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION"
+    }
+    local picture={
+        opposedCorridorKnowledge={},
+        spatialConstraintKnowledge={{
+            pairRelationships={relation},
+            cornerKnowledge={engagements={{assemblyId="AS-CORNER",cornerIncumbent=true,cornerKey="C1"}}}
+        }}
+    }
+    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="FORWARD_INTERSECTION_REMAINS_POSITIVELY_SUPPORTED"}
+    local result=authority:assessActionSpaceRegulationPermission(picture,{decision={epoch=1},candidates={}},nil,semantic)
+    equal(result.status,"QUIESCENT")
+    equal(result.reason,"ACTION_SPACE_REGULATION_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
+    equal(clearedOwnerTag,"FORWARD_INTERSECTION_INTENT_REVELATION")
+    equal(lease.actuationActive,false)
+    equal(lease.currentCapKmh,nil)
+    equal(lease.quiescenceReason,"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION")
+end)
+
 test("Forward Intersection Corner engagement blocks role migration onto the protected Corner worker",function()
     local runtime=OuttaMyWay.Runtime.new()
     local authority=runtime.regulationBoundedAuthority

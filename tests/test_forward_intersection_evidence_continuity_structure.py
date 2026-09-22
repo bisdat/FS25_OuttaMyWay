@@ -107,3 +107,15 @@ def test_bounded_authority_honours_corner_protection_before_fi_role_migration():
     assert guard in authority
     assert authority.index(guard) < authority.index(migration)
     assert '"CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION"' in authority
+
+
+def test_forward_intersection_never_physically_regulates_current_corner_incumbent():
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+
+    assert "local function currentCornerIncumbency(picture,assemblyId)" in authority
+    assert 'engagement.cornerIncumbent==true' in authority
+    assert authority.count('"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"') >= 4
+    assert 'lease.ownerTag or ACTION_SPACE_REGULATION_OWNER_TAG' in authority
+    assert 'local fixedForward=bridge.admissionKind=="FORWARD_INTERSECTION"' in authority
+    assert 'lease.fixedForwardIntersection=fixedForward' in authority
+    assert 'fixed and "INTENT_REVELATION_CREEP" or envelope.effectClass' in authority
