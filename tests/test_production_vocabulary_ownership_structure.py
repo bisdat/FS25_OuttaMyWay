@@ -438,9 +438,11 @@ def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners
 
     guide = planner.split("local function makeGuide(", 1)[1].split("\nlocal function ", 1)[0]
     assert f"local traversalRadius={radius}" in guide
-    for kind, forward in (("CROSSING_WINDOW_ENTRY", "development"),
-                          ("CROSSING_WINDOW_EXIT", "development+traversal")):
-        assert f'{{kind="{kind}",forwardM={forward},lateralFraction=1.0,radiusM=traversalRadius}}' in guide
+    assert "participantProgress" in guide
+    assert 'append("CROSSING_WINDOW_ENTRY",progress(subjectDevelopment,' in guide
+    assert ',otherDevelopment,' in guide
+    assert 'append("CROSSING_WINDOW_EXIT",progress(subjectDevelopment+traversal,' in guide
+    assert ',otherDevelopment+traversal,' in guide
     for participant in ("subject", "other"):
         assert re.search(rf"gate\.{participant}=\{{[^\n]+radiusM=gate\.radiusM\}}", guide)
 
@@ -508,16 +510,20 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     for expression in (
         "localnominalClearance=COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M",
         "PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)",
-        "localminimumDevelopment=COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M",
-        "localforwardPerLateral=COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
-        "ifmaximumOffset>0.001then",
-        "development=math.max(minimumDevelopment,maximumOffset*forwardPerLateral)",
-        "localrecovery=development",
+        "localburden=math.abs(offset)",
+        "localrequired=burden>0.001",
+        "development=math.max(COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M,burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M)",
+        "recoveryTailDistanceM=development",
+        "localsubjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)",
+        "localotherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)",
+        "localdevelopmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM",
         "localentryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
-        "localentryBoundary=frontOverlap+2*development+entryAllowance",
+        "localentryBoundary=frontOverlap+developmentSum+entryAllowance",
         "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
-        "localdevelopmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,development*0.25))",
-        "localrecoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,recovery*0.25))",
+        "localmaximumDevelopment=math.max(subjectDevelopment,otherDevelopment)",
+        "localmaximumRecovery=math.max(subjectRecovery,otherRecovery)",
+        "localdevelopmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,maximumDevelopment*0.25))",
+        "localrecoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,maximumRecovery*0.25))",
         "localstepM=COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M",
         "segmentInsideField(p0.x,p0.z,p1.x,p1.z,fieldWorld,stepM)",
         "localrequired=tonumber(nominalClearanceM)or1.0",
