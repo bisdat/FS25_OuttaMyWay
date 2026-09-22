@@ -6452,6 +6452,71 @@ test("Cooperative Passage: native blocked signal does not independently abort an
     g_time=oldTime
 end)
 
+test("Cooperative Passage Tranche 2: Crossing Clearance requires positive current represented rear-clear",function()
+    local source={
+        representations={
+            ["REF-A"]={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=8,radius=1}}},
+            ["REF-B"]={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=2,radius=1}}}
+        },
+        getTrackedRepresentation=function(self,key) return self.representations[key] end
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({liveObservationSource=source},{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    local run={
+        a={assemblyId="AS-A",referenceKey="REF-A",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1},
+        b={assemblyId="AS-B",referenceKey="REF-B",executionOriginX=0,executionOriginZ=10,axisForwardX=0,axisForwardZ=-1}
+    }
+    local clear,reason,evidence=control:_crossingClearanceEvidence(run)
+    equal(clear,true); equal(reason,nil)
+    equal(evidence.subjectRearClearM,4); equal(evidence.otherRearClearM,4)
+    source.representations["REF-A"].worldPrimitives[1].z=4
+    source.representations["REF-B"].worldPrimitives[1].z=6
+    clear,reason,evidence=control:_crossingClearanceEvidence(run)
+    equal(clear,false); equal(reason,"CROSSING_REAR_CLEAR_NOT_ESTABLISHED")
+    equal(evidence.subjectRearClearM<0,true); equal(evidence.otherRearClearM<0,true)
+end)
+
+test("Cooperative Passage Tranche 2: positive-zero-recovery leg enters restore before debt-bearing survivor resumes guide",function()
+    local restoreStarted=nil
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},
+        driveMechanism={clear=function() end},
+        configurationMechanism={}
+    })
+    control._beginParticipantRestore=function(self,run,participant)
+        restoreStarted=participant
+        run.activeRestoreParticipant=participant
+        run.phase="RESTORING_PARTICIPANT"
+        return true,nil
+    end
+    local zero={assemblyId="AS-A",name="zero",positiveZeroRecovery=true,spatialRecoveryRequired=false}
+    local debt={assemblyId="AS-B",name="debt",positiveZeroRecovery=false,spatialRecoveryRequired=true}
+    local run={commitmentId="CM-T2",a=zero,b=debt,participants={zero,debt},guide={gates={{index=1},{index=2},{index=3}}}}
+    local started,reason=control:_beginCrossingClearanceHandoff(run,3)
+    equal(started,true); equal(reason,nil); equal(restoreStarted,zero)
+    equal(run.crossingClearanceResumeGuideIndex,3)
+    equal(debt.released,nil)
+end)
+
+test("Cooperative Passage Tranche 2: early handed-back participant remains hard-safety Reality for survivor",function()
+    local oldTranslation=getWorldTranslation
+    local oldDirection=localDirectionToWorld
+    getWorldTranslation=function(node) return node==1 and 0 or 2,0,0 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local source={
+        getTrackedRepresentation=function(self,key)
+            if key=="REF-A" then return {worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=0,radius=2}}} end
+            return nil
+        end
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({liveObservationSource=source},{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    local released={vehicle={rootNode=1},assemblyId="AS-A",referenceKey="REF-A",released=true,transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
+    local survivor={vehicle={rootNode=2},assemblyId="AS-B",referenceKey="REF-B",transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
+    local run={participants={released,survivor},passageArrangement={nominalInterAssemblyClearanceM=1}}
+    local ok,reason=control:_formerParticipantOccupancySupport(run,nil)
+    equal(ok,false); equal(reason,"PASSAGE_SUPPORT_LOSS_FORMER_PARTICIPANT_CURRENT_OCCUPANCY:AS-A")
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
+
 test("Cooperative Passage: clearance telemetry retains already-computed rejected sweep evidence",function()
     local picture,snapshot=buildCooperativePassageFixture(-0.2,0.2,30)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)

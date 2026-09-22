@@ -1996,3 +1996,19 @@ def test_issue240_feature_relative_corner_arrival_is_production_situation_meanin
     ):
         assert token in assessment
     assert "workingWidthM" not in assessment[assessment.index("local function terminalEdgeCornerAssociation"):assessment.index("-- Current Corner Occupancy")]
+
+
+def test_issue227_tranche2_participant_scoped_post_crossing_control():
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+
+    assert "recoveryTailForAssembly" in control
+    assert "participant.positiveZeroRecovery=tail.positiveZeroRecovery" in control
+    assert "function Control:_crossingClearanceEvidence(run)" in control
+    assert "POSITIVE_CURRENT_REPRESENTED_PAIR_REAR_CLEAR" in control
+    assert "CROSSING_REAR_CLEAR_NOT_ESTABLISHED" in control
+    assert "function Control:_beginCrossingClearanceHandoff(run,resumeGuideIndex)" in control
+    assert "PASSAGE_LEG_ZERO_RECOVERY_HANDOFF" in control
+    assert 'next=PARTICIPANT_SCOPED_RECOVERY' in control
+    assert "former.vacated==true or former.released==true" in control
+    assert "participant.crossingClearanceEarlyHandback==true" in control
+    assert "CROSSING_CLEARANCE_NOT_POSITIVELY_ESTABLISHED" in control

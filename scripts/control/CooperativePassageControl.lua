@@ -10,8 +10,10 @@
 -- forward-only point pursuit. TRANSIT_BASE participants always
 -- request Transit and wait only for positive native fold-motion settlement. Final
 -- Recovery restores whole-assembly axis alignment, performs one-at-a-time Axis
--- Return, then completes participant-specific restore/handoff. The captured member
--- pose is an execution origin, not a target articulation shape. Unsupported return
+-- Return only for Passage Legs carrying intervention-created spatial recovery debt,
+-- while positive-zero-recovery legs may restore/hand back independently after fresh
+-- Crossing Clearance. The captured member pose is an execution origin, not a target
+-- articulation shape. Unsupported return
 -- fails safely to restore/handoff rather than reverse point-seeking.
 
 OuttaMyWay.CooperativePassageControl={}
@@ -229,6 +231,36 @@ local function configurationPlanByAssembly(plan)
     return result
 end
 
+local function recoveryTailForAssembly(bridge,assemblyId)
+    local theatre=bridge and bridge.recoveryCapablePassageTheatre or nil
+    local tails=theatre and theatre.recoveryTails or nil
+    local role=nil
+    if bridge and assemblyId==bridge.subjectAssemblyId then role="subject"
+    elseif bridge and assemblyId==bridge.otherAssemblyId then role="other" end
+    if role==nil or type(tails)~="table" or type(tails[role])~="table" then
+        return nil,"COOPERATIVE_PASSAGE_RECOVERY_TAIL_UNAVAILABLE:"..tostring(assemblyId)
+    end
+    local tail=tails[role]
+    local distanceM=tonumber(tail.distanceM)
+    if distanceM==nil or distanceM<0 then
+        return nil,"COOPERATIVE_PASSAGE_RECOVERY_TAIL_DISTANCE_INVALID:"..tostring(assemblyId)
+    end
+    if tail.required==true then
+        if tail.positiveZeroRecovery==true or distanceM<=0 then
+            return nil,"COOPERATIVE_PASSAGE_RECOVERY_TAIL_REQUIRED_EVIDENCE_INVALID:"..tostring(assemblyId)
+        end
+    elseif tail.positiveZeroRecovery~=true or distanceM>0.001 then
+        return nil,"COOPERATIVE_PASSAGE_ZERO_RECOVERY_EVIDENCE_INVALID:"..tostring(assemblyId)
+    end
+    return {
+        required=tail.required==true,
+        positiveZeroRecovery=tail.positiveZeroRecovery==true,
+        distanceM=distanceM,
+        role=role,
+        fieldSupported=tail.fieldSupported
+    },nil
+end
+
 local function configurationModeText(run)
     local values={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
@@ -253,15 +285,93 @@ local function transitReserve(participant)
     return radius>0 and radius or nil
 end
 
+local function representedAxisInterval(representation,originX,originZ,axisX,axisZ)
+    if type(representation)~="table" then return nil,"REPRESENTATION_UNAVAILABLE" end
+    local minimum,maximum,count=nil,nil,0
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(representation.worldPrimitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then
+            local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
+            if x~=nil and z~=nil and radius~=nil and radius>0 then
+                local station=(x-originX)*axisX+(z-originZ)*axisZ
+                local rear,front=station-radius,station+radius
+                minimum=minimum==nil and rear or math.min(minimum,rear)
+                maximum=maximum==nil and front or math.max(maximum,front)
+                count=count+1
+            end
+        end
+    end
+    if minimum==nil or maximum==nil or count<1 then return nil,"POSITIVE_REPRESENTED_DISC_OCCUPANCY_UNAVAILABLE" end
+    return {minimumM=minimum,maximumM=maximum,physicalPrimitiveCount=count},nil
+end
+
+function Control:_crossingClearanceEvidence(run)
+    local source=self.runtime and self.runtime.liveObservationSource or nil
+    if source==nil or type(source.getTrackedRepresentation)~="function" then
+        return false,"CROSSING_CLEARANCE_REPRESENTATION_SOURCE_UNAVAILABLE",nil
+    end
+    local a,b=run and run.a or nil,run and run.b or nil
+    if a==nil or b==nil then return false,"CROSSING_CLEARANCE_PAIR_UNAVAILABLE",nil end
+    local required={
+        a.executionOriginX,a.executionOriginZ,a.axisForwardX,a.axisForwardZ,
+        b.executionOriginX,b.executionOriginZ,b.axisForwardX,b.axisForwardZ
+    }
+    for _,value in OuttaMyWay.ValueRecord.ipairs(required) do
+        if type(value)~="number" then return false,"CROSSING_CLEARANCE_EXECUTION_FRAME_UNAVAILABLE",nil end
+    end
+    local aRepresentation=source:getTrackedRepresentation(a.referenceKey)
+    local bRepresentation=source:getTrackedRepresentation(b.referenceKey)
+    local aOnA,aReason=representedAxisInterval(aRepresentation,a.executionOriginX,a.executionOriginZ,a.axisForwardX,a.axisForwardZ)
+    if aOnA==nil then return false,"CROSSING_CLEARANCE_SUBJECT_REPRESENTATION:"..tostring(aReason),nil end
+    local bOnA,bAReason=representedAxisInterval(bRepresentation,a.executionOriginX,a.executionOriginZ,a.axisForwardX,a.axisForwardZ)
+    if bOnA==nil then return false,"CROSSING_CLEARANCE_OTHER_ON_SUBJECT_AXIS:"..tostring(bAReason),nil end
+    local bOnB,bReason=representedAxisInterval(bRepresentation,b.executionOriginX,b.executionOriginZ,b.axisForwardX,b.axisForwardZ)
+    if bOnB==nil then return false,"CROSSING_CLEARANCE_OTHER_REPRESENTATION:"..tostring(bReason),nil end
+    local aOnB,aBReason=representedAxisInterval(aRepresentation,b.executionOriginX,b.executionOriginZ,b.axisForwardX,b.axisForwardZ)
+    if aOnB==nil then return false,"CROSSING_CLEARANCE_SUBJECT_ON_OTHER_AXIS:"..tostring(aBReason),nil end
+    local subjectRearClearM=aOnA.minimumM-bOnA.maximumM
+    local otherRearClearM=bOnB.minimumM-aOnB.maximumM
+    local evidence={
+        subjectAssemblyId=a.assemblyId,otherAssemblyId=b.assemblyId,
+        subjectRearClearM=subjectRearClearM,otherRearClearM=otherRearClearM,
+        subjectPhysicalPrimitiveCount=aOnA.physicalPrimitiveCount,
+        otherPhysicalPrimitiveCount=bOnB.physicalPrimitiveCount,
+        authority="POSITIVE_CURRENT_REPRESENTED_PAIR_REAR_CLEAR"
+    }
+    if subjectRearClearM<0 or otherRearClearM<0 then
+        return false,"CROSSING_REAR_CLEAR_NOT_ESTABLISHED",evidence
+    end
+    return true,nil,evidence
+end
+
+function Control:_currentRepresentedReserve(participant)
+    local source=self.runtime and self.runtime.liveObservationSource or nil
+    if source==nil or type(source.getTrackedRepresentation)~="function" then return nil end
+    local representation=source:getTrackedRepresentation(participant.referenceKey)
+    local pp=pose(participant.vehicle)
+    if representation==nil or pp==nil then return nil end
+    local reserve=nil
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(representation.worldPrimitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then
+            local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
+            if x~=nil and z~=nil and radius~=nil and radius>0 then
+                local value=distance(pp.x,pp.z,x,z)+radius
+                reserve=reserve==nil and value or math.max(reserve,value)
+            end
+        end
+    end
+    return reserve
+end
+
 function Control:_formerParticipantOccupancySupport(run,gate)
     local clearance=tonumber(run and run.passageArrangement and run.passageArrangement.nominalInterAssemblyClearanceM) or 1
     for _,former in OuttaMyWay.ValueRecord.ipairs(run and run.participants or {}) do
         local vacaturEvidence=former.vacaturEvidence or {}
         local positivelyRemoved=former.vacated==true
             and (vacaturEvidence.positiveRemoval==true or vacaturEvidence.kind=="POSITIVE_VEHICLE_RUNTIME_REMOVAL")
-        if former.vacated==true and not positivelyRemoved then
+        local formerTerminal=former.vacated==true or former.released==true
+        if formerTerminal and not positivelyRemoved then
             local formerPose=pose(former.vehicle)
-            local formerReserve=transitReserve(former)
+            local formerReserve=former.released==true and self:_currentRepresentedReserve(former) or transitReserve(former)
             if formerPose~=nil and formerReserve~=nil then
                 for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
                     local participantReserve=transitReserve(participant)
@@ -896,6 +1006,55 @@ function Control:_releaseParticipant(run,participant)
     return true,nil
 end
 
+function Control:_continueCrossingClearanceHandoff(run)
+    local queue=run.crossingClearanceHandoffQueue or {}
+    local index=tonumber(run.crossingClearanceHandoffIndex) or 1
+    while index<=#queue and not legLive(queue[index]) do index=index+1 end
+    run.crossingClearanceHandoffIndex=index
+    if index<=#queue then
+        local participant=queue[index]
+        participant.crossingClearanceEarlyHandback=true
+        logInfo("PASSAGE_LEG_ZERO_RECOVERY_HANDOFF commitment=%s participant=%s crossingClearance=true recoveryTail=0.00m action=RESTORE_THEN_GIANTS_HAND_BACK",
+            tostring(run.commitmentId),tostring(participant.name))
+        local ok,reason=self:_beginParticipantRestore(run,participant)
+        if not ok then return false,reason end
+        return true,"RESTORING_ZERO_RECOVERY_PARTICIPANT"
+    end
+
+    run.crossingClearanceHandoffQueue=nil
+    run.crossingClearanceHandoffIndex=nil
+    local resumeIndex=run.crossingClearanceResumeGuideIndex
+    run.crossingClearanceResumeGuideIndex=nil
+    if allPassageLegsTerminal(run) then
+        self:_completePairContext(run)
+        return true,"ALL_PASSAGE_LEGS_TERMINAL"
+    end
+    if type(resumeIndex)=="number" and resumeIndex<=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
+        local ok,reason=self:_startGuideGate(run,resumeIndex)
+        if not ok then return false,reason end
+        return true,"SURVIVOR_GUIDE_RESUMED"
+    end
+    local ok,reason=self:_beginAlignmentRunout(run)
+    if not ok then return false,reason end
+    return true,"SURVIVOR_RECOVERY_STARTED"
+end
+
+function Control:_beginCrossingClearanceHandoff(run,resumeGuideIndex)
+    local queue={}
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
+        if participant.positiveZeroRecovery==true then queue[#queue+1]=participant end
+    end
+    if #queue==0 then return false,nil end
+    table.sort(queue,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    self:_stopLeg(run)
+    run.crossingClearanceHandoffQueue=queue
+    run.crossingClearanceHandoffIndex=1
+    run.crossingClearanceResumeGuideIndex=resumeGuideIndex
+    local ok,reason=self:_continueCrossingClearanceHandoff(run)
+    if not ok then return false,reason end
+    return true,nil
+end
+
 function Control:_releasedParticipantClearedReturnSpace(released,waiting)
     local source=self.runtime and self.runtime.liveObservationSource or nil
     local representation=source and type(source.getTrackedRepresentation)=="function" and source:getTrackedRepresentation(released.referenceKey) or nil
@@ -1209,6 +1368,12 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         participant.transitPassageEnvelope=planned.transitPassageEnvelope
         if participant.configurationMode~="TRANSIT_REQUIRED" then return false,"COOPERATIVE_PASSAGE_CONFIGURATION_MODE_INVALID:"..tostring(participant.configurationMode) end
         if type(participant.transitPassageEnvelope)~="table" then return false,"COOPERATIVE_PASSAGE_TRANSIT_ENVELOPE_MISSING:"..participant.name end
+        local tail,tailReason=recoveryTailForAssembly(bridge,participant.assemblyId)
+        if tail==nil then return false,tailReason end
+        participant.spatialRecoveryRequired=tail.required
+        participant.positiveZeroRecovery=tail.positiveZeroRecovery
+        participant.recoveryTailDistanceM=tail.distanceM
+        participant.recoveryTailRole=tail.role
     end
 
     local entryReady=bridge.passageEntry and bridge.passageEntry.ready==true
@@ -1216,7 +1381,7 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId=requestA.commitmentId,candidateId=candidate.identity,a=a,b=b,participants={a,b},
         subjectAssemblyId=bridge.subjectAssemblyId,otherAssemblyId=bridge.otherAssemblyId,
         phase=entryReady and "SETTLING" or "PASSAGE_APPROACH",phaseStartedAt=g_time or 0,startedAt=g_time or 0,guide=bridge.passageGuide,guideIndex=0,
-        passageArrangement=bridge.passageArrangement,passageConfiguration=configurationPlan,passageEntry=bridge.passageEntry,passageExcursion=bridge.passageExcursion,controlProfile=bridge.controlProfile,
+        passageArrangement=bridge.passageArrangement,passageConfiguration=configurationPlan,passageEntry=bridge.passageEntry,passageExcursion=bridge.passageExcursion,recoveryCapablePassageTheatre=bridge.recoveryCapablePassageTheatre,controlProfile=bridge.controlProfile,
         thirdPartyConstraints=bridge.localPassageSpace and bridge.localPassageSpace.thirdPartyConstraints or {},
         initialSeparationM=distance(a.startX,a.startZ,b.startX,b.startZ),headingDot=dot(a.startForwardX,a.startForwardZ,b.startForwardX,b.startForwardZ),
         speedKmh=COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH
@@ -1241,6 +1406,9 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(excursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(excursion.clearanceDeficitM) or 0,
         tonumber(arrangement.physicalContactThresholdM) or 0,tonumber(arrangement.nominalInterAssemblyClearanceM) or 0,tonumber(arrangement.policyRequiredSeparationM) or 0,tonumber(arrangement.currentLateralSeparationM) or 0,tonumber(arrangement.currentPolicyReserveM) or 0,
         tostring(run.guide and run.guide.identity),OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tonumber(excursion.developmentDistanceM) or 0,tonumber(excursion.crossingWindowForwardPerParticipantM) or 0,tonumber(excursion.recoveryDistanceM) or 0,configurationModeText(run),OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {}))
+    logInfo("PASSAGE_LEG_RECOVERY_DEBT commitment=%s subject=%s required=%s zeroRecovery=%s tail=%.2fm other=%s required=%s zeroRecovery=%s tail=%.2fm",
+        tostring(run.commitmentId),a.name,tostring(a.spatialRecoveryRequired==true),tostring(a.positiveZeroRecovery==true),tonumber(a.recoveryTailDistanceM) or -1,
+        b.name,tostring(b.spatialRecoveryRequired==true),tostring(b.positiveZeroRecovery==true),tonumber(b.recoveryTailDistanceM) or -1)
     return true,"COOPERATIVE_PASSAGE_STARTED"
 end
 
@@ -1330,8 +1498,33 @@ function Control:update(dt)
             local gate=run.guide and run.guide.gates and run.guide.gates[completedIndex] or nil
             self:_stopLeg(run)
             logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
+            if gate~=nil and gate.kind=="CROSSING_WINDOW_EXIT" then run.crossingWindowExitReached=true end
+            if run.crossingWindowExitReached==true and run.crossingClearanceEstablished~=true then
+                local clear,clearReason,clearEvidence=self:_crossingClearanceEvidence(run)
+                if clear then
+                    run.crossingClearanceEstablished=true
+                    run.crossingClearanceEvidence=clearEvidence
+                    logInfo("CROSSING_CLEARANCE commitment=%s guide=%s subjectRearClear=%.2fm otherRearClear=%.2fm authority=%s",
+                        tostring(run.commitmentId),tostring(run.guide and run.guide.identity),
+                        tonumber(clearEvidence and clearEvidence.subjectRearClearM) or -1,
+                        tonumber(clearEvidence and clearEvidence.otherRearClearM) or -1,
+                        tostring(clearEvidence and clearEvidence.authority or "n/a"))
+                elseif completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
+                    self:_failHeld("CROSSING_CLEARANCE:"..tostring(clearReason))
+                    return
+                end
+            end
+            if run.crossingClearanceEstablished==true then
+                local handoff,handoffReason=self:_beginCrossingClearanceHandoff(run,completedIndex+1)
+                if handoffReason~=nil then self:_failHeld("CROSSING_CLEARANCE_HANDOFF:"..tostring(handoffReason)); return end
+                if handoff then return end
+            end
             if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
-                logInfo("COOPERATIVE_PASSAGE_GUIDE_COMPLETE commitment=%s guide=%s next=RECOVERY_ALIGNMENT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
+                if run.crossingClearanceEstablished~=true then
+                    self:_failHeld("CROSSING_CLEARANCE_NOT_POSITIVELY_ESTABLISHED")
+                    return
+                end
+                logInfo("COOPERATIVE_PASSAGE_GUIDE_COMPLETE commitment=%s guide=%s next=PARTICIPANT_SCOPED_RECOVERY secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
                 local ok,reason=self:_beginAlignmentRunout(run); if not ok then self:_failHeld("ALIGNMENT_RUNOUT_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end
@@ -1378,12 +1571,20 @@ function Control:update(dt)
         local participant=run.activeRestoreParticipant
         if participant==nil then self:_failHeld("RESTORE_PARTICIPANT_UNAVAILABLE"); return end
         if self:_participantRestoreReady(participant) then
+            local earlyHandback=participant.crossingClearanceEarlyHandback==true
             local ok,reason=self:_releaseParticipant(run,participant); if not ok then self:_failHeld("PARTICIPANT_RELEASE:"..tostring(reason)); return end
             if run.failureReason~=nil then return end
+            run.activeRestoreParticipant=nil; run.activeReturnParticipant=nil
+            if earlyHandback then
+                participant.crossingClearanceEarlyHandback=false
+                local continued,continueReason=self:_continueCrossingClearanceHandoff(run)
+                if not continued then self:_failHeld("CROSSING_CLEARANCE_HANDOFF_CONTINUE:"..tostring(continueReason)) end
+                return
+            end
             if allPassageLegsTerminal(run) then self:_completePairContext(run); return end
             local waiting=liveParticipants(run)[1]
             if waiting==nil then self:_completePairContext(run); return end
-            run.releasedLeader=participant; run.waitingParticipant=waiting; run.activeRestoreParticipant=nil; run.activeReturnParticipant=nil; run.returnRequiresReleasedClearance=false
+            run.releasedLeader=participant; run.waitingParticipant=waiting; run.returnRequiresReleasedClearance=false
             self:_setPhase(run,"WAIT_NATIVE_CLEARANCE",g_time or 0)
             logInfo("RETURN_CLEARANCE_WAIT commitment=%s released=%s waiting=%s positiveCurrentOccupancyRequired=true",tostring(run.commitmentId),participant.name,waiting.name)
         end
