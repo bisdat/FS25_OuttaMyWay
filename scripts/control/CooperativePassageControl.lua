@@ -1391,6 +1391,7 @@ function Control:_phaseCompletionResidual(run)
     if phase=="RESTORING_PARTICIPANT" then
         local participant=run.activeRestoreParticipant
         if participant==nil then return nil,"RESTORE_COMPLETION_PARTICIPANT_UNAVAILABLE" end
+        if type(self.configurationMechanism.getState)~="function" then return nil,"RESTORE_COMPLETION_STATE_UNAVAILABLE" end
         if self.configurationMechanism:getState(participant.vehicle)==nil then
             return {kind="RESTORE_ACTUATOR_DISTANCE",value=0,epsilon=COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON}
         end

@@ -6382,11 +6382,11 @@ test("Cached Transit actuator waits for requested endpoint and then settles",fun
     local capability={isFoldable=true,members={vehicle,implement},actuators={{object=implement,memberReferenceKey="member-root:1364"}},settlementTimeoutMs=10000}
     local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     local ok=authority:prepareCachedTransit(vehicle,capability); equal(ok,true); equal(implement.requested,1)
-    local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.exhausted,false); near(pending.completionResidual,1,0.0001)
+    local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.exhausted,false); equal(pending.completionResidual,1)
     implement.spec_foldable.foldAnimTime=0.5; g_time=6000
-    pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); near(pending.completionResidual,0.5,0.0001)
+    pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.completionResidual,0.5)
     implement.spec_foldable.foldAnimTime=1; g_time=7000
-    local settled=authority:getCachedTransitSettlement(vehicle); equal(settled.settled,true); equal(settled.normal,true); equal(settled.exhausted,false); near(settled.completionResidual,0,0.0001)
+    local settled=authority:getCachedTransitSettlement(vehicle); equal(settled.settled,true); equal(settled.normal,true); equal(settled.exhausted,false); equal(settled.completionResidual,0)
 end)
 
 test("Cached Transit settlement exhaustion removes configuration veto without asserting compaction",function()
