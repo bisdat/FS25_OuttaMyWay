@@ -1,3 +1,35 @@
+## D-0219 — Recovery-Capable Cooperative Passage and Participant-Scoped Recovery
+
+**Status:** Accepted owner decision.
+
+**Decision:** Cooperative Passage commitment requires a **Recovery-Capable Passage Theatre**, not merely a crossing-valid guide. The prospective theatre consists of capture/control reserve, a pairwise **Shared Crossing Core**, and only the participant-specific **Recovery Tails** created by the selected intervention.
+
+Passage recognition remains distinct from Passage commitment. Working/A8 evidence may establish a foreseeable opposed encounter even when the natural encounter point is poor. Tactical Regulation may then reshape relative timing until a complete Passage is supportable. Category-1 Corner and Category-2 Headland/Boundary space require particular care because the crossing can fit while downstream participant-specific recovery cannot.
+
+Corner right-of-way, Passage-theatre Regulation and Cooperative Passage remain sharply separated responsibilities. Positive Corner Departure ends Corner right-of-way; if Passage remains foreseeable but its theatre is not yet Recovery-Capable, ordinary tactical Regulation may continue under a Passage-theatre-shaping purpose. Cooperative Passage begins only when one complete Passage Candidate is supported and mandatory-admissible.
+
+> **Corner Regulation Completion != Passage-Theatre Shaping Completion**
+
+> **Sharp Responsibility Transition — No Hybrid Spatial Modes**
+
+After commitment, Passage recovery is participant-scoped. Participation alone creates no recovery debt. A zero-excursion participant does not acquire Alignment Runout or Axis Return obligations merely because it participated in Passage. Axis settlement/return is conditional recovery evidence/mechanism for a participant whose OuttaMyWay intervention actually created spatial restitution debt.
+
+> **Participation != Recovery Debt**
+
+> **Axis Settlement Is Conditional Recovery Evidence, Not A Universal Passage Obligation**
+
+Positive **Crossing Clearance** marks the boundary at which the original opposed crossing conflict has physically cleared. From then on, each Passage Leg may discharge independently. One leg may restore and return to GIANTS while the other continues recovery; the Bubble and Resolution-Epoch third-party Bullet Time remain live until the final original Passage Leg becomes terminal.
+
+> **Bubble Lifetime != Symmetric Control Lifetime**
+
+A Return Corridor is already-created Passage space that must remain protected when Axis Return is actually required; it is not a generic rearward reserve. If fresh Reality defeats previously supported recovery after Crossing Clearance, unsupported OuttaMyWay actuation must stop. Positive safe-native-continuation evidence may support degraded GIANTS handback even when exact planned spatial restitution cannot be completed; player intervention remains the final outcome when safe autonomous handback is not positively supported.
+
+The Cooperative Passage progress watchdog is calibrated at **10 seconds of no meaningful progress toward the current phase completion condition**. Generic vehicle movement does not reset that semantic progress measure. Watchdog expiry requires reassessment/fail-safe handling and is not itself success, failure, debt discharge or safe-handback evidence. The common Passage actuation speed remains **8 km/h** for both participants.
+
+**Reason:** Issue #227 and repeated Condor/S416 Reality runs showed that a crossing-valid Passage can complete its guide near a field edge and then discover that Alignment Runout has no supported Field World target. Review further showed that current Control imposes symmetric runout and captured-axis settlement even on zero-excursion asymmetric Passages where Transit geometry already permits straight passing. The observed failures therefore expose an incomplete Passage admission/recovery contract rather than a simple target-containment bug.
+
+**Consequence:** Architecture and Specifications define complete Passage support through participant-scoped theatre and debt. Current production source remains intentionally unchanged by this documentation checkpoint and is expected to be reconciled through bounded implementation tranches for Candidate/theatre feasibility, participant-scoped post-crossing lifecycle, adaptive Runout, and progress-watchdog / exceptional-settlement behaviour. GIANTS Reality validation remains required before behavioural closure of #227.
+
 ## D-0218 — Causal Obstruction and Non-Active Blocker Relocation
 
 **Status:** Accepted owner decision.

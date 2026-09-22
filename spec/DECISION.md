@@ -186,11 +186,19 @@ Cooperative Passage
 
 Follower, Forward Intersection, Action-Space and Corner-derived right-of-way are reasons or allocations within the tactical **Regulation** stage. They MAY govern while no supported, mandatory-admissible Cooperative Passage is available and temporal shaping is still required. They are not peer strategic successors that acquire a generic right to defeat Passage through implementation-family ordering.
 
-When a Cooperative Passage Candidate is supported for the current Decision Picture and passes every applicable mandatory Constraint, Decision MUST NOT select an ordinary live-traffic Regulation scope instead merely because Follower, Forward Intersection, Action-Space or Corner Regulation appears earlier in an implementation ordering. This is the implementation-facing Decision consequence of the architectural rule:
+When a Cooperative Passage Candidate is supported for the current Decision Picture and passes every applicable mandatory Constraint, Decision MUST NOT select an ordinary live-traffic Regulation scope instead merely because Follower, Forward Intersection, Action-Space or Corner Regulation appears earlier in an implementation ordering.
+
+For this stage transition, **supported Cooperative Passage** means the complete current Passage Candidate contract is positive: the Shared Crossing Core, capture/control reserve, and every participant-specific Recovery Tail actually required by the selected intervention are supported. A crossing-only arrangement MUST NOT pre-empt tactical Regulation.
+
+> **Crossing-Viable Passage != Recovery-Capable Passage**
+
+This is the implementation-facing Decision consequence of the architectural rule:
 
 > **Stop shaping once Passage is sufficiently viable; least intervention wins.**
 
-Corner Engagement and other current Situation facts remain real after Passage selection. If those facts make the proposed Passage unsupported, unsafe or incompatible, that conclusion must be expressed through the owning support or mandatory-admissibility contract rather than recreated as an unrelated Decision-family precedence.
+Corner Engagement and other current Situation facts remain real after Passage selection. Positive Corner Departure may legitimately end Corner right-of-way while a different tactical Regulation purpose continues Passage-theatre shaping. Decision MUST preserve a sharp Responsibility Transition between those purposes rather than co-mingling them into a hybrid Corner/Passage mode.
+
+If current Situation facts make the proposed Passage unsupported, unsafe or incompatible, that conclusion must be expressed through the owning support or mandatory-admissibility contract rather than recreated as an unrelated Decision-family precedence.
 
 Before Bubble Formation, independently occupied third-party space essential to the proposed pairwise Resolution may prevent Passage support or admissibility. After Bubble Formation, the independent third active worker is managed by the Cooperative Passage contract's Resolution-Epoch **1 km/h Bullet Time**. An unrelated pre-commit Regulation preference MUST NOT substitute for that lifecycle.
 

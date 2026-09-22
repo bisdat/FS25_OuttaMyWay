@@ -45,13 +45,17 @@ As applicable, the semantic product includes:
 
 - the exact two participant assemblies and their current Job Episode provenance;
 - the purpose-specific geometry basis and its claim limits;
-- the proposed Passage arrangement and directional lateral allocation;
-- required Passage clearance and represented non-contact support;
-- Development burden and required downstream reserve;
+- the proposed Passage arrangement and participant-specific lateral allocation;
+- the **Shared Crossing Core** with required Passage clearance and represented non-contact support;
+- capture/control reserve and disposable native approach margin;
+- each participant's required **Recovery Tail**, including a positive zero-recovery conclusion where the selected intervention creates no spatial recovery debt;
+- any Return Corridor that must remain protected for an actually required Axis Return;
 - entry/capture boundary evidence;
 - the required Transit configuration plan for both participants;
 - Passage guide semantics sufficient to express the intended physical choreography; and
 - any third-party occupancy/protection facts that constrain commitment.
+
+A Candidate MUST NOT become supported merely because the Shared Crossing Core fits. Where the selected arrangement creates participant-scoped recovery debt, the Candidate MUST also positively support the corresponding Recovery Tail. This is the implementation-facing meaning of a **Recovery-Capable Passage Theatre**.
 
 The Candidate is prospective. Selection of the Candidate does not establish the Resolution; [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) owns that semantic lifecycle boundary.
 
@@ -61,7 +65,7 @@ Cooperative Passage is admitted only from exactly two active GIANTS AI participa
 
 At commitment, the implementation MUST establish two participant-scoped **Passage Leg** obligations under one Resolution Commitment.
 
-The Bubble begins only when fresh evidence still supports the Passage, the required reserve remains viable, and the pair accepts the jointly dependent obligations.
+The Bubble begins only when fresh evidence still supports the complete Passage, the Recovery-Capable Passage Theatre remains viable, and the pair accepts the jointly dependent obligations. A crossing-only arrangement whose required participant-specific Recovery Tail is unsupported MUST NOT establish Bubble Formation.
 
 Bubble Formation begins the Resolution Epoch.
 
@@ -71,14 +75,21 @@ The Bubble MUST NOT create persistent pair history, future-route ownership, perm
 
 Passage commitment MUST be governed by the Architecture's current reserve policy rather than a universal distance literal.
 
-The implementation MUST preserve the architectural distinction between:
+The implementation MUST preserve the distinction among:
 
-- **required Passage reserve** needed after capture for represented physical extents, `2 x Development`, and the coarse **3 m Passage Entry Control Allowance**; and
-- **disposable native approach margin** that can be consumed before capture while still retaining the required reserve.
+- **capture/control reserve**, including the coarse **3 m Passage Entry Control Allowance** used to acquire and settle the pair;
+- the **Shared Crossing Core** required by the selected Transit-configured pair; and
+- each participant's **Recovery Tail**, but only where the selected intervention creates participant-scoped spatial recovery debt.
 
-The Entry Control Allowance is reserve for acquiring and settling the pair. It MUST NOT be treated as a braking-model claim.
+The Entry Control Allowance MUST NOT be treated as a braking-model claim.
 
-Current closing progression determines how quickly disposable margin is consumed. Capture MUST occur before independent approach makes the accepted Passage no longer supportable.
+A Return Corridor required by Axis Return MUST be represented as protected already-created Passage space, not as a second generic rearward reserve.
+
+The implementation MUST also preserve **disposable native approach margin** that can be consumed before capture while retaining the complete required theatre.
+
+Current closing progression determines how quickly disposable margin is consumed. Capture MUST occur before independent approach makes the accepted Recovery-Capable Passage Theatre no longer supportable.
+
+> **Full-Lifecycle Feasibility Is An Admission Requirement, Not An Execution Guarantee.**
 
 ### Clearance policy
 
@@ -92,21 +103,30 @@ Implementation-local search steps, tolerance literals, sample counts and candida
 
 Each original participant receives one Passage Leg obligation. A live Passage Leg owns only the intervention-created debt required by the accepted Passage.
 
-Depending on the selected Passage, that debt MAY include:
+Depending on what OuttaMyWay actually changes for that participant, that debt MAY include:
 
-- capture and Passage movement;
-- Alignment Runout;
-- Axis Settlement or Axis Return;
+- capture and coupled Passage movement;
+- participant-specific displacement or reorientation recovery;
+- Alignment Runout where current whole-assembly articulation/alignment requires supported forward settlement for the selected recovery mechanism;
+- Axis Settlement or Axis Return where the intervention created spatial restitution debt that actually requires it;
 - restoration of configuration or other physical state changed by OuttaMyWay; and
 - GIANTS handback.
 
-The implementation MUST NOT reconstruct or "correct" pre-existing articulation, alignment or configuration imperfection that was not created by the Passage intervention.
+The implementation MUST NOT reconstruct or "correct" pre-existing articulation, alignment or configuration imperfection that was not created by the Passage intervention. A zero-excursion participant MUST NOT acquire Alignment Runout or Axis Return debt merely because it participated in the pairwise Passage.
 
-Physical crossing alone does not settle a leg while its intervention-created recovery/restoration/handback debt remains open.
+> **Participation != Recovery Debt**
+
+> **Axis Settlement Is Conditional Recovery Evidence, Not A Universal Passage Obligation**
 
 The two legs may progress and terminate independently.
 
+After **Crossing Clearance** positively establishes that the original opposed crossing conflict has physically cleared, each leg MUST be assessed against only its own remaining intervention-created debt. A leg whose remaining debt is discharged MAY restore and hand back to GIANTS immediately while the other leg remains live.
+
+Physical crossing alone does not settle a leg while that leg's actual recovery/restoration/handback debt remains open.
+
 > **Pairwise Resolution != Symmetric Progress Requirement**
+
+> **Bubble Lifetime != Symmetric Control Lifetime**
 
 ### Passage Leg terminal dispositions
 
@@ -140,6 +160,16 @@ The vacated leg ceases to be a procedural dependency, but its physical assembly 
 Fresh hard-safety evidence about the former participant's continuing occupancy therefore remains relevant to the survivor's permitted physical progression.
 
 ## Reality-verified execution contract
+
+### Crossing Clearance
+
+**Crossing Clearance** is positive current evidence that the original opposed pairwise crossing conflict has physically cleared. It is the semantic boundary after which participant-scoped recovery and early individual GIANTS handback may proceed.
+
+Crossing Clearance MUST be established from current pair geometry / rear-clear evidence fit for that question. Reaching a procedural gate name, elapsed time or nominal crossing midpoint is insufficient by itself.
+
+Before Crossing Clearance, the unresolved original crossing conflict prevents blind native release merely because a downstream recovery mechanism has become difficult. After Crossing Clearance, the implementation MAY discharge and hand back one leg independently when its own intervention-created debt is positively satisfied.
+
+> **Crossing Clearance != Exact Axis Restitution**
 
 Passage commitment does not freeze execution geometry.
 
@@ -205,15 +235,20 @@ After dissolution, fresh Situation Assessment determines any new responsibility 
 
 - **Passage recognition not positively supported** — no Passage Candidate authority.
 - **Complete-assembly purpose-specific geometry unavailable** — reject any Candidate requiring complete-assembly Passage authority; do not substitute subset completeness.
-- **Required reserve unavailable** — do not commit.
+- **Recovery-Capable Passage Theatre unavailable before commitment** — do not commit; where Passage remains foreseeable, tactical Regulation may continue shaping the encounter without reserving Passage as the successor.
 - **Either participant's required Transit configuration not positively realised** — do not begin geometry-dependent Passage movement; there is no full-width/working-configuration Passage execution fallback.
-- **Execution arrangement no longer supported by fresh Reality** — reject/halt unsupported progression and require supported adaptation or failure handling; do not preserve stale guide authority.
+- **Execution arrangement no longer supported by fresh Reality before Crossing Clearance** — reject/halt unsupported progression and require supported adaptation or failure handling; do not preserve stale guide authority.
+- **Required recovery becomes unsupported after Crossing Clearance** — stop unsupported OuttaMyWay recovery actuation and reassess current safe-native-continuation evidence. Where restoration plus GIANTS handback is positively safe, that evidence MAY support degraded native settlement even when exact planned spatial restitution cannot be completed. Agronomic perfection is not itself spatial-safety authority. Where safe autonomous handback is not positively supported, preserve fail-safe escalation rather than inventing geometry.
 - **One participant's exact Job Episode authoritatively ends** — vacate only that Passage Leg, release its participant-scoped authority, preserve the survivor contract.
 - **Raw contradiction before semantic lifecycle resolution** — suspend unsupported new progression as needed for safety, but do not vacate a leg or dissolve the Bubble from raw evidence alone.
 - **Hard-safety contradiction during execution** — downstream authority/control MUST fail closed; no alternative strategic route may be invented inside Control.
 - **Both legs terminal** — dissolve the Bubble immediately and allow the parent Resolution lifecycle to reach terminality.
 
 A phase watchdog, target radius, actuation speed, alignment tolerance or other Control calibration MUST NOT become semantic Passage failure evidence merely because a source timer or threshold expires.
+
+The accepted Passage progress watchdog calibration is **10 seconds with no meaningful progress toward the current phase completion condition**. Progress MUST be measured against the phase's completion residual rather than generic vehicle movement. Expiry requires fresh assessment / fail-safe handling; it does not manufacture Passage success, recovery-debt discharge, safe handback or failure.
+
+The common Cooperative Passage actuation speed remains **8 km/h** for both participants. This is Control calibration for coupled crossing coherence, not a claim that equal commanded speed guarantees equal realised motion.
 
 ## Durable invariants
 
