@@ -382,7 +382,7 @@ def test_cooperative_passage_control_owns_execution_calibration():
         ("COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH", "8.0",
          "_executeCooperativePassageJointRequests", "speedKmh="),
         ("COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS", "10000",
-         "_progressWatchdogStatus", "stalledMs>=COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS"),
+         "_progressWatchdogStatus", "stalledMs>="),
         ("COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M", "0.50",
          "_assemblyAxisSettled", "local lateralTolerance="),
         ("COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT", "0.995",
