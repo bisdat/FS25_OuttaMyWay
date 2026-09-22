@@ -367,15 +367,15 @@ Regulation changes relative timing only. It does not create Passage, reserve Pas
 
 > **Successor-Agnostic != Future-Blind**
 
-A foreseeable Passage does not imply that its current prospective encounter point is a suitable Passage theatre. A **Recovery-Capable Passage Theatre** is a prospective encounter interval that positively supports the complete intervention OuttaMyWay proposes to create: capture/control reserve, the pair's **Shared Crossing Core**, and only the participant-specific **Recovery Tails** required by the selected arrangement.
+A foreseeable Passage does not imply that its current prospective encounter point is a suitable Passage theatre. A **Passage-Capable Theatre** is a prospective encounter interval that positively supports the complete intervention OuttaMyWay proposes to create: capture/control reserve, the pair's **Shared Crossing Core**, and any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The Shared Crossing Core is the coupled region in which the two Transit-configured Physical Assemblies require positive non-contact and Passage-clearance support. A Recovery Tail is downstream Field World capacity required by one participant because OuttaMyWay's selected arrangement will create displacement, reorientation or other spatial recovery debt for that participant. A zero-excursion participant has no spatial Recovery Tail merely because it participates in Passage.
+The Shared Crossing Core is the coupled region in which the two Transit-configured Physical Assemblies require positive non-contact and Passage-clearance support. Lateral Excursion is optional Passage geometry: where the selected arrangement requires sideways displacement to create clearance, the theatre must support both development of that displacement and reacquisition of the captured axis. Where no lateral excursion is required, those guide components are simply absent; on-axis and laterally displaced arrangements share the same downstream lifecycle.
 
 > **Shared Crossing Core != Symmetric Passage Excursion**
 
 > **Recovery Reserve Is Participant-Scoped**
 
-Changing progression for an opposed A8 pair changes its prospective encounter position. Regulation may move that position into a Recovery-Capable Passage Theatre. Category-1 Corner and Category-2 Headland/Boundary space are particularly important because constrained space can allow the Shared Crossing Core while denying one participant's required Recovery Tail.
+Changing progression for an opposed A8 pair changes its prospective encounter position. Regulation may move that position into a Passage-Capable Theatre. Category-1 Corner and Category-2 Headland/Boundary space are particularly important because constrained space can allow the Shared Crossing Core while denying that participant's required Lateral Excursion Development/Reacquisition.
 
 Corner right-of-way and Passage-theatre shaping remain distinct tactical Regulation purposes. Positive Corner Departure ends the Corner purpose sharply. If fresh A8 still predicts Passage but the resulting theatre is not yet Recovery-Capable, ordinary tactical Regulation may continue under a Passage-theatre-shaping purpose until the theatre is supportable or the forecast disappears.
 
@@ -451,7 +451,7 @@ The required Passage reserve is arrangement-specific and contains three distinct
 
 - **capture/control reserve** sufficient to acquire and settle the pair before independent approach consumes the supported manoeuvre;
 - the **Shared Crossing Core** required for the selected Transit-configured pair to cross with represented non-contact and accepted Passage clearance; and
-- each participant's **Recovery Tail**, but only where the selected intervention positively creates participant-scoped spatial recovery debt.
+- any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
 The coarse **3 m Passage Entry Control Allowance** remains capture/control reserve. It is not a GIANTS braking model.
 
@@ -459,9 +459,9 @@ A Return Corridor required by Axis Return is not a second generic rearward reser
 
 > **Return Corridor != Rearward Reserve**
 
-For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed. Commitment becomes due before independent approach consumes the space/time needed to acquire and settle both workers while retaining the complete Recovery-Capable Passage Theatre.
+For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed. Commitment becomes due before independent approach consumes the space/time needed to acquire and settle both workers while retaining the complete Passage-Capable Theatre.
 
-Configuration duration is not itself pre-commit lead time because capture controls closing progression. Candidate-scoped geometry may support the Shared Crossing Core and participant-specific Recovery Tails before commitment; physical movement under the accepted Resolution remains Reality-bound.
+Configuration duration is not itself pre-commit lead time because capture controls closing progression. Candidate-scoped geometry may support the Shared Crossing Core and participant-specific Lateral Excursion Development/Reacquisition before commitment; physical movement under the accepted Resolution remains Reality-bound.
 
 Full-lifecycle feasibility is an admission requirement, not an execution guarantee. Fresh Reality can invalidate previously supported recovery after commitment; that later contradiction must be handled through the Passage lifecycle rather than by pretending the admission proof never existed.
 
@@ -496,13 +496,11 @@ The parent Resolution Commitment persists while any legitimate Passage Leg or sh
 
 > **Pairwise Resolution != Symmetric Progress Requirement**
 
-> **Participation != Recovery Debt**
+> **Lateral Excursion Is Optional Passage Geometry, Not A Lifecycle**
 
-> **Axis Settlement Is Conditional Recovery Evidence, Not A Universal Passage Obligation**
+The two Passage Legs may progress and terminate at different times where current evidence supports it. Bubble protection and Resolution-Epoch third-party protection persist until the final original Passage Leg becomes terminal.
 
-The two Passage Legs may progress and terminate at different times. After positive Crossing Clearance, one leg may discharge its own remaining intervention-created debt and return to GIANTS while the other leg continues recovery. Bubble protection and Resolution-Epoch third-party protection persist until the final original Passage Leg becomes terminal.
-
-Passage owns only intervention-created debt. It does not reconstruct pre-existing imperfections or articulation. A participant selected for zero lateral excursion does not acquire spatial recovery debt merely because the pair crossed under Cooperative Passage. Physical crossing alone is not completion while a leg's actual recovery, restoration or handback debt remains open.
+Passage owns only the physical state changes it actually creates. It does not reconstruct pre-existing imperfections or articulation. A selected arrangement may require lateral excursion or may remain on-axis; that distinction changes guide geometry only. Both cases share the same coupled crossing, runout/return-staging, Axis Return, restoration and GIANTS-handback lifecycle where those downstream steps remain required by current Control evidence.
 
 ### Reality-verified execution
 
@@ -516,7 +514,7 @@ Before geometry-dependent Passage movement begins after capture, both participan
 - execution origin;
 - current physical occupancy;
 - guide geometry and lateral allocation while they remain prospective rather than physically committed; and
-- recovery debt derived from the manoeuvre actually executed.
+- actual Lateral Excursion state and intervention-created restoration state.
 
 There is no supported full-width/working-configuration Cooperative Passage execution fallback.
 
