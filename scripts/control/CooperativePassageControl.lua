@@ -1455,7 +1455,8 @@ function Control:_progressWatchdogStatus(run,nowMs)
     run.progressWatchdogUnavailableReason=nil
 
     local stalledMs=math.max(0,nowMs-(run.progressWatchdogLastImprovementAt or nowMs))
-    return stalledMs>=COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS,{
+    local stalled=stalledMs>=COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS
+    return stalled,{
         kind=sample.kind,residual=value,epsilon=epsilon,stalledMs=stalledMs,
         bestResidual=run.progressWatchdogBestResidual
     }
