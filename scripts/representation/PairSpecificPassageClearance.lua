@@ -209,6 +209,111 @@ function Clearance.radialReserveFromRelativeDiscs(discs)
     return reserve,count
 end
 
+
+local function directionalEnvelopeBounds(envelope)
+    if type(envelope)~="table" then return nil end
+    local minRight,maxRight,minForward,maxForward=
+        tonumber(envelope.minRightM),tonumber(envelope.maxRightM),
+        tonumber(envelope.minForwardM),tonumber(envelope.maxForwardM)
+    if not finite(minRight) or not finite(maxRight) then
+        local half,offset=tonumber(envelope.halfWidthM),tonumber(envelope.widthOffsetM) or 0
+        if not finite(half) or half<=0 then return nil end
+        minRight,maxRight=offset-half,offset+half
+    end
+    if not finite(minForward) or not finite(maxForward) then
+        local half,offset=tonumber(envelope.halfLengthM),tonumber(envelope.lengthOffsetM) or 0
+        if not finite(half) or half<=0 then return nil end
+        minForward,maxForward=offset-half,offset+half
+    end
+    if maxRight<=minRight or maxForward<=minForward then return nil end
+    return {minRightM=minRight,maxRightM=maxRight,minForwardM=minForward,maxForwardM=maxForward}
+end
+
+local function directionalRectangleCorners(poseValue,envelope)
+    if type(poseValue)~="table" then return nil end
+    local x,z,forwardX,forwardZ=tonumber(poseValue.x),tonumber(poseValue.z),tonumber(poseValue.dx),tonumber(poseValue.dz)
+    local bounds=directionalEnvelopeBounds(envelope)
+    if not finite(x) or not finite(z) or not finite(forwardX) or not finite(forwardZ) or bounds==nil then return nil end
+    local length=math.sqrt(forwardX*forwardX+forwardZ*forwardZ)
+    if length<=0.0001 then return nil end
+    forwardX,forwardZ=forwardX/length,forwardZ/length
+    local rightX,rightZ=forwardZ,-forwardX
+    local result={}
+    for _,corner in ipairs({
+        {bounds.minRightM,bounds.minForwardM},{bounds.maxRightM,bounds.minForwardM},
+        {bounds.maxRightM,bounds.maxForwardM},{bounds.minRightM,bounds.maxForwardM}
+    }) do
+        result[#result+1]={
+            x=x+rightX*corner[1]+forwardX*corner[2],
+            z=z+rightZ*corner[1]+forwardZ*corner[2]
+        }
+    end
+    return result
+end
+
+local function segmentDistance(px,pz,ax,az,bx,bz)
+    local vx,vz=bx-ax,bz-az
+    local denominator=vx*vx+vz*vz
+    if denominator<=0.000001 then return distance(px,pz,ax,az) end
+    local t=((px-ax)*vx+(pz-az)*vz)/denominator
+    if t<0 then t=0 elseif t>1 then t=1 end
+    return distance(px,pz,ax+vx*t,az+vz*t)
+end
+
+local function polygonProjection(corners,axisX,axisZ)
+    local minimum,maximum=nil,nil
+    for _,point in ipairs(corners) do
+        local value=point.x*axisX+point.z*axisZ
+        minimum=minimum==nil and value or math.min(minimum,value)
+        maximum=maximum==nil and value or math.max(maximum,value)
+    end
+    return minimum,maximum
+end
+
+local function polygonSeparation(a,b)
+    local axes={}
+    local minimumPenetration=math.huge
+    local separated=false
+    for _,polygon in ipairs({a,b}) do
+        for index=1,2 do
+            local p,q=polygon[index],polygon[index+1]
+            local edgeX,edgeZ=q.x-p.x,q.z-p.z
+            local length=math.sqrt(edgeX*edgeX+edgeZ*edgeZ)
+            if length>0.0001 then axes[#axes+1]={x=-edgeZ/length,z=edgeX/length} end
+        end
+    end
+    for _,axis in ipairs(axes) do
+        local aMin,aMax=polygonProjection(a,axis.x,axis.z)
+        local bMin,bMax=polygonProjection(b,axis.x,axis.z)
+        local gap=math.max(bMin-aMax,aMin-bMax)
+        if gap>0 then
+            separated=true
+        else
+            minimumPenetration=math.min(minimumPenetration,math.min(aMax,bMax)-math.max(aMin,bMin))
+        end
+    end
+    if not separated then return -minimumPenetration end
+    local minimum=math.huge
+    for _,pair in ipairs({{a,b},{b,a}}) do
+        for _,point in ipairs(pair[1]) do
+            for index=1,4 do
+                local q=pair[2][index]
+                local r=pair[2][index%4+1]
+                minimum=math.min(minimum,segmentDistance(point.x,point.z,q.x,q.z,r.x,r.z))
+            end
+        end
+    end
+    return minimum
+end
+
+function Clearance.currentDirectionalEnvelopeSeparation(aPose,aEnvelope,bPose,bEnvelope)
+    local a=directionalRectangleCorners(aPose,aEnvelope)
+    if a==nil then return nil,"SUBJECT_DIRECTIONAL_TRANSIT_ENVELOPE_UNAVAILABLE" end
+    local b=directionalRectangleCorners(bPose,bEnvelope)
+    if b==nil then return nil,"OTHER_DIRECTIONAL_TRANSIT_ENVELOPE_UNAVAILABLE" end
+    return polygonSeparation(a,b),nil
+end
+
 function Clearance.minimumTranslatedDiscClearance(aDiscs,ax,az,bDiscs,bx,bz)
     if type(aDiscs)~="table" or type(bDiscs)~="table" then return nil end
     local minimum=math.huge

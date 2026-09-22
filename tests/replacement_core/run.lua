@@ -6452,27 +6452,49 @@ test("Cooperative Passage: native blocked signal does not independently abort an
     g_time=oldTime
 end)
 
-test("Cooperative Passage Tranche 2: Crossing Clearance requires positive current represented rear-clear",function()
-    local source={
-        representations={
-            ["REF-A"]={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=8,radius=1}}},
-            ["REF-B"]={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=2,radius=1}}}
-        },
-        getTrackedRepresentation=function(self,key) return self.representations[key] end
+test("Cooperative Passage Tranche 2: Crossing Clearance requires pass-order inversion plus current 2-D Transit separation",function()
+    local oldTranslation=getWorldTranslation
+    local oldDirection=localDirectionToWorld
+    local positions={
+        [1]={x=-2,z=6,dx=0,dz=1},
+        [2]={x=2,z=4,dx=0,dz=-1}
     }
-    local control=OuttaMyWay.CooperativePassageControl.new({liveObservationSource=source},{holdMechanism={},driveMechanism={},configurationMechanism={}})
+    getWorldTranslation=function(node)
+        local p=positions[node]; return p.x,0,p.z
+    end
+    localDirectionToWorld=function(node,x,y,z)
+        local p=positions[node]; return p.dx,0,p.dz
+    end
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},driveMechanism={},configurationMechanism={}
+    })
     local run={
-        a={assemblyId="AS-A",referenceKey="REF-A",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1},
-        b={assemblyId="AS-B",referenceKey="REF-B",executionOriginX=0,executionOriginZ=10,axisForwardX=0,axisForwardZ=-1}
+        a={vehicle={rootNode=1},assemblyId="AS-A",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,transitPassageEnvelope=envelope},
+        b={vehicle={rootNode=2},assemblyId="AS-B",executionOriginX=0,executionOriginZ=10,axisForwardX=0,axisForwardZ=-1,transitPassageEnvelope=envelope}
     }
     local clear,reason,evidence=control:_crossingClearanceEvidence(run)
     equal(clear,true); equal(reason,nil)
-    equal(evidence.subjectRearClearM,4); equal(evidence.otherRearClearM,4)
-    source.representations["REF-A"].worldPrimitives[1].z=4
-    source.representations["REF-B"].worldPrimitives[1].z=6
+    equal(evidence.subjectPassOrderMarginM,2)
+    equal(evidence.otherPassOrderMarginM,2)
+    equal(evidence.currentTransitEnvelopeSeparationM>0,true)
+
+    -- 2-D separation alone is insufficient before the participants have actually passed.
+    positions[1].z=4; positions[2].z=6
     clear,reason,evidence=control:_crossingClearanceEvidence(run)
-    equal(clear,false); equal(reason,"CROSSING_REAR_CLEAR_NOT_ESTABLISHED")
-    equal(evidence.subjectRearClearM<0,true); equal(evidence.otherRearClearM<0,true)
+    equal(clear,false); equal(reason,"CROSSING_PASS_ORDER_NOT_INVERTED")
+    equal(evidence.currentTransitEnvelopeSeparationM>0,true)
+
+    -- Pass-order inversion alone is insufficient while the Transit envelopes still intersect.
+    positions[1]={x=0,z=6,dx=0,dz=1}
+    positions[2]={x=0.5,z=4,dx=0,dz=-1}
+    clear,reason,evidence=control:_crossingClearanceEvidence(run)
+    equal(clear,false); equal(reason,"CROSSING_CURRENT_TRANSIT_ENVELOPES_NOT_SEPARATED")
+    equal(evidence.subjectPassOrderMarginM>0,true)
+    equal(evidence.otherPassOrderMarginM>0,true)
+    equal(evidence.currentTransitEnvelopeSeparationM<=0,true)
+
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
 test("Cooperative Passage Tranche 2: positive-zero-recovery leg enters restore before debt-bearing survivor resumes guide",function()

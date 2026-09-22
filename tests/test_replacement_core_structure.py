@@ -2004,8 +2004,12 @@ def test_issue227_tranche2_participant_scoped_post_crossing_control():
     assert "recoveryTailForAssembly" in control
     assert "participant.positiveZeroRecovery=tail.positiveZeroRecovery" in control
     assert "function Control:_crossingClearanceEvidence(run)" in control
-    assert "POSITIVE_CURRENT_REPRESENTED_PAIR_REAR_CLEAR" in control
-    assert "CROSSING_REAR_CLEAR_NOT_ESTABLISHED" in control
+    clearance=(ROOT/"scripts"/"representation"/"PairSpecificPassageClearance.lua").read_text(encoding="utf-8")
+    assert "POSITIVE_CURRENT_PASS_ORDER_PLUS_TRANSIT_ENVELOPE_NON_CONTACT" in control
+    assert "CROSSING_PASS_ORDER_NOT_INVERTED" in control
+    assert "CROSSING_CURRENT_TRANSIT_ENVELOPES_NOT_SEPARATED" in control
+    assert "currentDirectionalEnvelopeSeparation" in control
+    assert "function Clearance.currentDirectionalEnvelopeSeparation" in clearance
     assert "function Control:_beginCrossingClearanceHandoff(run,resumeGuideIndex)" in control
     assert "PASSAGE_LEG_ZERO_RECOVERY_HANDOFF" in control
     assert 'next=PARTICIPANT_SCOPED_RECOVERY' in control

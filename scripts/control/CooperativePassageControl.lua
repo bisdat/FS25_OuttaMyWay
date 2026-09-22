@@ -285,30 +285,7 @@ local function transitReserve(participant)
     return radius>0 and radius or nil
 end
 
-local function representedAxisInterval(representation,originX,originZ,axisX,axisZ)
-    if type(representation)~="table" then return nil,"REPRESENTATION_UNAVAILABLE" end
-    local minimum,maximum,count=nil,nil,0
-    for _,primitive in OuttaMyWay.ValueRecord.ipairs(representation.worldPrimitives or {}) do
-        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then
-            local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
-            if x~=nil and z~=nil and radius~=nil and radius>0 then
-                local station=(x-originX)*axisX+(z-originZ)*axisZ
-                local rear,front=station-radius,station+radius
-                minimum=minimum==nil and rear or math.min(minimum,rear)
-                maximum=maximum==nil and front or math.max(maximum,front)
-                count=count+1
-            end
-        end
-    end
-    if minimum==nil or maximum==nil or count<1 then return nil,"POSITIVE_REPRESENTED_DISC_OCCUPANCY_UNAVAILABLE" end
-    return {minimumM=minimum,maximumM=maximum,physicalPrimitiveCount=count},nil
-end
-
 function Control:_crossingClearanceEvidence(run)
-    local source=self.runtime and self.runtime.liveObservationSource or nil
-    if source==nil or type(source.getTrackedRepresentation)~="function" then
-        return false,"CROSSING_CLEARANCE_REPRESENTATION_SOURCE_UNAVAILABLE",nil
-    end
     local a,b=run and run.a or nil,run and run.b or nil
     if a==nil or b==nil then return false,"CROSSING_CLEARANCE_PAIR_UNAVAILABLE",nil end
     local required={
@@ -318,27 +295,33 @@ function Control:_crossingClearanceEvidence(run)
     for _,value in OuttaMyWay.ValueRecord.ipairs(required) do
         if type(value)~="number" then return false,"CROSSING_CLEARANCE_EXECUTION_FRAME_UNAVAILABLE",nil end
     end
-    local aRepresentation=source:getTrackedRepresentation(a.referenceKey)
-    local bRepresentation=source:getTrackedRepresentation(b.referenceKey)
-    local aOnA,aReason=representedAxisInterval(aRepresentation,a.executionOriginX,a.executionOriginZ,a.axisForwardX,a.axisForwardZ)
-    if aOnA==nil then return false,"CROSSING_CLEARANCE_SUBJECT_REPRESENTATION:"..tostring(aReason),nil end
-    local bOnA,bAReason=representedAxisInterval(bRepresentation,a.executionOriginX,a.executionOriginZ,a.axisForwardX,a.axisForwardZ)
-    if bOnA==nil then return false,"CROSSING_CLEARANCE_OTHER_ON_SUBJECT_AXIS:"..tostring(bAReason),nil end
-    local bOnB,bReason=representedAxisInterval(bRepresentation,b.executionOriginX,b.executionOriginZ,b.axisForwardX,b.axisForwardZ)
-    if bOnB==nil then return false,"CROSSING_CLEARANCE_OTHER_REPRESENTATION:"..tostring(bReason),nil end
-    local aOnB,aBReason=representedAxisInterval(aRepresentation,b.executionOriginX,b.executionOriginZ,b.axisForwardX,b.axisForwardZ)
-    if aOnB==nil then return false,"CROSSING_CLEARANCE_SUBJECT_ON_OTHER_AXIS:"..tostring(aBReason),nil end
-    local subjectRearClearM=aOnA.minimumM-bOnA.maximumM
-    local otherRearClearM=bOnB.minimumM-aOnB.maximumM
+    local aPose,bPose=pose(a.vehicle),pose(b.vehicle)
+    if aPose==nil or bPose==nil then return false,"CROSSING_CLEARANCE_CURRENT_PAIR_POSE_UNAVAILABLE",nil end
+
+    local aStationOnA=(aPose.x-a.executionOriginX)*a.axisForwardX+(aPose.z-a.executionOriginZ)*a.axisForwardZ
+    local bStationOnA=(bPose.x-a.executionOriginX)*a.axisForwardX+(bPose.z-a.executionOriginZ)*a.axisForwardZ
+    local bStationOnB=(bPose.x-b.executionOriginX)*b.axisForwardX+(bPose.z-b.executionOriginZ)*b.axisForwardZ
+    local aStationOnB=(aPose.x-b.executionOriginX)*b.axisForwardX+(aPose.z-b.executionOriginZ)*b.axisForwardZ
+    local subjectPassOrderMarginM=aStationOnA-bStationOnA
+    local otherPassOrderMarginM=bStationOnB-aStationOnB
+
+    local separation,separationReason=OuttaMyWay.PairSpecificPassageClearance.currentDirectionalEnvelopeSeparation(
+        aPose,a.transitPassageEnvelope,bPose,b.transitPassageEnvelope)
+    if type(separation)~="number" then
+        return false,"CROSSING_CLEARANCE_CURRENT_TRANSIT_GEOMETRY:"..tostring(separationReason),nil
+    end
     local evidence={
         subjectAssemblyId=a.assemblyId,otherAssemblyId=b.assemblyId,
-        subjectRearClearM=subjectRearClearM,otherRearClearM=otherRearClearM,
-        subjectPhysicalPrimitiveCount=aOnA.physicalPrimitiveCount,
-        otherPhysicalPrimitiveCount=bOnB.physicalPrimitiveCount,
-        authority="POSITIVE_CURRENT_REPRESENTED_PAIR_REAR_CLEAR"
+        subjectPassOrderMarginM=subjectPassOrderMarginM,
+        otherPassOrderMarginM=otherPassOrderMarginM,
+        currentTransitEnvelopeSeparationM=separation,
+        authority="POSITIVE_CURRENT_PASS_ORDER_PLUS_TRANSIT_ENVELOPE_NON_CONTACT"
     }
-    if subjectRearClearM<0 or otherRearClearM<0 then
-        return false,"CROSSING_REAR_CLEAR_NOT_ESTABLISHED",evidence
+    if subjectPassOrderMarginM<=0 or otherPassOrderMarginM<=0 then
+        return false,"CROSSING_PASS_ORDER_NOT_INVERTED",evidence
+    end
+    if separation<=0 then
+        return false,"CROSSING_CURRENT_TRANSIT_ENVELOPES_NOT_SEPARATED",evidence
     end
     return true,nil,evidence
 end
@@ -1504,10 +1487,11 @@ function Control:update(dt)
                 if clear then
                     run.crossingClearanceEstablished=true
                     run.crossingClearanceEvidence=clearEvidence
-                    logInfo("CROSSING_CLEARANCE commitment=%s guide=%s subjectRearClear=%.2fm otherRearClear=%.2fm authority=%s",
+                    logInfo("CROSSING_CLEARANCE commitment=%s guide=%s subjectPassOrder=%.2fm otherPassOrder=%.2fm transitEnvelopeSeparation=%.2fm authority=%s",
                         tostring(run.commitmentId),tostring(run.guide and run.guide.identity),
-                        tonumber(clearEvidence and clearEvidence.subjectRearClearM) or -1,
-                        tonumber(clearEvidence and clearEvidence.otherRearClearM) or -1,
+                        tonumber(clearEvidence and clearEvidence.subjectPassOrderMarginM) or -1,
+                        tonumber(clearEvidence and clearEvidence.otherPassOrderMarginM) or -1,
+                        tonumber(clearEvidence and clearEvidence.currentTransitEnvelopeSeparationM) or -1,
                         tostring(clearEvidence and clearEvidence.authority or "n/a"))
                 elseif completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
                     self:_failHeld("CROSSING_CLEARANCE:"..tostring(clearReason))
