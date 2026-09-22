@@ -2013,6 +2013,8 @@ def test_issue227_tranche2_participant_scoped_post_crossing_control():
     assert "function Control:_beginCrossingClearanceHandoff(run,resumeGuideIndex)" in control
     assert "PASSAGE_LEG_ZERO_RECOVERY_HANDOFF" in control
     assert 'next=PARTICIPANT_SCOPED_RECOVERY' in control
-    assert "former.vacated==true or former.released==true" in control
+    assert "former.vacated==true or former.crossingClearanceHandedBack==true" in control
+    assert "participant.crossingClearanceHandedBack=true" in control
+    assert "former.vacated==true or former.released==true" not in control
     assert "participant.crossingClearanceEarlyHandback==true" in control
     assert "CROSSING_CLEARANCE_NOT_POSITIVELY_ESTABLISHED" in control

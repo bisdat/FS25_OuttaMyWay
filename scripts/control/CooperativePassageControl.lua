@@ -351,10 +351,10 @@ function Control:_formerParticipantOccupancySupport(run,gate)
         local vacaturEvidence=former.vacaturEvidence or {}
         local positivelyRemoved=former.vacated==true
             and (vacaturEvidence.positiveRemoval==true or vacaturEvidence.kind=="POSITIVE_VEHICLE_RUNTIME_REMOVAL")
-        local formerTerminal=former.vacated==true or former.released==true
+        local formerTerminal=former.vacated==true or former.crossingClearanceHandedBack==true
         if formerTerminal and not positivelyRemoved then
             local formerPose=pose(former.vehicle)
-            local formerReserve=former.released==true and self:_currentRepresentedReserve(former) or transitReserve(former)
+            local formerReserve=former.crossingClearanceHandedBack==true and self:_currentRepresentedReserve(former) or transitReserve(former)
             if formerPose~=nil and formerReserve~=nil then
                 for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
                     local participantReserve=transitReserve(participant)
@@ -1561,6 +1561,7 @@ function Control:update(dt)
             run.activeRestoreParticipant=nil; run.activeReturnParticipant=nil
             if earlyHandback then
                 participant.crossingClearanceEarlyHandback=false
+                participant.crossingClearanceHandedBack=true
                 local continued,continueReason=self:_continueCrossingClearanceHandoff(run)
                 if not continued then self:_failHeld("CROSSING_CLEARANCE_HANDOFF_CONTINUE:"..tostring(continueReason)) end
                 return

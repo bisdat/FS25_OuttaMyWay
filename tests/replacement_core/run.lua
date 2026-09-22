@@ -6531,11 +6531,30 @@ test("Cooperative Passage Tranche 2: early handed-back participant remains hard-
         end
     }
     local control=OuttaMyWay.CooperativePassageControl.new({liveObservationSource=source},{holdMechanism={},driveMechanism={},configurationMechanism={}})
-    local released={vehicle={rootNode=1},assemblyId="AS-A",referenceKey="REF-A",released=true,transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
+    local released={vehicle={rootNode=1},assemblyId="AS-A",referenceKey="REF-A",released=true,crossingClearanceHandedBack=true,transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
     local survivor={vehicle={rootNode=2},assemblyId="AS-B",referenceKey="REF-B",transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
     local run={participants={released,survivor},passageArrangement={nominalInterAssemblyClearanceM=1}}
     local ok,reason=control:_formerParticipantOccupancySupport(run,nil)
     equal(ok,false); equal(reason,"PASSAGE_SUPPORT_LOSS_FORMER_PARTICIPANT_CURRENT_OCCUPANCY:AS-A")
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
+
+test("Cooperative Passage Tranche 2: ordinary released leader remains owned by WAIT_NATIVE_CLEARANCE instead of generic former-participant rejection",function()
+    local oldTranslation=getWorldTranslation
+    local oldDirection=localDirectionToWorld
+    getWorldTranslation=function(node) return node==1 and 0 or 2,0,0 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},driveMechanism={},configurationMechanism={}
+    })
+    local released={vehicle={rootNode=1},assemblyId="AS-A",referenceKey="REF-A",released=true,transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
+    local waiting={vehicle={rootNode=2},assemblyId="AS-B",referenceKey="REF-B",transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}}
+    local run={
+        phase="WAIT_NATIVE_CLEARANCE",releasedLeader=released,waitingParticipant=waiting,
+        participants={released,waiting},passageArrangement={nominalInterAssemblyClearanceM=1}
+    }
+    local ok,reason=control:_formerParticipantOccupancySupport(run,nil)
+    equal(ok,true); equal(reason,nil)
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
