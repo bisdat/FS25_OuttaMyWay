@@ -1996,3 +1996,12 @@ def test_issue240_feature_relative_corner_arrival_is_production_situation_meanin
     ):
         assert token in assessment
     assert "workingWidthM" not in assessment[assessment.index("local function terminalEdgeCornerAssociation"):assessment.index("-- Current Corner Occupancy")]
+
+
+def test_issue227_return_staging_is_residual_derived_before_axis_return():
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    assert '"RETURN_STAGING_CLEARANCE_NOT_YET_ESTABLISHED"' in control
+    assert "otherReturnLimitM-readinessEvidence.rearStationM" in control
+    assert 'derivation="RETURN_STAGING_DEFICIT_PLUS_AXIS_TOLERANCE"' in control
+    assert 'derivation="TRANSIT_ASSEMBLY_LENGTH_ALIGNMENT_SETTLEMENT"' in control
+    assert "_startRunoutChunk(run,participant,reason,evidence)" in control

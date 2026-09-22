@@ -6278,6 +6278,75 @@ test("Cooperative Passage Leg: vacatur before execution-origin rebase preserves 
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
+test("Cooperative Passage: aligned participant advances only remaining Return-Staging deficit before Axis Return readiness",function()
+    local oldTranslation=getWorldTranslation
+    local oldDirection=localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) return 0,0,10 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId="FIELD-TEST"} end
+
+    local captured=nil
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},
+        driveMechanism={
+            setAxisTravel=function(self,vehicle,originX,originZ,axisX,axisZ,targetStation,speedKmh,forward,tolerance)
+                captured={targetStation=targetStation,speedKmh=speedKmh,forward=forward,tolerance=tolerance}
+                return true,nil
+            end
+        },
+        configurationMechanism={}
+    })
+    local participant={
+        vehicle={rootNode=1},name="aligned",executionOriginX=0,executionOriginZ=0,
+        axisForwardX=0,axisForwardZ=1,
+        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2}
+    }
+    local evidence={progressM=10,rearStationM=8,otherReturnLimitM=11}
+    local ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-MIN-STAGE"},participant,"RETURN_STAGING_CLEARANCE_NOT_YET_ESTABLISHED",evidence)
+    equal(ok,true); equal(reason,nil)
+    -- Remaining staging is 3 m. Add the existing 1 m Axis Travel station tolerance,
+    -- so target station is current 10 + 4 = 14 m, not a whole 4 m Transit length by coincidence.
+    equal(captured.targetStation,14)
+    equal(captured.forward,true)
+    equal(captured.tolerance,1)
+
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("Cooperative Passage: unresolved alignment retains whole Transit-length settlement step",function()
+    local oldTranslation=getWorldTranslation
+    local oldDirection=localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) return 0,0,10 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId="FIELD-TEST"} end
+
+    local captured=nil
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},
+        driveMechanism={
+            setAxisTravel=function(self,vehicle,originX,originZ,axisX,axisZ,targetStation,speedKmh,forward,tolerance)
+                captured={targetStation=targetStation}
+                return true,nil
+            end
+        },
+        configurationMechanism={}
+    })
+    local participant={
+        vehicle={rootNode=1},name="unaligned",executionOriginX=0,executionOriginZ=0,
+        axisForwardX=0,axisForwardZ=1,
+        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-3,maxForwardM=5}
+    }
+    local ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-ALIGN-FALLBACK"},participant,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED",nil)
+    equal(ok,true); equal(reason,nil)
+    equal(captured.targetStation,18)
+
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
 test("Cooperative Passage: settling accepts owned Hold plus physical stationary state even when GIANTS refused before PermissionGate",function()
     local vehicleA={rootNode=1351,lastSpeedReal=0}; local vehicleB={rootNode=1352,lastSpeedReal=0}
     local held={[vehicleA]=true,[vehicleB]=true}

@@ -773,32 +773,47 @@ function Control:_stagedBeyondOtherTransitReturn(participant,other)
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
     local otherOriginProgress=(other.executionOriginX-participant.executionOriginX)*participant.axisForwardX+(other.executionOriginZ-participant.executionOriginZ)*participant.axisForwardZ
     local limit=otherOriginProgress+otherProjection
-    return progress+minForward>=limit,nil,{progressM=progress,rearStationM=progress+minForward,otherReturnLimitM=limit}
+    local evidence={progressM=progress,rearStationM=progress+minForward,otherReturnLimitM=limit}
+    local staged=evidence.rearStationM>=limit
+    return staged,staged and nil or "RETURN_STAGING_CLEARANCE_NOT_YET_ESTABLISHED",evidence
 end
 
 function Control:_participantRunoutReady(participant,other)
     local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
-    if not aligned then return false,alignmentReason end
+    if not aligned then return false,alignmentReason,nil end
     if not legLive(other) then return true,nil,{progressM=0,rearStationM=0,otherReturnLimitM=0} end
     local staged,stagingReason,evidence=self:_stagedBeyondOtherTransitReturn(participant,other)
-    if not staged then return false,stagingReason end
+    if not staged then return false,stagingReason,evidence end
     return true,nil,evidence
 end
 
-function Control:_startRunoutChunk(run,participant)
+function Control:_startRunoutChunk(run,participant,readinessReason,readinessEvidence)
     local pp=pose(participant.vehicle)
     if pp==nil then return false,"ALIGNMENT_RUNOUT_POSE_UNAVAILABLE" end
     local length=envelopeLength(participant.transitPassageEnvelope)
     if length==nil or length<=0 then return false,"ALIGNMENT_RUNOUT_TRANSIT_LENGTH_UNAVAILABLE" end
-    local tx,tz=pp.x+participant.axisForwardX*length,pp.z+participant.axisForwardZ*length
-    local inside,fieldReason=fieldResolvedAt(tx,tz)
-    if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
     local tolerance=COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M
-    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+length,run.speedKmh,true,tolerance)
+    local stepDistance=length
+    local derivation="TRANSIT_ASSEMBLY_LENGTH_ALIGNMENT_SETTLEMENT"
+    local remainingStaging=nil
+    if readinessReason=="RETURN_STAGING_CLEARANCE_NOT_YET_ESTABLISHED"
+        and type(readinessEvidence)=="table"
+        and type(readinessEvidence.rearStationM)=="number"
+        and type(readinessEvidence.otherReturnLimitM)=="number" then
+        remainingStaging=math.max(0,readinessEvidence.otherReturnLimitM-readinessEvidence.rearStationM)
+        stepDistance=remainingStaging+tolerance
+        derivation="RETURN_STAGING_DEFICIT_PLUS_AXIS_TOLERANCE"
+    end
+    local tx,tz=pp.x+participant.axisForwardX*stepDistance,pp.z+participant.axisForwardZ*stepDistance
+    local inside,fieldReason=fieldResolvedAt(tx,tz)
+    if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
+    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+stepDistance,run.speedKmh,true,tolerance)
     if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
     participant.runoutActive=true
-    logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm derivedFrom=TRANSIT_ASSEMBLY_LENGTH",tostring(run.commitmentId),participant.name,length,progress+length)
+    logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm derivedFrom=%s remainingReturnStaging=%s",
+        tostring(run.commitmentId),participant.name,stepDistance,progress+stepDistance,derivation,
+        remainingStaging~=nil and string.format("%.2fm",remainingStaging) or "n/a")
     return true,nil
 end
 
@@ -826,7 +841,7 @@ function Control:_updateAlignmentRunout(run)
                     self.holdMechanism:setHold(participant.vehicle,"COOPERATIVE-PASSAGE-RETURN-STAGED")
                     logInfo("RETURN_STAGING_READY commitment=%s participant=%s wholeAssemblyAligned=true transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
                 else
-                    local ok,startReason=self:_startRunoutChunk(run,participant)
+                    local ok,startReason=self:_startRunoutChunk(run,participant,reason,evidence)
                     if not ok then return false,startReason..":"..tostring(reason) end
                 end
             end
