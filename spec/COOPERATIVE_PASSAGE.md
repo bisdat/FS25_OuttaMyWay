@@ -107,22 +107,25 @@ Depending on what OuttaMyWay actually changes for that participant, that debt MA
 
 - capture and coupled Passage movement;
 - participant-specific displacement or reorientation recovery;
-- Alignment Runout where current whole-assembly articulation/alignment requires supported forward settlement for the selected recovery mechanism;
-- Axis Settlement or Axis Return where the intervention created spatial restitution debt that actually requires it;
+- **Return Staging** until the participant's rear positively clears the other participant's protected Axis-Return corridor;
+- additional Alignment Runout where current whole-assembly articulation/alignment remains unresolved;
+- Axis Settlement or Axis Return where controlled Passage progression or participant-specific recovery has displaced the participant from the captured execution-origin station;
 - restoration of configuration or other physical state changed by OuttaMyWay; and
 - GIANTS handback.
 
-The implementation MUST NOT reconstruct or "correct" pre-existing articulation, alignment or configuration imperfection that was not created by the Passage intervention. A zero-excursion participant MUST NOT acquire Alignment Runout or Axis Return debt merely because it participated in the pairwise Passage.
+The implementation MUST NOT reconstruct or "correct" pre-existing articulation, alignment or configuration imperfection that was not created by the Passage intervention. A zero-excursion participant MUST NOT acquire lateral recovery debt merely because it participated in the pairwise Passage.
 
 > **Participation != Recovery Debt**
 
-> **Axis Settlement Is Conditional Recovery Evidence, Not A Universal Passage Obligation**
+> **Zero Recovery Tail != Zero Return-Staging Distance**
 
-The two legs may progress and terminate independently.
+> **Return Staging Is Crossing Completion, Not Recovery Debt**
 
-After **Crossing Clearance** positively establishes that the original opposed crossing conflict has physically cleared, each leg MUST be assessed against only its own remaining intervention-created debt. A leg whose remaining debt is discharged MAY restore and hand back to GIANTS immediately while the other leg remains live.
+The two legs may progress and terminate independently only after the coupled pass has positively established safe Return Staging.
 
-Physical crossing alone does not settle a leg while that leg's actual recovery/restoration/handback debt remains open.
+A zero-excursion participant may still require forward Return Staging and Axis Return because Cooperative Passage advanced it longitudinally away from its captured execution origin. That requirement is not a lateral Recovery Tail and MUST NOT be inflated into whole-assembly-length movement when current geometry establishes a smaller remaining staging deficit.
+
+Physical non-contact alone does not settle a leg while Return Staging, Axis Return, restoration or handback remains open.
 
 > **Pairwise Resolution != Symmetric Progress Requirement**
 
@@ -163,13 +166,15 @@ Fresh hard-safety evidence about the former participant's continuing occupancy t
 
 ### Crossing Clearance
 
-**Crossing Clearance** is positive current evidence that the original opposed pairwise crossing conflict has physically cleared. It is the semantic boundary after which participant-scoped recovery and early individual GIANTS handback may proceed.
+**Crossing Clearance** is positive current evidence that the coupled opposed pairwise pass has physically completed far enough for the selected return mechanism. For the current Axis-Return choreography, this requires positive **Return Staging**: each participant's rear is beyond the other participant's protected return corridor.
 
-Crossing Clearance MUST be established from current pair geometry / rear-clear evidence fit for that question. Reaching a procedural gate name, elapsed time or nominal crossing midpoint is insufficient by itself.
+Two-dimensional non-contact, centre/reference-point pass-order inversion, elapsed time, a nominal crossing midpoint, or merely reaching a procedural gate are insufficient by themselves.
 
-Before Crossing Clearance, the unresolved original crossing conflict prevents blind native release merely because a downstream recovery mechanism has become difficult. After Crossing Clearance, the implementation MAY discharge and hand back one leg independently when its own intervention-created debt is positively satisfied.
+Before Crossing Clearance / Return Staging, the pair must continue bounded forward Passage progression. Once Return Staging is positive, Axis Return may begin without an additional arbitrary longitudinal tail.
 
-> **Crossing Clearance != Exact Axis Restitution**
+> **Crossing Clearance != Mere Non-Contact**
+
+> **Return Staging != Lateral Recovery Debt**
 
 Passage commitment does not freeze execution geometry.
 

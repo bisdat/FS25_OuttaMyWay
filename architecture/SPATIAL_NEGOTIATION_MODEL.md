@@ -487,8 +487,9 @@ Depending on what OuttaMyWay actually changed for that participant, a leg may in
 
 - capture and coupled Passage movement;
 - participant-specific displacement or reorientation recovery;
-- Alignment Runout where current articulation/alignment requires supported forward settlement before a safe return mechanism;
-- Axis Settlement/Return where the selected intervention actually created spatial restitution debt that requires it;
+- **Return Staging**: coupled forward progression until the participant's rear has positively cleared the other participant's protected Axis-Return corridor;
+- additional Alignment Runout only where current articulation/alignment remains unresolved after Return Staging demand is considered;
+- Axis Settlement/Return where the Passage's controlled forward crossing movement or participant-specific recovery requires return to the captured execution-origin station;
 - intervention-created configuration or other physical restoration debt; and
 - GIANTS handback.
 
@@ -498,11 +499,17 @@ The parent Resolution Commitment persists while any legitimate Passage Leg or sh
 
 > **Participation != Recovery Debt**
 
-> **Axis Settlement Is Conditional Recovery Evidence, Not A Universal Passage Obligation**
+> **Zero Recovery Tail != Zero Return-Staging Distance**
 
-The two Passage Legs may progress and terminate at different times. After positive Crossing Clearance, one leg may discharge its own remaining intervention-created debt and return to GIANTS while the other leg continues recovery. Bubble protection and Resolution-Epoch third-party protection persist until the final original Passage Leg becomes terminal.
+> **Return Staging Is Crossing Completion, Not Recovery Debt**
 
-Passage owns only intervention-created debt. It does not reconstruct pre-existing imperfections or articulation. A participant selected for zero lateral excursion does not acquire spatial recovery debt merely because the pair crossed under Cooperative Passage. Physical crossing alone is not completion while a leg's actual recovery, restoration or handback debt remains open.
+The two Passage Legs may still progress and terminate at different times, but current Axis-Return choreography MUST NOT treat two-dimensional non-contact or zero lateral excursion as proof that the coupled physical pass is complete. Each participant must first become positively Return-Staged: its rear is beyond the other participant's protected return corridor.
+
+A participant selected for zero lateral excursion does not acquire lateral recovery debt merely because the pair crossed under Cooperative Passage. It may nevertheless require additional forward Return Staging and subsequent Axis Return because Cooperative Passage itself advanced that participant longitudinally away from the captured execution origin.
+
+Passage does not reconstruct pre-existing articulation or alignment imperfection. Additional alignment movement is justified only by current unresolved alignment evidence; Return Staging is justified independently by the coupled crossing geometry.
+
+Bubble protection and Resolution-Epoch third-party protection persist until the final original Passage Leg becomes terminal.
 
 ### Reality-verified execution
 
