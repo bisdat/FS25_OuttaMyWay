@@ -411,7 +411,7 @@ def test_cooperative_passage_control_owns_execution_calibration():
         "math.abs(vehicleLateral)>lateralTolerance",
         "vehicleHeadingDot<headingMinDot",
         "memberHeadingDot<headingMinDot",
-        "nowMs-(run.phaseStartedAt or nowMs)>=timeout",
+        "local stalledMs=math.max(0,nowMs-(run.progressWatchdogLastImprovementAt or nowMs))",
     ):
         assert use in passage
 
