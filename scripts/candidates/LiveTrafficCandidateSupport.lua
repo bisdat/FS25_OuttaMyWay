@@ -88,11 +88,11 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
     local constraints={}
     for _,id in ipairs(mandatory) do constraints[id]=cooperativePassagePacket("Supported local Cooperative Passage constraint",{cooperativePassage=true}) end
     constraints.FIELD_WORLD_CONTAINMENT=cooperativePassagePacket(
-        "Candidate-owned Progressive Passage Search found a complete centreline Passage Guide inside the immutable current Field World; Boundary Encroachment was not required by this selected arrangement",
-        {fieldWorldReferenceKey=plan.localPassageSpace and plan.localPassageSpace.fieldWorldReferenceKey,centrelineSweepSupported=true,boundaryEncroachment=false,whollyExtraField=false})
+        "Candidate-owned Progressive Passage Search positively supported the complete Recovery-Capable Passage Theatre inside the immutable current Field World: capture/control reserve, Shared Crossing Core, and each required participant Recovery Tail; zero-excursion tails are explicit positive zero-recovery conclusions",
+        {fieldWorldReferenceKey=plan.localPassageSpace and plan.localPassageSpace.fieldWorldReferenceKey,centrelineSweepSupported=true,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,boundaryEncroachment=false,whollyExtraField=false})
     constraints.TRANSITION_CLEARANCE=cooperativePassagePacket(
-        "The selected multi-gate guide preserves the configured Nominal Inter-Assembly Clearance using Candidate-selected complete-assembly Transit directional envelopes where required by the Passage plan and excludes known positive third-party occupancy; generic current physical-conflict DISC overlap is not Passage-clearance authority and no generic negative-clearance claim is made",
-        {pairSpecificPassageClearance=plan.pairSpecificPassageClearance,pairSweepSupport=plan.passageGuide and plan.passageGuide.pairSweepSupport,thirdPartySupport=plan.passageGuide and plan.passageGuide.thirdPartySupport,manoeuvreSweptOccupancySampled=true,vehicleNameAdmissionGate=false,generalVehicleAuthority=false,negativeClearanceAuthority=false})
+        "The Shared Crossing Core preserves the configured Nominal Inter-Assembly Clearance using Candidate-selected complete-assembly Transit directional envelopes; participant-scoped Recovery Tails are separately Field-World-supported and the full guide excludes known positive third-party occupancy",
+        {pairSpecificPassageClearance=plan.pairSpecificPassageClearance,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,pairSweepSupport=plan.passageGuide and plan.passageGuide.pairSweepSupport,thirdPartySupport=plan.passageGuide and plan.passageGuide.thirdPartySupport,manoeuvreSweptOccupancySampled=true,vehicleNameAdmissionGate=false,generalVehicleAuthority=false,negativeClearanceAuthority=false})
     constraints.REPRESENTATION_FITNESS=cooperativePassagePacket(
         "Cached current geometry plus same-Job-Episode native configuration-profile provenance admits this established pair to configuration-first Pair-Specific Passage Clearance; compact selection requires a stable native-observed folded profile that positively releases conflict-side Facing Clearance Extent",
         {representationFitnessIds=plan.representationFitnessIds,controlProfile=plan.controlProfile,vehicleNameAdmissionGate=false,configurationReductionAuthority="AI_REACHABLE_PRODUCTIVE_CONFIGURATION_NATIVE_PROFILE_PLUS_POSITIVE_CONFLICT_SIDE_RELEASE",passageConfiguration=plan.passageConfiguration,generalVehicleAuthority=false})
@@ -103,8 +103,8 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
         "Neither Established Trajectory is privileged; Pairwise Passage Economy apportioned only the necessary local lateral burden and both participants retain forward progression",
         {pairwisePassageEconomy=plan.passageArrangement and plan.passageArrangement.pairwisePassageEconomy,subjectOffsetM=plan.passageArrangement and plan.passageArrangement.subjectLateralOffsetM,otherOffsetM=plan.passageArrangement and plan.passageArrangement.otherLateralOffsetM})
     constraints.PROGRESS_PRESERVATION=cooperativePassagePacket(
-        "The selected guide is a decisive Passage expression, not Information-Gaining Delay; both participants progress through development, traversal and native reacquisition gates",
-        {informationGainingDelay=false,guideGateCount=plan.passageGuide and OuttaMyWay.ValueRecord.length(plan.passageGuide.gates or {}) or 0})
+        "The selected guide is a decisive Passage expression, not Information-Gaining Delay; both participants progress through the Shared Crossing Core while downstream Recovery Tail targets exist only for participants whose selected lateral intervention creates spatial recovery debt",
+        {informationGainingDelay=false,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,guideGateCount=plan.passageGuide and OuttaMyWay.ValueRecord.length(plan.passageGuide.gates or {}) or 0})
     constraints.RESPONSIBILITY_COMPATIBILITY=cooperativePassagePacket(
         "One pair-scoped Cooperative Passage Commitment resolves the Established Opposed Corridor Conflict while other active Operation assemblies remain Local Spatial Constraints rather than hidden passage participants",
         {conflictIdentity=plan.conflictIdentity,assemblyIds=plan.assemblyIds,thirdPartyConstraintCount=plan.localPassageSpace and plan.localPassageSpace.thirdPartyConstraintCount or 0})
@@ -147,7 +147,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
         referenceKey="cooperative-passage:"..tostring(plan.conflictIdentity),
         purpose={kind="COOPERATIVE_PASSAGE",result="RESOLVE_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_BY_SUFFICIENT_LOCAL_PASSAGE"},
         subject={assemblyIds=plan.assemblyIds},capability="REPOSITION",
-        expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true,postHandoffCooldown=false,king=false,refuge=false},
+        expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,recoveryCapablePassageTheatre=true,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true,postHandoffCooldown=false,king=false,refuge=false},
         evidenceBasis={
             constraintEvidence=constraints,
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
@@ -166,14 +166,14 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
                 subjectJobToken=plan.subjectJobToken,otherJobToken=plan.otherJobToken,
                 subjectStartX=plan.subjectStartX,subjectStartZ=plan.subjectStartZ,otherStartX=plan.otherStartX,otherStartZ=plan.otherStartZ,
                 initialSeparationM=plan.separationM,trajectoryDot=plan.trajectoryDot,
-                localPassageSpace=plan.localPassageSpace,
+                localPassageSpace=plan.localPassageSpace,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,
                 passageArrangement=plan.passageArrangement,passageGuide=plan.passageGuide,passageConfiguration=plan.passageConfiguration,
                 passageEntry=plan.passageEntry,passageExcursion=plan.passageExcursion,progressiveSearch=plan.progressiveSearch,
                 controlProfile=plan.controlProfile
             }
         },
         representationFitness={requirements=requirements},
-        preconditions={evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,establishedOpposedCorridorConflict=true,sufficientLocalPassageArrangement=true,controlProfile=plan.controlProfile},
+        preconditions={evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,establishedOpposedCorridorConflict=true,sufficientLocalPassageArrangement=true,recoveryCapablePassageTheatre=true,controlProfile=plan.controlProfile},
         invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ESTABLISHED_CONFLICT_CHANGE"},{kind="PASSAGE_SUPPORT_LOSS"}},
         reversibility={physicalEffect=true,restoreParticipantBeforeLegRelease=true,passageReassessment=true},
         obligationsCreated=passageLegObligations,
@@ -674,7 +674,10 @@ local function passageRejectionTelemetry(allRejected)
             total=total+1
             local reason=nil
             if candidate.guideReason~=nil then geometry=geometry+1; reason="GUIDE:"..tostring(candidate.guideReason)
-            elseif candidate.fieldReason~=nil then field=field+1; reason="FIELD:"..tostring(candidate.fieldReason)
+            elseif candidate.fieldReason~=nil then
+                field=field+1
+                local component=candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent or "UNCLASSIFIED"
+                reason="FIELD:"..tostring(component)..":"..tostring(candidate.fieldReason)
             elseif candidate.sweepReason~=nil then sweep=sweep+1; reason="SWEEP:"..tostring(candidate.sweepReason)
             elseif candidate.thirdPartyReason~=nil then third=third+1; reason="THIRD:"..tostring(candidate.thirdPartyReason)
             else other=other+1; reason="OTHER" end
@@ -1031,11 +1034,13 @@ function Support:attach(picture,snapshot)
             local arrangement=plan.passageArrangement or {}; local guide=plan.passageGuide or {}; local sweep=guide.pairSweepSupport or {}
             local config=plan.passageConfiguration or {}; local participants=config.participants or {}
             local c1=participants[1] or {}; local c2=participants[2] or {}
-            logInfo("COOPERATIVE_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d development=%.2f crossingForward=%.2f recovery=%.2f minimumRepresentedClearance=%.2f searchIndex=%s",
+            local theatre=plan.recoveryCapablePassageTheatre or {}; local tails=theatre.recoveryTails or {}
+            local subjectTail=tails.subject or {}; local otherTail=tails.other or {}
+            logInfo("COOPERATIVE_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d crossingForward=%.2f recoveryTailRequired=%s/%s recoveryTail=%.2f/%.2f theatreComplete=%s minimumRepresentedClearance=%.2f searchIndex=%s",
                 tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.nominalInterAssemblyClearanceM) or -1,tonumber(arrangement.policyRequiredSeparationM) or -1,tonumber(arrangement.currentPolicyReserveM) or -1,
                 tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(sweep.supportBasis or "n/a"),tostring(plan.passageExcursion and plan.passageExcursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.clearanceDeficitM) or 0,
                 tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"),tonumber(config.totalConfigurationReleasedSpaceM) or 0,tostring(c1.expectedCompactConfigurationProfileId or c1.currentConfigurationProfileId or "n/a"),tostring(c2.expectedCompactConfigurationProfileId or c2.currentConfigurationProfileId or "n/a"),
-                tostring(guide.identity),#(guide.gates or {}),tonumber(plan.passageExcursion and plan.passageExcursion.developmentDistanceM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.crossingWindowForwardPerParticipantM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.recoveryDistanceM) or 0,tonumber(sweep.minimumRepresentedClearanceM) or -1,tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"))
+                tostring(guide.identity),#(guide.gates or {}),tonumber(plan.passageExcursion and plan.passageExcursion.crossingWindowForwardPerParticipantM) or 0,tostring(subjectTail.required==true),tostring(otherTail.required==true),tonumber(subjectTail.distanceM) or 0,tonumber(otherTail.distanceM) or 0,tostring(theatre.complete==true),tonumber(sweep.minimumRepresentedClearanceM) or -1,tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"))
         end
         local specification=makeCooperativePassageCandidate(pictureId,values,plan,governingRequirementKey)
         values.candidateSupportEvidence={

@@ -3596,8 +3596,9 @@ test("Trajectory Conflict: missing trajectory corridor anchor fails closed inste
 end)
 
 
-local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSeparationM)
+local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSeparationM,fieldMinZ,fieldMaxZ)
     fieldMinX=fieldMinX or -40; fieldMaxX=fieldMaxX or 40
+    fieldMinZ=fieldMinZ or -30; fieldMaxZ=fieldMaxZ or 90
     longitudinalSeparationM=longitudinalSeparationM or 60
     local conflict={
         identity="OC-COOPERATIVE-PASSAGE",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
@@ -3633,7 +3634,7 @@ local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSe
     })
     local snapshot=OuttaMyWay.ObservationSnapshot.new({
         identity="OS-COOPERATIVE-PASSAGE",epoch=801,timestamp=80,provenance={source="cooperative-passage-test"},
-        fieldWorld={referenceKey="field-world:cooperative-passage",geometryFingerprint="fw-cooperative-passage",boundary={{x=fieldMinX,z=-30},{x=fieldMaxX,z=-30},{x=fieldMaxX,z=90},{x=fieldMinX,z=90}},islands={}},
+        fieldWorld={referenceKey="field-world:cooperative-passage",geometryFingerprint="fw-cooperative-passage",boundary={{x=fieldMinX,z=fieldMinZ},{x=fieldMaxX,z=fieldMinZ},{x=fieldMaxX,z=fieldMaxZ},{x=fieldMinX,z=fieldMaxZ}},islands={}},
         assemblies={{assemblyId="AS-A",referenceKey="vehicle-root:101",memberComponentIds={}},{assemblyId="AS-B",referenceKey="vehicle-root:201",memberComponentIds={}}},
         geometry={currentSpaceEvidence={},futureSpaceEvidence={},futureSpaceRelationshipEvidence={},demandEvidence={},interactionEvidence={}},motion={closureEvidence={}},aiStates={},playerControl={},jobEpisodeEvidence={},operationMembershipEvidence={},physicalRepresentationEvidence={},controlOutcomes={},unavailableSources={},diagnostics={}
     })
@@ -3899,6 +3900,77 @@ test("Cooperative Passage: zero Clearance Deficit produces straight Passage with
     equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
     equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
     equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+    local theatre=plan.recoveryCapablePassageTheatre
+    equal(theatre.complete,true)
+    equal(theatre.sharedCrossingCore.fieldSupported,true)
+    equal(theatre.recoveryTails.subject.required,false)
+    equal(theatre.recoveryTails.subject.positiveZeroRecovery,true)
+    equal(theatre.recoveryTails.subject.distanceM,0)
+    equal(theatre.recoveryTails.other.required,false)
+    equal(theatre.recoveryTails.other.positiveZeroRecovery,true)
+    equal(theatre.recoveryTails.other.distanceM,0)
+end)
+
+test("Cooperative Passage: one-sided intervention creates only one Recovery Tail and leaves the zero-tail participant at Crossing Clearance",function()
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-20,35)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    local subjectOffset=math.abs(plan.passageArrangement.subjectLateralOffsetM)
+    local otherOffset=math.abs(plan.passageArrangement.otherLateralOffsetM)
+    local zeroRole,recoveryRole=nil,nil
+    if subjectOffset<0.001 and otherOffset>0.001 then zeroRole,recoveryRole="subject","other"
+    elseif otherOffset<0.001 and subjectOffset>0.001 then zeroRole,recoveryRole="other","subject" end
+    if zeroRole==nil then error("expected one-sided Passage arrangement") end
+    local tails=plan.recoveryCapablePassageTheatre.recoveryTails
+    equal(tails[zeroRole].required,false); equal(tails[zeroRole].positiveZeroRecovery,true); equal(tails[zeroRole].distanceM,0)
+    equal(tails[recoveryRole].required,true); equal(tails[recoveryRole].fieldSupported,true); equal(tails[recoveryRole].distanceM>0,true)
+    local crossingExit,native=nil,nil
+    for _,gate in ipairs(plan.passageGuide.gates or {}) do
+        if gate.kind=="CROSSING_WINDOW_EXIT" then crossingExit=gate end
+        if gate.kind=="NATIVE_REACQUISITION" then native=gate end
+    end
+    if crossingExit==nil or native==nil then error("expected Crossing Clearance and native reacquisition gates") end
+    equal(math.abs(native[zeroRole].x-crossingExit[zeroRole].x)<0.0001,true)
+    equal(math.abs(native[zeroRole].z-crossingExit[zeroRole].z)<0.0001,true)
+    local dx=native[recoveryRole].x-crossingExit[recoveryRole].x
+    local dz=native[recoveryRole].z-crossingExit[recoveryRole].z
+    equal(math.sqrt(dx*dx+dz*dz)>0.001,true)
+end)
+
+test("Cooperative Passage: crossing-valid theatre is rejected when every required participant Recovery Tail leaves Field World",function()
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+    local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(plan,nil)
+    equal(reason,"RECOVERY_CAPABLE_PASSAGE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE")
+    local recoveryTailFailure=false
+    for _,conflict in ipairs(rejected or {}) do
+        for _,candidate in ipairs(conflict.rejected or {}) do
+            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY"
+                and candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent=="RECOVERY_TAIL" then
+                recoveryTailFailure=true
+            end
+        end
+    end
+    equal(recoveryTailFailure,true)
+end)
+
+test("Cooperative Passage: unsupported Recovery-Capable Theatre retains tactical Action-Space Regulation",function()
+    local runtime=autonomousHeadOnRuntime()
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.actionSpaceConservation={
+        status="REGULATE_SUPPORTED",supported=true,admissionKind="ESTABLISHED_CONFLICT",
+        reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE",
+        regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
+        roleBasis="DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION",separationM=18,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
+        currentClosing={resolved=true,separationM=18,closingRateMps=6,currentDirectionDot=-1},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,
+        governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+    }
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local supported=runtime.liveTrafficCandidateSupport:attach(adapted,snapshot)
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
+    equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REGULATE_SPEED")
 end)
 
 test("Cooperative Passage: Passage Selection immediately supersedes Action-Space Regulation even when physical Entry is later",function()
@@ -3919,6 +3991,7 @@ test("Cooperative Passage: Passage Selection immediately supersedes Action-Space
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
+    equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.recoveryCapablePassageTheatre.complete,true)
     equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
 end)
 
@@ -3938,6 +4011,10 @@ test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arra
     equal(math.abs(plan.passageArrangement.combinedLateralBurdenM-7)<0.0001,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)-math.abs(plan.passageArrangement.otherLateralOffsetM))>0.001,true)
     equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
+    local tails=plan.recoveryCapablePassageTheatre.recoveryTails
+    equal(tails.subject.required,true); equal(tails.other.required,true)
+    equal(math.abs(tails.subject.distanceM-tails.other.distanceM)>0.001,true)
+    equal(tails.subject.fieldSupported,true); equal(tails.other.fieldSupported,true)
 end)
 
 test("Cooperative Passage mechanical preflight is vehicle-name independent and remains Control-revalidated",function()

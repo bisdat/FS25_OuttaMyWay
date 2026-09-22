@@ -6,6 +6,9 @@
 -- Guide are the governing Candidate concepts. Selection may precede physical
 -- Passage Entry; the derived Entry Boundary is consumed later by Cooperative
 -- Passage Control. TRANSIT_BASE planning carries one uniform Transit obligation.
+-- Recovery-Capable Passage Theatre feasibility is participant-scoped: the Shared
+-- Crossing Core remains coupled while selected lateral intervention creates only
+-- that participant's downstream Recovery Tail.
 -- Current represented geometry is bounded evidence rather than exact articulated
 -- swept-envelope closure; third parties and Field World remain constraints, not
 -- hidden participants.
@@ -220,34 +223,53 @@ local function longitudinalSupport(discs,directionalEnvelope,space,trajectory,ro
     return support,nil
 end
 
+local function participantExcursionProfile(lateralOffsetM)
+    local offset=tonumber(lateralOffsetM) or 0
+    local burden=math.abs(offset)
+    local required=burden>0.001
+    local development=0
+    if required then
+        development=math.max(COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M,burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M)
+    end
+    return {
+        lateralOffsetM=offset,
+        spatialRecoveryRequired=required,
+        positiveZeroRecovery=not required,
+        developmentDistanceM=development,
+        recoveryTailDistanceM=development
+    }
+end
+
 local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpace,longitudinalSeparationM,executionCaptured)
     local aLong,aReason=longitudinalSupport(arrangement.subjectPassageDiscs,arrangement.subjectDirectionalPassageEnvelope,aSpace,aTrajectory,"SUBJECT")
     if aLong==nil then return nil,aReason end
     local bLong,bReason=longitudinalSupport(arrangement.otherPassageDiscs,arrangement.otherDirectionalPassageEnvelope,bSpace,bTrajectory,"OTHER")
     if bLong==nil then return nil,bReason end
 
-    local maximumOffset=math.max(math.abs(tonumber(arrangement.subjectLateralOffsetM) or 0),math.abs(tonumber(arrangement.otherLateralOffsetM) or 0))
-    local development=0
-    if maximumOffset>0.001 then
-        local minimumDevelopment=COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M
-        local forwardPerLateral=COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M
-        development=math.max(minimumDevelopment,maximumOffset*forwardPerLateral)
-    end
-    local recovery=development
+    local subjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)
+    local otherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)
+    local developmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
     local entryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M
-    local entryBoundary=frontOverlap+2*development+entryAllowance
+    local entryBoundary=frontOverlap+developmentSum+entryAllowance
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
     local entryReady=executionCaptured==true or currentSeparation<=entryBoundary
     local approachPerParticipant=entryReady and 0 or math.max(0,(currentSeparation-entryBoundary)*0.5)
     local plannedEntrySeparation=entryReady and currentSeparation or entryBoundary
-    local postDevelopmentSeparation=math.max(0,plannedEntrySeparation-2*development)
+    local postDevelopmentSeparation=math.max(0,plannedEntrySeparation-developmentSum)
     local crossingForward=math.max(0,(postDevelopmentSeparation+rearClear)*0.5)
+    subjectProfile.totalForwardDistanceM=subjectProfile.developmentDistanceM+crossingForward+subjectProfile.recoveryTailDistanceM
+    otherProfile.totalForwardDistanceM=otherProfile.developmentDistanceM+crossingForward+otherProfile.recoveryTailDistanceM
+
     return {
-        maximumParticipantLateralExcursionM=maximumOffset,
-        developmentDistanceM=development,recoveryDistanceM=recovery,
+        maximumParticipantLateralExcursionM=math.max(math.abs(subjectProfile.lateralOffsetM),math.abs(otherProfile.lateralOffsetM)),
+        -- Transitional maximum summaries remain for diagnostics only; participantProfiles is the semantic authority.
+        developmentDistanceM=math.max(subjectProfile.developmentDistanceM,otherProfile.developmentDistanceM),
+        recoveryDistanceM=math.max(subjectProfile.recoveryTailDistanceM,otherProfile.recoveryTailDistanceM),
+        totalForwardDistanceM=math.max(subjectProfile.totalForwardDistanceM,otherProfile.totalForwardDistanceM),
+        participantProfiles={subject=subjectProfile,other=otherProfile},
         subjectFrontExtentM=aLong.frontExtentM,subjectRearExtentM=aLong.rearExtentM,
         otherFrontExtentM=bLong.frontExtentM,otherRearExtentM=bLong.rearExtentM,
         crossingWindowEntrySeparationM=frontOverlap,crossingWindowRearClearSeparationM=rearClear,
@@ -256,30 +278,47 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
         passageEntryControlAllowanceM=entryAllowance,passageEntryBoundarySeparationM=entryBoundary,
         passageEntryReady=entryReady,approachDistancePerParticipantM=approachPerParticipant,
         plannedEntrySeparationM=plannedEntrySeparation,
-        totalForwardDistanceM=development+crossingForward+recovery,
-        model="DEVELOPMENT_CROSSING_WINDOW_RECOVERY_EXCURSION",
+        model="PARTICIPANT_SCOPED_RECOVERY_CAPABLE_THEATRE",
         clearanceDeficitM=math.max(0,tonumber(arrangement.combinedLateralBurdenM) or 0)
     },nil
 end
 
 local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,bOffset,geometry)
     if type(geometry)~="table" then return nil,"PASSAGE_EXCURSION_GEOMETRY_UNAVAILABLE" end
-    local development=tonumber(geometry.developmentDistanceM) or 0
+    local profiles=geometry.participantProfiles or {}
+    local subjectProfile,otherProfile=profiles.subject,profiles.other
+    if type(subjectProfile)~="table" or type(otherProfile)~="table" then return nil,"PASSAGE_PARTICIPANT_RECOVERY_PROFILES_UNAVAILABLE" end
     local traversal=tonumber(geometry.crossingWindowForwardPerParticipantM) or 0
-    local recovery=tonumber(geometry.recoveryDistanceM) or 0
+    local subjectDevelopment=tonumber(subjectProfile.developmentDistanceM) or 0
+    local otherDevelopment=tonumber(otherProfile.developmentDistanceM) or 0
+    local subjectRecovery=tonumber(subjectProfile.recoveryTailDistanceM) or 0
+    local otherRecovery=tonumber(otherProfile.recoveryTailDistanceM) or 0
+    local maximumDevelopment=math.max(subjectDevelopment,otherDevelopment)
+    local maximumRecovery=math.max(subjectRecovery,otherRecovery)
     local traversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M
-    local developmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,development*0.25))
-    local recoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,recovery*0.25))
+    local developmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,maximumDevelopment*0.25))
+    local recoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,maximumRecovery*0.25))
     local gates={}
-    if development>0.001 then
-        gates[#gates+1]={kind="DEVELOPMENT_ENTRY",forwardM=development*0.5,lateralFraction=0.5,radiusM=developmentRadius}
+
+    local function progress(subjectForward,subjectFraction,otherForward,otherFraction)
+        return {
+            subject={forwardM=subjectForward,lateralFraction=subjectFraction},
+            other={forwardM=otherForward,lateralFraction=otherFraction}
+        }
     end
-    gates[#gates+1]={kind="CROSSING_WINDOW_ENTRY",forwardM=development,lateralFraction=1.0,radiusM=traversalRadius}
-    gates[#gates+1]={kind="CROSSING_WINDOW_EXIT",forwardM=development+traversal,lateralFraction=1.0,radiusM=traversalRadius}
-    if recovery>0.001 then
-        gates[#gates+1]={kind="RECOVERY_EXIT",forwardM=development+traversal+recovery*0.5,lateralFraction=0.5,radiusM=recoveryRadius}
+    local function append(kind,participantProgress,radiusM)
+        gates[#gates+1]={kind=kind,participantProgress=participantProgress,radiusM=radiusM}
     end
-    gates[#gates+1]={kind="NATIVE_REACQUISITION",forwardM=development+traversal+recovery,lateralFraction=0.0,radiusM=recoveryRadius}
+
+    if maximumDevelopment>0.001 then
+        append("DEVELOPMENT_ENTRY",progress(subjectDevelopment*0.5,subjectProfile.spatialRecoveryRequired and 0.5 or 0,otherDevelopment*0.5,otherProfile.spatialRecoveryRequired and 0.5 or 0),developmentRadius)
+    end
+    append("CROSSING_WINDOW_ENTRY",progress(subjectDevelopment,subjectProfile.spatialRecoveryRequired and 1.0 or 0,otherDevelopment,otherProfile.spatialRecoveryRequired and 1.0 or 0),traversalRadius)
+    append("CROSSING_WINDOW_EXIT",progress(subjectDevelopment+traversal,subjectProfile.spatialRecoveryRequired and 1.0 or 0,otherDevelopment+traversal,otherProfile.spatialRecoveryRequired and 1.0 or 0),traversalRadius)
+    if maximumRecovery>0.001 then
+        append("RECOVERY_EXIT",progress(subjectDevelopment+traversal+subjectRecovery*0.5,subjectProfile.spatialRecoveryRequired and 0.5 or 0,otherDevelopment+traversal+otherRecovery*0.5,otherProfile.spatialRecoveryRequired and 0.5 or 0),recoveryRadius)
+    end
+    append("NATIVE_REACQUISITION",progress(subjectDevelopment+traversal+subjectRecovery,0,otherDevelopment+traversal+otherRecovery,0),recoveryRadius)
 
     local overlap=conflict.supportedCorridorOverlap or {}
     local rightX,rightZ=tonumber(overlap.sharedRightX),tonumber(overlap.sharedRightZ)
@@ -292,10 +331,14 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
     b0x=b0x+bTrajectory.establishedDirectionX*approach; b0z=b0z+bTrajectory.establishedDirectionZ*approach
 
     for index,gate in ipairs(gates) do
-        local af=gate.lateralFraction*aOffset; local bf=gate.lateralFraction*bOffset
+        local sp=gate.participantProgress.subject
+        local op=gate.participantProgress.other
         gate.index=index
-        gate.subject={assemblyId=conflict.subjectAssemblyId,x=a0x+aTrajectory.establishedDirectionX*gate.forwardM+rightX*af,z=a0z+aTrajectory.establishedDirectionZ*gate.forwardM+rightZ*af,radiusM=gate.radiusM}
-        gate.other={assemblyId=conflict.otherAssemblyId,x=b0x+bTrajectory.establishedDirectionX*gate.forwardM+rightX*bf,z=b0z+bTrajectory.establishedDirectionZ*gate.forwardM+rightZ*bf,radiusM=gate.radiusM}
+        -- Aggregate fields are compatibility summaries only; target construction is participant-scoped.
+        gate.forwardM=math.max(sp.forwardM,op.forwardM)
+        gate.lateralFraction=math.max(sp.lateralFraction,op.lateralFraction)
+        gate.subject={assemblyId=conflict.subjectAssemblyId,x=a0x+aTrajectory.establishedDirectionX*sp.forwardM+rightX*(sp.lateralFraction*aOffset),z=a0z+aTrajectory.establishedDirectionZ*sp.forwardM+rightZ*(sp.lateralFraction*aOffset),radiusM=gate.radiusM}
+        gate.other={assemblyId=conflict.otherAssemblyId,x=b0x+bTrajectory.establishedDirectionX*op.forwardM+rightX*(op.lateralFraction*bOffset),z=b0z+bTrajectory.establishedDirectionZ*op.forwardM+rightZ*(op.lateralFraction*bOffset),radiusM=gate.radiusM}
     end
     return {
         gates=gates,entryOrigins={subject={x=a0x,z=a0z},other={x=b0x,z=b0z}},
@@ -304,7 +347,20 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
             subjectForwardX=aTrajectory.establishedDirectionX,subjectForwardZ=aTrajectory.establishedDirectionZ,
             otherForwardX=bTrajectory.establishedDirectionX,otherForwardZ=bTrajectory.establishedDirectionZ
         },
-        developmentDistanceM=development,traversalDistanceM=traversal,reacquisitionDistanceM=recovery,
+        participantDevelopment={
+            subject={distanceM=subjectDevelopment,lateralOffsetM=aOffset},
+            other={distanceM=otherDevelopment,lateralOffsetM=bOffset}
+        },
+        recoveryTails={
+            subject={required=subjectProfile.spatialRecoveryRequired==true,positiveZeroRecovery=subjectProfile.positiveZeroRecovery==true,distanceM=subjectRecovery,lateralOffsetM=aOffset},
+            other={required=otherProfile.spatialRecoveryRequired==true,positiveZeroRecovery=otherProfile.positiveZeroRecovery==true,distanceM=otherRecovery,lateralOffsetM=bOffset}
+        },
+        sharedCrossingCore={
+            entrySeparationM=geometry.crossingWindowEntrySeparationM,rearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
+            forwardPerParticipantM=traversal,reference=geometry.crossingWindowBasis or "PASSAGE_CONFIGURED_REPRESENTED_LONGITUDINAL_EXTENTS"
+        },
+        -- Transitional maximum summaries remain for existing diagnostics.
+        developmentDistanceM=maximumDevelopment,traversalDistanceM=traversal,reacquisitionDistanceM=maximumRecovery,
         crossingWindow={
             entrySeparationM=geometry.crossingWindowEntrySeparationM,rearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
             forwardPerParticipantM=traversal,reference=geometry.crossingWindowBasis or "PASSAGE_CONFIGURED_REPRESENTED_LONGITUDINAL_EXTENTS"
@@ -318,20 +374,56 @@ local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
     if type(fieldWorld)~="table" or type(fieldWorld.boundary)~="table" or OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3 then return false,"FIELD_WORLD_GEOMETRY_UNAVAILABLE" end
     local stepM=COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M
     local entryOrigins=guide.entryOrigins or {}
-    local previous={
-        subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
-        other={x=tonumber(entryOrigins.other and entryOrigins.other.x) or tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(entryOrigins.other and entryOrigins.other.z) or tonumber(bSpace.occupancy and bSpace.occupancy.z)}
+    local current={
+        subject={x=tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(aSpace.occupancy and aSpace.occupancy.z)},
+        other={x=tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(bSpace.occupancy and bSpace.occupancy.z)}
     }
+    local previous={
+        subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z)},
+        other={x=tonumber(entryOrigins.other and entryOrigins.other.x),z=tonumber(entryOrigins.other and entryOrigins.other.z)}
+    }
+    local tails=guide.recoveryTails or {}
+    local evidence={
+        centrelineFieldSupported=false,boundaryEncroachmentUsed=false,sampleStepM=stepM,
+        captureControlReserve={fieldSupported=false},
+        sharedCrossingCore={fieldSupported=false},
+        recoveryTails={
+            subject={required=tails.subject and tails.subject.required==true,positiveZeroRecovery=tails.subject and tails.subject.positiveZeroRecovery==true,distanceM=tonumber(tails.subject and tails.subject.distanceM) or 0,fieldSupported=false},
+            other={required=tails.other and tails.other.required==true,positiveZeroRecovery=tails.other and tails.other.positiveZeroRecovery==true,distanceM=tonumber(tails.other and tails.other.distanceM) or 0,fieldSupported=false}
+        }
+    }
+
+    for _,role in ipairs({"subject","other"}) do
+        local p0=current[role]; local p1=previous[role]
+        if not p0 or not finite(p0.x) or not finite(p0.z) or not p1 or not finite(p1.x) or not finite(p1.z) then
+            return false,"PASSAGE_CAPTURE_RESERVE_TARGET_UNRESOLVED",{theatreComponent="CAPTURE_CONTROL_RESERVE",role=role}
+        end
+        local ok,witness=segmentInsideField(p0.x,p0.z,p1.x,p1.z,fieldWorld,stepM)
+        if not ok then return false,"LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY",{theatreComponent="CAPTURE_CONTROL_RESERVE",role=role,witness=witness} end
+    end
+    evidence.captureControlReserve.fieldSupported=true
+
+    local crossingCleared=false
     for _,gate in ipairs(guide.gates or {}) do
         for _,role in ipairs({"subject","other"}) do
             local p0=previous[role]; local p1=gate[role]
-            if not p0 or not finite(p0.x) or not finite(p0.z) or not p1 or not finite(p1.x) or not finite(p1.z) then return false,"PASSAGE_GUIDE_TARGET_UNRESOLVED" end
+            if not p0 or not finite(p0.x) or not finite(p0.z) or not p1 or not finite(p1.x) or not finite(p1.z) then
+                return false,"PASSAGE_GUIDE_TARGET_UNRESOLVED",{theatreComponent=crossingCleared and "RECOVERY_TAIL" or "CAPTURE_CONTROL_RESERVE",role=role,gateIndex=gate.index}
+            end
+            local component=crossingCleared and "RECOVERY_TAIL" or (gate.kind=="CROSSING_WINDOW_EXIT" and "SHARED_CROSSING_CORE" or "CAPTURE_CONTROL_RESERVE")
             local ok,witness=segmentInsideField(p0.x,p0.z,p1.x,p1.z,fieldWorld,stepM)
-            if not ok then return false,"LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY",{role=role,gateIndex=gate.index,witness=witness} end
+            if not ok then return false,"LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY",{theatreComponent=component,role=role,gateIndex=gate.index,witness=witness} end
             previous[role]={x=p1.x,z=p1.z}
         end
+        if gate.kind=="CROSSING_WINDOW_EXIT" then
+            evidence.sharedCrossingCore.fieldSupported=true
+            crossingCleared=true
+        end
     end
-    return true,nil,{centrelineFieldSupported=true,boundaryEncroachmentUsed=false,sampleStepM=stepM}
+    evidence.recoveryTails.subject.fieldSupported=true
+    evidence.recoveryTails.other.fieldSupported=true
+    evidence.centrelineFieldSupported=true
+    return true,nil,evidence
 end
 
 local function rectangleCorners(x,z,forwardX,forwardZ,envelope)
@@ -903,6 +995,7 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
                         passageExcursion={
                             model=geometry.model,clearanceDeficitM=geometry.clearanceDeficitM,
                             maximumParticipantLateralExcursionM=geometry.maximumParticipantLateralExcursionM,
+                            participantProfiles=geometry.participantProfiles,
                             developmentDistanceM=geometry.developmentDistanceM,recoveryDistanceM=geometry.recoveryDistanceM,
                             totalForwardDistanceM=geometry.totalForwardDistanceM,
                             crossingWindowEntrySeparationM=geometry.crossingWindowEntrySeparationM,
@@ -995,6 +1088,42 @@ local function planConflict(picture,snapshot,conflict)
                 arrangement.pairwisePassageEconomy={combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"}
                 local passageConfiguration,configurationReason=passageConfigurationPlan(conflict,arrangement)
                 if passageConfiguration==nil then return nil,configurationReason end
+                local tailField=fieldEvidence and fieldEvidence.recoveryTails or {}
+                local function recoveryTail(role,assemblyId,profile)
+                    local field=tailField[role] or {}
+                    local required=profile.spatialRecoveryRequired==true
+                    return {
+                        assemblyId=assemblyId,required=required,positiveZeroRecovery=not required,
+                        lateralOffsetM=profile.lateralOffsetM,distanceM=profile.recoveryTailDistanceM,
+                        fieldSupported=field.fieldSupported==true,
+                        basis=required and "SELECTED_PARTICIPANT_LATERAL_EXCURSION" or "ZERO_SELECTED_LATERAL_EXCURSION"
+                    }
+                end
+                local recoveryTails={
+                    subject=recoveryTail("subject",conflict.subjectAssemblyId,geometry.participantProfiles.subject),
+                    other=recoveryTail("other",conflict.otherAssemblyId,geometry.participantProfiles.other)
+                }
+                local theatre={
+                    complete=true,authority="RECOVERY_CAPABLE_PASSAGE_THEATRE_CANDIDATE_SUPPORT",
+                    fieldWorldReferenceKey=fieldWorld and fieldWorld.referenceKey or nil,
+                    captureControlReserve={
+                        fieldSupported=fieldEvidence and fieldEvidence.captureControlReserve and fieldEvidence.captureControlReserve.fieldSupported==true,
+                        controlAllowanceM=geometry.passageEntryControlAllowanceM,
+                        approachDistancePerParticipantM=geometry.approachDistancePerParticipantM,
+                        subjectDevelopmentDistanceM=geometry.participantProfiles.subject.developmentDistanceM,
+                        otherDevelopmentDistanceM=geometry.participantProfiles.other.developmentDistanceM
+                    },
+                    sharedCrossingCore={
+                        fieldSupported=fieldEvidence and fieldEvidence.sharedCrossingCore and fieldEvidence.sharedCrossingCore.fieldSupported==true,
+                        pairSweepSupported=true,entrySeparationM=geometry.crossingWindowEntrySeparationM,
+                        rearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
+                        forwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
+                        representationBasis=geometry.crossingWindowBasis,
+                        minimumRepresentedClearanceM=sweepEvidence and sweepEvidence.minimumRepresentedClearanceM or nil
+                    },
+                    recoveryTails=recoveryTails,
+                    thirdPartySupport=thirdEvidence
+                }
                 guide.identity="cooperative-passage-guide:"..tostring(conflict.identity)..":"..tostring(index)
                 guide.fieldSupport=fieldEvidence
                 guide.pairSweepSupport=sweepEvidence
@@ -1013,12 +1142,12 @@ local function planConflict(picture,snapshot,conflict)
                     representationFitnessIds={fitness[1].representationId,fitness[2].representationId},
                     localPassageSpace={
                         fieldWorldReferenceKey=fieldWorld and fieldWorld.referenceKey or nil,passagePresumption=true,
-                        fieldCentrelineSweepSupported=true,boundaryEncroachmentEvaluated=false,boundaryEncroachmentReason="CURRENT_EXPRESSION_DOES_NOT_REQUIRE_MARGIN_USE",
+                        fieldCentrelineSweepSupported=true,recoveryCapableTheatreSupported=true,boundaryEncroachmentEvaluated=false,boundaryEncroachmentReason="CURRENT_EXPRESSION_DOES_NOT_REQUIRE_MARGIN_USE",
                         thirdPartyConstraints=thirdEvidence and thirdEvidence.constraints or {},
                         thirdPartyConstraintCount=thirdEvidence and thirdEvidence.thirdPartyConstraintCount or 0,
                         thirdPartySupportBasis="CURRENT_POSITIVE_OPERATION_ASSEMBLY_OCCUPANCY"
                     },
-                    passageArrangement=arrangement,passageGuide=guide,passageConfiguration=passageConfiguration,pairSpecificPassageClearance=pairClearance,
+                    passageArrangement=arrangement,passageGuide=guide,passageConfiguration=passageConfiguration,pairSpecificPassageClearance=pairClearance,recoveryCapablePassageTheatre=theatre,
                     passageEntry={
                         ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,
                         controlAllowanceM=geometry.passageEntryControlAllowanceM,approachDistancePerParticipantM=geometry.approachDistancePerParticipantM,
@@ -1026,6 +1155,7 @@ local function planConflict(picture,snapshot,conflict)
                     },
                     passageExcursion={
                         model=geometry.model,clearanceDeficitM=geometry.clearanceDeficitM,maximumParticipantLateralExcursionM=geometry.maximumParticipantLateralExcursionM,
+                        participantProfiles=geometry.participantProfiles,
                         developmentDistanceM=geometry.developmentDistanceM,recoveryDistanceM=geometry.recoveryDistanceM,totalForwardDistanceM=geometry.totalForwardDistanceM,
                         crossingWindowEntrySeparationM=geometry.crossingWindowEntrySeparationM,crossingWindowRearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
                         crossingWindowForwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
@@ -1041,7 +1171,7 @@ local function planConflict(picture,snapshot,conflict)
             -- normal Candidate pass so diagnostics can expose NO -> YES -> NO
             -- clearance behaviour without repeating any geometric work.
             rejected[#rejected+1]={
-                index=index,fieldReason=fieldReason,sweepReason=sweepReason,thirdPartyReason=thirdReason,thirdPartyEvidence=thirdEvidence,
+                index=index,fieldReason=fieldReason,fieldEvidence=fieldEvidence,sweepReason=sweepReason,thirdPartyReason=thirdReason,thirdPartyEvidence=thirdEvidence,
                 sweepEvidence=sweepEvidence,separationM=separation,longitudinalSeparationM=longitudinalSeparation,
                 currentLateralSeparationM=pairClearance.currentLateralSeparationM,relationSign=arrangement.relationSign,
                 subjectLateralOffsetM=arrangement.subjectLateralOffsetM,otherLateralOffsetM=arrangement.otherLateralOffsetM,
@@ -1062,7 +1192,7 @@ local function planConflict(picture,snapshot,conflict)
             }
         end
     end
-    return nil,"LOCAL_PASSAGE_SPACE_EXHAUSTED_WITHIN_SUPPORTED_PROFILE",rejected
+    return nil,"RECOVERY_CAPABLE_PASSAGE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE",rejected
 end
 
 
