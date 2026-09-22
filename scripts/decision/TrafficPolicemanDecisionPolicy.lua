@@ -94,10 +94,28 @@ local function cornerRightOfWayChoice(entries)
         local evidence=entry.metadata.cornerRightOfWay
         return evidence and evidence.protectedParticipant or nil
     end
+    local function regulated(entry)
+        local evidence=entry.metadata.cornerRightOfWay
+        return evidence and evidence.regulatedParticipant or nil
+    end
+    local function requiresCornerEvacuation(participant)
+        return type(participant)=="table"
+            and (participant.cornerIncumbent==true or participant.currentConstrainedCornerOccupancy==true)
+    end
     local a,b=entries[1],entries[2]
     local ap,bp=protected(a),protected(b)
-    if type(ap)~="table" or type(bp)~="table" then
+    local ar,br=regulated(a),regulated(b)
+    if type(ap)~="table" or type(bp)~="table" or type(ar)~="table" or type(br)~="table" then
         return nil,true,"SHARED_CORNER_PARTICIPANT_EVIDENCE_UNAVAILABLE"
+    end
+
+    local aIneligible=requiresCornerEvacuation(ar)
+    local bIneligible=requiresCornerEvacuation(br)
+    if aIneligible and bIneligible then
+        return nil,true,"BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION"
+    end
+    if aIneligible~=bIneligible then
+        return aIneligible and b or a,true,"REGULATE_ONLY_NON_CORNER_OCCUPANT"
     end
 
     local ai=ap.cornerIncumbent==true

@@ -85,3 +85,54 @@ def test_corner_engagement_does_not_create_new_timeout_or_regulation_type():
     assert "CORNER_TIMEOUT" not in config
     assert 'kind~="REGULATION"' in regulation
     assert "CORNER_REGULATION" not in regulation
+
+
+def test_forward_intersection_uses_native_progress_opportunity_not_realised_speed():
+    spatial = (ROOT / "scripts" / "assessment" / "SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
+
+    assert "local function nativeProgressOpportunity(motion)" in spatial
+    assert 'motion.nativeFieldWork and motion.nativeFieldWork.nativeDriveCommand' in spatial
+    assert '"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED"' in spatial
+    assert "result.progressRateMps,result.progressRateSource=nativeProgressOpportunity(motion)" in spatial
+    assert "POSITION_DERIVED_PROGRESS_RATE" not in spatial
+    assert "GIANTS_REPORTED_PROGRESS_RATE" not in spatial
+
+
+def test_bounded_authority_honours_corner_protection_before_fi_role_migration():
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+
+    assert "forwardIntersectionCornerProtectionRetainsCurrentSubject" in authority
+    guard = 'if forwardIntersectionCornerProtectionRetainsCurrentSubject(lease,bridge,semanticAssessment) then'
+    migration = 'applicationContext="ROLE_MIGRATION"'
+    assert guard in authority
+    assert authority.index(guard) < authority.index(migration)
+    assert '"CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION"' in authority
+
+
+def test_forward_intersection_never_physically_regulates_current_corner_incumbent():
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+
+    assert "currentCornerIncumbency=function(picture,assemblyId)" in authority
+    assert 'engagement.cornerIncumbent==true' in authority
+    assert authority.count('"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"') >= 4
+    assert 'lease.ownerTag or ACTION_SPACE_REGULATION_OWNER_TAG' in authority
+    assert 'local fixedForward=bridge.admissionKind=="FORWARD_INTERSECTION"' in authority
+    assert 'lease.fixedForwardIntersection=fixedForward' in authority
+    assert 'fixed and "INTENT_REVELATION_CREEP" or envelope.effectClass' in authority
+
+
+def test_category_1_corner_incumbency_is_generic_regulation_ineligibility():
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    policy = (ROOT / "scripts" / "decision" / "TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+
+    assert 'if operation=="APPLY" and currentCornerIncumbency(picture,assemblyId)~=nil then' in authority
+    assert '"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"' in authority
+    assert 'currentCornerIncumbency(picture,lease.followerAssemblyId)' in authority
+    assert 'currentCornerIncumbency(picture,bridge.followerAssemblyId)' in authority
+    assert 'migrationAwayFromCorner' in authority
+    assert 'currentCornerIncumbency(picture,bridge.regulatedAssemblyId)' in authority
+    assert 'RELOCATION_SERIALIZATION' in authority
+    assert 'requiresCornerEvacuation' in policy
+    assert 'currentConstrainedCornerOccupancy==true' in policy
+    assert '"REGULATE_ONLY_NON_CORNER_OCCUPANT"' in policy
+    assert '"BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION"' in policy

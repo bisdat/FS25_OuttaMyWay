@@ -984,6 +984,54 @@ test("Corner Right-of-Way protects incumbent over earlier non-incumbent arrival"
     equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:PROTECT_CORNER_INCUMBENT")
 end)
 
+test("Corner Right-of-Way never regulates a participant occupying another Category-1 Corner",function()
+    local requirement="corner-right-of-way:shared-corner:test"
+    local regulateCondor=cornerPolicyCandidate("corner-regulate-condor","AS-CONDOR","AS-S416",{
+        assemblyId="AS-S416",engagement=true,cornerIncumbent=false,
+        currentConstrainedCornerOccupancy=false,timeToCornerSec=2
+    },requirement,"REP-CORNER-CONDOR")
+    regulateCondor.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+        assemblyId="AS-CONDOR",engagement=true,cornerIncumbent=true,
+        currentConstrainedCornerOccupancy=true,occupiedCornerKey="corner:other"
+    }
+    local regulateS416=cornerPolicyCandidate("corner-regulate-s416","AS-S416","AS-CONDOR",{
+        assemblyId="AS-CONDOR",engagement=true,cornerIncumbent=true,
+        currentConstrainedCornerOccupancy=true,timeToCornerSec=nil
+    },requirement,"REP-CORNER-S416")
+    regulateS416.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+        assemblyId="AS-S416",engagement=true,cornerIncumbent=false,
+        currentConstrainedCornerOccupancy=false
+    }
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({regulateCondor,regulateS416},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do
+        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-S416")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:REGULATE_ONLY_NON_CORNER_OCCUPANT")
+end)
+
+test("Corner Right-of-Way waits when both possible regulated participants require Category-1 evacuation",function()
+    local requirement="corner-right-of-way:shared-corner:test"
+    local regulateA=cornerPolicyCandidate("corner-both-A","AS-A","AS-B",{
+        assemblyId="AS-B",engagement=true,cornerIncumbent=true,currentConstrainedCornerOccupancy=true
+    },requirement,"REP-CORNER-BOTH-A")
+    regulateA.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+        assemblyId="AS-A",cornerIncumbent=true,currentConstrainedCornerOccupancy=true
+    }
+    local regulateB=cornerPolicyCandidate("corner-both-B","AS-B","AS-A",{
+        assemblyId="AS-A",engagement=true,cornerIncumbent=true,currentConstrainedCornerOccupancy=true
+    },requirement,"REP-CORNER-BOTH-B")
+    regulateB.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+        assemblyId="AS-B",cornerIncumbent=true,currentConstrainedCornerOccupancy=true
+    }
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({regulateA,regulateB},requirement))
+    equal(result.decision.selectedCandidateId,nil)
+    equal(result.decision.nonIntervention.classification,"WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE")
+    equal(result.decision.comparisonBasis.rule,"CORNER_RIGHT_OF_WAY:BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION")
+end)
+
 test("Corner Right-of-Way protects earlier native arrival regardless of Engagement age",function()
     local requirement="corner-right-of-way:shared-corner:test"
     local protectA=cornerPolicyCandidate("corner-arrival-A","AS-00002","AS-00001",{
@@ -6755,11 +6803,17 @@ local function spatialFuture(assemblyId,startX,startZ,endX,endZ,headingX,heading
     }
 end
 
-local function spatialMotion(assemblyId,widthM,speedMps)
+local function spatialMotion(assemblyId,widthM,speedMps,nativeMaxSpeedKmh)
     local workingWidth
     if widthM~=nil then workingWidth={available=true,widthMetres=widthM,source="GIANTS_WORKING_WIDTH_ACCESSOR",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"} end
-    return {assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,reportedSpeedMps=speedMps,
-        nativeFieldWork={workingWidth=workingWidth}}
+    local nativeKmh=nativeMaxSpeedKmh
+    if nativeKmh==nil and speedMps~=nil then nativeKmh=speedMps*3.6 end
+    local nativeDriveCommand={
+        available=nativeKmh~=nil,valid=nativeKmh~=nil,moveForwards=true,maxSpeedKmh=nativeKmh,
+        authority="IMMEDIATE_NATIVE_FIELD_WORKER_DRIVE_COMMAND_ONLY"
+    }
+    return {assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,reportedSpeedMps=speedMps,positionDerivedSpeedMps=speedMps,
+        nativeFieldWork={workingWidth=workingWidth,nativeDriveCommand=nativeDriveCommand}}
 end
 
 local function spatialNear(actual,expected,tolerance)
@@ -6834,6 +6888,22 @@ test("Forward Intersection missing motion leaves temporal allocation unresolved 
     equal(knowledge.boundaryTransitionProjections[1].status,"SUPPORTED")
     equal(knowledge.pairRelationships[1].classification,"FORWARD_INTERSECTION")
     equal(knowledge.pairRelationships[1].temporalAllocationStatus,"UNRESOLVED")
+end)
+
+test("Forward Intersection temporal ordering ignores OuttaMyWay-altered realised speed",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",10,60,100,60,1,0,90),spatialFuture("AS-B",90,90,0,45,-0.89442719,-0.44721360,100.62305899),
+        spatialMotion("AS-A",6,1,18),spatialMotion("AS-B",6,10,18))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION")
+    equal(relation.spatialOverlay,"OPEN_FIELD")
+    spatialNear(relation.subjectProgressRateMps,5)
+    spatialNear(relation.otherProgressRateMps,5)
+    equal(relation.subjectProgressRateSource,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED")
+    equal(relation.otherProgressRateSource,"GIANTS_IMMEDIATE_NATIVE_MAX_SPEED")
+    -- Realised speed would make AS-A the later arrival; equal native opportunities
+    -- correctly leave the farther participant AS-B as the temporal yielder.
+    equal(relation.temporalYielderAssemblyId,"AS-B")
 end)
 
 
@@ -7085,6 +7155,162 @@ test("Forward Intersection evidence continuity distinguishes waiting, dissolutio
     local successor=assessment:assessActionSpaceRegulation(current,superseded)
     equal(successor.disposition,"TERMINATE")
     equal(successor.terminationEvidenceKind,"FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
+end)
+
+test("Follower Boundary Regulation quiesces when the follower becomes a Corner incumbent",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    local clearedOwnerTag=nil
+    authority.regulationControl={
+        clearRegulationLeaseByReference=function(_,referenceKey,ownerTag)
+            equal(referenceKey,"vehicle-root:follower")
+            clearedOwnerTag=ownerTag
+            return true,"CONTROL_CLEANUP_RELEASED"
+        end
+    }
+    local lease={
+        commitmentId="CM-FOLLOW-CORNER",pairKey="PAIR-FOLLOW-CORNER",
+        followerAssemblyId="AS-FOLLOW",followerReferenceKey="vehicle-root:follower",
+        leaderAssemblyId="AS-LEAD",leaderReferenceKey="vehicle-root:leader",
+        governingPurpose="FOLLOWER_BOUNDARY_PROTECTION",actuationActive=true,currentCapKmh=4
+    }
+    authority.followerBoundaryLease=lease
+    local picture={
+        spatialConstraintKnowledge={{
+            cornerKnowledge={engagements={{assemblyId="AS-FOLLOW",cornerIncumbent=true,cornerKey="C1"}}}
+        }}
+    }
+    local result=authority:assessFollowerBoundaryPermission(picture,{decision={epoch=1}},nil,{disposition="PERSIST"})
+    equal(result.status,"QUIESCENT")
+    equal(clearedOwnerTag,"FOLLOWER_BOUNDARY")
+    equal(lease.actuationActive,false)
+    equal(lease.quiescenceReason,"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION")
+end)
+
+test("Corner Right-of-Way migrates Regulation away from a current Corner incumbent when the other participant is admissible",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    authority.regulationControl={executeControlRequest=function() return true end}
+    local lease={
+        commitmentId="CM-CORNER-MIGRATE",conflictIdentity="shared-corner:test",admissionKind="CORNER_RIGHT_OF_WAY",
+        regulatedAssemblyId="AS-CORNER",regulatedReferenceKey="vehicle-root:corner",
+        protectedAssemblyId="AS-OUTSIDE",protectedReferenceKey="vehicle-root:outside",
+        governingPurpose="PRESERVE_SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY",
+        ownerTag="CORNER_RIGHT_OF_WAY",actuationActive=true,fixedCornerRightOfWay=true,currentCapKmh=1
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity="shared-corner:test",classification="SHARED_CORNER_COMPETING_DEMAND",relationshipStatus="POSITIVE",
+        actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true}
+    }
+    local candidate={
+        identity="CA-CORNER-MIGRATE",capability="REGULATE_SPEED",
+        evidenceBasis={actionSpaceRegulationBridge={
+            conflictIdentity="shared-corner:test",admissionKind="CORNER_RIGHT_OF_WAY",
+            regulatedAssemblyId="AS-OUTSIDE",regulatedReferenceKey="vehicle-root:outside",
+            protectedAssemblyId="AS-CORNER",protectedReferenceKey="vehicle-root:corner",
+            fixedRegulationSpeedKmh=1,governingPurpose="PRESERVE_SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY"
+        }}
+    }
+    local picture={
+        opposedCorridorKnowledge={},
+        spatialConstraintKnowledge={{
+            pairRelationships={},
+            cornerKnowledge={
+                sharedCornerSituations={{identity="shared-corner:test"}},
+                engagements={{assemblyId="AS-CORNER",cornerIncumbent=true,cornerKey="C1"}}
+            }
+        }}
+    }
+    local evaluated={decision={selectedCandidateId=candidate.identity,epoch=1},candidates={candidate}}
+    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="SHARED_CORNER_COMPETING_DEMAND_REMAINS_POSITIVELY_SUPPORTED"}
+    local result=authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semantic)
+    equal(result.status,"ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED")
+    equal(result.applicationContext,"ROLE_MIGRATION")
+    equal(result.regulatedAssemblyId,"AS-OUTSIDE")
+    equal(lease.actuationActive,true)
+end)
+
+test("Forward Intersection regulated Corner incumbent is quiesced for native evacuation",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    local clearedOwnerTag=nil
+    authority.regulationControl={
+        clearRegulationLeaseByReference=function(_,referenceKey,ownerTag)
+            equal(referenceKey,"vehicle-root:corner")
+            clearedOwnerTag=ownerTag
+            return true,"CONTROL_CLEANUP_RELEASED"
+        end
+    }
+    local lease={
+        commitmentId="CM-FI-INCUMBENT",conflictIdentity="FI-INCUMBENT",admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId="AS-CORNER",regulatedReferenceKey="vehicle-root:corner",
+        protectedAssemblyId="AS-OUTSIDE",protectedReferenceKey="vehicle-root:outside",
+        governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
+        ownerTag="FORWARD_INTERSECTION_INTENT_REVELATION",
+        actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity="FI-INCUMBENT",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
+        actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
+        reason="GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION"
+    }
+    local picture={
+        opposedCorridorKnowledge={},
+        spatialConstraintKnowledge={{
+            pairRelationships={relation},
+            cornerKnowledge={engagements={{assemblyId="AS-CORNER",cornerIncumbent=true,cornerKey="C1"}}}
+        }}
+    }
+    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="FORWARD_INTERSECTION_REMAINS_POSITIVELY_SUPPORTED"}
+    local result=authority:assessActionSpaceRegulationPermission(picture,{decision={epoch=1},candidates={}},nil,semantic)
+    equal(result.status,"QUIESCENT")
+    equal(result.reason,"ACTION_SPACE_REGULATION_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
+    equal(clearedOwnerTag,"FORWARD_INTERSECTION_INTENT_REVELATION")
+    equal(lease.actuationActive,false)
+    equal(lease.currentCapKmh,nil)
+    equal(lease.quiescenceReason,"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION")
+end)
+
+test("Forward Intersection Corner engagement blocks role migration onto the protected Corner worker",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    local lease={
+        commitmentId="CM-FI-CORNER",conflictIdentity="FI-CORNER",admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId="AS-OUTSIDE",regulatedReferenceKey="vehicle-root:outside",
+        protectedAssemblyId="AS-CORNER",protectedReferenceKey="vehicle-root:corner",
+        governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
+        actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity="FI-CORNER",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
+        actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
+        reason="GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION"
+    }
+    local candidate={
+        identity="CA-FI-CORNER",capability="REGULATE_SPEED",
+        evidenceBasis={actionSpaceRegulationBridge={
+            conflictIdentity="FI-CORNER",admissionKind="FORWARD_INTERSECTION",
+            regulatedAssemblyId="AS-CORNER",regulatedReferenceKey="vehicle-root:corner",
+            protectedAssemblyId="AS-OUTSIDE",protectedReferenceKey="vehicle-root:outside",
+            fixedRegulationSpeedKmh=1,governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME"
+        }}
+    }
+    local evaluated={decision={selectedCandidateId=candidate.identity,epoch=1},candidates={candidate}}
+    local picture={opposedCorridorKnowledge={},spatialConstraintKnowledge={{pairRelationships={relation}}}}
+    local semantic={
+        disposition="PERSIST",evidenceState="CORNER_ENGAGEMENT",
+        reason="CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION",
+        cornerProtection={regulatedAssemblyId="AS-OUTSIDE",protectedAssemblyId="AS-CORNER",cornerKey="C1"}
+    }
+    local result=authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semantic)
+    equal(result.status,"MAINTAINED")
+    equal(result.reason,"CORNER_ENGAGEMENT_PRESERVES_INCUMBENT_FORWARD_INTERSECTION_ALLOCATION")
+    equal(lease.regulatedAssemblyId,"AS-OUTSIDE")
+    equal(lease.protectedAssemblyId,"AS-CORNER")
+    equal(lease.currentCapKmh,1)
 end)
 
 test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-kmh lease",function()
