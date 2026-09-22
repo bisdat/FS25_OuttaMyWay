@@ -7190,6 +7190,7 @@ end)
 test("Corner Right-of-Way migrates Regulation away from a current Corner incumbent when the other participant is admissible",function()
     local runtime=OuttaMyWay.Runtime.new()
     local authority=runtime.regulationBoundedAuthority
+    authority.regulationControl={executeControlRequest=function() return true end}
     local lease={
         commitmentId="CM-CORNER-MIGRATE",conflictIdentity="shared-corner:test",admissionKind="CORNER_RIGHT_OF_WAY",
         regulatedAssemblyId="AS-CORNER",regulatedReferenceKey="vehicle-root:corner",
