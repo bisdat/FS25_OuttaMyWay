@@ -7,7 +7,7 @@
 -- Passage Entry; the derived Entry Boundary is consumed later by Cooperative
 -- Passage Control. TRANSIT_BASE planning carries one uniform Transit obligation.
 -- Passage-Capable Theatre feasibility is participant-scoped: the Shared
--- Crossing Core remains coupled while selected lateral intervention creates only
+-- Crossing Core remains coupled while selected lateral intervention creates
 -- only that participant's Lateral Excursion Development/Reacquisition geometry.
 -- Current represented geometry is bounded evidence rather than exact articulated
 -- swept-envelope closure; third parties and Field World remain constraints, not
