@@ -10,18 +10,6 @@ Support.__index=Support
 -- for whether fresh positive obstruction justifies any later actuation.
 local BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M=60.0
 
-local mandatory={"FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS","CONTROL_CAPABILITY_AVAILABILITY","CONTINUING_INTENT_PRIORITY","PROGRESS_PRESERVATION","RESPONSIBILITY_COMPATIBILITY","OBLIGATION_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"}
-
-local function packet(reason,evidence,applicable)
-    return {result="PASS",applicable=applicable~=false,evidence=evidence or {},reason=reason,provenance={source="ObstructionRelocationCandidateSupport",authority="CAUSAL_OBSTRUCTION_RELOCATION"},revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}}
-end
-
-local function allPassEvidence(reason)
-    local result={}
-    for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do result[id]=packet(reason,{bounded=true}) end
-    return result
-end
-
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -127,19 +115,6 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
     for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do if type(item.referenceKey)~="string" then return nil,"BENEFICIARY_REFERENCE_UNAVAILABLE" end end
     if OuttaMyWay.ValueRecord.length(protected)==0 then return nil,"BENEFICIARY_UNAVAILABLE" end
 
-    local constraints=allPassEvidence("Bounded Causal Obstruction relocation candidate")
-    constraints.FIELD_WORLD_CONTAINMENT=packet("Bounded inward relocation uses the validated fixed centroid-bearing movement without claiming predictive full-sweep Field World containment",{predictiveContainmentClaim=false,routePlanning=false,maximumRelocationDistanceM=objective.maximumRelocationDistanceM},false)
-    constraints.TRANSITION_CLEARANCE=packet("Positive-only representation does not authorise a boundary-away search or negative-clearance inference; each bounded inward actuation returns to fresh Reality",{negativeFutureClearanceAuthority=false,parking=false,routePlanning=false,repeatedActuationRequiresFreshPositiveObstruction=true},false)
-    constraints.REPRESENTATION_FITNESS=packet("Current Physical Assembly pose and positive-conflict representation support only this bounded relocation reference",{representationId="current-obstruction-relocation:"..group.blockerAssemblyReferenceKey})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=packet("Validated non-active direct movement mechanics supply current Player Claim/source-AI checks, opportunistic compaction, Vehicle Activity Context, forward-only fixed-direction actuation and neutralisation",{mechanicalDonor="NonJobActuationMechanism",authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false,relocationSerialization=true})
-    constraints.CONTINUING_INTENT_PRIORITY=packet("Only active supported beneficiaries positively obstructed by this blocker are protected while it translates",{beneficiaryAssemblyIds=group.beneficiaryIds,productiveJobsRemainGiantsOwned=true})
-    constraints.PROGRESS_PRESERVATION=packet("The non-active blocker has no supported productive progress to preserve; movement exists only to remove current Causal Obstruction",{parking=false,tidying=false})
-    constraints.RESPONSIBILITY_COMPATIBILITY=packet("One relocation responsibility is keyed by Local Operation plus blocker Physical Assembly, aggregating pairwise beneficiaries",{relocationKey=group.relocationKey,blockerAssemblyId=group.blockerAssemblyId})
-    constraints.OBLIGATION_COMPATIBILITY=packet("The same unresolved obstruction responsibility may authorise another bounded inward actuation only from fresh positive Causal Obstruction; no move-count budget or boundary-away stage exists",{repeatedActuationRequiresFreshPositiveObstruction=true,moveCountBudget=false,boundaryAwayStage=false})
-    constraints.COMMITMENT_PRECONDITIONS=packet("Current Causal Obstruction, NON_ACTIVE_UNCLAIMED classification and current relocation pose independently establish relocation eligibility",{relocationEligible=true,historicalJobProvenanceRequired=false,configurationConsentRequired=false})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet("One retained Commitment owns OBSTRUCTION_RELOCATION_ACTUATION for the blocker and PROGRESS_ACTUATION only to protect active beneficiaries",{blockerAuthorityClass="OBSTRUCTION_RELOCATION_ACTUATION",serializedBeneficiaryAssemblyIds=group.beneficiaryIds})
-    constraints.SAFE_RELEASE_HANDOVER=packet("Current Player Claim or source AI reactivation immediately outranks relocation; owned completion neutralises actuation before releasing Vehicle Activity Context",{playerClaimCurrentNotSticky=true,actuationNeutralisation=true,relocationSerializationRelease=true})
-
     local protectedIds={}
     local relevantIds={group.blockerAssemblyId}
     local compositionEntries={{assemblyId=group.blockerAssemblyId,commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="OBSTRUCTION_RELOCATION",obstructionRelocationActuation=true}}
@@ -156,7 +131,6 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
         subject={assemblyId=group.blockerAssemblyId},capability="REPOSITION",
         expectedEffect={physicalChange=true,phase="INFIELD",boundedInwardRelocation=true,oneFixedAlignment=true,parking=false},
         evidenceBasis={
-            constraintEvidence=constraints,
             governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey=group.relocationKey,operationIds={group.operationId},sourceIntentIds={},authorizingDemandAssemblyIds=protectedIds,blockerAssemblyId=group.blockerAssemblyId},
             progressActuationOwnership={assemblyIds=protectedIds},
             obstructionRelocationActuationOwnership={assemblyIds={group.blockerAssemblyId}},
@@ -232,25 +206,23 @@ end
 
 local function terminalSpec(context,eventKind,blockerAssemblyId,referenceKey,terminalReason)
     local basis=context.governingBasis or {}
-    local constraints=allPassEvidence("Causal Obstruction relocation settlement consumes fresh current evidence and requests no new actuation")
     return {
         referenceKey=tostring(basis.responsibilityKey)..":settlement:"..eventKind,
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION_SETTLEMENT",eventKind=eventKind},
         subject={assemblyId=blockerAssemblyId},capability=eventKind=="OBJECTIVE_FAILED" and "ESCALATE" or "CONTINUE_UNCHANGED",
         expectedEffect={physicalChange=false,terminalEvent=eventKind,playerEscalationRequired=eventKind=="OBJECTIVE_FAILED"},
-        evidenceBasis={constraintEvidence=constraints,maintainsExistingCommitment=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,terminalEvent=eventKind,terminalReason=terminalReason,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
+{architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,terminalEvent=eventKind,terminalReason=terminalReason,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
         representationFitness={requirements={}},preconditions={evidenceContracts={}},invalidationConditions={},reversibility={kind="NOT_APPLICABLE_SETTLEMENT"},obligationsCreated={},releaseImplications={releasePhysicalAuthority=true},uncertainty={},comparisonCost=0
     }
 end
 
 local function waitingSpec(context,blockerAssemblyId,referenceKey)
     local basis=context.governingBasis or {}
-    local constraints=allPassEvidence("Fresh positive supported beneficiary continuation has not yet discharged the Causal Obstruction responsibility")
     return {
         referenceKey=tostring(basis.responsibilityKey)..":wait-for-positive-continuation",
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION_REASSESSMENT"},subject={assemblyId=blockerAssemblyId},capability="CONTINUE_OBSERVATION",
         expectedEffect={physicalChange=false,waitingForEvidence=true},
-        evidenceBasis={constraintEvidence=constraints,maintainsExistingCommitment=true,existingProgressMayContinue=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,phase="WAITING_FOR_EVIDENCE",blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
+{architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,phase="WAITING_FOR_EVIDENCE",blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
         representationFitness={requirements={}},preconditions={evidenceContracts={{kind="FRESH_POSITIVE_SUPPORTED_CONTINUATION_REQUIRED"}}},invalidationConditions={{kind="PLAYER_CLAIM"},{kind="SOURCE_AI_REACTIVATION"}},reversibility={kind="OBSERVE_ONLY"},obligationsCreated={},releaseImplications={noActuation=true},uncertainty={{kind="OBSTRUCTION_CESSATION_OR_SUPPORTED_CONTINUATION_NOT_YET_POSITIVELY_ESTABLISHED"}},comparisonCost=0
     }
 end
