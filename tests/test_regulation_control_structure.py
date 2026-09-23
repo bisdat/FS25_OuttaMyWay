@@ -86,8 +86,11 @@ def test_p22_is_retired_after_capability_graduation():
     assert "addModEventListener(OuttaMyWay.cooperativePassageControl)" in main
 
 
-def test_candidate_support_uses_production_regulation_lease_vocabulary():
+def test_regulation_authority_and_control_use_production_lease_vocabulary():
     candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    assert "P22_REGULATION_LEASE" not in candidate
-    assert 'leaseKind="REGULATION_LEASE"' in candidate
-    assert "The production Regulation lease can express the Bounded-Authority-owned Resolution-Space Progression Envelope" in candidate
+    authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
+    assert "P22_REGULATION_LEASE" not in candidate + authority + control
+    assert 'target={kind="REGULATION_LEASE"' in authority
+    assert 'target.kind~="REGULATION_LEASE"' in control
+    assert "setRegulationLease" in control
