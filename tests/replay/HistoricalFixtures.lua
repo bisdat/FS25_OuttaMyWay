@@ -1,16 +1,9 @@
 local M={}
-local mandatory={"REPRESENTATION_FITNESS","RESPONSIBILITY_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION"}
-local function evidence(overrides)
-    local result={}
-    for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do result[id]={result="PASS",evidence={documented=true},provenance={source="canonical-documentation"},reason="documented reconstruction supports constraint",revalidationTrigger={kind="FIXTURE_CHANGE"}} end
-    for id,value in OuttaMyWay.ValueRecord.pairs(overrides or {}) do result[id]=value end
-    return result
-end
 local function candidate(referenceKey,capability,cost,options)
     options=options or {}
     return {
         referenceKey=referenceKey,purpose={kind=options.purpose or "SAFE_CONTINUATION",referenceKey=referenceKey},subject={assemblyId=options.assemblyId or "AS-A"},capability=capability,
-        expectedEffect={kind=capability},evidenceBasis={constraintEvidence=evidence(options.constraints),governingBasis=options.governingBasis,progressActuationOwnership=options.progressActuationOwnership,effectiveActuationComposition=options.composition,maintainsExistingCommitment=options.maintainsExistingCommitment},
+        expectedEffect={kind=capability},evidenceBasis={governingBasis=options.governingBasis,progressActuationOwnership=options.progressActuationOwnership,effectiveActuationComposition=options.composition,maintainsExistingCommitment=options.maintainsExistingCommitment},
         representationFitness={requirements=options.fitnessRequirements or {}},preconditions=options.preconditions or {facts={}},invalidationConditions={{kind="OPERATIONAL_PICTURE_CHANGE"}},reversibility={reversible=capability~="ESCALATE"},
         obligationsCreated=options.obligations or {},releaseImplications=options.releaseImplications or {required=false},uncertainty=options.uncertainty or {},comparisonCost=cost
     }

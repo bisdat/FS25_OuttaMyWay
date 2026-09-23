@@ -91,8 +91,10 @@ def test_passage_contract_uses_purpose_specific_representation_authority():
 
     assert 'invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ESTABLISHED_CONFLICT_CHANGE"},{kind="PASSAGE_SUPPORT_LOSS"}}' in support
     assert 'invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ESTABLISHED_CONFLICT_CHANGE"},{kind="PASSAGE_SUPPORT_LOSS"},{kind="CURRENT_PHYSICAL_INTERACTION"}}' not in support
-    assert "complete-assembly Transit directional envelopes" in support
-    assert "generic current physical-conflict DISC overlap is not Passage-clearance authority" in support
+    assert "plan.representationFitnessIds" in support
+    assert "representationFitness={requirements=requirements}" in support
+    assert "pairSweepSupport" in support
+    assert "directionalPassageEnvelopeBasis" in support
     assert "GENERIC_CURRENT_PHYSICAL_CONFLICT_IS_NOT_PASSAGE_CLEARANCE_AUTHORITY" in support
 
 

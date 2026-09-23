@@ -54,8 +54,18 @@ def test_issue67_replacement_core_loader_matches_current_constraint_topology():
 
 def test_issue67_replay_causality_uses_current_constraint_authority():
     replay=read("tests/replay/HistoricalFixtures.lua")
+    engine=read("scripts/constraints/ConstraintEngine.lua")
 
-    assert 'local mandatory={"REPRESENTATION_FITNESS","RESPONSIBILITY_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION"}' in replay
+    for evaluator in (
+        "RepresentationFitnessConstraint",
+        "ResponsibilityCompatibilityConstraint",
+        "CommitmentPreconditionsConstraint",
+        "EffectiveActuationCompositionConstraint",
+    ):
+        assert evaluator in engine
+
+    assert "constraintEvidence" not in replay
+    assert "candidatePlanningEvidence" not in replay
 
     retired=(
         "FIELD_WORLD_CONTAINMENT",

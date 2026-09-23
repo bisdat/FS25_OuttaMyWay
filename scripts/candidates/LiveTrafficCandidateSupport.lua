@@ -19,22 +19,6 @@ local function logInfo(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] "..message) end
 end
 
-local mandatory = {
-    "FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS",
-    "CONTROL_CAPABILITY_AVAILABILITY","CONTINUING_INTENT_PRIORITY",
-    "PROGRESS_PRESERVATION","RESPONSIBILITY_COMPATIBILITY",
-    "OBLIGATION_COMPATIBILITY","COMMITMENT_PRECONDITIONS",
-    "EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"
-}
-
-local function cooperativePassagePacket(reason,evidence,applicable)
-    return {
-        result="PASS",applicable=applicable~=false,evidence=evidence or {},reason=reason,
-        provenance={source="LiveTrafficCandidateSupport",authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT"},
-        revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
-    }
-end
-
 function Support.new(identityRegistry,epochSequence,passiveSupport)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil,projectedPassageRejectionTraceKeys={}},Support)
 end
@@ -79,42 +63,6 @@ local function cooperativePassageBandExhaustion(pictureId,governingRequirementKe
 end
 
 local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,governingRequirementKey)
-    local constraints={}
-    for _,id in ipairs(mandatory) do constraints[id]=cooperativePassagePacket("Supported local Cooperative Passage constraint",{cooperativePassage=true}) end
-    constraints.FIELD_WORLD_CONTAINMENT=cooperativePassagePacket(
-        "Candidate-owned Progressive Passage Search positively supported the complete Recovery-Capable Passage Theatre inside the immutable current Field World: capture/control reserve, Shared Crossing Core, and each required participant Recovery Tail; zero-excursion tails are explicit positive zero-recovery conclusions",
-        {fieldWorldReferenceKey=plan.localPassageSpace and plan.localPassageSpace.fieldWorldReferenceKey,centrelineSweepSupported=true,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,boundaryEncroachment=false,whollyExtraField=false})
-    constraints.TRANSITION_CLEARANCE=cooperativePassagePacket(
-        "The Shared Crossing Core preserves the configured Nominal Inter-Assembly Clearance using Candidate-selected complete-assembly Transit directional envelopes; participant-scoped Recovery Tails are separately Field-World-supported and the full guide excludes known positive third-party occupancy; generic current physical-conflict DISC overlap is not Passage-clearance authority and no generic negative-clearance claim is made",
-        {pairSpecificPassageClearance=plan.pairSpecificPassageClearance,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,pairSweepSupport=plan.passageGuide and plan.passageGuide.pairSweepSupport,thirdPartySupport=plan.passageGuide and plan.passageGuide.thirdPartySupport,manoeuvreSweptOccupancySampled=true,vehicleNameAdmissionGate=false,generalVehicleAuthority=false,negativeClearanceAuthority=false})
-    constraints.REPRESENTATION_FITNESS=cooperativePassagePacket(
-        "Cached current geometry plus same-Job-Episode native configuration-profile provenance admits this established pair to configuration-first Pair-Specific Passage Clearance; compact selection requires a stable native-observed folded profile that positively releases conflict-side Facing Clearance Extent",
-        {representationFitnessIds=plan.representationFitnessIds,controlProfile=plan.controlProfile,vehicleNameAdmissionGate=false,configurationReductionAuthority="AI_REACHABLE_PRODUCTIVE_CONFIGURATION_NATIVE_PROFILE_PLUS_POSITIVE_CONFLICT_SIDE_RELEASE",passageConfiguration=plan.passageConfiguration,generalVehicleAuthority=false})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=cooperativePassagePacket(
-        "Existing proven Hold, optional configuration reduction, target-Reposition and selective restore mechanisms can execute the Candidate-supplied Passage Guide without Control inventing geometry",
-        {controlModule="CooperativePassageControl",passageGuideId=plan.passageGuide and plan.passageGuide.identity,mechanicalDonors={"FieldWorkHoldMechanism","NativeDriveMechanism","TransitConfigurationMechanism"}})
-    constraints.CONTINUING_INTENT_PRIORITY=cooperativePassagePacket(
-        "Neither Established Trajectory is privileged; Pairwise Passage Economy apportioned only the necessary local lateral burden and both participants retain forward progression",
-        {pairwisePassageEconomy=plan.passageArrangement and plan.passageArrangement.pairwisePassageEconomy,subjectOffsetM=plan.passageArrangement and plan.passageArrangement.subjectLateralOffsetM,otherOffsetM=plan.passageArrangement and plan.passageArrangement.otherLateralOffsetM})
-    constraints.PROGRESS_PRESERVATION=cooperativePassagePacket(
-        "The selected guide is a decisive Passage expression, not Information-Gaining Delay; both participants progress through the Shared Crossing Core while downstream Recovery Tail targets exist only for participants whose selected lateral intervention creates spatial recovery debt",
-        {informationGainingDelay=false,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,guideGateCount=plan.passageGuide and OuttaMyWay.ValueRecord.length(plan.passageGuide.gates or {}) or 0})
-    constraints.RESPONSIBILITY_COMPATIBILITY=cooperativePassagePacket(
-        "One pair-scoped Cooperative Passage Commitment resolves the Established Opposed Corridor Conflict while other active Operation assemblies remain Local Spatial Constraints rather than hidden passage participants",
-        {conflictIdentity=plan.conflictIdentity,assemblyIds=plan.assemblyIds,thirdPartyConstraintCount=plan.localPassageSpace and plan.localPassageSpace.thirdPartyConstraintCount or 0})
-    constraints.OBLIGATION_COMPATIBILITY=cooperativePassagePacket(
-        "Material displacement creates one restoration-and-GIANTS-handoff Passage Leg obligation per original participant",
-        {sameJobRestoration=true})
-    constraints.COMMITMENT_PRECONDITIONS=cooperativePassagePacket(
-        "Actuation starts only after this same-picture Cooperative Passage Candidate passes mandatory Constraints and normal Commitment admission/revision",
-        {operatorCommandRequired=false,conflictIdentity=plan.conflictIdentity})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=cooperativePassagePacket(
-        "Both assemblies are explicit REPOSITION/MOVE progress-actuation owners under one Commitment",
-        {assemblyIds=plan.assemblyIds,jointCommitment=true})
-    constraints.SAFE_RELEASE_HANDOVER=cooperativePassagePacket(
-        "Control restores only configurations it actually changed, preserving unchanged participant configuration, before immediate GIANTS handoff with unchanged Job Episodes; Passage Support Loss halts held rather than broadening the Guide",
-        {sameJobRequired=true,restoreBeforeHandoff=true,passageReassessmentOutcomeOnUnsupportedExecution="SAFE_ABANDON_ESCALATE"})
-
     local compositionEntries={}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(plan.assemblyIds or {}) do
         compositionEntries[#compositionEntries+1]={assemblyId=assemblyId,commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true}
@@ -143,7 +91,6 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
         subject={assemblyIds=plan.assemblyIds},capability="REPOSITION",
         expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,recoveryCapablePassageTheatre=true,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true},
         evidenceBasis={
-            constraintEvidence=constraints,
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             progressActuationOwnership={assemblyIds=plan.assemblyIds},
             effectiveActuationComposition={identity="cooperative-passage-composition:"..tostring(plan.conflictIdentity)..":"..pictureId,epoch=pictureValues.epoch,relevantAssemblyIds=plan.assemblyIds,entries=compositionEntries},
@@ -291,14 +238,6 @@ local function actionSpaceExistingCommitmentForRequirement(pictureValues,require
     return match,nil
 end
 
-local function actionSpaceRegulationPacket(reason,evidence)
-    return {
-        result="PASS",applicable=true,evidence=evidence or {},reason=reason,
-        provenance={source="LiveTrafficCandidateSupport",authority="ACTION_SPACE_REGULATION"},
-        revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
-    }
-end
-
 local function actionSpaceRegulationRepresentation(values,pictureId,item)
     local relation=item.relation
     local action=item.action
@@ -333,46 +272,6 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local forward=action.admissionKind=="FORWARD_INTERSECTION"
     local corner=action.admissionKind=="CORNER_RIGHT_OF_WAY"
     local fixed=forward or corner
-    local constraints={}
-    for _,id in ipairs(mandatory) do constraints[id]=actionSpaceRegulationPacket("Action-Space Regulation constraint",{conflictIdentity=relation.identity,relationshipClassification=relation.classification}) end
-    constraints.FIELD_WORLD_CONTAINMENT=actionSpaceRegulationPacket(
-        "The regulated participant is a current Operation member; the protected participant is either another member or a same-Field-World active GIANTS field-work job whose productive intent remains unrevealed. Regulation creates no route or spatial target",
-        {operationId=relation.operationId,spatialTargetCreated=false,subjectOperationMember=relation.subjectOperationMember,otherOperationMember=relation.otherOperationMember,subjectProductiveCommencementPending=relation.subjectProductiveCommencementPending,otherProductiveCommencementPending=relation.otherProductiveCommencementPending})
-    constraints.TRANSITION_CLEARANCE=actionSpaceRegulationPacket(
-        "No displacement transition is commanded; Regulation only bounds one participant's GIANTS-native progression while the active opposed relationship retains passage Action Space",
-        {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,routeAuthority=false,admissionKind=action.admissionKind})
-    constraints.REPRESENTATION_FITNESS=actionSpaceRegulationPacket(
-        forward and "Situation positively supports one Forward Intersection within both Field-World-bounded continuations and positive timing evidence"
-            or (corner and "Situation positively supports one Structural Corner Feature with current competing participant demand; Candidate Support enumerates both temporary right-of-way allocations without choosing one"
-            or "Situation positively supports an active opposed relationship, current physical corridor coupling, positive closure and bounded local-passage proximity"),
-        {currentCorridorOverlap=action.currentCorridorOverlap,separationM=action.separationM,maxSeparationM=action.maxSeparationM,negativeClearanceAuthority=false,admissionKind=action.admissionKind})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=actionSpaceRegulationPacket(
-        "The production Regulation lease can express the Bounded-Authority-owned Resolution-Space Progression Envelope while GIANTS retains route, steering and direction; a zero integer cap is Hold as the terminal magnitude of the same envelope",
-        {controlCapability="REGULATE_SPEED",leaseKind="REGULATION_LEASE",giantsRoutePreserved=true,zeroSpeedHoldExpression=true,progressionEnvelope=true})
-    constraints.CONTINUING_INTENT_PRIORITY=actionSpaceRegulationPacket(
-        "The protected participant remains GIANTS-native; an active pre-productive entrant is protected as unresolved native intent rather than folded/repositioned. Only the current Operation member selected by Situation is temporarily regulated, and that actuation role may migrate under the same unresolved obligation when Situation changes",
-        {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,roleBasis=action.roleBasis,roleAssignmentMutable=true,protectedProductiveCommencementPending=(action.protectedAssemblyId==relation.subjectAssemblyId and relation.subjectProductiveCommencementPending==true) or (action.protectedAssemblyId==relation.otherAssemblyId and relation.otherProductiveCommencementPending==true)})
-    constraints.PROGRESS_PRESERVATION=actionSpaceRegulationPacket(
-        forward and "Fixed 1 km/h Intent-Revelation Creep maximises practical revelation time while fresh Situation owns prompt release"
-            or (corner and "Fixed 1 km/h Intent-Revelation Creep preserves the Decision-allocated temporary Corner right-of-way while GIANTS retains route, steering and direction"
-            or "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Bounded Authority owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression"),
-        {nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,progressionEnvelope="ZERO_TERMINAL_POLICY_TRAJECTORY",reverseCreatedReserveSpendable=false,reposition=false})
-    constraints.RESPONSIBILITY_COMPATIBILITY=actionSpaceRegulationPacket(
-        "The bounded Regulation and any later Established-conflict Passage share one pair-scoped conflict governing requirement",
-        {conflictIdentity=relation.identity,governingRequirementKey=governingRequirementKey})
-    constraints.OBLIGATION_COMPATIBILITY=actionSpaceRegulationPacket(
-        "One terminal-dependent Action-Space preservation obligation remains open only until the relationship dissolves or succeeds into Passage",
-        {sameCommitmentPassageSuccession=true})
-    constraints.COMMITMENT_PRECONDITIONS=actionSpaceRegulationPacket(
-        "Current Situation positively reports Resolution-Space Conservation support and a positive native closure-contribution opportunity for the active opposed relationship",
-        {status=action.status,reason=action.reason,relationshipClassification=relation.classification,admissionKind=action.admissionKind})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=actionSpaceRegulationPacket(
-        "Only the regulated participant owns OuttaMyWay progress actuation; the protected participant remains wholly GIANTS-driven",
-        {regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId})
-    constraints.SAFE_RELEASE_HANDOVER=actionSpaceRegulationPacket(
-        "The Regulation lease expires on positive relationship dissolution and is physically cleared without revoking same-Commitment authority when Cooperative Passage succeeds it",
-        {releaseOnPurposeExpiry=true,sameCommitmentPassageSuccession=true})
-
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
     local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
@@ -395,7 +294,6 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,
             elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=fixed,zeroSpeedHoldExpression=not fixed},
         evidenceBasis={
-            constraintEvidence=constraints,
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
             progressActuationOwnership={assemblyIds={action.regulatedAssemblyId}},effectiveActuationComposition=composition,
@@ -495,32 +393,6 @@ local function followerBoundaryRecord(picture)
     return best.record,nil
 end
 
-local function followerPacket(reason,evidence)
-    return {
-        result="PASS",applicable=true,evidence=evidence or {},reason=reason,
-        provenance={source="LiveTrafficCandidateSupport",authority="FOLLOWER_BOUNDARY"},
-        revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
-    }
-end
-
-local function followerConstraints(record,physicalCandidate)
-    local constraints={}
-    local transition=record.transitionPreservation==true
-    for _,id in ipairs(mandatory) do constraints[id]=followerPacket("Follower Boundary candidate constraint",{pairKey=record.pairKey}) end
-    constraints.FIELD_WORLD_CONTAINMENT=followerPacket("The protected pair remains inside the same active Field World Operation",{operationId=record.operationId})
-    constraints.TRANSITION_CLEARANCE=followerPacket(transition and "An already-admitted follower purpose is being rate-bounded by the leader's current GIANTS native transition command" or "Regulation preserves ordering before follower boundary demand matures; it does not invent a route or manoeuvre pose",{provisionalDemandSeed=not transition,transitionPreservation=transition})
-    constraints.REPRESENTATION_FITNESS=followerPacket(transition and "Existing follower purpose plus a positive immediate GIANTS transition-rate observation support magnitude maintenance only" or "Current Adjacent Following topology and the explicit Provisional Demand Seed are the only active follower-demand representations",{representationFitness=record.representationFitness,historicalNativeManoeuvreAuthority=false,transitionPreservation=transition})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=followerPacket(physicalCandidate and "Existing bounded P22 Regulation lease can cap GIANTS-native follower speed only" or "No new physical capability is required",{giantsRoutePreserved=true,giantsSteeringPreserved=true})
-    constraints.CONTINUING_INTENT_PRIORITY=followerPacket(transition and "The existing follower obligation is retained while GIANTS transitions the leader; only follower speed magnitude is updated" or "Both participants are positively Productive and co-directional; this candidate preserves their existing GIANTS continuations",{leaderAssemblyId=record.leaderAssemblyId,followerAssemblyId=record.followerAssemblyId,transitionPreservation=transition})
-    constraints.PROGRESS_PRESERVATION=followerPacket("Follower remains GIANTS-owned Progress; only its current speed ceiling may be bounded",{followerAssemblyId=record.followerAssemblyId})
-    constraints.RESPONSIBILITY_COMPATIBILITY=followerPacket("Follower-boundary protection is pair-scoped and composes inside the current unresolved traffic responsibility",{existingCommitmentId=record.existingCommitmentId})
-    constraints.OBLIGATION_COMPATIBILITY=followerPacket("One explicit follower-boundary ordering obligation owns purpose persistence until positive retirement",{existingObligationId=record.existingObligationId})
-    constraints.COMMITMENT_PRECONDITIONS=followerPacket("Physical Regulation requires a selected all-PASS Candidate and a live Commitment",{existingCommitmentId=record.existingCommitmentId})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=followerPacket(physicalCandidate and "Follower speed Regulation composes with independent purpose-bound leases under the same Commitment" or "No new actuation is proposed",{neverHoldAll=true})
-    constraints.SAFE_RELEASE_HANDOVER=followerPacket("Retirement requires positive purpose invalidation/satisfaction; absence or temporary uncertainty cannot release the purpose",{stickyPurpose=true,elasticMagnitude=true})
-    return constraints
-end
-
 local function followerRepresentation(values,pictureId,record)
     local representationId="follower-boundary-demand:"..tostring(record.pairKey)..":"..tostring(pictureId)
     values.representationFitness=values.representationFitness or {}
@@ -575,12 +447,10 @@ local function followerSpecification(pictureId,pictureValues,record,representati
             provenance={source="FollowerBoundaryDemandAssessment",authority="FOLLOWER_BOUNDARY_OBSERVATION_EXHAUSTION"}
         }
     end
-    local constraints=followerConstraints(record,physicalCandidate)
     local preference=nil
     if capability~="CONTINUE_UNCHANGED" then preference={primaryResolution=true,governingRequirementKey=requirement,exhaustionEvidence=exhaustion} end
     local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,record.leaderAssemblyId,record.followerAssemblyId,nil)
     local evidence={
-        constraintEvidence=constraints,
         governingBasis={responsibilityKey=requirement,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
         maintainsExistingCommitment=existing or (#(pictureValues.commitmentContext or {})==1),
         existingProgressMayContinue=true,

@@ -38,7 +38,7 @@ def test_main_is_production_composition_root_and_p22_is_retired():
 def test_controls_consume_mechanisms_without_new_semantic_authority():
     passage=text("scripts/control/CooperativePassageControl.lua")
     terminal=text("scripts/control/ObstructionRelocationControl.lua")
-    candidate=text("scripts/candidates/LiveTrafficCandidateSupport.lua")
+    main=text("scripts/main.lua")
     assert "holdMechanism=mechanisms.holdMechanism" in passage
     assert "driveMechanism=mechanisms.driveMechanism" in passage
     assert "configurationMechanism=mechanisms.configurationMechanism" in passage
@@ -48,7 +48,10 @@ def test_controls_consume_mechanisms_without_new_semantic_authority():
     assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
     assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()
     assert not (ROOT/"scripts"/"control"/"TerminalEgressControl.lua").exists()
-    assert '{"FieldWorkHoldMechanism","NativeDriveMechanism","TransitConfigurationMechanism"}' in candidate
+    assert "holdMechanism=OuttaMyWay.FieldWorkHoldMechanism.new()" in main
+    assert "driveMechanism=OuttaMyWay.NativeDriveMechanism.new()" in main
+    assert "configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new()" in main
+    assert "OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
 
 def test_native_drive_retires_only_uncalled_orientation_residue():
     drive=text("scripts/control/mechanisms/NativeDriveMechanism.lua")
