@@ -244,6 +244,20 @@ def test_sourced_production_has_no_retired_root_identity():
     assert offenders == []
 
 
+def test_sourced_production_has_no_scenario_specific_passage_mode():
+    retired = "TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST"
+    offenders = []
+    for path in _loaded_production_lua_paths():
+        text = path.read_text(encoding="utf-8")
+        if retired in text:
+            for index, line in enumerate(text.splitlines(), 1):
+                if retired in line:
+                    offenders.append(
+                        f"{path.relative_to(ROOT).as_posix()}:{index}:{retired}"
+                    )
+    assert offenders == []
+
+
 def test_sourced_production_vocabulary_has_no_historical_decision_identity():
     historical_identity = re.compile(r"(?i)d-?\d{4}")
     offenders = []

@@ -730,7 +730,7 @@ function Runtime:processLiveObservation(raw)
 
     local evaluated=self:evaluateSealedOperationalPicture(supported)
     local boundary=selectedGroupBoundary(evaluated)
-    if type(boundary)=="table" and (boundary.mode=="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" or boundary.mode=="COOPERATIVE_PASSAGE") then
+    if type(boundary)=="table" and boundary.mode=="COOPERATIVE_PASSAGE" then
         local candidate=selectedCandidate(evaluated)
         if candidate~=nil then
             local bridge=candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
