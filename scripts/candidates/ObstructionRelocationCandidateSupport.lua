@@ -211,7 +211,7 @@ local function terminalSpec(context,eventKind,blockerAssemblyId,referenceKey,ter
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION_SETTLEMENT",eventKind=eventKind},
         subject={assemblyId=blockerAssemblyId},capability=eventKind=="OBJECTIVE_FAILED" and "ESCALATE" or "CONTINUE_UNCHANGED",
         expectedEffect={physicalChange=false,terminalEvent=eventKind,playerEscalationRequired=eventKind=="OBJECTIVE_FAILED"},
-{architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,terminalEvent=eventKind,terminalReason=terminalReason,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
+        evidenceBasis={maintainsExistingCommitment=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,terminalEvent=eventKind,terminalReason=terminalReason,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
         representationFitness={requirements={}},preconditions={evidenceContracts={}},invalidationConditions={},reversibility={kind="NOT_APPLICABLE_SETTLEMENT"},obligationsCreated={},releaseImplications={releasePhysicalAuthority=true},uncertainty={},comparisonCost=0
     }
 end
@@ -222,7 +222,7 @@ local function waitingSpec(context,blockerAssemblyId,referenceKey)
         referenceKey=tostring(basis.responsibilityKey)..":wait-for-positive-continuation",
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION_REASSESSMENT"},subject={assemblyId=blockerAssemblyId},capability="CONTINUE_OBSERVATION",
         expectedEffect={physicalChange=false,waitingForEvidence=true},
-{architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,phase="WAITING_FOR_EVIDENCE",blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
+        evidenceBasis={maintainsExistingCommitment=true,existingProgressMayContinue=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,phase="WAITING_FOR_EVIDENCE",blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
         representationFitness={requirements={}},preconditions={evidenceContracts={{kind="FRESH_POSITIVE_SUPPORTED_CONTINUATION_REQUIRED"}}},invalidationConditions={{kind="PLAYER_CLAIM"},{kind="SOURCE_AI_REACTIVATION"}},reversibility={kind="OBSERVE_ONLY"},obligationsCreated={},releaseImplications={noActuation=true},uncertainty={{kind="OBSTRUCTION_CESSATION_OR_SUPPORTED_CONTINUATION_NOT_YET_POSITIVELY_ESTABLISHED"}},comparisonCost=0
     }
 end
