@@ -1227,7 +1227,7 @@ end
 
 test("autonomous head-on support remains passive without positive Productive Continuation evidence",function()
     local runtime=newDecisionRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(headOnSupportPicture(),headOnTestSnapshot())
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
 end)
 
@@ -1696,7 +1696,7 @@ test("active Job Episodes with unresolved field identity wait rather than exhaus
             equal(OuttaMyWay.ValueRecord.length(processed.operation.activeOperationIds),0)
         end
         equal(OuttaMyWay.ValueRecord.length(processed.jobEpisodes.activeEpisodeIds),2)
-        local supported=runtime.passiveCandidateSupport:attach(processed.picture,processed.snapshot)
+        local supported=runtime.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
         local evaluated=runtime:evaluateSealedOperationalPicture(supported)
         equal(evaluated.decision.commitmentAction,"WAIT")
         equal(evaluated.decision.nonIntervention.classification,"CONTINUE_OBSERVATION")
@@ -1719,7 +1719,7 @@ test("inactive assembly without authoritative source-job end evidence preserves 
         if not gap then error("source-job end evidence gap was not published") end
         local second=runtime:processSealedObservation(secondRaw)
         equal(#second.jobEpisodes.activeEpisodeIds,1); equal(#second.operation.activeOperationIds,1)
-        local supported=runtime.passiveCandidateSupport:attach(second.picture,second.snapshot)
+        local supported=runtime.passiveCandidateSupport:publishDecisionPicture(second.picture,second.snapshot)
         local evaluated=runtime:evaluateSealedOperationalPicture(supported)
         equal(evaluated.decision.commitmentAction,"WAIT"); equal(evaluated.decision.nonIntervention.classification,"CONTINUE_OBSERVATION")
     end)
@@ -1869,7 +1869,7 @@ end)
 
 test("passive support publishes only one non-actuating complete candidate",function()
     local runtime=newPictureRuntime(); local processed=runtime:processSealedObservation(pictureFixture(1))
-    local supported=runtime.passiveCandidateSupport:attach(processed.picture,processed.snapshot)
+    local supported=runtime.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
     equal(supported.candidateSupportEvidence.complete,true)
     equal(#supported.candidateSupportEvidence.candidateSpecifications,1)
     local capability=supported.candidateSupportEvidence.candidateSpecifications[1].capability
@@ -1902,7 +1902,7 @@ test("passive live source and reasoning are deterministic from fresh state",func
             local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
             local raw=runtime.liveObservationSource:capture(mission,10)[1]
             local processed=runtime:processSealedObservation(raw)
-            local supported=runtime.passiveCandidateSupport:attach(processed.picture,processed.snapshot)
+            local supported=runtime.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
             local evaluated=runtime:evaluateSealedOperationalPicture(supported)
             return OuttaMyWay.ValueRecord.canonical(evaluated.decision)
         end
@@ -2939,7 +2939,7 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     runtime:setRegulationControl(capability)
 
     local firstBase=buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(12,nil,nil),nil)
-    local first=runtime.liveTrafficCandidateSupport:attach(firstBase,headOnTestSnapshot())
+    local first=runtime.liveTrafficCandidateSupport:publishDecisionPicture(firstBase,headOnTestSnapshot())
     equal(first.candidateSupportEvidence.supportBoundary.mode,"FOLLOWER_BOUNDARY")
     local firstEval=runtime:evaluateSealedOperationalPicture(first)
     equal(firstEval.decision.commitmentAction,"CREATE")
@@ -2971,7 +2971,7 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     -- dispatcher must raise the owner-tag lease instead of preserving the
     -- historical minimum-ever cap.
     local secondBase=buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(20,commitmentId,obligationId),commitmentId)
-    local second=runtime.liveTrafficCandidateSupport:attach(secondBase,headOnTestSnapshot())
+    local second=runtime.liveTrafficCandidateSupport:publishDecisionPicture(secondBase,headOnTestSnapshot())
     local secondEval=runtime:evaluateSealedOperationalPicture(second)
     equal(secondEval.decision.commitmentAction,"MAINTAIN")
     local updated=runtime:dispatchEvaluatedOperationalPicture(second,secondEval)
@@ -2986,7 +2986,7 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     -- The same purpose must also tighten again when the current sealed picture
     -- requires it; elasticity is bidirectional rather than relaxation-only.
     local thirdBase=buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(8,commitmentId,obligationId),commitmentId)
-    local third=runtime.liveTrafficCandidateSupport:attach(thirdBase,headOnTestSnapshot())
+    local third=runtime.liveTrafficCandidateSupport:publishDecisionPicture(thirdBase,headOnTestSnapshot())
     local thirdEval=runtime:evaluateSealedOperationalPicture(third)
     local tightened=runtime:dispatchEvaluatedOperationalPicture(third,thirdEval)
     equal(tightened.status,"ACCEPTED")
@@ -3004,7 +3004,7 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     preserveRecord.status="UNRESOLVED"; preserveRecord.purposeState="PERSIST_UNRESOLVED"
     preserveRecord.reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION"; preserveRecord.controlMagnitude=nil
     local preserveBase=buildFollowerBoundaryPicture(preserveRecord,commitmentId)
-    local preservePicture=runtime.liveTrafficCandidateSupport:attach(preserveBase,headOnTestSnapshot())
+    local preservePicture=runtime.liveTrafficCandidateSupport:publishDecisionPicture(preserveBase,headOnTestSnapshot())
     local preserveEval=runtime:evaluateSealedOperationalPicture(preservePicture)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(preservePicture,preserveEval)
     equal(quiesced.status,"QUIESCENT")
@@ -3019,7 +3019,7 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     -- The same retained purpose may reactivate when positive follower topology
     -- and current magnitude support return; this is not Commitment churn.
     local reactivateBase=buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(10,commitmentId,obligationId),commitmentId)
-    local reactivatePicture=runtime.liveTrafficCandidateSupport:attach(reactivateBase,headOnTestSnapshot())
+    local reactivatePicture=runtime.liveTrafficCandidateSupport:publishDecisionPicture(reactivateBase,headOnTestSnapshot())
     local reactivateEval=runtime:evaluateSealedOperationalPicture(reactivatePicture)
     local reactivated=runtime:dispatchEvaluatedOperationalPicture(reactivatePicture,reactivateEval)
     equal(reactivated.status,"REACTIVATED")
@@ -3034,7 +3034,7 @@ test("Follower Boundary: aligned follower Regulation travels Situation Candidate
     local retireRecord=buildFollowerBoundaryRecord(25,commitmentId,obligationId)
     retireRecord.status="RETIRE_SUPPORTED"; retireRecord.purposeState="RETIRE"; retireRecord.reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"; retireRecord.controlMagnitude=nil
     local retireBase=buildFollowerBoundaryPicture(retireRecord,commitmentId)
-    local retire=runtime.liveTrafficCandidateSupport:attach(retireBase,headOnTestSnapshot())
+    local retire=runtime.liveTrafficCandidateSupport:publishDecisionPicture(retireBase,headOnTestSnapshot())
     local retireEval=runtime:evaluateSealedOperationalPicture(retire)
     equal(retireEval.decision.commitmentAction,"MAINTAIN")
     local released=runtime:dispatchEvaluatedOperationalPicture(retire,retireEval)
@@ -3058,7 +3058,7 @@ test("Follower Boundary: follower Regulation retains current responsibility and 
     function capability:getControlExecutionObservation() return nil end
     runtime:setRegulationControl(capability)
 
-    local first=runtime.liveTrafficCandidateSupport:attach(buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(14,nil,nil),nil),headOnTestSnapshot())
+    local first=runtime.liveTrafficCandidateSupport:publishDecisionPicture(buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(14,nil,nil),nil),headOnTestSnapshot())
     local firstEval=runtime:evaluateSealedOperationalPicture(first)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(first,firstEval)
     local commitmentId=admitted.commitment.identity
@@ -3093,7 +3093,7 @@ test("Job-Episode Dependency Collapse: Follower Regulation ends and physically r
     function capability:getControlExecutionObservation() return nil end
     runtime:setRegulationControl(capability)
 
-    local first=runtime.liveTrafficCandidateSupport:attach(buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(12,nil,nil),nil),headOnTestSnapshot())
+    local first=runtime.liveTrafficCandidateSupport:publishDecisionPicture(buildFollowerBoundaryPicture(buildFollowerBoundaryRecord(12,nil,nil),nil),headOnTestSnapshot())
     local admitted=runtime:dispatchEvaluatedOperationalPicture(first,runtime:evaluateSealedOperationalPicture(first))
     equal(admitted.status,"ACCEPTED")
     local commitmentId=admitted.commitment.identity
@@ -4003,7 +4003,7 @@ test("Cooperative Passage: unsupported Recovery-Capable Theatre retains tactical
         governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local adapted=OuttaMyWay.OperationalPicture.new(values)
-    local supported=runtime.liveTrafficCandidateSupport:attach(adapted,snapshot)
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(adapted,snapshot)
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REGULATE_SPEED")
 end)
@@ -4022,7 +4022,7 @@ test("Cooperative Passage: Passage Selection immediately supersedes Action-Space
         governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local adapted=OuttaMyWay.OperationalPicture.new(values)
-    local supported=runtime.liveTrafficCandidateSupport:attach(adapted,snapshot)
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(adapted,snapshot)
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
@@ -4216,7 +4216,7 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     function capability:getControlExecutionObservation() return nil end
     runtime:setRegulationControl(capability)
     local picture=forwardIntersectionPicture(true)
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,headOnTestSnapshot())
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.evidenceBasis.actionSpaceRegulationBridge.admissionKind,"FORWARD_INTERSECTION")
     equal(specification.evidenceBasis.actionSpaceRegulationBridge.fixedRegulationSpeedKmh,1)
@@ -4228,7 +4228,7 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
 
     local dissolved=forwardIntersectionPicture(false)
-    local passive=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
+    local passive=runtime.liveTrafficCandidateSupport:publishDecisionPicture(dissolved,headOnTestSnapshot())
     local reevaluated=runtime:evaluateSealedOperationalPicture(passive)
     local released=runtime:dispatchEvaluatedOperationalPicture(passive,reevaluated)
     equal(released.status,"RELEASED")
@@ -4245,7 +4245,7 @@ test("Forward Intersection Regulation same-pair Passage replaces responsibility 
     runtime:setRegulationControl(capability)
 
     local initial=forwardIntersectionPicture(true)
-    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(initial,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(admitted.forwardIntersection,true)
@@ -4274,7 +4274,7 @@ test("Forward Intersection Regulation same-pair Passage replaces responsibility 
     end
     runtime:setCooperativePassageControl(cooperativeControl)
 
-    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    local passageSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(passagePicture,passageSnapshot)
     local passageCandidate=passageSupported.candidateSupportEvidence.candidateSpecifications[1]
     local passageBridge=passageCandidate.evidenceBasis.cooperativePassageBridge
     equal(passageBridge.conflictIdentity~=predecessorConflictId,true)
@@ -4306,7 +4306,7 @@ test("Viable Passage replaces unrelated live Forward Intersection without incumb
     runtime:setRegulationControl(capability)
 
     local predecessorPicture=unrelatedForwardIntersectionPicture()
-    local predecessorSupported=runtime.liveTrafficCandidateSupport:attach(predecessorPicture,headOnTestSnapshot())
+    local predecessorSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(predecessorPicture,headOnTestSnapshot())
     local predecessorEval=runtime:evaluateSealedOperationalPicture(predecessorSupported)
     local predecessor=runtime:dispatchEvaluatedOperationalPicture(predecessorSupported,predecessorEval)
     equal(predecessor.status,"ACCEPTED")
@@ -4336,7 +4336,7 @@ test("Viable Passage replaces unrelated live Forward Intersection without incumb
     end
     runtime:setCooperativePassageControl(cooperativeControl)
 
-    local portfolio=runtime.prospectiveDecisionPortfolioSupport:attach(passagePicture,passageSnapshot)
+    local portfolio=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(passagePicture,passageSnapshot)
     equal(portfolio.candidateSupportEvidence.supportBoundary.mode,"PROSPECTIVE_DECISION_PORTFOLIO")
     local evaluated=runtime:evaluateSealedOperationalPicture(portfolio)
     local selected=nil
@@ -4373,7 +4373,7 @@ test("Forward Intersection fixed creep role migration does not require a Resolut
     runtime:setRegulationControl(capability)
 
     local initial=forwardIntersectionPicture(true)
-    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(initial,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED")
@@ -4395,7 +4395,7 @@ test("Forward Intersection fixed creep role migration does not require a Resolut
     relation.actionSpaceConservation.protectedAssemblyId="AS-B"
     relation.actionSpaceConservation.protectedReferenceKey="vehicle-root:201"
     local changed=OuttaMyWay.OperationalPicture.new(values)
-    local changedSupported=runtime.liveTrafficCandidateSupport:attach(changed,headOnTestSnapshot())
+    local changedSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(changed,headOnTestSnapshot())
     local changedEval=runtime:evaluateSealedOperationalPicture(changedSupported)
     equal(changedEval.decision.commitmentAction,"MAINTAIN")
     local migrated=runtime:dispatchEvaluatedOperationalPicture(changedSupported,changedEval)
@@ -4441,7 +4441,7 @@ test("Pre-productive intent relevance crosses Candidate as Regulation only and c
         governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local picture=OuttaMyWay.OperationalPicture.new(values)
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,headOnTestSnapshot())
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"REGULATE_SPEED")
@@ -4468,7 +4468,7 @@ test("Cooperative Passage: Established conflict Resolution-Space Regulation cros
         governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     base=OuttaMyWay.OperationalPicture.new(values)
-    local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(base,headOnTestSnapshot())
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.preconditions.relationshipClassification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
@@ -4485,7 +4485,7 @@ test("Cooperative Passage: Action-Space Regulation crosses Candidate Decision Co
     runtime:setRegulationControl(capability)
 
     local base=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(base,headOnTestSnapshot())
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"CREATE")
@@ -4519,7 +4519,7 @@ test("Cooperative Passage: Action-Space Regulation crosses Candidate Decision Co
         accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED"
     end
     runtime:setCooperativePassageControl(cooperativeControl)
-    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    local passageSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(passagePicture,passageSnapshot)
     equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(passageSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
     local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
@@ -4564,7 +4564,7 @@ local function followerResponsibilityFixture()
     record.leaderReferenceKey="vehicle-root:101"; record.followerReferenceKey="vehicle-root:201"
     local values=OuttaMyWay.ValueRecord.toTable(buildFollowerBoundaryPicture(record,nil))
     values.identities.assemblies={"AS-A","AS-B"}
-    local supported=runtime.liveTrafficCandidateSupport:attach(OuttaMyWay.OperationalPicture.new(values),headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(OuttaMyWay.OperationalPicture.new(values),headOnTestSnapshot())
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,runtime:evaluateSealedOperationalPicture(supported))
     equal(admitted.status,"ACCEPTED")
     return runtime,admitted,events
@@ -4587,7 +4587,7 @@ local function followerPassageFixture(runtime,admitted,events)
         return true,"ACCEPTED"
     end
     runtime:setCooperativePassageControl(control)
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"REVISE")
     return supported,evaluated
@@ -4696,7 +4696,7 @@ test("Follower ordinary revalidation preserves explicit semantic identity at unc
     record.pairKey="AS-A|AS-B"; record.leaderAssemblyId="AS-A"; record.followerAssemblyId="AS-B"
     record.leaderReferenceKey="vehicle-root:101"; record.followerReferenceKey="vehicle-root:201"
     local values=OuttaMyWay.ValueRecord.toTable(buildFollowerBoundaryPicture(record,id)); values.identities.assemblies={"AS-A","AS-B"}
-    local picture=runtime.liveTrafficCandidateSupport:attach(OuttaMyWay.OperationalPicture.new(values),headOnTestSnapshot())
+    local picture=runtime.liveTrafficCandidateSupport:publishDecisionPicture(OuttaMyWay.OperationalPicture.new(values),headOnTestSnapshot())
     local result=runtime:dispatchEvaluatedOperationalPicture(picture,runtime:evaluateSealedOperationalPicture(picture))
     equal(result.status,"ACCEPTED")
     equal(result.currentResponsibility.identity,admitted.currentResponsibility.identity)
@@ -4734,7 +4734,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     function capability:getControlExecutionObservation() return nil end
     runtime:setRegulationControl(capability)
     local base=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(base,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.currentResponsibility.kind,"REGULATION")
@@ -4757,7 +4757,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     function cooperativeControl:isActive() return false end
     function cooperativeControl:executeJointRequests(a,b,candidate) starts=starts+1; return true,"UNEXPECTED" end
     runtime:setCooperativePassageControl(cooperativeControl)
-    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    local passageSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(passagePicture,passageSnapshot)
     local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
     local refusedValues=OuttaMyWay.ValueRecord.toTable(passageSupported)
     refusedValues.commitmentContext={}
@@ -4790,7 +4790,7 @@ test("Action-Space responsibility authority preserves identity for reactivation 
     function capability:getControlExecutionObservation() return nil end
     runtime:setRegulationControl(capability)
     local picture=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local initial=admitted.currentResponsibility
@@ -4828,7 +4828,7 @@ test("Cooperative Passage: Resolution-Space role migration moves actuation under
     runtime:setRegulationControl(capability)
 
     local initial=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(initial,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED")
@@ -4857,7 +4857,7 @@ test("Cooperative Passage: Resolution-Space role migration moves actuation under
         governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local changed=OuttaMyWay.OperationalPicture.new(values)
-    local changedSupported=runtime.liveTrafficCandidateSupport:attach(changed,headOnTestSnapshot())
+    local changedSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(changed,headOnTestSnapshot())
     local changedEval=runtime:evaluateSealedOperationalPicture(changedSupported)
     equal(changedEval.decision.commitmentAction,"MAINTAIN")
     local migrated=runtime:dispatchEvaluatedOperationalPicture(changedSupported,changedEval)
@@ -4889,7 +4889,7 @@ test("Resolution-Space Progression Envelope tightens prospectively as ordinary s
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
@@ -4902,7 +4902,7 @@ test("Resolution-Space Progression Envelope tightens prospectively as ordinary s
     relation.currentClosing={resolved=true,separationM=65,closingRateMps=3.2,currentDirectionDot=-0.98}
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     local closing=OuttaMyWay.OperationalPicture.new(values)
-    local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
+    local closingSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
     local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED")
@@ -4924,7 +4924,7 @@ test("Protected Intent-Revelation Locality: Action-Space Regulation bare NO_CURR
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1)
@@ -4941,7 +4941,7 @@ test("Protected Intent-Revelation Locality: Action-Space Regulation bare NO_CURR
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION",intentRevelationQuiescenceVeto={active=true,assemblyIds={"AS-A"},separationM=60,maxSeparationM=80,reason="LOCAL_TURNING_PARTICIPANT_STILL_REVEALING_NATIVE_INTENT"}}
     relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     local transient=OuttaMyWay.OperationalPicture.new(values)
-    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
     local maintained=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(maintained.status=="MAINTAINED" or maintained.status=="ENVELOPE_UPDATED",true)
@@ -4962,7 +4962,7 @@ test("Resolution-Margin Demand: pair-local positive witness prevents Action-Spac
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1)
@@ -4987,7 +4987,7 @@ test("Resolution-Margin Demand: pair-local positive witness prevents Action-Spac
         provenance={source="test",authority="POSITIVE_RESOLUTION_MARGIN_DEMAND_ONLY"}
     }}
     local transient=OuttaMyWay.OperationalPicture.new(values)
-    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
     local maintained=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(maintained.status=="MAINTAINED" or maintained.status=="ENVELOPE_UPDATED",true)
@@ -5009,7 +5009,7 @@ test("Action-Space Regulation positive NOT_REQUIRED quiesces without pair-local 
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
@@ -5037,7 +5037,7 @@ test("Action-Space Regulation positive NOT_REQUIRED quiesces without pair-local 
         provenance={source="test",authority="POSITIVE_RESOLUTION_MARGIN_DEMAND_ONLY"}
     }}
     local transient=OuttaMyWay.OperationalPicture.new(values)
-    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(quiesced.status,"QUIESCENT")
@@ -5061,7 +5061,7 @@ test("Action-Space Regulation quiescent actuation reactivates on positive REGULA
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
@@ -5075,7 +5075,7 @@ test("Action-Space Regulation quiescent actuation reactivates on positive REGULA
     qRelation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
     qRelation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     local qPicture=OuttaMyWay.OperationalPicture.new(qValues)
-    local qSupported=runtime.liveTrafficCandidateSupport:attach(qPicture,headOnTestSnapshot())
+    local qSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(qPicture,headOnTestSnapshot())
     local qEval=runtime:evaluateSealedOperationalPicture(qSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(qSupported,qEval)
     equal(quiesced.status,"QUIESCENT"); equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
@@ -5095,7 +5095,7 @@ test("Action-Space Regulation quiescent actuation reactivates on positive REGULA
         nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local rPicture=OuttaMyWay.OperationalPicture.new(rValues)
-    local rSupported=runtime.liveTrafficCandidateSupport:attach(rPicture,headOnTestSnapshot())
+    local rSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(rPicture,headOnTestSnapshot())
     local rEval=runtime:evaluateSealedOperationalPicture(rSupported)
     equal(rEval.decision.commitmentAction,"MAINTAIN")
     local reactivated=runtime:dispatchEvaluatedOperationalPicture(rSupported,rEval)
@@ -5120,7 +5120,7 @@ test("Resolution-Space Progression Envelope: exhausted ordinary space retains 1 
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
@@ -5137,7 +5137,7 @@ test("Resolution-Space Progression Envelope: exhausted ordinary space retains 1 
     relation.currentClosing={resolved=true,separationM=52.5,closingRateMps=4.8,currentDirectionDot=-0.98}
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     local closing=OuttaMyWay.OperationalPicture.new(values)
-    local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
+    local closingSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
     local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED")
@@ -5158,7 +5158,7 @@ test("Resolution-Space Progression Envelope: Reverse-Created Resolution Reserve 
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
@@ -5171,7 +5171,7 @@ test("Resolution-Space Progression Envelope: Reverse-Created Resolution Reserve 
         relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
         relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
         local picture=OuttaMyWay.OperationalPicture.new(values)
-        local supportedPicture=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+        local supportedPicture=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,headOnTestSnapshot())
         local evaluatedPicture=runtime:evaluateSealedOperationalPicture(supportedPicture)
         return picture,runtime:dispatchEvaluatedOperationalPicture(supportedPicture,evaluatedPicture)
     end
@@ -5206,7 +5206,7 @@ test("Resolution-Space Progression Envelope: low admission speed seeds the envel
     local relation=values.opposedCorridorKnowledge[1]
     relation.actionSpaceConservation.nativeUnrestrictedKmh=8
     local active=OuttaMyWay.OperationalPicture.new(values)
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,8)
@@ -5219,7 +5219,7 @@ test("Resolution-Space Progression Envelope: low admission speed seeds the envel
     relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     local closing=OuttaMyWay.OperationalPicture.new(values)
-    local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
+    local closingSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
     local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED"); equal(#requests,2); equal(requests[2].target.maxSpeedKmh,5)
@@ -5237,7 +5237,7 @@ test("Transient reverse non-closing evidence retains Cooperative Passage obligat
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
@@ -5251,7 +5251,7 @@ test("Transient reverse non-closing evidence retains Cooperative Passage obligat
     relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
     local transient=OuttaMyWay.OperationalPicture.new(values)
-    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(quiesced.status,"QUIESCENT")
@@ -5272,7 +5272,7 @@ test("Potential conflict may retain Cooperative Passage obligation while current
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
@@ -5288,7 +5288,7 @@ test("Potential conflict may retain Cooperative Passage obligation while current
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
     local potential=OuttaMyWay.OperationalPicture.new(values)
-    local potentialSupported=runtime.liveTrafficCandidateSupport:attach(potential,headOnTestSnapshot())
+    local potentialSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(potential,headOnTestSnapshot())
     local potentialEval=runtime:evaluateSealedOperationalPicture(potentialSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(potentialSupported,potentialEval)
     equal(quiesced.status,"QUIESCENT")
@@ -5309,7 +5309,7 @@ test("Transitional Continuation retains Cooperative Passage obligation but does 
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
@@ -5324,7 +5324,7 @@ test("Transitional Continuation retains Cooperative Passage obligation but does 
     relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
     local transitional=OuttaMyWay.OperationalPicture.new(values)
-    local transitionalSupported=runtime.liveTrafficCandidateSupport:attach(transitional,headOnTestSnapshot())
+    local transitionalSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(transitional,headOnTestSnapshot())
     local transitionalEval=runtime:evaluateSealedOperationalPicture(transitionalSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(transitionalSupported,transitionalEval)
     equal(quiesced.status,"QUIESCENT")
@@ -5345,7 +5345,7 @@ test("Cooperative Passage: Action-Space Regulation releases only on positive set
     runtime:setRegulationControl(capability)
 
     local active=actionSpaceRegulationPicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED")
@@ -5360,7 +5360,7 @@ test("Cooperative Passage: Action-Space Regulation releases only on positive set
     relation.resolutionSpaceRelationship={status="POSITIVELY_DISSOLVED",positiveDissolution=true,reason="POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
     local dissolved=OuttaMyWay.OperationalPicture.new(values)
-    local dissolvedSupported=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
+    local dissolvedSupported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(dissolved,headOnTestSnapshot())
     local dissolvedEval=runtime:evaluateSealedOperationalPicture(dissolvedSupported)
     local released=runtime:dispatchEvaluatedOperationalPicture(dissolvedSupported,dissolvedEval)
     equal(released.status,"RELEASED")
@@ -5374,7 +5374,7 @@ end)
 test("Cooperative Passage Established Conflict crosses Candidate Decision Commitment and central Control dispatch",function()
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity); equal(evaluated.decision.commitmentAction,"CREATE")
@@ -5408,7 +5408,7 @@ end)
 test("Cooperative Passage: production Candidate binds each Passage Leg to exact assembly and Job Episode",function()
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(#specification.obligationsCreated,2)
     local seen={}
@@ -5969,7 +5969,7 @@ end)
 test("Direct Cooperative Passage failure removes semantic Resolution Commitment",function()
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
-    local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
+    local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local control={}
     function control:setCompletionHandler(fn) self.handler=fn end
