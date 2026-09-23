@@ -417,7 +417,9 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     for token in ("EQUIVALENCE_SAMPLE_SIDE","SAME_MAX_AREA_RELATIVE_DELTA","SAME_MIN_SAMPLED_JACCARD","DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in evaluator
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "trajectorySituationKnowledge=true" in runtime
+    trajectory=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    assert "scripts/assessment/TrajectoryConflictAssessment.lua" in main
+    assert "OuttaMyWay.TrajectoryConflictAssessment" in trajectory
     assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -610,8 +612,15 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     assert "currentPairAssessmentScope" in assessment
     assert "futureSpaceStatus" in scope and "relationshipStatus" in scope
     assert "futureSpacePositive=%s" in validator
-    for token in ("trajectorySituationKnowledge=true","opposedCorridorClassification=true","runtimeOwnedCycle=true","situationOwnsCurrentKnowledge=true","typedBoundedControl=true"):
-        assert token in runtime
+    trajectory=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    coordinator=(ROOT/"scripts"/"runtime"/"LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
+    assert "scripts/assessment/TrajectoryConflictAssessment.lua" in main
+    assert "ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" in trajectory
+    assert "trajectoryKnowledge" in assessment and "opposedCorridorKnowledge" in assessment
+    assert "scripts/runtime/LiveRuntimeCoordinator.lua" in main
+    assert "local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250" in coordinator
+    assert "runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)" in runtime
+    assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
     for text in (source,assessment,scope,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
