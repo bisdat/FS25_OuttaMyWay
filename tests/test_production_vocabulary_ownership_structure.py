@@ -258,6 +258,36 @@ def test_sourced_production_has_no_scenario_specific_passage_mode():
     assert offenders == []
 
 
+def test_sourced_production_has_no_retired_autonomous_head_on_candidate_support_api():
+    retired = (
+        "markAutonomousHeadOnDispatched",
+        "resetAutonomousHeadOnState",
+        "resetAutonomousState",
+    )
+    offenders = []
+    for path in _loaded_production_lua_paths():
+        text = path.read_text(encoding="utf-8")
+        for token in retired:
+            if token in text:
+                for index, line in enumerate(text.splitlines(), 1):
+                    if token in line:
+                        offenders.append(
+                            f"{path.relative_to(ROOT).as_posix()}:{index}:{token}"
+                        )
+    assert offenders == []
+
+    live = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    bubble = (ROOT / "scripts" / "candidates" / "BubbleDecisionHorizonCandidateSupport.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    coordinator = (ROOT / "scripts" / "runtime" / "LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
+
+    assert "function Support:resetStatus()" in live
+    assert "function Support:resetStatus()" in bubble
+    assert "function Runtime:resetLiveTrafficCandidateSupportStatus()" in runtime
+    assert 'type(self.runtime.resetLiveTrafficCandidateSupportStatus)=="function"' in coordinator
+    assert "self.runtime:resetLiveTrafficCandidateSupportStatus()" in coordinator
+
+
 def test_sourced_production_vocabulary_has_no_historical_decision_identity():
     historical_identity = re.compile(r"(?i)d-?\d{4}")
     offenders = []

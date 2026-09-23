@@ -53,13 +53,9 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
     return self.delegate:buildProjectedGroup(picture,snapshot,projection,targetPictureId,targetEpoch)
 end
 
-function Support:markAutonomousHeadOnDispatched(governingRequirementKey)
-    if type(self.delegate.markAutonomousHeadOnDispatched)=="function" then self.delegate:markAutonomousHeadOnDispatched(governingRequirementKey) end
-end
-
-function Support:resetAutonomousState()
+function Support:resetStatus()
     self.lastStatus="PASSIVE"
-    if type(self.delegate.resetAutonomousState)=="function" then self.delegate:resetAutonomousState() end
+    if type(self.delegate.resetStatus)=="function" then self.delegate:resetStatus() end
 end
 
 function Support:getLastStatus() return self.lastStatus end
