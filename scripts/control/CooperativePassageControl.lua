@@ -186,7 +186,7 @@ function Control:mouseEvent() end
 
 function Control:loadMap()
     local ok,reason=self.driveMechanism:install()
-    logInfo("LOAD architecture=COOPERATIVE_PASSAGE transitGeometry=REQUIRED_FAIL_CLOSED mechanicalProfile=JOB_START_CAPABILITY_GUIDED_PASSAGE vehicleNameGate=false driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
+    logInfo("LOAD architecture=COOPERATIVE_PASSAGE transitGeometry=REQUIRED_FAIL_CLOSED mechanicalProfile=JOB_START_CAPABILITY_GUIDED_PASSAGE vehicleNameGate=false driveHook=%s reason=%s generalVehicleAuthority=false",
         tostring(ok),tostring(reason or "ready"))
 end
 
