@@ -80,11 +80,6 @@ def test_issue112_graduated_physical_representation_uses_current_names_without_e
     assert "physicalRepresentationEvidence" in live
     assert "planViewOccupancyEvidence" in live
 
-    # Current Interface Identity != Historical Evidence Identity.
-    native_drive = (ROOT / "scripts" / "diagnostics" / "NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
-
-    assert "PASSIVE_SHADOW_ONLY" in native_drive
-
 
 def test_passage_contract_uses_purpose_specific_representation_authority():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")

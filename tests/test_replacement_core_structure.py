@@ -323,10 +323,12 @@ def test_v476_trace_reports_candidate_verdict_diagnostics():
 
 
 
-def test_v478_targeted_job_episode_and_field_identity_path_is_active():
+
+def test_v478_job_episode_and_field_identity_path_survives_probe_retirement():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     assert "scripts/observation/LiveAIJobEvidence.lua" in main
-    assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
+    assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" not in main
+    assert not (ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").exists()
     assert "scripts/runtime/LiveRuntimeCoordinator.lua" in main
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
@@ -336,9 +338,8 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "observeRuntimeResult" in validator
     assert "processLiveObservation" not in validator
     assert "self.runtime.processLiveObservation" in coordinator
+    assert "targetedFieldIdentityProbe" not in coordinator
     assert main.index("addModEventListener(OuttaMyWay.liveRuntimeCoordinator)") < main.index("addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)")
-
-
 
 def test_v478_broad_reflection_probe_is_removed_from_active_tree():
     assert not (ROOT/"scripts"/"diagnostics"/"LiveAIStateProbe.lua").exists()
@@ -552,18 +553,19 @@ def test_v4720_shape_gate_and_diagnostic_throttling_remain_passive():
             assert forbidden not in text
 
 
-def test_v4721_future_space_conformance_recovers_existing_local_intent_architecture_passively():
+
+def test_v4721_future_space_conformance_survives_diagnostic_hud_retirement():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     intent=(ROOT/"scripts"/"observation"/"LocalIntentObservation.lua").read_text(encoding="utf-8")
     future=(ROOT/"scripts"/"observation"/"FieldBoundedFutureSpace.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
-    hud=(ROOT/"scripts"/"diagnostics"/"FutureSpaceHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    for rel in ("scripts/observation/LocalIntentObservation.lua","scripts/observation/FieldBoundedFutureSpace.lua","scripts/diagnostics/FutureSpaceHud.lua"):
+    for rel in ("scripts/observation/LocalIntentObservation.lua","scripts/observation/FieldBoundedFutureSpace.lua"):
         assert rel in main
+    assert "scripts/diagnostics/FutureSpaceHud.lua" not in main
+    assert not (ROOT/"scripts"/"diagnostics"/"FutureSpaceHud.lua").exists()
     assert "PASSIVE_FUTURE_HORIZON_SECONDS" not in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for token in ("FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION","futureSpaceRelationshipEvidence","NEXT_MATERIAL_MANOEUVRE"):
@@ -574,11 +576,8 @@ def test_v4721_future_space_conformance_recovers_existing_local_intent_architect
         assert token in future
     for token in ("futureSpaceRelationships","FUTURE_SPACE_INTERSECTION","MANOEUVRING"):
         assert token in assessment
-    for token in ("OTM FUTURE SPACE","FUTURE SPACES INTERSECT","UNRESOLVED WHILE MANOEUVRING","FUTURE-SPACE HUD"):
-        assert token in hud
     assert "FUTURE_SPACE pair=%s classification=%s" in validator
-    assert "trajectorySituationKnowledge=true" in runtime
-    for text in (source,intent,future,assessment,hud,validator,runtime):
+    for text in (source,intent,future,assessment,validator):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
 
@@ -617,22 +616,19 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
 
-def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritative():
+
+def test_v4731_productive_continuation_is_situation_owned_after_probe_retirement():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
     observation=(ROOT/"scripts"/"observation"/"NativeFieldWorkObservation.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     assert "scripts/observation/NativeFieldWorkObservation.lua" in main
-    assert "scripts/diagnostics/ProductiveContinuationProbe.lua" in main
+    assert "scripts/diagnostics/ProductiveContinuationProbe.lua" not in main
+    assert not (ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").exists()
     assert "SituationAssessment.ProductiveContinuation" in assessment
     assert "productiveContinuationKnowledge" in assessment
+    assert "latestProductiveContinuationByReference" in assessment
     assert "nativeFieldWork" in assessment
-    assert "SituationAssessment-owned Productive Continuation" in probe
-    for token in ("getActiveSegmentData", "getCruiseControlSpeed", "getSpeedLimit", "driveToPoint(", "decisionCommitmentBoundary:apply"):
-        assert token not in probe
     assert "semanticAuthority=false" in observation
-
-
 
 def test_v4742_traffic_policeman_decision_policy_current_implementation_contract():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
@@ -674,28 +670,27 @@ def test_d0181_d0143_runtime_literals_and_resurrection_switch_are_retired():
     assert 'bridge.architecture~="COOPERATIVE_PASSAGE"' in runtime
     assert 'kind="COOPERATIVE_PASSAGE"' in runtime
 
-def test_progression_preservation_diagnostics_consume_current_picture_without_authority():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
-    assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
-    op=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
-    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    probe=(ROOT/"scripts"/"diagnostics"/"ProgressionPreservationProbe.lua").read_text(encoding="utf-8")
-    assert 'local PROGRESSION_PRESERVATION_ENABLED=true' in probe
-    assert 'scripts/diagnostics/ProgressionPreservationProbe.lua' in main
-    assert 'progressionEvidence = {}' in source
-    assert 'LIVE_MOTION_DIAGNOSTIC_PLUS_GIANTS_LOCAL_INTENT' in source
-    assert 'motionEvidence=motionEvidence' in assessment
-    assert 'physicalSpaceEvidence=physicalSpaceEvidence' in assessment
-    assert 'openObligations=openObligations' in assessment
-    assert '"motionEvidence", "physicalSpaceEvidence"' in op
-    assert 'setProgressionPreservationProbe' in validator
-    assert 'responseAdjustedSupportableProgression="UNRESOLVED"' in probe
-    assert 'negativeClearanceAuthority=false' in probe
-    assert 'speedAuthority=false' in probe and 'controlAuthority=false' in probe
-    assert 'WITNESS_OPEN' in probe and 'consumedFromBaseline' in probe and 'WITNESS_INVALIDATED' in probe
-    assert 'POTENTIAL_DEMAND' in probe and 'COMMITTED_DEMAND' in probe and 'CURRENT_SPACE' in probe
 
+def test_resolution_margin_demand_owns_promoted_progression_question_after_probe_retirement():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    module=(ROOT/"scripts"/"assessment"/"ResolutionMarginDemandAssessment.lua").read_text(encoding="utf-8")
+    spec=(ROOT/"spec"/"SITUATION_ASSESSMENT.md").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    assert "scripts/assessment/ResolutionMarginDemandAssessment.lua" in main
+    assert "scripts/diagnostics/ProgressionPreservationProbe.lua" not in main
+    assert not (ROOT/"scripts"/"diagnostics"/"ProgressionPreservationProbe.lua").exists()
+    assert "setProgressionPreservationProbe" not in validator
+    for token in (
+        "POSITIVE_WITNESS_WITHIN_LOCAL_INTENT",
+        "CURRENT_SUPPORTED_NATIVE_PROGRESSION",
+        "ProgressionGeometry.rayCapsuleEntry",
+        "negativeClearanceAuthority=false",
+        "COMMITTED_DEMAND",
+        "POTENTIAL_DEMAND",
+        "CURRENT_SPACE",
+    ):
+        assert token in module
+    assert "Resolution-Margin Demand Evidence" in spec
 
 def test_completed_research_instruments_are_absent_from_production():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
@@ -732,38 +727,26 @@ def test_completed_research_instruments_are_absent_from_production():
             assert token not in source, (path, token)
 
 
-def test_v4767_native_field_worker_drive_command_probe_is_passive_and_sdk_aligned():
+
+def test_v4767_native_drive_discovery_is_preserved_as_research_not_running_instrumentation():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    probe=(ROOT/"scripts"/"diagnostics"/"NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     d0137=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
     d0138=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
-    assert 'local NATIVE_FIELD_WORKER_DRIVE_COMMAND_ENABLED=true' in probe
-    assert 'scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua' in main
-    assert 'addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)' in main
-    assert 'spec_aiFieldWorker' in probe and 'aiDriveParams' in probe
-    assert 'params.moveForwards' in probe and 'params.tX' in probe and 'params.tZ' in probe and 'params.maxSpeed' in probe
-    assert 'getDriveData()' in probe and 'never calls' in probe
-    assert 'driveToPoint' in probe and 'never' in probe
-    assert 'candidateRelation' in probe
-    assert 'vehicle.aiDriveDirection' in probe
-    assert 'initialization/default fields' in probe
-    assert 'deliberately not observed here' in probe
-    assert 'routePrediction=false' in probe and 'futureSpaceAuthority=false' in probe
-    assert 'refugeSelectionAuthority=false' in probe and 'controlAuthority=false' in probe
-    assert 'D-0137' in decision and 'falsified' in decision
-    assert 'D-0138' in decision and 'aiDriveParams' in decision
-    assert 'Result — falsified' in d0137
-    assert 'Fast falsification' in d0138
+    assert "scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua" not in main
+    assert not (ROOT/"scripts"/"diagnostics"/"NativeFieldWorkerDriveCommandProbe.lua").exists()
+    assert "D-0137" in decision and "falsified" in decision
+    assert "D-0138" in decision and "aiDriveParams" in decision
+    assert "Result — falsified" in d0137
+    assert "Fast falsification" in d0138
 
 
-def test_v4769_lua_harness_uses_native_field_worker_drive_command_probe_not_falsified_native_ai_drive_signal_probe():
+def test_v4769_lua_harness_does_not_recreate_retired_native_drive_instrumentation():
     harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
-    assert 'load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")' in harness
+    assert 'load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")' not in harness
     assert 'load("scripts/diagnostics/NativeAIDriveSignalProbe.lua")' not in harness
     assert 'NativeAIDriveSignalProbe.' not in harness
-    assert 'NativeFieldWorkerDriveCommandProbe.candidateRelation' in harness
-
+    assert 'NativeFieldWorkerDriveCommandProbe.' not in harness
 
 def test_v0165_transit_base_uses_job_start_cached_capability_and_bounded_settlement():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
@@ -865,8 +848,8 @@ def test_alignment_authority_surface_is_central_and_diagnostics_are_downstream_o
         assert "g_currentMission" not in text, f"{path.relative_to(ROOT)} must not read GIANTS mission Reality directly"
     assert 'scripts/control/LiveControlDispatcher.lua' in main
     assert 'scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua' not in main
-    assert main.index('addModEventListener(OuttaMyWay.liveRuntimeCoordinator)') < main.index('addModEventListener(OuttaMyWay.productiveContinuationProbe)')
     assert main.index('addModEventListener(OuttaMyWay.liveRuntimeCoordinator)') < main.index('addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)')
+
 
 
 def test_aligned_follower_boundary_regulation_uses_current_knowledge_and_central_control_only():
@@ -880,8 +863,6 @@ def test_aligned_follower_boundary_regulation_uses_current_knowledge_and_central
     control=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     operational=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     coordinator=(ROOT/"scripts"/"runtime"/"LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
-
-    hud=(ROOT/"scripts"/"diagnostics"/"FollowerPacingHud.lua").read_text(encoding="utf-8")
 
     assert 'scripts/assessment/FollowerBoundaryDemandAssessment.lua' in main
     assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED' not in config
@@ -908,26 +889,18 @@ def test_aligned_follower_boundary_regulation_uses_current_knowledge_and_central
     assert 'historicalNativeManoeuvreAuthority=false' in assessment
     assert 'NativeManoeuvreObservationSource' not in assessment
     assert 'forensicDemandEnvelope' not in assessment
-    assert 'FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR' in assessment
     assert 'FOLLOWER_BOUNDARY' in support
-    assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED' not in support
     assert 'local function followerBoundaryRecord(picture)' in support
     assert 'FOLLOWER_BOUNDARY_PROTECTION' in support
     assert 'applyFollowerBoundaryDecision' in lifecycle
     assert 'settleFollowerBoundaryPurpose' in lifecycle
     assert 'FOLLOWER_BOUNDARY' in control
     assert 'ELASTIC_REGULATION_MAGNITUDE_UPDATED' in control
-    assert 'CAP_RELAXATION_REJECTED_PURPOSE_PERSISTS' not in control
-    assert 'FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR' not in control
-    assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
     assert 'local interval=LIVE_RUNTIME_CONTROL_INTERVAL_MS' in coordinator
-    assert 'OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in coordinator
     assert 'PASSIVE_SAMPLE_INTERVAL_MS' not in coordinator
-    assert 'Follower regulation ALIGNED' in hud
-    assert 'legacy follower SHADOW' not in hud
-    assert 'FollowerPacingHud.new(OuttaMyWay.runtime.regulationBoundedAuthority)' in main
+    assert not (ROOT/"scripts"/"diagnostics"/"FollowerPacingHud.lua").exists()
+    assert 'FollowerPacingHud' not in main
     assert 'followerMaturationCompressionProbe' not in main
-
 
 def test_v47100_trajectory_conflict_remains_situation_owned_knowledge_under_cooperative_passage_consumption():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")

@@ -5754,3 +5754,18 @@ TEST identity: **0.3.0.118**.
 **Authority Triad:** Architecture validated unchanged because no production Replay responsibility exists. Specification validated unchanged because no primary Specification assigns Replay to Runtime. Source topology is corrected to match those authorities. Tests retain ownership of executable Replay validation and add structural protection that Replay cannot silently return to shipped Runtime.
 
 **Validate:** GitHub Actions remains the independent offline execution authority for this candidate. No GIANTS Reality behaviour change is claimed from removing an unreachable validation-only production API.
+
+
+## 2026-09-23 — #152 Stage 1 retires completed-question diagnostics
+
+**Observe:** the live diagnostics census separated engineering instrumentation from log publication and player communication. `ProductiveContinuationProbe` now only republishes Situation-owned Productive Continuation Knowledge; `ProgressionPreservationProbe` asks a question now owned by production Resolution-Margin Demand Evidence; `TargetedFieldIdentityProbe` re-reads Job/Field Reality already consumed by current identity/lifecycle owners; and `NativeFieldWorkerDriveCommandProbe` retains useful D-0137/D-0138 research knowledge but has no current semantic consumer. `FutureSpaceHud` and `FollowerPacingHud` are historical engineering presentation, not accepted player-facing HUD architecture. `ArchitectureTrace` duplicates retained Passive Live records and has no independent shipped consumer.
+
+**Discover:** **Reusable Engineering Knowledge != Permanently Running Instrumentation.** **Engineering Observability != Player Communication.** **Presentation Consumer != Evidence Publisher.**
+
+**Decision:** TEST `0.3.0.140` retires those seven shipped diagnostic modules. `PassiveLiveValidator` remains for a later responsibility decomposition but no longer hosts Progression Preservation, feeds Future Space HUD, or duplicates each record into `ArchitectureTrace`. Runtime and LiveRuntimeCoordinator no longer construct/sample the retired Field Identity / Trace instruments. `VersionHud` remains temporarily and explicitly as Development Build Identity for Reality validation.
+
+**Evidence preservation:** Productive Continuation remains first-class Situation knowledge; Resolution-Margin Demand remains first-class Situation evidence; current Job/Field identity remains owned by live Observation/identity machinery; D-0137/D-0138 remain in Decision/Research records. Structural and Lua tests are re-anchored to those promoted owners or explicit retirement rather than preserving the research instruments.
+
+**Non-scope:** no central logging module, verbosity policy, Configuration surface, player-facing HUD architecture, semantic logging retune, or `PassiveLiveValidator` redesign is included. Those questions remain #152 Stage 2 / #139 / #89 work.
+
+**Implementation consequence:** removing `ArchitectureTrace` also removes its diagnostic-only initialization consumption of the shared Runtime epoch sequence. This intentionally avoids retaining a ghost diagnostic epoch solely to preserve numbering; CI is the first check that no semantic contract incorrectly depends on that instrumentation side effect.
