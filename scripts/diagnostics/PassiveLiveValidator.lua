@@ -72,24 +72,23 @@ local function futureSpaceRelationships(picture)
 end
 function Validator.new(runtime)
     return setmetatable({
-        runtime=runtime,progressionPreservationProbe=nil,
+        runtime=runtime,
         elapsed=0,lastLogAt=-math.huge,lastSignature=nil,records={},errorCount=0,
         acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
-        futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={}
+        futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={}
     },Validator)
 end
-function Validator:setProgressionPreservationProbe(probe) self.progressionPreservationProbe=probe end
 function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
-    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset()
+    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
     logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before trace publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
-    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset()
+    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
-function Validator:draw() self.futureSpaceHud:draw() end
+function Validator:draw() end
 
 function Validator:_warn(code,details,nowMilliseconds)
     local pair=details and (details.pairReferenceKey or details.assemblyReferenceKey or details.encounterIdentity) or nil
@@ -109,7 +108,6 @@ function Validator:_record(raw,live)
     local evaluated={candidateInventory=live.candidateInventory,candidates=live.candidates,verdictSet=live.verdictSet,verdicts=live.verdicts,decision=live.decision}
     local capability=selectedCapability(evaluated)
     local passCandidates,unresolvedCandidates,failedCandidates=candidateVerdictSummary(evaluated)
-    if self.progressionPreservationProbe~=nil then self.progressionPreservationProbe:observe(processed.snapshot,supported,evaluated,raw.timestamp) end
     local diagnostics=supported.diagnostics or {}; local counters=diagnostics.counters or {}; local assessedFutureSpaceRelationships=futureSpaceRelationships(supported)
     local dispatch=live.controlDispatch or {}; local request=dispatch.request; local outcome=dispatch.outcome
     local record=OuttaMyWay.PassiveLiveTraceRecord.new({
@@ -127,7 +125,7 @@ function Validator:_record(raw,live)
         admittedEpisodeIds=processed.jobEpisodes.admittedEpisodeIds,endedEpisodeIds=processed.jobEpisodes.endedEpisodeIds,assemblyDiagnostics=diagnostics.assemblyDiagnostics or {},pairDiagnostics=diagnostics.pairPipeline or {},diagnosticContradictions=diagnostics.contradictions or {},currentPairScopeDiagnostics=diagnostics.currentPairScopeDiagnostics or {},futureSpaceRelationshipCount=#assessedFutureSpaceRelationships,futureSpaceRelationships=assessedFutureSpaceRelationships,activeAssemblyReferenceKeys=activeAssemblyReferenceKeys(processed.snapshot),
         provenance={source="PassiveLiveValidator",runtimeProcessingComplete=true,fieldWorld=supported.provenance,decisionCommitmentBoundaryApplied=dispatch.commitment~=nil,interactionPredicatesChanged=false,diagnosticOnly=true}
     })
-    self.records[#self.records+1]=record; self.runtime.trace:append("PASSIVE_LIVE_TRACE",record.epoch,OuttaMyWay.ValueRecord.canonical(record)); return record
+    self.records[#self.records+1]=record; return record
 end
 
 function Validator:_logCycleDiagnostics(cycle,due,nowMilliseconds)
@@ -287,7 +285,7 @@ function Validator:observeRuntimeResult(raw,live,due,nowMilliseconds)
 end
 function Validator:observeRuntimeError(errorValue) self.errorCount=self.errorCount+1; logError(tostring(errorValue)) end
 function Validator:endRuntimeCycle(sampleRecords,nowMilliseconds)
-    for _,record in ipairs(sampleRecords or {}) do self.futureSpaceHud:observeRecord(record) end
+    -- Reserved hook for post-cycle diagnostics; no HUD publication is owned here.
 end
 function Validator:update(dt) end
 function Validator:getRecords() local result={}; for i,v in OuttaMyWay.ValueRecord.ipairs(self.records) do result[i]=v end; return result end

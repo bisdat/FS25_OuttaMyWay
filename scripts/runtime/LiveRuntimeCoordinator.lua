@@ -37,20 +37,18 @@ local function appendObstructionRelocationObservation(raw,observation)
     raw.controlOutcomes[#raw.controlOutcomes+1]=observation
     return true
 end
-function Coordinator.new(runtime,source,targetedFieldIdentityProbe,fieldWorldSnapshots,diagnosticObserver)
-    return setmetatable({runtime=runtime,source=source,targetedFieldIdentityProbe=targetedFieldIdentityProbe,fieldWorldSnapshots=fieldWorldSnapshots,diagnosticObserver=diagnosticObserver,elapsed=0,cycleCount=0,errorCount=0},Coordinator)
+function Coordinator.new(runtime,source,fieldWorldSnapshots,diagnosticObserver)
+    return setmetatable({runtime=runtime,source=source,fieldWorldSnapshots=fieldWorldSnapshots,diagnosticObserver=diagnosticObserver,elapsed=0,cycleCount=0,errorCount=0},Coordinator)
 end
 function Coordinator:loadMap()
     self.elapsed=0; self.cycleCount=0; self.errorCount=0
     if self.source and type(self.source.reset)=="function" then self.source:reset() end
-    if self.targetedFieldIdentityProbe and type(self.targetedFieldIdentityProbe.reset)=="function" then self.targetedFieldIdentityProbe:reset() end
     if self.fieldWorldSnapshots and type(self.fieldWorldSnapshots.reset)=="function" then self.fieldWorldSnapshots:reset() end
     if self.runtime and type(self.runtime.resetLiveTrafficCandidateSupportStatus)=="function" then self.runtime:resetLiveTrafficCandidateSupportStatus() end
     if self.runtime and type(self.runtime.resetSituationKnowledge)=="function" then self.runtime:resetSituationKnowledge() end
 end
 function Coordinator:deleteMap()
     if self.source and type(self.source.reset)=="function" then self.source:reset() end
-    if self.targetedFieldIdentityProbe and type(self.targetedFieldIdentityProbe.reset)=="function" then self.targetedFieldIdentityProbe:reset() end
     if self.fieldWorldSnapshots and type(self.fieldWorldSnapshots.reset)=="function" then self.fieldWorldSnapshots:reset() end
     if self.runtime and self.runtime.bubbleBulletTime and type(self.runtime.bubbleBulletTime.releaseAll)=="function" then self.runtime.bubbleBulletTime:releaseAll("MAP_DELETE") end
     if self.runtime and type(self.runtime.resetSituationKnowledge)=="function" then self.runtime:resetSituationKnowledge() end
@@ -69,7 +67,6 @@ function Coordinator:update(dt)
     self.elapsed=self.elapsed%interval
     local now=(tonumber(g_time) or 0)/1000
     local nowMilliseconds=tonumber(g_time) or 0
-    if self.targetedFieldIdentityProbe~=nil and type(self.targetedFieldIdentityProbe.update)=="function" then self.targetedFieldIdentityProbe:update(g_currentMission,now,nowMilliseconds) end
     local observations=self.source:capture(g_currentMission,now)
     local due=false
     if self.diagnosticObserver and type(self.diagnosticObserver.beginRuntimeCycle)=="function" then due=self.diagnosticObserver:beginRuntimeCycle(self.source:getLastDiagnostics(),nowMilliseconds)==true end
