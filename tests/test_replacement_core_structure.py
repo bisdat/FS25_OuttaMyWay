@@ -176,10 +176,10 @@ def test_decision_selector_has_no_control_or_archive_dependency():
 def test_constraint_engine_declares_only_independently_owned_mandatory_questions():
     engine=(ROOT/"scripts"/"constraints"/"ConstraintEngine.lua").read_text(encoding="utf-8")
     retained={
-        "RepresentationFitness.lua":("RepresentationFitnessConstraint","REPRESENTATION_FITNESS"),
-        "ResponsibilityCompatibility.lua":("ResponsibilityCompatibilityConstraint","RESPONSIBILITY_COMPATIBILITY"),
-        "CommitmentPreconditions.lua":("CommitmentPreconditionsConstraint","COMMITMENT_PRECONDITIONS"),
-        "EffectiveActuationComposition.lua":("EffectiveActuationCompositionConstraint","EFFECTIVE_ACTUATION_COMPOSITION"),
+        "RepresentationFitnessConstraint.lua":("RepresentationFitnessConstraint","REPRESENTATION_FITNESS"),
+        "ResponsibilityCompatibilityConstraint.lua":("ResponsibilityCompatibilityConstraint","RESPONSIBILITY_COMPATIBILITY"),
+        "CommitmentPreconditionsConstraint.lua":("CommitmentPreconditionsConstraint","COMMITMENT_PRECONDITIONS"),
+        "EffectiveActuationCompositionConstraint.lua":("EffectiveActuationCompositionConstraint","EFFECTIVE_ACTUATION_COMPOSITION"),
     }
     for filename,(evaluator_name,constraint_id) in retained.items():
         assert evaluator_name in engine

@@ -6,6 +6,18 @@ ROOT = Path(__file__).resolve().parents[1]
 def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
+def test_constraint_evaluator_basename_matches_primary_export():
+    evaluator_dir = ROOT / "scripts" / "constraints" / "evaluators"
+    files = sorted(evaluator_dir.glob("*.lua"))
+    assert files
+
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        exports = re.findall(r"^OuttaMyWay\.([A-Za-z][A-Za-z0-9_]*)\s*=\s*\{\}\s*$", text, re.M)
+        assert len(exports) == 1, path
+        assert path.stem == exports[0], path
+
+
 def test_candidate_support_cannot_publish_constraint_verdict_authority():
     contract=read("scripts/contracts/CandidateAction.lua")
     space=read("scripts/candidates/CandidateSpace.lua")
@@ -36,10 +48,10 @@ def test_phase13_constraint_engine_owns_only_independent_bounded_questions():
     main=read("scripts/main.lua")
     engine=read("scripts/constraints/ConstraintEngine.lua")
     retained={
-        "RepresentationFitness.lua":("RepresentationFitnessConstraint","REPRESENTATION_FITNESS"),
-        "ResponsibilityCompatibility.lua":("ResponsibilityCompatibilityConstraint","RESPONSIBILITY_COMPATIBILITY"),
-        "CommitmentPreconditions.lua":("CommitmentPreconditionsConstraint","COMMITMENT_PRECONDITIONS"),
-        "EffectiveActuationComposition.lua":("EffectiveActuationCompositionConstraint","EFFECTIVE_ACTUATION_COMPOSITION"),
+        "RepresentationFitnessConstraint.lua":("RepresentationFitnessConstraint","REPRESENTATION_FITNESS"),
+        "ResponsibilityCompatibilityConstraint.lua":("ResponsibilityCompatibilityConstraint","RESPONSIBILITY_COMPATIBILITY"),
+        "CommitmentPreconditionsConstraint.lua":("CommitmentPreconditionsConstraint","COMMITMENT_PRECONDITIONS"),
+        "EffectiveActuationCompositionConstraint.lua":("EffectiveActuationCompositionConstraint","EFFECTIVE_ACTUATION_COMPOSITION"),
     }
     for filename,(evaluator_name,constraint_id) in retained.items():
         assert f"scripts/constraints/evaluators/{filename}" in main
@@ -54,9 +66,9 @@ def test_phase13_constraint_engine_owns_only_independent_bounded_questions():
         assert not (ROOT/"scripts"/"constraints"/"evaluators"/filename).exists()
 
 def test_phase13_retained_evaluators_do_not_relabel_candidate_verdicts():
-    responsibility=read("scripts/constraints/evaluators/ResponsibilityCompatibility.lua")
-    preconditions=read("scripts/constraints/evaluators/CommitmentPreconditions.lua")
-    composition=read("scripts/constraints/evaluators/EffectiveActuationComposition.lua")
+    responsibility=read("scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua")
+    preconditions=read("scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua")
+    composition=read("scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua")
     for text in (responsibility,preconditions,composition):
         assert "fromCandidate" not in text
         assert "constraintEvidence" not in text

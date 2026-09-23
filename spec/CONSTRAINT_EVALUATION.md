@@ -143,10 +143,10 @@ Constraint Evaluation failure does not itself choose an alternative or establish
 | Production source | Participation |
 | --- | --- |
 | [`scripts/constraints/ConstraintEngine.lua`](../scripts/constraints/ConstraintEngine.lua) | `REALISES` |
-| [`scripts/constraints/evaluators/RepresentationFitness.lua`](../scripts/constraints/evaluators/RepresentationFitness.lua) | `REALISES` |
-| [`scripts/constraints/evaluators/ResponsibilityCompatibility.lua`](../scripts/constraints/evaluators/ResponsibilityCompatibility.lua) | `REALISES` |
-| [`scripts/constraints/evaluators/CommitmentPreconditions.lua`](../scripts/constraints/evaluators/CommitmentPreconditions.lua) | `REALISES` |
-| [`scripts/constraints/evaluators/EffectiveActuationComposition.lua`](../scripts/constraints/evaluators/EffectiveActuationComposition.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/RepresentationFitnessConstraint.lua`](../scripts/constraints/evaluators/RepresentationFitnessConstraint.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua`](../scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua`](../scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua) | `REALISES` |
+| [`scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua`](../scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua) | `REALISES` |
 | [`scripts/contracts/ConstraintVerdict.lua`](../scripts/contracts/ConstraintVerdict.lua) | `REALISES` |
 | [`scripts/contracts/ConstraintVerdictSet.lua`](../scripts/contracts/ConstraintVerdictSet.lua) | `REALISES` |
 | [`scripts/constraints/ConstraintEvidence.lua`](../scripts/constraints/ConstraintEvidence.lua) | `SUPPORTS` |
@@ -158,10 +158,10 @@ The following mapping is **non-normative source traceability**.
 Current implementation routes include:
 
 - [`scripts/constraints/ConstraintEngine.lua`](../scripts/constraints/ConstraintEngine.lua) — binds one Candidate inventory to one Operational Picture, executes every current mandatory evaluator for every Candidate, and publishes the verdict set;
-- [`scripts/constraints/evaluators/RepresentationFitness.lua`](../scripts/constraints/evaluators/RepresentationFitness.lua) — current representation-fitness mandatory question;
-- [`scripts/constraints/evaluators/ResponsibilityCompatibility.lua`](../scripts/constraints/evaluators/ResponsibilityCompatibility.lua) — current responsibility-compatibility mandatory question;
-- [`scripts/constraints/evaluators/CommitmentPreconditions.lua`](../scripts/constraints/evaluators/CommitmentPreconditions.lua) — current commitment-precondition mandatory question;
-- [`scripts/constraints/evaluators/EffectiveActuationComposition.lua`](../scripts/constraints/evaluators/EffectiveActuationComposition.lua) — current effective-actuation-composition mandatory question; and
+- [`scripts/constraints/evaluators/RepresentationFitnessConstraint.lua`](../scripts/constraints/evaluators/RepresentationFitnessConstraint.lua) — current representation-fitness mandatory question;
+- [`scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua`](../scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua) — current responsibility-compatibility mandatory question;
+- [`scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua`](../scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua) — current commitment-precondition mandatory question;
+- [`scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua`](../scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua) — current effective-actuation-composition mandatory question; and
 - [`scripts/contracts/ConstraintVerdict.lua`](../scripts/contracts/ConstraintVerdict.lua) plus [`scripts/contracts/ConstraintVerdictSet.lua`](../scripts/contracts/ConstraintVerdictSet.lua) — current semantic record forms.
 
 The current evaluator list and module names are not normative Architecture. What is normative is complete, independent mandatory admissibility evaluation.

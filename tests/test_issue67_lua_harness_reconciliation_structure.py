@@ -20,10 +20,10 @@ def test_issue67_replacement_core_loader_matches_current_constraint_topology():
     run=read("tests/replacement_core/run.lua")
 
     retained=(
-        "RepresentationFitness.lua",
-        "ResponsibilityCompatibility.lua",
-        "CommitmentPreconditions.lua",
-        "EffectiveActuationComposition.lua",
+        "RepresentationFitnessConstraint.lua",
+        "ResponsibilityCompatibilityConstraint.lua",
+        "CommitmentPreconditionsConstraint.lua",
+        "EffectiveActuationCompositionConstraint.lua",
     )
     for filename in retained:
         assert run.count(f'load("scripts/constraints/evaluators/{filename}")') == 1
