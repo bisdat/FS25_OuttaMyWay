@@ -1,0 +1,60 @@
+name: Cleanup old workflow runs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  cleanup:
+    name: Keep five most recent workflow runs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete workflow runs older than the five most recent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          readonly keep_count=5
+          readonly repository="${GITHUB_REPOSITORY}"
+
+          mapfile -t runs < <(
+            gh api --paginate               -H "Accept: application/vnd.github+json"               "/repos/${repository}/actions/runs?per_page=100"               --jq '.workflow_runs[] | [.created_at, (.id | tostring), .name] | @tsv'             | sort -r
+          )
+
+          total_count=${#runs[@]}
+
+          if (( total_count <= keep_count )); then
+            echo "Found ${total_count} workflow runs; nothing to delete."
+            {
+              echo "## Workflow run cleanup"
+              echo
+              echo "Found **${total_count}** workflow runs. Nothing was deleted."
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          delete_count=$((total_count - keep_count))
+
+          echo "Found ${total_count} workflow runs."
+          echo "Keeping the five most recent and deleting ${delete_count} older runs."
+
+          deleted=0
+          for entry in "${runs[@]:keep_count}"; do
+            IFS=$'\t' read -r created_at run_id workflow_name <<< "${entry}"
+            echo "Deleting run ${run_id} (${workflow_name}, ${created_at})"
+            gh api               --method DELETE               -H "Accept: application/vnd.github+json"               "/repos/${repository}/actions/runs/${run_id}"
+            ((deleted += 1))
+          done
+
+          {
+            echo "## Workflow run cleanup"
+            echo
+            echo "Kept the **5 most recent** workflow runs and deleted **${deleted}** older runs."
+            echo
+            echo "The current cleanup run participates in the same recency ordering."
+          } >> "${GITHUB_STEP_SUMMARY}"
