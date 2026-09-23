@@ -1,6 +1,24 @@
-## D-0219 — Recovery-Capable Cooperative Passage and Participant-Scoped Recovery
+## D-0220 — Lateral Excursion Geometry and Common Passage Return Lifecycle
 
 **Status:** Accepted owner decision.
+
+**Decision:** Retire **Recovery Tail**, **Recovery-Capable Passage Theatre**, **zero recovery** and **positive zero recovery** as current Architecture / Specification concepts and lifecycle distinctions.
+
+A **Passage-Capable Theatre** supports the complete intervention proposed for the selected arrangement: capture/control reserve, the pair's **Shared Crossing Core**, and any participant-specific **Lateral Excursion Development/Reacquisition** required to create and then remove lateral displacement. A participant with no selected lateral offset simply has no Lateral Excursion Development/Reacquisition; that absence does not create another Passage mode or an early-completion lifecycle.
+
+All Passage arrangements share the same downstream **Runout / Return Staging / Axis Return / restoration / GIANTS handback** lifecycle, subject to current Reality and the participant's actual intervention-created obligations. Generic recovery/restoration remains valid language for those downstream obligations; the retired terms described guide geometry as if it were a distinct recovery lifecycle.
+
+> **Lateral Excursion Is Optional Passage Geometry, Not A Lifecycle**
+
+> **Guide Reacquisition != Downstream Recovery**
+
+**Reason:** TEST .128/.129 evidence and the subsequent #227 review showed that the former "Recovery Tail" value was the forward guide distance over which lateral displacement was reacquired before guide completion. On-axis and displaced Passages then entered the same return-staging and Axis-Return lifecycle. Reducing Runout quantisation further confirmed that the dominant remaining movement was deliberate Axis Return rather than a separate zero/positive-recovery mode. The later rollback to the .124 implementation line left parts of source, Specification and decision vocabulary stale even though the architectural conclusion remained accepted.
+
+**Consequence:** Current Architecture, Specifications, live concept indexing, production identifiers and validation vocabulary use **Passage-Capable Theatre** and optional **Lateral Excursion Development/Reacquisition**. Source/schema reconciliation must preserve the existing geometry, guide coordinates/order, Runout, Axis Return, restoration and handback behaviour. D-0219 remains decision history but is partially superseded where it defines Recovery Tail / Recovery-Capable / zero-recovery concepts.
+
+## D-0219 — Recovery-Capable Cooperative Passage and Participant-Scoped Recovery
+
+**Status:** Partially superseded by D-0220; retained as decision history.
 
 **Decision:** Cooperative Passage commitment requires a **Recovery-Capable Passage Theatre**, not merely a crossing-valid guide. The prospective theatre consists of capture/control reserve, a pairwise **Shared Crossing Core**, and only the participant-specific **Recovery Tails** created by the selected intervention.
 
