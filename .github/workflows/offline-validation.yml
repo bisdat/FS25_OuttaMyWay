@@ -84,9 +84,9 @@ jobs:
             scripts/candidates/CandidateSpace.lua \
             scripts/constraints/ConstraintEvidence.lua \
             scripts/constraints/ConstraintEngine.lua \
-            scripts/constraints/evaluators/ResponsibilityCompatibility.lua \
-            scripts/constraints/evaluators/CommitmentPreconditions.lua \
-            scripts/constraints/evaluators/EffectiveActuationComposition.lua \
+            scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua \
+            scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua \
+            scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua \
             scripts/contracts/CommitmentRecord.lua \
             scripts/contracts/OperationalPicture.lua \
             scripts/contracts/PassiveLiveTraceRecord.lua \
