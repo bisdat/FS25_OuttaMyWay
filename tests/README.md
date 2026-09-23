@@ -12,7 +12,11 @@ tests/
 │   ├── README.md
 │   └── run.lua
 └── replay/
-    └── HistoricalFixtures.lua
+    ├── ConformanceAssertions.lua
+    ├── HistoricalFixtures.lua
+    ├── ReplayFixture.lua
+    ├── ReplayRunResult.lua
+    └── ReplayRunner.lua
 ```
 
 ## Python structural and source-contract suite
@@ -31,7 +35,7 @@ The harness also has a demonstrated **Validation Runtime Contract** for sealed c
 
 ## Replay fixtures
 
-[`replay/HistoricalFixtures.lua`](replay/HistoricalFixtures.lua) contains executable historical reconstruction inputs for ReplayRunner and conformance testing. They are current test evidence. Their historical provenance does not grant them current architectural authority.
+[`replay/`](replay/) owns the replay validation driver, its validation-only value records/assertions, and executable historical reconstruction inputs. `ReplayRunner` exercises production Runtime seams from the offline harness; none of this machinery is part of shipped Runtime. The historical fixtures are current test evidence, and their provenance does not grant them current architectural authority.
 
 ## Continuous integration
 

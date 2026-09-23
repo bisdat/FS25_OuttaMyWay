@@ -5739,3 +5739,18 @@ Rather than weaken that established contract, the source was reorganised so the 
 Because this executable source changed after the published .117 head, build identity advances again rather than reusing .117.
 
 TEST identity: **0.3.0.118**.
+
+
+## 2026-09-23 — Issue #258 separates Replay validation from shipped Runtime
+
+**Observe:** current Architecture and primary Specifications assign no production Replay responsibility, while `scripts/main.lua` sourced `ReplayFixture`, `ReplayRunResult`, `ConformanceAssertions` and `ReplayRunner`; `Runtime` constructed a Replay runner, exposed `runReplay()`, and published `replayRunCount`. The only demonstrated semantic consumer was the offline replacement-core harness, which already explicitly loaded the Replay modules.
+
+**Discovery:** **Offline Validation Driver != Shipped Runtime API.** A second structural test had preserved the contradiction by describing Replay as “offline only” while requiring it to remain in production startup. **Test-Sustained Production Topology != Runtime Responsibility.**
+
+**Hypothesis:** Replay can move wholly under `/tests` while continuing to exercise the same production Runtime seams and preserve the historical conformance corpus unchanged in meaning.
+
+**Implement:** TEST `0.3.0.139` moves the two Replay value records, conformance assertions and runner to `tests/replay/`; removes Replay sourcing from `scripts/main.lua`; removes Runtime Replay construction, `Runtime:runReplay()` and `replayRunCount`; and has the offline harness instantiate the test-owned Replay runner directly against production Runtime. Historical fixtures and their assertions remain current validation evidence.
+
+**Authority Triad:** Architecture validated unchanged because no production Replay responsibility exists. Specification validated unchanged because no primary Specification assigns Replay to Runtime. Source topology is corrected to match those authorities. Tests retain ownership of executable Replay validation and add structural protection that Replay cannot silently return to shipped Runtime.
+
+**Validate:** GitHub Actions remains the independent offline execution authority for this candidate. No GIANTS Reality behaviour change is claimed from removing an unreachable validation-only production API.

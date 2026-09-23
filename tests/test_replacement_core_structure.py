@@ -213,19 +213,47 @@ def test_current_control_topology_has_one_obstruction_relocation_executor_beside
 
 
 
-def test_v474_replay_modules_are_active_and_offline_only():
+def test_replay_validation_is_test_owned_and_absent_from_shipped_runtime():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
+
+    # Preserve the neighbouring replacement-core composition contract that was
+    # historically bundled into the old Replay topology assertion.
     for rel in (
-        "scripts/replay/ReplayRunner.lua","scripts/replay/ConformanceAssertions.lua",
-        "scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua",
-        "scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua",
+        "scripts/commitment/CommitmentAdmission.lua",
+        "scripts/commitment/GoverningBasisEvaluator.lua",
+        "scripts/commitment/TerminalSettlementEvaluator.lua",
+        "scripts/commitment/DecisionCommitmentBoundary.lua",
     ):
         assert rel in main
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "runReplay" in runtime
+
+    for rel in (
+        "scripts/contracts/ReplayFixture.lua",
+        "scripts/contracts/ReplayRunResult.lua",
+        "scripts/replay/ConformanceAssertions.lua",
+        "scripts/replay/ReplayRunner.lua",
+    ):
+        assert not (ROOT/rel).exists()
+        assert rel not in main
+
+    for rel in (
+        "tests/replay/ReplayFixture.lua",
+        "tests/replay/ReplayRunResult.lua",
+        "tests/replay/ConformanceAssertions.lua",
+        "tests/replay/ReplayRunner.lua",
+    ):
+        assert (ROOT/rel).is_file()
+        assert f'load("{rel}")' in harness
+
+    for token in ("ReplayFixture","ReplayRunResult","ConformanceAssertions","ReplayRunner"):
+        assert token not in main
+    for token in ("replayRunner","runReplay","replayRunCount"):
+        assert token not in runtime
     for token in ("addModEventListener","updateTick","g_currentMission","driveToPoint"):
         assert token not in runtime
 
+    assert "return OuttaMyWay.ReplayRunner.new(runtime):run(fixture)" in harness
 
 def test_replay_corpus_names_all_required_historical_families():
     text=(ROOT/"tests"/"replay"/"HistoricalFixtures.lua").read_text(encoding="utf-8")
@@ -234,10 +262,18 @@ def test_replay_corpus_names_all_required_historical_families():
 
 
 def test_replay_has_no_physical_control_dispatch():
-    active="\n".join(p.read_text(encoding="utf-8") for p in (ROOT/"scripts").rglob("*.lua") if "archive" not in p.parts)
+    active="\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT/"scripts").rglob("*.lua")
+        if "archive" not in path.parts
+    )
+    replay="\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT/"tests"/"replay").glob("*.lua")
+    )
     for token in ("driveToPoint(","setCruiseControlState(","AIFieldWorker:stopCurrentAIJob", "ControlAdmission"):
         assert token not in active
-
+        assert token not in replay
 
 def test_v475_passive_live_modules_are_active_and_zero_control():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
