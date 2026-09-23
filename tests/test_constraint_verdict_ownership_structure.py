@@ -19,7 +19,7 @@ def test_candidate_support_cannot_publish_constraint_verdict_authority():
     assert "fromCandidate" not in evidence
 
     sourced = [ROOT / "scripts/main.lua"]
-    for relative in __import__("re").findall(r'"(scripts/[^"]+\.lua)"', main):
+    for relative in re.findall(r'"(scripts/[^"]+\.lua)"', main):
         sourced.append(ROOT / relative)
 
     # Candidate Support publishes current support facts directly; it must not
