@@ -39,15 +39,9 @@ function Support.new(identityRegistry,epochSequence,passiveSupport)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil,projectedPassageRejectionTraceKeys={}},Support)
 end
 
--- Retained API for LiveRuntimeCoordinator compatibility. The retired prototype
--- one-shot autonomous-head-on marker has no authority; current Situation evidence is
--- authoritative on each live cycle.
-function Support:markAutonomousHeadOnDispatched(governingRequirementKey)
-    if type(governingRequirementKey)=="string" and governingRequirementKey~="" then
-        self.lastStatus="COOPERATIVE_PASSAGE_DISPATCHED_CURRENT_SITUATION_REASSESSMENT_CONTINUES"
-    end
-end
-function Support:resetAutonomousState() self.lastStatus="PASSIVE" end
+-- Candidate Support status is observational and is reset when the live map/runtime
+-- context is reinitialised.
+function Support:resetStatus() self.lastStatus="PASSIVE" end
 function Support:getLastStatus() return self.lastStatus end
 
 -- Cooperative Passage Candidate expression.  Established conflict meaning is
