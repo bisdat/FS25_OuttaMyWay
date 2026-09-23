@@ -1315,7 +1315,7 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
         "passageEntryReady",
         "CROSSING_WINDOW_ENTRY",
         "CROSSING_WINDOW_EXIT",
-        "PARTICIPANT_SCOPED_RECOVERY_CAPABLE_THEATRE",
+        "PARTICIPANT_SCOPED_PASSAGE_CAPABLE_THEATRE",
         "entryOrigins",
         "COOPERATIVE_PASSAGE_EXCURSION",
     ):
@@ -1402,7 +1402,7 @@ def test_passage_rejection_telemetry_reports_candidate_failure_class_without_cha
     for token in ("geometry=%d","field=%d","sweep=%d","thirdParty=%d","other=%d"):
         assert token in support
     assert "rejected[#rejected+1]" in planner
-    assert 'return nil,"RECOVERY_CAPABLE_PASSAGE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE",rejected' in planner
+    assert 'return nil,"PASSAGE_CAPABLE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE",rejected' in planner
     assert "fieldEvidence=fieldEvidence" in planner
     assert "theatreComponent" in support
 
