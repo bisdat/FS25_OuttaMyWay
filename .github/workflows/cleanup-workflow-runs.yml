@@ -6,6 +6,10 @@ on:
 permissions:
   actions: write
 
+concurrency:
+  group: workflow-run-cleanup
+  cancel-in-progress: false
+
 jobs:
   cleanup:
     name: Keep five most recent workflow runs
@@ -25,7 +29,8 @@ jobs:
           readonly two_weeks_ago_epoch="$(date -d '14 days ago' +%s)"
 
           mapfile -t runs < <(
-            gh api --paginate               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: ${api_version}"               "/repos/${repository}/actions/runs?per_page=100"               --jq '.workflow_runs[] | [.created_at, (.id | tostring), .status, .name] | @tsv'             | sort -r
+            gh api --paginate -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: ${api_version}" "/repos/${repository}/actions/runs?per_page=100" --jq '.workflow_runs[] | [.created_at, (.id | tostring), .status, .name] | @tsv' |
+              sort -r
           )
 
           total_count=${#runs[@]}
@@ -59,7 +64,7 @@ jobs:
             fi
 
             echo "Deleting run ${run_id} (${workflow_name}, ${created_at}, status=${status})"
-            gh api               --method DELETE               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: ${api_version}"               "/repos/${repository}/actions/runs/${run_id}"
+            gh api --method DELETE -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: ${api_version}" "/repos/${repository}/actions/runs/${run_id}"
             ((deleted += 1))
           done
 
