@@ -56,11 +56,11 @@ def test_tactical_regulation_uses_fresh_portfolio_while_active_resolution_keeps_
     process=runtime[runtime.index("function Runtime:processLiveObservation(raw)"):runtime.index("function Runtime:runReplay(fixture)")]
     assert "activeResolution" in process
     assert "getCurrentResolutionCommitment" in process
-    assert "self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)" in process
-    assert process.index("if activeResolution then") < process.index("self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)")
-    assert "self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)" in process
+    assert "self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
+    assert process.index("if activeResolution then") < process.index("self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)")
+    assert "self.obstructionRelocationCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
     assert "self.terminalEgressCandidateSupport" not in process
-    assert "self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)" in process
+    assert "self.liveTrafficCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
 
 def test_obstruction_relocation_semantics_survive_shared_execution():
     runtime=read("scripts/runtime/Runtime.lua")
