@@ -7,6 +7,30 @@ def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def test_candidate_support_publication_uses_current_decision_picture_verb():
+    participants = (
+        "scripts/candidates/PassiveLiveCandidateSupport.lua",
+        "scripts/candidates/LiveTrafficCandidateSupport.lua",
+        "scripts/candidates/ObstructionRelocationCandidateSupport.lua",
+        "scripts/candidates/ProspectiveDecisionPortfolioSupport.lua",
+        "scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua",
+    )
+    for path in participants:
+        source = read(path)
+        assert "function Support:publishDecisionPicture(picture,snapshot)" in source
+        assert "function Support:attach(picture,snapshot)" not in source
+
+    live = read("scripts/candidates/LiveTrafficCandidateSupport.lua")
+    assert "publishActionSpaceRegulationPicture" in live
+    assert "publishFollowerBoundaryPicture" in live
+    assert "attachActionSpaceRegulation" not in live
+    assert "attachFollowerBoundary" not in live
+
+    runtime = read("scripts/runtime/Runtime.lua")
+    assert ":publishDecisionPicture(processed.picture,processed.snapshot)" in runtime
+    assert ":attach(processed.picture,processed.snapshot)" not in runtime
+
+
 def test_projection_materializes_exactly_one_portfolio_picture_and_no_support_views():
     support=read("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
     assert 'local targetPictureId=self.identities:issue("PICTURE")' in support
@@ -32,7 +56,7 @@ def test_projection_builders_return_groups_without_publishing_operational_pictur
     for path, token in paths_and_tokens:
         text=read(path)
         assert token in text
-        builder=text[text.index(token):text.index("function Support:attach", text.index(token))]
+        builder=text[text.index(token):text.index("function Support:publishDecisionPicture", text.index(token))]
         assert "OperationalPicture.new" not in builder
 
 
