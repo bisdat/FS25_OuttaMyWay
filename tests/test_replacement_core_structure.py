@@ -1534,7 +1534,7 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
     # Bounded Axis Return begins only after the existing guide completes.
     assert 'COOPERATIVE_PASSAGE_GUIDE_COMPLETE' in control
-    assert 'RECOVERY_ALIGNMENT_START' in control
+    assert 'ALIGNMENT_RUNOUT_START' in control
     assert 'RETURN_STAGING_READY' in control
     assert 'AXIS_RETURN_START' in control
     assert 'steering=CAPTURED_AXIS_ONLY' in control
