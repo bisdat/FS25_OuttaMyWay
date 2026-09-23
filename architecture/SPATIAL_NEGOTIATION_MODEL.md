@@ -373,11 +373,11 @@ The Shared Crossing Core is the coupled region in which the two Transit-configur
 
 > **Shared Crossing Core != Symmetric Passage Excursion**
 
-> **Recovery Reserve Is Participant-Scoped**
+> **Lateral Excursion Support Is Participant-Scoped**
 
 Changing progression for an opposed A8 pair changes its prospective encounter position. Regulation may move that position into a Passage-Capable Theatre. Category-1 Corner and Category-2 Headland/Boundary space are particularly important because constrained space can allow the Shared Crossing Core while denying that participant's required Lateral Excursion Development/Reacquisition.
 
-Corner right-of-way and Passage-theatre shaping remain distinct tactical Regulation purposes. Positive Corner Departure ends the Corner purpose sharply. If fresh A8 still predicts Passage but the resulting theatre is not yet Recovery-Capable, ordinary tactical Regulation may continue under a Passage-theatre-shaping purpose until the theatre is supportable or the forecast disappears.
+Corner right-of-way and Passage-theatre shaping remain distinct tactical Regulation purposes. Positive Corner Departure ends the Corner purpose sharply. If fresh A8 still predicts Passage but the resulting theatre is not yet Passage-Capable, ordinary tactical Regulation may continue under a Passage-theatre-shaping purpose until the theatre is supportable or the forecast disappears.
 
 > **Corner Regulation Completion != Passage-Theatre Shaping Completion**
 
