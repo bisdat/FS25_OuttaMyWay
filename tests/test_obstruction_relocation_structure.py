@@ -177,7 +177,7 @@ def test_issue87_obstruction_relocation_is_core_capability_not_optional_configur
     assert "AUTOMATIC_TERMINAL_EGRESS" not in runtime
     assert "obstructionRelocationCoreCapability=true" in runtime
     assert "DEVELOPMENT_CONSENT_DISABLED" not in candidate
-    assert 'configurationConsentRequired=false' in candidate
+    assert "configurationConsentRequired" not in candidate
 
     # Existing independent safety/evidence boundaries remain the eligibility owners.
     assert 'blockerClassification~="NON_ACTIVE_UNCLAIMED"' in candidate
