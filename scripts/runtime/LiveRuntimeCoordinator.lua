@@ -45,7 +45,7 @@ function Coordinator:loadMap()
     if self.source and type(self.source.reset)=="function" then self.source:reset() end
     if self.targetedFieldIdentityProbe and type(self.targetedFieldIdentityProbe.reset)=="function" then self.targetedFieldIdentityProbe:reset() end
     if self.fieldWorldSnapshots and type(self.fieldWorldSnapshots.reset)=="function" then self.fieldWorldSnapshots:reset() end
-    if self.runtime and type(self.runtime.resetAutonomousHeadOnState)=="function" then self.runtime:resetAutonomousHeadOnState() end
+    if self.runtime and type(self.runtime.resetLiveTrafficCandidateSupportStatus)=="function" then self.runtime:resetLiveTrafficCandidateSupportStatus() end
     if self.runtime and type(self.runtime.resetSituationKnowledge)=="function" then self.runtime:resetSituationKnowledge() end
 end
 function Coordinator:deleteMap()
