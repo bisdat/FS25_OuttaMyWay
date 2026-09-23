@@ -290,13 +290,13 @@ def test_sourced_production_has_no_retired_autonomous_head_on_candidate_support_
 
 def test_cooperative_passage_schema_has_no_retired_negative_compatibility_fields():
     retired_field = re.compile(
-        r"\\b(?:king|refuge)\\s*=\\s*false\\b|\\bpostHandoffCooldown\\b"
+        r"\b(?:king|refuge)\s*=\s*false\b|\bpostHandoffCooldown\b"
     )
     offenders = []
     for path in _loaded_production_lua_paths():
         text = path.read_text(encoding="utf-8")
         for match in retired_field.finditer(text):
-            line = text.count("\\n", 0, match.start()) + 1
+            line = text.count("\n", 0, match.start()) + 1
             offenders.append(
                 f"{path.relative_to(ROOT).as_posix()}:{line}:{match.group(0)}"
             )
@@ -304,11 +304,11 @@ def test_cooperative_passage_schema_has_no_retired_negative_compatibility_fields
 
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     passage = (ROOT / "scripts" / "control" / "CooperativePassageControl.lua").read_text(encoding="utf-8")
-    load_map = passage.split("function Control:loadMap()", 1)[1].split("\\nfunction Control:", 1)[0]
+    load_map = passage.split("function Control:loadMap()", 1)[1].split("\nfunction Control:", 1)[0]
 
     # The no-cooldown lifecycle guarantee remains behavioural; it is not a
     # false-valued Candidate schema field or historical load declaration.
-    assert not re.search(r"\\bcooldown\\s*=\\s*false\\b", support)
+    assert not re.search(r"\bcooldown\s*=\s*false\b", support)
     assert "king=false" not in load_map
     assert "refuge=false" not in load_map
     assert "cooldown=false" not in load_map
