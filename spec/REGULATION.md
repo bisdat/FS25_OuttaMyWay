@@ -146,14 +146,14 @@ A likely Passage, Resolution or return to ordinary GIANTS AI may motivate tempor
 
 ### Passage-theatre shaping and sharp purpose transition
 
-When fresh Situation evidence makes Cooperative Passage foreseeable but the prospective encounter is not yet a **Recovery-Capable Passage Theatre**, Regulation MAY continue to alter relative timing so that the encounter moves into supportable space.
+When fresh Situation evidence makes Cooperative Passage foreseeable but the prospective encounter is not yet a **Passage-Capable Theatre**, Regulation MAY continue to alter relative timing so that the encounter moves into supportable space.
 
 This is ordinary tactical Regulation. It MUST NOT create a hybrid Corner/Passage mode, pre-commit Passage control, or route authority.
 
 A prior tactical Regulation purpose may end while another tactical Regulation purpose becomes justified. In particular:
 
 - Positive Corner Departure terminates the Corner right-of-way purpose through the normal responsibility lifecycle;
-- if fresh A8 still predicts opposed Passage and the Shared Crossing Core plus required participant-specific Recovery Tails are not yet supportable, a Passage-theatre-shaping Regulation purpose MAY be established through a sharp Responsibility Transition; and
+- if fresh A8 still predicts opposed Passage and the Shared Crossing Core plus any required participant-specific Lateral Excursion Development/Reacquisition are not yet supportable, a Passage-theatre-shaping Regulation purpose MAY be established through a sharp Responsibility Transition; and
 - when one complete Cooperative Passage Candidate becomes positively supported and mandatory-admissible, Regulation MUST yield through Responsibility Transition to Cooperative Passage.
 
 > **Corner Regulation Completion != Passage-Theatre Shaping Completion**
