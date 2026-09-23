@@ -594,6 +594,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"): assert forbidden not in text
 
 def test_v4724_removes_legacy_future_predictor_without_changing_future_space_admission_authority():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     diagnostics=(ROOT/"scripts"/"observation"/"LiveInteractionObservation.lua").read_text(encoding="utf-8")

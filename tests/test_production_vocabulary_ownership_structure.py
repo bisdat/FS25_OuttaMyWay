@@ -363,7 +363,7 @@ def test_sourced_production_has_no_development_origin_labels_for_current_concept
     action_space = (ROOT / "scripts" / "responsibility" / "ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
     passage = (ROOT / "scripts" / "responsibility" / "CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
     hold = (ROOT / "scripts" / "control" / "mechanisms" / "FieldWorkHoldMechanism.lua").read_text(encoding="utf-8")
-    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    follower_assessment = (ROOT / "scripts" / "assessment" / "FollowerBoundaryDemandAssessment.lua").read_text(encoding="utf-8")
 
     assert "commitmentApplicationAction=application.action" in adapter
     assert "commitmentAction=%s" in follower
@@ -371,7 +371,7 @@ def test_sourced_production_has_no_development_origin_labels_for_current_concept
     assert "commitmentApplicationAction=%s" in passage
     assert 'status="BUBBLE_BULLET_TIME_NOT_COMPOSED"' in passage
     assert 'context or "FIELD-WORK-HOLD"' in hold
-    assert "turningRankAwareness=true" in runtime
+    assert "leader.turning==true" in follower_assessment
 
 
 def test_semantic_runtime_categories_are_closed():
