@@ -166,11 +166,8 @@ function Runtime:setRegulationControl(control)
     self.liveControlDispatcher:setRegulationControl(control)
     if self.regulationBoundedAuthority~=nil then self.regulationBoundedAuthority:setRegulationControl(control) end
 end
-function Runtime:markAutonomousHeadOnDispatched(governingRequirementKey)
-    self.liveTrafficCandidateSupport:markAutonomousHeadOnDispatched(governingRequirementKey)
-end
-function Runtime:resetAutonomousHeadOnState()
-    self.liveTrafficCandidateSupport:resetAutonomousState()
+function Runtime:resetLiveTrafficCandidateSupportStatus()
+    self.liveTrafficCandidateSupport:resetStatus()
 end
 function Runtime:resetSituationKnowledge()
     if self.situationAssessment and type(self.situationAssessment.resetSituationKnowledge)=="function" then self.situationAssessment:resetSituationKnowledge() end
