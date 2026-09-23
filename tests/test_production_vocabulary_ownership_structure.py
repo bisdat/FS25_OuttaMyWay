@@ -80,11 +80,6 @@ def test_issue112_graduated_physical_representation_uses_current_names_without_e
     assert "physicalRepresentationEvidence" in live
     assert "planViewOccupancyEvidence" in live
 
-    # Current Interface Identity != Historical Evidence Identity.
-    native_drive = (ROOT / "scripts" / "diagnostics" / "NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
-
-    assert "PASSIVE_SHADOW_ONLY" in native_drive
-
 
 def test_passage_contract_uses_purpose_specific_representation_authority():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -368,7 +363,7 @@ def test_sourced_production_has_no_development_origin_labels_for_current_concept
     action_space = (ROOT / "scripts" / "responsibility" / "ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
     passage = (ROOT / "scripts" / "responsibility" / "CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
     hold = (ROOT / "scripts" / "control" / "mechanisms" / "FieldWorkHoldMechanism.lua").read_text(encoding="utf-8")
-    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    follower_assessment = (ROOT / "scripts" / "assessment" / "FollowerBoundaryDemandAssessment.lua").read_text(encoding="utf-8")
 
     assert "commitmentApplicationAction=application.action" in adapter
     assert "commitmentAction=%s" in follower
@@ -376,7 +371,7 @@ def test_sourced_production_has_no_development_origin_labels_for_current_concept
     assert "commitmentApplicationAction=%s" in passage
     assert 'status="BUBBLE_BULLET_TIME_NOT_COMPOSED"' in passage
     assert 'context or "FIELD-WORK-HOLD"' in hold
-    assert "turningRankAwareness=true" in runtime
+    assert "leader.turning==true" in follower_assessment
 
 
 def test_semantic_runtime_categories_are_closed():

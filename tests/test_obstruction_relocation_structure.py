@@ -168,6 +168,7 @@ def test_issue121_ended_job_evidence_resolves_activity_without_creating_provenan
     assert 'terminalSpec(context,"NEW_AUTHORITATIVE_INTENT"' in candidate
 
 def test_issue87_obstruction_relocation_is_core_capability_not_optional_configuration():
+    main = read("scripts/main.lua")
     config = read("scripts/config.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     runtime = read("scripts/runtime/Runtime.lua")
@@ -175,7 +176,8 @@ def test_issue87_obstruction_relocation_is_core_capability_not_optional_configur
     assert "AUTOMATIC_TERMINAL_EGRESS" not in config
     assert "AUTOMATIC_TERMINAL_EGRESS" not in candidate
     assert "AUTOMATIC_TERMINAL_EGRESS" not in runtime
-    assert "obstructionRelocationCoreCapability=true" in runtime
+    assert "scripts/candidates/ObstructionRelocationCandidateSupport.lua" in main
+    assert "runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new" in runtime
     assert "DEVELOPMENT_CONSENT_DISABLED" not in candidate
     assert "configurationConsentRequired" not in candidate
 

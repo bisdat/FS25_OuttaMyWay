@@ -85,15 +85,9 @@ load("scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua
 load("scripts/constraints/ConstraintEngine.lua")
 load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
-load("scripts/diagnostics/ArchitectureTrace.lua")
 load("tests/replay/ConformanceAssertions.lua")
 load("tests/replay/ReplayRunner.lua")
-load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
-load("scripts/diagnostics/FutureSpaceHud.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
-load("scripts/diagnostics/ProductiveContinuationProbe.lua")
-load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
-load("scripts/diagnostics/ProgressionPreservationProbe.lua")
 load("scripts/control/mechanisms/FieldWorkHoldMechanism.lua")
 load("scripts/control/mechanisms/NativeDriveMechanism.lua")
 load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
@@ -1885,7 +1879,7 @@ test("passive validator publishes admitted episodes Operation and candidate diag
         local oldMission,oldServer,oldClient,oldTime=g_currentMission,g_server,g_client,g_time
         g_currentMission,g_server,g_client,g_time=mission,{},nil,1000
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); runtime.passiveLiveValidator:loadMap()
-        local coordinator=OuttaMyWay.LiveRuntimeCoordinator.new(runtime,runtime.liveObservationSource,runtime.targetedFieldIdentityProbe,runtime.fieldWorldSnapshots,runtime.passiveLiveValidator)
+        local coordinator=OuttaMyWay.LiveRuntimeCoordinator.new(runtime,runtime.liveObservationSource,runtime.fieldWorldSnapshots,runtime.passiveLiveValidator)
         runtime.liveRuntimeCoordinator=coordinator; coordinator:loadMap(); coordinator:update(1000)
         local record=runtime.passiveLiveValidator:getRecords()[1]
         if record==nil then error("runtime-owned coordinator did not publish diagnostic record") end
@@ -2029,31 +2023,6 @@ test("equivalence authority merges non-exact representations into one Operation"
         FieldCourseField=oldGenerator
     end)
 end)
-
-test("targeted field identity probe records only active job vehicles",function()
-    withFakeLiveGlobals(function(mission,a,b)
-        a.configFileName="data/vehicles/testA.xml"
-        local pallet={rootNode=301,getRootVehicle=function(self) return self end}
-        mission.vehicles={a,b,pallet}
-        local probe=OuttaMyWay.TargetedFieldIdentityProbe.new()
-        local captured=probe:capture(mission,10)
-        equal(#captured.records,2)
-        equal(captured.records[1].field.resolved,true); equal(captured.records[1].field.fieldId,77)
-        if captured.records[1].jobProbe.token==nil then error("targeted probe omitted job token") end
-        equal(probe:getSampleCount(),0)
-    end)
-end)
-
-test("targeted field identity probe is diagnostic-only and does not affect admission",function()
-    withFakeLiveGlobals(function(mission,a,b)
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-        runtime.targetedFieldIdentityProbe:capture(mission,10)
-        equal(#runtime.jobEpisodes:list(),0)
-        equal(#runtime.operations:list(),0)
-        equal(#runtime.commitments:list(),0)
-    end)
-end)
-
 
 test("GIANTS raw traversal cannot see sealed collections but ValueRecord accessors can", function()
     local snapshot=OuttaMyWay.ObservationSnapshot.new({identity="OS-GIANTS",epoch=1,timestamp=1,provenance={},fieldWorld={referenceKey="field-world:1",fieldPolygonReferenceKey="field-polygon:1",operationMembershipEvidenceComplete=false},assemblies={{assemblyId="AS-1",referenceKey="vehicle-root:1",componentIds={"CP-1"},componentReferenceKeys={"component-root:1"}}},geometry={currentSpaceEvidence={},futureSpaceEvidence={},demandEvidence={},interactionEvidence={}},motion={closureEvidence={}},aiStates={ ["AS-1"]={observedActive=true}},playerControl={},jobEpisodeEvidence={{assemblyId="AS-1",sourceJobToken="giants-ai-job-id:7",jobPresent=true,aiControlled=true}},operationMembershipEvidence={},physicalRepresentationEvidence={},controlOutcomes={},unavailableSources={{source="FIELD_WORLD"}}})
@@ -2743,15 +2712,6 @@ test("rejected Encounter lifecycle modules are absent from the active harness", 
     if OuttaMyWay.CurrentPairAssessmentScope==nil then error("Current Pair Assessment Scope module not loaded") end
 end)
 
-test("Future Space HUD reports settled, manoeuvring and intersecting Knowledge", function()
-    local hud=OuttaMyWay.FutureSpaceHud.new()
-    hud:observeRecord({assemblyDiagnostics={{assemblyReferenceKey="A",name="Condor",activeJobVehicleMembership=true,localIntent={classification="SETTLED_CONTINUATION"},futureSpace={boundaryDistance=120}},{assemblyReferenceKey="B",name="Patriot",activeJobVehicleMembership=true,localIntent={classification="TURNING"},futureSpace={}}},pairDiagnostics={{eligible=true,futureSpaceOutcome="FUTURE_SPACE_INTERACTION_UNRESOLVED"}}})
-    equal(hud.lines[2],"Condor: STRAIGHT → 120m"); equal(hud.lines[3],"Patriot: TURNING"); equal(hud.lines[4],"Pair: UNRESOLVED WHILE MANOEUVRING")
-    hud:observeRecord({assemblyDiagnostics={{assemblyReferenceKey="A",name="Condor",activeJobVehicleMembership=true,localIntent={classification="SETTLED_CONTINUATION"},futureSpace={boundaryDistance=100}},{assemblyReferenceKey="B",name="Patriot",activeJobVehicleMembership=true,localIntent={classification="SETTLED_CONTINUATION"},futureSpace={boundaryDistance=90}}},pairDiagnostics={{eligible=true,futureSpaceOutcome="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE"}}})
-    equal(hud.lines[4],"Pair: FUTURE SPACES INTERSECT")
-end)
-
-
 test("Follower Boundary: current Adjacent Following topology supports the v4.7.70 positive case without historical sweep authority", function()
     local leader={assemblyId="AS-C",x=0,z=0,dx=0,dz=1,boundaryDistanceM=144,workingWidthM=36,productivePositive=true,settledContinuation=true,progressSpeedKmh=25,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=25}
     local follower={assemblyId="AS-P",x=0,z=-26,dx=0,dz=1,boundaryDistanceM=170,workingWidthM=30,productivePositive=true,settledContinuation=true,progressSpeedKmh=25,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=25}
@@ -3200,43 +3160,6 @@ test("Progression Geometry: ray-capsule witness distance is geometric and positi
     equal(math.abs(d-8)<0.000001,true)
     equal(reason,"RAY_CAPSULE_ENTRY")
 end)
-
-test("Progression Geometry: subject projection reports represented witness within local-intent horizon", function()
-    local subject={dx=1,dz=0,projectionLimitM=20,discs={{identity="S1",x=0,z=0,radius=1}}}
-    local region={kind="CAPSULE",ax=10,az=0,bx=10,bz=0,radius=1}
-    local r=OuttaMyWay.ProgressionPreservationProbe.evaluateSubjectAgainstRegion(subject,region)
-    equal(r.status,"POSITIVE_WITNESS_WITHIN_LOCAL_INTENT")
-    equal(math.abs(r.knownWitnessEntryM-8)<0.000001,true)
-    equal(r.negativeClearanceAuthority,false)
-    equal(r.responseAdjustedSupportableProgression,"UNRESOLVED")
-end)
-
-test("Progression Geometry: represented witness beyond bounded native horizon cannot claim current progression pressure", function()
-    local subject={dx=1,dz=0,projectionLimitM=5,discs={{identity="S1",x=0,z=0,radius=1}}}
-    local region={kind="CAPSULE",ax=10,az=0,bx=10,bz=0,radius=1}
-    local r=OuttaMyWay.ProgressionPreservationProbe.evaluateSubjectAgainstRegion(subject,region)
-    equal(r.status,"POSITIVE_WITNESS_BEYOND_LOCAL_INTENT")
-    equal(r.withinLocalIntentHorizon,false)
-end)
-
-
-
-
-
-
-
-
-test("Native Field Worker Drive Command Probe relation remains descriptive only",function()
-    local r=OuttaMyWay.NativeFieldWorkerDriveCommandProbe.candidateRelation({valid=true,targetX=10,targetZ=20},16,28)
-    equal(r.status,"DESCRIBED")
-    equal(math.abs(r.targetDistanceM-10)<0.000001,true)
-    equal(r.targetDeltaX,6); equal(r.targetDeltaZ,8)
-    equal(r.authority,"DESCRIPTIVE_ONLY")
-    equal(r.routePrediction,false); equal(r.negativeClearanceAuthority,false)
-end)
-
-
-
 
 local function buildTrajectoryMotionEvidence(assemblyId,jobToken,dx,dz,speed,interval,nativeRateKmh,localIntentClassification,intentValid,nativeMoveForwards,headingX,headingZ)
     local result={assemblyId=assemblyId,assemblyReferenceKey="REF-"..assemblyId,sourceJobToken=jobToken,travelDirectionX=dx,travelDirectionZ=dz,positionDerivedSpeedMps=speed,sampleIntervalSeconds=interval,motionClassification="PHYSICAL_TRAVEL",headingX=headingX or dx,headingZ=headingZ or dz}

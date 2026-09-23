@@ -13,7 +13,7 @@ local modules={
     "scripts/commitment/CommitmentStateMachine.lua","scripts/commitment/CommitmentRegistry.lua","scripts/commitment/ObligationLedger.lua","scripts/authority/AuthorityRegistry.lua","scripts/control/mechanisms/NonJobActuationMechanism.lua","scripts/authority/EffectiveActuationComposition.lua","scripts/authority/BoundedAuthority.lua","scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua","scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua","scripts/commitment/LiveTrafficCommitmentLifecycle.lua","scripts/authority/BubbleBulletTime.lua","scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua","scripts/responsibility/ResolutionCommitmentAdapter.lua","scripts/responsibility/ResponsibilityTransitionAuthority.lua","scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua","scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua","scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua","scripts/responsibility/CooperativePassageResponsibilityTransition.lua","scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua",
     "scripts/candidates/CandidateSpace.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/candidates/LocalPassagePlanner.lua","scripts/candidates/ObstructionRelocationCandidateSupport.lua","scripts/candidates/LiveTrafficCandidateSupport.lua","scripts/decision/ProspectivePortfolioDecisionPolicy.lua","scripts/candidates/ProspectiveDecisionPortfolioSupport.lua","scripts/constraints/ConstraintEvidence.lua",
     "scripts/constraints/evaluators/RepresentationFitnessConstraint.lua","scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua","scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua","scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua",
-    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/ProductiveContinuationProbe.lua","scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua","scripts/diagnostics/ProgressionPreservationProbe.lua","scripts/diagnostics/VersionHud.lua","scripts/diagnostics/FollowerPacingHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/FollowerBoundaryMagnitudePolicy.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
+    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/VersionHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/FollowerBoundaryMagnitudePolicy.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
@@ -23,15 +23,9 @@ OuttaMyWay.runtime.situationAssessment=OuttaMyWay.CurrentResponsibilityContextSi
     OuttaMyWay.runtime.situationAssessment,OuttaMyWay.runtime.currentResponsibilityAssessment)
 OuttaMyWay.runtime:initialize()
 
--- Diagnostics consume Situation-owned Knowledge; no diagnostic object supplies
--- semantic evidence to Candidate/Decision/Control.
-OuttaMyWay.productiveContinuationProbe=OuttaMyWay.ProductiveContinuationProbe.new(OuttaMyWay.runtime.situationAssessment)
-OuttaMyWay.nativeFieldWorkerDriveCommandProbe=OuttaMyWay.NativeFieldWorkerDriveCommandProbe.new(OuttaMyWay.runtime,OuttaMyWay.runtime.situationAssessment)
-
-OuttaMyWay.progressionPreservationProbe=OuttaMyWay.ProgressionPreservationProbe.new(OuttaMyWay.runtime)
-OuttaMyWay.runtime.passiveLiveValidator:setProgressionPreservationProbe(OuttaMyWay.progressionPreservationProbe)
+-- Passive diagnostics observe completed Runtime results only. VersionHud remains
+-- temporary Development Build Identity instrumentation for Reality validation.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
-OuttaMyWay.followerPacingHud=OuttaMyWay.FollowerPacingHud.new(OuttaMyWay.runtime.regulationBoundedAuthority)
 
 OuttaMyWay.physicalControlMechanisms={
     holdMechanism=OuttaMyWay.FieldWorkHoldMechanism.new(),
@@ -52,19 +46,16 @@ OuttaMyWay.runtime:setCooperativePassageControl(OuttaMyWay.cooperativePassageCon
 OuttaMyWay.obstructionRelocationControl=OuttaMyWay.ObstructionRelocationControl.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource)
 OuttaMyWay.runtime:setObstructionRelocationControl(OuttaMyWay.obstructionRelocationControl)
 
-OuttaMyWay.liveRuntimeCoordinator=OuttaMyWay.LiveRuntimeCoordinator.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource,OuttaMyWay.runtime.targetedFieldIdentityProbe,OuttaMyWay.runtime.fieldWorldSnapshots,OuttaMyWay.runtime.passiveLiveValidator)
+OuttaMyWay.liveRuntimeCoordinator=OuttaMyWay.LiveRuntimeCoordinator.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource,OuttaMyWay.runtime.fieldWorldSnapshots,OuttaMyWay.runtime.passiveLiveValidator)
 OuttaMyWay.runtime.liveRuntimeCoordinator=OuttaMyWay.liveRuntimeCoordinator
 
 if type(addModEventListener)=="function" then
     -- Runtime capture/process/dispatch is causally upstream of diagnostics.
     addModEventListener(OuttaMyWay.liveRuntimeCoordinator)
-    addModEventListener(OuttaMyWay.productiveContinuationProbe)
-    addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)
     addModEventListener(OuttaMyWay.regulationControl)
     addModEventListener(OuttaMyWay.cooperativePassageControl)
     if OuttaMyWay.runtime.bubbleBulletTime~=nil then addModEventListener(OuttaMyWay.runtime.bubbleBulletTime) end
     addModEventListener(OuttaMyWay.obstructionRelocationControl)
     addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)
     addModEventListener(OuttaMyWay.versionHud)
-    addModEventListener(OuttaMyWay.followerPacingHud)
 end

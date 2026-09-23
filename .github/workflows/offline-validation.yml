@@ -108,7 +108,6 @@ jobs:
             scripts/representation/EntityLocalShapeEvidence.lua \
             scripts/representation/AssemblyRepresentationCache.lua \
             scripts/representation/CurrentPhysicalConflictRepresentation.lua \
-            scripts/diagnostics/FollowerPacingHud.lua \
             scripts/diagnostics/PassiveLiveValidator.lua \
             scripts/observation/LiveInteractionObservation.lua \
             scripts/observation/LiveObservationSource.lua \
