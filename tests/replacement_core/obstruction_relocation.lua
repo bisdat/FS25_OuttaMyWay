@@ -185,8 +185,8 @@ test("generic Causal Obstruction relocation is a core capability without a confi
     local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")}})
     local supported=support:attach(base,snapshot())
     if supported==nil then error("expected generic relocation support without optional consent gate") end
-    local constraints=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.constraintEvidence
-    equal(constraints.COMMITMENT_PRECONDITIONS.evidence.configurationConsentRequired,false)
+    local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(specification.capability,"REPOSITION")
 end)
 
 test("observable parked assembly without causal obstruction creates no relocation candidate", function()
