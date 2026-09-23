@@ -47,7 +47,7 @@ function Support:buildProjectedGroup(picture,snapshot,targetPictureId,targetEpoc
     },nil
 end
 
-function Support:attach(picture,snapshot)
+function Support:publishDecisionPicture(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
     local observe=OuttaMyWay.ValueRecord.length(snapshot.assemblies)>0 or OuttaMyWay.ValueRecord.length(snapshot.unavailableSources)>0 or OuttaMyWay.ValueRecord.length(picture.currentPairAssessmentScope)>0 or OuttaMyWay.ValueRecord.length(picture.uncertainty)>0

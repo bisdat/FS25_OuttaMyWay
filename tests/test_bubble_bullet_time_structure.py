@@ -34,8 +34,8 @@ def test_passage_transition_prepares_bubble_before_joint_requests_and_dispatcher
 def test_bubble_decision_horizon_uses_passive_support_during_live_passage_leg():
     support = text("scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua")
     assert 'basis.kind=="COOPERATIVE_PASSAGE_LEG"' in support
-    assert "return self.passiveSupport:attach(picture,snapshot)" in support
-    assert "self.delegate:attach(picture,snapshot)" in support
+    assert "return self.passiveSupport:publishDecisionPicture(picture,snapshot)" in support
+    assert "self.delegate:publishDecisionPicture(picture,snapshot)" in support
 
 
 def test_bubble_regulation_is_fixed_one_kmh_and_bounded_authority_gated():

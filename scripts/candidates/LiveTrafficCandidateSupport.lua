@@ -340,13 +340,13 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     }
 end
 
-local function attachActionSpaceRegulation(self,picture,snapshot,item)
+local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local pictureId=self.identities:issue("PICTURE")
     values.identity=pictureId; values.epoch=self.epochs:next()
     local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "cooperative-passage:")..tostring(item.relation.identity)
     local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
-    if existingReason~=nil then self.lastStatus=existingReason; return self.passiveSupport:attach(picture,snapshot) end
+    if existingReason~=nil then self.lastStatus=existingReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
     values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
     local representationId=actionSpaceRegulationRepresentation(values,pictureId,item)
     local specification=makeActionSpaceRegulationCandidate(pictureId,values,item,requirement,existing,representationId)
@@ -505,7 +505,7 @@ local function followerSpecification(pictureId,pictureValues,record,representati
     },requirement
 end
 
-local function attachFollowerBoundary(self,picture,snapshot,record)
+local function publishFollowerBoundaryPicture(self,picture,snapshot,record)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local pictureId=self.identities:issue("PICTURE")
     values.identity=pictureId; values.epoch=self.epochs:next()
@@ -840,20 +840,20 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
     return nil,"UNSUPPORTED_CANDIDATE_SUPPORT_PROJECTION_KIND:"..tostring(projection.kind)
 end
 
-function Support:attach(picture,snapshot)
+function Support:publishDecisionPicture(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
 
     local follower,followerReason=followerBoundaryRecord(picture)
-    if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return attachFollowerBoundary(self,picture,snapshot,follower) end
-    if followerReason~=nil then self.lastStatus=followerReason; return self.passiveSupport:attach(picture,snapshot) end
+    if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return publishFollowerBoundaryPicture(self,picture,snapshot,follower) end
+    if followerReason~=nil then self.lastStatus=followerReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
 
     -- An established follower purpose has precedence. Otherwise the earliest
     -- supported Forward Intersection is considered before Passage planning.
     if follower==nil then
         local forward,forwardReason=forwardIntersectionRecord(picture)
-        if forward~=nil then return attachActionSpaceRegulation(self,picture,snapshot,forward) end
-        if forwardReason~=nil then self.lastStatus=forwardReason; return self.passiveSupport:attach(picture,snapshot) end
+        if forward~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,forward) end
+        if forwardReason~=nil then self.lastStatus=forwardReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
     end
 
     -- Cooperative Passage has a single production Candidate path.
@@ -867,18 +867,18 @@ function Support:attach(picture,snapshot)
                 logInfo("COOPERATIVE_PASSAGE_REJECTED %s",rejectionText)
             end
             local actionSpace,actionReason=actionSpaceRegulationRecord(picture)
-            if actionSpace~=nil then return attachActionSpaceRegulation(self,picture,snapshot,actionSpace) end
-            if actionReason~=nil then self.lastStatus=actionReason; return self.passiveSupport:attach(picture,snapshot) end
-            if follower~=nil then return attachFollowerBoundary(self,picture,snapshot,follower) end
+            if actionSpace~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,actionSpace) end
+            if actionReason~=nil then self.lastStatus=actionReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
+            if follower~=nil then return publishFollowerBoundaryPicture(self,picture,snapshot,follower) end
             self.lastCooperativeTraceKey=nil
             self.lastStatus=reason or "NO_SUPPORTED_COOPERATIVE_PASSAGE"
-            return self.passiveSupport:attach(picture,snapshot)
+            return self.passiveSupport:publishDecisionPicture(picture,snapshot)
         end
         self.lastPassageRejectionTraceKey=nil
         local selectedClearanceTrace=passageClearanceSelectedTelemetry(plan)
         if selectedClearanceTrace~=nil then logInfo("%s",selectedClearanceTrace) end
         if follower~=nil and not followerMatchesCooperative(follower,{assemblyIds=plan.assemblyIds or {}}) then
-            return attachFollowerBoundary(self,picture,snapshot,follower)
+            return publishFollowerBoundaryPicture(self,picture,snapshot,follower)
         end
 
         -- Passage Selection immediately hands authority from Action-Space Regulation

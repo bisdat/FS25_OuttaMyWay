@@ -31,17 +31,17 @@ end
 test("Bubble decision horizon defers ordinary traffic negotiation while Passage Leg is live",function()
     local delegateCalls,passiveCalls=0,0
     local delegate={
-        attach=function() delegateCalls=delegateCalls+1; return {path="delegate"} end,
+        publishDecisionPicture=function() delegateCalls=delegateCalls+1; return {path="delegate"} end,
         buildProjectedGroup=function() delegateCalls=delegateCalls+1; return {path="delegate-projection"},nil end,
         getLastStatus=function() return "DELEGATE" end,
         getPublishedCount=function() return 4 end
     }
     local passive={
-        attach=function() passiveCalls=passiveCalls+1; return {path="passive"} end,
+        publishDecisionPicture=function() passiveCalls=passiveCalls+1; return {path="passive"} end,
         buildProjectedGroup=function() passiveCalls=passiveCalls+1; return {path="passive-projection"},nil end
     }
     local support=OuttaMyWay.BubbleDecisionHorizonCandidateSupport.new(delegate,passive)
-    local result=support:attach(activePassagePicture(),{})
+    local result=support:publishDecisionPicture(activePassagePicture(),{})
     equal(result.path,"passive")
     equal(passiveCalls,1)
     equal(delegateCalls,0)
@@ -52,7 +52,7 @@ test("Bubble decision horizon defers ordinary traffic negotiation while Passage 
     equal(passiveCalls,2)
     equal(delegateCalls,0)
 
-    local ordinary=support:attach({commitmentContext={}}, {})
+    local ordinary=support:publishDecisionPicture({commitmentContext={}}, {})
     equal(ordinary.path,"delegate")
     equal(delegateCalls,1)
 end)

@@ -329,7 +329,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     },nil
 end
 
-function Support:attach(picture,snapshot)
+function Support:publishDecisionPicture(picture,snapshot)
     local context,contextReason=genericContext(picture)
     if contextReason~=nil then self.lastStatus=contextReason; return nil end
     local references=referencesByAssembly(snapshot)

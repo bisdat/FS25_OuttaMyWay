@@ -149,7 +149,7 @@ test("pairwise causal relations aggregate to one geometry-bounded blocker reloca
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
     local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A"),relation("AS-B","REF-B")}})
-    local supported=support:attach(base,snapshot())
+    local supported=support:publishDecisionPicture(base,snapshot())
     if supported==nil then error("expected generic relocation support") end
     local specifications=supported.candidateSupportEvidence.candidateSpecifications
     equal(OuttaMyWay.ValueRecord.length(specifications),1)
@@ -170,7 +170,7 @@ test("generic Causal Obstruction relocation requires no historical Job provenanc
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
     local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")}})
-    local supported=support:attach(base,snapshot())
+    local supported=support:publishDecisionPicture(base,snapshot())
     if supported==nil then error("expected generic relocation support") end
     local bridge=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.obstructionRelocationBridge
     equal(bridge.historicalJobProvenanceRequired,false)
@@ -183,7 +183,7 @@ test("generic Causal Obstruction relocation is a core capability without a confi
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
     OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=nil
     local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")}})
-    local supported=support:attach(base,snapshot())
+    local supported=support:publishDecisionPicture(base,snapshot())
     if supported==nil then error("expected generic relocation support without optional consent gate") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"REPOSITION")
@@ -193,7 +193,7 @@ test("observable parked assembly without causal obstruction creates no relocatio
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local supported=support:attach(picture(ids,epochs,{}),snapshot())
+    local supported=support:publishDecisionPicture(picture(ids,epochs,{}),snapshot())
     equal(supported,nil)
     equal(support:getLastStatus(),"NO_GENERIC_CAUSAL_OBSTRUCTION_ACTION")
 end)
@@ -213,7 +213,7 @@ test("manoeuvre completion plus raw movement cannot settle obstruction resolutio
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local supported=support:attach(reassessmentPicture(ids,epochs,false,false),snapshot())
+    local supported=support:publishDecisionPicture(reassessmentPicture(ids,epochs,false,false),snapshot())
     if supported==nil then error("expected waiting reassessment") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.purpose.kind,"CAUSAL_OBSTRUCTION_RELOCATION_REASSESSMENT")
@@ -224,7 +224,7 @@ test("fresh supported continuation and obstruction cessation settle resolution",
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local supported=support:attach(reassessmentPicture(ids,epochs,true,false),snapshot())
+    local supported=support:publishDecisionPicture(reassessmentPicture(ids,epochs,true,false),snapshot())
     if supported==nil then error("expected terminal reassessment") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"OBJECTIVE_SATISFIED")
@@ -234,7 +234,7 @@ test("fresh positive obstruction after manoeuvre completion authorises another i
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local supported=support:attach(reassessmentPicture(ids,epochs,true,true),snapshot(10))
+    local supported=support:publishDecisionPicture(reassessmentPicture(ids,epochs,true,true),snapshot(10))
     if supported==nil then error("expected repeated relocation candidate") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"REPOSITION")
@@ -247,7 +247,7 @@ test("positive obstruction at centroid exhausts inward strategy instead of inven
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local supported=support:attach(reassessmentPicture(ids,epochs,true,true),snapshot(100))
+    local supported=support:publishDecisionPicture(reassessmentPicture(ids,epochs,true,true),snapshot(100))
     if supported==nil then error("expected explicit strategy exhaustion settlement") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"ESCALATE")
@@ -261,7 +261,7 @@ test("active Job re-entry terminates retained obstruction relocation responsibil
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
     local current=snapshot()
     current.aiStates["REF-BLOCKER"]={observedActive=true,aiActive=false,aiActiveObserved=false}
-    local supported=support:attach(reassessmentPicture(ids,epochs,false,true),current)
+    local supported=support:publishDecisionPicture(reassessmentPicture(ids,epochs,false,true),current)
     if supported==nil then error("expected new authoritative intent settlement") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"CONTINUE_UNCHANGED")

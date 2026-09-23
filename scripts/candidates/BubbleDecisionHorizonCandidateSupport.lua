@@ -33,13 +33,13 @@ function Support.install(runtime)
     return wrapper,nil
 end
 
-function Support:attach(picture,snapshot)
+function Support:publishDecisionPicture(picture,snapshot)
     local context=activePassageContext(picture)
     if context~=nil then
         self.lastStatus="BUBBLE_RESOLUTION_EPOCH_DEFERS_INDEPENDENT_TRAFFIC_NEGOTIATION"
-        return self.passiveSupport:attach(picture,snapshot)
+        return self.passiveSupport:publishDecisionPicture(picture,snapshot)
     end
-    local result=self.delegate:attach(picture,snapshot)
+    local result=self.delegate:publishDecisionPicture(picture,snapshot)
     if type(self.delegate.getLastStatus)=="function" then self.lastStatus=self.delegate:getLastStatus() end
     return result
 end
