@@ -20,8 +20,8 @@ load("scripts/contracts/ResolutionCommitment.lua")
 load("scripts/contracts/BoundedAuthorityGrant.lua")
 load("scripts/contracts/ControlRequest.lua")
 load("scripts/contracts/ControlOutcome.lua")
-load("scripts/contracts/ReplayFixture.lua")
-load("scripts/contracts/ReplayRunResult.lua")
+load("tests/replay/ReplayFixture.lua")
+load("tests/replay/ReplayRunResult.lua")
 load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
 load("scripts/contracts/PassiveLiveTraceRecord.lua")
@@ -86,8 +86,8 @@ load("scripts/constraints/ConstraintEngine.lua")
 load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
 load("scripts/diagnostics/ArchitectureTrace.lua")
-load("scripts/replay/ConformanceAssertions.lua")
-load("scripts/replay/ReplayRunner.lua")
+load("tests/replay/ConformanceAssertions.lua")
+load("tests/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
@@ -1298,6 +1298,9 @@ end)
 
 
 local fixtureModule=dofile(root .. "/tests/replay/HistoricalFixtures.lua")
+local function runReplay(runtime,fixture)
+    return OuttaMyWay.ReplayRunner.new(runtime):run(fixture)
+end
 
 test("ReplayFixture rejects duplicate aliases",function()
     expectError(function() OuttaMyWay.ReplayFixture.new({identity="RF-X",title="x",sourceEvidence={{source="x"}},steps={{kind="NO_ACTIVITY",alias="a"},{kind="NO_ACTIVITY",alias="a"}},expected={},provenance={}}) end)
@@ -1332,19 +1335,19 @@ test("historical replay corpus passes deterministically",function()
     equal(#fixtureModule.fixtures,10)
     local first={}
     for index,fixture in ipairs(fixtureModule.fixtures) do
-        local runtime=newDecisionRuntime(); local result=runtime:runReplay(fixture)
+        local runtime=newDecisionRuntime(); local result=runReplay(runtime,fixture)
         equal(result.conformance,"PASS","replay failed " .. fixture.identity .. ": " .. tostring(result.earliestDivergence and result.earliestDivergence.reason))
         first[index]=OuttaMyWay.ValueRecord.canonical(result)
     end
     for index,fixture in ipairs(fixtureModule.fixtures) do
-        local runtime=newDecisionRuntime(); local result=runtime:runReplay(fixture)
+        local runtime=newDecisionRuntime(); local result=runReplay(runtime,fixture)
         equal(OuttaMyWay.ValueRecord.canonical(result),first[index],"non-deterministic replay " .. fixture.identity)
     end
 end)
 
 test("replay reports earliest divergence",function()
     local fixture=OuttaMyWay.ReplayFixture.new({identity="RF-DIVERGENCE",title="divergence",sourceEvidence={{source="test"}},steps={{kind="NO_ACTIVITY",expect={activityCount=1}},{kind="NO_ACTIVITY",expect={activityCount=0}}},expected={},provenance={}})
-    local result=newDecisionRuntime():runReplay(fixture)
+    local result=runReplay(newDecisionRuntime(),fixture)
     equal(result.conformance,"FAIL"); equal(result.earliestDivergence.step,1); equal(#result.stepResults,1)
 end)
 

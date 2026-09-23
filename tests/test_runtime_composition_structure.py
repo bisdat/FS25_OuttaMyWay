@@ -53,7 +53,7 @@ def test_dispatch_order_is_portfolio_then_cold_then_existing():
 
 def test_tactical_regulation_uses_fresh_portfolio_while_active_resolution_keeps_its_decision_horizon():
     runtime=read("scripts/runtime/Runtime.lua")
-    process=runtime[runtime.index("function Runtime:processLiveObservation(raw)"):runtime.index("function Runtime:runReplay(fixture)")]
+    process=runtime[runtime.index("function Runtime:processLiveObservation(raw)"):runtime.index("function Runtime:getStatus()")]
     assert "activeResolution" in process
     assert "getCurrentResolutionCommitment" in process
     assert "self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
