@@ -36,10 +36,10 @@ def test_phase13_constraint_engine_owns_only_independent_bounded_questions():
     main=read("scripts/main.lua")
     engine=read("scripts/constraints/ConstraintEngine.lua")
     retained={
-        "RepresentationFitness.lua":("RepresentationFitnessConstraint","REPRESENTATION_FITNESS"),
-        "ResponsibilityCompatibility.lua":("ResponsibilityCompatibilityConstraint","RESPONSIBILITY_COMPATIBILITY"),
-        "CommitmentPreconditions.lua":("CommitmentPreconditionsConstraint","COMMITMENT_PRECONDITIONS"),
-        "EffectiveActuationComposition.lua":("EffectiveActuationCompositionConstraint","EFFECTIVE_ACTUATION_COMPOSITION"),
+        "RepresentationFitnessConstraint.lua":("RepresentationFitnessConstraint","REPRESENTATION_FITNESS"),
+        "ResponsibilityCompatibilityConstraint.lua":("ResponsibilityCompatibilityConstraint","RESPONSIBILITY_COMPATIBILITY"),
+        "CommitmentPreconditionsConstraint.lua":("CommitmentPreconditionsConstraint","COMMITMENT_PRECONDITIONS"),
+        "EffectiveActuationCompositionConstraint.lua":("EffectiveActuationCompositionConstraint","EFFECTIVE_ACTUATION_COMPOSITION"),
     }
     for filename,(evaluator_name,constraint_id) in retained.items():
         assert f"scripts/constraints/evaluators/{filename}" in main
@@ -54,9 +54,9 @@ def test_phase13_constraint_engine_owns_only_independent_bounded_questions():
         assert not (ROOT/"scripts"/"constraints"/"evaluators"/filename).exists()
 
 def test_phase13_retained_evaluators_do_not_relabel_candidate_verdicts():
-    responsibility=read("scripts/constraints/evaluators/ResponsibilityCompatibility.lua")
-    preconditions=read("scripts/constraints/evaluators/CommitmentPreconditions.lua")
-    composition=read("scripts/constraints/evaluators/EffectiveActuationComposition.lua")
+    responsibility=read("scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua")
+    preconditions=read("scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua")
+    composition=read("scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua")
     for text in (responsibility,preconditions,composition):
         assert "fromCandidate" not in text
         assert "constraintEvidence" not in text
