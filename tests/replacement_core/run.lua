@@ -6382,11 +6382,11 @@ test("Cached Transit actuator waits for requested endpoint and then settles",fun
     local capability={isFoldable=true,members={vehicle,implement},actuators={{object=implement,memberReferenceKey="member-root:1364"}},settlementTimeoutMs=10000}
     local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     local ok=authority:prepareCachedTransit(vehicle,capability); equal(ok,true); equal(implement.requested,1)
-    local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.exhausted,false)
+    local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.exhausted,false); equal(pending.completionResidual,1)
     implement.spec_foldable.foldAnimTime=0.5; g_time=6000
-    pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false)
+    pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.completionResidual,0.5)
     implement.spec_foldable.foldAnimTime=1; g_time=7000
-    local settled=authority:getCachedTransitSettlement(vehicle); equal(settled.settled,true); equal(settled.normal,true); equal(settled.exhausted,false)
+    local settled=authority:getCachedTransitSettlement(vehicle); equal(settled.settled,true); equal(settled.normal,true); equal(settled.exhausted,false); equal(settled.completionResidual,0)
 end)
 
 test("Cached Transit settlement exhaustion removes configuration veto without asserting compaction",function()
@@ -6433,6 +6433,50 @@ test("Transit-only Cooperative Passage: Cooperative Passage configuration reject
     local run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-NON-TRANSIT",phase="SETTLING",participants={{vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="LEGACY_MODE"}}}
     local ok,reason=control:_beginPassageConfiguration(run)
     equal(ok,false); equal(reason,"A:unsupported-configuration-mode:LEGACY_MODE")
+end)
+
+test("Cooperative Passage progress watchdog uses cumulative completion-residual improvement and ten-second stall threshold",function()
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},driveMechanism={},configurationMechanism={}
+    })
+    local current=10
+    control._phaseCompletionResidual=function()
+        return {kind="TEST_RESIDUAL",value=current,epsilon=1}
+    end
+    local run={commitmentId="CM-WATCHDOG",phase="GUIDE_TEST",phaseStartedAt=0}
+    control:_setPhase(run,"GUIDE_TEST",0)
+
+    local stalled,evidence=control:_progressWatchdogStatus(run,0)
+    equal(stalled,false); equal(evidence.residual,10)
+
+    -- Sub-epsilon improvements accumulate against the last meaningful best.
+    current=9.6; stalled=control:_progressWatchdogStatus(run,5000); equal(stalled,false)
+    current=8.9; stalled=control:_progressWatchdogStatus(run,9000); equal(stalled,false)
+    equal(run.progressWatchdogLastImprovementAt,9000)
+
+    current=8.8; stalled=control:_progressWatchdogStatus(run,18999); equal(stalled,false)
+    stalled,evidence=control:_progressWatchdogStatus(run,19000)
+    equal(stalled,true); equal(evidence.kind,"TEST_RESIDUAL"); equal(evidence.stalledMs,10000)
+end)
+
+test("Cooperative Passage progress watchdog pauses when completion-residual evidence is unavailable",function()
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},driveMechanism={},configurationMechanism={}
+    })
+    local available=false
+    control._phaseCompletionResidual=function()
+        if not available then return nil,"TEST_EVIDENCE_UNAVAILABLE" end
+        return {kind="TEST_RESIDUAL",value=5,epsilon=1}
+    end
+    local run={commitmentId="CM-WATCHDOG-EVIDENCE",phase="GUIDE_TEST",phaseStartedAt=0}
+    control:_setPhase(run,"GUIDE_TEST",0)
+    equal(control:_progressWatchdogStatus(run,0),false)
+    equal(control:_progressWatchdogStatus(run,20000),false)
+    available=true
+    local stalled,evidence=control:_progressWatchdogStatus(run,20000)
+    equal(stalled,false); equal(evidence.stalledMs,0)
+    stalled,evidence=control:_progressWatchdogStatus(run,30000)
+    equal(stalled,true); equal(evidence.stalledMs,10000)
 end)
 
 test("Cooperative Passage: failed guide holds compact configuration without restore request",function()

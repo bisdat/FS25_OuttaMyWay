@@ -22,7 +22,15 @@ Control.__index=Control
 -- Alignment tolerances measure settlement around the captured Transit axis;
 -- they do not define Passage-clearance or traversal-gate geometry.
 local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0
-local COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
+-- Specification-owned progress watchdog: elapsed phase time is not evidence.
+-- Control halts only after 10 s without meaningful improvement of the current
+-- phase completion residual measured from fresh Reality.
+local COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS = 10000
+local COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M = 0.10
+local COOPERATIVE_PASSAGE_PROGRESS_SPEED_EPSILON_KMH = 0.10
+local COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON = 0.005
+local COOPERATIVE_PASSAGE_PROGRESS_HEADING_EPSILON = 0.0005
+local COOPERATIVE_PASSAGE_PROGRESS_LATERAL_EPSILON_M = 0.05
 local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
 local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 local COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
@@ -444,6 +452,11 @@ end
 
 function Control:_setPhase(run,phase,nowMs)
     run.phase=phase; run.phaseStartedAt=nowMs
+    run.progressWatchdogPhase=phase
+    run.progressWatchdogBestResidual=nil
+    run.progressWatchdogResidualKind=nil
+    run.progressWatchdogLastImprovementAt=nowMs
+    run.progressWatchdogUnavailableReason=nil
 end
 
 function Control:_targetFor(run,p,forwardM,lateralM)
@@ -1254,6 +1267,202 @@ function Control:executeJointRequests(requestA,requestB,candidate)
     return self:_executeCooperativePassageJointRequests(requestA,requestB,candidate,bridge)
 end
 
+
+local function finiteNumber(value)
+    return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
+end
+
+function Control:_axisTravelCompletionResidualM(participant)
+    if participant==nil or participant.vehicle==nil or type(self.driveMechanism.getState)~="function" then return nil,"AXIS_TRAVEL_STATE_UNAVAILABLE" end
+    local state=self.driveMechanism:getState(participant.vehicle)
+    if type(state)~="table" or state.mode~="AXIS_TRAVEL" then return nil,"AXIS_TRAVEL_STATE_UNAVAILABLE" end
+    local pp=pose(participant.vehicle)
+    local ox,oz=tonumber(state.originX),tonumber(state.originZ)
+    local fx,fz=tonumber(state.axisForwardX),tonumber(state.axisForwardZ)
+    local target=tonumber(state.targetStationM)
+    if pp==nil or ox==nil or oz==nil or fx==nil or fz==nil or target==nil then return nil,"AXIS_TRAVEL_RESIDUAL_FRAME_UNAVAILABLE" end
+    local axisLength=math.sqrt(fx*fx+fz*fz)
+    if axisLength<=0.0001 then return nil,"AXIS_TRAVEL_RESIDUAL_AXIS_DEGENERATE" end
+    fx,fz=fx/axisLength,fz/axisLength
+    local progress=(pp.x-ox)*fx+(pp.z-oz)*fz
+    local tolerance=math.max(0,tonumber(state.stationToleranceM) or 0)
+    local forwards=state.moveForwards~=false
+    if forwards then return math.max(0,target-(progress+tolerance)),nil end
+    return math.max(0,(progress-tolerance)-target),nil
+end
+
+function Control:_alignmentCompletionResidualUnits(participant)
+    local current,reason=self:_alignmentSnapshot(participant)
+    if current==nil then return nil,reason end
+    local pp=pose(participant.vehicle)
+    if pp==nil then return nil,"ASSEMBLY_AXIS_VEHICLE_POSE_UNAVAILABLE" end
+    local fx,fz=tonumber(participant.axisForwardX),tonumber(participant.axisForwardZ)
+    local ox,oz=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    if fx==nil or fz==nil or ox==nil or oz==nil then return nil,"ASSEMBLY_AXIS_FRAME_UNAVAILABLE" end
+    local rightX,rightZ=fz,-fx
+    local vehicleLateral=(pp.x-ox)*rightX+(pp.z-oz)*rightZ
+    local residual=math.max(0,math.abs(vehicleLateral)-COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M)
+        / COOPERATIVE_PASSAGE_PROGRESS_LATERAL_EPSILON_M
+    local vehicleHeadingDot=dot(pp.dx,pp.dz,fx,fz)
+    residual=residual+math.max(0,COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT-vehicleHeadingDot)
+        / COOPERATIVE_PASSAGE_PROGRESS_HEADING_EPSILON
+    local memberCount=OuttaMyWay.ValueRecord.length(current.members or {})
+    if memberCount<1 then return nil,"ASSEMBLY_AXIS_MEMBER_EVIDENCE_UNAVAILABLE" end
+    for _,m in OuttaMyWay.ValueRecord.ipairs(current.members or {}) do
+        local memberHeadingDot=math.abs(dot(tonumber(m.headingX) or 0,tonumber(m.headingZ) or 0,fx,fz))
+        residual=residual+math.max(0,COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT-memberHeadingDot)
+            / COOPERATIVE_PASSAGE_PROGRESS_HEADING_EPSILON
+    end
+    return residual,nil
+end
+
+function Control:_phaseCompletionResidual(run)
+    local phase=tostring(run and run.phase or "")
+    if phase=="PASSAGE_APPROACH" then
+        local longitudinal=self:_passageLongitudinalSeparation(run)
+        local boundary=tonumber(run.passageEntry and run.passageEntry.boundarySeparationM)
+        if longitudinal==nil or boundary==nil then return nil,"APPROACH_COMPLETION_RESIDUAL_UNAVAILABLE" end
+        return {kind="APPROACH_BOUNDARY_MARGIN_M",value=math.max(0,longitudinal-boundary),epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
+    end
+
+    if phase=="SETTLING" then
+        local residual=0
+        for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
+            if self.holdMechanism:isHolding(participant.vehicle)~=true then residual=residual+10 end
+            residual=residual+math.max(0,actualSpeedKmh(participant.vehicle)-COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH)
+                / COOPERATIVE_PASSAGE_PROGRESS_SPEED_EPSILON_KMH
+        end
+        return {kind="SETTLING_COMPLETION_UNITS",value=residual,epsilon=1}
+    end
+
+    if phase=="CONFIGURING" then
+        local residual=0
+        for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
+            if participant.passageTransitFoldExpected==true and participant.passageTransitCompactionActive==true then
+                local settlement=self.configurationMechanism:getCachedTransitSettlement(participant.vehicle)
+                if settlement.settled~=true and not finiteNumber(settlement.completionResidual) then
+                    return nil,"TRANSIT_CONFIGURATION_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(participant.assemblyId)
+                end
+                residual=residual+(tonumber(settlement.completionResidual) or 0)
+            end
+        end
+        return {kind="TRANSIT_CONFIGURATION_ACTUATOR_DISTANCE",value=residual,epsilon=COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON}
+    end
+
+    if string.sub(phase,1,6)=="GUIDE_" then
+        local residual=0
+        for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
+            local pp=pose(participant.vehicle)
+            local tx,tz,radius=tonumber(participant.targetX),tonumber(participant.targetZ),tonumber(participant.targetRadiusM)
+            if pp==nil or tx==nil or tz==nil or radius==nil then return nil,"GUIDE_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(participant.assemblyId) end
+            residual=residual+math.max(0,distance(pp.x,pp.z,tx,tz)-radius)
+        end
+        return {kind="GUIDE_TARGET_DISTANCE_M",value=residual,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
+    end
+
+    if phase=="ALIGNMENT_RUNOUT" then
+        local residual=0
+        for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
+            if participant.runoutReady~=true then
+                local alignment,alignmentReason=self:_alignmentCompletionResidualUnits(participant)
+                if alignment==nil then return nil,"ALIGNMENT_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(alignmentReason) end
+                residual=residual+alignment
+                local other=participant==run.a and run.b or run.a
+                if legLive(other) then
+                    local _,_,evidence=self:_stagedBeyondOtherTransitReturn(participant,other)
+                    if type(evidence)~="table" or not finiteNumber(evidence.rearStationM) or not finiteNumber(evidence.otherReturnLimitM) then
+                        return nil,"RETURN_STAGING_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(participant.assemblyId)
+                    end
+                    residual=residual+math.max(0,evidence.otherReturnLimitM-evidence.rearStationM)
+                        / COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M
+                end
+            end
+        end
+        return {kind="RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS",value=residual,epsilon=1}
+    end
+
+    if phase=="AXIS_RETURN" then
+        local participant=run.activeReturnParticipant
+        local residual,reason=self:_axisTravelCompletionResidualM(participant)
+        if residual==nil then return nil,reason end
+        return {kind="AXIS_RETURN_STATION_DISTANCE_M",value=residual,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
+    end
+
+    if phase=="RESTORING_PARTICIPANT" then
+        local participant=run.activeRestoreParticipant
+        if participant==nil then return nil,"RESTORE_COMPLETION_PARTICIPANT_UNAVAILABLE" end
+        if type(self.configurationMechanism.getState)~="function" then return nil,"RESTORE_COMPLETION_STATE_UNAVAILABLE" end
+        if self.configurationMechanism:getState(participant.vehicle)==nil then
+            return {kind="RESTORE_ACTUATOR_DISTANCE",value=0,epsilon=COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON}
+        end
+        local settlement=self.configurationMechanism:getCachedRestoreSettlement(participant.vehicle)
+        if settlement.settled~=true and not finiteNumber(settlement.completionResidual) then
+            return nil,"RESTORE_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(participant.assemblyId)
+        end
+        return {kind="RESTORE_ACTUATOR_DISTANCE",value=tonumber(settlement.completionResidual) or 0,epsilon=COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON}
+    end
+
+    if phase=="WAIT_NATIVE_CLEARANCE" then
+        local released,waiting=run.releasedLeader,run.waitingParticipant
+        if released==nil or waiting==nil then return nil,"RETURN_CLEARANCE_COMPLETION_CONTEXT_UNAVAILABLE" end
+        local clear,reason,evidence=self:_releasedParticipantClearedReturnSpace(released,waiting)
+        if clear then return {kind="RETURN_CLEARANCE_DEFICIT_M",value=0,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M} end
+        if type(evidence)~="table" or not finiteNumber(evidence.rearStationM) or not finiteNumber(evidence.requiredStationM) then
+            return nil,"RETURN_CLEARANCE_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(reason)
+        end
+        return {kind="RETURN_CLEARANCE_DEFICIT_M",value=math.max(0,evidence.requiredStationM-evidence.rearStationM),epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
+    end
+
+    return nil,"PROGRESS_WATCHDOG_PHASE_NOT_GOVERNED:"..phase
+end
+
+function Control:_progressWatchdogStatus(run,nowMs)
+    local sample,reason=self:_phaseCompletionResidual(run)
+    if sample==nil then
+        if run.progressWatchdogUnavailableReason~=reason then
+            logInfo("PASSAGE_PROGRESS_WATCHDOG_EVIDENCE commitment=%s phase=%s state=UNAVAILABLE reason=%s action=PAUSE_STALL_CLOCK",
+                tostring(run.commitmentId),tostring(run.phase),tostring(reason))
+        end
+        run.progressWatchdogBestResidual=nil
+        run.progressWatchdogResidualKind=nil
+        run.progressWatchdogLastImprovementAt=nowMs
+        run.progressWatchdogUnavailableReason=reason
+        return false,nil
+    end
+
+    local value,epsilon=tonumber(sample.value),math.max(0,tonumber(sample.epsilon) or 0)
+    if not finiteNumber(value) then return false,nil end
+    if run.progressWatchdogPhase~=run.phase or run.progressWatchdogResidualKind~=sample.kind or not finiteNumber(run.progressWatchdogBestResidual) then
+        run.progressWatchdogPhase=run.phase
+        run.progressWatchdogResidualKind=sample.kind
+        run.progressWatchdogBestResidual=value
+        run.progressWatchdogLastImprovementAt=nowMs
+        run.progressWatchdogUnavailableReason=nil
+        return false,{kind=sample.kind,residual=value,epsilon=epsilon,stalledMs=0}
+    end
+
+    if value<=0 then
+        run.progressWatchdogBestResidual=0
+        run.progressWatchdogLastImprovementAt=nowMs
+        run.progressWatchdogUnavailableReason=nil
+        return false,{kind=sample.kind,residual=0,epsilon=epsilon,stalledMs=0}
+    end
+
+    local improvement=(run.progressWatchdogBestResidual or value)-value
+    if improvement>=epsilon then
+        run.progressWatchdogBestResidual=value
+        run.progressWatchdogLastImprovementAt=nowMs
+    end
+    run.progressWatchdogUnavailableReason=nil
+
+    local stalledMs=math.max(0,nowMs-(run.progressWatchdogLastImprovementAt or nowMs))
+    local stalled=stalledMs>=COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS
+    return stalled,{
+        kind=sample.kind,residual=value,epsilon=epsilon,stalledMs=stalledMs,
+        bestResidual=run.progressWatchdogBestResidual
+    }
+end
+
 function Control:update(dt)
     local run=self.run
     if run==nil or run.failureReason~=nil then return end
@@ -1283,15 +1492,14 @@ function Control:update(dt)
     local thirdOk,thirdReason=self:_thirdPartySupport(run,nil)
     if not thirdOk then self:_failHeld(thirdReason); return end
 
-    local timeout=COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS
-    if run.failureReason==nil and nowMs-(run.phaseStartedAt or nowMs)>=timeout then
-        if run.phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant~=nil then
-            local waiting=run.waitingParticipant; waiting.axisReturnSkipped=true
-            logWarning("RETURN_CLEARANCE_EXHAUSTED commitment=%s waiting=%s action=SKIP_AXIS_RETURN_AND_RESTORE",tostring(run.commitmentId),waiting.name)
-            local ok,reason=self:_beginParticipantRestore(run,waiting); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
-        else
-            self:_failHeld("PHASE_WATCHDOG:"..tostring(run.phase)); return
-        end
+    local stalled,watchdog=self:_progressWatchdogStatus(run,nowMs)
+    if stalled then
+        logWarning("PASSAGE_PROGRESS_WATCHDOG commitment=%s phase=%s residualKind=%s residual=%.3f bestResidual=%.3f stalledMs=%d thresholdMs=%d action=FAIL_SAFE_HOLD_REASSESSMENT semanticTerminality=false",
+            tostring(run.commitmentId),tostring(run.phase),tostring(watchdog and watchdog.kind or "n/a"),
+            tonumber(watchdog and watchdog.residual) or -1,tonumber(watchdog and watchdog.bestResidual) or -1,
+            tonumber(watchdog and watchdog.stalledMs) or 0,COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS)
+        self:_failHeld("PROGRESS_WATCHDOG_NO_COMPLETION_PROGRESS:"..tostring(run.phase)..":"..tostring(watchdog and watchdog.kind or "UNAVAILABLE"))
+        return
     end
 
     if run.phase=="PASSAGE_APPROACH" then

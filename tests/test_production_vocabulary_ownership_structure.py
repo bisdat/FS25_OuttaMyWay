@@ -381,8 +381,8 @@ def test_cooperative_passage_control_owns_execution_calibration():
     expected = (
         ("COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH", "8.0",
          "_executeCooperativePassageJointRequests", "speedKmh="),
-        ("COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS", "45000",
-         "update", "local timeout="),
+        ("COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS", "10000",
+         "_progressWatchdogStatus", "local stalled=stalledMs>="),
         ("COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M", "0.50",
          "_assemblyAxisSettled", "local lateralTolerance="),
         ("COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT", "0.995",
@@ -411,7 +411,7 @@ def test_cooperative_passage_control_owns_execution_calibration():
         "math.abs(vehicleLateral)>lateralTolerance",
         "vehicleHeadingDot<headingMinDot",
         "memberHeadingDot<headingMinDot",
-        "nowMs-(run.phaseStartedAt or nowMs)>=timeout",
+        "local stalledMs=math.max(0,nowMs-(run.progressWatchdogLastImprovementAt or nowMs))",
     ):
         assert use in passage
 
