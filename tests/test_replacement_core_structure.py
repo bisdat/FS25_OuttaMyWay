@@ -632,7 +632,8 @@ def test_d0181_d0143_runtime_literals_and_resurrection_switch_are_retired():
         "COOPERATIVE_PASSAGE_MOVE_SPEED_KMH",
     ):
         assert token not in config
-    assert "TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" not in support
+    assert "TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" not in support + runtime
+    assert 'boundary.mode=="COOPERATIVE_PASSAGE"' in runtime
     assert 'bridge.architecture~="COOPERATIVE_PASSAGE"' in runtime
     assert 'kind="COOPERATIVE_PASSAGE"' in runtime
 
