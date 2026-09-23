@@ -576,27 +576,14 @@ test("Situation Assessment is deterministic from fresh sealed state",function()
 end)
 
 
-local mandatoryConstraintIds={
-    "FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS","CONTROL_CAPABILITY_AVAILABILITY","CONTINUING_INTENT_PRIORITY","PROGRESS_PRESERVATION","RESPONSIBILITY_COMPATIBILITY","OBLIGATION_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"
-}
-
-local function passConstraintEvidence()
-    local result={}
-    for _,id in ipairs(mandatoryConstraintIds) do
-        result[id]={result="PASS",evidence={fixture=true},provenance={source="sealed-fixture"},reason="fixture supports constraint",revalidationTrigger={kind="FIXTURE_CHANGE"}}
-    end
-    return result
-end
-
 local function candidateSpec(referenceKey,capability,cost,subjectAssemblyId)
-    local constraints=passConstraintEvidence()
     return {
         referenceKey=referenceKey,
         purpose={kind="SAFE_CONTINUATION",referenceKey=referenceKey},
         subject={assemblyId=subjectAssemblyId or "AS-00001"},
         capability=capability,
         expectedEffect={kind=capability},
-        evidenceBasis={constraintEvidence=constraints},
+        evidenceBasis={},
         representationFitness={requirements={}},
         preconditions={facts={}},
         invalidationConditions={{kind="OPERATIONAL_PICTURE_CHANGE"}},
