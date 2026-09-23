@@ -109,7 +109,7 @@ function Support.new(identityRegistry,epochSequence,obstructionSupport,liveSuppo
     return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,liveSupport=liveSupport,passiveSupport=passiveSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
 end
 
-function Support:attach(picture,snapshot)
+function Support:publishDecisionPicture(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
     local targetPictureId=self.identities:issue("PICTURE")
@@ -178,7 +178,7 @@ function Support:attach(picture,snapshot)
 
     if #state.groups==0 then
         self.lastStatus="NO_PROSPECTIVE_SUPPORT_GROUPS"
-        return self.passiveSupport:attach(picture,snapshot)
+        return self.passiveSupport:publishDecisionPicture(picture,snapshot)
     end
 
     local capabilities,capabilitySet={},{}
