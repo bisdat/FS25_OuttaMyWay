@@ -85,7 +85,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     -- deferred until ResponsibilityTransitionAuthority has registered this
     -- Resolution as current and LiveControlDispatcher is about to dispatch the
     -- jointly authorised Passage requests.
-    local protection={status="LEGACY_HARNESS_NOT_COMPOSED"}
+    local protection={status="BUBBLE_BULLET_TIME_NOT_COMPOSED"}
     if self.runtime.bubbleBulletTime~=nil then
         local protectionReason=nil
         protection,protectionReason=self.runtime.bubbleBulletTime:prepareAtBubbleFormation(picture,candidate,applied)
@@ -106,7 +106,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
 
     if not (semantics and semantics.deferResponsibilityExposureLog==true) then
         local exposure=semantics and semantics.responsibilityAlreadyCurrent==true and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
-        logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s legacyAction=%s",
+        logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s commitmentApplicationAction=%s",
             exposure,tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
             table.concat(participantIds,","),table.concat(participantIds,","),tostring(applied.application.action))
     end
