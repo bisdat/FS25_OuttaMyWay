@@ -168,7 +168,7 @@ function Mechanism:install()
             localX, localZ = localX / length, localZ / length
             local cap = tonumber(state.speedKmh) or 0
             state.lastOutputMaxSpeed = cap
-            -- Prototype 22 validates forward Reposition only. Reverse remains
+            -- Current Reposition actuation supports forward travel only. Reverse remains
             -- architecturally valid but UNRESOLVED until dedicated discovery.
             return original(vehicle, dt, 1, true, true, localX, localZ, cap)
         end

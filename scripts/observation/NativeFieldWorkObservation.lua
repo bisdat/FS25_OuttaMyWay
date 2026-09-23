@@ -83,7 +83,7 @@ local function workingWidthObservation(vehicle)
 end
 
 -- Exact SDK and live native-command evidence identify aiDriveParams as the immediate
--- native field-worker command before the P22 driveToPoint wrapper.  Reading it
+-- native field-worker command before OuttaMyWay Native Drive actuation. Reading it
 -- here makes that raw Observation available to Situation Assessment without
 -- letting Diagnostics become an authority source.
 local function nativeDriveCommandObservation(vehicle)

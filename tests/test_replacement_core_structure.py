@@ -575,7 +575,8 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     assert "currentPairAssessmentScope" in assessment
     assert "futureSpaceStatus" in scope and "relationshipStatus" in scope
     assert "futureSpacePositive=%s" in validator
-    assert "retiredPrototypePassageSourced=false" in runtime and "kingRetired=true" in runtime and "typedBoundedControl=true" in runtime
+    for token in ("trajectorySituationKnowledge=true","opposedCorridorClassification=true","runtimeOwnedCycle=true","situationOwnsCurrentKnowledge=true","typedBoundedControl=true"):
+        assert token in runtime
     for text in (source,assessment,scope,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text

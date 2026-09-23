@@ -55,7 +55,7 @@ function Gate:setHold(vehicle, context)
     local ok, reason = self:install(vehicle)
     if not ok then return false, reason end
     self.holds[vehicle] = {
-        context = tostring(context or "P22"),
+        context = tostring(context or "FIELD-WORK-HOLD"),
         startedAt = g_time or 0,
         lastGateAt = nil
     }

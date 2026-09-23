@@ -55,7 +55,7 @@ function Transition:transition(picture,evaluated,readiness)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
     local disposition=preflight.current==nil and "ESTABLISHED" or "REVALIDATED"
-    logInfo("FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM decision=%s candidate=%s pair=%s commitment=%s responsibility=%s leader=%s follower=%s legacyAction=%s responsibilityDisposition=%s beforePhysicalDispatch=true",
+    logInfo("FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM decision=%s candidate=%s pair=%s commitment=%s responsibility=%s leader=%s follower=%s commitmentAction=%s responsibilityDisposition=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.pairKey),tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(currentResponsibility.identity),tostring(bridge.leaderAssemblyId),tostring(bridge.followerAssemblyId),tostring(evaluated.decision.commitmentAction),disposition)
     return applied,nil

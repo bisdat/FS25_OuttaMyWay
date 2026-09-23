@@ -5,8 +5,8 @@ OuttaMyWay.ConstraintEngine={}
 local Engine=OuttaMyWay.ConstraintEngine
 Engine.__index=Engine
 
--- Phase 13: only independently evaluated bounded questions are mandatory
--- Constraint verdicts. Candidate planning evidence is not a verdict source.
+-- Only independently evaluated bounded questions are mandatory Constraint
+-- verdicts. Candidate Support evidence is not a verdict source.
 local evaluatorNames={
     "RepresentationFitnessConstraint",
     "ResponsibilityCompatibilityConstraint",
