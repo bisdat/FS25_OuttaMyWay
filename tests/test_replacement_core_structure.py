@@ -889,14 +889,20 @@ def test_aligned_follower_boundary_regulation_uses_current_knowledge_and_central
     assert 'historicalNativeManoeuvreAuthority=false' in assessment
     assert 'NativeManoeuvreObservationSource' not in assessment
     assert 'forensicDemandEnvelope' not in assessment
+    assert 'FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR' in assessment
     assert 'FOLLOWER_BOUNDARY' in support
+    assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED' not in support
     assert 'local function followerBoundaryRecord(picture)' in support
     assert 'FOLLOWER_BOUNDARY_PROTECTION' in support
     assert 'applyFollowerBoundaryDecision' in lifecycle
     assert 'settleFollowerBoundaryPurpose' in lifecycle
     assert 'FOLLOWER_BOUNDARY' in control
     assert 'ELASTIC_REGULATION_MAGNITUDE_UPDATED' in control
+    assert 'CAP_RELAXATION_REJECTED_PURPOSE_PERSISTS' not in control
+    assert 'FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR' not in control
+    assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
     assert 'local interval=LIVE_RUNTIME_CONTROL_INTERVAL_MS' in coordinator
+    assert 'OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in coordinator
     assert 'PASSIVE_SAMPLE_INTERVAL_MS' not in coordinator
     assert not (ROOT/"scripts"/"diagnostics"/"FollowerPacingHud.lua").exists()
     assert 'FollowerPacingHud' not in main

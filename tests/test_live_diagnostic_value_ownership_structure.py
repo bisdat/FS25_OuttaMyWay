@@ -65,7 +65,7 @@ def test_issue152_promoted_knowledge_survives_probe_retirement():
     assert "nativeFieldWork" in situation
     assert "semanticAuthority=false" in native_field_work
 
-    assert "Resolution-Margin Demand Evidence" in resolution_margin
+    assert "OuttaMyWay.ResolutionMarginDemandAssessment" in resolution_margin
     assert "POSITIVE_WITNESS_WITHIN_LOCAL_INTENT" in resolution_margin
     assert "ProgressionGeometry.rayCapsuleEntry" in resolution_margin
     assert "negativeClearanceAuthority=false" in resolution_margin
