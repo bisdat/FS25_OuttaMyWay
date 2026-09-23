@@ -330,6 +330,55 @@ def test_sourced_production_vocabulary_has_no_historical_decision_identity():
 
 
 
+def test_sourced_production_has_no_development_origin_labels_for_current_concepts():
+    retired = (
+        "Phase 13",
+        "Prototype 22",
+        "legacyApplicationAction",
+        "legacyAction=",
+        "LEGACY_HARNESS_NOT_COMPOSED",
+        "retiredPrototypePassageSourced",
+        "obstructionRelocationResponsibilityConsolidated",
+        "successorRookRetired",
+        "continuousProductiveHistoryRetired",
+        "kingRetired",
+        "continuousRefugeRetired",
+        "turningRankAwarenessRetained",
+    )
+    p22 = re.compile(r"\\bP22\\b")
+    offenders = []
+    for path in _loaded_production_lua_paths():
+        text = path.read_text(encoding="utf-8")
+        for token in retired:
+            if token in text:
+                for index, line in enumerate(text.splitlines(), 1):
+                    if token in line:
+                        offenders.append(
+                            f"{path.relative_to(ROOT).as_posix()}:{index}:{token}"
+                        )
+        for match in p22.finditer(text):
+            line = text.count("\\n", 0, match.start()) + 1
+            offenders.append(
+                f"{path.relative_to(ROOT).as_posix()}:{line}:{match.group(0)}"
+            )
+    assert offenders == []
+
+    adapter = (ROOT / "scripts" / "responsibility" / "ResolutionCommitmentAdapter.lua").read_text(encoding="utf-8")
+    follower = (ROOT / "scripts" / "responsibility" / "FollowerBoundaryResponsibilityTransition.lua").read_text(encoding="utf-8")
+    action_space = (ROOT / "scripts" / "responsibility" / "ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
+    passage = (ROOT / "scripts" / "responsibility" / "CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
+    hold = (ROOT / "scripts" / "control" / "mechanisms" / "FieldWorkHoldMechanism.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+
+    assert "commitmentApplicationAction=application.action" in adapter
+    assert "commitmentAction=%s" in follower
+    assert "commitmentAction=%s" in action_space
+    assert "commitmentApplicationAction=%s" in passage
+    assert 'status="BUBBLE_BULLET_TIME_NOT_COMPOSED"' in passage
+    assert 'context or "FIELD-WORK-HOLD"' in hold
+    assert "turningRankAwareness=true" in runtime
+
+
 def test_semantic_runtime_categories_are_closed():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     regulation = (ROOT / "scripts" / "control" / "RegulationControl.lua").read_text(encoding="utf-8")
