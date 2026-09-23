@@ -713,15 +713,15 @@ function Runtime:processLiveObservation(raw)
 
     local supported=nil
     if activeResolution then
-        supported=self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)
-        if supported==nil then supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot) end
+        supported=self.obstructionRelocationCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
+        if supported==nil then supported=self.liveTrafficCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot) end
     else
-        supported=self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)
+        supported=self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)
         if supported==nil then
             -- Conservative escape hatch only; the Portfolio helper normally
             -- returns either a complete Portfolio or the existing passive support.
-            supported=self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)
-            if supported==nil then supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot) end
+            supported=self.obstructionRelocationCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
+            if supported==nil then supported=self.liveTrafficCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot) end
         end
     end
 
