@@ -118,7 +118,7 @@ def test_decision_is_present_but_control_remains_absent():
 
 def test_operational_picture_modules_are_offline_and_active():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
-    for rel in ("scripts/identity/OperationAdmission.lua", "scripts/assessment/RepresentationFitnessConstraint.lua", "scripts/assessment/SituationAssessment.lua"):
+    for rel in ("scripts/identity/OperationAdmission.lua", "scripts/assessment/RepresentationFitness.lua", "scripts/assessment/SituationAssessment.lua"):
         assert rel in main
     runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
     assert "processSealedObservation" in runtime
