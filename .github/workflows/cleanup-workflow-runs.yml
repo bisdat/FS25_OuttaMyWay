@@ -21,9 +21,11 @@ jobs:
 
           readonly keep_count=5
           readonly repository="${GITHUB_REPOSITORY}"
+          readonly api_version="2026-03-10"
+          readonly two_weeks_ago_epoch="$(date -d '14 days ago' +%s)"
 
           mapfile -t runs < <(
-            gh api --paginate               -H "Accept: application/vnd.github+json"               "/repos/${repository}/actions/runs?per_page=100"               --jq '.workflow_runs[] | [.created_at, (.id | tostring), .name] | @tsv'             | sort -r
+            gh api --paginate               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: ${api_version}"               "/repos/${repository}/actions/runs?per_page=100"               --jq '.workflow_runs[] | [.created_at, (.id | tostring), .status, .name] | @tsv'             | sort -r
           )
 
           total_count=${#runs[@]}
@@ -38,16 +40,26 @@ jobs:
             exit 0
           fi
 
-          delete_count=$((total_count - keep_count))
+          candidate_count=$((total_count - keep_count))
 
           echo "Found ${total_count} workflow runs."
-          echo "Keeping the five most recent and deleting ${delete_count} older runs."
+          echo "Keeping the five most recent and evaluating ${candidate_count} older runs for deletion."
 
           deleted=0
+          skipped=0
+
           for entry in "${runs[@]:keep_count}"; do
-            IFS=$'\t' read -r created_at run_id workflow_name <<< "${entry}"
-            echo "Deleting run ${run_id} (${workflow_name}, ${created_at})"
-            gh api               --method DELETE               -H "Accept: application/vnd.github+json"               "/repos/${repository}/actions/runs/${run_id}"
+            IFS=$'\t' read -r created_at run_id status workflow_name <<< "${entry}"
+            created_epoch="$(date -d "${created_at}" +%s)"
+
+            if [[ "${status}" != "completed" ]] && (( created_epoch > two_weeks_ago_epoch )); then
+              echo "Skipping run ${run_id} (${workflow_name}, ${created_at}, status=${status}): GitHub does not allow this recent active run to be deleted."
+              ((skipped += 1))
+              continue
+            fi
+
+            echo "Deleting run ${run_id} (${workflow_name}, ${created_at}, status=${status})"
+            gh api               --method DELETE               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: ${api_version}"               "/repos/${repository}/actions/runs/${run_id}"
             ((deleted += 1))
           done
 
@@ -55,6 +67,10 @@ jobs:
             echo "## Workflow run cleanup"
             echo
             echo "Kept the **5 most recent** workflow runs and deleted **${deleted}** older runs."
+            if (( skipped > 0 )); then
+              echo
+              echo "Skipped **${skipped}** recent active run(s) that GitHub does not yet permit deletion."
+            fi
             echo
             echo "The current cleanup run participates in the same recency ordering."
           } >> "${GITHUB_STEP_SUMMARY}"
