@@ -6,6 +6,18 @@ ROOT = Path(__file__).resolve().parents[1]
 def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
+def test_constraint_evaluator_basename_matches_primary_export():
+    evaluator_dir = ROOT / "scripts" / "constraints" / "evaluators"
+    files = sorted(evaluator_dir.glob("*.lua"))
+    assert files
+
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        exports = re.findall(r"^OuttaMyWay\.([A-Za-z][A-Za-z0-9_]*)\s*=\s*\{\}\s*$", text, re.M)
+        assert len(exports) == 1, path
+        assert path.stem == exports[0], path
+
+
 def test_candidate_support_cannot_publish_constraint_verdict_authority():
     contract=read("scripts/contracts/CandidateAction.lua")
     space=read("scripts/candidates/CandidateSpace.lua")
