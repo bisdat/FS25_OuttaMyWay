@@ -345,7 +345,7 @@ def test_sourced_production_has_no_development_origin_labels_for_current_concept
         "continuousRefugeRetired",
         "turningRankAwarenessRetained",
     )
-    p22 = re.compile(r"\\bP22\\b")
+    p22 = re.compile(r"\bP22\b")
     offenders = []
     for path in _loaded_production_lua_paths():
         text = path.read_text(encoding="utf-8")
@@ -357,7 +357,7 @@ def test_sourced_production_has_no_development_origin_labels_for_current_concept
                             f"{path.relative_to(ROOT).as_posix()}:{index}:{token}"
                         )
         for match in p22.finditer(text):
-            line = text.count("\\n", 0, match.start()) + 1
+            line = text.count("\n", 0, match.start()) + 1
             offenders.append(
                 f"{path.relative_to(ROOT).as_posix()}:{line}:{match.group(0)}"
             )
