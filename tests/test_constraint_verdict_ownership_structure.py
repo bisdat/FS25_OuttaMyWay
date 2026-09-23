@@ -5,17 +5,31 @@ ROOT = Path(__file__).resolve().parents[1]
 def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
-def test_phase13_candidate_cannot_carry_constraint_verdict_authority():
+def test_candidate_support_cannot_publish_constraint_verdict_authority():
     contract=read("scripts/contracts/CandidateAction.lua")
     space=read("scripts/candidates/CandidateSpace.lua")
     evidence=read("scripts/constraints/ConstraintEvidence.lua")
+    main=read("scripts/main.lua")
+
     assert "constraintEvidence=true" in contract
     assert "forbiddenDownstreamAuthorityFields" in contract
-    assert 'key~="constraintEvidence"' in space
-    assert "candidatePlanningEvidence" in space
-    assert "packet.result" not in space
-    assert "packet.applicable" not in space
+    assert "evidenceBasis=specification.evidenceBasis" in space
+    assert "candidateEvidenceBasis" not in space
     assert "fromCandidate" not in evidence
+
+    sourced = [ROOT / "scripts/main.lua"]
+    for relative in __import__("re").findall(r'"(scripts/[^"]+\.lua)"', main):
+        sourced.append(ROOT / relative)
+
+    # Candidate Support publishes current support facts directly; it must not
+    # manufacture Constraint-shaped verdict packets for CandidateSpace to scrub.
+    for path in sourced:
+        if path.parent.name == "candidates":
+            assert "constraintEvidence" not in path.read_text(encoding="utf-8"), path
+
+    # The retired translation product has no current production responsibility.
+    for path in sourced:
+        assert "candidatePlanningEvidence" not in path.read_text(encoding="utf-8"), path
 
 def test_phase13_constraint_engine_owns_only_independent_bounded_questions():
     main=read("scripts/main.lua")
