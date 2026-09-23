@@ -50,6 +50,6 @@ function Adapter.build(runtime,applied,semantics)
         beneficiaryAssemblyIds=beneficiaries,
         controlledSubjectAssemblyIds=subjects,
         openResolutionObligationIds=obligationIds,
-        provenance={source=semantics.source,legacyApplicationAction=application.action,genericCommitmentIdentity=commitment.identity,genericCommitmentRevision=commitment.revision}
+        provenance={source=semantics.source,commitmentApplicationAction=application.action,genericCommitmentIdentity=commitment.identity,genericCommitmentRevision=commitment.revision}
     }),nil
 end
