@@ -188,9 +188,9 @@ Follower, Forward Intersection, Action-Space and Corner-derived right-of-way are
 
 When a Cooperative Passage Candidate is supported for the current Decision Picture and passes every applicable mandatory Constraint, Decision MUST NOT select an ordinary live-traffic Regulation scope instead merely because Follower, Forward Intersection, Action-Space or Corner Regulation appears earlier in an implementation ordering.
 
-For this stage transition, **supported Cooperative Passage** means the complete current Passage Candidate contract is positive: the Shared Crossing Core, capture/control reserve, and every participant-specific Recovery Tail actually required by the selected intervention are supported. A crossing-only arrangement MUST NOT pre-empt tactical Regulation.
+For this stage transition, **supported Cooperative Passage** means the complete current Passage Candidate contract is positive: the Shared Crossing Core, capture/control reserve, and any participant-specific Lateral Excursion Development/Reacquisition required by the selected arrangement are supported. A crossing-only arrangement MUST NOT pre-empt tactical Regulation.
 
-> **Crossing-Viable Passage != Recovery-Capable Passage**
+> **Crossing-Viable Geometry != Passage-Capable Theatre**
 
 This is the implementation-facing Decision consequence of the architectural rule:
 

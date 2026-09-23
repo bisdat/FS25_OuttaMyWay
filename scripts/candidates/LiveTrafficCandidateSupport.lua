@@ -89,7 +89,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
         referenceKey="cooperative-passage:"..tostring(plan.conflictIdentity),
         purpose={kind="COOPERATIVE_PASSAGE",result="RESOLVE_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_BY_SUFFICIENT_LOCAL_PASSAGE"},
         subject={assemblyIds=plan.assemblyIds},capability="REPOSITION",
-        expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,recoveryCapablePassageTheatre=true,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true},
+        expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,passageCapableTheatre=true,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true},
         evidenceBasis={
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             progressActuationOwnership={assemblyIds=plan.assemblyIds},
@@ -107,14 +107,14 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
                 subjectJobToken=plan.subjectJobToken,otherJobToken=plan.otherJobToken,
                 subjectStartX=plan.subjectStartX,subjectStartZ=plan.subjectStartZ,otherStartX=plan.otherStartX,otherStartZ=plan.otherStartZ,
                 initialSeparationM=plan.separationM,trajectoryDot=plan.trajectoryDot,
-                localPassageSpace=plan.localPassageSpace,recoveryCapablePassageTheatre=plan.recoveryCapablePassageTheatre,
+                localPassageSpace=plan.localPassageSpace,passageCapableTheatre=plan.passageCapableTheatre,
                 passageArrangement=plan.passageArrangement,passageGuide=plan.passageGuide,passageConfiguration=plan.passageConfiguration,
                 passageEntry=plan.passageEntry,passageExcursion=plan.passageExcursion,progressiveSearch=plan.progressiveSearch,
                 controlProfile=plan.controlProfile
             }
         },
         representationFitness={requirements=requirements},
-        preconditions={evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,establishedOpposedCorridorConflict=true,sufficientLocalPassageArrangement=true,recoveryCapablePassageTheatre=true,controlProfile=plan.controlProfile},
+        preconditions={evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,establishedOpposedCorridorConflict=true,sufficientLocalPassageArrangement=true,passageCapableTheatre=true,controlProfile=plan.controlProfile},
         invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ESTABLISHED_CONFLICT_CHANGE"},{kind="PASSAGE_SUPPORT_LOSS"}},
         reversibility={physicalEffect=true,restoreParticipantBeforeLegRelease=true,passageReassessment=true},
         obligationsCreated=passageLegObligations,
@@ -898,13 +898,13 @@ function Support:publishDecisionPicture(picture,snapshot)
             local arrangement=plan.passageArrangement or {}; local guide=plan.passageGuide or {}; local sweep=guide.pairSweepSupport or {}
             local config=plan.passageConfiguration or {}; local participants=config.participants or {}
             local c1=participants[1] or {}; local c2=participants[2] or {}
-            local theatre=plan.recoveryCapablePassageTheatre or {}; local tails=theatre.recoveryTails or {}
-            local subjectTail=tails.subject or {}; local otherTail=tails.other or {}
-            logInfo("COOPERATIVE_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d crossingForward=%.2f recoveryTailRequired=%s/%s recoveryTail=%.2f/%.2f theatreComplete=%s minimumRepresentedClearance=%.2f searchIndex=%s",
+            local theatre=plan.passageCapableTheatre or {}; local reacquisition=theatre.lateralExcursionReacquisition or {}
+            local subjectReacquisition=reacquisition.subject or {}; local otherReacquisition=reacquisition.other or {}
+            logInfo("COOPERATIVE_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d crossingForward=%.2f lateralExcursionRequired=%s/%s reacquisition=%.2f/%.2f theatreComplete=%s minimumRepresentedClearance=%.2f searchIndex=%s",
                 tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.nominalInterAssemblyClearanceM) or -1,tonumber(arrangement.policyRequiredSeparationM) or -1,tonumber(arrangement.currentPolicyReserveM) or -1,
                 tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(sweep.supportBasis or "n/a"),tostring(plan.passageExcursion and plan.passageExcursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.clearanceDeficitM) or 0,
                 tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"),tonumber(config.totalConfigurationReleasedSpaceM) or 0,tostring(c1.expectedCompactConfigurationProfileId or c1.currentConfigurationProfileId or "n/a"),tostring(c2.expectedCompactConfigurationProfileId or c2.currentConfigurationProfileId or "n/a"),
-                tostring(guide.identity),#(guide.gates or {}),tonumber(plan.passageExcursion and plan.passageExcursion.crossingWindowForwardPerParticipantM) or 0,tostring(subjectTail.required==true),tostring(otherTail.required==true),tonumber(subjectTail.distanceM) or 0,tonumber(otherTail.distanceM) or 0,tostring(theatre.complete==true),tonumber(sweep.minimumRepresentedClearanceM) or -1,tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"))
+                tostring(guide.identity),#(guide.gates or {}),tonumber(plan.passageExcursion and plan.passageExcursion.crossingWindowForwardPerParticipantM) or 0,tostring(subjectReacquisition.required==true),tostring(otherReacquisition.required==true),tonumber(subjectReacquisition.distanceM) or 0,tonumber(otherReacquisition.distanceM) or 0,tostring(theatre.complete==true),tonumber(sweep.minimumRepresentedClearanceM) or -1,tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"))
         end
         local specification=makeCooperativePassageCandidate(pictureId,values,plan,governingRequirementKey)
         values.candidateSupportEvidence={

@@ -3930,66 +3930,64 @@ test("Cooperative Passage: zero Clearance Deficit produces straight Passage with
     equal(plan.passageArrangement.currentSeparationAlreadySufficient,true)
     equal(plan.passageExcursion.clearanceDeficitM,0)
     equal(plan.passageArrangement.subjectLateralOffsetM,0); equal(plan.passageArrangement.otherLateralOffsetM,0)
-    equal(plan.passageExcursion.developmentDistanceM,0); equal(plan.passageExcursion.recoveryDistanceM,0)
+    equal(plan.passageExcursion.developmentDistanceM,0); equal(plan.passageExcursion.reacquisitionDistanceM,0)
     equal(#plan.passageGuide.gates,3)
     equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
     equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
     equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
-    local theatre=plan.recoveryCapablePassageTheatre
+    local theatre=plan.passageCapableTheatre
     equal(theatre.complete,true)
     equal(theatre.sharedCrossingCore.fieldSupported,true)
-    equal(theatre.recoveryTails.subject.required,false)
-    equal(theatre.recoveryTails.subject.positiveZeroRecovery,true)
-    equal(theatre.recoveryTails.subject.distanceM,0)
-    equal(theatre.recoveryTails.other.required,false)
-    equal(theatre.recoveryTails.other.positiveZeroRecovery,true)
-    equal(theatre.recoveryTails.other.distanceM,0)
+    equal(theatre.lateralExcursionReacquisition.subject.required,false)
+    equal(theatre.lateralExcursionReacquisition.subject.distanceM,0)
+    equal(theatre.lateralExcursionReacquisition.other.required,false)
+    equal(theatre.lateralExcursionReacquisition.other.distanceM,0)
 end)
 
-test("Cooperative Passage: one-sided intervention creates only one Recovery Tail and leaves the zero-tail participant at Crossing Clearance",function()
+test("Cooperative Passage: one-sided intervention creates Reacquisition only for the participant with Lateral Excursion",function()
     local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-20,35)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     local subjectOffset=math.abs(plan.passageArrangement.subjectLateralOffsetM)
     local otherOffset=math.abs(plan.passageArrangement.otherLateralOffsetM)
-    local zeroRole,recoveryRole=nil,nil
-    if subjectOffset<0.001 and otherOffset>0.001 then zeroRole,recoveryRole="subject","other"
-    elseif otherOffset<0.001 and subjectOffset>0.001 then zeroRole,recoveryRole="other","subject" end
-    if zeroRole==nil then error("expected one-sided Passage arrangement") end
-    local tails=plan.recoveryCapablePassageTheatre.recoveryTails
-    equal(tails[zeroRole].required,false); equal(tails[zeroRole].positiveZeroRecovery,true); equal(tails[zeroRole].distanceM,0)
-    equal(tails[recoveryRole].required,true); equal(tails[recoveryRole].fieldSupported,true); equal(tails[recoveryRole].distanceM>0,true)
+    local onAxisRole,excursionRole=nil,nil
+    if subjectOffset<0.001 and otherOffset>0.001 then onAxisRole,excursionRole="subject","other"
+    elseif otherOffset<0.001 and subjectOffset>0.001 then onAxisRole,excursionRole="other","subject" end
+    if onAxisRole==nil then error("expected one-sided Passage arrangement") end
+    local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
+    equal(reacquisition[onAxisRole].required,false); equal(reacquisition[onAxisRole].distanceM,0)
+    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM>0,true)
     local crossingExit,native=nil,nil
     for _,gate in ipairs(plan.passageGuide.gates or {}) do
         if gate.kind=="CROSSING_WINDOW_EXIT" then crossingExit=gate end
         if gate.kind=="NATIVE_REACQUISITION" then native=gate end
     end
     if crossingExit==nil or native==nil then error("expected Crossing Clearance and native reacquisition gates") end
-    equal(math.abs(native[zeroRole].x-crossingExit[zeroRole].x)<0.0001,true)
-    equal(math.abs(native[zeroRole].z-crossingExit[zeroRole].z)<0.0001,true)
-    local dx=native[recoveryRole].x-crossingExit[recoveryRole].x
-    local dz=native[recoveryRole].z-crossingExit[recoveryRole].z
+    equal(math.abs(native[onAxisRole].x-crossingExit[onAxisRole].x)<0.0001,true)
+    equal(math.abs(native[onAxisRole].z-crossingExit[onAxisRole].z)<0.0001,true)
+    local dx=native[excursionRole].x-crossingExit[excursionRole].x
+    local dz=native[excursionRole].z-crossingExit[excursionRole].z
     equal(math.sqrt(dx*dx+dz*dz)>0.001,true)
 end)
 
-test("Cooperative Passage: crossing-valid theatre is rejected when every required participant Recovery Tail leaves Field World",function()
+test("Cooperative Passage: crossing-valid theatre is rejected when required Lateral Excursion Reacquisition leaves Field World",function()
     local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(plan,nil)
-    equal(reason,"RECOVERY_CAPABLE_PASSAGE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE")
-    local recoveryTailFailure=false
+    equal(reason,"PASSAGE_CAPABLE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE")
+    local reacquisitionFailure=false
     for _,conflict in ipairs(rejected or {}) do
         for _,candidate in ipairs(conflict.rejected or {}) do
             if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY"
-                and candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent=="RECOVERY_TAIL" then
-                recoveryTailFailure=true
+                and candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent=="LATERAL_EXCURSION_REACQUISITION" then
+                reacquisitionFailure=true
             end
         end
     end
-    equal(recoveryTailFailure,true)
+    equal(reacquisitionFailure,true)
 end)
 
-test("Cooperative Passage: unsupported Recovery-Capable Theatre retains tactical Action-Space Regulation",function()
+test("Cooperative Passage: unsupported Passage-Capable Theatre retains tactical Action-Space Regulation",function()
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
@@ -4026,7 +4024,7 @@ test("Cooperative Passage: Passage Selection immediately supersedes Action-Space
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
-    equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.recoveryCapablePassageTheatre.complete,true)
+    equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageCapableTheatre.complete,true)
     equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
 end)
 
@@ -4046,10 +4044,10 @@ test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arra
     equal(math.abs(plan.passageArrangement.combinedLateralBurdenM-7)<0.0001,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)-math.abs(plan.passageArrangement.otherLateralOffsetM))>0.001,true)
     equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
-    local tails=plan.recoveryCapablePassageTheatre.recoveryTails
-    equal(tails.subject.required,true); equal(tails.other.required,true)
-    equal(math.abs(tails.subject.distanceM-tails.other.distanceM)>0.001,true)
-    equal(tails.subject.fieldSupported,true); equal(tails.other.fieldSupported,true)
+    local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
+    equal(reacquisition.subject.required,true); equal(reacquisition.other.required,true)
+    equal(math.abs(reacquisition.subject.distanceM-reacquisition.other.distanceM)>0.001,true)
+    equal(reacquisition.subject.fieldSupported,true); equal(reacquisition.other.fieldSupported,true)
 end)
 
 test("Cooperative Passage mechanical preflight is vehicle-name independent and remains Control-revalidated",function()
@@ -6611,7 +6609,7 @@ test("Axis Return: Axis Travel reverses on captured axis rather than pursuing a 
     AIVehicleUtil, getWorldTranslation, worldDirectionToLocal = oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
-test("Recovery Alignment settles the assembly on the captured axis rather than reproducing Phase-5 articulation",function()
+test("Alignment Runout settles the assembly on the captured axis rather than reproducing Phase-5 articulation",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
     getWorldTranslation=function(node) return 0.1,0,12 end
