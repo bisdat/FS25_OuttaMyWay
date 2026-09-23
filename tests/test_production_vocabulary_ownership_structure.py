@@ -634,7 +634,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "localburden=math.abs(offset)",
         "localrequired=burden>0.001",
         "development=math.max(COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M,burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M)",
-        "recoveryTailDistanceM=development",
+        "reacquisitionDistanceM=development",
         "localsubjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)",
         "localotherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)",
         "localdevelopmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM",
@@ -642,9 +642,9 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "localentryBoundary=frontOverlap+developmentSum+entryAllowance",
         "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
         "localmaximumDevelopment=math.max(subjectDevelopment,otherDevelopment)",
-        "localmaximumRecovery=math.max(subjectRecovery,otherRecovery)",
+        "localmaximumReacquisition=math.max(subjectReacquisition,otherReacquisition)",
         "localdevelopmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,maximumDevelopment*0.25))",
-        "localrecoveryRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,maximumRecovery*0.25))",
+        "localreacquisitionRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,maximumReacquisition*0.25))",
         "localstepM=COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M",
         "segmentInsideField(p0.x,p0.z,p1.x,p1.z,fieldWorld,stepM)",
         "localrequired=tonumber(nominalClearanceM)or1.0",
@@ -692,3 +692,27 @@ def test_config_root_is_comment_free_identity_only():
     ]
     assert config.endswith("\n")
     assert "--" not in config
+
+def test_retired_recovery_tail_vocabulary_absent_from_sourced_production():
+    retired = (
+        "Recovery Tail",
+        "Recovery-Capable",
+        "recoveryCapablePassageTheatre",
+        "recoveryCapableTheatreSupported",
+        "recoveryTails",
+        "positiveZeroRecovery",
+        "spatialRecoveryRequired",
+        "recoveryTailDistanceM",
+        "recoveryDistanceM",
+        "RECOVERY_TAIL",
+        "RECOVERY_EXIT",
+        "RECOVERY_CAPABLE_PASSAGE_THEATRE",
+        "PARTICIPANT_SCOPED_RECOVERY_CAPABLE_THEATRE",
+        "RECOVERY_ALIGNMENT_THEN_AXIS_RETURN",
+        "RECOVERY_ALIGNMENT_START",
+    )
+    for path in _loaded_production_lua_paths():
+        source = path.read_text(encoding="utf-8")
+        for token in retired:
+            assert token not in source, (path, token)
+
