@@ -9,12 +9,10 @@ Authority.__index = Authority
 local COMPARISON_RECORD_RETENTION_LIMIT=128
 local RESOLUTION_RECORD_RETENTION_LIMIT=128
 
-local function logInfo(message)
-    if Logging ~= nil and type(Logging.info) == "function" then
-        Logging.info("[FS25_OuttaMyWay][FIELD-WORLD-AUTHORITY] %s", message)
-    else
-        print("[FS25_OuttaMyWay][FIELD-WORLD-AUTHORITY] " .. message)
-    end
+local function publishDebug(code,payloadBuilder)
+    local publisher=OuttaMyWay.logPublication
+    if publisher==nil then return false,"LOG_PUBLICATION_UNAVAILABLE" end
+    return publisher:publish({code=code,publicationClass="DEBUG",severity="INFO",origin="OPERATION_LIFECYCLE"},payloadBuilder)
 end
 
 local function sortedClassKeys(classes)
@@ -114,7 +112,7 @@ function Authority:_mintClass(snapshot, outcome, reason, classComparisons)
     }
     self.assignments[snapshot.referenceKey]=result
     self:_appendResolution(result)
-    logInfo(string.format("RESOLVED snapshot=%s outcome=%s world=%s reason=%s classSnapshots=1 control=false",tostring(snapshot.referenceKey),outcome,referenceKey,reason))
+    publishDebug("FIELD_WORLD_EQUIVALENCE_RESOLVED",function() return string.format("snapshot=%s outcome=%s world=%s reason=%s classSnapshots=1 control=false",tostring(snapshot.referenceKey),outcome,referenceKey,reason) end)
     return result
 end
 
@@ -135,7 +133,7 @@ function Authority:_joinClass(snapshot, class, classComparisons)
     }
     self.assignments[snapshot.referenceKey]=result
     self:_appendResolution(result)
-    logInfo(string.format("RESOLVED snapshot=%s outcome=SAME_FIELD_WORLD world=%s reason=%s classSnapshots=%d control=false",tostring(snapshot.referenceKey),class.referenceKey,result.reason,#class.snapshots))
+    publishDebug("FIELD_WORLD_EQUIVALENCE_RESOLVED",function() return string.format("snapshot=%s outcome=SAME_FIELD_WORLD world=%s reason=%s classSnapshots=%d control=false",tostring(snapshot.referenceKey),class.referenceKey,result.reason,#class.snapshots) end)
     return result
 end
 
@@ -190,7 +188,7 @@ function Authority:resolve(snapshot)
         controlAuthorityEnabled=false
     }
     self:_appendResolution(result)
-    logInfo(string.format("UNRESOLVED snapshot=%s classes=%d reason=%s operationAuthority=false control=false",tostring(snapshot.referenceKey),#classKeys,result.reason))
+    publishDebug("FIELD_WORLD_EQUIVALENCE_UNRESOLVED",function() return string.format("snapshot=%s classes=%d reason=%s operationAuthority=false control=false",tostring(snapshot.referenceKey),#classKeys,result.reason) end)
     return result
 end
 
@@ -206,7 +204,7 @@ function Authority:endObservationCycle()
             self.retiredClasses[#self.retiredClasses+1]={referenceKey=key,snapshotReferenceKeys=sortedSnapshotReferenceKeys(class.snapshotReferenceKeys)}
             for snapshotReferenceKey in OuttaMyWay.ValueRecord.pairs(class.snapshotReferenceKeys) do self.assignments[snapshotReferenceKey]=nil end
             self.classes[key]=nil
-            logInfo(string.format("RETIRED world=%s reason=NO_RELEVANT_JOB_EPISODE_EVIDENCE control=false",key))
+            publishDebug("FIELD_WORLD_EQUIVALENCE_RETIRED",function() return string.format("world=%s reason=NO_RELEVANT_JOB_EPISODE_EVIDENCE control=false",key) end)
         end
     end
     self.cycleOpen=false

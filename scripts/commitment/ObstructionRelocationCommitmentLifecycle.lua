@@ -6,13 +6,10 @@ local Lifecycle=OuttaMyWay.ObstructionRelocationCommitmentLifecycle
 
 local CENTROID_STRATEGY_EXHAUSTION_REASON="POSITIVE_CAUSAL_OBSTRUCTION_WITHOUT_MEANINGFUL_INWARD_RELOCATION_SPACE"
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] "..message) end
-end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] "..message) end
+local function publish(code,publicationClass,severity,payloadBuilder)
+    local publisher=OuttaMyWay.logPublication
+    if publisher==nil then return false,"LOG_PUBLICATION_UNAVAILABLE" end
+    return publisher:publish({code=code,publicationClass=publicationClass,severity=severity,origin="OBSTRUCTION_RELOCATION"},payloadBuilder)
 end
 
 local function semanticTerminalEvent(eventKind,evidence)
@@ -68,9 +65,13 @@ function Lifecycle.settle(runtime,commitmentId,eventKind,evidence)
     local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
     local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,terminalEvidence)
     if requiredOutcomeBranch=="PLAYER_ESCALATION" then
-        logWarning("SETTLED commitment=%s event=%s terminal=%s playerEscalation=true basisCessation=%s releasedAuthority=%d",tostring(commitmentId),tostring(semanticEvent),tostring(terminal.state),tostring(verdict.invalidated),OuttaMyWay.ValueRecord.length(settling.releasedAuthorityTokenIds or {}))
+        publish("PLAYER_INTERVENTION_REQUIRED","NORMAL","WARNING",function()
+            return string.format("commitment=%s event=%s terminal=%s playerEscalation=true basisCessation=%s releasedAuthority=%d",tostring(commitmentId),tostring(semanticEvent),tostring(terminal.state),tostring(verdict.invalidated),OuttaMyWay.ValueRecord.length(settling.releasedAuthorityTokenIds or {}))
+        end)
     else
-        logInfo("SETTLED commitment=%s event=%s terminal=%s basisCessation=%s releasedAuthority=%d",tostring(commitmentId),tostring(semanticEvent),tostring(terminal.state),tostring(verdict.invalidated),OuttaMyWay.ValueRecord.length(settling.releasedAuthorityTokenIds or {}))
+        publish("OBSTRUCTION_RELOCATION_SETTLED","DEBUG","INFO",function()
+            return string.format("commitment=%s event=%s terminal=%s basisCessation=%s releasedAuthority=%d",tostring(commitmentId),tostring(semanticEvent),tostring(terminal.state),tostring(verdict.invalidated),OuttaMyWay.ValueRecord.length(settling.releasedAuthorityTokenIds or {}))
+        end)
     end
     return terminal,nil
 end

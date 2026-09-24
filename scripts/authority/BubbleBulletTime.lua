@@ -9,9 +9,10 @@ local OWNER_TAG = "BUBBLE_BULLET_TIME"
 local GOVERNING_PURPOSE = "COOPERATIVE_PASSAGE_BUBBLE_BULLET_TIME"
 local INTENT_REVELATION_CREEP_KMH = 1.0
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][BUBBLE-BULLET-TIME] %s",message) else print("[FS25_OuttaMyWay][BUBBLE-BULLET-TIME] "..message) end
+local function publishDebug(code,payloadBuilder)
+    local publisher=OuttaMyWay.logPublication
+    if publisher==nil then return false,"LOG_PUBLICATION_UNAVAILABLE" end
+    return publisher:publish({code=code,publicationClass="DEBUG",severity="INFO",origin="COOPERATIVE_PASSAGE"},payloadBuilder)
 end
 
 local function passagePairSet(candidate)
@@ -98,7 +99,7 @@ function BulletTime:_clearPhysical(lease,reason)
     end
     lease.physicalActive=false
     lease.boundedAuthorityId=nil
-    logInfo("RELEASE commitment=%s assembly=%s ref=%s cleared=%s reason=%s",tostring(lease.commitmentId),tostring(lease.assemblyId),tostring(lease.referenceKey),tostring(cleared),tostring(reason))
+    publishDebug("BUBBLE_BULLET_TIME_RELEASED",function() return string.format("commitment=%s assembly=%s ref=%s cleared=%s reason=%s",tostring(lease.commitmentId),tostring(lease.assemblyId),tostring(lease.referenceKey),tostring(cleared),tostring(reason)) end)
     return cleared
 end
 
@@ -140,7 +141,7 @@ function BulletTime:prepareAtBubbleFormation(picture,candidate,applied)
         physicalActive=false,pairAssemblyIds=bridge.assemblyIds
     }
     self.leasesByCommitmentId[commitmentId]=prepared
-    logInfo("PREPARED commitment=%s operation=%s assembly=%s ref=%s composition=%s cap=%.2fkmh",tostring(commitmentId),tostring(bridge.operationId),tostring(third.assemblyId),tostring(third.referenceKey),tostring(prepared.effectiveActuationCompositionId),INTENT_REVELATION_CREEP_KMH)
+    publishDebug("BUBBLE_BULLET_TIME_PREPARED",function() return string.format("commitment=%s operation=%s assembly=%s ref=%s composition=%s cap=%.2fkmh",tostring(commitmentId),tostring(bridge.operationId),tostring(third.assemblyId),tostring(third.referenceKey),tostring(prepared.effectiveActuationCompositionId),INTENT_REVELATION_CREEP_KMH) end)
     return prepared,nil
 end
 
@@ -199,7 +200,7 @@ function BulletTime:activatePrepared(commitmentId,requestContext,candidate)
     lease.boundedAuthorityId=grant.identity
     lease.controlRequestId=request.identity
     lease.physicalActive=true
-    logInfo("APPLY commitment=%s operation=%s assembly=%s ref=%s request=%s cap=%.2fkmh",tostring(commitmentId),tostring(lease.operationId),tostring(lease.assemblyId),tostring(lease.referenceKey),tostring(request.identity),INTENT_REVELATION_CREEP_KMH)
+    publishDebug("BUBBLE_BULLET_TIME_APPLIED",function() return string.format("commitment=%s operation=%s assembly=%s ref=%s request=%s cap=%.2fkmh",tostring(commitmentId),tostring(lease.operationId),tostring(lease.assemblyId),tostring(lease.referenceKey),tostring(request.identity),INTENT_REVELATION_CREEP_KMH) end)
     return lease,nil
 end
 

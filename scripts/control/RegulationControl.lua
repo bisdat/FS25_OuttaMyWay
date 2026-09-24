@@ -23,23 +23,12 @@ local function actualSpeedKmh(vehicle)
     return math.abs(tonumber(vehicle and vehicle.lastSpeedReal) or 0) * 3600
 end
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then
-        Logging.info("[FS25_OuttaMyWay][REGULATION-CONTROL] %s",message)
-    else
-        print("[FS25_OuttaMyWay][REGULATION-CONTROL] "..message)
-    end
-end
-
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then
-        Logging.warning("[FS25_OuttaMyWay][REGULATION-CONTROL] %s",message)
-    else
-        print("[FS25_OuttaMyWay][REGULATION-CONTROL][WARNING] "..message)
-    end
-end
+local REGULATION_CONTROL_UNAVAILABLE={
+    code="REGULATION_CONTROL_UNAVAILABLE",
+    publicationClass="NORMAL",
+    severity="WARNING",
+    origin="CONTROL"
+}
 
 function Control.new(runtime,driveMechanism)
     if runtime==nil then error("RegulationControl requires Runtime",2) end
@@ -148,10 +137,13 @@ end
 
 function Control:loadMap()
     local ok,reason=self.driveMechanism:install()
-    if ok then
-        logInfo("loaded physicalMechanism=NativeDriveMechanism policyAuthority=false")
-    else
-        logWarning("drive mechanism unavailable reason=%s",tostring(reason))
+    if not ok then
+        local publisher=OuttaMyWay.logPublication
+        if publisher~=nil then
+            publisher:publish(REGULATION_CONTROL_UNAVAILABLE,function()
+                return string.format("physicalMechanism=NativeDriveMechanism reason=%s",tostring(reason))
+            end)
+        end
     end
 end
 
