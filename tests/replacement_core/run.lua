@@ -24,7 +24,6 @@ load("tests/replay/ReplayFixture.lua")
 load("tests/replay/ReplayRunResult.lua")
 load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
-load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/representation/PlanViewFootprint.lua")
 load("scripts/representation/EntityLocalShapeEvidence.lua")
@@ -275,7 +274,7 @@ end)
 
 test("runtime is inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0)
 end)
 
 
@@ -1874,20 +1873,27 @@ test("passive support publishes only one non-actuating complete candidate",funct
     equal(supported.candidateSupportEvidence.supportBoundary.controlAuthority,false)
 end)
 
-test("passive validator publishes admitted episodes Operation and candidate diagnostics",function()
+test("passive diagnostic projection is ephemeral and does not advance Runtime identity or epoch authority",function()
     withFakeLiveGlobals(function(mission)
         local oldMission,oldServer,oldClient,oldTime=g_currentMission,g_server,g_client,g_time
         g_currentMission,g_server,g_client,g_time=mission,{},nil,1000
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); runtime.passiveLiveValidator:loadMap()
-        local coordinator=OuttaMyWay.LiveRuntimeCoordinator.new(runtime,runtime.liveObservationSource,runtime.fieldWorldSnapshots,runtime.passiveLiveValidator)
-        runtime.liveRuntimeCoordinator=coordinator; coordinator:loadMap(); coordinator:update(1000)
-        local record=runtime.passiveLiveValidator:getRecords()[1]
-        if record==nil then error("runtime-owned coordinator did not publish diagnostic record") end
-        equal(record.activeAssemblyCount,2); equal(record.activeJobEpisodeCount,2); equal(record.activeOperationCount,1); equal(record.globalActiveOperationCount,1)
-        equal(record.candidateCount,1); equal(record.allPassCandidateCount,1); equal(record.unresolvedCandidateCount,0); equal(record.failedCandidateCount,0)
-        equal(record.selectedCapability,"CONTINUE_OBSERVATION"); equal(record.nonIntervention.classification,"CONTINUE_OBSERVATION")
+        local raw=runtime.liveObservationSource:capture(mission,1)[1]
+        local live=runtime:processLiveObservation(raw)
+        local epochBefore=runtime.epochs:current()
+        local identityCountBefore=0
+        for _ in pairs(runtime.identities.issued) do identityCountBefore=identityCountBefore+1 end
+        local projection=runtime.passiveLiveValidator:_project(live)
+        equal(runtime.epochs:current(),epochBefore)
+        local identityCountAfter=0
+        for _ in pairs(runtime.identities.issued) do identityCountAfter=identityCountAfter+1 end
+        equal(identityCountAfter,identityCountBefore)
+        equal(projection.activeAssemblyCount,2); equal(projection.activeJobEpisodeCount,2); equal(projection.activeOperationCount,1); equal(projection.globalActiveOperationCount,1)
+        equal(projection.candidateCount,1); equal(projection.allPassCandidateCount,1); equal(projection.unresolvedCandidateCount,0); equal(projection.failedCandidateCount,0)
+        equal(projection.selectedCapability,"CONTINUE_OBSERVATION"); equal(projection.nonIntervention.classification,"CONTINUE_OBSERVATION")
         equal(#runtime.commitments:list(),0); equal(runtime.decisionCommitmentBoundary:getPublishedCount(),0)
-        equal(coordinator:getCycleCount(),1)
+        runtime.passiveLiveValidator:observeRuntimeResult(live,true,1000)
+        equal(runtime.epochs:current(),epochBefore)
         g_currentMission,g_server,g_client,g_time=oldMission,oldServer,oldClient,oldTime
     end)
 end)

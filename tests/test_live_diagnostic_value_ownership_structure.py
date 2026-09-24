@@ -99,16 +99,34 @@ def test_issue152_version_hud_remains_temporary_development_build_identity_only(
     for name in ("VERSION_HUD_ENABLED","VERSION_HUD_X","VERSION_HUD_Y","VERSION_HUD_TEXT_SIZE"):
         assert re.search(rf"OuttaMyWay\.{name}\b", config) is None
 
-def test_issue152_passive_validator_remains_for_stage2_decomposition():
+def test_issue152_stage2a_passive_diagnostics_are_ephemeral_and_do_not_own_runtime_history():
     main = read("scripts/main.lua")
     runtime = read("scripts/runtime/Runtime.lua")
+    coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
     validator = read("scripts/diagnostics/PassiveLiveValidator.lua")
+    identities = read("scripts/identity/IdentityRegistry.lua")
 
     assert "scripts/diagnostics/PassiveLiveValidator.lua" in main
+    assert "scripts/contracts/PassiveLiveTraceRecord.lua" not in main
+    assert not (ROOT / "scripts/contracts/PassiveLiveTraceRecord.lua").exists()
     assert "runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime)" in runtime
     assert "addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)" in main
     assert "PASSIVE_HEARTBEAT_INTERVAL_MS=10000" in validator
     assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE=8" in validator
-    assert "function Validator:observeRuntimeResult" in validator
-    assert "function Validator:observeRuntimeError" in validator
-    assert "self.records[#self.records+1]=record; return record" in validator
+    assert "function Validator:_project(live)" in validator
+    assert "function Validator:observeRuntimeResult(live,due,nowMilliseconds)" in validator
+    assert "self.runtime.identities" not in validator
+    assert "self.runtime.epochs" not in validator
+    assert "PASSIVE_LIVE_TRACE" not in validator
+    assert "PASSIVE_LIVE_TRACE" not in identities
+    assert "self.records" not in validator
+    assert "getRecords" not in validator
+    assert "getErrorCount" not in validator
+    assert "passiveTraceCount" not in runtime
+    assert "passiveErrorCount" not in runtime
+    assert "local records={}" not in coordinator
+    assert "endRuntimeCycle" not in coordinator
+    assert "observeRuntimeError" not in coordinator + validator
+    assert "pcall(self.diagnosticObserver.observeRuntimeResult" in coordinator
+
+

@@ -70,7 +70,6 @@ function Coordinator:update(dt)
     local observations=self.source:capture(g_currentMission,now)
     local due=false
     if self.diagnosticObserver and type(self.diagnosticObserver.beginRuntimeCycle)=="function" then due=self.diagnosticObserver:beginRuntimeCycle(self.source:getLastDiagnostics(),nowMilliseconds)==true end
-    local records={}
     local regulationControlObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getRegulationControlObservation() or nil
     local obstructionRelocationObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getObstructionRelocationObservation() or nil
     for _,raw in OuttaMyWay.ValueRecord.ipairs(observations) do
@@ -85,20 +84,21 @@ function Coordinator:update(dt)
                 else
                     self.errorCount=self.errorCount+1
                     logError("Bubble Bullet Time release assessment failed: "..tostring(bubbleResult))
-                    if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeError)=="function" then self.diagnosticObserver:observeRuntimeError(bubbleResult) end
                 end
             end
             if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeResult)=="function" then
-                local okRecord,record=pcall(self.diagnosticObserver.observeRuntimeResult,self.diagnosticObserver,raw,live,due,nowMilliseconds)
-                if okRecord then records[#records+1]=record else self.errorCount=self.errorCount+1; self.diagnosticObserver:observeRuntimeError(record) end
+                local okDiagnostic,diagnosticError=pcall(self.diagnosticObserver.observeRuntimeResult,self.diagnosticObserver,live,due,nowMilliseconds)
+                if not okDiagnostic then
+                    self.errorCount=self.errorCount+1
+                    logError("Diagnostic observer failed: "..tostring(diagnosticError))
+                end
             end
         else
             self.errorCount=self.errorCount+1
-            if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeError)=="function" then self.diagnosticObserver:observeRuntimeError(live) else logError(tostring(live)) end
+            logError(tostring(live))
         end
     end
     self.cycleCount=self.cycleCount+1
-    if self.diagnosticObserver and type(self.diagnosticObserver.endRuntimeCycle)=="function" then self.diagnosticObserver:endRuntimeCycle(records,nowMilliseconds) end
 end
 function Coordinator:getCycleCount() return self.cycleCount end
 function Coordinator:getErrorCount() return self.errorCount end
