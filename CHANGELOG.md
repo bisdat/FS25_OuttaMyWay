@@ -1,3 +1,27 @@
+# v0.4.0.0 RELEASE DECLARATION — Responsibility-Oriented Traffic Architecture
+
+**Accepted source baseline before declaration:** current `main` after merged PR #284, carrying the field-validated executable bytes previously identified as TEST `0.3.0.148`.
+
+**Version rationale:** MINOR checkpoint under D-0223. The accepted delta from canonical `0.3.0.0` materially changes the architectural/capability epoch rather than constituting only compatible corrections within the prior model.
+
+**Release declaration boundary:** this increment changes release identity and release history only. It intentionally introduces no new traffic, Control, Observation, Representation, Configuration, HUD or logging behaviour.
+
+**Current capability/architecture checkpoint:**
+- explicit Responsibility Transition separates native GIANTS operation, tactical Regulation and Cooperative Passage;
+- Cooperative Passage is a pairwise Resolution with participant-scoped Passage Legs, independent handback/vacatur, survivor invariance and Last-Leg Dissolution;
+- Bubble Bullet Time serialises an independent third active worker at the accepted 1 km/h Intent-Revelation Creep while the pairwise Resolution executes;
+- corner/headland constrained-space handling, action-space Regulation and Passage-theatre shaping are separated from Passage itself rather than implemented as hybrid modes;
+- Causal Obstruction and Obstruction Relocation replace the older terminal-egress special-case model with current positive obstruction evidence and bounded relocation authority;
+- Physical Assembly / current-pose representation and purpose-scoped Passage geometry provide the current spatial evidence basis;
+- Log Publication is a first-class cross-cutting jurisdiction with NORMAL, DEBUG and DIAGNOSTIC publication classes, early suppression, stable event codes and semantic-owner lifecycle events;
+- direct diagnostic HUD surfaces are retired pending GUI/HUD architecture work; only temporary Development Build Identity remains on screen.
+
+**Validation basis:** the current executable bytes have blocking offline validation plus in-game Reality validation through TEST `0.3.0.148`. The final `.148` run confirmed coherent Regulation and Cooperative Passage lifecycle publication, successful Passage completion, original pair identity preserved through terminal publication, and only the version string remaining on the HUD.
+
+**Known separable work:** open stress-test, Configuration, GUI/HUD, supportability and other engineering Issues remain valid future work. Their existence does not make this checkpoint incoherent under the Validated Plateau rule.
+
+**Canonical authority:** this entry is a declaration candidate until the repository owner merges the explicitly designated Release Declaration PR. If merged, that Canonical Merge declares the resulting exact `main` commit canonical **v0.4.0.0**.
+
 # v0.3.0.0 CANONICAL CANDIDATE — Spatial Negotiation Operating Model
 
 **Authoritative baseline:** owner-declared v0.2.0.0 canonical (`e0263f562749215d44906f71b5edf65bda4c207283ac4407556f524004326c12`; Git `d1a1f3fd5276a92088701c7a1256b90b35ad8153`; 264 files).
