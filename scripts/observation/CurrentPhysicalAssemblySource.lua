@@ -5,13 +5,24 @@ OuttaMyWay.CurrentPhysicalAssemblySource = {}
 local Source = OuttaMyWay.CurrentPhysicalAssemblySource
 Source.__index = Source
 
-local function logInfo(formatText, ...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then
-        Logging.info("[FS25_OuttaMyWay][CURRENT-PHYSICAL-ASSEMBLY] %s",message)
-    else
-        print("[FS25_OuttaMyWay][CURRENT-PHYSICAL-ASSEMBLY] "..message)
-    end
+local MISSION_POPULATION={
+    code="CURRENT_PHYSICAL_MISSION_POPULATION",
+    publicationClass="DIAGNOSTIC",
+    severity="INFO",
+    origin="OBSERVATION"
+}
+local FIELD_WORLD_WITNESS={
+    code="CURRENT_PHYSICAL_FIELD_WORLD_WITNESS",
+    publicationClass="DIAGNOSTIC",
+    severity="INFO",
+    origin="OBSERVATION"
+}
+
+local function diagnosticEligible(descriptor)
+    local publisher=OuttaMyWay.logPublication
+    if publisher==nil then return nil,false end
+    local eligible=publisher:classify(descriptor)
+    return publisher,eligible==true
 end
 
 local function safeCall(object,methodName,...)
@@ -194,10 +205,15 @@ function Source:observe(mission)
         unresolvedMemberPositionCount=unresolvedMemberPositionCount
     }
 
-    local signature=recordSignature(self.records)
-    if signature~=self.lastMissionSignature then
-        self.lastMissionSignature=signature
-        logInfo("MISSION populationEntries=%d rootAssemblies=%d assemblies=%s",missionVehicleEntryCount,#self.records,signature)
+    local publisher,diagnosticEnabled=diagnosticEligible(MISSION_POPULATION)
+    if diagnosticEnabled then
+        local signature=recordSignature(self.records)
+        if signature~=self.lastMissionSignature then
+            self.lastMissionSignature=signature
+            publisher:publish(MISSION_POPULATION,function()
+                return string.format("populationEntries=%d rootAssemblies=%d assemblies=%s",missionVehicleEntryCount,#self.records,signature)
+            end)
+        end
     end
     return self.records,self.diagnostics
 end
@@ -248,16 +264,21 @@ function Source:observeFieldWorldPresence(records,snapshots,fieldWorldReferenceK
     end
     table.sort(result,function(a,b) return a.assembly.referenceKey<b.assembly.referenceKey end)
 
-    local names={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(result) do
-        names[#names+1]=tostring(item.assembly.name).."="..tostring(item.assembly.referenceKey)
-    end
-    table.sort(names)
-    local signature=table.concat(names,",")
-    local fieldKey=tostring(fieldWorldReferenceKey)
-    if self.lastFieldSignatures[fieldKey]~=signature then
-        self.lastFieldSignatures[fieldKey]=signature
-        logInfo("FIELD-WITNESS world=%s assemblies=%d witnessed=%s coverageComplete=false negativeExclusionAuthority=false",fieldKey,#result,signature)
+    local publisher,diagnosticEnabled=diagnosticEligible(FIELD_WORLD_WITNESS)
+    if diagnosticEnabled then
+        local names={}
+        for _,item in OuttaMyWay.ValueRecord.ipairs(result) do
+            names[#names+1]=tostring(item.assembly.name).."="..tostring(item.assembly.referenceKey)
+        end
+        table.sort(names)
+        local signature=table.concat(names,",")
+        local fieldKey=tostring(fieldWorldReferenceKey)
+        if self.lastFieldSignatures[fieldKey]~=signature then
+            self.lastFieldSignatures[fieldKey]=signature
+            publisher:publish(FIELD_WORLD_WITNESS,function()
+                return string.format("world=%s assemblies=%d witnessed=%s coverageComplete=false negativeExclusionAuthority=false",fieldKey,#result,signature)
+            end)
+        end
     end
     return result
 end

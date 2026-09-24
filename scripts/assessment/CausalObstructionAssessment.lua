@@ -5,13 +5,18 @@ OuttaMyWay.CausalObstructionAssessment = {}
 local Assessment = OuttaMyWay.CausalObstructionAssessment
 Assessment.__index = Assessment
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then
-        Logging.info("[FS25_OuttaMyWay][CAUSAL-OBSTRUCTION] %s",message)
-    else
-        print("[FS25_OuttaMyWay][CAUSAL-OBSTRUCTION] "..message)
-    end
+local CAUSAL_OBSTRUCTION_RELATIONS={
+    code="CAUSAL_OBSTRUCTION_RELATIONS",
+    publicationClass="DIAGNOSTIC",
+    severity="INFO",
+    origin="SITUATION_ASSESSMENT"
+}
+
+local function diagnosticPublisher()
+    local publisher=OuttaMyWay.logPublication
+    if publisher==nil then return nil,false end
+    local eligible=publisher:classify(CAUSAL_OBSTRUCTION_RELATIONS)
+    return publisher,eligible==true
 end
 
 local function finite(value)
@@ -261,19 +266,24 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
 
     table.sort(records,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
 
-    local signatureParts={}
-    for _,record in OuttaMyWay.ValueRecord.ipairs(records) do
-        signatureParts[#signatureParts+1]=table.concat({
-            tostring(record.identity),
-            tostring(record.blockerClassification),
-            tostring(record.obstructionEvidence and record.obstructionEvidence.kind or "UNRESOLVED"),
-            record.relocationEligible==true and "RELOCATION_ELIGIBLE" or "NO_RELOCATION"
-        },"|")
-    end
-    local signature=table.concat(signatureParts,",")
-    if signature~=self.lastSignature then
-        self.lastSignature=signature
-        logInfo("count=%d relations=%s",#records,signature~="" and signature or "none")
+    local publisher,diagnosticEnabled=diagnosticPublisher()
+    if diagnosticEnabled then
+        local signatureParts={}
+        for _,record in OuttaMyWay.ValueRecord.ipairs(records) do
+            signatureParts[#signatureParts+1]=table.concat({
+                tostring(record.identity),
+                tostring(record.blockerClassification),
+                tostring(record.obstructionEvidence and record.obstructionEvidence.kind or "UNRESOLVED"),
+                record.relocationEligible==true and "RELOCATION_ELIGIBLE" or "NO_RELOCATION"
+            },"|")
+        end
+        local signature=table.concat(signatureParts,",")
+        if signature~=self.lastSignature then
+            self.lastSignature=signature
+            publisher:publish(CAUSAL_OBSTRUCTION_RELATIONS,function()
+                return string.format("count=%d relations=%s",#records,signature~="" and signature or "none")
+            end)
+        end
     end
     return records
 end
