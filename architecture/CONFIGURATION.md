@@ -365,7 +365,28 @@ File absence is therefore not a transient in-memory fallback. The first successf
 
 This architecture selects the persistence **surface, lifetime and first-use materialisation rule**, not an exact XML filename, element layout or GIANTS API call sequence. Those belong to the Configuration Specification and implementation once the persisted representation is defined.
 
-An existing but unreadable, invalid or older-schema representation is not equivalent to a missing file. Its handling belongs to the still-unresolved schema/version/migration contract and must not be silently treated as first use.
+An existing persisted representation whose **content cannot be parsed, fails Configuration validation, or declares an unsupported/older schema** is recovered immediately by replacing it with a fresh representation populated from the accepted defaults. The recovered defaults become the current semantic Configuration state and the replacement is persisted before Runtime bootstrap is considered.
+
+```text
+existing Configuration file
+        |
+        +-- current + valid ------> load semantic state
+        |
+        `-- malformed / invalid /
+            unsupported schema --> reset all supported values to defaults
+                                  -> overwrite with current representation
+                                  -> expose default semantic state
+```
+
+> **Invalid Persisted Configuration != Runtime Failure**
+
+> **Unsupported Schema != Migration Obligation**
+
+The initial Configuration contract therefore carries **no persisted-value migration obligation**. Unsupported historical schemas are replaced rather than transformed field-by-field. With only three supported values, preserving a potentially ambiguous older representation is not worth allowing stale or partially interpreted preference meaning into Runtime.
+
+A mechanical storage failure is different. If the persistence API cannot read the existing file at all, cannot create/replace it, or cannot successfully write the recovery representation, Configuration must not claim that persisted recovery succeeded. The exact operational failure/reporting behaviour belongs to the Configuration Specification.
+
+> **Persistence Recovery != Storage Success**
 
 The initial supported Configuration scope is the **local player/profile** case. Multiplayer/server-client Configuration ownership, propagation, conflict resolution and authority are intentionally outside the current support claim because they cannot presently be validated against Reality.
 
@@ -377,7 +398,7 @@ This boundary says nothing about whether OuttaMyWay runtime behaviour can operat
 
 Future multiplayer Configuration work must be added from evidence without changing the local profile preference set into savegame-scoped state.
 
-Schema/version ownership and migration semantics remain unresolved until the persisted representation contract is specified.
+The persisted representation must expose enough schema identity for Configuration to distinguish the current supported representation from an unsupported one. Exact schema identifier/version syntax belongs to the Configuration Specification. Unsupported schemas are reset and overwritten rather than migrated.
 
 When startup resolves `enabled=false`, the product shell may load Configuration, Log Publication and required settings/GUI integration, but normal Runtime bootstrap must not occur. Job Episodes, Local Operations, Situation, Current Responsibility, Commitments and Bounded Authority are runtime semantic state and must not be resurrected from a prior enabled session.
 
@@ -429,10 +450,9 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 
 ## 11. Deferred Configuration contract areas
 
-The following Configuration contract areas are intentionally unresolved rather than silently inferred:
+The following Configuration contract area is intentionally unresolved rather than silently inferred:
 
-- exact `modSettings` filename / representation / API usage;
-- persisted schema/version/migration semantics for an existing representation.
+- exact `modSettings` filename / representation / API usage, including current-schema identifier syntax and storage-failure handling.
 
 Multiplayer/server-client Configuration semantics are not an unresolved blocker for this initial contract; they are outside its current validated support scope.
 
@@ -459,6 +479,8 @@ This architecture does not authorise:
 - adding a global Reset to Defaults action to the initial three-toggle Configuration surface;
 - assuming current implementation defaults are player defaults;
 - treating a missing first-use Configuration file as an error or leaving defaults only in volatile memory;
+- attempting to preserve or partially interpret malformed, invalid or unsupported-schema Configuration instead of replacing it with accepted defaults;
+- claiming persisted recovery succeeded when the storage mechanism failed to read/write the replacement;
 - persisting supported Configuration inside individual savegames;
 - allowing savegame state to override the cross-save Configuration preference set;
 - claiming multiplayer/server-client Configuration ownership, propagation or authority without validation evidence;
