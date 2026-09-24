@@ -268,6 +268,9 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 
 ## Contract participants
 
+| Production source | Participation |
+| --- | --- |
+
 No production source currently realises this Jurisdiction.
 
 ## Implementation traceability
