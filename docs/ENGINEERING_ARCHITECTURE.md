@@ -243,15 +243,82 @@ The repository does not require ordinary changes to pass through a separate cand
 ### Pre-1.0 Versioning Policy
 
 Before the first public release, release identity uses `0.MINOR.PATCH.BUILD`.
-Canonical named releases use `BUILD=0`, while non-canonical TEST iterations
-increment `BUILD`. An accepted compatible correction increments `PATCH` and
-resets `BUILD`; a significant architecture or capability milestone increments
-`MINOR` and resets both `PATCH` and `BUILD`. The first public release is reserved
-for `1.0.0.0`.
+The components identify different engineering responsibilities:
+
+- **BUILD** identifies one non-canonical executable TEST revision. It is an
+  experimental/validation serial, not a stability level. Each materially
+  different executable TEST revision advances BUILD exactly once.
+- **PATCH** identifies a **Validated Plateau** within the same
+  architectural/capability epoch.
+- **MINOR** identifies a materially changed architectural/capability epoch.
+
+Canonical named releases use `BUILD=0`. A PATCH or MINOR promotion is a
+deliberate release-checkpoint decision and resets the lower-order components;
+it is never triggered by reaching a particular BUILD count, commit count or
+elapsed development time.
+
+#### Validated Plateau
+
+A **Validated Plateau** is a coherent accepted engineering tranche that is fit
+to become the baseline for subsequent work without requiring the next known
+piece of work to make the current tranche whole. A PATCH-level checkpoint is
+appropriate when all of the following are true:
+
+1. the intended tranche is merged into Accepted Repository State and has the
+   validation appropriate to its claims;
+2. no known defect remains that the repository owner regards as required before
+   checkpointing that tranche;
+3. remaining work is separable and may legitimately begin from this state; and
+4. the architectural/capability epoch remains materially the same as the prior
+   named release.
+
+A Validated Plateau does not require all open Issues to be closed. Known future
+work, deferred capabilities and stress-test questions may remain open when they
+do not make the accepted tranche internally incoherent.
+
+> **PATCH = Validated Plateau Within An Epoch**
+
+Historical PATCH promotions such as `0.1.0.14 -> 0.1.1.0`,
+`0.1.2.2 -> 0.1.3.0`, `0.1.13.3 -> 0.1.14.0` and
+`0.1.14.5 -> 0.1.15.0` demonstrate this responsibility: their BUILD counts
+differed, while each promotion deliberately consolidated a coherent validated
+tranche and left separable work for the next increment.
+
+#### Minor architectural/capability epoch
+
+A MINOR-level checkpoint is appropriate when describing the accepted delta from
+the previous named release requires materially new architectural concepts,
+changed responsibility boundaries, or materially new supported capability,
+rather than only corrections/refinements within the existing model.
+
+A useful classification question is:
+
+> **Can the accepted delta be described entirely as corrections/refinements
+> within concepts and responsibility boundaries already present at the previous
+> named release?**
+
+If yes, a Validated Plateau may be PATCH-level. If no, and the new model is
+accepted and validated strongly enough to checkpoint, use MINOR.
+
+> **MINOR = Architectural/Capability Epoch**
+
+The practical checkpoint decision after a substantial validated tranche is:
+
+```text
+Validated Plateau?
+    no  -> continue TEST BUILD lineage
+    yes -> did the architectural/capability epoch materially change?
+              no  -> PATCH candidate
+              yes -> MINOR candidate
+```
+
+The first public release is reserved for `1.0.0.0`.
 
 Historical `4.7.x` identities remain immutable provenance and are not
 renumbered. Version identity does not itself establish accepted or canonical
-authority.
+authority. Release Declaration preparation remains behaviour-neutral; the
+version promotion records already-accepted bytes rather than creating new
+runtime behaviour.
 
 Runtime system/build identity is limited to `OuttaMyWay.MOD_NAME` and
 `OuttaMyWay.VERSION`, as defined by the root-identity boundary in
