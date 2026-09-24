@@ -1,3 +1,3 @@
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.4.0.2"
+OuttaMyWay.VERSION = "0.4.0.3"
