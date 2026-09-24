@@ -50,3 +50,15 @@ def test_pair_key_remains_correlation_not_identity_authority():
     assert 'return "live-pair:" .. first .. ":" .. second' in observation
     for forbidden in ("IdentityRegistry","identities:resolve","identities:issue"):
         assert forbidden not in observation
+
+
+def test_semantic_component_identity_is_not_reprojected_as_redundant_diagnostic_count():
+    source=text("scripts/observation/LiveObservationSource.lua")
+    adapter=text("scripts/observation/RuntimeObservationAdapter.lua")
+    validator=text("scripts/diagnostics/PassiveLiveValidator.lua")
+
+    assert "componentReferenceKeys = worker.components" in source
+    assert "componentReferenceKeys=item.componentReferenceKeys or {}" in adapter
+    assert "componentCount=" not in source
+    assert "item.componentCount" not in validator
+    assert "legacyComponentKeys" not in validator

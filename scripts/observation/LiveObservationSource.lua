@@ -667,7 +667,6 @@ function Source:capture(mission, nowSeconds)
                     width=worker.width,
                     length=worker.length,
                     radius=worker.radius,
-                    componentCount=#(worker.components or {}),
                     structurallyValid=worker.radius~=nil,
                     coverageComplete=false,
                     conservative=false,
