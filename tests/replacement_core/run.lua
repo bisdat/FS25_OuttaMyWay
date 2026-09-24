@@ -312,6 +312,12 @@ test("assembly identity persists across snapshots", function()
     equal(#a.assemblies[1].componentIds,2)
 end)
 
+test("Observation preserves absence of optional diagnostic projection", function()
+    local _,_,adapter=newObservationKernel()
+    local snapshot=adapter:publish(rawObservation(1,nil))
+    equal(snapshot.diagnostics,nil)
+end)
+
 
 test("Observation rejects duplicate assembly and episode evidence", function()
     local _,_,adapter=newObservationKernel()
@@ -1590,6 +1596,8 @@ test("position-derived motion diagnostics separate forward reverse turning and s
     equal(stationary.classification,"STATIONARY")
 end)
 
+OuttaMyWay.DIAGNOSTIC_LOGGING=true
+
 test("live source enumerates every unique unordered pair for three workers",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         positions[301]={10,0,10}; directions[301]={1,0}
@@ -1658,6 +1666,8 @@ test("mutually blocked same-Operation pair with unresolved scope is an explicit 
         local found=false; for _,item in OuttaMyWay.ValueRecord.ipairs(processed.picture.diagnostics.contradictions) do if item.code=="BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR" then found=true end end; equal(found,true)
     end)
 end)
+
+OuttaMyWay.DIAGNOSTIC_LOGGING=nil
 
 test("player presence in an AI-active vehicle does not imply player Control",function()
     withFakeLiveGlobals(function(mission,a,b)
@@ -2597,11 +2607,13 @@ test("filtered current-space footprint positive reaches current pair scope when 
         runtime.liveObservationSource:capture(mission,9)
         strategies.a.isTurn=true; strategies.b.isTurn=true
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
-        local pair=raw.diagnostics.pairDiagnostics[1]
-        equal(pair.principalOutcome,"MISSING_OTHER_RADIUS")
-        equal(pair.currentFootprintIntersects,true)
-        equal(pair.interactionEvidenceSource,"CURRENT_SPACE_POSITIVE")
-        equal(pair.interactionEvidenceEmitted,true)
+        equal(raw.diagnostics,nil)
+        equal(#raw.geometry.interactionEvidence,1)
+        local interaction=raw.geometry.interactionEvidence[1]
+        equal(interaction.relationship,"CURRENT_SPACE_INTERACTION")
+        equal(interaction.currentSpaceIntersects,true)
+        equal(interaction.provenance.currentSpace.scalar,false)
+        equal(interaction.provenance.currentSpace.filteredPlanView,true)
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.picture.currentPairAssessmentScope,1)
         equal(processed.picture.currentPairAssessmentScope[1].relationship,"CURRENT_SPACE_INTERACTION")
@@ -2686,13 +2698,15 @@ test("field-bounded Future Space reaches current pair scope after legacy predict
         a.lastSpeedReal=0.0005; b.lastSpeedReal=0.0005
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
-        local pair=raw.diagnostics.pairDiagnostics[1]
-        equal(pair.futureSpaceOutcome,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE")
-        equal(pair.fieldBoundedFutureSpacePositive,true)
-        equal(pair.interactionEvidenceEmitted,true)
-        equal(pair.interactionEvidenceSource,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
-        equal(raw.geometry.interactionEvidence[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
-        equal(raw.geometry.interactionEvidence[1].provenance.legacyShadow,nil)
+        equal(raw.diagnostics,nil)
+        equal(#raw.geometry.interactionEvidence,1)
+        local interaction=raw.geometry.interactionEvidence[1]
+        equal(interaction.relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
+        equal(interaction.futureSpaceConverges,true)
+        equal(interaction.provenance.source,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
+        equal(interaction.provenance.fieldBoundedFutureSpace.positive,true)
+        equal(interaction.provenance.fieldBoundedFutureSpace.outcome,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE")
+        equal(interaction.provenance.legacyShadow,nil)
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.picture.currentPairAssessmentScope,1)
         equal(processed.picture.currentPairAssessmentScope[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")

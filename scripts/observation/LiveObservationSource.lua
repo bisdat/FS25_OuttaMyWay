@@ -6,6 +6,12 @@ OuttaMyWay.LiveObservationSource = {}
 local Source = OuttaMyWay.LiveObservationSource
 Source.__index = Source
 
+local diagnosticPublication=OuttaMyWay.LogPublication.origin("OBSERVATION")
+local function diagnosticProjectionEnabled()
+    local eligible=diagnosticPublication:isEligible("DIAGNOSTIC","INFO","OBSERVATION_DIAGNOSTIC_PROJECTION")
+    return eligible==true
+end
+
 local function safeCall(object, methodName, ...)
     if object == nil or type(object[methodName]) ~= "function" then return false, nil end
     return pcall(object[methodName], object, ...)
@@ -228,18 +234,19 @@ function Source:capture(mission, nowSeconds)
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
     local relevantList = relevantVehicles(activeList, self.tracks)
+    local diagnosticActive=diagnosticProjectionEnabled()
     local currentPhysicalAssemblies={}
     if self.currentPhysicalAssemblySource~=nil then
         currentPhysicalAssemblies=self.currentPhysicalAssemblySource:observe(mission)
     end
-    local cycleDiagnostics = {
+    local cycleDiagnostics = diagnosticActive and {
         timestamp=nowSeconds,
         activeJobVehicleCount=#activeList,
         relevantVehicleCount=#relevantList,
         assemblyAcquisition={},
         contradictions={}
-    }
-    self.lastCycleDiagnostics=cycleDiagnostics
+    } or nil
+    self.lastCycleDiagnostics=cycleDiagnostics or {}
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:beginObservationCycle() end
     if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:beginObservationCycle() end
     if self.fieldWorldSnapshots ~= nil then self.fieldWorldSnapshots:update(0, mission) end
@@ -249,27 +256,29 @@ function Source:capture(mission, nowSeconds)
         present[ref] = true
         local activeObserved = activeSet[object] == true
         local pose, poseDiagnostic = positionAndHeading(object)
-        cycleDiagnostics.assemblyAcquisition[#cycleDiagnostics.assemblyAcquisition+1]={
-            assemblyReferenceKey=ref,
-            name=objectName(object),
-            activeJobVehicleMembership=activeObserved,
-            poseResolved=pose~=nil,
-            node=poseDiagnostic.node,
-            nodeSource=poseDiagnostic.nodeSource,
-            poseReason=poseDiagnostic.reason,
-            x=poseDiagnostic.x,
-            y=poseDiagnostic.y,
-            z=poseDiagnostic.z,
-            headingX=poseDiagnostic.headingX,
-            headingZ=poseDiagnostic.headingZ
-        }
-        if activeObserved and pose == nil then
-            appendDiagnosticContradiction(cycleDiagnostics.contradictions,"ACTIVE_JOB_VEHICLE_WITHOUT_POSE",{
+        if diagnosticActive then
+            cycleDiagnostics.assemblyAcquisition[#cycleDiagnostics.assemblyAcquisition+1]={
                 assemblyReferenceKey=ref,
                 name=objectName(object),
-                reason=poseDiagnostic.reason,
-                nodeSource=poseDiagnostic.nodeSource
-            })
+                activeJobVehicleMembership=activeObserved,
+                poseResolved=pose~=nil,
+                node=poseDiagnostic.node,
+                nodeSource=poseDiagnostic.nodeSource,
+                poseReason=poseDiagnostic.reason,
+                x=poseDiagnostic.x,
+                y=poseDiagnostic.y,
+                z=poseDiagnostic.z,
+                headingX=poseDiagnostic.headingX,
+                headingZ=poseDiagnostic.headingZ
+            }
+            if activeObserved and pose == nil then
+                appendDiagnosticContradiction(cycleDiagnostics.contradictions,"ACTIVE_JOB_VEHICLE_WITHOUT_POSE",{
+                    assemblyReferenceKey=ref,
+                    name=objectName(object),
+                    reason=poseDiagnostic.reason,
+                    nodeSource=poseDiagnostic.nodeSource
+                })
+            end
         end
         local fieldActive, aiActive, hasFieldWorker, aiActiveObserved = activityCorroboration(object)
         local track = self.tracks[ref]
@@ -524,8 +533,10 @@ function Source:capture(mission, nowSeconds)
             },
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, planViewOccupancyEvidence = {}},
             motion = {closureEvidence = {}, progressionEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
-            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
-            diagnostics = {
+            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
+        }
+        if diagnosticActive then
+            raw.diagnostics={
                 sourceCounters={
                     cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,
                     cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,
@@ -544,7 +555,7 @@ function Source:capture(mission, nowSeconds)
                 pairDiagnostics={},
                 contradictions={}
             }
-        }
+        end
         for _, worker in OuttaMyWay.ValueRecord.ipairs(group.workers) do
             raw.assemblies[#raw.assemblies + 1] = {
                 referenceKey = worker.referenceKey, componentReferenceKeys = worker.components,
@@ -630,78 +641,80 @@ function Source:capture(mission, nowSeconds)
             local worldResolved=worker.fieldWorldResolution~=nil and worker.fieldWorldResolution.fieldWorldReferenceKey~=nil
             local recognised=worker.activeObserved and worldResolved and worker.hasFieldWorker and productiveWorkCommenced
             worker.futureSpace=OuttaMyWay.FieldBoundedFutureSpace.build(worker)
-            raw.diagnostics.sourceCounters.activeGroupWorkerCount=raw.diagnostics.sourceCounters.activeGroupWorkerCount+(worker.activeObserved and 1 or 0)
-            raw.diagnostics.sourceCounters.poseResolvedWorkerCount=raw.diagnostics.sourceCounters.poseResolvedWorkerCount+(worker.pose~=nil and 1 or 0)
-            raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
-                assemblyReferenceKey=worker.referenceKey,
-                name=worker.name,
-                sourceJobToken=worker.sourceJobToken,
-                activeJobVehicleMembership=worker.activeObserved==true,
-                fieldWorkerSpecializationPresent=worker.hasFieldWorker==true,
-                fieldActive=worker.fieldActive==true,
-                aiActive=worker.aiActive==true,
-                productiveWorkCommenced=productiveWorkCommenced==true,
-                productiveWorkCommencementCurrentSample=commencementCurrentSample==true,
-                blocked=worker.blocked==true,
-                poseResolved=worker.pose~=nil,
-                node=worker.poseDiagnostic and worker.poseDiagnostic.node or (worker.pose and worker.pose.node or nil),
-                nodeSource=worker.poseDiagnostic and worker.poseDiagnostic.nodeSource or (worker.pose and worker.pose.nodeSource or nil),
-                poseReason=worker.poseDiagnostic and worker.poseDiagnostic.reason or (worker.pose and "RETAINED_LAST_POSE" or "POSE_UNAVAILABLE"),
-                x=worker.pose and worker.pose.x or nil,
-                y=worker.pose and worker.pose.y or nil,
-                z=worker.pose and worker.pose.z or nil,
-                headingX=worker.pose and worker.pose.dx or nil,
-                headingZ=worker.pose and worker.pose.dz or nil,
-                width=worker.width,
-                length=worker.length,
-                radius=worker.radius,
-                componentCount=#(worker.components or {}),
-                structurallyValid=worker.radius~=nil,
-                coverageComplete=false,
-                conservative=false,
-                underApproximationRisk=true,
-                motion=worker.motionDiagnostic or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_DIAGNOSTIC_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
-                localIntent=worker.localIntent or {classification="UNRESOLVED",intentEpoch=0,intentValid=false,reason="LOCAL_INTENT_UNAVAILABLE"},
-                futureSpace=worker.futureSpace,
-                fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
-                fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil,
-                assemblyRepresentation=worker.assemblyRepresentation and {
-                    episodeKey=worker.assemblyRepresentation.episodeKey,
-                    cacheHit=worker.assemblyRepresentation.cacheHit,
-                    memberCount=worker.assemblyRepresentation.memberCount,
-                    edgeCount=worker.assemblyRepresentation.edgeCount,
-                    localPrimitiveCount=worker.assemblyRepresentation.localPrimitiveCount,
-                    inventoryPrimitiveCount=worker.assemblyRepresentation.inventoryPrimitiveCount,
-                    participatingPrimitiveCount=worker.assemblyRepresentation.participatingPrimitiveCount,
-                    inactivePrimitiveCount=worker.assemblyRepresentation.inactivePrimitiveCount,
-                    unresolvedPrimitiveCount=worker.assemblyRepresentation.unresolvedPrimitiveCount,
-                    runtimeConfirmedPrimitiveCount=worker.assemblyRepresentation.runtimeConfirmedPrimitiveCount,
-                    participatingPrimitiveNames=worker.assemblyRepresentation.participatingPrimitiveNames,
-                    inactivePrimitiveNames=worker.assemblyRepresentation.inactivePrimitiveNames,
-                    unresolvedPrimitiveNames=worker.assemblyRepresentation.unresolvedPrimitiveNames,
-                    worldPrimitiveCount=worker.assemblyRepresentation.worldPrimitiveCount,
-                    physicalPrimitiveCount=worker.assemblyRepresentation.physicalPrimitiveCount,
-                    diagnosticPrimitiveCount=worker.assemblyRepresentation.diagnosticPrimitiveCount,
-                    configurationKey=worker.assemblyRepresentation.configurationKey,
-                    configurationProfileId=worker.assemblyRepresentation.configurationProfileId,
-                    configurationProfileCacheHit=worker.assemblyRepresentation.configurationProfileCacheHit,
-                    configurationProfileCount=worker.assemblyRepresentation.configurationProfileCount,
-                    configurationAlternatives=worker.assemblyRepresentation.configurationAlternatives,
-                    directionalPassageEnvelope=worker.assemblyRepresentation.directionalPassageEnvelope,
-                    transitPassageEnvelope=worker.assemblyRepresentation.transitPassageEnvelope,
-                    transitPassageReason=worker.assemblyRepresentation.transitPassageReason,
-                    transitFoldCapability=worker.assemblyRepresentation.transitFoldCapability,
-                    outtaMyWayConfigurationAuthorityActive=worker.assemblyRepresentation.outtaMyWayConfigurationAuthorityActive,
-                    membershipChanged=worker.assemblyRepresentation.membershipChanged,
-                    structurallyValid=worker.assemblyRepresentation.structurallyValid,
-                    coverageComplete=worker.assemblyRepresentation.coverageComplete,
-                    negativeClearanceAuthority=worker.assemblyRepresentation.negativeClearanceAuthority,
-                    planViewSummary=worker.assemblyRepresentation.planViewSummary,
-                    geometryStats=worker.assemblyRepresentation.geometryStats,
-                    rejectionCount=worker.assemblyRepresentation.rejectionCount,
-                    transformFailureCount=worker.assemblyRepresentation.transformFailureCount
-                } or nil
-            }
+            if diagnosticActive then
+                raw.diagnostics.sourceCounters.activeGroupWorkerCount=raw.diagnostics.sourceCounters.activeGroupWorkerCount+(worker.activeObserved and 1 or 0)
+                raw.diagnostics.sourceCounters.poseResolvedWorkerCount=raw.diagnostics.sourceCounters.poseResolvedWorkerCount+(worker.pose~=nil and 1 or 0)
+                raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
+                    assemblyReferenceKey=worker.referenceKey,
+                    name=worker.name,
+                    sourceJobToken=worker.sourceJobToken,
+                    activeJobVehicleMembership=worker.activeObserved==true,
+                    fieldWorkerSpecializationPresent=worker.hasFieldWorker==true,
+                    fieldActive=worker.fieldActive==true,
+                    aiActive=worker.aiActive==true,
+                    productiveWorkCommenced=productiveWorkCommenced==true,
+                    productiveWorkCommencementCurrentSample=commencementCurrentSample==true,
+                    blocked=worker.blocked==true,
+                    poseResolved=worker.pose~=nil,
+                    node=worker.poseDiagnostic and worker.poseDiagnostic.node or (worker.pose and worker.pose.node or nil),
+                    nodeSource=worker.poseDiagnostic and worker.poseDiagnostic.nodeSource or (worker.pose and worker.pose.nodeSource or nil),
+                    poseReason=worker.poseDiagnostic and worker.poseDiagnostic.reason or (worker.pose and "RETAINED_LAST_POSE" or "POSE_UNAVAILABLE"),
+                    x=worker.pose and worker.pose.x or nil,
+                    y=worker.pose and worker.pose.y or nil,
+                    z=worker.pose and worker.pose.z or nil,
+                    headingX=worker.pose and worker.pose.dx or nil,
+                    headingZ=worker.pose and worker.pose.dz or nil,
+                    width=worker.width,
+                    length=worker.length,
+                    radius=worker.radius,
+                    componentCount=#(worker.components or {}),
+                    structurallyValid=worker.radius~=nil,
+                    coverageComplete=false,
+                    conservative=false,
+                    underApproximationRisk=true,
+                    motion=worker.motionDiagnostic or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_DIAGNOSTIC_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
+                    localIntent=worker.localIntent or {classification="UNRESOLVED",intentEpoch=0,intentValid=false,reason="LOCAL_INTENT_UNAVAILABLE"},
+                    futureSpace=worker.futureSpace,
+                    fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
+                    fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil,
+                    assemblyRepresentation=worker.assemblyRepresentation and {
+                        episodeKey=worker.assemblyRepresentation.episodeKey,
+                        cacheHit=worker.assemblyRepresentation.cacheHit,
+                        memberCount=worker.assemblyRepresentation.memberCount,
+                        edgeCount=worker.assemblyRepresentation.edgeCount,
+                        localPrimitiveCount=worker.assemblyRepresentation.localPrimitiveCount,
+                        inventoryPrimitiveCount=worker.assemblyRepresentation.inventoryPrimitiveCount,
+                        participatingPrimitiveCount=worker.assemblyRepresentation.participatingPrimitiveCount,
+                        inactivePrimitiveCount=worker.assemblyRepresentation.inactivePrimitiveCount,
+                        unresolvedPrimitiveCount=worker.assemblyRepresentation.unresolvedPrimitiveCount,
+                        runtimeConfirmedPrimitiveCount=worker.assemblyRepresentation.runtimeConfirmedPrimitiveCount,
+                        participatingPrimitiveNames=worker.assemblyRepresentation.participatingPrimitiveNames,
+                        inactivePrimitiveNames=worker.assemblyRepresentation.inactivePrimitiveNames,
+                        unresolvedPrimitiveNames=worker.assemblyRepresentation.unresolvedPrimitiveNames,
+                        worldPrimitiveCount=worker.assemblyRepresentation.worldPrimitiveCount,
+                        physicalPrimitiveCount=worker.assemblyRepresentation.physicalPrimitiveCount,
+                        diagnosticPrimitiveCount=worker.assemblyRepresentation.diagnosticPrimitiveCount,
+                        configurationKey=worker.assemblyRepresentation.configurationKey,
+                        configurationProfileId=worker.assemblyRepresentation.configurationProfileId,
+                        configurationProfileCacheHit=worker.assemblyRepresentation.configurationProfileCacheHit,
+                        configurationProfileCount=worker.assemblyRepresentation.configurationProfileCount,
+                        configurationAlternatives=worker.assemblyRepresentation.configurationAlternatives,
+                        directionalPassageEnvelope=worker.assemblyRepresentation.directionalPassageEnvelope,
+                        transitPassageEnvelope=worker.assemblyRepresentation.transitPassageEnvelope,
+                        transitPassageReason=worker.assemblyRepresentation.transitPassageReason,
+                        transitFoldCapability=worker.assemblyRepresentation.transitFoldCapability,
+                        outtaMyWayConfigurationAuthorityActive=worker.assemblyRepresentation.outtaMyWayConfigurationAuthorityActive,
+                        membershipChanged=worker.assemblyRepresentation.membershipChanged,
+                        structurallyValid=worker.assemblyRepresentation.structurallyValid,
+                        coverageComplete=worker.assemblyRepresentation.coverageComplete,
+                        negativeClearanceAuthority=worker.assemblyRepresentation.negativeClearanceAuthority,
+                        planViewSummary=worker.assemblyRepresentation.planViewSummary,
+                        geometryStats=worker.assemblyRepresentation.geometryStats,
+                        rejectionCount=worker.assemblyRepresentation.rejectionCount,
+                        transformFailureCount=worker.assemblyRepresentation.transformFailureCount
+                    } or nil
+                }
+                end
             if worker.assemblyRepresentation~=nil then
                 raw.geometry.planViewOccupancyEvidence[#raw.geometry.planViewOccupancyEvidence+1]={
                     assemblyReferenceKey=worker.referenceKey,
@@ -719,7 +732,7 @@ function Source:capture(mission, nowSeconds)
                     negativeClearanceAuthority=worker.assemblyRepresentation.negativeClearanceAuthority,
                     provenance=worker.assemblyRepresentation.provenance
                 }
-                if worker.assemblyRepresentation.membershipChanged==true then
+                if diagnosticActive and worker.assemblyRepresentation.membershipChanged==true then
                     appendDiagnosticContradiction(raw.diagnostics.contradictions,"ASSEMBLY_MEMBERSHIP_CHANGED_DURING_JOB_EPISODE",{assemblyReferenceKey=worker.referenceKey,reason="CACHED_ASSEMBLY_FINGERPRINT_CHANGED"})
                 end
             end
@@ -835,20 +848,22 @@ function Source:capture(mission, nowSeconds)
                 playerEntered=physical.playerEntered,
                 playerEnteredObserved=physical.playerEnteredObserved
             }
-            raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
-                assemblyReferenceKey=physical.referenceKey,name=physical.name,
-                source="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS",
-                memberCount=physical.memberCount,memberPositionCount=physical.memberPositionCount,
-                memberSource=physical.memberSource,memberPositions=physical.memberPositions,
-                aiActive=physical.aiActive,fieldActive=physical.fieldActive,
-                playerEntered=physical.playerEntered,playerControlled=physical.playerControlled,
-                fieldWorldPresenceEvidence=presence,
-                currentPositiveConflictPrimitiveCount=currentRepresentation and currentRepresentation.positivePrimitiveCount or 0,
-                currentConflictRepresentationAvailable=currentRepresentation~=nil and currentRepresentation.structurallyValid==true,
-                currentConflictRepresentationScanTruncated=currentRepresentation and currentRepresentation.scanTruncated==true or false,
-                coverageComplete=false,
-                negativeExclusionAuthority=false,semanticAuthority=false
-            }
+            if diagnosticActive then
+                raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
+                    assemblyReferenceKey=physical.referenceKey,name=physical.name,
+                    source="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS",
+                    memberCount=physical.memberCount,memberPositionCount=physical.memberPositionCount,
+                    memberSource=physical.memberSource,memberPositions=physical.memberPositions,
+                    aiActive=physical.aiActive,fieldActive=physical.fieldActive,
+                    playerEntered=physical.playerEntered,playerControlled=physical.playerControlled,
+                    fieldWorldPresenceEvidence=presence,
+                    currentPositiveConflictPrimitiveCount=currentRepresentation and currentRepresentation.positivePrimitiveCount or 0,
+                    currentConflictRepresentationAvailable=currentRepresentation~=nil and currentRepresentation.structurallyValid==true,
+                    currentConflictRepresentationScanTruncated=currentRepresentation and currentRepresentation.scanTruncated==true or false,
+                    coverageComplete=false,
+                    negativeExclusionAuthority=false,semanticAuthority=false
+                }
+            end
         end
 
         for i = 1, #group.workers - 1 do
@@ -857,92 +872,106 @@ function Source:capture(mission, nowSeconds)
                 local pairReferenceKey = OuttaMyWay.LiveInteractionObservation.pairReferenceKey(a.referenceKey,b.referenceKey)
                 local eligible = a.activeObserved==true and b.activeObserved==true and a.pose~=nil and b.pose~=nil
                 local exclusionReason = nil
-                if not eligible then
+                if diagnosticActive and not eligible then
                     if a.activeObserved~=true then exclusionReason="SUBJECT_NOT_ACTIVE_JOB_MEMBER"
                     elseif b.activeObserved~=true then exclusionReason="OTHER_NOT_ACTIVE_JOB_MEMBER"
                     elseif a.pose==nil then exclusionReason="SUBJECT_POSE_UNAVAILABLE"
                     elseif b.pose==nil then exclusionReason="OTHER_POSE_UNAVAILABLE"
                     else exclusionReason="PAIR_ELIGIBILITY_UNRESOLVED" end
                 end
-                local pairDiagnostic={
-                    pairReferenceKey=pairReferenceKey,
-                    subjectAssemblyReferenceKey=a.referenceKey,
-                    otherAssemblyReferenceKey=b.referenceKey,
-                    subjectSourceJobToken=a.sourceJobToken,
-                    otherSourceJobToken=b.sourceJobToken,
-                    fieldWorldReferenceKey=resolved and group.fieldWorldReferenceKey or nil,
-                    sameFieldWorld=resolved,
-                    subjectActive=a.activeObserved==true,
-                    otherActive=b.activeObserved==true,
-                    subjectPoseAvailable=a.pose~=nil,
-                    otherPoseAvailable=b.pose~=nil,
-                    subjectBlocked=a.blocked==true,
-                    otherBlocked=b.blocked==true,
-                    eligible=eligible,
-                    evaluated=false,
-                    excluded=not eligible,
-                    exclusionReason=exclusionReason,
-                    qualifying=false,
-                    interactionEvidenceEmitted=false,
-                    subjectRepresentation={radius=a.radius,width=a.width,length=a.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
-                    otherRepresentation={radius=b.radius,width=b.width,length=b.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
-                    subjectAssemblyRepresentationAvailable=a.assemblyRepresentation~=nil,
-                    otherAssemblyRepresentationAvailable=b.assemblyRepresentation~=nil
-                }
-                raw.diagnostics.sourceCounters.relevantPairCount=raw.diagnostics.sourceCounters.relevantPairCount+1
+                local pairDiagnostic=nil
+                if diagnosticActive then
+                    pairDiagnostic={
+                        pairReferenceKey=pairReferenceKey,
+                        subjectAssemblyReferenceKey=a.referenceKey,
+                        otherAssemblyReferenceKey=b.referenceKey,
+                        subjectSourceJobToken=a.sourceJobToken,
+                        otherSourceJobToken=b.sourceJobToken,
+                        fieldWorldReferenceKey=resolved and group.fieldWorldReferenceKey or nil,
+                        sameFieldWorld=resolved,
+                        subjectActive=a.activeObserved==true,
+                        otherActive=b.activeObserved==true,
+                        subjectPoseAvailable=a.pose~=nil,
+                        otherPoseAvailable=b.pose~=nil,
+                        subjectBlocked=a.blocked==true,
+                        otherBlocked=b.blocked==true,
+                        eligible=eligible,
+                        evaluated=false,
+                        excluded=not eligible,
+                        exclusionReason=exclusionReason,
+                        qualifying=false,
+                        interactionEvidenceEmitted=false,
+                        subjectRepresentation={radius=a.radius,width=a.width,length=a.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
+                        otherRepresentation={radius=b.radius,width=b.width,length=b.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
+                        subjectAssemblyRepresentationAvailable=a.assemblyRepresentation~=nil,
+                        otherAssemblyRepresentationAvailable=b.assemblyRepresentation~=nil
+                    }
+                    raw.diagnostics.sourceCounters.relevantPairCount=raw.diagnostics.sourceCounters.relevantPairCount+1
+                end
                 if eligible then
-                    raw.diagnostics.sourceCounters.eligiblePairCount=raw.diagnostics.sourceCounters.eligiblePairCount+1
-                    raw.diagnostics.sourceCounters.evaluatedPairCount=raw.diagnostics.sourceCounters.evaluatedPairCount+1
+                    if diagnosticActive then
+                        raw.diagnostics.sourceCounters.eligiblePairCount=raw.diagnostics.sourceCounters.eligiblePairCount+1
+                        raw.diagnostics.sourceCounters.evaluatedPairCount=raw.diagnostics.sourceCounters.evaluatedPairCount+1
+                    end
                     local observed = observePairState(a, b)
-                    pairDiagnostic.evaluated=true
-                    pairDiagnostic.distance=observed.distance
-                    pairDiagnostic.required=observed.required
-                    pairDiagnostic.currentSpaceIntersects=observed.current
-                    pairDiagnostic.closingRate=observed.closingRate
-                    pairDiagnostic.headingDot=observed.headingDot
-                    pairDiagnostic.relativeVelocityX=observed.relativeVelocityX
-                    pairDiagnostic.relativeVelocityZ=observed.relativeVelocityZ
-                    pairDiagnostic.relativeSpeedMps=observed.relativeSpeedMps
-                    pairDiagnostic.subjectVelocityX=observed.subjectVelocityX
-                    pairDiagnostic.subjectVelocityZ=observed.subjectVelocityZ
-                    pairDiagnostic.otherVelocityX=observed.otherVelocityX
-                    pairDiagnostic.otherVelocityZ=observed.otherVelocityZ
-                    pairDiagnostic.principalOutcome=observed.principalOutcome
-                    pairDiagnostic.currentSuppressionReason=observed.currentSuppressionReason
-                    pairDiagnostic.representationFitForNegativeConclusion=false
                     local currentFootprint=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a.assemblyRepresentation,b.assemblyRepresentation)
-                    pairDiagnostic.currentFootprintOutcome=currentFootprint.outcome
-                    pairDiagnostic.currentFootprintIntersects=currentFootprint.current
-                    pairDiagnostic.currentFootprintDistance=currentFootprint.distance
-                    pairDiagnostic.currentFootprintRequired=currentFootprint.required
-                    pairDiagnostic.currentFootprintSubjectPrimitiveId=currentFootprint.subjectPrimitiveId
-                    pairDiagnostic.currentFootprintOtherPrimitiveId=currentFootprint.otherPrimitiveId
-                    pairDiagnostic.currentFootprintSubjectPhysicalPrimitiveCount=currentFootprint.subjectPhysicalPrimitiveCount
-                    pairDiagnostic.currentFootprintOtherPhysicalPrimitiveCount=currentFootprint.otherPhysicalPrimitiveCount
-                    pairDiagnostic.currentFootprintAuthority=currentFootprint.authority
-
                     local fieldFuture=OuttaMyWay.FieldBoundedFutureSpace.evaluatePair(a,b,a.futureSpace,b.futureSpace)
-                    pairDiagnostic.futureSpaceOutcome=fieldFuture.outcome
-                    pairDiagnostic.futureSpacePositive=fieldFuture.positive==true
-                    pairDiagnostic.futureSpaceUnresolved=fieldFuture.unresolved==true
-                    pairDiagnostic.futureSpaceAuthority=fieldFuture.authority
-                    pairDiagnostic.futureSpaceDistance=fieldFuture.distance
-                    pairDiagnostic.futureSpaceRequired=fieldFuture.required
-                    pairDiagnostic.futureSpaceSubjectPrimitiveId=fieldFuture.subjectPrimitiveId
-                    pairDiagnostic.futureSpaceOtherPrimitiveId=fieldFuture.otherPrimitiveId
-                    pairDiagnostic.subjectLocalIntentClassification=a.localIntent and a.localIntent.classification or "UNRESOLVED"
-                    pairDiagnostic.otherLocalIntentClassification=b.localIntent and b.localIntent.classification or "UNRESOLVED"
-                    pairDiagnostic.subjectIntentEpoch=a.localIntent and a.localIntent.intentEpoch or 0
-                    pairDiagnostic.otherIntentEpoch=b.localIntent and b.localIntent.intentEpoch or 0
-                    pairDiagnostic.subjectFutureSpaceBoundaryDistance=a.futureSpace and a.futureSpace.boundaryDistance or nil
-                    pairDiagnostic.otherFutureSpaceBoundaryDistance=b.futureSpace and b.futureSpace.boundaryDistance or nil
+                    local subjectLocalIntentClassification=a.localIntent and a.localIntent.classification or "UNRESOLVED"
+                    local otherLocalIntentClassification=b.localIntent and b.localIntent.classification or "UNRESOLVED"
+                    local subjectIntentEpoch=a.localIntent and a.localIntent.intentEpoch or 0
+                    local otherIntentEpoch=b.localIntent and b.localIntent.intentEpoch or 0
+                    local subjectFutureSpaceBoundaryDistance=a.futureSpace and a.futureSpace.boundaryDistance or nil
+                    local otherFutureSpaceBoundaryDistance=b.futureSpace and b.futureSpace.boundaryDistance or nil
+
+                    if diagnosticActive then
+                        pairDiagnostic.evaluated=true
+                        pairDiagnostic.distance=observed.distance
+                        pairDiagnostic.required=observed.required
+                        pairDiagnostic.currentSpaceIntersects=observed.current
+                        pairDiagnostic.closingRate=observed.closingRate
+                        pairDiagnostic.headingDot=observed.headingDot
+                        pairDiagnostic.relativeVelocityX=observed.relativeVelocityX
+                        pairDiagnostic.relativeVelocityZ=observed.relativeVelocityZ
+                        pairDiagnostic.relativeSpeedMps=observed.relativeSpeedMps
+                        pairDiagnostic.subjectVelocityX=observed.subjectVelocityX
+                        pairDiagnostic.subjectVelocityZ=observed.subjectVelocityZ
+                        pairDiagnostic.otherVelocityX=observed.otherVelocityX
+                        pairDiagnostic.otherVelocityZ=observed.otherVelocityZ
+                        pairDiagnostic.principalOutcome=observed.principalOutcome
+                        pairDiagnostic.currentSuppressionReason=observed.currentSuppressionReason
+                        pairDiagnostic.representationFitForNegativeConclusion=false
+                        pairDiagnostic.currentFootprintOutcome=currentFootprint.outcome
+                        pairDiagnostic.currentFootprintIntersects=currentFootprint.current
+                        pairDiagnostic.currentFootprintDistance=currentFootprint.distance
+                        pairDiagnostic.currentFootprintRequired=currentFootprint.required
+                        pairDiagnostic.currentFootprintSubjectPrimitiveId=currentFootprint.subjectPrimitiveId
+                        pairDiagnostic.currentFootprintOtherPrimitiveId=currentFootprint.otherPrimitiveId
+                        pairDiagnostic.currentFootprintSubjectPhysicalPrimitiveCount=currentFootprint.subjectPhysicalPrimitiveCount
+                        pairDiagnostic.currentFootprintOtherPhysicalPrimitiveCount=currentFootprint.otherPhysicalPrimitiveCount
+                        pairDiagnostic.currentFootprintAuthority=currentFootprint.authority
+                        pairDiagnostic.futureSpaceOutcome=fieldFuture.outcome
+                        pairDiagnostic.futureSpacePositive=fieldFuture.positive==true
+                        pairDiagnostic.futureSpaceUnresolved=fieldFuture.unresolved==true
+                        pairDiagnostic.futureSpaceAuthority=fieldFuture.authority
+                        pairDiagnostic.futureSpaceDistance=fieldFuture.distance
+                        pairDiagnostic.futureSpaceRequired=fieldFuture.required
+                        pairDiagnostic.futureSpaceSubjectPrimitiveId=fieldFuture.subjectPrimitiveId
+                        pairDiagnostic.futureSpaceOtherPrimitiveId=fieldFuture.otherPrimitiveId
+                        pairDiagnostic.subjectLocalIntentClassification=subjectLocalIntentClassification
+                        pairDiagnostic.otherLocalIntentClassification=otherLocalIntentClassification
+                        pairDiagnostic.subjectIntentEpoch=subjectIntentEpoch
+                        pairDiagnostic.otherIntentEpoch=otherIntentEpoch
+                        pairDiagnostic.subjectFutureSpaceBoundaryDistance=subjectFutureSpaceBoundaryDistance
+                        pairDiagnostic.otherFutureSpaceBoundaryDistance=otherFutureSpaceBoundaryDistance
+                    end
+
                     raw.geometry.futureSpaceRelationshipEvidence[#raw.geometry.futureSpaceRelationshipEvidence+1]={
                         interactionReferenceKey=pairReferenceKey,
                         subjectAssemblyReferenceKey=a.referenceKey,otherAssemblyReferenceKey=b.referenceKey,
                         positiveIntersection=fieldFuture.positive==true,unresolved=fieldFuture.unresolved==true,outcome=fieldFuture.outcome,
-                        subjectLocalIntentClassification=pairDiagnostic.subjectLocalIntentClassification,otherLocalIntentClassification=pairDiagnostic.otherLocalIntentClassification,
-                        subjectIntentEpoch=pairDiagnostic.subjectIntentEpoch,otherIntentEpoch=pairDiagnostic.otherIntentEpoch,
-                        subjectBoundaryDistance=pairDiagnostic.subjectFutureSpaceBoundaryDistance,otherBoundaryDistance=pairDiagnostic.otherFutureSpaceBoundaryDistance,
+                        subjectLocalIntentClassification=subjectLocalIntentClassification,otherLocalIntentClassification=otherLocalIntentClassification,
+                        subjectIntentEpoch=subjectIntentEpoch,otherIntentEpoch=otherIntentEpoch,
+                        subjectBoundaryDistance=subjectFutureSpaceBoundaryDistance,otherBoundaryDistance=otherFutureSpaceBoundaryDistance,
                         distance=fieldFuture.distance,required=fieldFuture.required,authority=fieldFuture.authority,negativeClearanceAuthority=false,
                         provenance={source="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION_INTERSECTION",subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId}
                     }
@@ -962,18 +991,22 @@ function Source:capture(mission, nowSeconds)
                         admissionRelationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"
                         admissionSource="FIELD_BOUNDED_FUTURE_SPACE_POSITIVE"
                     end
-                    pairDiagnostic.scalarCurrentPositive=observed.current==true
-                    pairDiagnostic.filteredCurrentFootprintPositive=currentFootprint.current==true
-                    pairDiagnostic.fieldBoundedFutureSpacePositive=futureSpacePositive
-                    pairDiagnostic.qualifying=admissionPositive
-                    pairDiagnostic.interactionEvidenceEmitted=admissionPositive
-                    pairDiagnostic.interactionEvidenceSource=admissionSource
-                    pairDiagnostic.interactionEvidenceAuthority=admissionPositive and "POSITIVE_INTERACTION_ONLY" or nil
-                    pairDiagnostic.encounterAdmissionRelationship=admissionRelationship
+                    if diagnosticActive then
+                        pairDiagnostic.scalarCurrentPositive=observed.current==true
+                        pairDiagnostic.filteredCurrentFootprintPositive=currentFootprint.current==true
+                        pairDiagnostic.fieldBoundedFutureSpacePositive=futureSpacePositive
+                        pairDiagnostic.qualifying=admissionPositive
+                        pairDiagnostic.interactionEvidenceEmitted=admissionPositive
+                        pairDiagnostic.interactionEvidenceSource=admissionSource
+                        pairDiagnostic.interactionEvidenceAuthority=admissionPositive and "POSITIVE_INTERACTION_ONLY" or nil
+                        pairDiagnostic.encounterAdmissionRelationship=admissionRelationship
+                    end
 
                     if admissionPositive then
-                        raw.diagnostics.sourceCounters.qualifyingPairCount=raw.diagnostics.sourceCounters.qualifyingPairCount+1
-                        raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount=raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount+1
+                        if diagnosticActive then
+                            raw.diagnostics.sourceCounters.qualifyingPairCount=raw.diagnostics.sourceCounters.qualifyingPairCount+1
+                            raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount=raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount+1
+                        end
                         raw.geometry.interactionEvidence[#raw.geometry.interactionEvidence + 1] = {
                             interactionReferenceKey = pairReferenceKey,
                             subjectAssemblyReferenceKey = a.referenceKey, otherAssemblyReferenceKey = b.referenceKey,
@@ -987,9 +1020,9 @@ function Source:capture(mission, nowSeconds)
                                 negativeClearanceAuthority = false,
                                 fieldBoundedFutureSpace = {
                                     positive=futureSpacePositive,outcome=fieldFuture.outcome,
-                                    subjectIntentEpoch=pairDiagnostic.subjectIntentEpoch,otherIntentEpoch=pairDiagnostic.otherIntentEpoch,
-                                    subjectBoundaryDistance=pairDiagnostic.subjectFutureSpaceBoundaryDistance,
-                                    otherBoundaryDistance=pairDiagnostic.otherFutureSpaceBoundaryDistance,
+                                    subjectIntentEpoch=subjectIntentEpoch,otherIntentEpoch=otherIntentEpoch,
+                                    subjectBoundaryDistance=subjectFutureSpaceBoundaryDistance,
+                                    otherBoundaryDistance=otherFutureSpaceBoundaryDistance,
                                     distance=fieldFuture.distance,required=fieldFuture.required,
                                     subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId
                                 },
@@ -1007,10 +1040,12 @@ function Source:capture(mission, nowSeconds)
                             provenance = {source = "relative-live-motion"}
                         }
                     end
-                else
+                elseif diagnosticActive then
                     raw.diagnostics.sourceCounters.excludedPairCount=raw.diagnostics.sourceCounters.excludedPairCount+1
                 end
-                raw.diagnostics.pairDiagnostics[#raw.diagnostics.pairDiagnostics+1]=pairDiagnostic
+                if diagnosticActive then
+                    raw.diagnostics.pairDiagnostics[#raw.diagnostics.pairDiagnostics+1]=pairDiagnostic
+                end
             end
         end
 
@@ -1032,15 +1067,18 @@ function Source:capture(mission, nowSeconds)
     if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:endObservationCycle() end
 
     if #observations == 0 then
-        observations[1] = {
+        local raw={
             timestamp = nowSeconds,
             provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", noActivity = true},
             fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, planViewOccupancyEvidence = {}},
             motion = {closureEvidence = {}, progressionEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
-            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
-            diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
+            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
         }
+        if diagnosticActive then
+            raw.diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
+        end
+        observations[1]=raw
     end
     if self.currentPhysicalPoseSource~=nil then
         for _,raw in OuttaMyWay.ValueRecord.ipairs(observations or {}) do

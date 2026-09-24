@@ -22,6 +22,10 @@ end
 local function logWarning(code,formatText,...)
     return publication:warning("NORMAL",code,formatText,...)
 end
+local function diagnosticPublicationEnabled(code)
+    local eligible=publication:isEligible("DIAGNOSTIC","INFO",code)
+    return eligible==true
+end
 local function numberText(value,format)
     if type(value)~="number" then return "nil" end
     return string.format(format or "%.6f",value)
@@ -285,9 +289,11 @@ function Control:executeControlRequest(request,candidate)
     })
     logInfo("DEBUG","OBSTRUCTION_RELOCATION_CONTROL_STARTED","commitment=%s assembly=%s targetProgress=%.2fm speed=%.2fkmh configuration=%s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),state.targetProgressM,state.speedKmh,tostring(state.configurationResult))
-    logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_BASELINE","commitment=%s assembly=%s %s",
-        tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
-        steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
+    if diagnosticPublicationEnabled("OBSTRUCTION_RELOCATION_STEERING_BASELINE") then
+        logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_BASELINE","commitment=%s assembly=%s %s",
+            tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+            steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
+    end
     return true,"MANOEUVRE_STARTED"
 end
 function Control:update(dt)
@@ -304,12 +310,15 @@ function Control:update(dt)
 
     if state.phase=="INFIELD" and state.actuationIssued==true then
         local now=tonumber(g_time) or 0
-        if state.nextUpdateTelemetryLogged~=true then
+        if state.nextUpdateTelemetryLogged~=true
+            and diagnosticPublicationEnabled("OBSTRUCTION_RELOCATION_STEERING_NEXT_UPDATE") then
             state.nextUpdateTelemetryLogged=true
             logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_NEXT_UPDATE","commitment=%s assembly=%s %s",
                 tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
                 steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
-        elseif state.lastSteeringHeartbeatAt==nil or now-state.lastSteeringHeartbeatAt>=1000 then
+        elseif state.nextUpdateTelemetryLogged==true
+            and (state.lastSteeringHeartbeatAt==nil or now-state.lastSteeringHeartbeatAt>=1000)
+            and diagnosticPublicationEnabled("OBSTRUCTION_RELOCATION_STEERING_HEARTBEAT") then
             state.lastSteeringHeartbeatAt=now
             logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_HEARTBEAT","commitment=%s assembly=%s %s",
                 tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
@@ -346,7 +355,8 @@ function Control:update(dt)
         return
     end
     state.actuationIssued=true
-    if state.directionEvidenceLogged~=true and type(result)=="table" then
+    if state.directionEvidenceLogged~=true and type(result)=="table"
+        and diagnosticPublicationEnabled("OBSTRUCTION_RELOCATION_INFIELD_ALIGNMENT_ACTUATION") then
         state.directionEvidenceLogged=true
         state.lastSteeringHeartbeatAt=tonumber(g_time) or 0
         logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_INFIELD_ALIGNMENT_ACTUATION","commitment=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",

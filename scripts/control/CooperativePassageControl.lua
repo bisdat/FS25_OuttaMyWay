@@ -53,6 +53,10 @@ end
 local function logWarning(publicationClass,code,formatText,...)
     return publication:warning(publicationClass,code,formatText,...)
 end
+local function diagnosticPublicationEnabled(code)
+    local eligible=publication:isEligible("DIAGNOSTIC","INFO",code)
+    return eligible==true
+end
 
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
@@ -1600,13 +1604,15 @@ function Control:update(dt)
                 logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
-        elseif nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
+        elseif diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL")
+            and nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
             run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
             logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL","commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
         end
     end
 
-    if self.run~=nil and nowMs>=(self.nextHeartbeatMs or 0) then
+    if self.run~=nil and diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_STATE")
+        and nowMs>=(self.nextHeartbeatMs or 0) then
         self.nextHeartbeatMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
         local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
         logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_STATE","commitment=%s phase=%s A=%s speed=%.2f B=%s speed=%.2f separation=%s failure=%s",

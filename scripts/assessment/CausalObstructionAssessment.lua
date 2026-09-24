@@ -257,19 +257,22 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
 
     table.sort(records,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
 
-    local signatureParts={}
-    for _,record in OuttaMyWay.ValueRecord.ipairs(records) do
-        signatureParts[#signatureParts+1]=table.concat({
-            tostring(record.identity),
-            tostring(record.blockerClassification),
-            tostring(record.obstructionEvidence and record.obstructionEvidence.kind or "UNRESOLVED"),
-            record.relocationEligible==true and "RELOCATION_ELIGIBLE" or "NO_RELOCATION"
-        },"|")
-    end
-    local signature=table.concat(signatureParts,",")
-    if signature~=self.lastSignature then
-        self.lastSignature=signature
-        logInfo("CAUSAL_OBSTRUCTION_RELATION_CENSUS","count=%d relations=%s",#records,signature~="" and signature or "none")
+    local diagnosticEligible=publication:isEligible("DIAGNOSTIC","INFO","CAUSAL_OBSTRUCTION_RELATION_CENSUS")
+    if diagnosticEligible==true then
+        local signatureParts={}
+        for _,record in OuttaMyWay.ValueRecord.ipairs(records) do
+            signatureParts[#signatureParts+1]=table.concat({
+                tostring(record.identity),
+                tostring(record.blockerClassification),
+                tostring(record.obstructionEvidence and record.obstructionEvidence.kind or "UNRESOLVED"),
+                record.relocationEligible==true and "RELOCATION_ELIGIBLE" or "NO_RELOCATION"
+            },"|")
+        end
+        local signature=table.concat(signatureParts,",")
+        if signature~=self.lastSignature then
+            self.lastSignature=signature
+            logInfo("CAUSAL_OBSTRUCTION_RELATION_CENSUS","count=%d relations=%s",#records,signature~="" and signature or "none")
+        end
     end
     return records
 end

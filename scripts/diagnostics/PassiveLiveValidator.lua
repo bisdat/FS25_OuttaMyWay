@@ -274,8 +274,8 @@ function Validator:beginRuntimeCycle(cycleDiagnostics,nowMilliseconds)
     return due
 end
 function Validator:observeRuntimeResult(live,due,nowMilliseconds)
-    local projection=self:_project(live)
     if not publicationEnabled() then return end
+    local projection=self:_project(live)
     local signature=table.concat({tostring(projection.fieldWorldReferenceKey),tostring(projection.observedAssemblyCount),tostring(projection.activeAssemblyCount),tostring(projection.activeJobEpisodeCount),tostring(projection.activeOperationCount),tostring(projection.globalActiveOperationCount),tostring(projection.situationCount),tostring(projection.currentPairAssessmentCount),tostring(projection.candidateCount),tostring(projection.relevantPairCount),tostring(projection.eligiblePairCount),tostring(projection.evaluatedPairCount),tostring(projection.qualifyingPairCount),tostring(projection.interactionEvidenceEmittedCount),tostring(projection.interactionEvidenceReceivedCount),tostring(projection.unavailableSourceCount),tostring(projection.boundedControlDispatchStatus)},"|")
     local signatureChanged=signature~=self.lastSignature
     if signatureChanged or due then
