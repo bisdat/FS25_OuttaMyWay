@@ -119,7 +119,7 @@ function Control:_complete(status,evidence)
             local neutralized,neutralEvidence=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
             completionEvidence.neutralization={performed=neutralized==true,evidence=type(neutralEvidence)=="table" and neutralEvidence or nil,reason=neutralized and nil or tostring(neutralEvidence)}
             if neutralized==true then
-                logInfo("DEBUG","OBSTRUCTION_RELOCATION_PHYSICAL_NEUTRALIZED","commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
+                logInfo("DEBUG","OBSTRUCTION_RELOCATION_PHYSICAL_ACTUATION_NEUTRALIZED","commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
                     tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
                     self.actuationMechanism:getNeutralizeCallCount(),
                     steeringTelemetryText(type(neutralEvidence)=="table" and neutralEvidence.postNeutralizeSteering or nil))
