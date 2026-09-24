@@ -178,7 +178,47 @@ These capabilities remain governed by current Situation, Current Responsibility,
 
 A harmless parked vehicle does not become movable because OuttaMyWay is enabled. A player-controlled subject does not lose Player Claim. Unsupported or unsafe action remains unsupported or unsafe. Configuration supplies consent to operate the product; it does not manufacture the evidence or authority required for any particular intervention.
 
-## 5. Configuration and runtime authority
+## 5. Configuration runtime state and authority boundary
+
+Configuration owns one current semantic preference state for the supported local player/profile:
+
+- `enabled`;
+- `hudVisible`; and
+- `debug`.
+
+It owns the accepted defaults, validation of supported values, application of deliberate player changes, persistence of those values through the Configuration storage boundary, and notification that a semantic Configuration value has changed.
+
+> **Configuration State != Configuration Storage**
+
+The current semantic Configuration state is the interface consumed by the rest of the product. Runtime and GUI consumers must not read XML, construct `modSettings` paths, interpret schema versions or derive settings from storage representation directly.
+
+Storage is subordinate to Configuration. It persists and restores the supported representation; it does not decide what Enabled, HUD visibility or Debug mean.
+
+> **Configuration Owns Choice; Consumer Owns Interpretation**
+
+Consumers receive semantic values, not implementation addresses or derived subsystem policy:
+
+```text
+modSettings persistence
+        |
+        v
+Configuration
+  enabled
+  hudVisible
+  debug
+        |
+        +--> Product lifecycle
+        |      consumes enabled
+        |
+        +--> GUI / HUD
+        |      consumes hudVisible
+        |
+        `--> Log Publication
+               consumes debug
+               resolves NORMAL / DEBUG
+```
+
+Configuration does not directly bootstrap Runtime, terminate Responsibility, render HUD messages or publish logs merely because one of its values changed. The responsible consumer owns the resulting subsystem behaviour under its own architecture. Configuration supplies the accepted choice and its change boundary.
 
 Reality is independent of player Configuration.
 
@@ -209,7 +249,7 @@ Control
 Reality
 ```
 
-Configuration constrains operation at the boundary relevant to the setting. It does not replace any stage in that authority chain.
+Configuration constrains operation at the boundary relevant to the setting. It does not replace any stage in that authority chain, and its consumers must not bypass the Configuration state interface by reaching into persistence.
 
 ```text
 Configuration
@@ -365,7 +405,6 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
-- runtime interface shape and ownership boundary;
 - exact `modSettings` persistence representation / API usage;
 - persisted schema/version/migration semantics.
 
@@ -382,6 +421,8 @@ These are unresolved contract areas, not permission to preserve current implemen
 This architecture does not authorise:
 
 - a generic global settings/constants warehouse;
+- consumers reading or interpreting persisted Configuration representation directly instead of consuming semantic Configuration state;
+- persistence storage deciding subsystem meaning or Runtime authority;
 - resurrection of per-capability rollout gates;
 - player tuning of internal Passage, Regulation, representation or Control calibration merely because those values exist;
 - a player Logging on/off switch that suppresses the NORMAL operational journal;
