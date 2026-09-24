@@ -301,7 +301,15 @@ A savegame must neither own nor silently override these values. First use, or ab
 
 This architecture selects the persistence **surface and lifetime**, not an exact XML filename, element layout or GIANTS API call sequence. Those belong to the Configuration Specification and implementation once the runtime interface is defined.
 
-Multiplayer/server-client ownership remains unresolved. That question may determine which machine/profile's `modSettings` representation is authoritative in a multiplayer context, but it must not convert ordinary local Configuration into savegame-scoped state.
+The initial supported Configuration scope is the **local player/profile** case. Multiplayer/server-client Configuration ownership, propagation, conflict resolution and authority are intentionally outside the current support claim because they cannot presently be validated against Reality.
+
+> **No Validation Route != Permission to Invent Semantics**
+
+> **Unvalidated Multiplayer Configuration != Unsupported Multiplayer Runtime**
+
+This boundary says nothing about whether OuttaMyWay runtime behaviour can operate in multiplayer generally. It says only that the project does not yet claim Configuration semantics for questions such as whose Enabled choice governs, whether Configuration is server-authoritative, or how host/client preferences interact.
+
+Future multiplayer Configuration work must be added from evidence without changing the local profile preference set into savegame-scoped state.
 
 Schema/version ownership and migration semantics remain unresolved until the persisted representation contract is specified.
 
@@ -359,8 +367,9 @@ The following Configuration contract areas are intentionally unresolved rather t
 
 - runtime interface shape and ownership boundary;
 - exact `modSettings` persistence representation / API usage;
-- multiplayer/server-client ownership;
 - persisted schema/version/migration semantics.
+
+Multiplayer/server-client Configuration semantics are not an unresolved blocker for this initial contract; they are outside its current validated support scope.
 
 The initial supported defaults and immediate change semantics are no longer unresolved: Enabled defaults on; Operational Player Messages default on; Debug defaults off; HUD visibility and Debug changes apply immediately. DIAGNOSTIC has no supported player Configuration mapping.
 
@@ -384,7 +393,7 @@ This architecture does not authorise:
 - assuming current implementation defaults are player defaults;
 - persisting supported Configuration inside individual savegames;
 - allowing savegame state to override the cross-save Configuration preference set;
-- assuming multiplayer/server-client Configuration ownership without evidence;
+- claiming multiplayer/server-client Configuration ownership, propagation or authority without validation evidence;
 - waiting for Regulation, Passage, Relocation or Local Operation completion after explicit player disablement;
 - abandoning owned physical effects without authority-reducing release/neutralisation;
 - using shutdown cleanup to continue or invent a strategic resolution after consent withdrawal;
