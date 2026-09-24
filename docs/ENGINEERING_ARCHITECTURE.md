@@ -201,12 +201,12 @@ Canonical does not mean a current document, current architecture truth, an accep
 
 ### Canonical Merge
 
-**A Canonical Merge is the repository owner's intentional merge of an explicitly designated Release Declaration PR. That merge declares the resulting exact `main` commit to be the canonical repository checkpoint for the named version.**
+**A Canonical Merge is the repository owner's intentional merge of an explicitly designated Release Declaration PR for an owner-selected MINOR epoch checkpoint. That merge declares the resulting exact `main` commit to be the canonical repository checkpoint for the named version. PATCH plateau checkpoints are accepted/versioned but are not canonicalisation.**
 
 ```text
 Accepted Repository State
        ↓
-owner and engineering collaborator agree a named release is warranted
+owner and engineering collaborator agree a new MINOR canonical epoch checkpoint is warranted
        ↓
 Release Declaration Engineering Increment
        ↓
@@ -220,7 +220,7 @@ resulting exact main commit
 = canonical named release
 ```
 
-Not every merge is canonical. Only a PR explicitly designated in advance as a **Release Declaration PR** carries this authority. Its body must state unambiguously, in substance:
+Not every merge is canonical. Under the current pre-1.0 policy, only an owner-selected MINOR checkpoint PR explicitly designated in advance as a **Release Declaration PR** carries this authority. PATCH checkpoint PRs must not make a canonical-effect declaration. A Release Declaration PR body must state unambiguously, in substance:
 
 > If the repository owner merges this PR, that merge constitutes the explicit declaration that the resulting `main` commit is canonical `<version>`.
 
@@ -252,10 +252,13 @@ The components identify different engineering responsibilities:
   architectural/capability epoch.
 - **MINOR** identifies a materially changed architectural/capability epoch.
 
-Canonical named releases use `BUILD=0`, while non-canonical TEST iterations
-advance `BUILD`. A PATCH or MINOR promotion is a deliberate release-checkpoint
-decision and resets the lower-order components; it is never triggered by reaching
-a particular BUILD count, commit count or elapsed development time.
+PATCH and MINOR promotions reset lower-order components and use `BUILD=0`, while
+non-canonical TEST iterations advance `BUILD`. `BUILD=0` therefore does not imply
+canonical authority. A PATCH promotion is an accepted non-canonical plateau
+checkpoint. A MINOR promotion records a new architectural/capability epoch and is
+the only checkpoint level eligible for an owner-selected Release Declaration /
+Canonical Merge under the current pre-1.0 policy. Neither promotion is triggered
+by reaching a particular BUILD count, commit count or elapsed development time.
 
 #### Validated Plateau
 
@@ -276,13 +279,15 @@ A Validated Plateau does not require all open Issues to be closed. Known future
 work, deferred capabilities and stress-test questions may remain open when they
 do not make the accepted tranche internally incoherent.
 
-> **PATCH = Validated Plateau Within An Epoch**
+> **PATCH = Validated Plateau Within An Epoch; Accepted, Not Canonical**
 
 Historical PATCH promotions such as `0.1.0.14 -> 0.1.1.0`,
 `0.1.2.2 -> 0.1.3.0`, `0.1.13.3 -> 0.1.14.0` and
-`0.1.14.5 -> 0.1.15.0` demonstrate this responsibility: their BUILD counts
+`0.1.14.5 -> 0.1.15.0` demonstrate plateau selection: their BUILD counts
 differed, while each promotion deliberately consolidated a coherent validated
-tranche and left separable work for the next increment.
+tranche and left separable work for the next increment. Historical canonical
+status attached to earlier PATCH identities remains immutable provenance and does
+not define the current prospective canonicalisation rule.
 
 #### Minor architectural/capability epoch
 
@@ -300,7 +305,7 @@ A useful classification question is:
 If yes, a Validated Plateau may be PATCH-level. If no, and the new model is
 accepted and validated strongly enough to checkpoint, use MINOR.
 
-> **MINOR = Architectural/Capability Epoch**
+> **MINOR = Architectural/Capability Epoch; Canonical-Candidate Level**
 
 The practical checkpoint decision after a substantial validated tranche is:
 
@@ -308,8 +313,8 @@ The practical checkpoint decision after a substantial validated tranche is:
 Validated Plateau?
     no  -> continue TEST BUILD lineage
     yes -> did the architectural/capability epoch materially change?
-              no  -> PATCH candidate
-              yes -> MINOR candidate
+              no  -> PATCH checkpoint (accepted, non-canonical)
+              yes -> MINOR candidate (eligible for owner-selected canonicalisation)
 ```
 
 The first public release is reserved for `1.0.0.0`.
@@ -318,7 +323,8 @@ Historical `4.7.x` identities remain immutable provenance and are not
 renumbered. Version identity does not itself establish accepted or canonical
 authority. Release Declaration preparation remains behaviour-neutral; the
 version promotion records already-accepted bytes rather than creating new
-runtime behaviour.
+runtime behaviour. A PATCH promotion does not use Release Declaration authority;
+only an owner-selected MINOR candidate may be prepared as the Canonical Merge.
 
 Runtime system/build identity is limited to `OuttaMyWay.MOD_NAME` and
 `OuttaMyWay.VERSION`, as defined by the root-identity boundary in

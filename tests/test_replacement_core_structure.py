@@ -1285,9 +1285,21 @@ def test_v0181_transit_base_missing_evidence_fails_closed_without_legacy_configu
 def test_v0100_pre_1_0_versioning_epoch_contract():
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     engineering=(ROOT/"docs"/"ENGINEERING_ARCHITECTURE.md").read_text(encoding="utf-8")
-    for token in ('0.MINOR.PATCH.BUILD','canonical releases use `BUILD=0`','TEST iterations increment BUILD','first public release is `1.0.0.0`'):
+    for token in (
+        '0.MINOR.PATCH.BUILD',
+        'PATCH = Validated Plateau Within An Epoch; Accepted, Not Canonical',
+        'MINOR = Architectural/Capability Epoch; Canonical-Candidate Level',
+        'next Canonical Merge would be an owner-selected MINOR epoch checkpoint, therefore `0.5.0.0`',
+    ):
         assert token in decision
-    for token in ('0.MINOR.PATCH.BUILD','Canonical named releases use `BUILD=0`','non-canonical TEST iterations','first public release is reserved'):
+    for token in (
+        '0.MINOR.PATCH.BUILD',
+        'PATCH = Validated Plateau Within An Epoch; Accepted, Not Canonical',
+        'MINOR = Architectural/Capability Epoch; Canonical-Candidate Level',
+        'PATCH checkpoint (accepted, non-canonical)',
+        'MINOR candidate (eligible for owner-selected canonicalisation)',
+        'first public release is reserved',
+    ):
         assert token in engineering
     assert 'Historical `4.7.x` identities remain immutable provenance and are not renumbered.' in " ".join(engineering.split())
 
