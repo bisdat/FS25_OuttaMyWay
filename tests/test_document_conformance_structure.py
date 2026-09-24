@@ -14,6 +14,7 @@ ID_RE = re.compile(r"^\*\*Jurisdiction ID:\*\*\s*`([A-Z][A-Z0-9_]*)`\s*$")
 PRIMARY_SPEC_RE = re.compile(r"^\*\*Primary Specification:\*\*\s*\[[^\]]+\]\(([^)]+)\)\s*$")
 SPECIALISES_RE = re.compile(r"^\*\*Specialises:\*\*\s*`([A-Z][A-Z0-9_]*)`\s*$")
 PRIMARY_ARCH_RE = re.compile(r"^\*\*Primary Architecture Authority:\*\*\s*\[[^\]]+\]\(([^)]+)\)\s*$")
+IMPLEMENTATION_STATUS_RE = re.compile(r"^\*\*Implementation Status:\*\*\s*`(NOT_IMPLEMENTED)`\s*$")
 ACK_RE = re.compile(r"^-- Specification Jurisdictions:\s*(.+?)\s*$")
 BACKTICK_ID_RE = re.compile(r"`([A-Z][A-Z0-9_]*)`")
 PARTICIPANT_ROW_RE = re.compile(
@@ -44,6 +45,36 @@ def _section(lines: list[str], heading: str, errors: list[str]) -> list[str] | N
             end = index
             break
     return lines[start:end]
+
+
+def _implementation_status(lines: list[str], jurisdiction_id: str, errors: list[str]) -> str:
+    declarations = [line.strip() for line in lines if line.strip().startswith("**Implementation Status:**")]
+    if not declarations:
+        return "IMPLEMENTED"
+    if len(declarations) != 1:
+        errors.append(f"Spec {jurisdiction_id} has {len(declarations)} Implementation Status declarations")
+        return "INVALID"
+    match = IMPLEMENTATION_STATUS_RE.match(declarations[0])
+    if match is None:
+        errors.append(f"Spec {jurisdiction_id} has malformed/unsupported Implementation Status: {declarations[0]}")
+        return "INVALID"
+    return match.group(1)
+
+
+def _validate_implementation_participation(
+    jurisdiction_id: str,
+    implementation_status: str,
+    relations: list[str],
+    errors: list[str],
+) -> None:
+    if implementation_status == "NOT_IMPLEMENTED":
+        if relations:
+            errors.append(
+                f"Spec {jurisdiction_id} is NOT_IMPLEMENTED but declares production participants: {sorted(relations)}"
+            )
+        return
+    if implementation_status == "IMPLEMENTED" and "REALISES" not in relations:
+        errors.append(f"Spec {jurisdiction_id} has no REALISES participant")
 
 
 def _derive_declared_graph() -> list[str]:
@@ -90,6 +121,8 @@ def _derive_declared_graph() -> list[str]:
         if jurisdiction_id in specifications:
             errors.append(f"duplicate Specification Jurisdiction ID {jurisdiction_id}")
             continue
+
+        implementation_status = _implementation_status(lines, jurisdiction_id, errors)
 
         architecture_links = [match.group(1) for line in lines if (match := PRIMARY_ARCH_RE.match(line.strip()))]
         if len(architecture_links) != 1:
@@ -146,7 +179,11 @@ def _derive_declared_graph() -> list[str]:
                     errors.append(f"Spec {jurisdiction_id} has unparseable Repository validation participants row: {stripped}")
 
         spec_path = path.relative_to(ROOT).as_posix()
-        specifications[jurisdiction_id] = {"file": spec_path, "architecture": architecture_path}
+        specifications[jurisdiction_id] = {
+            "file": spec_path,
+            "architecture": architecture_path,
+            "implementation_status": implementation_status,
+        }
         spec_path_to_id[spec_path] = jurisdiction_id
 
     if set(architecture) != set(specifications):
@@ -200,9 +237,13 @@ def _derive_declared_graph() -> list[str]:
     by_jurisdiction: dict[str, list[str]] = defaultdict(list)
     for (_, jurisdiction_id), relation in participant_edges.items():
         by_jurisdiction[jurisdiction_id].append(relation)
-    for jurisdiction_id in specifications:
-        if "REALISES" not in by_jurisdiction[jurisdiction_id]:
-            errors.append(f"Spec {jurisdiction_id} has no REALISES participant")
+    for jurisdiction_id, specification in specifications.items():
+        _validate_implementation_participation(
+            jurisdiction_id,
+            specification["implementation_status"],
+            by_jurisdiction[jurisdiction_id],
+            errors,
+        )
 
     source_acknowledgements: dict[str, tuple[str, ...]] = {}
     for path in sorted(SCRIPTS_DIR.rglob("*.lua")):
@@ -258,3 +299,35 @@ def _derive_declared_graph() -> list[str]:
 def test_declared_cross_surface_conformance_graph_closes():
     errors = _derive_declared_graph()
     assert not errors, "Declared cross-surface conformance graph is open:\n- " + "\n- ".join(errors)
+
+
+def test_unimplemented_specification_status_contract():
+    errors: list[str] = []
+    assert _implementation_status([], "EXAMPLE", errors) == "IMPLEMENTED"
+    assert not errors
+
+    errors = []
+    assert _implementation_status(["**Implementation Status:** `NOT_IMPLEMENTED`"], "EXAMPLE", errors) == "NOT_IMPLEMENTED"
+    assert not errors
+
+    errors = []
+    assert _implementation_status(["**Implementation Status:** `IMPLEMENTED`"], "EXAMPLE", errors) == "INVALID"
+    assert errors == [
+        "Spec EXAMPLE has malformed/unsupported Implementation Status: **Implementation Status:** `IMPLEMENTED`"
+    ]
+
+    errors = []
+    _validate_implementation_participation("EXAMPLE", "NOT_IMPLEMENTED", [], errors)
+    assert not errors
+
+    errors = []
+    _validate_implementation_participation("EXAMPLE", "NOT_IMPLEMENTED", ["REALISES"], errors)
+    assert errors == ["Spec EXAMPLE is NOT_IMPLEMENTED but declares production participants: ['REALISES']"]
+
+    errors = []
+    _validate_implementation_participation("EXAMPLE", "IMPLEMENTED", ["REALISES"], errors)
+    assert not errors
+
+    errors = []
+    _validate_implementation_participation("EXAMPLE", "IMPLEMENTED", [], errors)
+    assert errors == ["Spec EXAMPLE has no REALISES participant"]
