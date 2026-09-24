@@ -410,10 +410,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             if received and pairScope==nil then
                 appendContradiction(diagnosticContradictions,"INTERACTION_EVIDENCE_WITHOUT_CURRENT_PAIR_SCOPE",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
             end
-            if sameOperation and item.subjectBlocked==true and item.otherBlocked==true
-                and (pairScope==nil or pairScope.relationshipStatus~="POSITIVE") then
-                appendContradiction(diagnosticContradictions,"BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
-            end
         end
         table.sort(pairPipeline,function(a,b) return tostring(a.pairReferenceKey)<tostring(b.pairReferenceKey) end)
     
