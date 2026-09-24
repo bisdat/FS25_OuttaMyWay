@@ -337,9 +337,35 @@ All three initial supported values are persisted together as Configuration:
 - Operational Player Messages / HUD visibility; and
 - Debug.
 
-A savegame must neither own nor silently override these values. First use, or absence of a valid persisted Configuration representation, resolves to the accepted product defaults.
+A savegame must neither own nor silently override these values.
 
-This architecture selects the persistence **surface and lifetime**, not an exact XML filename, element layout or GIANTS API call sequence. Those belong to the Configuration Specification and implementation once the runtime interface is defined.
+At product-shell startup, Configuration must resolve persistence **before any normal Runtime bootstrap decision**. If the expected persisted Configuration file does not exist, Configuration treats this as first use: it creates the mod-scoped persisted representation, populates all supported settings with the accepted defaults, persists that representation, and exposes the resulting semantic Configuration state to consumers.
+
+```text
+product shell loads
+      |
+      v
+Configuration persistence check
+      |
+      +-- file exists ------> load / validate persisted representation
+      |
+      `-- file missing -----> materialise accepted defaults
+                                -> persist new Configuration file
+                                -> expose semantic state
+                                      |
+                                      v
+                              enabled decides Runtime bootstrap
+```
+
+> **Missing Configuration != Configuration Error**
+
+> **Defaults Become Persisted State on First Use**
+
+File absence is therefore not a transient in-memory fallback. The first successful startup with no Configuration file establishes the durable cross-save preference set immediately.
+
+This architecture selects the persistence **surface, lifetime and first-use materialisation rule**, not an exact XML filename, element layout or GIANTS API call sequence. Those belong to the Configuration Specification and implementation once the persisted representation is defined.
+
+An existing but unreadable, invalid or older-schema representation is not equivalent to a missing file. Its handling belongs to the still-unresolved schema/version/migration contract and must not be silently treated as first use.
 
 The initial supported Configuration scope is the **local player/profile** case. Multiplayer/server-client Configuration ownership, propagation, conflict resolution and authority are intentionally outside the current support claim because they cannot presently be validated against Reality.
 
@@ -405,8 +431,8 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
-- exact `modSettings` persistence representation / API usage;
-- persisted schema/version/migration semantics.
+- exact `modSettings` filename / representation / API usage;
+- persisted schema/version/migration semantics for an existing representation.
 
 Multiplayer/server-client Configuration semantics are not an unresolved blocker for this initial contract; they are outside its current validated support scope.
 
@@ -432,6 +458,7 @@ This architecture does not authorise:
 - treating in-game Help content as another Configuration setting merely because the settings surface links to it;
 - adding a global Reset to Defaults action to the initial three-toggle Configuration surface;
 - assuming current implementation defaults are player defaults;
+- treating a missing first-use Configuration file as an error or leaving defaults only in volatile memory;
 - persisting supported Configuration inside individual savegames;
 - allowing savegame state to override the cross-save Configuration preference set;
 - claiming multiplayer/server-client Configuration ownership, propagation or authority without validation evidence;
