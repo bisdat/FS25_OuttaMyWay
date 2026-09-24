@@ -10,20 +10,15 @@ local SNAPSHOT_GENERATION_BUDGET=0.00025
 local FINGERPRINT_QUANTIZATION_METRES=0.1
 local FINGERPRINT_SCHEMA_VERSION="FWG1"
 
-local function logInfo(message)
-    if Logging ~= nil and type(Logging.info) == "function" then
-        Logging.info("[FS25_OuttaMyWay][FIELD-WORLD] %s", message)
-    else
-        print("[FS25_OuttaMyWay][FIELD-WORLD] " .. message)
-    end
-end
-
-local function logEquivalence(message)
-    if Logging ~= nil and type(Logging.info) == "function" then
-        Logging.info("[FS25_OuttaMyWay][FIELD-WORLD-EQUIVALENCE] %s", message)
-    else
-        print("[FS25_OuttaMyWay][FIELD-WORLD-EQUIVALENCE] " .. message)
-    end
+local function publish(code,publicationClass,severity,payloadBuilder)
+    local publisher=OuttaMyWay.logPublication
+    if publisher==nil then return false,"LOG_PUBLICATION_UNAVAILABLE" end
+    return publisher:publish({
+        code=code,
+        publicationClass=publicationClass,
+        severity=severity,
+        origin="OPERATION_LIFECYCLE"
+    },payloadBuilder)
 end
 
 local function safeCall(object, methodName, ...)
@@ -496,7 +491,9 @@ function Registry:_complete(state, result, success)
     state.pending=false; state.completed=true; state.finishedAt=tonumber(g_time) or 0
     if not success or result==nil or type(result.fieldRootBoundary)~="table" or type(result.fieldRootBoundary.boundaryLine)~="table" then
         state.error="FIELD_WORLD_GENERATION_CALLBACK_FAILED"
-        logInfo(string.format("FAILED ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error))
+        publish("FIELD_WORLD_SNAPSHOT_FAILED","DEBUG","INFO",function()
+            return string.format("ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error)
+        end)
         return
     end
     local canonical, reason = Registry.canonicalizeBoundary(
@@ -506,7 +503,9 @@ function Registry:_complete(state, result, success)
     )
     if canonical==nil then
         state.error=reason
-        logInfo(string.format("FAILED ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error))
+        publish("FIELD_WORLD_SNAPSHOT_FAILED","DEBUG","INFO",function()
+            return string.format("ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error)
+        end)
         return
     end
     local version=canonical.canonicalizationVersion
@@ -514,7 +513,9 @@ function Registry:_complete(state, result, success)
     local existing=self.canonicalByPolygonKey[polygonKey]
     if existing~=nil and existing~=canonical.canonicalGeometry then
         state.error="FIELD_WORLD_FINGERPRINT_COLLISION"
-        logInfo(string.format("FAILED ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error))
+        publish("FIELD_WORLD_SNAPSHOT_FAILED","DEBUG","INFO",function()
+            return string.format("ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error)
+        end)
         return
     end
     self.canonicalByPolygonKey[polygonKey]=canonical.canonicalGeometry
@@ -553,12 +554,16 @@ function Registry:_complete(state, result, success)
         fieldWorldIdentityAuthorityAssigned=false,controlAuthorityEnabled=false
     }
     self.records[#self.records+1]=record
-    logInfo(string.format("CAPTURED ref=%s jobToken=%s snapshot=%s polygon=%s fingerprint=%s seed=(%.1f,%.1f) %s islands=%d immutable=true authority=pending control=false",
-        state.vehicleReferenceKey,tostring(state.jobToken),snapshotKey,polygonKey,canonical.fingerprint,
-        state.seedPosition.x,state.seedPosition.z,boundarySummary(canonical.boundary),canonical.islandCount))
-    local canonicalIslands=#canonical.canonicalIslandRings>0 and table.concat(canonical.canonicalIslandRings,"|") or "none"
-    logEquivalence(string.format("GEOMETRY snapshot=%s ref=%s jobToken=%s fingerprint=%s quantum=%.3f %s islands=%d canonicalRoot=%s canonicalIslands=%s immutable=true authority=pending control=false",
-        snapshotKey,state.vehicleReferenceKey,tostring(state.jobToken),canonical.fingerprint,canonical.quantizationMetres,evidenceSummary(metrics),canonical.islandCount,canonical.canonicalRootRing,canonicalIslands))
+    publish("FIELD_WORLD_SNAPSHOT_CAPTURED","DIAGNOSTIC","INFO",function()
+        return string.format("ref=%s jobToken=%s snapshot=%s polygon=%s fingerprint=%s seed=(%.1f,%.1f) %s islands=%d immutable=true authority=pending control=false",
+            state.vehicleReferenceKey,tostring(state.jobToken),snapshotKey,polygonKey,canonical.fingerprint,
+            state.seedPosition.x,state.seedPosition.z,boundarySummary(canonical.boundary),canonical.islandCount)
+    end)
+    publish("FIELD_WORLD_GEOMETRY","DIAGNOSTIC","INFO",function()
+        local canonicalIslands=#canonical.canonicalIslandRings>0 and table.concat(canonical.canonicalIslandRings,"|") or "none"
+        return string.format("snapshot=%s ref=%s jobToken=%s fingerprint=%s quantum=%.3f %s islands=%d canonicalRoot=%s canonicalIslands=%s immutable=true authority=pending control=false",
+            snapshotKey,state.vehicleReferenceKey,tostring(state.jobToken),canonical.fingerprint,canonical.quantizationMetres,evidenceSummary(metrics),canonical.islandCount,canonical.canonicalRootRing,canonicalIslands)
+    end)
 end
 
 function Registry:_start(vehicle, pose, jobToken, captureToken)
@@ -572,7 +577,9 @@ function Registry:_start(vehicle, pose, jobToken, captureToken)
         state.error="GIANTS_FIELD_COURSE_API_UNAVAILABLE"
         if not self.apiUnavailableLogged then
             self.apiUnavailableLogged=true
-            logInfo("GIANTS FieldCourse boundary API unavailable; Job Episodes remain active while Field World identity waits for evidence; control=false")
+            publish("FIELD_WORLD_BOUNDARY_API_UNAVAILABLE","NORMAL","WARNING",function()
+                return "Job Episodes remain active while Field World identity waits for evidence; control=false"
+            end)
         end
         return
     end
@@ -585,7 +592,9 @@ function Registry:_start(vehicle, pose, jobToken, captureToken)
     end)
     if not okCreate or courseField==nil then state.error="FIELD_COURSE_CREATE_FAILED"; return end
     state.courseField=courseField; state.pending=true
-    logInfo(string.format("STARTED ref=%s jobToken=%s seed=(%.1f,%.1f) immutable-capture=true control=false",ref,tostring(jobToken),pose.x,pose.z))
+    publish("FIELD_WORLD_SNAPSHOT_STARTED","DEBUG","INFO",function()
+        return string.format("ref=%s jobToken=%s seed=(%.1f,%.1f) immutable-capture=true control=false",ref,tostring(jobToken),pose.x,pose.z)
+    end)
 end
 
 function Registry:ensure(vehicle,pose,jobToken,captureToken)
