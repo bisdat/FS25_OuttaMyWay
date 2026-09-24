@@ -5,9 +5,9 @@ OuttaMyWay.LiveControlDispatcher = {}
 local Dispatcher = OuttaMyWay.LiveControlDispatcher
 Dispatcher.__index = Dispatcher
 
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][CONTROL-DISPATCH] %s",message) else print("[FS25_OuttaMyWay][CONTROL-DISPATCH][WARNING] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("CONTROL")
+local function logWarning(code,formatText,...)
+    return publication:warning("DEBUG",code,formatText,...)
 end
 
 function Dispatcher.new(runtime)
@@ -87,7 +87,7 @@ function Dispatcher:dispatchJoint(requestA,requestB,candidate)
     return started,result
 end
 function Dispatcher:notifyRejected(request,reason,effect)
-    logWarning("CONTROL_REJECTED request=%s reason=%s",tostring(request and request.identity or "NONE"),tostring(reason))
+    logWarning("CONTROL_REJECTED","request=%s reason=%s",tostring(request and request.identity or "NONE"),tostring(reason))
     return self:recordOutcome(request,"REJECTED",effect or {kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(reason)})
 end
 function Dispatcher:notifyAccepted(request,effect)

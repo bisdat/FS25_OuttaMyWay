@@ -4,7 +4,7 @@ local modDirectory=g_currentModDirectory or ""
 -- Module source order is dependency-sensitive: sourced modules may consume globals established by earlier modules.
 -- Preserve source-before-consumer ordering; this bootstrap sequence does not define architectural authority.
 local modules={
-    "scripts/config.lua",
+    "scripts/config.lua","scripts/publication/LogPublication.lua",
     "scripts/contracts/ValueRecord.lua","scripts/contracts/ObservationSnapshot.lua","scripts/contracts/OperationalPicture.lua","scripts/contracts/CandidateAction.lua","scripts/contracts/CandidateInventory.lua","scripts/contracts/ConstraintVerdict.lua","scripts/contracts/ConstraintVerdictSet.lua","scripts/contracts/DecisionRecord.lua","scripts/contracts/CommitmentRecord.lua","scripts/contracts/ObligationRecord.lua","scripts/contracts/Regulation.lua","scripts/contracts/ResolutionCommitment.lua","scripts/contracts/BoundedAuthorityGrant.lua","scripts/contracts/ControlRequest.lua","scripts/contracts/ControlOutcome.lua","scripts/contracts/GoverningBasisVerdict.lua","scripts/contracts/CommitmentApplicationRecord.lua",
     "scripts/identity/EpochSequence.lua","scripts/identity/IdentityRegistry.lua",
     "scripts/representation/PlanViewFootprint.lua","scripts/representation/EntityLocalShapeEvidence.lua","scripts/representation/AssemblyRepresentationCache.lua","scripts/representation/CurrentPhysicalConflictRepresentation.lua","scripts/representation/PairSpecificPassageClearance.lua",
@@ -17,6 +17,19 @@ local modules={
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
+
+-- Migration compatibility input only. Future Configuration (#139) may resolve
+-- this value before publisher composition; this fallback is not a player default.
+if OuttaMyWay.DIAGNOSTIC_LOGGING==nil then OuttaMyWay.DIAGNOSTIC_LOGGING=true end
+local function resolvedMigrationPublicationPolicy()
+    return OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"
+end
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(resolvedMigrationPublicationPolicy)
+local productPublication=OuttaMyWay.LogPublication.origin("PRODUCT_RUNTIME")
+productPublication:publish("NORMAL","INFO","OUTTAMYWAY_STARTED",function()
+    return {version=OuttaMyWay.VERSION,enabled=true}
+end)
+
 OuttaMyWay.runtime=OuttaMyWay.Runtime.new()
 OuttaMyWay.runtime.situationAssessment=OuttaMyWay.ResolutionMarginSituationAssessment.new(OuttaMyWay.runtime.situationAssessment)
 OuttaMyWay.runtime.situationAssessment=OuttaMyWay.CurrentResponsibilityContextSituationAssessment.new(

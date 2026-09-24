@@ -80,19 +80,17 @@ def test_obstruction_relocation_semantics_survive_shared_execution():
     ):
         assert token in runtime
 
-def test_obstruction_relocation_methods_retain_lexical_logging_dependencies():
+def test_obstruction_relocation_methods_use_central_log_publication_without_losing_causal_evidence():
     runtime=read("scripts/runtime/Runtime.lua")
-    assert "local function logInfo(formatText,...)" in runtime
-    assert "local function logWarning(formatText,...)" in runtime
-    assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s' in runtime
-    assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] ' in runtime
+    assert 'OuttaMyWay.LogPublication.origin("RUNTIME")' in runtime
+    assert "Logging." not in runtime
 
     obstruction_relocation=runtime[
         runtime.index("function Runtime:_obstructionRelocationRequest"):
         runtime.index("function Runtime:dispatchEvaluatedOperationalPicture")
     ]
-    assert "logInfo(" in obstruction_relocation
-    assert "logWarning(" in obstruction_relocation
+    assert "OBSTRUCTION_RELOCATION_CONTROL_ACCEPTED" in obstruction_relocation
+    assert "OBSTRUCTION_RELOCATION_CONTROL_SETTLEMENT_FAILED" in obstruction_relocation
 
 def test_runtime_still_does_not_physically_actuate():
     runtime=read("scripts/runtime/Runtime.lua")

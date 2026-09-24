@@ -8,15 +8,10 @@
 OuttaMyWay.LiveTrafficCommitmentLifecycle = {}
 local Lifecycle = OuttaMyWay.LiveTrafficCommitmentLifecycle
 
-local function logInfo(formatText, ...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then
-        Logging.info("[FS25_OuttaMyWay][LIVE-COMMITMENT] %s",message)
-    else
-        print("[FS25_OuttaMyWay][LIVE-COMMITMENT] "..message)
-    end
+local publication=OuttaMyWay.LogPublication.origin("LIVE_TRAFFIC_COMMITMENT_LIFECYCLE")
+local function logInfo(code,formatText,...)
+    return publication:info("DEBUG",code,formatText,...)
 end
-
 
 local function hasPrefix(value,prefix)
     return type(value)=="string"
@@ -95,7 +90,7 @@ function Lifecycle.acquireSupportingRegulationAuthority(runtime,commitmentId,ass
     record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{
         progressActuationOwnership=ownership,effectiveActuationCompositionId=composition.identity,epoch=runtime.epochs:next()
     }))
-    logInfo("SUPPORTING_REGULATION_AUTHORITY_ACQUIRED commitment=%s assembly=%s token=%s composition=%s purpose=%s",
+    logInfo("SUPPORTING_REGULATION_AUTHORITY_ACQUIRED","commitment=%s assembly=%s token=%s composition=%s purpose=%s",
         tostring(commitmentId),tostring(assemblyId),tostring(token.identity),tostring(composition.identity),tostring(evidence and evidence.governingPurpose or "UNSPECIFIED"))
     return {commitment=record,authorityToken=token,composition=composition},nil
 end
@@ -118,7 +113,7 @@ function Lifecycle.releaseSupportingRegulationAuthority(runtime,commitmentId,ass
     record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{
         progressActuationOwnership=ownership,effectiveActuationCompositionId=composition.identity,epoch=runtime.epochs:next()
     }))
-    logInfo("SUPPORTING_REGULATION_AUTHORITY_RELEASED commitment=%s assembly=%s token=%s preservedForOtherPurpose=%s composition=%s reason=%s",
+    logInfo("SUPPORTING_REGULATION_AUTHORITY_RELEASED","commitment=%s assembly=%s token=%s preservedForOtherPurpose=%s composition=%s reason=%s",
         tostring(commitmentId),tostring(assemblyId),tostring(token and token.identity or "NONE"),tostring(preserve),tostring(composition.identity),tostring(evidence and evidence.reason or "PURPOSE_EXPIRED"))
     return {commitment=record,releasedAuthorityTokenId=(token~=nil and not preserve) and token.identity or nil,preservedAuthorityTokenId=(token~=nil and preserve) and token.identity or nil,composition=composition},nil
 end
@@ -164,7 +159,7 @@ function Lifecycle.ensureFollowerBoundaryObligation(runtime,commitmentId,bridge,
     })
     local ids=appendCopy(record.obligationIds,obligation.identity)
     record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{obligationIds=ids,epoch=runtime.epochs:next()}))
-    logInfo("FOLLOWER_BOUNDARY_OBLIGATION_CREATED commitment=%s obligation=%s pair=%s",tostring(commitmentId),tostring(obligation.identity),tostring(bridge.pairKey))
+    logInfo("FOLLOWER_BOUNDARY_OBLIGATION_CREATED","commitment=%s obligation=%s pair=%s",tostring(commitmentId),tostring(obligation.identity),tostring(bridge.pairKey))
     return {commitment=record,obligation=obligation,created=true},nil
 end
 
@@ -206,7 +201,7 @@ function Lifecycle.applyFollowerBoundaryDecision(runtime,picture,evaluated)
         commitment=result.commitment; token=result.authorityToken; acquired=true
     end
     if application~=nil or obligationResult.created or acquired then
-        logInfo("FOLLOWER_BOUNDARY_DECISION_APPLIED decision=%s application=%s commitment=%s obligation=%s pair=%s token=%s acquired=%s admissible=%.2fkmh",
+        logInfo("FOLLOWER_BOUNDARY_DECISION_APPLIED","decision=%s application=%s commitment=%s obligation=%s pair=%s token=%s acquired=%s admissible=%.2fkmh",
             tostring(evaluated.decision.identity),tostring(application and application.identity or "REVALIDATED"),tostring(commitment.identity),tostring(obligationResult.obligation.identity),
             tostring(bridge.pairKey),tostring(token and token.identity or "NONE"),tostring(acquired),tonumber(bridge.magnitudeEvidence and bridge.magnitudeEvidence.maxAdmissibleFollowerKmh) or 0)
     end
@@ -255,7 +250,7 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
             pairKey=bridge.pairKey,reason=bridge.reason})
         record=terminal
     end
-    logInfo("FOLLOWER_BOUNDARY_PURPOSE_RETIRED commitment=%s pair=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
+    logInfo("FOLLOWER_BOUNDARY_PURPOSE_RETIRED","commitment=%s pair=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
         tostring(commitmentId),tostring(bridge.pairKey),tostring(settledId or "NONE"),#remaining,tostring(terminal and terminal.state or "NO"),tostring(bridge.reason))
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
@@ -331,7 +326,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
         record=result.commitment; token=result.authorityToken; acquired=true
     end
     if token==nil or runtime.authorities:validate(token)~=true then return nil,"ACTION_SPACE_REGULATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
-    logInfo("ACTION_SPACE_REGULATION_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
+    logInfo("ACTION_SPACE_REGULATION_DECISION_APPLIED","decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
         tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),
         tostring(obligation.identity),tostring(token.identity),tostring(acquired))
     return {application=applied,commitment=record,obligation=obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
@@ -389,7 +384,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
     end
-    logInfo("ACTION_SPACE_REGULATION_PURPOSE_SETTLED commitment=%s conflict=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
+    logInfo("ACTION_SPACE_REGULATION_PURPOSE_SETTLED","commitment=%s conflict=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
         tostring(commitmentId),tostring(bridge.conflictIdentity),tostring(settledId or "NONE"),#remaining,tostring(terminal and terminal.state or "NO"),tostring(bridge.reason))
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
@@ -476,7 +471,7 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
             if #losses>0 then
                 local control=runtime.liveControlDispatcher and runtime.liveControlDispatcher.cooperativePassageControl or nil
                 local activeControl=control~=nil and control.run~=nil and control.run.commitmentId==record.identity
-                logInfo("COOPERATIVE_PASSAGE_PARTICIPANT_LOSS_SET commitment=%s losses=%d activeControl=%s sealedObservation=%s",
+                logInfo("COOPERATIVE_PASSAGE_PARTICIPANT_LOSS_SET","commitment=%s losses=%d activeControl=%s sealedObservation=%s",
                     tostring(record.identity),#losses,tostring(activeControl),tostring(snapshot and snapshot.identity or episodeResult.observationSnapshotId))
 
                 local neutralizationFailure=nil
@@ -547,7 +542,7 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
                                 partialPassageBasisCessation=true,survivorAuthority=survivorAuthority,
                                 failureReason=survivorFailure
                             }
-                            logInfo("COOPERATIVE_PASSAGE_LEG_VACATED commitment=%s pair=%s jobEpisode=%s assembly=%s loss=%s terminal=%s survivorAuthority=%s",
+                            logInfo("COOPERATIVE_PASSAGE_LEG_VACATED","commitment=%s pair=%s jobEpisode=%s assembly=%s loss=%s terminal=%s survivorAuthority=%s",
                                 tostring(record.identity),tostring(record.governingBasis and record.governingBasis.dependentPairReferenceKey or "NONE"),
                                 tostring(loss.jobEpisodeId),tostring(loss.assemblyId),tostring(loss.evidence.kind),
                                 tostring(settled.terminal and settled.terminal.state or "NO"),tostring(survivorAuthority and survivorAuthority.boundedAuthorityId or "NO"))
@@ -605,7 +600,7 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
                     endedJobEpisodeId=endedDependentEpisodeId,settledObligationIds=settledIds,
                     releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}
                 }
-                logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s pair=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
+                logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE","commitment=%s pair=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
                     tostring(record.identity),tostring(basis.dependentPairReferenceKey or "NONE"),tostring(endedDependentEpisodeId),
                     #settledIds,#(settling.releasedAuthorityTokenIds or {}),tostring(terminal.state))
             end
@@ -621,7 +616,7 @@ function Lifecycle.applyInitialDecision(runtime, picture, evaluated)
     if application==nil or application.commitmentId==nil then return nil,"COMMITMENT_APPLICATION_UNRESOLVED" end
     local record=runtime.commitments:get(application.commitmentId)
     if record==nil then return nil,"COMMITMENT_RECORD_UNAVAILABLE" end
-    logInfo("CREATE decision=%s application=%s commitment=%s state=%s obligations=%d authorityTokens=%d responsibility=%s productionControlAuthority=false",
+    logInfo("LIVE_TRAFFIC_COMMITMENT_CREATED","decision=%s application=%s commitment=%s state=%s obligations=%d authorityTokens=%d responsibility=%s productionControlAuthority=false",
         tostring(evaluated.decision.identity),tostring(application.identity),tostring(record.identity),tostring(record.state),
         #(application.createdObligationIds or {}),#(application.authorityTokenIds or {}),tostring(record.governingBasis and record.governingBasis.responsibilityKey or "n/a"))
     return {application=application,commitment=record},nil
@@ -711,7 +706,7 @@ function Lifecycle.settleCooperativePassageLeg(runtime,commitmentId,assemblyId,d
         record=terminal
         for _,id in OuttaMyWay.ValueRecord.ipairs(settling.releasedAuthorityTokenIds or {}) do releasedTokens[#releasedTokens+1]=id end
     end
-    logInfo("COOPERATIVE_PASSAGE_LEG_SETTLED commitment=%s assembly=%s disposition=%s obligation=%s mode=%s remainingObligations=%d releasedAuthority=%d releasedBoundedAuthority=%d terminal=%s",
+    logInfo("COOPERATIVE_PASSAGE_LEG_SETTLED","commitment=%s assembly=%s disposition=%s obligation=%s mode=%s remainingObligations=%d releasedAuthority=%d releasedBoundedAuthority=%d terminal=%s",
         tostring(commitmentId),tostring(assemblyId),tostring(disposition),tostring(obligation.identity),tostring(mode),#remaining,#releasedTokens,#releasedBounded,tostring(terminal and terminal.state or "NO"))
     return {commitment=record,settledObligationId=obligation.identity,remainingObligations=remaining,releasedAuthorityTokenIds=releasedTokens,releasedBoundedAuthorityGrantIds=releasedBounded,terminal=terminal,composition=composition},nil
 end
@@ -731,7 +726,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
     if action=="CREATE" then
         local result,reason=Lifecycle.applyInitialDecision(runtime,picture,evaluated)
         if result~=nil then
-            logInfo("COOPERATIVE_PASSAGE_CREATE commitment=%s owners=%d",tostring(result.commitment.identity),OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
+            logInfo("COOPERATIVE_PASSAGE_COMMITMENT_CREATED","commitment=%s owners=%d",tostring(result.commitment.identity),OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
         end
         return result,reason
     end
@@ -750,7 +745,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
             if isCooperativePassageObligation(open) then obligation=open break end
         end
         if obligation==nil then return nil,"COOPERATIVE_PASSAGE_REPLACEMENT_OBLIGATION_UNAVAILABLE" end
-        logInfo("COOPERATIVE_PASSAGE_REPLACEMENT_CREATE decision=%s predecessor=%s successor=%s owners=%d",
+        logInfo("COOPERATIVE_PASSAGE_REPLACEMENT_CREATED","decision=%s predecessor=%s successor=%s owners=%d",
             tostring(evaluated.decision.identity),tostring(semantics.freshReplacementPredecessorCommitmentId),
             tostring(record.identity),OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
         return {application=application,commitment=record,cooperativePassageObligation=obligation},nil
@@ -826,7 +821,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
     local changes={obligationIds=obligationIds,progressActuationOwnership=ownership,epoch=runtime.epochs:next()}
     if composition~=nil then changes.effectiveActuationCompositionId=composition.identity end
     record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,changes))
-    logInfo("COOPERATIVE_PASSAGE_REVISE decision=%s commitment=%s obligation=%s owners=%d",tostring(evaluated.decision.identity),tostring(commitmentId),tostring(obligation.identity),#ownership)
+    logInfo("COOPERATIVE_PASSAGE_COMMITMENT_REVISED","decision=%s commitment=%s obligation=%s owners=%d",tostring(evaluated.decision.identity),tostring(commitmentId),tostring(obligation.identity),#ownership)
     return {application=application,commitment=record,cooperativePassageObligation=obligation},nil
 end
 
@@ -853,7 +848,7 @@ function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
     local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="COOPERATIVE_PASSAGE"}})
     local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
     local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="COOPERATIVE_PASSAGE_POSITIVE_RESTORATION_AND_HANDOFF"})
-    logInfo("COOPERATIVE_PASSAGE_SETTLED commitment=%s terminal=%s settledObligations=%d releasedAuthorityTokens=%d cooldown=false",tostring(commitmentId),tostring(terminal.state),#settled,#(settling.releasedAuthorityTokenIds or {}))
+    logInfo("COOPERATIVE_PASSAGE_COMMITMENT_SETTLED","commitment=%s terminal=%s settledObligations=%d releasedAuthorityTokens=%d cooldown=false",tostring(commitmentId),tostring(terminal.state),#settled,#(settling.releasedAuthorityTokenIds or {}))
     return {commitment=terminal,settledObligationIds=settled,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}},nil
 end
 

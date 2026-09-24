@@ -7,7 +7,6 @@
 
 **Primary Architecture Authority:** [`architecture/LOG_PUBLICATION.md`](../architecture/LOG_PUBLICATION.md#specification-jurisdiction--log-publication)
 
-**Implementation Status:** `NOT_IMPLEMENTED`
 
 This Specification owns the implementation-facing contract for deciding publication eligibility from a cheap producer-supplied Descriptor, deferring avoidable Payload work until admission, rendering admitted events consistently, and delivering them to the GIANTS log without acquiring semantic authority.
 
@@ -237,19 +236,32 @@ A generic publication rate limiter or deduplication policy requires separate evi
 
 ## Contract participants
 
-No production source participates in this Jurisdiction while its implementation status is `NOT_IMPLEMENTED`.
+| Production source | Participation |
+| --- | --- |
+| [`scripts/publication/LogPublication.lua`](../scripts/publication/LogPublication.lua) | `REALISES` |
 
 ## Implementation traceability
 
-There is intentionally no production implementation route yet.
+The current implementation deliberately has one narrow publication boundary:
 
-The first accepted implementation increment MUST remove the exceptional implementation-status declaration, identify at least one truthful `REALISES` source participant in this section, and add reciprocal source acknowledgement according to [Documentation Standards](../docs/DOCUMENT_STANDARDS.md).
+- [`scripts/publication/LogPublication.lua`](../scripts/publication/LogPublication.lua) owns Descriptor validation, cumulative eligibility, deferred Payload invocation, deterministic one-line rendering, severity routing and non-recursive publication-failure isolation;
+- [`scripts/main.lua`](../scripts/main.lua) composes the product-level publisher, publishes the startup-state event and currently supplies `DIAGNOSTIC_LOGGING=true` only when no earlier Configuration value exists. This is a migration compatibility input, not an accepted player default;
+- Issue #139 owns eventual supported player names, defaults, persistence/change semantics and the Configuration-to-publication/diagnostic-activation mapping;
+- semantic owners and diagnostic instruments call the publication contract while retaining ownership of event meaning, code, class, severity and role vocabulary.
 
-Existing direct `Logging.*` calls are migration evidence, not `LOG_PUBLICATION` participants merely because they currently write to the GIANTS log.
+No production module outside `LogPublication.lua` directly addresses the GIANTS logging destination. Existing semantic producers therefore call the contract rather than becoming Log Publication contract participants merely because they publish events.
+
+## Repository validation participants
+
+| Validation surface | Relationship |
+| --- | --- |
+| [`tests/replacement_core/log_publication.lua`](../tests/replacement_core/log_publication.lua) | `CHALLENGES` |
+| [`tests/replacement_core/operation_lifecycle.lua`](../tests/replacement_core/operation_lifecycle.lua) | `CHALLENGES` |
+| [`tests/test_log_publication_structure.py`](../tests/test_log_publication_structure.py) | `CHALLENGES` |
 
 ## Validation route
 
-Before implementation can be accepted, offline contract evidence should challenge at least:
+Current offline contract evidence challenges:
 
 - NORMAL/DEBUG/DIAGNOSTIC cumulative eligibility;
 - severity not widening class eligibility;

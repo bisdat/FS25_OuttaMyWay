@@ -12,13 +12,12 @@ Authority.__index = Authority
 local RELOCATION_SERIALIZATION_OWNER_TAG="RELOCATION_SERIALIZATION"
 local currentCornerIncumbency
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][REGULATION-AUTHORITY] %s",message) else print("[FS25_OuttaMyWay][REGULATION-AUTHORITY] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("BOUNDED_AUTHORITY")
+local function logInfo(publicationClass,code,formatText,...)
+    return publication:info(publicationClass,code,formatText,...)
 end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][REGULATION-AUTHORITY] %s",message) else print("[FS25_OuttaMyWay][REGULATION-AUTHORITY][WARNING] "..message) end
+local function logWarning(publicationClass,code,formatText,...)
+    return publication:warning(publicationClass,code,formatText,...)
 end
 
 local function selectedCandidate(evaluated)
@@ -100,7 +99,7 @@ function Authority:_releaseRelocationSerialization(commitmentId,reason)
         self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     end
     self.relocationSerializationLeases[commitmentId]=nil
-    logInfo("RELOCATION_SERIALIZATION_RELEASE commitment=%s released=%d reason=%s",tostring(commitmentId),released,tostring(reason))
+    logInfo("DEBUG","RELOCATION_SERIALIZATION_RELEASE","commitment=%s released=%d reason=%s",tostring(commitmentId),released,tostring(reason))
     return released
 end
 
@@ -161,7 +160,7 @@ function Authority:_applyRelocationSerialization(picture,evaluated,candidate,com
             return false,"RELOCATION_SERIALIZATION_REJECTED:"..tostring(result),outcome
         end
         leases[#leases+1]={assemblyId=item.assemblyId,referenceKey=item.referenceKey,requestId=request.identity,outcomeId=outcome.identity,boundedAuthorityId=request.boundedAuthorityId}
-        logInfo("RELOCATION_SERIALIZATION_APPLIED commitment=%s assembly=%s ref=%s request=%s cap=0.00kmh",tostring(commitment.identity),tostring(item.assemblyId),tostring(item.referenceKey),tostring(request.identity))
+        logInfo("DEBUG","RELOCATION_SERIALIZATION_APPLIED","commitment=%s assembly=%s ref=%s request=%s cap=0.00kmh",tostring(commitment.identity),tostring(item.assemblyId),tostring(item.referenceKey),tostring(request.identity))
     end
     self.relocationSerializationLeases[commitment.identity]=leases
     return true,"RELOCATION_SERIALIZATION_APPLIED"
@@ -368,7 +367,7 @@ function Authority:neutralizeFollowerBoundaryPhysical(picture,evaluated,candidat
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
     self.followerBoundaryLease=nil
-    logInfo("FOLLOWER_BOUNDARY_RELEASE commitment=%s pair=%s follower=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.followerReferenceKey),tostring(reason))
+    logInfo("DEBUG","FOLLOWER_BOUNDARY_RELEASE","commitment=%s pair=%s follower=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.followerReferenceKey),tostring(reason))
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,followerBoundary=true,commitment=commitment}
 end
 
@@ -411,7 +410,7 @@ function Authority:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate
     lease.quiescenceReason=bridge and bridge.reason or "FOLLOWER_BOUNDARY_CURRENT_FOLLOWER_TOPOLOGY_UNRESOLVED"
     lease.quiescenceCount=(tonumber(lease.quiescenceCount) or 0)+1
     self.followerBoundaryQuiescenceCount=(tonumber(self.followerBoundaryQuiescenceCount) or 0)+1
-    logInfo("FOLLOWER_BOUNDARY_ACTUATION_QUIESCENT commitment=%s pair=%s follower=%s reason=%s purposeRetained=true quiescenceCount=%d",tostring(lease.commitmentId),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.quiescenceReason),tonumber(lease.quiescenceCount) or 0)
+    logInfo("DEBUG","FOLLOWER_BOUNDARY_ACTUATION_QUIESCENT","commitment=%s pair=%s follower=%s reason=%s purposeRetained=true quiescenceCount=%d",tostring(lease.commitmentId),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.quiescenceReason),tonumber(lease.quiescenceCount) or 0)
     return {status="QUIESCENT",reason="FOLLOWER_BOUNDARY_CURRENT_FOLLOWER_TOPOLOGY_UNRESOLVED_ACTUATION_QUIESCENT",request=request,outcome=outcome,followerBoundary=true,commitmentId=lease.commitmentId}
 end
 
@@ -484,9 +483,10 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
     self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(request,"ACCEPTED",{kind=reactivated and "FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED" or (update and "ELASTIC_REGULATION_MAGNITUDE_UPDATED" or "FOLLOWER_BOUNDARY_REGULATION_ADMITTED"),capability="REGULATE_SPEED",maxSpeedKmh=permittedFollowerCapKmh},nil)
     if reactivated then
-        logInfo("FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED commitment=%s pair=%s follower=%s cap=%.2fkmh purposeRetained=true reactivationCount=%d",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tonumber(permittedFollowerCapKmh) or 0,tonumber(self.followerBoundaryLease.reactivationCount) or 0)
+        logInfo("DEBUG","FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED","commitment=%s pair=%s follower=%s cap=%.2fkmh purposeRetained=true reactivationCount=%d",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tonumber(permittedFollowerCapKmh) or 0,tonumber(self.followerBoundaryLease.reactivationCount) or 0)
     else
-        logInfo("FOLLOWER_BOUNDARY_%s commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",update and "UPDATE" or "APPLY",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(permittedFollowerCapKmh) or 0,tonumber(magnitude.nativeUnrestrictedFollowerKmh) or 0,tostring(magnitude.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
+        local publicationCode=update and "FOLLOWER_BOUNDARY_UPDATED" or "FOLLOWER_BOUNDARY_APPLIED"
+    logInfo("DEBUG",publicationCode,"commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(permittedFollowerCapKmh) or 0,tonumber(magnitude.nativeUnrestrictedFollowerKmh) or 0,tostring(magnitude.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
     end
     return {status=reactivated and "REACTIVATED" or "ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,followerBoundary=true,elasticUpdate=update,reactivated=reactivated}
 end
@@ -526,10 +526,10 @@ function Authority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,rea
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     self.actionSpaceRegulationLease=nil
     if lease.admissionKind=="FORWARD_INTERSECTION" then
-        logInfo("FORWARD_INTERSECTION_REGULATION_RELEASED commitment=%s relationship=%s yielder=%s reason=%s freshReality=true",
+        logInfo("DEBUG","FORWARD_INTERSECTION_REGULATION_RELEASED","commitment=%s relationship=%s yielder=%s reason=%s freshReality=true",
             tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(reason))
     end
-    logInfo("ACTION_SPACE_REGULATION_RELEASE commitment=%s conflict=%s regulated=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.regulatedReferenceKey),tostring(reason))
+    logInfo("DEBUG","ACTION_SPACE_REGULATION_RELEASE","commitment=%s conflict=%s regulated=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.regulatedReferenceKey),tostring(reason))
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,actionSpaceRegulation=true}
 end
 
@@ -600,7 +600,7 @@ local function actionSpaceRegulationQuiescenceSupported(picture,lease,action)
     local marginDemand=pairLocalResolutionMarginDemand(picture,lease)
     if marginDemand~=nil then
         local claim=marginDemand.representedClaim or {}
-        logInfo("ACTION_SPACE_REGULATION_QUIESCENCE_VETO commitment=%s conflict=%s regulated=%s protected=%s demand=%s claimClass=%s reason=POSITIVE_PAIR_LOCAL_RESOLUTION_MARGIN_DEMAND",
+        logInfo("DEBUG","ACTION_SPACE_REGULATION_QUIESCENCE_VETO","commitment=%s conflict=%s regulated=%s protected=%s demand=%s claimClass=%s reason=POSITIVE_PAIR_LOCAL_RESOLUTION_MARGIN_DEMAND",
             tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),
             tostring(marginDemand.identity),tostring(claim.class))
         return false,"POSITIVE_PAIR_LOCAL_RESOLUTION_MARGIN_DEMAND_RETAINS_ACTION_SPACE_ACTUATION"
@@ -655,7 +655,7 @@ function Authority:_quiesceActionSpaceRegulationActuation(picture,evaluated,leas
     lease.quiescenceReason=action and action.reason or "ACTION_SPACE_REGULATION_NOT_CURRENTLY_REQUIRED"
     lease.quiescenceCount=(tonumber(lease.quiescenceCount) or 0)+1
     self.actionSpaceRegulationQuiescenceCount=(self.actionSpaceRegulationQuiescenceCount or 0)+1
-    logInfo("ACTION_SPACE_REGULATION_ACTUATION_QUIESCENT commitment=%s conflict=%s regulated=%s protected=%s actionSpace=NOT_REQUIRED actionReason=%s relationshipRetained=true quiescenceCount=%d",
+    logInfo("DEBUG","ACTION_SPACE_REGULATION_ACTUATION_QUIESCENT","commitment=%s conflict=%s regulated=%s protected=%s actionSpace=NOT_REQUIRED actionReason=%s relationshipRetained=true quiescenceCount=%d",
         tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),tostring(lease.quiescenceReason),tonumber(lease.quiescenceCount) or 0)
     return {status="QUIESCENT",reason="ACTION_SPACE_REGULATION_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT",request=request,outcome=outcome,actionSpaceRegulation=true,commitmentId=lease.commitmentId}
 end
@@ -695,7 +695,7 @@ function Authority:_continueActionSpaceRegulationReactivation(picture,evaluated,
     self.actionSpaceRegulationReactivationCount=(self.actionSpaceRegulationReactivationCount or 0)+1
     self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(request,"ACCEPTED",{kind="ACTION_SPACE_REGULATION_ACTUATION_REACTIVATED",capability="REGULATE_SPEED",effectClass=fixed and "INTENT_REVELATION_CREEP" or envelope.effectClass,maxSpeedKmh=cap},nil)
-    logInfo("ACTION_SPACE_REGULATION_ACTUATION_REACTIVATED commitment=%s conflict=%s regulated=%s protected=%s cap=%dkmh actionSpace=REGULATE_SUPPORTED envelopeRebased=true reactivationCount=%d",
+    logInfo("DEBUG","ACTION_SPACE_REGULATION_ACTUATION_REACTIVATED","commitment=%s conflict=%s regulated=%s protected=%s cap=%dkmh actionSpace=REGULATE_SUPPORTED envelopeRebased=true reactivationCount=%d",
         tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),cap,tonumber(lease.reactivationCount) or 0)
     return {status="REACTIVATED",reason="ACTION_SPACE_REGULATION_CURRENT_ACTION_SPACE_REGULATION_REACTIVATED",request=request,outcome=outcome,actionSpaceRegulation=true,commitmentId=lease.commitmentId}
 end
@@ -747,12 +747,12 @@ function Authority:_updateActionSpaceRegulationEnvelope(picture,evaluated,candid
     if previousBoundedAuthorityId~=nil and previousBoundedAuthorityId~=request.boundedAuthorityId then self:_releaseBoundedAuthority(previousBoundedAuthorityId,"ACTION_SPACE_REGULATION_GRANT_REPLACED_BY_CURRENT_MAGNITUDE") end
     self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(request,"ACCEPTED",{kind="RESOLUTION_SPACE_PROGRESSION_ENVELOPE_UPDATED",capability="REGULATE_SPEED",effectClass=envelope.effectClass,maxSpeedKmh=requestedCap},nil)
-    logInfo("RESOLUTION_SPACE_PROGRESSION_ENVELOPE_UPDATE commitment=%s conflict=%s regulated=%s protected=%s priorCap=%dkmh cap=%dkmh raw=%.2fkmh physical=%.2fm conservative=%.2fm reverseReserve=%.2fm contingency=%.2fm ordinaryRemaining=%.2fm effect=%s",
+    logInfo("DIAGNOSTIC","RESOLUTION_SPACE_PROGRESSION_ENVELOPE_UPDATE","commitment=%s conflict=%s regulated=%s protected=%s priorCap=%dkmh cap=%dkmh raw=%.2fkmh physical=%.2fm conservative=%.2fm reverseReserve=%.2fm contingency=%.2fm ordinaryRemaining=%.2fm effect=%s",
         tostring(commitment.identity),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),priorCap,requestedCap,
         tonumber(envelope.rawCapKmh) or 0,tonumber(envelope.currentPhysicalDistanceM) or -1,tonumber(envelope.conservativeDistanceM) or -1,tonumber(envelope.reverseCreatedReserveM) or 0,
         tonumber(envelope.contingencyReserveM) or 0,tonumber(envelope.remainingOrdinaryM) or 0,tostring(envelope.effectClass))
     if envelope.effectClass=="INTENT_REVELATION_CREEP" and priorCap~=requestedCap then
-        logInfo("INTENT_REVELATION_CREEP commitment=%s conflict=%s regulated=%s protected=%s cap=%dkmh physical=%.2fm conservative=%.2fm contingency=%.2fm purpose=%s",
+        logInfo("DIAGNOSTIC","INTENT_REVELATION_CREEP","commitment=%s conflict=%s regulated=%s protected=%s cap=%dkmh physical=%.2fm conservative=%.2fm contingency=%.2fm purpose=%s",
             tostring(commitment.identity),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),requestedCap,
             tonumber(envelope.currentPhysicalDistanceM) or -1,tonumber(envelope.conservativeDistanceM) or -1,tonumber(envelope.contingencyReserveM) or 0,tostring(lease.governingPurpose))
     end
@@ -874,20 +874,20 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
             or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_ROLE_MIGRATED_AND_ENVELOPE_REBASED"),
         capability="REGULATE_SPEED",effectClass=fixed and "INTENT_REVELATION_CREEP" or rebased.effectClass,maxSpeedKmh=newCap},nil)
     if fixedForward then
-        logInfo("FORWARD_INTERSECTION_ROLE_MIGRATED commitment=%s relationship=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
+        logInfo("DEBUG","FORWARD_INTERSECTION_ROLE_MIGRATED","commitment=%s relationship=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
             tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(oldRegulatedAssemblyId),
             tostring(lease.regulatedAssemblyId),tostring(oldProtectedAssemblyId),tostring(lease.protectedAssemblyId),newCap)
         return {status="ROLE_MIGRATED",reason="FORWARD_INTERSECTION_CURRENT_SITUATION_REASSIGNED_TEMPORAL_YIELDER",
             request=newRequest,releaseRequest=oldRequest,outcome=outcome,actionSpaceRegulation=true,forwardIntersection=true,commitmentId=lease.commitmentId}
     end
     if fixedCorner then
-        logInfo("CORNER_RIGHT_OF_WAY_ROLE_MIGRATED commitment=%s situation=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
+        logInfo("DEBUG","CORNER_RIGHT_OF_WAY_ROLE_MIGRATED","commitment=%s situation=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
             tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(oldRegulatedAssemblyId),
             tostring(lease.regulatedAssemblyId),tostring(oldProtectedAssemblyId),tostring(lease.protectedAssemblyId),newCap)
         return {status="ROLE_MIGRATED",reason="CORNER_RIGHT_OF_WAY_CURRENT_DECISION_REASSIGNED_TEMPORARY_PRIORITY",
             request=newRequest,releaseRequest=oldRequest,outcome=outcome,actionSpaceRegulation=true,cornerRightOfWay=true,commitmentId=lease.commitmentId}
     end
-    logInfo("ACTION_SPACE_REGULATION_ROLE_REBASE commitment=%s conflict=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh ordinaryRemaining=%.2fm contingency=%.2fm reverseReserve=%.2fm rebaseCount=%d",
+    logInfo("DIAGNOSTIC","ACTION_SPACE_REGULATION_ROLE_REBASE","commitment=%s conflict=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh ordinaryRemaining=%.2fm contingency=%.2fm reverseReserve=%.2fm rebaseCount=%d",
         tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(oldRegulatedAssemblyId),
         tostring(lease.regulatedAssemblyId),tostring(oldProtectedAssemblyId),tostring(lease.protectedAssemblyId),newCap,
         tonumber(rebased.remainingOrdinaryM) or 0,tonumber(rebased.contingencyReserveM) or 0,
@@ -1018,17 +1018,17 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
         or (fixedCornerRightOfWay and "CORNER_RIGHT_OF_WAY_REGULATION_ADMITTED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ENVELOPE_ADMITTED"),
         capability="REGULATE_SPEED",effectClass=(fixedForwardIntersection or fixedCornerRightOfWay) and "INTENT_REVELATION_CREEP" or envelope.effectClass,maxSpeedKmh=initialCap},nil)
     if fixedForwardIntersection then
-        logInfo("FORWARD_INTERSECTION_REGULATION_APPLIED commitment=%s relationship=%s yielder=%s continuing=%s cap=1kmh purpose=%s",
+        logInfo("DEBUG","FORWARD_INTERSECTION_REGULATION_APPLIED","commitment=%s relationship=%s yielder=%s continuing=%s cap=1kmh purpose=%s",
             tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId),tostring(bridge.governingPurpose))
         return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,actionSpaceRegulation=true,forwardIntersection=true}
     end
     if fixedCornerRightOfWay then
-        logInfo("CORNER_RIGHT_OF_WAY_REGULATION_APPLIED commitment=%s situation=%s corner=%s regulated=%s protected=%s cap=1kmh purpose=%s",
+        logInfo("DEBUG","CORNER_RIGHT_OF_WAY_REGULATION_APPLIED","commitment=%s situation=%s corner=%s regulated=%s protected=%s cap=1kmh purpose=%s",
             tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.cornerKey),
             tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId),tostring(bridge.governingPurpose))
         return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,actionSpaceRegulation=true,cornerRightOfWay=true}
     end
-    logInfo("RESOLUTION_SPACE_PROGRESSION_ENVELOPE_ADMITTED commitment=%s conflict=%s admission=%s regulated=%s ref=%s protected=%s cap=%dkmh raw=%.2fkmh native=%.2fkmh initialDistance=%.2fm contingency=%.2fm ordinary=%.2fm reserveFraction=%.2f purpose=%s",
+    logInfo("DIAGNOSTIC","RESOLUTION_SPACE_PROGRESSION_ENVELOPE_ADMITTED","commitment=%s conflict=%s admission=%s regulated=%s ref=%s protected=%s cap=%dkmh raw=%.2fkmh native=%.2fkmh initialDistance=%.2fm contingency=%.2fm ordinary=%.2fm reserveFraction=%.2f purpose=%s",
         tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.regulatedReferenceKey),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),initialCap,
         tonumber(envelope.rawCapKmh) or 0,tonumber(bridge.nativeUnrestrictedKmh) or 0,tonumber(envelope.initialDistanceM) or 0,tonumber(envelope.contingencyReserveM) or 0,tonumber(envelope.ordinaryInitialM) or 0,tonumber(envelope.reserveFraction) or 0,tostring(bridge.governingPurpose))
     return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,actionSpaceRegulation=true}
@@ -1085,7 +1085,7 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
         self.actionSpaceRegulationLease=nil
         self.actionSpaceRegulationReleaseCount=self.actionSpaceRegulationReleaseCount+1
         released=released+1
-        logInfo("ACTION_SPACE_REGULATION_DEPENDENT_COMMITMENT_TERMINATED commitment=%s conflict=%s regulated=%s reason=%s",
+        logInfo("DEBUG","ACTION_SPACE_REGULATION_DEPENDENT_COMMITMENT_TERMINATED","commitment=%s conflict=%s regulated=%s reason=%s",
             tostring(commitmentId),tostring(actionSpace.conflictIdentity),tostring(actionSpace.regulatedAssemblyId),tostring(reason))
     end
     local follower=self.followerBoundaryLease
@@ -1094,7 +1094,7 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
         self.followerBoundaryLease=nil
         self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
         released=released+1
-        logInfo("FOLLOWER_BOUNDARY_DEPENDENT_COMMITMENT_TERMINATED commitment=%s pair=%s follower=%s reason=%s",
+        logInfo("DEBUG","FOLLOWER_BOUNDARY_DEPENDENT_COMMITMENT_TERMINATED","commitment=%s pair=%s follower=%s reason=%s",
             tostring(commitmentId),tostring(follower.pairKey),tostring(follower.followerAssemblyId),tostring(reason))
     end
     return {released=released}

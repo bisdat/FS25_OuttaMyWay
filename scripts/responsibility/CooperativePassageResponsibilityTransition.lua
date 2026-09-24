@@ -5,13 +5,12 @@ OuttaMyWay.CooperativePassageResponsibilityTransition = {}
 local Transition = OuttaMyWay.CooperativePassageResponsibilityTransition
 Transition.__index = Transition
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("RESPONSIBILITY_TRANSITION")
+local function logInfo(code,formatText,...)
+    return publication:info("DEBUG",code,formatText,...)
 end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][RESPONSIBILITY][WARNING] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY][WARNING] "..message) end
+local function logWarning(code,formatText,...)
+    return publication:warning("DEBUG",code,formatText,...)
 end
 
 local function selectedCandidate(evaluated)
@@ -67,7 +66,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     if participantIds==nil then return nil,participantReason end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(self.runtime,picture,evaluated,semantics)
     if applied==nil then
-        logWarning("COOPERATIVE_PASSAGE_TRANSITION_REFUSED decision=%s candidate=%s reason=COMMITMENT_APPLICATION_FAILED detail=%s",
+        logWarning("COOPERATIVE_PASSAGE_TRANSITION_REFUSED","decision=%s candidate=%s reason=COMMITMENT_APPLICATION_FAILED detail=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(reason))
         return nil,reason
     end
@@ -90,7 +89,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
         local protectionReason=nil
         protection,protectionReason=self.runtime.bubbleBulletTime:prepareAtBubbleFormation(picture,candidate,applied)
         if protection==nil then
-            logWarning("COOPERATIVE_PASSAGE_TRANSITION_REFUSED decision=%s candidate=%s reason=BUBBLE_BULLET_TIME_PREPARATION_FAILED detail=%s",
+            logWarning("COOPERATIVE_PASSAGE_TRANSITION_REFUSED","decision=%s candidate=%s reason=BUBBLE_BULLET_TIME_PREPARATION_FAILED detail=%s",
                 tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(protectionReason))
             if type(self.runtime.onCooperativePassageCompletion)=="function" then
                 self.runtime:onCooperativePassageCompletion({
@@ -106,11 +105,11 @@ function Transition:transition(picture,evaluated,readiness,semantics)
 
     if not (semantics and semantics.deferResponsibilityExposureLog==true) then
         local exposure=semantics and semantics.responsibilityAlreadyCurrent==true and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
-        logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s commitmentApplicationAction=%s",
-            exposure,tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
+        logInfo(exposure,"commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s commitmentApplicationAction=%s",
+            tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
             table.concat(participantIds,","),table.concat(participantIds,","),tostring(applied.application.action))
     end
-    logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true bubbleBulletTime=%s",
+    logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM","decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true bubbleBulletTime=%s",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(applied.application and applied.application.action or evaluated.decision.commitmentAction),tostring(protection.status or "PREPARED"))
     return applied,nil

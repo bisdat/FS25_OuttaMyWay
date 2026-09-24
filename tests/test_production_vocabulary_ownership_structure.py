@@ -443,7 +443,8 @@ def test_semantic_runtime_categories_are_closed():
     # over the sourced production surface by the dedicated test above.
     assert 'decision="COOPERATIVE_PASSAGE"' in support + lifecycle
     assert 'decision="FOLLOWER_BOUNDARY"' in support + lifecycle
-    assert 'logInfo("COOPERATIVE_PASSAGE_' in passage
+    assert "COOPERATIVE_PASSAGE_CONTROL_STARTED" in passage
+    assert "COOPERATIVE_PASSAGE_GUIDE_COMPLETE" in passage
 
 def test_semantic_recognition_and_validation_topology_are_closed():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")

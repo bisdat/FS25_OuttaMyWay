@@ -3,6 +3,8 @@ local function load(relativePath) dofile(root .. "/" .. relativePath) end
 
 OuttaMyWay = {}
 load("scripts/config.lua")
+load("scripts/publication/LogPublication.lua")
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function() return "DIAGNOSTIC" end)
 load("scripts/contracts/ValueRecord.lua")
 load("scripts/contracts/OperationalPicture.lua")
 load("scripts/contracts/CommitmentRecord.lua")

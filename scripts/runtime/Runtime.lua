@@ -5,22 +5,14 @@ OuttaMyWay.Runtime = {}
 local Runtime = OuttaMyWay.Runtime
 Runtime.__index = Runtime
 
-local function cooperativeLog(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("RUNTIME")
+local function logInfo(publicationClass,code,formatText,...)
+    return publication:info(publicationClass,code,formatText,...)
 end
-local function runtimeLogWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][RUNTIME] %s",message) else print("[FS25_OuttaMyWay][RUNTIME][WARNING] "..message) end
+local function logWarning(publicationClass,code,formatText,...)
+    return publication:warning(publicationClass,code,formatText,...)
 end
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] "..message) end
-end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] "..message) end
-end
+
 local function selectedCandidate(evaluated)
     local selectedId=evaluated and evaluated.decision and evaluated.decision.selectedCandidateId or nil
     if selectedId==nil then return nil end
@@ -157,7 +149,6 @@ function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
     -- Physical Control remains typed, responsibility-bound and Bounded-Authority-gated; no generic Control path exists.
     -- Trajectory Situation Knowledge and Established Opposed Conflict feed Candidate-owned Local Passage Search, Passage Guide, Commitment and Control.
-    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation core capability: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget",tostring(OuttaMyWay.VERSION)))
 end
 
 function Runtime:setRegulationControl(control)
@@ -277,7 +268,7 @@ function Runtime:failCooperativePassageSurvivorAuthority(commitmentId,reason)
         end
     end
     table.sort(released)
-    runtimeLogWarning("COOPERATIVE_PASSAGE_SURVIVOR_AUTHORITY_FAILED commitment=%s reason=%s releasedSurvivorBA=%d",tostring(commitmentId),failure,#released)
+    logWarning("NORMAL","COOPERATIVE_PASSAGE_SURVIVOR_AUTHORITY_FAILED","commitment=%s reason=%s releasedSurvivorBA=%d",tostring(commitmentId),failure,#released)
     return {failureReason=failure,releasedBoundedAuthorityGrantIds=released}
 end
 
@@ -347,14 +338,14 @@ function Runtime:_continueCooperativePassage(picture,evaluated,applied)
             self.liveControlDispatcher:notifyRejected(requests[1],result,{kind="NO_PHYSICAL_EFFECT_OBSERVED"}),
             self.liveControlDispatcher:notifyRejected(requests[2],result,{kind="NO_PHYSICAL_EFFECT_OBSERVED"})
         }
-        runtimeLogWarning("COOPERATIVE_REJECTED commitment=%s candidate=%s detail=%s",tostring(applied.commitment.identity),tostring(candidate.identity),tostring(result))
+        logWarning("NORMAL","COOPERATIVE_PASSAGE_CONTROL_START_REJECTED","commitment=%s candidate=%s detail=%s",tostring(applied.commitment.identity),tostring(candidate.identity),tostring(result))
         return {status="REJECTED",reason=tostring(result),requests=requests,outcomes=outcomes,commitment=applied.commitment,candidate=candidate}
     end
     local outcomes={
         self.liveControlDispatcher:notifyAccepted(requests[1],{kind="COOPERATIVE_PASSAGE_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"}),
         self.liveControlDispatcher:notifyAccepted(requests[2],{kind="COOPERATIVE_PASSAGE_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"})
     }
-    cooperativeLog("COOPERATIVE_ACCEPTED architecture=%s decision=%s candidate=%s commitment=%s requestA=%s requestB=%s subject=%s other=%s result=%s",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_CONTROL_ACCEPTED","architecture=%s decision=%s candidate=%s commitment=%s requestA=%s requestB=%s subject=%s other=%s result=%s",
         tostring(bridge.architecture),tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applied.commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
         tostring(bridge.subjectReferenceKey),tostring(bridge.otherReferenceKey),tostring(result))
     return {status="ACCEPTED",requests=requests,outcomes=outcomes,commitment=applied.commitment,candidate=candidate,result=result}
@@ -435,13 +426,13 @@ function Runtime:onCooperativePassageCompletion(result)
         local assemblyId=result.assemblyId or (result.assemblyIds and result.assemblyIds[1])
         local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(self,result.commitmentId,assemblyId,disposition,result.evidence)
         if settled==nil then
-            runtimeLogWarning("COOPERATIVE_PASSAGE_LEG_SETTLEMENT_UNRESOLVED commitment=%s assembly=%s disposition=%s reason=%s",tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(reason))
+            logWarning("NORMAL","COOPERATIVE_PASSAGE_LEG_SETTLEMENT_UNRESOLVED","commitment=%s assembly=%s disposition=%s reason=%s",tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(reason))
         else
             if settled.terminal==nil and settled.alreadyTerminal~=true then
                 local refreshed,refreshReason=self:refreshCooperativePassageSurvivorAuthority(result.commitmentId,settled)
                 if refreshed==nil then self:failCooperativePassageSurvivorAuthority(result.commitmentId,refreshReason) end
             end
-            cooperativeLog("COOPERATIVE_PASSAGE_LEG_TERMINAL commitment=%s assembly=%s disposition=%s terminal=%s survivorAuthorityPreserved=%s",
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_LEG_TERMINAL","commitment=%s assembly=%s disposition=%s terminal=%s survivorAuthorityPreserved=%s",
                 tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(settled.terminal and settled.terminal.state or "NO"),tostring((settled.remainingObligations and #settled.remainingObligations>0) or false))
         end
         return
@@ -449,14 +440,14 @@ function Runtime:onCooperativePassageCompletion(result)
     for _,grantId in OuttaMyWay.ValueRecord.ipairs(result.boundedAuthorityIds or {}) do self.boundedAuthority:release(grantId,"COOPERATIVE_PASSAGE_"..tostring(result.status)) end
     if result.status=="SUCCEEDED" then
         if not self.obligations:hasOpenObligations(result.commitmentId) then
-            cooperativeLog("COOPERATIVE_COMPLETION commitment=%s terminalAlreadySettledByPassageLegs=true cooldown=false",tostring(result.commitmentId))
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_COMPLETION","commitment=%s terminalAlreadySettledByPassageLegs=true cooldown=false",tostring(result.commitmentId))
             return
         end
         local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.completeCooperativePassage(self,result.commitmentId,result.evidence)
         if settled==nil then
-            runtimeLogWarning("COOPERATIVE_COMPLETION_UNRESOLVED commitment=%s reason=%s",tostring(result.commitmentId),tostring(reason))
+            logWarning("NORMAL","COOPERATIVE_PASSAGE_COMPLETION_UNRESOLVED","commitment=%s reason=%s",tostring(result.commitmentId),tostring(reason))
         else
-            cooperativeLog("COOPERATIVE_COMPLETION commitment=%s terminal=%s authorityReleased=true cooldown=false",tostring(result.commitmentId),tostring(settled.commitment and settled.commitment.state or "n/a"))
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_COMPLETION","commitment=%s terminal=%s authorityReleased=true cooldown=false",tostring(result.commitmentId),tostring(settled.commitment and settled.commitment.state or "n/a"))
         end
     elseif result.status=="FAILED" then
         local record=self.commitments:get(result.commitmentId)
@@ -472,7 +463,7 @@ function Runtime:onCooperativePassageCompletion(result)
             if not self.obligations:hasOpenObligations(result.commitmentId) then
                 self.terminalSettlementEvaluator:attemptTerminal(result.commitmentId,result.evidence or {kind="COOPERATIVE_PASSAGE_FAILED"})
             end
-            runtimeLogWarning("COOPERATIVE_ABORT_SETTLEMENT commitment=%s releasedAuthority=%d",tostring(result.commitmentId),#(settling.releasedAuthorityTokenIds or {}))
+            logWarning("NORMAL","COOPERATIVE_PASSAGE_ABORT_SETTLEMENT","commitment=%s releasedAuthority=%d",tostring(result.commitmentId),#(settling.releasedAuthorityTokenIds or {}))
         end
     end
 end
@@ -481,7 +472,7 @@ function Runtime:onObstructionRelocationControlCompletion(result)
     if type(result)~="table" then return end
     local context=result.completionContext or {}
     if context.triggerKind~="CURRENT_CAUSAL_OBSTRUCTION" then
-        runtimeLogWarning("OBSTRUCTION_RELOCATION_COMPLETION_CONTEXT_UNRESOLVED commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
+        logWarning("NORMAL","OBSTRUCTION_RELOCATION_COMPLETION_CONTEXT_UNRESOLVED","commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
         return
     end
     self:onObstructionRelocationCompletion(result)
@@ -509,7 +500,7 @@ function Runtime:onObstructionRelocationCompletion(result)
     if type(result.boundedAuthorityId)=="string" then self.boundedAuthority:release(result.boundedAuthorityId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status)) end
 
     if result.status=="MANOEUVRE_COMPLETE" then
-        logInfo("MANOEUVRE_COMPLETE commitment=%s relocation=%s freshSituationRequired=true semanticResolutionNotInferred=true",tostring(result.commitmentId),tostring(result.relocationKey))
+        logInfo("DEBUG","OBSTRUCTION_RELOCATION_MANOEUVRE_COMPLETE","commitment=%s relocation=%s freshSituationRequired=true semanticResolutionNotInferred=true",tostring(result.commitmentId),tostring(result.relocationKey))
         return
     end
 
@@ -519,7 +510,7 @@ function Runtime:onObstructionRelocationCompletion(result)
     elseif result.status=="SUPERSEDED" then eventKind="NEW_AUTHORITATIVE_INTENT" end
     if eventKind~=nil then
         local terminal,reason=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,result.commitmentId,eventKind,result.evidence)
-        if terminal==nil then logWarning("CONTROL_SETTLEMENT_FAILED commitment=%s event=%s reason=%s",tostring(result.commitmentId),tostring(eventKind),tostring(reason)) end
+        if terminal==nil then logWarning("NORMAL","OBSTRUCTION_RELOCATION_CONTROL_SETTLEMENT_FAILED","commitment=%s event=%s reason=%s",tostring(result.commitmentId),tostring(eventKind),tostring(reason)) end
     end
 end
 
@@ -580,7 +571,7 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
         return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,obstructionRelocation=true,commitment=applied.commitment}
     end
 
-    logInfo("ACCEPTED commitment=%s responsibility=%s relocation=%s blocker=%s request=%s beneficiaries=%d authority=OBSTRUCTION_RELOCATION_ACTUATION",
+    logInfo("DEBUG","OBSTRUCTION_RELOCATION_CONTROL_ACCEPTED","commitment=%s responsibility=%s relocation=%s blocker=%s request=%s beneficiaries=%d authority=OBSTRUCTION_RELOCATION_ACTUATION",
         tostring(applied.commitment.identity),tostring(applied.currentResponsibility.identity),tostring(bridge.relocationKey),tostring(bridge.blockerAssemblyReferenceKey),tostring(request.identity),OuttaMyWay.ValueRecord.length(bridge.relocationSerializationBeneficiaries or {}))
     return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,currentResponsibility=applied.currentResponsibility,obstructionRelocation=true,result=result}
 end
@@ -737,7 +728,7 @@ function Runtime:processLiveObservation(raw)
                     if verdict.candidateId==candidate.identity then summary[#summary+1]=tostring(verdict.constraintId).."="..tostring(verdict.result) end
                 end
                 table.sort(summary)
-                cooperativeLog("COOPERATIVE_CONSTRAINT_VERDICT conflict=%s candidate=%s decision=%s selected=true verdicts=%s",
+                logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_CONSTRAINT_VERDICT","conflict=%s candidate=%s decision=%s selected=true verdicts=%s",
                     tostring(bridge and bridge.conflictIdentity or "n/a"),tostring(candidate.identity),tostring(evaluated.decision and evaluated.decision.identity or "n/a"),table.concat(summary,","))
             end
         end

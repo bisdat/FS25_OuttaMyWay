@@ -3,6 +3,14 @@ local function load(relativePath) dofile(root .. "/" .. relativePath) end
 
 OuttaMyWay = {}
 load("scripts/config.lua")
+load("scripts/publication/LogPublication.lua")
+local publications={}
+Logging={
+    info=function(formatText,message) publications[#publications+1]=string.format(formatText,message) end,
+    warning=function(formatText,message) publications[#publications+1]=string.format(formatText,message) end,
+    error=function(formatText,message) publications[#publications+1]=string.format(formatText,message) end
+}
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function() return "DIAGNOSTIC" end)
 load("scripts/contracts/ValueRecord.lua")
 load("scripts/contracts/ObservationSnapshot.lua")
 load("scripts/identity/EpochSequence.lua")
@@ -43,6 +51,8 @@ local function activeJob(assemblyId, token)
         fieldPolygonReferenceKey="FIELD-TEST",
         fieldWorldFingerprint="FINGERPRINT-" .. assemblyId,
         fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",
+        playerFacingFieldId=77,
+        playerFacingLocatorSource="FOCUSED_FIXTURE",
         provenance={source="operation-lifecycle-focused-test"}
     }
 end
@@ -152,6 +162,36 @@ test("positive member termination is honoured while another member remains unres
     equal(contains(reconciled.memberAssemblyIds,"AS-A"),false,"positively terminated A must leave active Operation membership")
     equal(contains(reconciled.memberAssemblyIds,"AS-B"),true,"unresolved B must remain conservatively retained")
     equal(contains(reconciled.memberAssemblyIds,"AS-C"),true,"positively active C must remain a member")
+end)
+
+test("authoritative Job Episode and Operation transitions publish the NORMAL lifecycle journal", function()
+    publications={}
+    local identities=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local jobEpisodes=OuttaMyWay.JobEpisodeAdmission.new(identities,epochs)
+    local operations=OuttaMyWay.OperationAdmission.new(identities,epochs,jobEpisodes)
+
+    local first=snapshot("OS-JOURNAL-1",10,true,{activeJob("AS-J","job-J")},{activeMember("AS-J")})
+    local firstEpisodes=jobEpisodes:observe(first)
+    operations:observe(first,firstEpisodes)
+
+    local ended={
+        assemblyId="AS-J",sourceJobToken="job-J",jobPresent=false,aiControlled=false,aiActive=false,
+        sourceJobEndEvidence={observed=true,reason="FOCUSED_FIXTURE_SOURCE_JOB_ENDED"},
+        provenance={source="operation-lifecycle-focused-test"}
+    }
+    local last=snapshot("OS-JOURNAL-2",11,true,{ended},{})
+    local lastEpisodes=jobEpisodes:observe(last)
+    operations:observe(last,lastEpisodes)
+
+    local joined=table.concat(publications,"\n")
+    for _,code in OuttaMyWay.ValueRecord.ipairs({"JOB_EPISODE_STARTED","OPERATION_STARTED","JOB_EPISODE_ENDED","OPERATION_ENDED"}) do
+        if string.find(joined,"["..code.."]",1,true)==nil then error("missing NORMAL lifecycle publication "..code) end
+    end
+    if string.find(joined,"field=77",1,true)==nil then error("expected player-facing field locator") end
+    if string.find(joined,"[OPERATION_STARTED]",1,true)~=nil and string.find(joined,"members=AS-J",1,true)==nil then
+        error("expected Operation lifecycle publication to preserve sealed member identity")
+    end
 end)
 
 print(string.format("operation lifecycle focused validation: %d passed, %d failed",passed,failed))
