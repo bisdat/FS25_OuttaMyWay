@@ -89,7 +89,6 @@ jobs:
             scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua \
             scripts/contracts/CommitmentRecord.lua \
             scripts/contracts/OperationalPicture.lua \
-            scripts/contracts/PassiveLiveTraceRecord.lua \
             scripts/control/mechanisms/FieldWorkHoldMechanism.lua \
             scripts/control/mechanisms/NativeDriveMechanism.lua \
             scripts/control/mechanisms/TransitConfigurationMechanism.lua \

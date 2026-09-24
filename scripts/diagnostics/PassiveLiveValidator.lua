@@ -73,18 +73,18 @@ end
 function Validator.new(runtime)
     return setmetatable({
         runtime=runtime,
-        elapsed=0,lastLogAt=-math.huge,lastSignature=nil,records={},errorCount=0,
+        lastLogAt=-math.huge,lastSignature=nil,
         acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
         futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={}
     },Validator)
 end
 function Validator:loadMap()
-    self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
+    self.lastSignature=nil; self.lastLogAt=-math.huge
     self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
     logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before trace publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
-    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
+    self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
@@ -101,7 +101,7 @@ function Validator:_warn(code,details,nowMilliseconds)
     end
 end
 
-function Validator:_record(raw,live)
+function Validator:_project(live)
     if type(live)~="table" or live.snapshot==nil or live.picture==nil or live.decision==nil then error("Runtime live result required before diagnostic publication",2) end
     local processed={snapshot=live.snapshot,jobEpisodes=live.jobEpisodes,operation=live.operation}
     local supported=live.picture
@@ -110,8 +110,7 @@ function Validator:_record(raw,live)
     local passCandidates,unresolvedCandidates,failedCandidates=candidateVerdictSummary(evaluated)
     local diagnostics=supported.diagnostics or {}; local counters=diagnostics.counters or {}; local assessedFutureSpaceRelationships=futureSpaceRelationships(supported)
     local dispatch=live.controlDispatch or {}; local request=dispatch.request; local outcome=dispatch.outcome
-    local record=OuttaMyWay.PassiveLiveTraceRecord.new({
-        identity=self.runtime.identities:issue("PASSIVE_LIVE_TRACE"),epoch=self.runtime.epochs:next(),timestamp=raw.timestamp,status="TRACE",
+    local projection={
         observationSnapshotId=processed.snapshot.identity,operationalPictureId=supported.identity,candidateInventoryId=evaluated.candidateInventory.identity,verdictSetId=evaluated.verdictSet.identity,decisionId=evaluated.decision.identity,
         selectedCandidateId=evaluated.decision.selectedCandidateId,selectedCapability=capability,nonIntervention=evaluated.decision.nonIntervention,
         observedAssemblyCount=OuttaMyWay.ValueRecord.length(processed.snapshot.assemblies),activeAssemblyCount=activeAssemblyCount(processed.snapshot),activeJobEpisodeCount=OuttaMyWay.ValueRecord.length(processed.jobEpisodes.activeEpisodeIds),
@@ -124,8 +123,8 @@ function Validator:_record(raw,live)
         cycleActiveJobVehicleCount=counters.cycleActiveJobVehicleCount or 0,poseResolvedWorkerCount=counters.poseResolvedWorkerCount or 0,activeOperationMemberCount=counters.activeOperationMemberCount or 0,mathematicallyPossiblePairCount=counters.mathematicallyPossiblePairCount or 0,relevantPairCount=counters.relevantPairCount or 0,eligiblePairCount=counters.eligiblePairCount or 0,evaluatedPairCount=counters.evaluatedPairCount or 0,excludedPairCount=counters.excludedPairCount or 0,qualifyingPairCount=counters.qualifyingPairCount or 0,interactionEvidenceEmittedCount=counters.interactionEvidenceEmittedCount or 0,interactionEvidenceReceivedCount=counters.interactionEvidenceReceivedCount or 0,
         admittedEpisodeIds=processed.jobEpisodes.admittedEpisodeIds,endedEpisodeIds=processed.jobEpisodes.endedEpisodeIds,assemblyDiagnostics=diagnostics.assemblyDiagnostics or {},pairDiagnostics=diagnostics.pairPipeline or {},diagnosticContradictions=diagnostics.contradictions or {},currentPairScopeDiagnostics=diagnostics.currentPairScopeDiagnostics or {},futureSpaceRelationshipCount=#assessedFutureSpaceRelationships,futureSpaceRelationships=assessedFutureSpaceRelationships,activeAssemblyReferenceKeys=activeAssemblyReferenceKeys(processed.snapshot),
         provenance={source="PassiveLiveValidator",runtimeProcessingComplete=true,fieldWorld=supported.provenance,decisionCommitmentBoundaryApplied=dispatch.commitment~=nil,interactionPredicatesChanged=false,diagnosticOnly=true}
-    })
-    self.records[#self.records+1]=record; return record
+    }
+    return projection
 end
 
 function Validator:_logCycleDiagnostics(cycle,due,nowMilliseconds)
@@ -139,8 +138,8 @@ function Validator:_logCycleDiagnostics(cycle,due,nowMilliseconds)
     for _,item in ipairs(cycle.contradictions or {}) do self:_warn(item.code,item,nowMilliseconds) end
 end
 
-function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
-    for _,item in OuttaMyWay.ValueRecord.ipairs(record.assemblyDiagnostics or {}) do
+function Validator:_logProjectionDiagnostics(projection,due,nowMilliseconds)
+    for _,item in OuttaMyWay.ValueRecord.ipairs(projection.assemblyDiagnostics or {}) do
         local motion=item.motion or {}
         local representation=item.assemblyRepresentation or {}
         local signature=table.concat({tostring(item.activeJobVehicleMembership),tostring(item.poseResolved),tostring(item.nodeSource),tostring(item.width),tostring(item.length),tostring(item.radius),tostring(item.componentCount),tostring(item.representationFitnessState),tostring(representation.configurationProfileId),tostring(representation.participatingPrimitiveCount),tostring(representation.inactivePrimitiveCount),tostring(representation.unresolvedPrimitiveCount),tostring(motion.classification),tostring(item.blocked)},"|")
@@ -158,7 +157,7 @@ function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
 
     local maximum=PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE
     local logged,eligibleToLog=0,0
-    for _,pair in OuttaMyWay.ValueRecord.ipairs(record.pairDiagnostics or {}) do
+    for _,pair in OuttaMyWay.ValueRecord.ipairs(projection.pairDiagnostics or {}) do
         local signature=table.concat({tostring(pair.operationId),tostring(pair.episodeSignature),tostring(pair.eligible),tostring(pair.evaluated),tostring(pair.exclusionReason),tostring(pair.principalOutcome),tostring(pair.currentFootprintOutcome),tostring(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceReceived),tostring(pair.currentPairScopePresent),tostring(pair.currentPairRelationshipStatus),tostring(pair.currentSpaceStatus),tostring(pair.futureSpaceStatus),tostring(pair.subjectBlocked),tostring(pair.otherBlocked)},"|")
         local changed=self.pairDiagnosticSignatures[pair.pairReferenceKey]~=signature
         if changed then self.pairDiagnosticSignatures[pair.pairReferenceKey]=signature end
@@ -171,11 +170,11 @@ function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
         end
     end
     if eligibleToLog>maximum then logWarning(string.format("code=PAIR_DIAGNOSTIC_LOG_TRUNCATED eligible=%d logged=%d operationalPairEvaluationUnchanged=true",eligibleToLog,maximum)) end
-    for _,item in OuttaMyWay.ValueRecord.ipairs(record.diagnosticContradictions or {}) do self:_warn(item.code,item,nowMilliseconds) end
+    for _,item in OuttaMyWay.ValueRecord.ipairs(projection.diagnosticContradictions or {}) do self:_warn(item.code,item,nowMilliseconds) end
 end
 
-function Validator:_logFutureSpaceRelationships(record)
-    for _,relationship in OuttaMyWay.ValueRecord.ipairs(record.futureSpaceRelationships or {}) do
+function Validator:_logFutureSpaceRelationships(projection)
+    for _,relationship in OuttaMyWay.ValueRecord.ipairs(projection.futureSpaceRelationships or {}) do
         local key=tostring(relationship.interactionReferenceKey or "pair")
         local signature=table.concat({
             tostring(relationship.classification),tostring(relationship.outcome),
@@ -271,22 +270,19 @@ function Validator:beginRuntimeCycle(cycleDiagnostics,nowMilliseconds)
     self:_logCycleDiagnostics(cycleDiagnostics or {},due,nowMilliseconds)
     return due
 end
-function Validator:observeRuntimeResult(raw,live,due,nowMilliseconds)
-    local record=self:_record(raw,live)
-    local signature=table.concat({tostring(record.fieldWorldReferenceKey),tostring(record.observedAssemblyCount),tostring(record.activeAssemblyCount),tostring(record.activeJobEpisodeCount),tostring(record.activeOperationCount),tostring(record.globalActiveOperationCount),tostring(record.situationCount),tostring(record.currentPairAssessmentCount),tostring(record.candidateCount),tostring(record.relevantPairCount),tostring(record.eligiblePairCount),tostring(record.evaluatedPairCount),tostring(record.qualifyingPairCount),tostring(record.interactionEvidenceEmittedCount),tostring(record.interactionEvidenceReceivedCount),tostring(record.unavailableSourceCount),tostring(record.boundedControlDispatchStatus)},"|")
+function Validator:observeRuntimeResult(live,due,nowMilliseconds)
+    local projection=self:_project(live)
+    local signature=table.concat({tostring(projection.fieldWorldReferenceKey),tostring(projection.observedAssemblyCount),tostring(projection.activeAssemblyCount),tostring(projection.activeJobEpisodeCount),tostring(projection.activeOperationCount),tostring(projection.globalActiveOperationCount),tostring(projection.situationCount),tostring(projection.currentPairAssessmentCount),tostring(projection.candidateCount),tostring(projection.relevantPairCount),tostring(projection.eligiblePairCount),tostring(projection.evaluatedPairCount),tostring(projection.qualifyingPairCount),tostring(projection.interactionEvidenceEmittedCount),tostring(projection.interactionEvidenceReceivedCount),tostring(projection.unavailableSourceCount),tostring(projection.boundedControlDispatchStatus)},"|")
     local signatureChanged=signature~=self.lastSignature
     if signatureChanged or due then
         self.lastSignature=signature; self.lastLogAt=nowMilliseconds
-        local locators={}; for _,id in OuttaMyWay.ValueRecord.ipairs(record.playerFacingFieldLocators or {}) do locators[#locators+1]=tostring(id) end
-        logInfo(string.format("trace=%s field=%s fingerprint=%s locators=%s observed=%d active=%d activeJobVehicles=%d poseResolved=%d episodes=%d admitted=%d ended=%d operations=%d globalOperations=%d operationMembers=%d operationSituations=%d pairCandidates=%d eligiblePairs=%d evaluatedPairs=%d excludedPairs=%d qualifyingPairs=%d interactionEmitted=%d interactionReceived=%d pairScopes=%d decisionCandidates=%d pass=%d unresolved=%d failed=%d gaps=%d selected=%s decision=%s generalControl=false boundedDispatch=%s",record.identity,tostring(record.fieldWorldReferenceKey),tostring(record.fieldWorldFingerprint or "waiting"),#locators>0 and table.concat(locators,",") or "unresolved",record.observedAssemblyCount or 0,record.activeAssemblyCount,record.cycleActiveJobVehicleCount or 0,record.poseResolvedWorkerCount or 0,record.activeJobEpisodeCount,record.admittedEpisodeCount or 0,record.endedEpisodeCount or 0,record.activeOperationCount,record.globalActiveOperationCount or 0,record.activeOperationMemberCount or 0,record.situationCount,record.relevantPairCount or 0,record.eligiblePairCount or 0,record.evaluatedPairCount or 0,record.excludedPairCount or 0,record.qualifyingPairCount or 0,record.interactionEvidenceEmittedCount or 0,record.interactionEvidenceReceivedCount or 0,record.currentPairAssessmentCount or 0,record.candidateCount or 0,record.allPassCandidateCount or 0,record.unresolvedCandidateCount or 0,record.failedCandidateCount or 0,record.unavailableSourceCount or 0,tostring(record.selectedCapability),tostring(record.nonIntervention and record.nonIntervention.classification),tostring(record.boundedControlDispatchStatus or "NO_DISPATCH")))
+        local locators={}; for _,id in OuttaMyWay.ValueRecord.ipairs(projection.playerFacingFieldLocators or {}) do locators[#locators+1]=tostring(id) end
+        logInfo(string.format("snapshot=%s field=%s fingerprint=%s locators=%s observed=%d active=%d activeJobVehicles=%d poseResolved=%d episodes=%d admitted=%d ended=%d operations=%d globalOperations=%d operationMembers=%d operationSituations=%d pairCandidates=%d eligiblePairs=%d evaluatedPairs=%d excludedPairs=%d qualifyingPairs=%d interactionEmitted=%d interactionReceived=%d pairScopes=%d decisionCandidates=%d pass=%d unresolved=%d failed=%d gaps=%d selected=%s decision=%s generalControl=false boundedDispatch=%s",tostring(projection.observationSnapshotId or "n/a"),tostring(projection.fieldWorldReferenceKey),tostring(projection.fieldWorldFingerprint or "waiting"),#locators>0 and table.concat(locators,",") or "unresolved",projection.observedAssemblyCount or 0,projection.activeAssemblyCount,projection.cycleActiveJobVehicleCount or 0,projection.poseResolvedWorkerCount or 0,projection.activeJobEpisodeCount,projection.admittedEpisodeCount or 0,projection.endedEpisodeCount or 0,projection.activeOperationCount,projection.globalActiveOperationCount or 0,projection.activeOperationMemberCount or 0,projection.situationCount,projection.relevantPairCount or 0,projection.eligiblePairCount or 0,projection.evaluatedPairCount or 0,projection.excludedPairCount or 0,projection.qualifyingPairCount or 0,projection.interactionEvidenceEmittedCount or 0,projection.interactionEvidenceReceivedCount or 0,projection.currentPairAssessmentCount or 0,projection.candidateCount or 0,projection.allPassCandidateCount or 0,projection.unresolvedCandidateCount or 0,projection.failedCandidateCount or 0,projection.unavailableSourceCount or 0,tostring(projection.selectedCapability),tostring(projection.nonIntervention and projection.nonIntervention.classification),tostring(projection.boundedControlDispatchStatus or "NO_DISPATCH")))
     end
-    self:_logRecordDiagnostics(record,due,nowMilliseconds); self:_logFutureSpaceRelationships(record); self:_logFollowerBoundaryKnowledge(live.picture,due); self:_logTrajectoryConflictKnowledge(live.picture,due)
-    return record
+    self:_logProjectionDiagnostics(projection,due,nowMilliseconds)
+    self:_logFutureSpaceRelationships(projection)
+    self:_logFollowerBoundaryKnowledge(live.picture,due)
+    self:_logTrajectoryConflictKnowledge(live.picture,due)
 end
-function Validator:observeRuntimeError(errorValue) self.errorCount=self.errorCount+1; logError(tostring(errorValue)) end
-function Validator:endRuntimeCycle(sampleRecords,nowMilliseconds)
-    -- Reserved hook for post-cycle diagnostics; no HUD publication is owned here.
-end
+
 function Validator:update(dt) end
-function Validator:getRecords() local result={}; for i,v in OuttaMyWay.ValueRecord.ipairs(self.records) do result[i]=v end; return result end
-function Validator:getErrorCount() return self.errorCount end

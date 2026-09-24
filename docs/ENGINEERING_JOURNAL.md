@@ -5769,3 +5769,18 @@ TEST identity: **0.3.0.118**.
 **Non-scope:** no central logging module, verbosity policy, Configuration surface, player-facing HUD architecture, semantic logging retune, or `PassiveLiveValidator` redesign is included. Those questions remain #152 Stage 2 / #139 / #89 work.
 
 **Implementation consequence:** removing `ArchitectureTrace` also removes its diagnostic-only initialization consumption of the shared Runtime epoch sequence. This intentionally avoids retaining a ghost diagnostic epoch solely to preserve numbering; CI is the first check that no semantic contract incorrectly depends on that instrumentation side effect.
+
+
+## 2026-09-24 — #152 Stage 2A retires retained passive diagnostic history
+
+**Observe:** after Stage 1, `PassiveLiveValidator` still created a `PassiveLiveTraceRecord` for every completed live observation, retained those records for the map session, and issued each record through the same Runtime `IdentityRegistry` / `EpochSequence` used by semantic Observation, Situation, Decision, Commitment and Authority records. Runtime status exposed only the retained trace/error counts; no semantic consumer used the history.
+
+**Discover:** **Observability Must Not Advance Semantic Time.** **Diagnostic Identity != Runtime Identity Authority.** **Error Publication != Error Ownership.**
+
+**Decision:** TEST `0.3.0.141` retires `PassiveLiveTraceRecord`, its Runtime identity prefix, map-session diagnostic record retention, passive trace/error status counters, and coordinator record-return/end-cycle plumbing. `PassiveLiveValidator` remains temporarily as an ephemeral diagnostic projector/publisher: it derives the same current diagnostic view from an already-completed Runtime result, formats existing diagnostic output, and discards the projection immediately.
+
+Runtime/coordinator failures remain owned and counted by `LiveRuntimeCoordinator`; diagnostic publication no longer maintains a duplicate error count. Diagnostic observer failures are likewise counted and published by the coordinator that invokes the observer.
+
+**Validation intent:** the Lua harness now proves diagnostic projection and publication do not advance Runtime epoch or issued-identity authority while preserving the current projected content. Structural contracts explicitly prohibit reintroduction of retained passive history.
+
+**Non-scope:** this tranche does not introduce the central Log Publication Policy, change supported Configuration, classify Normal/Debug/Diagnostic output, redesign player HUD messaging, or otherwise retune existing diagnostic verbosity/severity. Those remain #152 Stage 2B / #139 / #89.

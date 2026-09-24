@@ -27,8 +27,7 @@ local defaultPrefixes = {
     COMMITMENT_APPLICATION = "AP",
     RESPONSIBILITY = "RS",
     BOUNDED_AUTHORITY = "BA",
-    REPLAY_RUN = "RR",
-    PASSIVE_LIVE_TRACE = "LT"
+    REPLAY_RUN = "RR"
 }
 
 function IdentityRegistry.new(prefixes)
