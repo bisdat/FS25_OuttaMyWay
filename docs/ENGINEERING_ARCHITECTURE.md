@@ -252,10 +252,10 @@ The components identify different engineering responsibilities:
   architectural/capability epoch.
 - **MINOR** identifies a materially changed architectural/capability epoch.
 
-Canonical named releases use `BUILD=0`. A PATCH or MINOR promotion is a
-deliberate release-checkpoint decision and resets the lower-order components;
-it is never triggered by reaching a particular BUILD count, commit count or
-elapsed development time.
+Canonical named releases use `BUILD=0`, while non-canonical TEST iterations
+advance `BUILD`. A PATCH or MINOR promotion is a deliberate release-checkpoint
+decision and resets the lower-order components; it is never triggered by reaching
+a particular BUILD count, commit count or elapsed development time.
 
 #### Validated Plateau
 
