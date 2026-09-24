@@ -119,7 +119,7 @@ function Control:_complete(status,evidence)
             local neutralized,neutralEvidence=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
             completionEvidence.neutralization={performed=neutralized==true,evidence=type(neutralEvidence)=="table" and neutralEvidence or nil,reason=neutralized and nil or tostring(neutralEvidence)}
             if neutralized==true then
-                logInfo("DEBUG","OBSTRUCTION_RELOCATION_ACTUATION_NEUTRALIZED","commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
+                logInfo("DEBUG","OBSTRUCTION_RELOCATION_PHYSICAL_NEUTRALIZED","commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
                     tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
                     self.actuationMechanism:getNeutralizeCallCount(),
                     steeringTelemetryText(type(neutralEvidence)=="table" and neutralEvidence.postNeutralizeSteering or nil))
@@ -138,7 +138,7 @@ function Control:_complete(status,evidence)
             local released,releaseEvidence=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
             completionEvidence.activityContext={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
             if released==true then
-                logInfo("DEBUG","OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_RELEASED","commitment=%s assembly=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",
+                logInfo("DEBUG","VEHICLE_ACTIVITY_CONTEXT_RELEASED","commitment=%s assembly=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",
                     tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
                     self.actuationMechanism:getActivityContextReleaseCallCount(),
                     tostring(type(releaseEvidence)=="table" and releaseEvidence.restoredForceIsActive or nil),
@@ -247,7 +247,7 @@ function Control:executeControlRequest(request,candidate)
         return self:_rejectBeforeStart(request,target,status,"VEHICLE_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext))
     end
     state.activityContext=activityContext
-    logInfo("DEBUG","OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_ACQUIRED","commitment=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",
+    logInfo("DEBUG","VEHICLE_ACTIVITY_CONTEXT_ACQUIRED","commitment=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
         self.actuationMechanism:getActivityContextAcquireCallCount(),
         tostring(activityContext.previousForceIsActive),

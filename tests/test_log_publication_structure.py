@@ -33,6 +33,7 @@ def test_publisher_owns_dynamic_destination_and_migration_policy_is_config_input
     main = MAIN.read_text(encoding="utf-8")
 
     assert "Logging and Logging[method]" in publisher
-    assert 'OuttaMyWay.DIAGNOSTIC_LOGGING = true' in config
+    assert "DIAGNOSTIC_LOGGING" not in config
+    assert "if OuttaMyWay.DIAGNOSTIC_LOGGING==nil then OuttaMyWay.DIAGNOSTIC_LOGGING=true end" in main
     assert 'OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"' in main
     assert 'OUTTAMYWAY_STARTED' in main

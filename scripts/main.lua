@@ -18,6 +18,9 @@ local modules={
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
 
+-- Migration compatibility input only. Future Configuration (#139) may resolve
+-- this value before publisher composition; this fallback is not a player default.
+if OuttaMyWay.DIAGNOSTIC_LOGGING==nil then OuttaMyWay.DIAGNOSTIC_LOGGING=true end
 local function resolvedMigrationPublicationPolicy()
     return OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"
 end

@@ -245,8 +245,8 @@ A generic publication rate limiter or deduplication policy requires separate evi
 The current implementation deliberately has one narrow publication boundary:
 
 - [`scripts/publication/LogPublication.lua`](../scripts/publication/LogPublication.lua) owns Descriptor validation, cumulative eligibility, deferred Payload invocation, deterministic one-line rendering, severity routing and non-recursive publication-failure isolation;
-- [`scripts/main.lua`](../scripts/main.lua) composes the product-level publisher and publishes the startup-state event;
-- [`scripts/config.lua`](../scripts/config.lua) currently supplies the migration-time `DIAGNOSTIC_LOGGING` input. This is not an accepted player Configuration default; Issue #139 owns eventual supported mapping/default/persistence semantics;
+- [`scripts/main.lua`](../scripts/main.lua) composes the product-level publisher, publishes the startup-state event and currently supplies `DIAGNOSTIC_LOGGING=true` only when no earlier Configuration value exists. This is a migration compatibility input, not an accepted player default;
+- Issue #139 owns eventual supported player names, defaults, persistence/change semantics and the Configuration-to-publication/diagnostic-activation mapping;
 - semantic owners and diagnostic instruments call the publication contract while retaining ownership of event meaning, code, class, severity and role vocabulary.
 
 No production module outside `LogPublication.lua` directly addresses the GIANTS logging destination. Existing semantic producers therefore call the contract rather than becoming Log Publication contract participants merely because they publish events.
