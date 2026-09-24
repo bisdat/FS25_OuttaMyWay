@@ -1,10 +1,10 @@
-# v0.4.1.0 RELEASE DECLARATION — Diagnostics and Log Publication Plateau
+# v0.4.1.0 PATCH CHECKPOINT — Diagnostics and Log Publication Plateau
 
-**Accepted source baseline before declaration:** current `main` after merged PR #290, carrying TEST `0.4.0.3`.
+**Accepted source baseline before checkpoint:** current `main` after merged PR #290, carrying TEST `0.4.0.3`.
 
 **Version rationale:** PATCH checkpoint under D-0223. The accepted delta since canonical `0.4.0.0` forms a coherent, appropriately validated plateau within the existing 0.4 architectural/capability epoch; it does not introduce a materially new capability epoch.
 
-**Release declaration boundary:** this increment changes release identity and release history only. It intentionally introduces no new traffic, Control, Observation, Representation, Configuration, HUD or Log Publication behaviour beyond the already accepted TEST baseline.
+**PATCH checkpoint boundary:** this increment changes version identity and release history only. It intentionally introduces no new traffic, Control, Observation, Representation, Configuration, HUD or Log Publication behaviour beyond the already accepted TEST baseline.
 
 **Validated plateau summary:**
 - #152 completed the live-diagnostics census and closed as completed;
@@ -21,7 +21,7 @@
 
 **Known separable work:** Configuration (#139), HUD/player communication (#89), performance/frame-pacing evidence (#86), diagnostic-name semantic refactor debt (#286), Singleton Native Blockage investigation (#288), stress testing and other open engineering Issues remain valid future work. Their existence does not make this diagnostics plateau incoherent under D-0223.
 
-**Canonical authority:** this entry is a declaration candidate until the repository owner merges the explicitly designated Release Declaration PR. If merged, that Canonical Merge declares the resulting exact `main` commit canonical **v0.4.1.0**.
+**Authority correction:** merged PR #291 advanced Accepted Repository State and version identity to **v0.4.1.0**, but did **not** perform canonicalisation. Canonical remains **v0.4.0.0**. Under the corrected prospective rule, the next Canonical Merge would be an owner-selected MINOR epoch checkpoint, therefore **v0.5.0.0**. PR #291's original canonical-effect wording is superseded by this owner correction.
 
 # v0.4.0.0 RELEASE DECLARATION — Responsibility-Oriented Traffic Architecture
 

@@ -5,22 +5,24 @@
 **Decision:** Clarify the pre-1.0 `0.MINOR.PATCH.BUILD` policy by assigning each component an explicit engineering responsibility.
 
 - `BUILD` is a non-canonical executable TEST revision identity. It is an experimental/validation serial and does not become more release-worthy merely because the number grows.
-- `PATCH` marks a **Validated Plateau**: a coherent accepted and appropriately validated tranche within the same architectural/capability epoch, with no defect the owner regards as mandatory before checkpointing and with remaining work separable from the tranche.
-- `MINOR` marks a materially changed architectural/capability epoch: the accepted delta requires new architectural concepts, changed responsibility boundaries, or materially new supported capability to explain what the system now is.
+- `PATCH` marks a **Validated Plateau**: a coherent accepted and appropriately validated tranche within the same architectural/capability epoch, with no defect the owner regards as mandatory before checkpointing and with remaining work separable from the tranche. Under the current prospective policy it is an accepted non-canonical checkpoint.
+- `MINOR` marks a materially changed architectural/capability epoch: the accepted delta requires new architectural concepts, changed responsibility boundaries, or materially new supported capability to explain what the system now is. It is the only checkpoint level eligible for an owner-selected Release Declaration / Canonical Merge.
 
 Commit count, BUILD count, elapsed time and the mere existence of open Issues do not choose the promotion level.
 
-> **PATCH = Validated Plateau Within An Epoch**
+> **PATCH = Validated Plateau Within An Epoch; Accepted, Not Canonical**
 
-> **MINOR = Architectural/Capability Epoch**
+> **MINOR = Architectural/Capability Epoch; Canonical-Candidate Level**
 
-At the end of a substantial validated tranche, first ask whether Accepted Repository State has reached a Validated Plateau. If not, continue the TEST BUILD lineage. If yes, classify whether the architectural/capability epoch materially changed; unchanged epoch selects a PATCH candidate, changed epoch selects a MINOR candidate. Release Declaration preparation remains behaviour-neutral and the repository owner's Canonical Merge remains the only act that creates canonical authority.
+At the end of a substantial validated tranche, first ask whether Accepted Repository State has reached a Validated Plateau. If not, continue the TEST BUILD lineage. If yes, classify whether the architectural/capability epoch materially changed; unchanged epoch selects a PATCH checkpoint, changed epoch selects a MINOR candidate. PATCH advances accepted/versioned state but not canonical authority. Only an owner-selected MINOR candidate may be prepared as a behaviour-neutral Release Declaration whose owner merge creates canonical authority.
 
-**Historical evidence:** Earlier PATCH promotions demonstrate plateau selection rather than a BUILD threshold: `0.1.0.14 -> 0.1.1.0`, `0.1.2.2 -> 0.1.3.0`, `0.1.13.3 -> 0.1.14.0`, and `0.1.14.5 -> 0.1.15.0` consolidated coherent validated tranches at very different BUILD counts while leaving separable work open.
+**Historical evidence:** Earlier PATCH promotions demonstrate plateau selection rather than a BUILD threshold: `0.1.0.14 -> 0.1.1.0`, `0.1.2.2 -> 0.1.3.0`, `0.1.13.3 -> 0.1.14.0`, and `0.1.14.5 -> 0.1.15.0` consolidated coherent validated tranches at very different BUILD counts while leaving separable work open. Any historical canonical status of those PATCH identities remains immutable provenance; it does not govern the current prospective canonicalisation rule.
 
 **Current classification:** The accepted delta from canonical `0.3.0.0` to current Accepted Repository State is MINOR-level rather than PATCH-level. It materially changes the architectural epoch, including Responsibility Transition and explicit Regulation/Resolution responsibility semantics, participant-scoped Cooperative Passage Legs and Last-Leg Dissolution, Bubble Bullet Time, Causal Obstruction / Obstruction Relocation, major Candidate/Constraint/Decision responsibility restructuring, Bounded Authority surfaces, Physical Assembly/pose representation, repository governance, and first-class Log Publication. The appropriate next Release Declaration target is therefore **`0.4.0.0`**, not `0.3.1.0`.
 
 This classification does not itself create canonical `0.4.0.0`. Canonical authority will arise only if the repository owner later merges an explicitly designated `0.4.0.0` Release Declaration PR.
+
+**Owner correction — 2026-09-24:** merged PATCH checkpoint `0.4.1.0` is Accepted Repository State but is **not canonical**. Canonical remains `0.4.0.0`. Under the clarified prospective rule, the next Canonical Merge would be an owner-selected MINOR epoch checkpoint, therefore `0.5.0.0`, not a `0.4.x.0` PATCH. This correction supersedes the erroneous canonical-effect wording in merged PR #291 while preserving that merge and version identity as historical repository provenance.
 
 **Reason:** The previous wording defined PATCH as an “accepted compatible correction” but did not define when a growing TEST lineage should deliberately consolidate. That ambiguity encouraged indefinite BUILD growth and made PATCH appear to be either arbitrary or synonymous with bug-fix count. The project’s own historical promotion practice shows the missing concept: a release checkpoint captures a validated plateau, while MINOR records a changed architectural/capability epoch.
 

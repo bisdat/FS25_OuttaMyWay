@@ -7,7 +7,7 @@
 - Do not commit directly to `main`. Work on a short-lived branch and open a pull request for review.
 - Do not merge pull requests automatically unless the repository owner explicitly instructs you to do so.
 - An ordinary pull-request merge advances Accepted Repository State; it is not canonicalisation.
-- Only a pull request explicitly designated in advance as a **Release Declaration PR** can become canonical. The repository owner's merge of that PR is the **Canonical Merge** and declares the resulting exact `main` commit canonical for its named version.
+- Under the current pre-1.0 policy, only an owner-selected **MINOR** epoch checkpoint may be explicitly designated in advance as a **Release Declaration PR**. The repository owner's merge of that PR is the **Canonical Merge** and declares the resulting exact `main` commit canonical for its named version. A PATCH checkpoint advances Accepted Repository State/version but is not canonicalisation.
 - A Git tag, GitHub Release or package may record or process release material but does not create canonical authority.
 - Do not change canonical labels, release identity, or release manifests unless the task explicitly requires it. Non-canonical TEST build identity follows the standing rule below.
 - Do not infer that a newer branch is more authoritative than the latest owner-accepted state.
@@ -32,11 +32,11 @@ Documentation-only, test-only, governance-only, or other non-executable changes 
 Interpret the pre-1.0 components by responsibility, not by elapsed time or the numeric size of `BUILD`:
 
 - `BUILD` identifies one non-canonical executable TEST revision. It is an experimental/validation serial and makes no stability claim.
-- `PATCH` identifies a **Validated Plateau** within the same architectural/capability epoch. A plateau exists when the intended tranche is accepted and validated, has no known defect that the owner regards as required before checkpointing, and remaining work can legitimately start from that state without being necessary to make the tranche coherent.
-- `MINOR` identifies a materially changed architectural/capability epoch. If describing the accepted delta requires new architectural concepts, changed responsibility boundaries, or materially new supported capability rather than only corrections/refinements within the existing model, prefer MINOR over PATCH.
+- `PATCH` identifies a **Validated Plateau** within the same architectural/capability epoch. A plateau exists when the intended tranche is accepted and validated, has no known defect that the owner regards as required before checkpointing, and remaining work can legitimately start from that state without being necessary to make the tranche coherent. PATCH is an accepted non-canonical checkpoint.
+- `MINOR` identifies a materially changed architectural/capability epoch. If describing the accepted delta requires new architectural concepts, changed responsibility boundaries, or materially new supported capability rather than only corrections/refinements within the existing model, prefer MINOR over PATCH. Under the current pre-1.0 governance, MINOR is the only checkpoint level eligible for a Release Declaration / Canonical Merge.
 - Commit count, BUILD count and the mere existence of open Issues do not select PATCH or MINOR.
 
-A release checkpoint is deliberate rather than automatic. At the end of a substantial validated tranche, ask **Validated Plateau?** If yes, then ask whether the architectural/capability epoch materially changed. Same epoch -> PATCH candidate; changed epoch -> MINOR candidate. Release Declaration preparation remains behaviour-neutral.
+A checkpoint is deliberate rather than automatic. At the end of a substantial validated tranche, ask **Validated Plateau?** If yes, then ask whether the architectural/capability epoch materially changed. Same epoch -> PATCH checkpoint (accepted, non-canonical); changed epoch -> MINOR candidate. Only an owner-selected MINOR candidate may proceed through behaviour-neutral Release Declaration preparation to Canonical Merge.
 
 ## Engineering method
 
