@@ -43,7 +43,7 @@ def test_raw_observation_evidence_and_diagnostic_projection_remain_distinct():
         assert token in source
     assert "geometry=shallowCopy(raw.geometry)" in adapter
     assert "motion=shallowCopy(raw.motion)" in adapter
-    assert "diagnostics=shallowCopy(raw.diagnostics)" in adapter
+    assert "diagnostics=raw.diagnostics~=nil and shallowCopy(raw.diagnostics) or nil" in adapter
 
 def test_pair_key_remains_correlation_not_identity_authority():
     observation=text("scripts/observation/LiveInteractionObservation.lua")
