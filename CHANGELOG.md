@@ -1,3 +1,28 @@
+# v0.4.1.0 RELEASE DECLARATION — Diagnostics and Log Publication Plateau
+
+**Accepted source baseline before declaration:** current `main` after merged PR #290, carrying TEST `0.4.0.3`.
+
+**Version rationale:** PATCH checkpoint under D-0223. The accepted delta since canonical `0.4.0.0` forms a coherent, appropriately validated plateau within the existing 0.4 architectural/capability epoch; it does not introduce a materially new capability epoch.
+
+**Release declaration boundary:** this increment changes release identity and release history only. It intentionally introduces no new traffic, Control, Observation, Representation, Configuration, HUD or Log Publication behaviour beyond the already accepted TEST baseline.
+
+**Validated plateau summary:**
+- #152 completed the live-diagnostics census and closed as completed;
+- PR #287 / TEST `0.4.0.1` suppresses diagnostic-only source/projection/publication preparation when DIAGNOSTIC publication is ineligible, while preserving semantic Runtime evidence;
+- PR #289 / TEST `0.4.0.2` retains native GIANTS blocked evidence but retires `BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR` as an unsupported OuttaMyWay contradiction;
+- PR #290 / TEST `0.4.0.3` retires the redundant diagnostic component census while preserving semantic `componentReferenceKeys -> componentIds`;
+- `PassiveLiveValidator` remains a bounded, ephemeral post-Runtime DIAGNOSTIC observer with no retained history or semantic authority;
+- `VersionHud` remains Development Build Identity until #89;
+- historically diagnostic-named values with semantic Runtime responsibility are separated to #286;
+- future Singleton Native Blockage investigation is separated to #288;
+- the temporary `DIAGNOSTIC_LOGGING=true` migration fallback remains explicitly not an accepted player default; supported defaults/persistence/mapping belong to #139.
+
+**Validation basis:** the closing executable TEST lineage is supported by green Offline Validation runs #810, #813 and #815. The changes in this PATCH plateau are diagnostic/publication responsibility corrections and retirements; no new traffic-control behaviour or new in-game capability claim is introduced by this declaration.
+
+**Known separable work:** Configuration (#139), HUD/player communication (#89), performance/frame-pacing evidence (#86), diagnostic-name semantic refactor debt (#286), Singleton Native Blockage investigation (#288), stress testing and other open engineering Issues remain valid future work. Their existence does not make this diagnostics plateau incoherent under D-0223.
+
+**Canonical authority:** this entry is a declaration candidate until the repository owner merges the explicitly designated Release Declaration PR. If merged, that Canonical Merge declares the resulting exact `main` commit canonical **v0.4.1.0**.
+
 # v0.4.0.0 RELEASE DECLARATION — Responsibility-Oriented Traffic Architecture
 
 **Accepted source baseline before declaration:** current `main` after merged PR #284, carrying the field-validated executable bytes previously identified as TEST `0.3.0.148`.
