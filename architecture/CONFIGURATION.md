@@ -94,9 +94,13 @@ There is no separate player-facing Logging on/off choice. NORMAL publication is 
 
 These are semantic Configuration concepts. Final labels, explanatory text, widgets, layout and interaction mechanics are not owned here.
 
+The initial supported surface contains only these three value choices. It does not include a global **Reset to Defaults** command. Defaults are part of each setting's contract; a reset command would be a separate player action with its own behavioural consequences, particularly because resetting master enablement to its default would enable OuttaMyWay and bootstrap Runtime.
+
 > **Operational Journal != Optional Logging**
 
 > **Configuration Choice != Publication Class**
+
+> **Configuration Value != Configuration Action**
 
 ### OuttaMyWay enabled
 
@@ -271,9 +275,13 @@ Every implemented player setting must have an explicit supported default.
 
 Defaults represent the intended normal player experience. They must not be inherited accidentally from development, validation, diagnostic or implementation values.
 
-The supported Debug default is **off**, which resolves ordinary Log Publication to NORMAL.
+The accepted supported defaults are:
 
-Supported defaults for **OuttaMyWay enabled** and **HUD visibility** remain unresolved and must be established deliberately before implementation. They must not be inherited from current development/test behaviour.
+- **OuttaMyWay enabled: on**;
+- **Operational Player Messages / HUD visibility: on**; and
+- **Debug: off**, which resolves ordinary Log Publication to NORMAL.
+
+These defaults define the intended first-run/absence-of-persisted-choice behaviour. They are product decisions, not inherited values from current development, validation or diagnostic implementation.
 
 ## 8. Persistence and ownership scope
 
@@ -307,7 +315,11 @@ The implementation must preserve authority ordering while doing so: semantic res
 
 Re-enablement applies through fresh Runtime bootstrap from current Reality rather than continuation of pre-disable semantic state.
 
-Change semantics for HUD visibility and Debug remain to be finalised.
+HUD visibility changes apply immediately to Operational Player Message publication/presentation. They do not alter Runtime responsibility or the Product Status Indicator.
+
+Debug changes apply immediately to the resolved Log Publication policy: off resolves to NORMAL and on resolves to DEBUG. Changing Debug does not activate or deactivate DIAGNOSTIC instruments and does not alter Runtime semantic authority.
+
+> **Observability Change != Runtime Authority Change**
 
 ## 10. Presentation and localisation boundary
 
@@ -337,15 +349,13 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
-- supported defaults for OuttaMyWay enabled and Operational Player Message visibility;
 - runtime interface shape and ownership boundary;
 - persistence API and storage mechanism;
 - preference lifecycle scope;
 - multiplayer/server-client ownership;
-- persisted schema/version/migration semantics; and
-- per-setting change/reload behaviour.
+- persisted schema/version/migration semantics.
 
-The Debug publication mapping is no longer unresolved: Debug off maps to NORMAL and Debug on maps to DEBUG. DIAGNOSTIC has no supported player Configuration mapping.
+The initial supported defaults and immediate change semantics are no longer unresolved: Enabled defaults on; Operational Player Messages default on; Debug defaults off; HUD visibility and Debug changes apply immediately. DIAGNOSTIC has no supported player Configuration mapping.
 
 Issue #139 owns the active investigation that must resolve these questions before Configuration implementation is accepted.
 
@@ -363,6 +373,7 @@ This architecture does not authorise:
 - exposing DIAGNOSTIC engineering instrumentation as a supported player setting;
 - treating diagnostics as player Configuration by default;
 - treating in-game Help content as another Configuration setting merely because the settings surface links to it;
+- adding a global Reset to Defaults action to the initial three-toggle Configuration surface;
 - assuming current implementation defaults are player defaults;
 - assuming a persistence mechanism or multiplayer owner without GIANTS evidence;
 - waiting for Regulation, Passage, Relocation or Local Operation completion after explicit player disablement;
