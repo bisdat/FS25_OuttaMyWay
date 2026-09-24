@@ -199,7 +199,7 @@ NORMAL lifecycle lines must be emitted from the authority that establishes the l
 
 | NORMAL fact | Semantic authority |
 | --- | --- |
-| Product startup / resolved enabled state / enable-disable transition | product shell after Configuration resolution; Responsibility Transition supplies any resulting responsibility-exit facts |
+| Product startup / resolved enabled state | product startup after Configuration resolution |
 | Job Episode start/end | Operation Lifecycle |
 | Local Operation start/end | Operation Lifecycle |
 | Regulation start/end | Responsibility Transition |
@@ -219,17 +219,15 @@ A Control mechanism physically slowing a worker does not own Regulation start. P
 
 ## 8. Product activation is not Job Bootstrap
 
-The global product-state publication answers whether the product shell loaded and whether OuttaMyWay Runtime operation is enabled. NORMAL publication must also expose later master enable/disable transitions so ordinary support evidence records when autonomous coordination became available or was withdrawn.
+The global startup publication answers whether the product loaded and whether OuttaMyWay operation is enabled.
 
-That is distinct from Runtime / per-Job Episode Bootstrap, which discovers current Reality and stable job-scoped knowledge.
-
-> **Product Shell != Runtime Bootstrap**
+That is distinct from per-Job Episode Bootstrap, which discovers/caches stable job-scoped knowledge.
 
 > **Mod Activation != Job Bootstrap**
 
-Log Publication must therefore remain available after Configuration has resolved product state even when normal OuttaMyWay Runtime intervention is disabled. An `enabled=false` startup may legitimately publish the disabled product state without bootstrapping Job Episodes, Local Operations or traffic coordination.
+Log Publication must therefore be available after Configuration has resolved product state even when normal OuttaMyWay intervention is disabled.
 
-Exact event-code wording belongs to the product-state semantic owner rather than Log Publication. The exact player Configuration names, defaults, persistence and storage mechanism remain Configuration responsibility.
+The exact player Configuration names, defaults, persistence, change semantics and mapping into the resolved publication policy remain Configuration responsibility.
 
 ## 9. Diagnostic production and publication are separate
 
