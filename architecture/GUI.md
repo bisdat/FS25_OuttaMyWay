@@ -21,9 +21,11 @@ Player-facing GUI has two distinct HUD responsibilities:
 
 The Configuration **HUD visibility** choice governs Operational Player Messages only. It does not hide the Product Status Indicator while OuttaMyWay remains enabled.
 
-Master OuttaMyWay enablement governs whether the Product Status Indicator exists in the steady state. Because disablement may require safe neutralisation of already-active Control, the exact indicator behaviour during an enabled-to-disabled transition must not falsely present effective state and remains unresolved with the safe-disablement contract.
+Master OuttaMyWay enablement governs whether the Product Status Indicator exists. Explicit disablement immediately supersedes OuttaMyWay functional responsibility and triggers bounded release/neutralisation of effects the mod already owns; there is no long-lived shutdown-drain state. The Product Status Indicator must disappear when that immediate hand-back has completed rather than remain visible for an unrelated GIANTS Job or Local Operation lifetime.
 
-Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, or otherwise behaves in a way that could appear stuck.
+A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. Player-facing communication must therefore support a truthful shutdown/hand-back message that confirms OuttaMyWay has stopped and tells the player that active AI jobs may require manual review or stopping. Exact wording, priority, duration and whether this confirmation bypasses ordinary Operational Player Message suppression remain #89 design questions.
+
+Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, hands responsibility back on disablement, or otherwise behaves in a way that could appear stuck.
 
 ## Explicit non-decisions
 
