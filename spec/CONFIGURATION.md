@@ -49,7 +49,9 @@ The resulting logical path is therefore:
 <user profile>/modSettings/<modName>/configuration.xml
 ```
 
-The implementation MUST ensure the mod-scoped directory exists before creating or replacing the file.
+The implementation MUST derive the directory from `getUserProfileAppPath()`, ensure the mod-scoped directory exists with the GIANTS folder-creation surface, and use the GIANTS file/XML surfaces rather than unrestricted Lua filesystem I/O.
+
+The first-use branch MUST distinguish absence using the engine file-existence surface before attempting a normal XML load. Existing Configuration MUST be loaded through a registered `XMLSchema`. Creation/replacement MUST use `XMLFile.create(...)`, persist through the XMLFile save lifecycle, and release XML handles after use.
 
 The Configuration file is profile/mod scoped and MUST NOT be written into or loaded from an individual savegame directory.
 
@@ -168,7 +170,7 @@ When Configuration cannot establish its durable persisted representation:
 - normal Runtime bootstrap MUST NOT proceed;
 - Configuration MUST NOT report the new/recovered state as successfully persisted;
 - the product shell MAY remain available;
-- a NORMAL operational error MUST be publishable through the product/logging boundary without recursively depending on normal Runtime bootstrap; and
+- an operational error MUST be surfaced through a product-shell-safe error path that does not require normal Runtime bootstrap or successful Configuration persistence; and
 - no persisted setting may be silently treated as authoritative merely because an in-memory fallback exists.
 
 > **Configuration Invalidity Is Recoverable; Configuration Storage Failure Is Not**
@@ -183,19 +185,19 @@ A deliberate player change to `enabled=false` applies immediately as product-con
 
 Configuration owns the value change and notification. Product lifecycle / Responsibility Transition / Control own the resulting termination of OuttaMyWay functional responsibility and bounded release/neutralisation of already-owned effects.
 
-The changed value MUST be persisted as part of the accepted Configuration state. A failed persistence operation MUST be surfaced as Configuration storage failure rather than silently claiming durable success.
+Consent withdrawal takes effect immediately even if persisting `enabled=false` fails. A storage failure MUST NOT keep OuttaMyWay active merely to preserve consistency with the old persisted value. The current session remains disabled, the failure is surfaced, and durable success MUST NOT be claimed.
 
-A deliberate change to `enabled=true` applies immediately and permits a fresh Runtime bootstrap from current GIANTS Reality. It MUST NOT resume pre-disable Situation, Operation, Responsibility, Commitment or Authority state.
+A deliberate change to `enabled=true` requests immediate re-enablement, but fresh Runtime bootstrap MUST NOT occur until the new enabled state has been persisted successfully. If persistence fails, the product remains disabled and the failure is surfaced. Successful re-enablement MUST bootstrap from current GIANTS Reality and MUST NOT resume pre-disable Situation, Operation, Responsibility, Commitment or Authority state.
 
 ### HUD visibility
 
-A deliberate change to `hudVisible` applies immediately to the semantic Configuration state and MUST be persisted. GUI/HUD consumes the value for Operational Player Messages only.
+A deliberate change to `hudVisible` applies immediately to the current-session semantic Configuration state and MUST be persisted. GUI/HUD consumes the value for Operational Player Messages only. If persistence fails, the current-session visibility change MAY remain effective, but durable success MUST NOT be claimed and the storage failure must be surfaced.
 
 The Product Status Indicator is not governed by `hudVisible`.
 
 ### Debug
 
-A deliberate change to `debug` applies immediately to the semantic Configuration state and MUST be persisted.
+A deliberate change to `debug` applies immediately to the current-session semantic Configuration state and MUST be persisted. If persistence fails, the current-session publication-policy change MAY remain effective, but durable success MUST NOT be claimed and the storage failure must be surfaced.
 
 Log Publication resolves:
 
@@ -212,7 +214,7 @@ Configuration MUST provide a bounded means for interested product-shell consumer
 
 A change notification MUST identify which supported semantic value changed and its committed new value. It MUST NOT carry XML keys, file paths or schema mechanics as consumer-facing semantics.
 
-A value is **committed** only when the Configuration layer has accepted it as supported state and completed the persistence obligation required by the operation.
+A notification MUST distinguish an effective current-session change from durable persistence success when the two differ because of storage failure. Consumers MUST NOT infer persistence success merely from observing a changed semantic value.
 
 This Specification does not require one callback, event-bus or observer implementation.
 
@@ -231,7 +233,7 @@ That file is outside the `CONFIGURATION` Jurisdiction:
 - it MUST NOT add a fourth supported Configuration value;
 - it MUST NOT be represented inside `configuration.xml`;
 - it MUST NOT be exposed as a supported player GUI setting;
-- its absence SHOULD mean DIAGNOSTIC off;
+- its absence MUST mean DIAGNOSTIC off;
 - it has no player-facing migration guarantee.
 
 Issue #303 owns that engineering-control mechanism.
@@ -269,8 +271,6 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 No production source currently realises this Jurisdiction.
 
 ## Implementation traceability
-
-**Implementation Status:** `NOT_IMPLEMENTED`
 
 Issue #139 owns the first production implementation. When that implementation is accepted, this Specification must in the same Engineering Increment:
 
