@@ -14,6 +14,30 @@ local function joinValues(values,separator)
     end
     return table.concat(result,separator or ",")
 end
+
+local function cooperativePassageParticipantIds(runtime,current,commitmentId)
+    local result,seen={},{}
+    local commitment=runtime and runtime.commitments and runtime.commitments:get(commitmentId) or nil
+    for _,obligationId in OuttaMyWay.ValueRecord.ipairs(commitment and commitment.obligationIds or {}) do
+        local obligation=runtime.obligations and runtime.obligations:get(obligationId) or nil
+        local basis=obligation and obligation.basis or nil
+        if basis and basis.kind=="COOPERATIVE_PASSAGE_LEG" and type(basis.assemblyId)=="string"
+            and seen[basis.assemblyId]~=true then
+            seen[basis.assemblyId]=true
+            result[#result+1]=basis.assemblyId
+        end
+    end
+    if #result==0 then
+        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(current and current.beneficiaryAssemblyIds or {}) do
+            if type(assemblyId)=="string" and seen[assemblyId]~=true then
+                seen[assemblyId]=true
+                result[#result+1]=assemblyId
+            end
+        end
+    end
+    table.sort(result)
+    return result
+end
 local function logInfo(code,formatText,...)
     return publication:info("DEBUG",code,formatText,...)
 end
@@ -84,7 +108,7 @@ local function resolutionPayload(runtime,current,commitmentId,reason)
         reason=reason
     }
     if kind=="COOPERATIVE_PASSAGE" then
-        payload.participants=joinValues(current.beneficiaryAssemblyIds,",")
+        payload.participants=joinValues(cooperativePassageParticipantIds(runtime,current,commitmentId),",")
     elseif kind=="CAUSAL_OBSTRUCTION_RELOCATION" then
         payload.blocker=(current.controlledSubjectAssemblyIds or {})[1]
         payload.beneficiaries=joinValues(current.beneficiaryAssemblyIds,",")

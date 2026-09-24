@@ -5346,7 +5346,11 @@ test("Cooperative Passage Established Conflict crosses Candidate Decision Commit
     equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(dispatched.commitment.identity),nil)
     local joined=table.concat(passagePublications,"\n")
     if string.find(joined,"[COOPERATIVE_PASSAGE_STARTED]",1,true)==nil then error("missing Cooperative Passage NORMAL start publication") end
-    if string.find(joined,"participants=AS-A,AS-B",1,true)==nil then error("Passage publication lost sealed participant identities") end
+    if string.find(joined,"[COOPERATIVE_PASSAGE_ENDED]",1,true)==nil then error("missing Cooperative Passage NORMAL end publication") end
+    local startLine=string.match(joined,"[^\n]*%[COOPERATIVE_PASSAGE_STARTED%][^\n]*")
+    local endLine=string.match(joined,"[^\n]*%[COOPERATIVE_PASSAGE_ENDED%][^\n]*")
+    if startLine==nil or string.find(startLine,"participants=AS-A,AS-B",1,true)==nil then error("Passage start publication lost original pair identities") end
+    if endLine==nil or string.find(endLine,"participants=AS-A,AS-B",1,true)==nil then error("Passage end publication lost original pair identities after leg settlement") end
     Logging=previousLogging
 end)
 
