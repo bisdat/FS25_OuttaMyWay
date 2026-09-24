@@ -27,6 +27,17 @@ Historical evidence, archived material, journal entries, release records, and ot
 
 Documentation-only, test-only, governance-only, or other non-executable changes do not consume a new TEST `BUILD` unless the repository owner explicitly requests one. A version-only identity correction after already-tested executable bytes likewise does not imply a new behavioural claim; it gives those bytes a unique future-facing identity.
 
+### Release checkpoint selection
+
+Interpret the pre-1.0 components by responsibility, not by elapsed time or the numeric size of `BUILD`:
+
+- `BUILD` identifies one non-canonical executable TEST revision. It is an experimental/validation serial and makes no stability claim.
+- `PATCH` identifies a **Validated Plateau** within the same architectural/capability epoch. A plateau exists when the intended tranche is accepted and validated, has no known defect that the owner regards as required before checkpointing, and remaining work can legitimately start from that state without being necessary to make the tranche coherent.
+- `MINOR` identifies a materially changed architectural/capability epoch. If describing the accepted delta requires new architectural concepts, changed responsibility boundaries, or materially new supported capability rather than only corrections/refinements within the existing model, prefer MINOR over PATCH.
+- Commit count, BUILD count and the mere existence of open Issues do not select PATCH or MINOR.
+
+A release checkpoint is deliberate rather than automatic. At the end of a substantial validated tranche, ask **Validated Plateau?** If yes, then ask whether the architectural/capability epoch materially changed. Same epoch -> PATCH candidate; changed epoch -> MINOR candidate. Release Declaration preparation remains behaviour-neutral.
+
 ## Engineering method
 
 Use the project loop:
