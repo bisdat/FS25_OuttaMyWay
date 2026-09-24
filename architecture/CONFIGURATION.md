@@ -8,21 +8,22 @@ Configuration exists to express choices the player is legitimately allowed to ma
 
 > **Configuration as Consent Surface**
 
-This document defines the current accepted Configuration responsibility and its boundaries. The Configuration runtime contract is intentionally incomplete: Issue #139 owns the remaining design-to-implementation investigation.
+This document defines the current accepted Configuration responsibility and its boundaries. The implementation-facing contract is now mature and is operationalised by the primary Configuration Specification.
 
-**Status: Not implemented.**
+**Status: Contract defined; production implementation not yet accepted.**
 
-Configuration is therefore a recognised Deferred Responsibility under the repository documentation standard. No primary `/spec` exists yet, and an empty or speculative Specification must not be created merely for symmetry. A Configuration Specification becomes appropriate only when the unresolved runtime contract has been established sufficiently to state a truthful implementation-facing contract.
+The primary Specification carries `NOT_IMPLEMENTED` until production source realises this Jurisdiction. Issue #139 owns the bounded implementation work.
 
 The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Log Publication Architecture](LOG_PUBLICATION.md) owns runtime log-publication classes, eligibility and publication boundaries. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
 
-## Specification Jurisdiction
+## Specification Jurisdiction — Configuration
 
-This architecture declares one Specification Jurisdiction:
+**Owns:** supported player choices, their semantic state, defaults, player-change semantics, cross-save persistence contract, first-use materialisation, invalid-representation recovery, and the boundary between persisted Configuration and consuming subsystems.
 
-| Specification Jurisdiction | Primary architectural responsibility |
-| --- | --- |
-| **Configuration** | Define supported player choices, their semantic meaning, consent boundaries, defaults requirements, persistence/change obligations and compatibility expectations without creating runtime authority. |
+**Does not own:** Runtime authority, subsystem interpretation of choices, GUI presentation, Log Publication internals, diagnostic engineering controls, savegame state, multiplayer Configuration semantics, or arbitrary implementation constants.
+
+**Jurisdiction ID:** `CONFIGURATION`  
+**Primary Specification:** [`spec/CONFIGURATION.md`](../spec/CONFIGURATION.md)
 
 Configuration is not a generic value-ownership jurisdiction. Internal policy, calibration, diagnostics, safety bounds, build identity and validation parameters remain owned by the responsibilities that give them meaning.
 
@@ -155,6 +156,12 @@ Debug=true
 NORMAL remains active when Debug is off. Configuration does not expose NORMAL, DEBUG or DIAGNOSTIC as player-selectable publication-class names; it exposes the semantic player choice **Debug** and maps that choice internally.
 
 DIAGNOSTIC remains targeted engineering instrumentation for development and narrowed investigation. It is not a supported player Configuration choice and is not enabled merely because Debug is enabled. Any internal diagnostic-instrument activation mechanism remains outside Configuration responsibility.
+
+An engineering-only diagnostic sidecar MAY exist under the same mod-scoped `modSettings` directory, but it is not part of `configuration.xml`, is not exposed as supported player Configuration, and has no player-facing persistence or migration promise.
+
+> **Player Configuration != Engineering Control**
+
+> **Shared Persistence Location != Shared Configuration Contract**
 
 Debug does not create player ownership of individual probes, sample periods, diagnostic HUDs or internal instrumentation switches.
 
@@ -384,9 +391,11 @@ existing Configuration file
 
 The initial Configuration contract therefore carries **no persisted-value migration obligation**. Unsupported historical schemas are replaced rather than transformed field-by-field. With only three supported values, preserving a potentially ambiguous older representation is not worth allowing stale or partially interpreted preference meaning into Runtime.
 
-A mechanical storage failure is different. If the persistence API cannot read the existing file at all, cannot create/replace it, or cannot successfully write the recovery representation, Configuration must not claim that persisted recovery succeeded. The exact operational failure/reporting behaviour belongs to the Configuration Specification.
+A mechanical storage failure is different. If Configuration cannot establish its durable representation because the persistence API cannot read required content, create/replace the representation, or successfully save it, normal Runtime bootstrap must not proceed. The product shell may remain available so the failure can be surfaced through ordinary product/logging facilities, but autonomous traffic responsibility must not start from Configuration state whose persistence contract was not established.
 
 > **Persistence Recovery != Storage Success**
+
+> **Configuration Invalidity Is Recoverable; Configuration Storage Failure Is Not**
 
 The initial supported Configuration scope is the **local player/profile** case. Multiplayer/server-client Configuration ownership, propagation, conflict resolution and authority are intentionally outside the current support claim because they cannot presently be validated against Reality.
 
@@ -448,19 +457,15 @@ A future OuttaMyWay settings/menu surface must provide a discoverable route to t
 
 Diagnostic/test HUDs remain instrumentation unless deliberately promoted through the GUI/HUD responsibility. The existence of a visible diagnostic control does not make it part of HUD visibility Configuration.
 
-## 11. Deferred Configuration contract areas
+## 11. Configuration contract maturity
 
-The following Configuration contract area is intentionally unresolved rather than silently inferred:
+The initial local-profile Configuration contract is mature enough for implementation and is operationalised by the primary [Configuration Specification](../spec/CONFIGURATION.md).
 
-- exact `modSettings` filename / representation / API usage, including current-schema identifier syntax and storage-failure handling.
+The Specification owns the exact `modSettings` filename, XML representation, schema identifier, GIANTS persistence API obligations and storage-failure mechanics beneath this Architecture.
 
-Multiplayer/server-client Configuration semantics are not an unresolved blocker for this initial contract; they are outside its current validated support scope.
+Multiplayer/server-client Configuration semantics remain outside the current validated support scope. DIAGNOSTIC engineering controls remain outside supported player Configuration.
 
-The initial supported defaults and immediate change semantics are no longer unresolved: Enabled defaults on; Operational Player Messages default on; Debug defaults off; HUD visibility and Debug changes apply immediately. DIAGNOSTIC has no supported player Configuration mapping.
-
-Issue #139 owns the active investigation that must resolve these questions before Configuration implementation is accepted.
-
-These are unresolved contract areas, not permission to preserve current implementation behaviour as architecture.
+Issue #139 now owns implementation and validation against this contract rather than further architectural invention.
 
 ## 12. Architectural boundaries
 
