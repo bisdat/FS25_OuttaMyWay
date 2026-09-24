@@ -5,6 +5,7 @@ OuttaMyWay = {}
 ClassIds={SHAPE=1}
 getHasClassId=function() return true end
 load("scripts/config.lua")
+load("scripts/publication/LogPublication.lua")
 load("scripts/contracts/ValueRecord.lua")
 load("scripts/contracts/ObservationSnapshot.lua")
 load("scripts/contracts/OperationalPicture.lua")
@@ -128,6 +129,76 @@ local function permittedFollowerCap(evidence)
     local permission=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize(evidence)
     return permission and permission.permittedFollowerCapKmh or nil
 end
+
+test("Log Publication migration default is variable-driven DIAGNOSTIC", function()
+    equal(OuttaMyWay.LOG_DIAGNOSTIC,true)
+    local publication=OuttaMyWay.LogPublication.new()
+    equal(publication:getResolvedClass(),"DIAGNOSTIC")
+end)
+
+test("Log Publication classes are cumulative and severity does not widen eligibility", function()
+    local normal=OuttaMyWay.LogPublication.new("NORMAL")
+    local debug=OuttaMyWay.LogPublication.new("DEBUG")
+    local diagnostic=OuttaMyWay.LogPublication.new("DIAGNOSTIC")
+    local normalEvent={code="NORMAL_EVENT",publicationClass="NORMAL",severity="INFO",origin="TEST"}
+    local debugEvent={code="DEBUG_EVENT",publicationClass="DEBUG",severity="INFO",origin="TEST"}
+    local diagnosticWarning={code="DIAGNOSTIC_WARNING",publicationClass="DIAGNOSTIC",severity="WARNING",origin="TEST"}
+    equal(select(1,normal:classify(normalEvent)),true)
+    equal(select(1,normal:classify(debugEvent)),false)
+    equal(select(1,debug:classify(normalEvent)),true)
+    equal(select(1,debug:classify(debugEvent)),true)
+    equal(select(1,debug:classify(diagnosticWarning)),false)
+    equal(select(1,diagnostic:classify(diagnosticWarning)),true)
+end)
+
+test("suppressed Log Publication never constructs payload", function()
+    local publication=OuttaMyWay.LogPublication.new("NORMAL")
+    local calls=0
+    local published,reason=publication:publish(
+        {code="DEBUG_EVENT",publicationClass="DEBUG",severity="INFO",origin="TEST"},
+        function() calls=calls+1; return "detail=should-not-exist" end)
+    equal(published,false)
+    equal(reason,"SUPPRESSED")
+    equal(calls,0)
+end)
+
+test("admitted Log Publication constructs payload once and emits one line", function()
+    local oldLogging=Logging
+    local calls={}
+    Logging={info=function(formatText,value) calls[#calls+1]=string.format(formatText,value) end}
+    local publication=OuttaMyWay.LogPublication.new("DEBUG")
+    local payloadCalls=0
+    local published,reason=publication:publish(
+        {code="REGULATION_STARTED",publicationClass="NORMAL",severity="INFO",origin="RESPONSIBILITY_TRANSITION"},
+        function() payloadCalls=payloadCalls+1; return "operation=OP-4 field=77 regulated=AS-1 protected=AS-2" end)
+    Logging=oldLogging
+    equal(published,true)
+    equal(reason,"PUBLISHED")
+    equal(payloadCalls,1)
+    equal(#calls,1)
+    if not calls[1]:find("REGULATION_STARTED",1,true) then error("event code missing from rendered line") end
+    if not calls[1]:find("operation=OP-4",1,true) then error("payload missing from rendered line") end
+end)
+
+test("Log Publication rejects invalid descriptors without invoking payload", function()
+    local publication=OuttaMyWay.LogPublication.new("DIAGNOSTIC")
+    local calls=0
+    local published,reason=publication:publish(
+        {code="L001 / Regulation Started",publicationClass="NORMAL",severity="INFO",origin="TEST"},
+        function() calls=calls+1; return "unexpected" end)
+    equal(published,false)
+    equal(reason,"EVENT_CODE_INVALID")
+    equal(calls,0)
+end)
+
+test("Log Publication payload failure is isolated from semantic caller", function()
+    local publication=OuttaMyWay.LogPublication.new("NORMAL")
+    local published,reason=publication:publish(
+        {code="NORMAL_EVENT",publicationClass="NORMAL",severity="INFO",origin="TEST"},
+        function() error("payload boom") end)
+    equal(published,false)
+    if not tostring(reason):find("PAYLOAD_CONSTRUCTION_FAILED:",1,true) then error("payload failure was not reported") end
+end)
 
 test("Entity-Local Shape Evidence preserves coherence and root-alias discrimination", function()
     local localSphere={valid=true,x=0,y=0,z=0,radius=2.0}

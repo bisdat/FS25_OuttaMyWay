@@ -4,7 +4,7 @@ local modDirectory=g_currentModDirectory or ""
 -- Module source order is dependency-sensitive: sourced modules may consume globals established by earlier modules.
 -- Preserve source-before-consumer ordering; this bootstrap sequence does not define architectural authority.
 local modules={
-    "scripts/config.lua",
+    "scripts/config.lua","scripts/publication/LogPublication.lua",
     "scripts/contracts/ValueRecord.lua","scripts/contracts/ObservationSnapshot.lua","scripts/contracts/OperationalPicture.lua","scripts/contracts/CandidateAction.lua","scripts/contracts/CandidateInventory.lua","scripts/contracts/ConstraintVerdict.lua","scripts/contracts/ConstraintVerdictSet.lua","scripts/contracts/DecisionRecord.lua","scripts/contracts/CommitmentRecord.lua","scripts/contracts/ObligationRecord.lua","scripts/contracts/Regulation.lua","scripts/contracts/ResolutionCommitment.lua","scripts/contracts/BoundedAuthorityGrant.lua","scripts/contracts/ControlRequest.lua","scripts/contracts/ControlOutcome.lua","scripts/contracts/GoverningBasisVerdict.lua","scripts/contracts/CommitmentApplicationRecord.lua",
     "scripts/identity/EpochSequence.lua","scripts/identity/IdentityRegistry.lua",
     "scripts/representation/PlanViewFootprint.lua","scripts/representation/EntityLocalShapeEvidence.lua","scripts/representation/AssemblyRepresentationCache.lua","scripts/representation/CurrentPhysicalConflictRepresentation.lua","scripts/representation/PairSpecificPassageClearance.lua",
@@ -17,6 +17,9 @@ local modules={
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
+-- Product infrastructure: Log Publication is available before Runtime composition and
+-- remains independent of whether OuttaMyWay intervention is enabled.
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new()
 OuttaMyWay.runtime=OuttaMyWay.Runtime.new()
 OuttaMyWay.runtime.situationAssessment=OuttaMyWay.ResolutionMarginSituationAssessment.new(OuttaMyWay.runtime.situationAssessment)
 OuttaMyWay.runtime.situationAssessment=OuttaMyWay.CurrentResponsibilityContextSituationAssessment.new(
