@@ -87,11 +87,16 @@ Future settings, including any future advanced settings, must satisfy the same a
 The accepted initial conceptual surface is deliberately small:
 
 - **OuttaMyWay enabled**;
-- **HUD visibility**;
-- **Logging**; and
+- **HUD visibility**; and
 - **Debug**.
 
+There is no separate player-facing Logging on/off choice. NORMAL publication is the intrinsic operational journal and therefore part of ordinary product operation rather than optional Configuration.
+
 These are semantic Configuration concepts. Final labels, explanatory text, widgets, layout and interaction mechanics are not owned here.
+
+> **Operational Journal != Optional Logging**
+
+> **Configuration Choice != Publication Class**
 
 ### OuttaMyWay enabled
 
@@ -115,21 +120,29 @@ It does not govern diagnostic or test HUDs merely because they are visible on sc
 
 Configuration owns the player's visibility choice. GUI/HUD architecture owns what normal player-facing messages exist, their lifecycle, priority, presentation, accessibility, layout and interaction semantics.
 
-### Logging
-
-Logging is a supported high-level choice for useful normal operational logging suitable for diagnosis and bug-report evidence.
-
-It is not a promise that every internal diagnostic, probe, trace or cadence becomes player-configurable.
-
-The runtime log-publication contract is owned by [Log Publication Architecture](LOG_PUBLICATION.md): NORMAL, DEBUG and DIAGNOSTIC are cumulative internal publication classes with severity orthogonal to class. Configuration still owns the supported player-facing Logging choice, its default/persistence/change semantics and the eventual mapping of that choice into a resolved runtime publication policy.
-
 ### Debug
 
-Debug is a supported high-level choice for substantially more detailed engineering/debug instrumentation.
+Debug is the supported player escalation from the intrinsic NORMAL operational journal to substantially more detailed support-grade causal publication.
 
-It does not create player ownership of individual probes, sample periods, diagnostic HUDs or internal instrumentation switches.
+The supported default is **Debug off**.
 
-Log Publication defines DEBUG as support-grade causal publication and DIAGNOSTIC as targeted engineering publication, while diagnostic instrument activation remains a separate upstream responsibility. Configuration must still define how the supported Debug choice maps into those internal capabilities without exposing individual probes, instruments or implementation topology as the public contract.
+The Configuration mapping is:
+
+```text
+Debug=false
+    -> resolved Log Publication policy = NORMAL
+
+Debug=true
+    -> resolved Log Publication policy = DEBUG
+```
+
+NORMAL remains active when Debug is off. Configuration does not expose NORMAL, DEBUG or DIAGNOSTIC as player-selectable publication-class names; it exposes the semantic player choice **Debug** and maps that choice internally.
+
+DIAGNOSTIC remains targeted engineering instrumentation for development and narrowed investigation. It is not a supported player Configuration choice and is not enabled merely because Debug is enabled. Any internal diagnostic-instrument activation mechanism remains outside Configuration responsibility.
+
+Debug does not create player ownership of individual probes, sample periods, diagnostic HUDs or internal instrumentation switches.
+
+> **Player Debug != Engineering Diagnostics**
 
 ## 4. Core capabilities are not separate Configuration
 
@@ -188,10 +201,15 @@ Configuration
    |      -> permits or prevents normal OuttaMyWay operation
    |         subject to independent runtime authority
    |
-   `-- HUD / Logging / Debug
-          -> supported presentation/instrumentation choices;
-             Logging/Debug eventually map into resolved
-             Log Publication / diagnostic-activation policy
+   |-- HUD visibility
+   |      -> supported player-facing communication visibility
+   |
+   `-- Debug
+          -> false maps to NORMAL publication
+          -> true maps to DEBUG publication
+
+DIAGNOSTIC remains internal engineering instrumentation
+outside supported player Configuration.
 ```
 
 Configuration does not:
@@ -232,7 +250,9 @@ Every implemented player setting must have an explicit supported default.
 
 Defaults represent the intended normal player experience. They must not be inherited accidentally from development, validation, diagnostic or implementation values.
 
-No supported defaults for the four initial Configuration concepts are established by this Architecture yet.
+The supported Debug default is **off**, which resolves ordinary Log Publication to NORMAL.
+
+Supported defaults for **OuttaMyWay enabled** and **HUD visibility** remain unresolved and must be established deliberately before implementation. They must not be inherited from current development/test behaviour.
 
 ## 8. Persistence and ownership scope
 
@@ -269,10 +289,17 @@ GUI/HUD architecture owns:
 - settings presentation;
 - widgets and layout;
 - interaction mechanics;
-- normal player-facing operational messaging; and
+- normal player-facing operational messaging;
+- in-game Help / Reference presentation and navigation; and
 - visual accessibility behaviour.
 
 Localisation owns user-facing wording/localisation policy.
+
+Configuration does not own enduring product explanation merely because Help is reached from a settings/menu surface.
+
+> **Configuration Choice != Product Explanation**
+
+A future OuttaMyWay settings/menu surface must provide a discoverable route to the in-game Help / Reference responsibility tracked by Issue #293. Help content itself is not another Configuration setting. It explains enduring product concepts and supported behaviour, while #89 owns transient operational communication about what OuttaMyWay is doing now.
 
 Diagnostic/test HUDs remain instrumentation unless deliberately promoted through the GUI/HUD responsibility. The existence of a visible diagnostic control does not make it part of HUD visibility Configuration.
 
@@ -280,15 +307,16 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
-- supported defaults for the initial four settings;
+- supported defaults for OuttaMyWay enabled and HUD visibility;
 - safe disablement completion evidence and transition sequence;
 - runtime interface shape and ownership boundary;
-- mapping the supported Logging/Debug choices into resolved Log Publication policy and diagnostic-instrument activation;
 - persistence API and storage mechanism;
 - preference lifecycle scope;
 - multiplayer/server-client ownership;
 - persisted schema/version/migration semantics; and
 - per-setting change/reload behaviour.
+
+The Debug publication mapping is no longer unresolved: Debug off maps to NORMAL and Debug on maps to DEBUG. DIAGNOSTIC has no supported player Configuration mapping.
 
 Issue #139 owns the active investigation that must resolve these questions before Configuration implementation is accepted.
 
@@ -301,11 +329,15 @@ This architecture does not authorise:
 - a generic global settings/constants warehouse;
 - resurrection of per-capability rollout gates;
 - player tuning of internal Passage, Regulation, representation or Control calibration merely because those values exist;
+- a player Logging on/off switch that suppresses the NORMAL operational journal;
+- exposing NORMAL, DEBUG or DIAGNOSTIC publication-class names as the player Configuration contract;
+- exposing DIAGNOSTIC engineering instrumentation as a supported player setting;
 - treating diagnostics as player Configuration by default;
+- treating in-game Help content as another Configuration setting merely because the settings surface links to it;
 - assuming current implementation defaults are player defaults;
 - assuming a persistence mechanism or multiplayer owner without GIANTS evidence;
 - unsafe instantaneous abandonment of active Control on disablement;
-- GUI/HUD layout or message-lifecycle decisions; or
+- GUI/HUD layout, Help presentation or message-lifecycle decisions; or
 - implementation work under this documentation reconciliation.
 
 Current implementation placement belongs outside this Architecture. Issue #139 owns the design-to-implementation work required to establish the still-missing Configuration contract and runtime surface.
