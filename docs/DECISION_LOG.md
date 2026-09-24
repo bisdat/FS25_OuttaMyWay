@@ -1,3 +1,27 @@
+## D-0221 — Mature Specifications May Precede Production Implementation
+
+**Status:** Accepted owner decision.
+
+**Decision:** Introduce an explicit **Unimplemented Specification Jurisdiction** state for a genuine architectural Jurisdiction whose implementation-facing contract is mature enough to be normative before any production source realises it.
+
+The primary Specification declares the exceptional machine-stable state exactly as:
+
+```markdown
+**Implementation Status:** `NOT_IMPLEMENTED`
+```
+
+Omission of this declaration means the normal implemented state; an explicit `IMPLEMENTED` marker is not authored. A `NOT_IMPLEMENTED` Specification retains an intentionally empty production `Contract participants` section and no production source may acknowledge that Jurisdiction. When implementation is first accepted, the same Engineering Increment removes `NOT_IMPLEMENTED`, adds at least one truthful `REALISES` participant, and adds reciprocal source acknowledgement.
+
+This state is distinct from **Deferred Responsibility**. A Deferred Responsibility has not yet reached a sufficiently complete implementation-facing contract and therefore has no placeholder Specification. The availability of an unimplemented-Jurisdiction state does not promote Configuration, GUI/HUD or any other Deferred Responsibility automatically; each must earn a mature Specification from architectural evidence.
+
+> **Responsibility Maturity != Implementation Maturity**
+
+> **A Specification Can Become Authoritative Before Its Mechanism Exists**
+
+**Reason:** Stage 2B of Issue #152 established `LOG_PUBLICATION` strongly enough to define a durable implementation-facing contract before selecting or writing its Lua mechanism. The previous two-state conformance model would otherwise force either premature source implementation or withholding a mature Specification. The existing documentation standard had already anticipated this possibility and deliberately deferred its representation until evidence required it.
+
+**Consequence:** Documentation governance and structural conformance now recognise three distinct maturity states: Deferred Responsibility; Unimplemented Specification Jurisdiction; Implemented Specification Jurisdiction. This preserves Architecture -> Specification -> Implementation sequencing. `LOG_PUBLICATION` will use the new middle state in a subsequent increment; Configuration and player communication may use it later only when their own contracts become sufficiently mature.
+
 ## D-0220 — Lateral Excursion Geometry and Common Passage Return Lifecycle
 
 **Status:** Accepted owner decision.

@@ -52,6 +52,8 @@ The currently migrated primary Specifications are:
 
 All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
 
+A genuine Jurisdiction whose implementation-facing contract is mature before production source exists may have a primary Specification carrying the exact declaration `**Implementation Status:** \`NOT_IMPLEMENTED\``. That state is distinct from a Deferred Responsibility: the contract is already normative, but no production mechanism yet realises it. Such a Specification has no production participant rows until implementation is accepted.
+
 This table is navigation, not a second Jurisdiction catalogue. Architecture remains authoritative for the complete Jurisdiction inventory and ownership relationships.
 
 ## Reading a Specification
@@ -71,7 +73,7 @@ The Specification should remain meaningful if its internal implementation mechan
 
 ## Navigating downward into source
 
-A primary Specification provides the route into the production source that materially participates in its contract. That route is implementation traceability, not contract ownership by source topology.
+An implemented primary Specification provides the route into the production source that materially participates in its contract. An unimplemented primary Specification explicitly declares `NOT_IMPLEMENTED` and has no production participants until the first implementation increment. That route or explicit absence is implementation traceability, not contract ownership by source topology.
 
 > **Primary Specification != Primary Source Module.**
 

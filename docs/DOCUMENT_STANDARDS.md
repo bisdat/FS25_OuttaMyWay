@@ -219,7 +219,7 @@ Structural conformance tooling MUST parse only the explicitly contracted constru
 The contracted constructs are:
 
 - Architecture-owned `Jurisdiction ID`, `Primary Specification` and optional `Specialises` declarations;
-- Specification-owned `Jurisdiction ID`, `Primary Architecture Authority`, `Contract participants` and repository validation-participant declarations;
+- Specification-owned `Jurisdiction ID`, `Primary Architecture Authority`, optional `Implementation Status`, `Contract participants` and repository validation-participant declarations;
 - source-owned `Specification Jurisdictions:` acknowledgement in module documentation; and
 - Authority Triad dispositions belonging to the proposed change set when that enforcement mechanism is adopted.
 
@@ -234,6 +234,8 @@ A parser MAY generate an in-memory or disposable index/graph from these facts. S
 ## Architecture-to-Specification relationship
 
 Every implemented Specification Jurisdiction MUST have exactly one primary Specification owner.
+
+An unimplemented Specification Jurisdiction MAY also have a primary Specification when Architecture has established a genuine Jurisdiction and its implementation-facing contract is mature enough to be normative before a production mechanism exists. Such a Specification MUST use the explicit `NOT_IMPLEMENTED` contract below; speculative or placeholder Specifications remain prohibited.
 
 Every authoritative Architecture declaration for a Specification Jurisdiction MUST expose these machine-stable facts in the detailed Jurisdiction declaration:
 
@@ -268,7 +270,7 @@ Architecture MAY additionally link directly to source when that source relations
 
 ## Specification-to-source relationship
 
-Every primary Specification MUST provide a discoverable route to the production source that currently participates materially in its contract.
+Every implemented primary Specification MUST provide a discoverable route to the production source that currently participates materially in its contract. An unimplemented primary Specification instead MUST make the absence of production implementation explicit through the contracted `NOT_IMPLEMENTED` state below.
 
 The authoritative machine participant set is owned by the primary Specification under a `## Contract participants` section using exact production-file paths and exactly one participation token per source/Jurisdiction pair:
 
@@ -310,6 +312,34 @@ A source module may truthfully `REALISE` several Jurisdictions when the same fil
 > **Technical Dependency != Contract Support.**
 
 > **Support Is Direct, Not Transitive.**
+
+### Unimplemented Specification Jurisdictions
+
+A genuine Specification Jurisdiction MAY reach a mature implementation-facing contract before any production mechanism realises it. This is an accepted steady-state engineering condition, not a migration exception.
+
+Such a primary Specification MUST declare exactly:
+
+```markdown
+**Implementation Status:** `NOT_IMPLEMENTED`
+```
+
+The declaration is Specification-owned because it describes the conformance state between the implementation-facing contract and production source. Architecture continues to own whether the Jurisdiction exists and what responsibility it represents.
+
+Omission of `Implementation Status` means the normal **implemented** state. An explicit `IMPLEMENTED` marker MUST NOT be authored merely to confirm that normal state.
+
+A `NOT_IMPLEMENTED` primary Specification:
+
+- MUST still contain a `## Contract participants` section so the absence of implementation is deliberate and reviewable;
+- MUST contain no `REALISES` or `SUPPORTS` production-participant rows;
+- MUST NOT have production source acknowledging that Jurisdiction;
+- MAY declare repository validation participants when a real validation artefact meaningfully challenges the contract itself; and
+- MUST remain a complete, non-speculative implementation-facing contract rather than a placeholder for future design.
+
+When production implementation first becomes accepted, the same Engineering Increment MUST remove the `NOT_IMPLEMENTED` declaration, add at least one truthful `REALISES` participant, and add the reciprocal source acknowledgement(s). Implementation source MUST NOT be created merely to make an unimplemented Specification appear conformant.
+
+> **Responsibility Maturity != Implementation Maturity.**
+
+> **A Specification Can Become Authoritative Before Its Mechanism Exists.**
 
 ## Reciprocal source acknowledgement
 
@@ -389,6 +419,8 @@ Repository conformance tooling adopted for these relationships MUST be capable o
 
 - duplicate or malformed canonical Jurisdiction IDs;
 - an implemented Architecture Jurisdiction with no valid primary Specification;
+- a malformed, duplicated or unsupported Specification `Implementation Status` declaration;
+- a `NOT_IMPLEMENTED` Specification that declares any production participant;
 - Architecture/Specification disagreement over Jurisdiction identity, primary Specification path or Primary Architecture Authority;
 - an unknown, self-targeting or cyclic `SPECIALISES` relationship;
 - a Spec-declared participant whose production source path does not exist;
@@ -417,6 +449,15 @@ A declared relationship that is inconsistent is machine-checkable. A relationshi
 ## Steady-state source-traceability conformance
 
 The repository operates in steady-state cross-surface traceability. There is no migration exception for missing required Architecture, Specification or participating-source declarations.
+
+Every unimplemented Specification Jurisdiction MUST continuously satisfy:
+
+- one unique canonical Jurisdiction ID declared by its authoritative Architecture and acknowledged by its primary Specification;
+- one exact reciprocal Architecture-to-primary-Specification route;
+- the exact `NOT_IMPLEMENTED` Specification declaration;
+- valid, acyclic `SPECIALISES` relationships where specialisation exists;
+- a present but empty production `Contract participants` set; and
+- no production source acknowledgement of that Jurisdiction.
 
 Every implemented Specification Jurisdiction MUST continuously satisfy the contracted relationships defined above:
 
@@ -576,9 +617,11 @@ A recognised Deferred Responsibility MAY therefore exist in current Architecture
 
 An empty or speculative Specification MUST NOT be created solely to satisfy structural symmetry.
 
-A Deferred Responsibility is not a deferred Specification Jurisdiction merely because it is named. If Architecture later establishes a genuine unimplemented Specification Jurisdiction, its representation and conformance semantics MUST be designed from that evidence rather than inferred from the present Deferred Responsibility mechanism.
+A Deferred Responsibility is not an unimplemented Specification Jurisdiction merely because it is named. When Architecture establishes a genuine Specification Jurisdiction and its implementation-facing contract becomes mature enough to be normative before source exists, it MAY progress to a primary Specification carrying the contracted `NOT_IMPLEMENTED` state.
 
-> **Deferred Responsibility != Deferred Jurisdiction.**
+A responsibility whose implementation-facing contract remains unresolved stays Deferred and MUST NOT acquire a placeholder Specification merely because the unimplemented-Jurisdiction mechanism exists.
+
+> **Deferred Responsibility != Unimplemented Specification Jurisdiction.**
 
 ## Cross-jurisdiction relationships
 
@@ -681,7 +724,7 @@ Specification documents MUST describe durable implementation-facing obligations 
 
 ## Primary ownership
 
-Every implemented Specification Jurisdiction declared by Architecture MUST have exactly one primary Specification.
+Every implemented Specification Jurisdiction declared by Architecture MUST have exactly one primary Specification. A genuine unimplemented Specification Jurisdiction MAY also have exactly one primary Specification when its contract is mature enough to satisfy this standard and it carries `Implementation Status: NOT_IMPLEMENTED`.
 
 Every primary Specification MUST:
 
@@ -689,7 +732,7 @@ Every primary Specification MUST:
 - identify its Primary Architecture Authority;
 - distinguish related architectural context from primary authority;
 - own one cohesive implementation-facing contract;
-- provide a discoverable route toward current implementation; and
+- provide a discoverable route toward current implementation, or explicitly declare `NOT_IMPLEMENTED` when no production implementation exists; and
 - provide a discoverable validation route.
 
 A primary Specification MUST NOT be created from a source file, class, helper, document heading or implementation subsystem merely because that unit exists. Specification identity follows the architectural Jurisdiction.
