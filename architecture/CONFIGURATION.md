@@ -102,11 +102,11 @@ These are semantic Configuration concepts. Final labels, explanatory text, widge
 
 This is the master product-level enable/disable choice.
 
-When enabled, normal OuttaMyWay operation is permitted subject to all independent evidence, responsibility, representation, authority and Control boundaries.
+When enabled, normal OuttaMyWay operation is permitted subject to all independent evidence, responsibility, representation, authority and Control boundaries. The player-facing GUI must expose a persistent **Product Status Indicator** while OuttaMyWay is operationally enabled so the player can tell that the mod is active. The indicator may include version identity, but its exact presentation is GUI responsibility.
 
-When disabled, OuttaMyWay must not acquire new intervention responsibility or initiate new autonomous coordination.
+When disabled, OuttaMyWay must not acquire new intervention responsibility or initiate new autonomous coordination. In the fully disabled steady state the Product Status Indicator is absent.
 
-Disabling does not require unsafe instantaneous abandonment of already-active physical Control. Existing physical authority must reach an appropriate safe neutralisation or relinquishment boundary before disablement is complete.
+Disabling does not require unsafe instantaneous abandonment of already-active physical Control. Existing physical authority must reach an appropriate safe neutralisation or relinquishment boundary before disablement is complete. The exact Product Status Indicator behaviour during that transition must remain truthful to the effective product state and is not yet defined.
 
 The exact runtime mechanism, completion evidence and transition sequence for safe disablement are not yet defined.
 
@@ -114,11 +114,15 @@ Configuration expresses player consent. It does not override Control safety.
 
 ### HUD visibility
 
-HUD visibility governs normal player-facing OuttaMyWay operational communication.
+HUD visibility governs **Operational Player Messages**: normal player-facing communication about current OuttaMyWay activity such as Regulation, Cooperative Passage, waiting, obstruction assistance or player-intervention requirements.
 
-It does not govern diagnostic or test HUDs merely because they are visible on screen.
+It does not govern the Product Status Indicator that shows OuttaMyWay is enabled, and it does not govern diagnostic or test HUDs merely because they are visible on screen.
 
-Configuration owns the player's visibility choice. GUI/HUD architecture owns what normal player-facing messages exist, their lifecycle, priority, presentation, accessibility, layout and interaction semantics.
+Configuration owns the player's Operational Player Message visibility choice. GUI/HUD architecture owns which messages exist, their lifecycle, priority, presentation, accessibility, layout and interaction semantics.
+
+> **Product Status Indicator != Operational Player Messaging**
+
+> **HUD Visibility Governs Operational Messages, Not Product Status**
 
 ### Debug
 
@@ -200,9 +204,12 @@ Configuration
    |-- master enablement
    |      -> permits or prevents normal OuttaMyWay operation
    |         subject to independent runtime authority
+   |      -> enabled steady state shows Product Status Indicator
+   |      -> disabled steady state hides Product Status Indicator
    |
    |-- HUD visibility
-   |      -> supported player-facing communication visibility
+   |      -> controls Operational Player Messages only
+   |      -> does not hide Product Status Indicator
    |
    `-- Debug
           -> false maps to NORMAL publication
@@ -289,7 +296,8 @@ GUI/HUD architecture owns:
 - settings presentation;
 - widgets and layout;
 - interaction mechanics;
-- normal player-facing operational messaging;
+- Product Status Indicator presentation;
+- Operational Player Message presentation and lifecycle;
 - in-game Help / Reference presentation and navigation; and
 - visual accessibility behaviour.
 
@@ -307,7 +315,7 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
-- supported defaults for OuttaMyWay enabled and HUD visibility;
+- supported defaults for OuttaMyWay enabled and Operational Player Message visibility;
 - safe disablement completion evidence and transition sequence;
 - runtime interface shape and ownership boundary;
 - persistence API and storage mechanism;

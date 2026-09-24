@@ -12,6 +12,17 @@ The repository has multiple HUD and message surfaces, many of which are diagnost
 
 [`LOCALISATION.md`](../docs/LOCALISATION.md) remains the separate authority for localisation policy, and user-facing GUI text must respect it. Existing accessibility requirements remain binding, including avoiding red/green-only semantic communication.
 
+Player-facing GUI has two distinct HUD responsibilities:
+
+1. **Product Status Indicator** — a persistent indication that OuttaMyWay is operationally enabled. It is visible in the enabled steady state and absent in the disabled steady state. It may include version identity, but exact content and presentation remain GUI decisions.
+2. **Operational Player Messages** — transient/current communication explaining OuttaMyWay activity such as Regulation, Cooperative Passage, waiting, obstruction assistance or player-intervention requirements.
+
+> **Product Status Indicator != Operational Player Messaging**
+
+The Configuration **HUD visibility** choice governs Operational Player Messages only. It does not hide the Product Status Indicator while OuttaMyWay remains enabled.
+
+Master OuttaMyWay enablement governs whether the Product Status Indicator exists in the steady state. Because disablement may require safe neutralisation of already-active Control, the exact indicator behaviour during an enabled-to-disabled transition must not falsely present effective state and remains unresolved with the safe-disablement contract.
+
 Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, or otherwise behaves in a way that could appear stuck.
 
 ## Explicit non-decisions
@@ -20,7 +31,7 @@ This placeholder does not decide:
 
 - screen or layout architecture;
 - widget hierarchy;
-- permanent HUD composition;
+- permanent HUD composition beyond the accepted Product Status Indicator / Operational Player Message responsibility split;
 - notification queueing or priorities;
 - settings UI;
 - input bindings;
