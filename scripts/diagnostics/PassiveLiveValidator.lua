@@ -13,9 +13,6 @@ end
 local function logWarning(message)
     if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][PASSIVE-DIAGNOSTIC] %s",message) else print("[FS25_OuttaMyWay][PASSIVE-DIAGNOSTIC][WARNING] "..message) end
 end
-local function logError(message)
-    if Logging~=nil and type(Logging.error)=="function" then Logging.error("[FS25_OuttaMyWay][PASSIVE] %s",message) else print("[FS25_OuttaMyWay][PASSIVE][ERROR] "..message) end
-end
 local function selectedCapability(result)
     local id=result.decision.selectedCandidateId
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates or {}) do if candidate.identity==id then return candidate.capability end end
@@ -81,7 +78,7 @@ end
 function Validator:loadMap()
     self.lastSignature=nil; self.lastLogAt=-math.huge
     self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
-    logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before trace publication; diagnosticOnly=true")
+    logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before diagnostic publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
     self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
