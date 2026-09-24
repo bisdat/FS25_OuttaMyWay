@@ -285,25 +285,33 @@ These defaults define the intended first-run/absence-of-persisted-choice behavio
 
 ## 8. Persistence and ownership scope
 
-Persistence is part of the Configuration contract, but the persistence mechanism and lifecycle ownership are not yet established.
+The initial OuttaMyWay Configuration is a **cross-save product preference set**, not savegame state. A player configures the product once and the same supported choices remain in force while loading, leaving, creating or switching savegames unless the player changes them.
 
-The eventual design must use an evidence-supported FS25 mechanism rather than assuming storage design from convenience.
+> **Configuration Lifetime != Savegame Lifetime**
 
-The following remain unresolved:
+For the normal local-player/profile case, the supported persistence surface is the FS25 `modSettings` area. OuttaMyWay owns one mod-scoped persisted Configuration representation there rather than copying the three settings into individual savegames.
 
-- whether a given preference belongs to player, mod, save, server or another supported lifecycle scope;
-- which settings, if any, are persisted independently;
-- multiplayer and server/client authority;
-- schema/version ownership; and
-- migration semantics for persisted values.
+All three initial supported values are persisted together as Configuration:
 
-The persisted master-enabled choice has one accepted lifecycle consequence even though the storage mechanism is unresolved: when startup resolves `enabled=false`, the product shell may load Configuration, Log Publication and required settings/GUI integration, but normal Runtime bootstrap must not occur. Job Episodes, Local Operations, Situation, Current Responsibility, Commitments and Bounded Authority are runtime semantic state and must not be resurrected from a prior enabled session.
+- OuttaMyWay enabled;
+- Operational Player Messages / HUD visibility; and
+- Debug.
+
+A savegame must neither own nor silently override these values. First use, or absence of a valid persisted Configuration representation, resolves to the accepted product defaults.
+
+This architecture selects the persistence **surface and lifetime**, not an exact XML filename, element layout or GIANTS API call sequence. Those belong to the Configuration Specification and implementation once the runtime interface is defined.
+
+Multiplayer/server-client ownership remains unresolved. That question may determine which machine/profile's `modSettings` representation is authoritative in a multiplayer context, but it must not convert ordinary local Configuration into savegame-scoped state.
+
+Schema/version ownership and migration semantics remain unresolved until the persisted representation contract is specified.
+
+When startup resolves `enabled=false`, the product shell may load Configuration, Log Publication and required settings/GUI integration, but normal Runtime bootstrap must not occur. Job Episodes, Local Operations, Situation, Current Responsibility, Commitments and Bounded Authority are runtime semantic state and must not be resurrected from a prior enabled session.
 
 If the player later re-enables OuttaMyWay, Runtime performs a fresh bootstrap from current GIANTS Reality. An immediate off-then-on sequence likewise starts a new Runtime interpretation rather than resuming a pre-disable Passage, Regulation, Relocation or Local Operation record.
 
 > **Product Shell != Runtime Bootstrap**
 
-Configuration must not invent simulated Field World meaning merely because a preference is persisted.
+Persisted Configuration must never contain or imply Runtime semantic authority merely because it survives between saves.
 
 ## 9. Change and disablement semantics
 
@@ -350,8 +358,7 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
 - runtime interface shape and ownership boundary;
-- persistence API and storage mechanism;
-- preference lifecycle scope;
+- exact `modSettings` persistence representation / API usage;
 - multiplayer/server-client ownership;
 - persisted schema/version/migration semantics.
 
@@ -375,7 +382,9 @@ This architecture does not authorise:
 - treating in-game Help content as another Configuration setting merely because the settings surface links to it;
 - adding a global Reset to Defaults action to the initial three-toggle Configuration surface;
 - assuming current implementation defaults are player defaults;
-- assuming a persistence mechanism or multiplayer owner without GIANTS evidence;
+- persisting supported Configuration inside individual savegames;
+- allowing savegame state to override the cross-save Configuration preference set;
+- assuming multiplayer/server-client Configuration ownership without evidence;
 - waiting for Regulation, Passage, Relocation or Local Operation completion after explicit player disablement;
 - abandoning owned physical effects without authority-reducing release/neutralisation;
 - using shutdown cleanup to continue or invent a strategic resolution after consent withdrawal;
