@@ -202,22 +202,9 @@ function Control:deleteMap()
     self.run=nil
 end
 
-local function renderLine(x,y,size,text)
-    if renderText==nil or text==nil then return end
-    if setTextAlignment~=nil then setTextAlignment((RenderText and RenderText.ALIGN_RIGHT) or 2) end
-    if setTextColor~=nil then setTextColor(0,0,0,0.90) end
-    renderText(x+0.001,y-0.001,size,text)
-    if setTextColor~=nil then setTextColor(1,1,1,1) end
-    renderText(x,y,size,text)
-end
-function Control:draw()
-    local run=self.run
-    if run==nil or g_currentMission==nil or renderText==nil then return end
-    local x,y,size=0.985,0.650,0.015
-    renderLine(x,y,size,run.failureReason and "OTM COOPERATIVE PASSAGE - HALTED" or "OTM COOPERATIVE PASSAGE - ACTIVE")
-    renderLine(x,y-size*1.35,size*0.90,"phase: "..tostring(run.phase))
-    if run.failureReason then renderLine(x,y-size*2.70,size*0.85,"player intervention required") end
-end
+-- Player-facing Passage presentation is deferred to GUI/HUD architecture (#89).
+-- Control owns no direct HUD rendering.
+function Control:draw() end
 
 function Control:_resolveReference(reference)
     for _,vehicle in OuttaMyWay.ValueRecord.ipairs(activeVehicles()) do if referenceKey(vehicle)==reference then return vehicle end end

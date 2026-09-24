@@ -149,7 +149,6 @@ function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
     -- Physical Control remains typed, responsibility-bound and Bounded-Authority-gated; no generic Control path exists.
     -- Trajectory Situation Knowledge and Established Opposed Conflict feed Candidate-owned Local Passage Search, Passage Guide, Commitment and Control.
-    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation core capability: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget",tostring(OuttaMyWay.VERSION)))
 end
 
 function Runtime:setRegulationControl(control)

@@ -10,7 +10,7 @@ CONFIG = SCRIPTS / "config.lua"
 MAIN = SCRIPTS / "main.lua"
 
 DESTINATION_RE = re.compile(r"\bLogging\s*(?:\.(?:info|warning|error)\b|\[[^\]]+\])")
-PREFIX_PRINT_RE = re.compile(r"""\bprint\s*\(\s*["'][^"']*\[FS25_OuttaMyWay\]""")
+PREFIX_PRINT_RE = re.compile(r"""\bprint\s*\([^\n]*FS25_OuttaMyWay""")
 
 
 def test_only_log_publication_addresses_runtime_log_destination() -> None:
@@ -23,7 +23,7 @@ def test_only_log_publication_addresses_runtime_log_destination() -> None:
             if DESTINATION_RE.search(line):
                 violations.append(f"{path.relative_to(ROOT)}:{line_number}: direct Logging destination access")
             if PREFIX_PRINT_RE.search(line):
-                violations.append(f"{path.relative_to(ROOT)}:{line_number}: direct OuttaMyWay-prefixed print publication")
+                violations.append(f"{path.relative_to(ROOT)}:{line_number}: direct OuttaMyWay print publication")
     assert violations == []
 
 
