@@ -1658,12 +1658,22 @@ test("active Job vehicle pose failure is explicit without changing admission",fu
     end)
 end)
 
-test("mutually blocked same-Operation pair with unresolved scope is an explicit contradiction",function()
+test("mutually GIANTS-blocked pair preserves native blocked evidence without promoting a contradiction",function()
     withFakeLiveGlobals(function(mission,a,b)
         a.spec_aiFieldWorker.isBlocked=true; b.spec_aiFieldWorker.isBlocked=true; a.lastSpeedReal=0; b.lastSpeedReal=0
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local processed=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
-        equal(#processed.picture.currentPairAssessmentScope,1); equal(processed.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
-        local found=false; for _,item in OuttaMyWay.ValueRecord.ipairs(processed.picture.diagnostics.contradictions) do if item.code=="BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR" then found=true end end; equal(found,true)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(#raw.diagnostics.pairDiagnostics,1)
+        equal(raw.diagnostics.pairDiagnostics[1].subjectBlocked,true)
+        equal(raw.diagnostics.pairDiagnostics[1].otherBlocked,true)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.picture.currentPairAssessmentScope,1)
+        equal(processed.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
+        local found=false
+        for _,item in OuttaMyWay.ValueRecord.ipairs(processed.picture.diagnostics.contradictions) do
+            if item.code=="BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR" then found=true end
+        end
+        equal(found,false)
     end)
 end)
 
