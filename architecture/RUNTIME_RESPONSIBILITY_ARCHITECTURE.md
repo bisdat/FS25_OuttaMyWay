@@ -433,6 +433,24 @@ This is explanatory, not a mandatory state-machine route.
 
 GIANTS AI is the default and attractor. GIANTS owns jobs, productive routing and navigation, turning, productive work and ordinary continuation. Shared Local Operation membership alone creates no active OuttaMyWay traffic responsibility.
 
+### Product-level disablement supersession
+
+Explicit player disablement is a product-consent boundary above individual Regulation and Resolution objectives. It supplies an authoritative external supersession condition for all current OuttaMyWay functional responsibility.
+
+> **Resolution Commitment != Product Consent**
+
+A current Cooperative Passage Commitment, Obstruction Relocation Resolution or Regulation responsibility may be strongly justified within the enabled product, but none can bind the player to continue running OuttaMyWay after master enablement is withdrawn.
+
+Disablement therefore does not wait for Passage dissolution, Regulation expiry, Relocation completion, Job Episode end or Local Operation closure. Responsibility Transition terminates current OuttaMyWay responsibility under product-level supersession; dependent Bounded Authority ends; Control and supporting mechanisms immediately stop, neutralise or relinquish effects they already own, including Regulation effects, Passage actuation, Bubble Bullet Time and Relocation actuation.
+
+> **Player Disablement Supersedes Functional Responsibility**
+
+This hand-back is authority-reducing cleanup, not successful resolution of the interrupted traffic situation. It may return GIANTS AI to an awkward physical arrangement and may require player review/intervention.
+
+> **Safe Relinquishment != Safe Resolution**
+
+Disablement must not synthesize natural Job Episode or Local Operation terminal evidence merely to empty Runtime. Those semantic records may simply cease to be observed when Runtime coordination stops. A later re-enable performs fresh bootstrap from current Reality and creates any new Runtime lifecycle state from that evidence; pre-disable Responsibility, Commitment, Operation or Situation state is not resumed.
+
 ### Specification Jurisdiction — Regulation
 
 **Owns:** bounded temporal coordination of otherwise GIANTS-owned progression.

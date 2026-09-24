@@ -104,13 +104,21 @@ This is the master product-level enable/disable choice.
 
 When enabled, normal OuttaMyWay operation is permitted subject to all independent evidence, responsibility, representation, authority and Control boundaries. The player-facing GUI must expose a persistent **Product Status Indicator** while OuttaMyWay is operationally enabled so the player can tell that the mod is active. The indicator may include version identity, but its exact presentation is GUI responsibility.
 
-When disabled, OuttaMyWay must not acquire new intervention responsibility or initiate new autonomous coordination. In the fully disabled steady state the Product Status Indicator is absent.
+When disabled, OuttaMyWay must not acquire new intervention responsibility or initiate new autonomous coordination. In the disabled steady state the Product Status Indicator is absent.
 
-Disabling does not require unsafe instantaneous abandonment of already-active physical Control. Existing physical authority must reach an appropriate safe neutralisation or relinquishment boundary before disablement is complete. The exact Product Status Indicator behaviour during that transition must remain truthful to the effective product state and is not yet defined.
+An explicit player change from enabled to disabled is a withdrawal of product consent and therefore a **product-level supersession condition**. It does not wait for a Local Operation, Regulation, Cooperative Passage, Obstruction Relocation or other current intervention to complete its ordinary objective. Responsibility Transition must terminate current OuttaMyWay functional responsibility, dependent Bounded Authority must end, and Control must immediately stop, neutralise or relinquish effects it already owns. Regulation, Passage actuation, Bubble Bullet Time and Obstruction Relocation do not form a shutdown drain.
 
-The exact runtime mechanism, completion evidence and transition sequence for safe disablement are not yet defined.
+> **Resolution Commitment != Product Consent**
 
-Configuration expresses player consent. It does not override Control safety.
+> **Player Disablement Supersedes Functional Responsibility**
+
+Immediate disablement means immediate semantic termination plus bounded authority-reducing cleanup. It does not mean silently ceasing execution while stale OuttaMyWay effects remain. Cleanup may release holds, speed limits, Bullet Time, Passage/relocation actuation or other owned effects, but it must not invent a new strategic target or continue solving the traffic situation after consent has been withdrawn.
+
+> **Safe Relinquishment != Safe Resolution**
+
+The player may therefore inherit an awkward or unresolved GIANTS AI situation after disablement. GUI/HUD architecture must support a truthful shutdown/hand-back message so the player can review or stop active AI jobs where necessary; exact wording, visibility priority and message lifecycle remain GUI/HUD responsibility.
+
+Configuration expresses player consent. It cannot create Runtime authority, but withdrawal of that consent is authoritative input requiring existing OuttaMyWay responsibility to end.
 
 ### HUD visibility
 
@@ -202,8 +210,12 @@ Configuration constrains operation at the boundary relevant to the setting. It d
 ```text
 Configuration
    |-- master enablement
-   |      -> permits or prevents normal OuttaMyWay operation
+   |      -> enabled permits normal OuttaMyWay operation
    |         subject to independent runtime authority
+   |      -> disabling supplies product-level supersession
+   |         -> terminate functional responsibility
+   |         -> relinquish owned physical effects
+   |         -> stop Runtime coordination
    |      -> enabled steady state shows Product Status Indicator
    |      -> disabled steady state hides Product Status Indicator
    |
@@ -224,13 +236,15 @@ Configuration does not:
 - establish Reality;
 - create Observation evidence;
 - determine Situation meaning;
-- establish or supersede Current Responsibility;
+- directly establish Current Responsibility;
 - grant Bounded Authority;
 - waive mandatory constraints;
 - override representation fitness or hard-safety evidence;
 - override GIANTS productive-job ownership;
 - override current Player Claim; or
 - turn unsupported Control into supported Control.
+
+Configuration may constrain or withdraw product consent. Responsibility Transition remains the authority that makes resulting Current Responsibility termination authoritative.
 
 > **Configuration Can Constrain Authority; It Cannot Create Authority.**
 
@@ -275,17 +289,25 @@ The following remain unresolved:
 - schema/version ownership; and
 - migration semantics for persisted values.
 
+The persisted master-enabled choice has one accepted lifecycle consequence even though the storage mechanism is unresolved: when startup resolves `enabled=false`, the product shell may load Configuration, Log Publication and required settings/GUI integration, but normal Runtime bootstrap must not occur. Job Episodes, Local Operations, Situation, Current Responsibility, Commitments and Bounded Authority are runtime semantic state and must not be resurrected from a prior enabled session.
+
+If the player later re-enables OuttaMyWay, Runtime performs a fresh bootstrap from current GIANTS Reality. An immediate off-then-on sequence likewise starts a new Runtime interpretation rather than resuming a pre-disable Passage, Regulation, Relocation or Local Operation record.
+
+> **Product Shell != Runtime Bootstrap**
+
 Configuration must not invent simulated Field World meaning merely because a preference is persisted.
 
 ## 9. Change and disablement semantics
 
-Each implemented setting must define explicit change semantics appropriate to its behavioural consequences.
+Each implemented setting must define explicit change semantics appropriate to its behavioural consequences. There is no architectural requirement that all settings share one reload rule.
 
-A setting may eventually apply immediately, at a safe responsibility boundary, at another evidence-defined transition, or next session. There is no architectural requirement that all settings share one reload rule.
+Master disablement applies immediately as product-consent withdrawal: no new OuttaMyWay responsibility may be acquired, existing functional responsibility is superseded, dependent authority is invalidated, owned physical effects are released/neutralised, and Runtime coordination stops. No waiting-for-completion, Passage drain, shutdown timeout or Local Operation completion gate is part of this contract.
 
-Safety and responsibility boundaries outrank UI immediacy.
+The implementation must preserve authority ordering while doing so: semantic responsibility ends through Responsibility Transition, and downstream cleanup may only narrow/release OuttaMyWay effects. Disablement must not use cleanup as authority to complete, redirect or replace the interrupted intervention.
 
-Master disablement is the highest-risk case. Accepted architecture already requires that disabling prevent new intervention responsibility while avoiding unsafe abandonment of already-active Control. The exact neutralisation/relinquishment contract remains unresolved and must be established before implementation is accepted.
+Re-enablement applies through fresh Runtime bootstrap from current Reality rather than continuation of pre-disable semantic state.
+
+Change semantics for HUD visibility and Debug remain to be finalised.
 
 ## 10. Presentation and localisation boundary
 
@@ -316,7 +338,6 @@ Diagnostic/test HUDs remain instrumentation unless deliberately promoted through
 The following Configuration contract areas are intentionally unresolved rather than silently inferred:
 
 - supported defaults for OuttaMyWay enabled and Operational Player Message visibility;
-- safe disablement completion evidence and transition sequence;
 - runtime interface shape and ownership boundary;
 - persistence API and storage mechanism;
 - preference lifecycle scope;
@@ -344,7 +365,10 @@ This architecture does not authorise:
 - treating in-game Help content as another Configuration setting merely because the settings surface links to it;
 - assuming current implementation defaults are player defaults;
 - assuming a persistence mechanism or multiplayer owner without GIANTS evidence;
-- unsafe instantaneous abandonment of active Control on disablement;
+- waiting for Regulation, Passage, Relocation or Local Operation completion after explicit player disablement;
+- abandoning owned physical effects without authority-reducing release/neutralisation;
+- using shutdown cleanup to continue or invent a strategic resolution after consent withdrawal;
+- resurrecting pre-disable Runtime semantic state on re-enable;
 - GUI/HUD layout, Help presentation or message-lifecycle decisions; or
 - implementation work under this documentation reconciliation.
 
