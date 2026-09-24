@@ -14,7 +14,7 @@ This document defines the current accepted Configuration responsibility and its 
 
 Configuration is therefore a recognised Deferred Responsibility under the repository documentation standard. No primary `/spec` exists yet, and an empty or speculative Specification must not be created merely for symmetry. A Configuration Specification becomes appropriate only when the unresolved runtime contract has been established sufficiently to state a truthful implementation-facing contract.
 
-The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
+The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Log Publication Architecture](LOG_PUBLICATION.md) owns runtime log-publication classes, eligibility and publication boundaries. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
 
 ## Specification Jurisdiction
 
@@ -121,7 +121,7 @@ Logging is a supported high-level choice for useful normal operational logging s
 
 It is not a promise that every internal diagnostic, probe, trace or cadence becomes player-configurable.
 
-The exact runtime logging contract, default and persistence semantics are not yet defined.
+The runtime log-publication contract is owned by [Log Publication Architecture](LOG_PUBLICATION.md): NORMAL, DEBUG and DIAGNOSTIC are cumulative internal publication classes with severity orthogonal to class. Configuration still owns the supported player-facing Logging choice, its default/persistence/change semantics and the eventual mapping of that choice into a resolved runtime publication policy.
 
 ### Debug
 
@@ -129,7 +129,7 @@ Debug is a supported high-level choice for substantially more detailed engineeri
 
 It does not create player ownership of individual probes, sample periods, diagnostic HUDs or internal instrumentation switches.
 
-The exact relationship between Debug, Logging and existing internal diagnostics remains unresolved. Configuration must eventually define the supported meaning without exposing the internal instrumentation topology as the public contract.
+Log Publication defines DEBUG as support-grade causal publication and DIAGNOSTIC as targeted engineering publication, while diagnostic instrument activation remains a separate upstream responsibility. Configuration must still define how the supported Debug choice maps into those internal capabilities without exposing individual probes, instruments or implementation topology as the public contract.
 
 ## 4. Core capabilities are not separate Configuration
 
@@ -189,7 +189,9 @@ Configuration
    |         subject to independent runtime authority
    |
    `-- HUD / Logging / Debug
-          -> presentation and instrumentation choices only
+          -> supported presentation/instrumentation choices;
+             Logging/Debug eventually map into resolved
+             Log Publication / diagnostic-activation policy
 ```
 
 Configuration does not:
@@ -281,7 +283,7 @@ The following Configuration contract areas are intentionally unresolved rather t
 - supported defaults for the initial four settings;
 - safe disablement completion evidence and transition sequence;
 - runtime interface shape and ownership boundary;
-- Logging versus Debug semantics and their relationship to internal diagnostics;
+- mapping the supported Logging/Debug choices into resolved Log Publication policy and diagnostic-instrument activation;
 - persistence API and storage mechanism;
 - preference lifecycle scope;
 - multiplayer/server-client ownership;

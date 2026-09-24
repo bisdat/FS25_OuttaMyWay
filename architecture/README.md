@@ -38,6 +38,9 @@ Other direct live Architecture responsibilities are:
   scope, and product-level direction;
 - [Configuration Architecture](CONFIGURATION.md) — supported player-choice and
   consent surface, admission rules, defaults, persistence, and authority boundaries;
+- [Log Publication Architecture](LOG_PUBLICATION.md) — controlled projection of
+  already-established runtime/engineering facts into NORMAL, DEBUG and DIAGNOSTIC
+  GIANTS-log publication without acquiring semantic authority;
 - [GUI Architecture](GUI.md) — deferred player-facing interface and communication
   architecture responsibility.
 

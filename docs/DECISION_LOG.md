@@ -1,3 +1,33 @@
+## D-0222 — Establish Log Publication as an Independent Cross-Cutting Jurisdiction
+
+**Status:** Accepted owner decision.
+
+**Decision:** Establish **Log Publication** as a first-class Specification Jurisdiction responsible for controlled projection of already-established runtime or engineering facts into the GIANTS log.
+
+Semantic owners and diagnostic instruments retain event meaning, publication class, severity, stable human-readable event code, role vocabulary and reason/outcome semantics. Log Publication owns only resolved publication eligibility, the early suppression boundary, common rendering envelope, severity routing after admission and delivery to the GIANTS log.
+
+A publication request is ephemeral and splits into a cheap **Publication Descriptor** (event code, class, severity, origin) and a deferred **Publication Payload** (context and semantic detail). Eligibility is decided before avoidable Payload work.
+
+Publication classes are cumulative: `NORMAL ⊂ DEBUG ⊂ DIAGNOSTIC`. NORMAL is a sparse lifecycle/intervention journal; DEBUG is support-grade causal narrative; DIAGNOSTIC is targeted engineering evidence. Severity is orthogonal and cannot promote a narrower-class event. Diagnostic publication and diagnostic-instrument activation remain separate.
+
+Stable event codes are readable semantic identifiers such as `REGULATION_STARTED`, not opaque catalogue keys such as `L001`. Publication context is supplied by the semantic owner rather than rediscovered by the publisher. Operation identity is authoritative where an event is Operation-scoped, while field number is a human-readable locator.
+
+Job Episode and Local Operation lifecycle publication remain separate because Job Episode admission may precede Operation participation. Global product activation publication is likewise separate from Job Episode Bootstrap.
+
+> **Publication Authority != Semantic Authority**
+
+> **Publication Event != Runtime Entity**
+
+> **Publication Eligibility Precedes Presentation Construction**
+
+> **Evidence Production != Evidence Publication**
+
+> **Normal Event Ownership Follows Semantic Authority**
+
+**Reason:** Stage 2B of Issue #152 showed that current direct `Logging.*` publication is distributed across semantic, Control and diagnostic layers; the same intervention may be published by several implementation layers, while expensive publication preparation may occur even when a message is not due. Support needs also distinguish a sparse normal journal, a bounded causal DEBUG narrative and targeted high-detail engineering diagnostics.
+
+**Consequence:** `architecture/LOG_PUBLICATION.md` and `spec/LOG_PUBLICATION.md` become the authoritative Architecture/Specification route. The Specification initially uses the repository's explicit `NOT_IMPLEMENTED` state introduced by D-0221. Existing direct logging remains current mechanism/migration evidence and is not automatically classified as implementing the new Jurisdiction. Configuration retains player-facing names/defaults/persistence and mapping; GUI/HUD remains separate player communication responsibility.
+
 ## D-0221 — Mature Specifications May Precede Production Implementation
 
 **Status:** Accepted owner decision.
