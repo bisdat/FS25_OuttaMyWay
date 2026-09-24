@@ -275,15 +275,20 @@ def test_replay_has_no_physical_control_dispatch():
         assert token not in active
         assert token not in replay
 
+
 def test_v475_passive_live_modules_are_active_and_zero_control():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    for rel in ("scripts/observation/LiveObservationSource.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/contracts/PassiveLiveTraceRecord.lua"):
+    for rel in ("scripts/observation/LiveObservationSource.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/diagnostics/PassiveLiveValidator.lua"):
         assert rel in main
+    assert "scripts/contracts/PassiveLiveTraceRecord.lua" not in main
+    assert not (ROOT/"scripts"/"contracts"/"PassiveLiveTraceRecord.lua").exists()
     assert "addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)" in main
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     assert "decisionCommitmentBoundary:apply" not in validator
-    assert "bounded Control dispatch are already complete before trace publication" in validator
-
+    assert "bounded Control dispatch are already complete before diagnostic publication" in validator
+    assert "function Validator:_project(live)" in validator
+    assert "self.runtime.identities" not in validator
+    assert "self.runtime.epochs" not in validator
 
 def test_v475_live_source_does_not_import_archive_or_control():
     active="\n".join(p.read_text(encoding="utf-8") for p in (ROOT/"scripts").rglob("*.lua") if "archive" not in p.parts)
@@ -390,13 +395,13 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "cannot change after capture" in admission
 
 
+
 def test_v4711_parallel_validation_reports_global_operation_count():
-    trace=(ROOT/"scripts"/"contracts"/"PassiveLiveTraceRecord.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    assert "globalActiveOperationCount" in trace
+    assert "globalActiveOperationCount=OuttaMyWay.ValueRecord.length(self.runtime.operations:listActive())" in validator
     assert "globalOperations=%d" in validator
     assert "decisionCommitmentBoundary:apply" not in validator
-
+    assert "PassiveLiveTraceRecord" not in validator
 
 def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")

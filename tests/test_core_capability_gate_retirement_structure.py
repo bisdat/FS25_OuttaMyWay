@@ -83,10 +83,12 @@ def test_issue87_control_permission_is_typed_bounded_topology():
     assert "CONTROL_REQUEST_CAPABILITY_UNSUPPORTED" in dispatcher
     assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
 
+
 def test_issue87_passive_diagnostics_report_actual_bounded_dispatch_not_pseudo_authority_state():
     validator = read("scripts/diagnostics/PassiveLiveValidator.lua")
-    record = read("scripts/contracts/PassiveLiveTraceRecord.lua")
     assert "boundedControlDispatchStatus=dispatch.status" in validator
     assert "boundedControlRequestId=request and request.identity or nil" in validator
     assert "boundedControlOutcomeId=outcome and outcome.identity or nil" in validator
-    assert '"boundedControlDispatchStatus","boundedControlRequestId","boundedControlOutcomeId"' in record
+    assert "PassiveLiveTraceRecord" not in validator
+    assert "self.records" not in validator
+
