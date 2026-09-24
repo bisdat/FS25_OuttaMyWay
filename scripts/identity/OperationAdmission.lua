@@ -7,6 +7,14 @@ Admission.__index = Admission
 
 local publication=OuttaMyWay.LogPublication.origin("OPERATION_LIFECYCLE")
 
+local function joinValues(values,separator)
+    local result={}
+    for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        result[#result+1]=tostring(value)
+    end
+    return table.concat(result,separator or ",")
+end
+
 local OperationRecord = OuttaMyWay.ValueRecord.register(
     "OperationRecord",
     OuttaMyWay.ValueRecord.define(
@@ -69,7 +77,7 @@ local function operationPayload(jobEpisodes,record,fieldId,cause)
         operation=record.identity,
         field=fieldId,
         fieldWorld=record.fieldWorldReferenceKey,
-        members=table.concat(record.memberAssemblyIds or {},","),
+        members=joinValues(record.memberAssemblyIds,","),
         cause=cause
     }
 end
@@ -133,7 +141,7 @@ function Admission:_end(record, snapshot)
     self.activeByFieldWorld[record.fieldWorldReferenceKey] = nil
     publication:publish("NORMAL","INFO","OPERATION_ENDED",function(jobEpisodes,value,field,cause,members)
         local payload=operationPayload(jobEpisodes,value,field,cause)
-        payload.members=table.concat(members or {},",")
+        payload.members=joinValues(members,",")
         return payload
     end,self.jobEpisodes,ended,fieldId,"MEMBERSHIP_ZERO",memberAssemblyIds)
     return ended

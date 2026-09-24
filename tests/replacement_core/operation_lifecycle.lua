@@ -189,6 +189,9 @@ test("authoritative Job Episode and Operation transitions publish the NORMAL lif
         if string.find(joined,"["..code.."]",1,true)==nil then error("missing NORMAL lifecycle publication "..code) end
     end
     if string.find(joined,"field=77",1,true)==nil then error("expected player-facing field locator") end
+    if string.find(joined,"[OPERATION_STARTED]",1,true)~=nil and string.find(joined,"members=AS-J",1,true)==nil then
+        error("expected Operation lifecycle publication to preserve sealed member identity")
+    end
 end)
 
 print(string.format("operation lifecycle focused validation: %d passed, %d failed",passed,failed))

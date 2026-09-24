@@ -5306,6 +5306,13 @@ test("Cooperative Passage: Action-Space Regulation releases only on positive set
 end)
 
 test("Cooperative Passage Established Conflict crosses Candidate Decision Commitment and central Control dispatch",function()
+    local previousLogging=Logging
+    local passagePublications={}
+    Logging={
+        info=function(formatText,message) passagePublications[#passagePublications+1]=string.format(formatText,message) end,
+        warning=function(formatText,message) passagePublications[#passagePublications+1]=string.format(formatText,message) end,
+        error=function(formatText,message) passagePublications[#passagePublications+1]=string.format(formatText,message) end
+    }
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
     local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
@@ -5337,6 +5344,10 @@ test("Cooperative Passage Established Conflict crosses Candidate Decision Commit
     control.handler({status="SUCCEEDED",commitmentId=dispatched.commitment.identity,evidence={kind="TEST_PASSAGE_COMPLETION"}})
     equal(runtime.commitments:get(dispatched.commitment.identity).state,"SUCCEEDED")
     equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(dispatched.commitment.identity),nil)
+    local joined=table.concat(passagePublications,"\n")
+    if string.find(joined,"[COOPERATIVE_PASSAGE_STARTED]",1,true)==nil then error("missing Cooperative Passage NORMAL start publication") end
+    if string.find(joined,"participants=AS-A,AS-B",1,true)==nil then error("Passage publication lost sealed participant identities") end
+    Logging=previousLogging
 end)
 
 test("Cooperative Passage: production Candidate binds each Passage Leg to exact assembly and Job Episode",function()

@@ -6,6 +6,14 @@ local Authority = OuttaMyWay.ResponsibilityTransitionAuthority
 Authority.__index = Authority
 
 local publication=OuttaMyWay.LogPublication.origin("RESPONSIBILITY_TRANSITION")
+
+local function joinValues(values,separator)
+    local result={}
+    for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        result[#result+1]=tostring(value)
+    end
+    return table.concat(result,separator or ",")
+end
 local function logInfo(code,formatText,...)
     return publication:info("DEBUG",code,formatText,...)
 end
@@ -76,10 +84,10 @@ local function resolutionPayload(runtime,current,commitmentId,reason)
         reason=reason
     }
     if kind=="COOPERATIVE_PASSAGE" then
-        payload.participants=table.concat(current.beneficiaryAssemblyIds or {},",")
+        payload.participants=joinValues(current.beneficiaryAssemblyIds,",")
     elseif kind=="CAUSAL_OBSTRUCTION_RELOCATION" then
         payload.blocker=(current.controlledSubjectAssemblyIds or {})[1]
-        payload.beneficiaries=table.concat(current.beneficiaryAssemblyIds or {},",")
+        payload.beneficiaries=joinValues(current.beneficiaryAssemblyIds,",")
     end
     local commitment=runtime and runtime.commitments and runtime.commitments:get(commitmentId) or nil
     if commitment~=nil and OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then payload.outcome=commitment.state end
