@@ -18,6 +18,14 @@ Specification Jurisdiction tables in Architecture are the complete inventory of 
 |---|---|---|---|
 | Breadcrumb Completeness | Accepted | Live knowledge is intentionally discoverable through direct-child README navigation. A missing link is an Orphan Signal requiring responsibility review, not automatic proof of staleness or deletion. | [Engineering Architecture](ENGINEERING_ARCHITECTURE.md#predictable-knowledge-placement) |
 
+## Publication and observability concepts
+
+| Concept | Status | Current meaning / boundary | Authority |
+|---|---|---|---|
+| Log Publication Policy | Accepted | Controls eligibility and common GIANTS-log publication of already-classified semantic/diagnostic events without acquiring semantic authority. | [Log Publication Architecture](../architecture/LOG_PUBLICATION.md#purpose-and-architectural-boundary) |
+| Publication Descriptor / Payload Boundary | Accepted | Cheap event classification reaches policy before any avoidable publication-only context/evidence construction; suppressed publication therefore stops before Payload work. | [Publication Event, Descriptor and Payload](../architecture/LOG_PUBLICATION.md#2-publication-event-descriptor-and-payload) |
+| Support Escalation Ladder | Accepted | NORMAL records sparse lifecycle/intervention facts, DEBUG provides support-grade causal narrative, and targeted DIAGNOSTIC publication exposes deeper engineering evidence only after narrower investigation warrants it. | [Publication classes and support escalation](../architecture/LOG_PUBLICATION.md#3-publication-classes-and-support-escalation) |
+
 ## Runtime responsibility concepts
 
 | Concept | Status | Current meaning / boundary | Authority |
