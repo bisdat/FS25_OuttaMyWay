@@ -14,9 +14,9 @@ Support.__index = Support
 -- Diagnostic Publication Window != Passage Search Horizon.
 local COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("CANDIDATE_SUPPORT")
+local function logInfo(code,formatText,...)
+    return publication:info("DIAGNOSTIC",code,formatText,...)
 end
 
 function Support.new(identityRegistry,epochSequence,passiveSupport)
@@ -356,7 +356,7 @@ local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
         candidateSpecifications={specification},provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
     }
     local action=item.action
-    logInfo("ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
+    logInfo("ACTION_SPACE_REGULATION_SUPPORTED","conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
         tostring(item.relation.identity),tostring(item.relation.classification),tostring(action.admissionKind or "CURRENT_EXCURSION"),tostring(action.regulatedReferenceKey or action.regulatedAssemblyId),tostring(action.protectedReferenceKey or action.excursionReferenceKey or action.protectedAssemblyId or action.excursionAssemblyId),tostring(action.roleBasis or "CURRENT_EXCURSION_STABLE_PARTICIPANT"),
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
@@ -629,6 +629,8 @@ end
 -- Decision, Responsibility, Authority or Control meaning.
 local function traceProjectedPassageRejection(self,relation,reason,rejected,fallbackActionSpaceSupported)
     if type(relation)~="table" or type(relation.identity)~="string" then return end
+    local eligible=publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_PROJECTED_REJECTED")
+    if eligible~=true then return end
     local allRejected={{conflictIdentity=relation.identity,reason=reason,rejected=rejected or {}}}
     local rejectionKey,rejectionText=passageRejectionTelemetry(allRejected)
     local signature=table.concat({
@@ -638,11 +640,11 @@ local function traceProjectedPassageRejection(self,relation,reason,rejected,fall
     },"|")
     if self.projectedPassageRejectionTraceKeys[relation.identity]~=signature then
         self.projectedPassageRejectionTraceKeys[relation.identity]=signature
-        logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTED conflict=%s classification=%s passageEligible=%s fallbackActionSpaceSupported=%s %s",
+        logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTED","conflict=%s classification=%s passageEligible=%s fallbackActionSpaceSupported=%s %s",
             tostring(relation.identity),tostring(relation.classification),tostring(relation.cooperativePassageEligible~=false),
             tostring(fallbackActionSpaceSupported==true),tostring(rejectionText or ("reason="..tostring(reason))))
         for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(allRejected)) do
-            logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL %s",clearanceTrace)
+            logInfo("COOPERATIVE_PASSAGE_PROJECTED_REJECTION_DETAIL","%s",clearanceTrace)
         end
     end
 end
@@ -719,7 +721,7 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
         specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
             targetPictureId,values,item,requirement,existing,representationId)
     end
-    logInfo("CORNER_RIGHT_OF_WAY_CANDIDATES_SUPPORTED situation=%s corner=%s participants=%s/%s targetPicture=%s decisionAllocation=true",
+    logInfo("CORNER_RIGHT_OF_WAY_CANDIDATES_SUPPORTED","situation=%s corner=%s participants=%s/%s targetPicture=%s decisionAllocation=true",
         tostring(situation.identity),tostring(situation.cornerKey),tostring(participants[1].assemblyId),
         tostring(participants[2].assemblyId),tostring(targetPictureId))
     return {
@@ -741,7 +743,7 @@ local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPict
     local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
     local specification=makeActionSpaceRegulationCandidate(targetPictureId,values,item,requirement,existing,representationId)
     local action=item.action
-    logInfo("ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
+    logInfo("ACTION_SPACE_REGULATION_SUPPORTED","conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
         tostring(item.relation.identity),tostring(item.relation.classification),tostring(action.admissionKind or "CURRENT_EXCURSION"),tostring(action.regulatedReferenceKey or action.regulatedAssemblyId),tostring(action.protectedReferenceKey or action.excursionReferenceKey or action.protectedAssemblyId or action.excursionAssemblyId),tostring(action.roleBasis or "CURRENT_EXCURSION_STABLE_PARTICIPANT"),
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
@@ -814,7 +816,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
                 end
                 local governingRequirementKey=cooperativePassageRequirementKey(plan)
                 local specification=makeCooperativePassageCandidate(targetPictureId,values,plan,governingRequirementKey)
-                logInfo("COOPERATIVE_PASSAGE_SUPPORTED conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
+                logInfo("COOPERATIVE_PASSAGE_SUPPORTED","conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
                     tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tostring(targetPictureId))
                 return {
                     supportBoundary={mode="COOPERATIVE_PASSAGE",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
@@ -860,11 +862,16 @@ function Support:publishDecisionPicture(picture,snapshot)
     -- There is no feature switch or retired prototype fallback path to resurrect.
         local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
         if plan==nil then
-            for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(rejected)) do logInfo("%s",clearanceTrace) end
-            local rejectionKey,rejectionText=passageRejectionTelemetry(rejected)
-            if rejectionKey~=nil and rejectionKey~=self.lastPassageRejectionTraceKey then
-                self.lastPassageRejectionTraceKey=rejectionKey
-                logInfo("COOPERATIVE_PASSAGE_REJECTED %s",rejectionText)
+            local diagnosticEligible=publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_CLEARANCE_REJECTION_DETAIL")
+            if diagnosticEligible==true then
+                for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(rejected)) do
+                    logInfo("COOPERATIVE_PASSAGE_CLEARANCE_REJECTION_DETAIL","%s",clearanceTrace)
+                end
+                local rejectionKey,rejectionText=passageRejectionTelemetry(rejected)
+                if rejectionKey~=nil and rejectionKey~=self.lastPassageRejectionTraceKey then
+                    self.lastPassageRejectionTraceKey=rejectionKey
+                    logInfo("COOPERATIVE_PASSAGE_REJECTED","%s",rejectionText)
+                end
             end
             local actionSpace,actionReason=actionSpaceRegulationRecord(picture)
             if actionSpace~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,actionSpace) end
@@ -875,8 +882,11 @@ function Support:publishDecisionPicture(picture,snapshot)
             return self.passiveSupport:publishDecisionPicture(picture,snapshot)
         end
         self.lastPassageRejectionTraceKey=nil
-        local selectedClearanceTrace=passageClearanceSelectedTelemetry(plan)
-        if selectedClearanceTrace~=nil then logInfo("%s",selectedClearanceTrace) end
+        local selectedTraceEligible=publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_CLEARANCE_SELECTED_DETAIL")
+        if selectedTraceEligible==true then
+            local selectedClearanceTrace=passageClearanceSelectedTelemetry(plan)
+            if selectedClearanceTrace~=nil then logInfo("COOPERATIVE_PASSAGE_CLEARANCE_SELECTED_DETAIL","%s",selectedClearanceTrace) end
+        end
         if follower~=nil and not followerMatchesCooperative(follower,{assemblyIds=plan.assemblyIds or {}}) then
             return publishFollowerBoundaryPicture(self,picture,snapshot,follower)
         end
@@ -892,7 +902,8 @@ function Support:publishDecisionPicture(picture,snapshot)
         values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",followerBoundarySupportingLeaseRetained=follower~=nil}
         local governingRequirementKey=cooperativePassageRequirementKey(plan)
         local traceKey=tostring(plan.conflictIdentity)
-        local firstTrace=self.lastCooperativeTraceKey~=traceKey
+        local selectionTraceEligible=publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_SELECTED")
+        local firstTrace=selectionTraceEligible==true and self.lastCooperativeTraceKey~=traceKey
         if firstTrace then
             self.lastCooperativeTraceKey=traceKey
             local arrangement=plan.passageArrangement or {}; local guide=plan.passageGuide or {}; local sweep=guide.pairSweepSupport or {}
@@ -900,7 +911,7 @@ function Support:publishDecisionPicture(picture,snapshot)
             local c1=participants[1] or {}; local c2=participants[2] or {}
             local theatre=plan.passageCapableTheatre or {}; local reacquisition=theatre.lateralExcursionReacquisition or {}
             local subjectReacquisition=reacquisition.subject or {}; local otherReacquisition=reacquisition.other or {}
-            logInfo("COOPERATIVE_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d crossingForward=%.2f lateralExcursionRequired=%s/%s reacquisition=%.2f/%.2f theatreComplete=%s minimumRepresentedClearance=%.2f searchIndex=%s",
+            logInfo("COOPERATIVE_PASSAGE_SELECTED","conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d crossingForward=%.2f lateralExcursionRequired=%s/%s reacquisition=%.2f/%.2f theatreComplete=%s minimumRepresentedClearance=%.2f searchIndex=%s",
                 tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.nominalInterAssemblyClearanceM) or -1,tonumber(arrangement.policyRequiredSeparationM) or -1,tonumber(arrangement.currentPolicyReserveM) or -1,
                 tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(sweep.supportBasis or "n/a"),tostring(plan.passageExcursion and plan.passageExcursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.clearanceDeficitM) or 0,
                 tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"),tonumber(config.totalConfigurationReleasedSpaceM) or 0,tostring(c1.expectedCompactConfigurationProfileId or c1.currentConfigurationProfileId or "n/a"),tostring(c2.expectedCompactConfigurationProfileId or c2.currentConfigurationProfileId or "n/a"),

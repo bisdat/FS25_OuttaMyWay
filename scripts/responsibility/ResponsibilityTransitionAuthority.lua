@@ -5,15 +5,95 @@ OuttaMyWay.ResponsibilityTransitionAuthority = {}
 local Authority = OuttaMyWay.ResponsibilityTransitionAuthority
 Authority.__index = Authority
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("RESPONSIBILITY_TRANSITION")
+local function logInfo(code,formatText,...)
+    return publication:info("DEBUG",code,formatText,...)
+end
+local function logWarning(code,formatText,...)
+    return publication:warning("NORMAL",code,formatText,...)
 end
 
 local function hasPrefix(value,prefix)
     return type(value)=="string"
         and type(prefix)=="string"
         and string.sub(value,1,string.len(prefix))==prefix
+end
+
+local function fieldForOperation(runtime,operationId)
+    if type(operationId)~="string" or runtime==nil or runtime.operations==nil then return nil end
+    local operation=type(runtime.operations.get)=="function" and runtime.operations:get(operationId) or nil
+    if operation==nil or runtime.jobEpisodes==nil then return nil end
+    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(operation.memberJobEpisodeIds or {}) do
+        local episode=runtime.jobEpisodes:get(episodeId)
+        if episode~=nil and episode.playerFacingFieldId~=nil then return episode.playerFacingFieldId end
+    end
+    return nil
+end
+
+local function regulationPayload(runtime,current,reason)
+    local provenance=current and current.provenance or {}
+    local operationId=provenance.operationId
+    return {
+        operation=operationId,
+        field=fieldForOperation(runtime,operationId),
+        responsibility=current and current.identity or nil,
+        commitment=provenance.retainedCommitmentId,
+        regulated=provenance.regulatedAssemblyId or provenance.followerAssemblyId,
+        protected=provenance.protectedAssemblyId or provenance.leaderAssemblyId,
+        pair=provenance.pairKey,
+        admission=provenance.admissionKind,
+        reason=reason
+    }
+end
+
+local function resolutionKind(current)
+    local purpose=current and current.purpose or nil
+    return type(purpose)=="table" and purpose.kind or nil
+end
+
+local function resolutionOperationId(current)
+    local ids=current and current.governingBasis and current.governingBasis.operationIds or nil
+    if OuttaMyWay.ValueRecord.length(ids or {})==1 then return ids[1] end
+    return nil
+end
+
+local function resolutionEventCode(current,suffix)
+    local kind=resolutionKind(current)
+    if kind=="COOPERATIVE_PASSAGE" then return "COOPERATIVE_PASSAGE_"..suffix end
+    if kind=="CAUSAL_OBSTRUCTION_RELOCATION" then return "OBSTRUCTION_RELOCATION_"..suffix end
+    return nil
+end
+
+local function resolutionPayload(runtime,current,commitmentId,reason)
+    local operationId=resolutionOperationId(current)
+    local kind=resolutionKind(current)
+    local payload={
+        operation=operationId,
+        field=fieldForOperation(runtime,operationId),
+        responsibility=current and current.identity or nil,
+        commitment=commitmentId,
+        purpose=kind,
+        reason=reason
+    }
+    if kind=="COOPERATIVE_PASSAGE" then
+        payload.participants=table.concat(current.beneficiaryAssemblyIds or {},",")
+    elseif kind=="CAUSAL_OBSTRUCTION_RELOCATION" then
+        payload.blocker=(current.controlledSubjectAssemblyIds or {})[1]
+        payload.beneficiaries=table.concat(current.beneficiaryAssemblyIds or {},",")
+    end
+    local commitment=runtime and runtime.commitments and runtime.commitments:get(commitmentId) or nil
+    if commitment~=nil and OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then payload.outcome=commitment.state end
+    return payload
+end
+
+local function publishRegulation(runtime,current,suffix,reason)
+    if current==nil then return end
+    publication:publish("NORMAL","INFO","REGULATION_"..suffix,regulationPayload,runtime,current,reason)
+end
+
+local function publishResolution(runtime,current,commitmentId,suffix,reason)
+    local code=resolutionEventCode(current,suffix)
+    if code~=nil then publication:publish("NORMAL","INFO",code,resolutionPayload,runtime,current,commitmentId,reason) end
 end
 
 local function selectedBridge(evaluated,name)
@@ -98,6 +178,7 @@ function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
                 regulatedAssemblyId=preflight.regulatedAssemblyId,protectedAssemblyId=preflight.protectedAssemblyId}
         })
         self.regulationsByCommitmentId[commitment.identity]=current
+        publishRegulation(self.runtime,current,"STARTED","ESTABLISHED")
         return current,nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
@@ -230,7 +311,9 @@ function Authority:replaceRegulationWithCooperativePassage(current,preflight,pic
     if retired==nil or retired.settled==nil then return nil,retireReason or (retired and retired.reason) or "REGULATION_PREDECESSOR_CLEANUP_FAILED" end
     self.regulationsByCommitmentId[preflight.commitmentId]=nil
     self.resolutionsByCommitmentId[preflight.commitmentId]=applied.currentResponsibility
-    logInfo("RESPONSIBILITY_REPLACED predecessor=%s predecessorKind=REGULATION successor=%s successorKind=RESOLUTION_COMMITMENT commitment=%s atomic=true beforePhysicalDispatch=true",
+    publishRegulation(self.runtime,current,"ENDED","REPLACED_BY_COOPERATIVE_PASSAGE")
+    publishResolution(self.runtime,applied.currentResponsibility,applied.commitment.identity,"STARTED","REPLACED_REGULATION")
+    logInfo("RESPONSIBILITY_REPLACED","predecessor=%s predecessorKind=REGULATION successor=%s successorKind=RESOLUTION_COMMITMENT commitment=%s atomic=true beforePhysicalDispatch=true",
         tostring(current.identity),tostring(applied.currentResponsibility.identity),tostring(applied.commitment.identity))
     return applied,nil
 end
@@ -286,17 +369,19 @@ function Authority:refreshCooperativePassageResolutionCommitment(commitmentId)
     return refreshed,nil
 end
 
-function Authority:terminateRegulation(commitmentId)
+function Authority:terminateRegulation(commitmentId,reason)
     local current=self.regulationsByCommitmentId[commitmentId]
     if current~=nil and self.runtime.boundedAuthority~=nil then self.runtime.boundedAuthority:releaseForResponsibility(current.identity,"REGULATION_RESPONSIBILITY_TERMINATED") end
     self.regulationsByCommitmentId[commitmentId]=nil
+    if current~=nil then publishRegulation(self.runtime,current,"ENDED",reason or "RESPONSIBILITY_TERMINATED") end
     return true
 end
 
-function Authority:terminateResolutionCommitment(commitmentId)
+function Authority:terminateResolutionCommitment(commitmentId,reason)
     local current=self.resolutionsByCommitmentId[commitmentId]
     if current~=nil and self.runtime.boundedAuthority~=nil then self.runtime.boundedAuthority:releaseForResponsibility(current.identity,"RESOLUTION_RESPONSIBILITY_TERMINATED") end
     self.resolutionsByCommitmentId[commitmentId]=nil
+    if current~=nil then publishResolution(self.runtime,current,commitmentId,"ENDED",reason or "RESPONSIBILITY_TERMINATED") end
     return true
 end
 
@@ -309,6 +394,8 @@ function Authority:terminateSemanticResponsibilitiesForTerminalCommitment(commit
     end
     self.regulationsByCommitmentId[commitmentId]=nil
     self.resolutionsByCommitmentId[commitmentId]=nil
+    if regulation~=nil then publishRegulation(self.runtime,regulation,"ENDED","TERMINAL_COMMITMENT") end
+    if resolution~=nil then publishResolution(self.runtime,resolution,commitmentId,"ENDED","TERMINAL_COMMITMENT") end
     return true
 end
 
@@ -494,6 +581,9 @@ function Authority:transitionCooperativePassageResolution(picture,evaluated,read
     end
 
     self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
+    if not responsibilityAlreadyCurrent then
+        publishResolution(self.runtime,applied.currentResponsibility,applied.commitment.identity,"STARTED","ESTABLISHED")
+    end
     return applied,nil
 end
 
@@ -516,6 +606,9 @@ function Authority:transitionObstructionRelocationResolution(picture,evaluated,r
     })
     if applied==nil then return nil,reason end
     self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
+    if not responsibilityAlreadyCurrent then
+        publishResolution(self.runtime,applied.currentResponsibility,applied.commitment.identity,"STARTED","ESTABLISHED")
+    end
     return applied,nil
 end
 
@@ -556,7 +649,8 @@ function Authority:preflightFollowerRegulation(picture,evaluated)
     if current~=nil and current.provenance.retainedCommitmentId~=bridge.existingCommitmentId then
         return nil,"FOLLOWER_REGULATION_PREFLIGHT_CONTINUITY_MISMATCH"
     end
-    return {current=current,pairKey=bridge.pairKey},nil
+    return {current=current,pairKey=bridge.pairKey,operationId=bridge.operationId,
+        leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId},nil
 end
 
 function Authority:establishOrPreserveFollowerRegulation(preflight,applied)
@@ -571,8 +665,10 @@ function Authority:establishOrPreserveFollowerRegulation(preflight,applied)
     end
     current=OuttaMyWay.Regulation.new({identity=self.runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",
         governingBasis=commitment.governingBasis,
-        provenance={source="FollowerBoundaryResponsibilityTransition",pairKey=preflight.pairKey,retainedCommitmentId=commitment.identity}})
+        provenance={source="FollowerBoundaryResponsibilityTransition",pairKey=preflight.pairKey,retainedCommitmentId=commitment.identity,
+            operationId=preflight.operationId,leaderAssemblyId=preflight.leaderAssemblyId,followerAssemblyId=preflight.followerAssemblyId}})
     self.regulationsByCommitmentId[commitment.identity]=current
+    publishRegulation(self.runtime,current,"STARTED","ESTABLISHED")
     return current,nil
 end
 
@@ -681,7 +777,9 @@ function Authority:replaceIndependentRegulationWithCooperativePassage(picture,ev
 
     self.regulationsByCommitmentId[predecessorId]=nil
     self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
-    logInfo("RESPONSIBILITY_REPLACED predecessor=%s predecessorKind=REGULATION predecessorCommitment=%s successor=%s successorKind=RESOLUTION_COMMITMENT successorCommitment=%s crossContext=true atomicCycle=true beforePhysicalDispatch=true",
+    publishRegulation(self.runtime,current,"ENDED","REPLACED_BY_COOPERATIVE_PASSAGE")
+    publishResolution(self.runtime,applied.currentResponsibility,applied.commitment.identity,"STARTED","REPLACED_REGULATION")
+    logInfo("RESPONSIBILITY_REPLACED","predecessor=%s predecessorKind=REGULATION predecessorCommitment=%s successor=%s successorKind=RESOLUTION_COMMITMENT successorCommitment=%s crossContext=true atomicCycle=true beforePhysicalDispatch=true",
         tostring(current.identity),tostring(predecessorId),tostring(applied.currentResponsibility.identity),tostring(applied.commitment.identity))
     return applied,nil
 end
@@ -779,7 +877,7 @@ function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitmen
         successorConflictIdentity=bridge.conflictIdentity
     })
     if settled==nil then
-        logInfo("ACTION_SPACE_REGULATION_PASSAGE_SUPERSESSION commitment=%s conflict=%s physicalLeaseCleared=true obligationSettlement=%s",tostring(commitment.identity),tostring(current.provenance.conflictIdentity),tostring(reason))
+        logWarning("REGULATION_PASSAGE_SUPERSESSION_FAILED","commitment=%s conflict=%s physicalLeaseCleared=true obligationSettlement=%s",tostring(commitment.identity),tostring(current.provenance.conflictIdentity),tostring(reason))
     end
     return {settled=settled,reason=reason,physical=neutralized},nil
 end

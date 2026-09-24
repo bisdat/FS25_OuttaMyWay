@@ -5,13 +5,12 @@ OuttaMyWay.FollowerBoundaryResponsibilityTransition = {}
 local Transition = OuttaMyWay.FollowerBoundaryResponsibilityTransition
 Transition.__index = Transition
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("RESPONSIBILITY_TRANSITION")
+local function logInfo(code,formatText,...)
+    return publication:info("DEBUG",code,formatText,...)
 end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY][WARNING] "..message) end
+local function logWarning(code,formatText,...)
+    return publication:warning("DEBUG",code,formatText,...)
 end
 
 local function selectedCandidate(evaluated)
@@ -47,7 +46,7 @@ function Transition:transition(picture,evaluated,readiness)
     if preflight==nil then return nil,preflightReason end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision(self.runtime,picture,evaluated)
     if applied==nil then
-        logWarning("FOLLOWER_BOUNDARY_TRANSITION_REFUSED decision=%s candidate=%s pair=%s reason=%s",
+        logWarning("FOLLOWER_BOUNDARY_TRANSITION_REFUSED","decision=%s candidate=%s pair=%s reason=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.pairKey),tostring(reason))
         return nil,reason
     end
@@ -55,7 +54,7 @@ function Transition:transition(picture,evaluated,readiness)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
     local disposition=preflight.current==nil and "ESTABLISHED" or "REVALIDATED"
-    logInfo("FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM decision=%s candidate=%s pair=%s commitment=%s responsibility=%s leader=%s follower=%s commitmentAction=%s responsibilityDisposition=%s beforePhysicalDispatch=true",
+    logInfo("FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM","decision=%s candidate=%s pair=%s commitment=%s responsibility=%s leader=%s follower=%s commitmentAction=%s responsibilityDisposition=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.pairKey),tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(currentResponsibility.identity),tostring(bridge.leaderAssemblyId),tostring(bridge.followerAssemblyId),tostring(evaluated.decision.commitmentAction),disposition)
     return applied,nil

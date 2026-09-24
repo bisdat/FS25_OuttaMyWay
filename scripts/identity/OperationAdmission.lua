@@ -5,6 +5,8 @@ OuttaMyWay.OperationAdmission = {}
 local Admission = OuttaMyWay.OperationAdmission
 Admission.__index = Admission
 
+local publication=OuttaMyWay.LogPublication.origin("OPERATION_LIFECYCLE")
+
 local OperationRecord = OuttaMyWay.ValueRecord.register(
     "OperationRecord",
     OuttaMyWay.ValueRecord.define(
@@ -54,6 +56,24 @@ function Admission.new(identityRegistry, epochSequence, jobEpisodes)
     return self
 end
 
+local function playerFacingFieldId(jobEpisodes,episodeIds)
+    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(episodeIds or {}) do
+        local episode=jobEpisodes:get(episodeId)
+        if episode~=nil and episode.playerFacingFieldId~=nil then return episode.playerFacingFieldId end
+    end
+    return nil
+end
+
+local function operationPayload(jobEpisodes,record,fieldId,cause)
+    return {
+        operation=record.identity,
+        field=fieldId,
+        fieldWorld=record.fieldWorldReferenceKey,
+        members=table.concat(record.memberAssemblyIds or {},","),
+        cause=cause
+    }
+end
+
 local function fieldContext(snapshot)
     local fieldWorld = snapshot.fieldWorld
     if type(fieldWorld.referenceKey) ~= "string" or fieldWorld.referenceKey == "" then
@@ -78,6 +98,8 @@ function Admission:_admit(fieldWorldKey, memberAssemblyIds, memberEpisodeIds, sn
     })
     self.records[identity] = record
     self.activeByFieldWorld[fieldWorldKey] = identity
+    publication:publish("NORMAL","INFO","OPERATION_STARTED",operationPayload,
+        self.jobEpisodes,record,playerFacingFieldId(self.jobEpisodes,record.memberJobEpisodeIds),nil)
     return record
 end
 
@@ -95,6 +117,8 @@ function Admission:_update(record, memberAssemblyIds, memberEpisodeIds, snapshot
 end
 
 function Admission:_end(record, snapshot)
+    local fieldId=playerFacingFieldId(self.jobEpisodes,record.memberJobEpisodeIds)
+    local memberAssemblyIds=record.memberAssemblyIds
     local ended = OuttaMyWay.ValueRecord.update(record, {
         status = "ENDED",
         memberAssemblyIds = {},
@@ -107,6 +131,11 @@ function Admission:_end(record, snapshot)
     })
     self.records[record.identity] = ended
     self.activeByFieldWorld[record.fieldWorldReferenceKey] = nil
+    publication:publish("NORMAL","INFO","OPERATION_ENDED",function(jobEpisodes,value,field,cause,members)
+        local payload=operationPayload(jobEpisodes,value,field,cause)
+        payload.members=table.concat(members or {},",")
+        return payload
+    end,self.jobEpisodes,ended,fieldId,"MEMBERSHIP_ZERO",memberAssemblyIds)
     return ended
 end
 

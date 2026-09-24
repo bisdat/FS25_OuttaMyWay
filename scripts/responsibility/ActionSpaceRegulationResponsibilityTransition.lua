@@ -5,13 +5,12 @@ OuttaMyWay.ActionSpaceRegulationResponsibilityTransition = {}
 local Transition = OuttaMyWay.ActionSpaceRegulationResponsibilityTransition
 Transition.__index = Transition
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("RESPONSIBILITY_TRANSITION")
+local function logInfo(code,formatText,...)
+    return publication:info("DEBUG",code,formatText,...)
 end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY][WARNING] "..message) end
+local function logWarning(code,formatText,...)
+    return publication:warning("DEBUG",code,formatText,...)
 end
 
 local function selectedCandidate(evaluated)
@@ -49,7 +48,7 @@ function Transition:transition(picture,evaluated,readiness)
     if preflight==nil then return nil,preflightReason end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyActionSpaceRegulationDecision(self.runtime,picture,evaluated)
     if applied==nil then
-        logWarning("ACTION_SPACE_REGULATION_TRANSITION_REFUSED decision=%s candidate=%s conflict=%s context=%s reason=%s",
+        logWarning("ACTION_SPACE_REGULATION_TRANSITION_REFUSED","decision=%s candidate=%s conflict=%s context=%s reason=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(context),tostring(reason))
         return nil,reason
     end
@@ -57,7 +56,7 @@ function Transition:transition(picture,evaluated,readiness)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
     local disposition=preflight.current==nil and "ESTABLISHED" or "REVALIDATED"
-    logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM decision=%s candidate=%s conflict=%s commitment=%s responsibility=%s regulated=%s protected=%s commitmentAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
+    logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM","decision=%s candidate=%s conflict=%s commitment=%s responsibility=%s regulated=%s protected=%s commitmentAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(currentResponsibility.identity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),tostring(evaluated.decision.commitmentAction),disposition,tostring(context))
     return applied,nil

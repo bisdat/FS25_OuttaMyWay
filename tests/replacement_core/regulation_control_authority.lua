@@ -2,6 +2,9 @@ local root = arg[1] or "."
 local function load(relativePath) dofile(root .. "/" .. relativePath) end
 
 OuttaMyWay = {}
+load("scripts/config.lua")
+load("scripts/publication/LogPublication.lua")
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function() return "DIAGNOSTIC" end)
 load("scripts/contracts/ValueRecord.lua")
 load("scripts/contracts/ControlRequest.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")

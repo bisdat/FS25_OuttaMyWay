@@ -5,13 +5,9 @@ OuttaMyWay.CurrentPhysicalAssemblySource = {}
 local Source = OuttaMyWay.CurrentPhysicalAssemblySource
 Source.__index = Source
 
-local function logInfo(formatText, ...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then
-        Logging.info("[FS25_OuttaMyWay][CURRENT-PHYSICAL-ASSEMBLY] %s",message)
-    else
-        print("[FS25_OuttaMyWay][CURRENT-PHYSICAL-ASSEMBLY] "..message)
-    end
+local publication=OuttaMyWay.LogPublication.origin("OBSERVATION")
+local function logInfo(code,formatText,...)
+    return publication:info("DIAGNOSTIC",code,formatText,...)
 end
 
 local function safeCall(object,methodName,...)
@@ -197,7 +193,7 @@ function Source:observe(mission)
     local signature=recordSignature(self.records)
     if signature~=self.lastMissionSignature then
         self.lastMissionSignature=signature
-        logInfo("MISSION populationEntries=%d rootAssemblies=%d assemblies=%s",missionVehicleEntryCount,#self.records,signature)
+        logInfo("MISSION_ASSEMBLY_CENSUS","populationEntries=%d rootAssemblies=%d assemblies=%s",missionVehicleEntryCount,#self.records,signature)
     end
     return self.records,self.diagnostics
 end
@@ -257,7 +253,7 @@ function Source:observeFieldWorldPresence(records,snapshots,fieldWorldReferenceK
     local fieldKey=tostring(fieldWorldReferenceKey)
     if self.lastFieldSignatures[fieldKey]~=signature then
         self.lastFieldSignatures[fieldKey]=signature
-        logInfo("FIELD-WITNESS world=%s assemblies=%d witnessed=%s coverageComplete=false negativeExclusionAuthority=false",fieldKey,#result,signature)
+        logInfo("FIELD_WITNESS_CENSUS","world=%s assemblies=%d witnessed=%s coverageComplete=false negativeExclusionAuthority=false",fieldKey,#result,signature)
     end
     return result
 end

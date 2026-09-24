@@ -5,6 +5,23 @@ OuttaMyWay.JobEpisodeAdmission = {}
 local Admission = OuttaMyWay.JobEpisodeAdmission
 Admission.__index = Admission
 
+local publication=OuttaMyWay.LogPublication.origin("OPERATION_LIFECYCLE")
+local function jobEpisodePayload(record,cause)
+    local endedBySourceJob=type(record.terminalEvidence)=="table"
+        and type(record.terminalEvidence.sourceJobEndEvidence)=="table"
+        and record.terminalEvidence.sourceJobEndEvidence.observed==true
+    return {
+        field=record.playerFacingFieldId,
+        assembly=record.assemblyId,
+        jobEpisode=record.identity,
+        sourceJob=record.sourceJobToken,
+        cause=cause or record.terminalCause or (endedBySourceJob and "SOURCE_JOB_ENDED" or nil)
+    }
+end
+local function publishJobEpisode(code,record,cause)
+    return publication:publish("NORMAL","INFO",code,jobEpisodePayload,record,cause)
+end
+
 local JobEpisodeRecord = OuttaMyWay.ValueRecord.register(
     "JobEpisodeRecord",
     OuttaMyWay.ValueRecord.define(
@@ -97,6 +114,7 @@ function Admission:_admit(evidence, snapshot)
     })
     self.records[identity] = record
     self.activeByAssembly[evidence.assemblyId] = identity
+    publishJobEpisode("JOB_EPISODE_STARTED",record,nil)
     return record
 end
 
@@ -158,6 +176,7 @@ function Admission:_end(record, cause, evidence, snapshot)
     local updated = OuttaMyWay.ValueRecord.update(record, updates)
     self.records[record.identity] = updated
     self.activeByAssembly[record.assemblyId] = nil
+    publishJobEpisode("JOB_EPISODE_ENDED",updated,cause)
     return updated
 end
 

@@ -5,13 +5,9 @@ OuttaMyWay.CausalObstructionAssessment = {}
 local Assessment = OuttaMyWay.CausalObstructionAssessment
 Assessment.__index = Assessment
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then
-        Logging.info("[FS25_OuttaMyWay][CAUSAL-OBSTRUCTION] %s",message)
-    else
-        print("[FS25_OuttaMyWay][CAUSAL-OBSTRUCTION] "..message)
-    end
+local publication=OuttaMyWay.LogPublication.origin("SITUATION_ASSESSMENT")
+local function logInfo(code,formatText,...)
+    return publication:info("DIAGNOSTIC",code,formatText,...)
 end
 
 local function finite(value)
@@ -273,7 +269,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
     local signature=table.concat(signatureParts,",")
     if signature~=self.lastSignature then
         self.lastSignature=signature
-        logInfo("count=%d relations=%s",#records,signature~="" and signature or "none")
+        logInfo("CAUSAL_OBSTRUCTION_RELATION_CENSUS","count=%d relations=%s",#records,signature~="" and signature or "none")
     end
     return records
 end

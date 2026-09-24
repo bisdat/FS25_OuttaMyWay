@@ -13,8 +13,9 @@ Coordinator.__index=Coordinator
 -- bounded Control cycle. Diagnostics observe completed cycles; they do not own this clock.
 local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250
 
-local function logError(message)
-    if Logging~=nil and type(Logging.error)=="function" then Logging.error("[FS25_OuttaMyWay][LIVE-RUNTIME] %s",message) else print("[FS25_OuttaMyWay][LIVE-RUNTIME][ERROR] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("PRODUCT_RUNTIME")
+local function logError(publicationClass,code,formatText,...)
+    return publication:error(publicationClass,code,formatText,...)
 end
 local function rawContainsReference(raw, referenceKey)
     if referenceKey==nil then return false end
@@ -83,19 +84,19 @@ function Coordinator:update(dt)
                     live.bubbleBulletTime=bubbleResult
                 else
                     self.errorCount=self.errorCount+1
-                    logError("Bubble Bullet Time release assessment failed: "..tostring(bubbleResult))
+                    logError("NORMAL","BUBBLE_BULLET_TIME_RELEASE_ASSESSMENT_FAILED","detail=%s",tostring(bubbleResult))
                 end
             end
             if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeResult)=="function" then
                 local okDiagnostic,diagnosticError=pcall(self.diagnosticObserver.observeRuntimeResult,self.diagnosticObserver,live,due,nowMilliseconds)
                 if not okDiagnostic then
                     self.errorCount=self.errorCount+1
-                    logError("Diagnostic observer failed: "..tostring(diagnosticError))
+                    logError("DIAGNOSTIC","DIAGNOSTIC_OBSERVER_FAILED","detail=%s",tostring(diagnosticError))
                 end
             end
         else
             self.errorCount=self.errorCount+1
-            logError(tostring(live))
+            logError("NORMAL","LIVE_RUNTIME_PROCESSING_FAILED","detail=%s",tostring(live))
         end
     end
     self.cycleCount=self.cycleCount+1

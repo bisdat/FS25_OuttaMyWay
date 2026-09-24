@@ -5,6 +5,10 @@ OuttaMyWay = {}
 ClassIds={SHAPE=1}
 getHasClassId=function() return true end
 load("scripts/config.lua")
+load("scripts/publication/LogPublication.lua")
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function()
+    return OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"
+end)
 load("scripts/contracts/ValueRecord.lua")
 load("scripts/contracts/ObservationSnapshot.lua")
 load("scripts/contracts/OperationalPicture.lua")

@@ -49,7 +49,7 @@ The currently migrated primary Specifications are:
 | **Decision** | [`DECISION.md`](DECISION.md) |
 | **Bounded Authority** | [`BOUNDED_AUTHORITY.md`](BOUNDED_AUTHORITY.md) |
 | **Control** | [`CONTROL.md`](CONTROL.md) |
-| **Log Publication** | [`LOG_PUBLICATION.md`](LOG_PUBLICATION.md) — `NOT_IMPLEMENTED` |
+| **Log Publication** | [`LOG_PUBLICATION.md`](LOG_PUBLICATION.md) |
 
 All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Configuration** remains a Deferred Responsibility and therefore correctly has no placeholder Specification.
 

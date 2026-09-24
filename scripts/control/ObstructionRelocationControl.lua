@@ -15,13 +15,12 @@ Control.__index=Control
 -- Expiry reports physical execution failure; it does not prove semantic obstruction state.
 local BOUNDED_MOVE_WATCHDOG_MS=45000
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("CONTROL")
+local function logInfo(publicationClass,code,formatText,...)
+    return publication:info(publicationClass,code,formatText,...)
 end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL][WARNING] "..message) end
+local function logWarning(code,formatText,...)
+    return publication:warning("NORMAL",code,formatText,...)
 end
 local function numberText(value,format)
     if type(value)~="number" then return "nil" end
@@ -120,13 +119,13 @@ function Control:_complete(status,evidence)
             local neutralized,neutralEvidence=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
             completionEvidence.neutralization={performed=neutralized==true,evidence=type(neutralEvidence)=="table" and neutralEvidence or nil,reason=neutralized and nil or tostring(neutralEvidence)}
             if neutralized==true then
-                logInfo("ACTUATION_NEUTRALIZED commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
+                logInfo("DEBUG","OBSTRUCTION_RELOCATION_ACTUATION_NEUTRALIZED","commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
                     tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
                     self.actuationMechanism:getNeutralizeCallCount(),
                     steeringTelemetryText(type(neutralEvidence)=="table" and neutralEvidence.postNeutralizeSteering or nil))
             else
                 ownedCleanupFailed=true
-                logWarning("NEUTRALIZATION_FAILED commitment=%s reason=%s",tostring(state.commitmentId),tostring(neutralEvidence))
+                logWarning("OBSTRUCTION_RELOCATION_NEUTRALIZATION_FAILED","commitment=%s reason=%s",tostring(state.commitmentId),tostring(neutralEvidence))
             end
         end
     end
@@ -139,14 +138,14 @@ function Control:_complete(status,evidence)
             local released,releaseEvidence=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
             completionEvidence.activityContext={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
             if released==true then
-                logInfo("VEHICLE_ACTIVITY_CONTEXT_RELEASED commitment=%s assembly=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",
+                logInfo("DEBUG","OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_RELEASED","commitment=%s assembly=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",
                     tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
                     self.actuationMechanism:getActivityContextReleaseCallCount(),
                     tostring(type(releaseEvidence)=="table" and releaseEvidence.restoredForceIsActive or nil),
                     steeringTelemetryText(type(releaseEvidence)=="table" and releaseEvidence.postReleaseSteering or nil))
             elseif status~="PLAYER_CLAIM" and status~="SUPERSEDED" then
                 ownedCleanupFailed=true
-                logWarning("ACTIVITY_CONTEXT_RELEASE_FAILED commitment=%s reason=%s",tostring(state.commitmentId),tostring(releaseEvidence))
+                logWarning("OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_RELEASE_FAILED","commitment=%s reason=%s",tostring(state.commitmentId),tostring(releaseEvidence))
             end
         end
     end
@@ -163,7 +162,7 @@ function Control:_complete(status,evidence)
     self.active=nil
     self:_publish(state,finalStatus,completionEvidence)
     if finalStatus=="FAILED" then self.failedCount=self.failedCount+1 else self.completedCount=self.completedCount+1 end
-    logInfo("CONTROL_COMPLETE commitment=%s status=%s phase=%s",tostring(state.commitmentId),tostring(finalStatus),tostring(state.phase))
+    logInfo("DEBUG","OBSTRUCTION_RELOCATION_CONTROL_COMPLETE","commitment=%s status=%s phase=%s",tostring(state.commitmentId),tostring(finalStatus),tostring(state.phase))
     if type(self.completionHandler)=="function" then
         local context=state.completionContext or {}
         self.completionHandler({
@@ -248,7 +247,7 @@ function Control:executeControlRequest(request,candidate)
         return self:_rejectBeforeStart(request,target,status,"VEHICLE_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext))
     end
     state.activityContext=activityContext
-    logInfo("VEHICLE_ACTIVITY_CONTEXT_ACQUIRED commitment=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",
+    logInfo("DEBUG","OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_ACQUIRED","commitment=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
         self.actuationMechanism:getActivityContextAcquireCallCount(),
         tostring(activityContext.previousForceIsActive),
@@ -284,9 +283,9 @@ function Control:executeControlRequest(request,candidate)
         speedKmh=state.speedKmh,speedPolicy="NATIVE_MAX_FORWARD",continuousCourseCorrection=false,
         configurationResult=state.configurationResult,configurationEvidence=configurationEvidence
     })
-    logInfo("CONTROL_STARTED commitment=%s assembly=%s targetProgress=%.2fm speed=%.2fkmh configuration=%s",
+    logInfo("DEBUG","OBSTRUCTION_RELOCATION_CONTROL_STARTED","commitment=%s assembly=%s targetProgress=%.2fm speed=%.2fkmh configuration=%s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),state.targetProgressM,state.speedKmh,tostring(state.configurationResult))
-    logInfo("STEERING_BASELINE commitment=%s assembly=%s %s",
+    logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_BASELINE","commitment=%s assembly=%s %s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
         steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
     return true,"MANOEUVRE_STARTED"
@@ -307,12 +306,12 @@ function Control:update(dt)
         local now=tonumber(g_time) or 0
         if state.nextUpdateTelemetryLogged~=true then
             state.nextUpdateTelemetryLogged=true
-            logInfo("STEERING_NEXT_UPDATE commitment=%s assembly=%s %s",
+            logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_NEXT_UPDATE","commitment=%s assembly=%s %s",
                 tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
                 steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
         elseif state.lastSteeringHeartbeatAt==nil or now-state.lastSteeringHeartbeatAt>=1000 then
             state.lastSteeringHeartbeatAt=now
-            logInfo("STEERING_HEARTBEAT commitment=%s assembly=%s %s",
+            logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_HEARTBEAT","commitment=%s assembly=%s %s",
                 tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
                 steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
         end
@@ -350,12 +349,12 @@ function Control:update(dt)
     if state.directionEvidenceLogged~=true and type(result)=="table" then
         state.directionEvidenceLogged=true
         state.lastSteeringHeartbeatAt=tonumber(g_time) or 0
-        logInfo("INFIELD_ALIGNMENT_ACTUATION commitment=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",
+        logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_INFIELD_ALIGNMENT_ACTUATION","commitment=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",
             tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
             tonumber(result.localDirectionX) or 0,tonumber(result.localDirectionZ) or 0,
             tonumber(result.headingErrorDeg) or 0,tonumber(result.steeringAngleLimitDeg) or 0,
             tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0)
-        logInfo("STEERING_COMMAND_STATE commitment=%s assembly=%s %s",
+        logInfo("DIAGNOSTIC","OBSTRUCTION_RELOCATION_STEERING_COMMAND_STATE","commitment=%s assembly=%s %s",
             tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
             steeringTelemetryText(result.postCommandSteering))
     end

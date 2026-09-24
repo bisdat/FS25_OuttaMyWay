@@ -46,13 +46,12 @@ local COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M = 1.0
 -- cap each forward settlement command so Reality is re-evaluated after a short step.
 local COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M = 5.0
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PASSAGE] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PASSAGE] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("CONTROL")
+local function logInfo(publicationClass,code,formatText,...)
+    return publication:info(publicationClass,code,formatText,...)
 end
-local function logWarning(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][COOPERATIVE-PASSAGE] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PASSAGE][WARN] "..message) end
+local function logWarning(publicationClass,code,formatText,...)
+    return publication:warning(publicationClass,code,formatText,...)
 end
 
 local function safeCall(object,methodName,...)
@@ -186,8 +185,9 @@ function Control:mouseEvent() end
 
 function Control:loadMap()
     local ok,reason=self.driveMechanism:install()
-    logInfo("LOAD architecture=COOPERATIVE_PASSAGE transitGeometry=REQUIRED_FAIL_CLOSED mechanicalProfile=JOB_START_CAPABILITY_GUIDED_PASSAGE vehicleNameGate=false driveHook=%s reason=%s generalVehicleAuthority=false",
-        tostring(ok),tostring(reason or "ready"))
+    if not ok then
+        logWarning("NORMAL","COOPERATIVE_PASSAGE_DRIVE_MECHANISM_UNAVAILABLE","reason=%s",tostring(reason or "unknown"))
+    end
 end
 
 function Control:deleteMap()
@@ -424,7 +424,7 @@ function Control:_beginPassageSettling(run,reason)
     end
     self:_setPhase(run,"SETTLING",g_time or 0)
     local separation=self:_passageLongitudinalSeparation(run)
-    logInfo("COOPERATIVE_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm closingRate=%.2fmps timeToBoundary=%s action=HOLD_THEN_CONFIGURE",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_ENTRY_TRIGGER","commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm closingRate=%.2fmps timeToBoundary=%s action=HOLD_THEN_CONFIGURE",
         tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",
         tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1,
         tonumber(run.captureClosingRateMps) or 0,
@@ -491,7 +491,7 @@ function Control:_startLeg(run,phase,forwardM,lateralM,radiusM)
         end
     end
     self:_setPhase(run,phase,g_time or 0)
-    logInfo("LEG_START commitment=%s phase=%s forward=%.2fm lateral=%+.2fm/%+.2fm radius=%.2fm speed=%.1fkmh A=%s target=(%.2f,%.2f) B=%s target=(%.2f,%.2f)",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_LEG_START","commitment=%s phase=%s forward=%.2fm lateral=%+.2fm/%+.2fm radius=%.2fm speed=%.1fkmh A=%s target=(%.2f,%.2f) B=%s target=(%.2f,%.2f)",
         tostring(run.commitmentId),phase,forwardM,lateralM,-lateralM,radiusM,run.speedKmh,
         run.a.name,run.a.targetX,run.a.targetZ,run.b.name,run.b.targetX,run.b.targetZ)
     return true
@@ -553,7 +553,7 @@ function Control:_startGuideGate(run,index)
     end
     run.guideIndex=index
     self:_setPhase(run,"GUIDE_"..tostring(gate.kind or index),g_time or 0)
-    logInfo("GUIDE_START commitment=%s guide=%s gate=%d/%d kind=%s speed=%.1fkmh A=%s target=(%.2f,%.2f) r=%.2f B=%s target=(%.2f,%.2f) r=%.2f",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_GUIDE_START","commitment=%s guide=%s gate=%d/%d kind=%s speed=%.1fkmh A=%s target=(%.2f,%.2f) r=%.2f B=%s target=(%.2f,%.2f) r=%.2f",
         tostring(run.commitmentId),tostring(run.guide.identity),index,OuttaMyWay.ValueRecord.length(run.guide.gates),tostring(gate.kind),run.speedKmh,
         run.a.name,run.a.targetX or 0,run.a.targetZ or 0,run.a.targetRadiusM or 0,run.b.name,run.b.targetX or 0,run.b.targetZ or 0,run.b.targetRadiusM or 0)
     return true,nil
@@ -664,7 +664,7 @@ function Control:_rebasePassageGuide(run)
             run.passageArrangement=arrangement
             run.passageExcursion=adapted.passageExcursion or run.passageExcursion
             geometryUnchanged=false
-            logInfo("COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s",
+            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION","commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s",
                 tostring(run.commitmentId),tostring(retainedReason),
                 tonumber(adapted.currentSignedSeparationM) or 0,tonumber(adapted.currentLongitudinalSeparationM) or 0,
                 originalSubjectOffset,originalOtherOffset,
@@ -673,7 +673,7 @@ function Control:_rebasePassageGuide(run)
                 tostring(adapted.subjectConfigurationProfileId),tostring(adapted.otherConfigurationProfileId))
         else
             guide.pairSweepSupport=retainedEvidence or guide.pairSweepSupport
-            logInfo("COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED commitment=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s retainedArrangement=true",
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED","commitment=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s retainedArrangement=true",
                 tostring(run.commitmentId),tostring(subjectRepresentation.configurationProfileId),tostring(otherRepresentation.configurationProfileId))
         end
     end
@@ -701,7 +701,7 @@ function Control:_rebasePassageGuide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
 
     local oldSubject=oldOrigins.subject or {}; local oldOther=oldOrigins.other or {}
-    logInfo("COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=%s executionRevalidated=true",
+    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE","commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=%s executionRevalidated=true",
         tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),
         subjectPose and subjectPose.x or 0,subjectPose and subjectPose.z or 0,
         oldSubject.x and string.format("%.2f",oldSubject.x) or "n/a",oldSubject.z and string.format("%.2f",oldSubject.z) or "n/a",
@@ -815,7 +815,7 @@ function Control:_startRunoutChunk(run,participant)
     local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+stepDistance,run.speedKmh,true,tolerance)
     if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
     participant.runoutActive=true
-    logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm transitLength=%.2fm derivedFrom=MAX_5M_REASSESSMENT_STEP",tostring(run.commitmentId),participant.name,stepDistance,progress+stepDistance,length)
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STARTED","commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm transitLength=%.2fm derivedFrom=MAX_5M_REASSESSMENT_STEP",tostring(run.commitmentId),participant.name,stepDistance,progress+stepDistance,length)
     return true,nil
 end
 
@@ -825,7 +825,7 @@ function Control:_beginAlignmentRunout(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         participant.runoutActive=false; participant.runoutReady=false; participant.targetX=nil; participant.targetZ=nil
     end
-    logInfo("ALIGNMENT_RUNOUT_START commitment=%s wholeAssemblyAxisSettlementRequired=true returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STARTED","commitment=%s wholeAssemblyAxisSettlementRequired=true returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
     return true,nil
 end
 
@@ -841,7 +841,7 @@ function Control:_updateAlignmentRunout(run)
                 if ready then
                     participant.runoutReady=true
                     self.holdMechanism:setHold(participant.vehicle,"COOPERATIVE-PASSAGE-RETURN-STAGED")
-                    logInfo("RETURN_STAGING_READY commitment=%s participant=%s wholeAssemblyAligned=true transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
+                    logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STAGING_READY","commitment=%s participant=%s wholeAssemblyAligned=true transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
                 else
                     local ok,startReason=self:_startRunoutChunk(run,participant)
                     if not ok then return false,startReason..":"..tostring(reason) end
@@ -871,7 +871,7 @@ function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearanc
     if not ok then return false,"AXIS_RETURN_ACTUATION:"..tostring(reason) end
     run.activeReturnParticipant=participant; run.waitingParticipant=other; run.returnRequiresReleasedClearance=requiresReleasedClearance==true
     self:_setPhase(run,"AXIS_RETURN",g_time or 0)
-    logInfo("AXIS_RETURN_START commitment=%s participant=%s startStation=%.2fm targetStation=0.00m reverse=true steering=CAPTURED_AXIS_ONLY pointSeeking=false",tostring(run.commitmentId),participant.name,progress)
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_STARTED","commitment=%s participant=%s startStation=%.2fm targetStation=0.00m reverse=true steering=CAPTURED_AXIS_ONLY pointSeeking=false",tostring(run.commitmentId),participant.name,progress)
     return true,nil
 end
 
@@ -888,7 +888,7 @@ function Control:_beginParticipantRestore(run,participant)
     participant.restoreRequested=true
     run.activeRestoreParticipant=participant
     self:_setPhase(run,"RESTORING_PARTICIPANT",g_time or 0)
-    logInfo("PARTICIPANT_RESTORE_START commitment=%s participant=%s cachedActuators=%d",tostring(run.commitmentId),participant.name,#(state.restoreActuatorStates or {}))
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_PARTICIPANT_RESTORE_STARTED","commitment=%s participant=%s cachedActuators=%d",tostring(run.commitmentId),participant.name,#(state.restoreActuatorStates or {}))
     return true,nil
 end
 
@@ -908,7 +908,7 @@ function Control:_releaseParticipant(run,participant)
     end
     self.driveMechanism:clear(participant.vehicle); self.holdMechanism:release(participant.vehicle)
     participant.wakeMethod=wakeNativeContinuation(participant.vehicle); participant.released=true; participant.releasedAt=g_time or 0
-    logInfo("PARTICIPANT_WAVE_ON commitment=%s participant=%s job=%s wake=%s axisReturn=%s restorationExhausted=%s",tostring(run.commitmentId),participant.name,tostring(participant.startJobToken),tostring(participant.wakeMethod),tostring(participant.axisReturnCompleted==true),tostring(participant.restoreSettlementExhausted==true))
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_PARTICIPANT_WAVE_ON","commitment=%s participant=%s job=%s wake=%s axisReturn=%s restorationExhausted=%s",tostring(run.commitmentId),participant.name,tostring(participant.startJobToken),tostring(participant.wakeMethod),tostring(participant.axisReturnCompleted==true),tostring(participant.restoreSettlementExhausted==true))
     self:_notify({status="PARTICIPANT_HANDED_BACK",commitmentId=run.commitmentId,requestIds={participant.request.identity},boundedAuthorityIds={participant.request.boundedAuthorityId},assemblyId=participant.assemblyId,assemblyIds={participant.assemblyId},evidence={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",passageLegDisposition="HANDED_BACK",assemblyId=participant.assemblyId,passageGuideId=run.guide and run.guide.identity or nil,sameJob=true,restorationExhausted=participant.restoreSettlementExhausted==true,completedAt=g_time or 0}})
     return true,nil
 end
@@ -947,7 +947,7 @@ function Control:_completePairContext(run)
         bothRestored=not exhausted
     end
     self.run=nil; self.completedCount=self.completedCount+1
-    logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=NO_REMAINING_PASSAGE_AUTHORITY participantSpecificRelease=true",tostring(run.commitmentId))
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_PAIR_CONTEXT_DISSOLVED","commitment=%s reason=NO_REMAINING_PASSAGE_AUTHORITY participantSpecificRelease=true",tostring(run.commitmentId))
     local evidenceKind=exhausted and "COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
     if mixed then evidenceKind="COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION" end
     self:_notify({
@@ -980,7 +980,7 @@ function Control:_beginPassageConfiguration(run)
         local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
         if cache~=nil and type(cache.getTransitFoldCapability)=="function" then capability=cache:getTransitFoldCapability(participant.referenceKey,participant.startJobToken) end
         participant.passageTransitFoldExpected=type(capability)=="table" and capability.isFoldable==true
-        logInfo("TRANSIT_CAPABILITY_CACHE commitment=%s participant=%s available=%s isFoldable=%s actuators=%d expectedDurationMs=%.0f timeoutMs=%.0f source=%s",
+        logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_TRANSIT_CAPABILITY_CACHE","commitment=%s participant=%s available=%s isFoldable=%s actuators=%d expectedDurationMs=%.0f timeoutMs=%.0f source=%s",
             tostring(run.commitmentId),participant.name,tostring(type(capability)=="table"),tostring(participant.passageTransitFoldExpected),type(capability)=="table" and tonumber(capability.actuatorCount) or 0,type(capability)=="table" and tonumber(capability.expectedFoldDurationMs) or 0,type(capability)=="table" and tonumber(capability.settlementTimeoutMs) or 0,type(capability)=="table" and tostring(capability.source) or "UNAVAILABLE")
         local ok,state
         if participant.passageTransitFoldExpected then ok,state=self.configurationMechanism:prepareCachedTransit(participant.vehicle,capability) else ok,state=false,"bootstrap-non-foldable" end
@@ -994,23 +994,23 @@ function Control:_beginPassageConfiguration(run)
             participant.passageTransitCompactionActive=false
             participant.passageTransitCompactionReason=tostring(state)
             ignored=ignored+1
-            logInfo("TRANSIT_REQUEST_IGNORED commitment=%s participant=%s plannedMode=%s reason=%s cachedFoldable=%s configurationVeto=false",
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_TRANSIT_REQUEST_IGNORED","commitment=%s participant=%s plannedMode=%s reason=%s cachedFoldable=%s configurationVeto=false",
                 tostring(run.commitmentId),participant.name,tostring(participant.configurationMode),tostring(state),tostring(participant.passageTransitFoldExpected==true))
         end
     end
     if requested==0 then
         if self:_passageConfigurationReady(run) then
-            logInfo("CONFIGURATION_READY commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d next=CAPTURE_EXECUTION_ORIGIN guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_CONFIGURATION_READY","commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d next=CAPTURE_EXECUTION_ORIGIN guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
             local rebased,rebaseReason=self:_rebasePassageGuide(run)
             if not rebased then return false,rebaseReason end
             return self:_startGuideGate(run,1)
         end
         self:_setPhase(run,"CONFIGURING",g_time or 0)
-        logInfo("CONFIGURATION_START commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d movementWaitsForTransitRealisation=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_CONFIGURATION_STARTED","commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d movementWaitsForTransitRealisation=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
         return true
     end
     self:_setPhase(run,"CONFIGURING",g_time or 0)
-    logInfo("CONFIGURATION_START commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=%d ignored=%d movementWaitsForTransitRealisation=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),requested,ignored)
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_CONFIGURATION_STARTED","commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=%d ignored=%d movementWaitsForTransitRealisation=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),requested,ignored)
     return true
 end
 
@@ -1024,18 +1024,18 @@ function Control:_passageConfigurationReady(run)
             if settlement.settled~=true then
                 if participant.passageTransitFoldWaitingLogged~=true then
                     participant.passageTransitFoldWaitingLogged=true
-                    logInfo("TRANSIT_FOLD_WAIT commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_TRANSIT_FOLD_WAIT","commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
                 end
                 return false
             end
             if settlement.exhausted==true then
                 if participant.passageTransitFoldExhaustedLogged~=true then
                     participant.passageTransitFoldExhaustedLogged=true
-                    logWarning("TRANSIT_FOLD_SETTLEMENT_EXHAUSTED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f action=REMOVE_CONFIGURATION_VETO compactionAsserted=false",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                    logWarning("DEBUG","COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_EXHAUSTED","commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f action=REMOVE_CONFIGURATION_VETO compactionAsserted=false",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
                 end
             elseif participant.passageTransitFoldSettledLogged~=true then
                 participant.passageTransitFoldSettledLogged=true
-                logInfo("TRANSIT_FOLD_SETTLED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                logInfo("DEBUG","COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLED","commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
             end
         end
     end
@@ -1045,7 +1045,7 @@ end
 function Control:_notify(result)
     if type(self.completionHandler)=="function" then
         local ok,reason=pcall(self.completionHandler,result)
-        if not ok then logWarning("COMPLETION_HANDLER_ERROR commitment=%s detail=%s",tostring(result and result.commitmentId),tostring(reason)) end
+        if not ok then logWarning("NORMAL","COOPERATIVE_PASSAGE_COMPLETION_HANDLER_ERROR","commitment=%s detail=%s",tostring(result and result.commitmentId),tostring(reason)) end
     end
 end
 
@@ -1064,8 +1064,8 @@ function Control:_failHeld(reason)
     -- lifecycle change is reconciled upstream and must not enter this path.
     self:_setPhase(run,"FAILED_HELD",g_time or 0)
     self.failedCount=self.failedCount+1
-    logWarning("PASSAGE_REASSESSMENT commitment=%s guide=%s cause=%s outcome=SAFE_ABANDON_ESCALATE controlBroadening=false bothHeld=true configurationPreserved=true",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),run.failureReason)
-    logWarning("HALT commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true configurationPreserved=true action=PLAYER_INTERVENTION_REQUIRED",tostring(run.commitmentId),run.failureReason,run.phase)
+    logWarning("DEBUG","COOPERATIVE_PASSAGE_REASSESSMENT","commitment=%s guide=%s cause=%s outcome=SAFE_ABANDON_ESCALATE controlBroadening=false bothHeld=true configurationPreserved=true",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),run.failureReason)
+    logWarning("NORMAL","PLAYER_INTERVENTION_REQUIRED","commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true configurationPreserved=true",tostring(run.commitmentId),run.failureReason,run.phase)
 end
 
 function Control:vacateParticipant(commitmentId,assemblyId,evidence)
@@ -1100,11 +1100,11 @@ function Control:vacateParticipant(commitmentId,assemblyId,evidence)
     if run.activeReturnParticipant==participant then run.activeReturnParticipant=nil end
     if run.activeRestoreParticipant==participant then run.activeRestoreParticipant=nil end
     if run.waitingParticipant==participant then run.waitingParticipant=nil end
-    logInfo("PARTICIPANT_VACATED commitment=%s participant=%s assembly=%s reason=%s physicalEffectClearedBeforeAuthorityRelease=true survivorChoreographyUnchanged=true",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_PARTICIPANT_VACATED","commitment=%s participant=%s assembly=%s reason=%s physicalEffectClearedBeforeAuthorityRelease=true survivorChoreographyUnchanged=true",
         tostring(run.commitmentId),tostring(participant.name),tostring(assemblyId),tostring(evidence and evidence.kind or "POSITIVE_PARTICIPANT_BASIS_CESSATION"))
     if allPassageLegsTerminal(run) then
         self.run=nil
-        logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=LAST_PASSAGE_LEG_VACATED participantSpecificRelease=true",tostring(run.commitmentId))
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_PAIR_CONTEXT_DISSOLVED","commitment=%s reason=LAST_PASSAGE_LEG_VACATED participantSpecificRelease=true",tostring(run.commitmentId))
     end
     return {disposition="VACATED",assemblyId=assemblyId}
 end
@@ -1113,7 +1113,7 @@ function Control:continueAfterParticipantVacatur(commitmentId,assemblyId)
     local run=self.run
     if run==nil or run.commitmentId~=commitmentId or run.failureReason~=nil then return end
     if run.semanticLifecyclePendingAssemblyId==assemblyId then
-        logInfo("SEMANTIC_LIFECYCLE_RECONCILED commitment=%s assembly=%s outcome=PASSAGE_LEG_VACATED terminalDecisionOwner=SEMANTIC_LIFECYCLE",
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_SEMANTIC_LIFECYCLE_RECONCILED","commitment=%s assembly=%s outcome=PASSAGE_LEG_VACATED terminalDecisionOwner=SEMANTIC_LIFECYCLE",
             tostring(run.commitmentId),tostring(assemblyId))
         run.semanticLifecyclePendingAssemblyId=nil
     end
@@ -1246,14 +1246,16 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         local settleOk,settleReason=self:_beginPassageSettling(run,"ENTRY_READY_AT_SELECTION")
         if not settleOk then self.run=nil; return false,settleReason end
     else
-        logInfo("COOPERATIVE_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm captureAcquisitionHorizon=%.2fs",
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_APPROACH_STARTED","commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm captureAcquisitionHorizon=%.2fs",
             tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,
             tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1,COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S)
     end
     local arrangement=bridge.passageArrangement or {}
     local excursion=run.passageExcursion or {}
     local entry=run.passageEntry or {}
-    logInfo("START architecture=COOPERATIVE_PASSAGE commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm entryBoundary=%.2fm headingDot=%.4f envelopeBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2fm contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d development=%.2fm crossingForward=%.2fm reacquisition=%.2fm sequence=PASSAGE_APPROACH_THEN_HOLD_ALWAYS_ATTEMPT_TRANSIT_CAPTURE_EXECUTION_ORIGIN_PASSAGE_EXCURSION_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_CONTROL_STARTED","commitment=%s candidate=%s conflict=%s A=%s B=%s arrangement=%s",
+        tostring(run.commitmentId),tostring(run.candidateId),tostring(run.conflictIdentity),run.a.name,run.b.name,tostring(run.arrangement and run.arrangement.identity or "n/a"))
+    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_CONTROL_START_DETAIL","architecture=COOPERATIVE_PASSAGE commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm entryBoundary=%.2fm headingDot=%.4f envelopeBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2fm contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d development=%.2fm crossingForward=%.2fm reacquisition=%.2fm sequence=PASSAGE_APPROACH_THEN_HOLD_ALWAYS_ATTEMPT_TRANSIT_CAPTURE_EXECUTION_ORIGIN_PASSAGE_EXCURSION_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
         tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,tonumber(entry.boundarySeparationM) or -1,run.headingDot,
         tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(excursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(excursion.clearanceDeficitM) or 0,
         tonumber(arrangement.physicalContactThresholdM) or 0,tonumber(arrangement.nominalInterAssemblyClearanceM) or 0,tonumber(arrangement.policyRequiredSeparationM) or 0,tonumber(arrangement.currentLateralSeparationM) or 0,tonumber(arrangement.currentPolicyReserveM) or 0,
@@ -1420,7 +1422,7 @@ function Control:_progressWatchdogStatus(run,nowMs)
     local sample,reason=self:_phaseCompletionResidual(run)
     if sample==nil then
         if run.progressWatchdogUnavailableReason~=reason then
-            logInfo("PASSAGE_PROGRESS_WATCHDOG_EVIDENCE commitment=%s phase=%s state=UNAVAILABLE reason=%s action=PAUSE_STALL_CLOCK",
+            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_EVIDENCE","commitment=%s phase=%s state=UNAVAILABLE reason=%s action=PAUSE_STALL_CLOCK",
                 tostring(run.commitmentId),tostring(run.phase),tostring(reason))
         end
         run.progressWatchdogBestResidual=nil
@@ -1478,14 +1480,14 @@ function Control:update(dt)
     if not sameJob then
         local changedAssemblyId=changed and changed.assemblyId or nil
         if run.semanticLifecyclePendingAssemblyId~=changedAssemblyId then
-            logInfo("SEMANTIC_LIFECYCLE_PENDING commitment=%s participant=%s assembly=%s phase=%s evidence=RAW_JOB_EPISODE_CONTRADICTION action=NO_NEW_CONTROL_PROGRESSION currentBoundedActuationMaySettle=true terminalDecision=false",
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_SEMANTIC_LIFECYCLE_PENDING","commitment=%s participant=%s assembly=%s phase=%s evidence=RAW_JOB_EPISODE_CONTRADICTION action=NO_NEW_CONTROL_PROGRESSION currentBoundedActuationMaySettle=true terminalDecision=false",
                 tostring(run.commitmentId),tostring(changed and changed.name or "unresolved"),tostring(changedAssemblyId),tostring(run.phase))
         end
         run.semanticLifecyclePendingAssemblyId=changedAssemblyId
         return
     end
     if run.semanticLifecyclePendingAssemblyId~=nil then
-        logInfo("SEMANTIC_LIFECYCLE_PENDING_CLEARED commitment=%s assembly=%s phase=%s outcome=RAW_CONTRADICTION_NO_LONGER_APPLIES terminalDecision=false",
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_SEMANTIC_LIFECYCLE_PENDING_CLEARED","commitment=%s assembly=%s phase=%s outcome=RAW_CONTRADICTION_NO_LONGER_APPLIES terminalDecision=false",
             tostring(run.commitmentId),tostring(run.semanticLifecyclePendingAssemblyId),tostring(run.phase))
         run.semanticLifecyclePendingAssemblyId=nil
     end
@@ -1494,7 +1496,7 @@ function Control:update(dt)
 
     local stalled,watchdog=self:_progressWatchdogStatus(run,nowMs)
     if stalled then
-        logWarning("PASSAGE_PROGRESS_WATCHDOG commitment=%s phase=%s residualKind=%s residual=%.3f bestResidual=%.3f stalledMs=%d thresholdMs=%d action=FAIL_SAFE_HOLD_REASSESSMENT semanticTerminality=false",
+        logWarning("DEBUG","COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG","commitment=%s phase=%s residualKind=%s residual=%.3f bestResidual=%.3f stalledMs=%d thresholdMs=%d action=FAIL_SAFE_HOLD_REASSESSMENT semanticTerminality=false",
             tostring(run.commitmentId),tostring(run.phase),tostring(watchdog and watchdog.kind or "n/a"),
             tonumber(watchdog and watchdog.residual) or -1,tonumber(watchdog and watchdog.bestResidual) or -1,
             tonumber(watchdog and watchdog.stalledMs) or 0,COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS)
@@ -1525,7 +1527,7 @@ function Control:update(dt)
         end
     elseif run.phase=="CONFIGURING" then
         if self:_passageConfigurationReady(run) then
-            logInfo("CONFIGURATION_CONFIRMED commitment=%s modes=%s next=CAPTURE_EXECUTION_ORIGIN",tostring(run.commitmentId),configurationModeText(run))
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_CONFIGURATION_CONFIRMED","commitment=%s modes=%s next=CAPTURE_EXECUTION_ORIGIN",tostring(run.commitmentId),configurationModeText(run))
             local rebased,rebaseReason=self:_rebasePassageGuide(run)
             if not rebased then self:_failHeld(tostring(rebaseReason)); return end
             local ok,reason=self:_startGuideGate(run,1)
@@ -1541,9 +1543,9 @@ function Control:update(dt)
             local completedIndex=run.guideIndex or 0
             local gate=run.guide and run.guide.gates and run.guide.gates[completedIndex] or nil
             self:_stopLeg(run)
-            logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_GUIDE_REACHED","commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
             if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
-                logInfo("COOPERATIVE_PASSAGE_GUIDE_COMPLETE commitment=%s guide=%s next=ALIGNMENT_RUNOUT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
+                logInfo("DEBUG","COOPERATIVE_PASSAGE_GUIDE_COMPLETE","commitment=%s guide=%s next=ALIGNMENT_RUNOUT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
                 local ok,reason=self:_beginAlignmentRunout(run); if not ok then self:_failHeld("ALIGNMENT_RUNOUT_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end
@@ -1558,7 +1560,7 @@ function Control:update(dt)
             local ok,reason=self:_beginAxisReturn(run,first,second,false)
             if not ok then
                 first.axisReturnSkipped=true
-                logWarning("AXIS_RETURN_SKIPPED commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),first.name,tostring(reason))
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),first.name,tostring(reason))
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,first); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
         end
@@ -1569,20 +1571,20 @@ function Control:update(dt)
             local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(run.releasedLeader,participant)
             if not clear then
                 self.driveMechanism:clear(participant.vehicle); participant.axisReturnSkipped=true
-                logWarning("AXIS_RETURN_CLEARANCE_LOST commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_CLEARANCE_LOST","commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
                 local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
                 return
             end
         end
         if targetReached(self.driveMechanism,participant.vehicle) then
             self.driveMechanism:clear(participant.vehicle); participant.axisReturnCompleted=true
-            logInfo("AXIS_RETURN_COMPLETE commitment=%s participant=%s executionOriginStation=true",tostring(run.commitmentId),participant.name)
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_COMPLETE","commitment=%s participant=%s executionOriginStation=true",tostring(run.commitmentId),participant.name)
             local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
         else
             local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
             if not aligned then
                 self.driveMechanism:clear(participant.vehicle); participant.axisReturnSkipped=true
-                logWarning("AXIS_RETURN_ALIGNMENT_LOST commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,tostring(alignmentReason))
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_ALIGNMENT_LOST","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,tostring(alignmentReason))
                 local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
             end
         end
@@ -1597,30 +1599,30 @@ function Control:update(dt)
             if waiting==nil then self:_completePairContext(run); return end
             run.releasedLeader=participant; run.waitingParticipant=waiting; run.activeRestoreParticipant=nil; run.activeReturnParticipant=nil; run.returnRequiresReleasedClearance=false
             self:_setPhase(run,"WAIT_NATIVE_CLEARANCE",g_time or 0)
-            logInfo("RETURN_CLEARANCE_WAIT commitment=%s released=%s waiting=%s positiveCurrentOccupancyRequired=true",tostring(run.commitmentId),participant.name,waiting.name)
+            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT","commitment=%s released=%s waiting=%s positiveCurrentOccupancyRequired=true",tostring(run.commitmentId),participant.name,waiting.name)
         end
     elseif run.phase=="WAIT_NATIVE_CLEARANCE" then
         local released,waiting=run.releasedLeader,run.waitingParticipant
         if released==nil or waiting==nil then self:_failHeld("RETURN_CLEARANCE_CONTEXT_UNAVAILABLE"); return end
         local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(released,waiting)
         if clear then
-            logInfo("RETURN_CLEARANCE commitment=%s released=%s waiting=%s rearStation=%.2fm requiredStation=%.2fm clearance=%.2fm authority=POSITIVE_CURRENT_PHYSICAL_OCCUPANCY",tostring(run.commitmentId),released.name,waiting.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.requiredStationM) or -1,tonumber(evidence and evidence.clearanceM) or -1)
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_CLEARANCE","commitment=%s released=%s waiting=%s rearStation=%.2fm requiredStation=%.2fm clearance=%.2fm authority=POSITIVE_CURRENT_PHYSICAL_OCCUPANCY",tostring(run.commitmentId),released.name,waiting.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.requiredStationM) or -1,tonumber(evidence and evidence.clearanceM) or -1)
             local ok,reason=self:_beginAxisReturn(run,waiting,released,true)
             if not ok then
                 waiting.axisReturnSkipped=true
-                logWarning("AXIS_RETURN_SKIPPED commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
         elseif nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
             run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
-            logInfo("RETURN_CLEARANCE_WAIT_DETAIL commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
+            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL","commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
         end
     end
 
     if self.run~=nil and nowMs>=(self.nextHeartbeatMs or 0) then
         self.nextHeartbeatMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
         local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
-        logInfo("STATE commitment=%s phase=%s A=%s speed=%.2f B=%s speed=%.2f separation=%s failure=%s",
+        logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_STATE","commitment=%s phase=%s A=%s speed=%.2f B=%s speed=%.2f separation=%s failure=%s",
             tostring(run.commitmentId),tostring(run.phase),run.a.name,actualSpeedKmh(run.a.vehicle),run.b.name,actualSpeedKmh(run.b.vehicle),
             pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a",tostring(run.failureReason or "none"))
     end

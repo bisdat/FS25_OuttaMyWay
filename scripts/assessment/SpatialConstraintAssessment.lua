@@ -155,12 +155,12 @@ local function pairRecord(operationId,a,b,followerKnowledge)
     r.reason=r.actionSpaceConservation.reason; return r
 end
 local function numberText(v) return v==nil and "UNRESOLVED" or string.format("%.3f",v) end
-local function logInfo(message)
-    if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][FORWARD-INTERSECTION] %s",message) else print("[FS25_OuttaMyWay][FORWARD-INTERSECTION] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("SITUATION_ASSESSMENT")
+local function logInfo(code,formatText,...)
+    return publication:info("DIAGNOSTIC",code,formatText,...)
 end
-local function logCornerInfo(message)
-    if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] %s",message)
-    else print("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] "..message) end
+local function logCornerInfo(code,formatText,...)
+    return publication:info("DIAGNOSTIC",code,formatText,...)
 end
 local function copyKnowledge(value)
     if type(value)~="table" then return value end
@@ -194,15 +194,17 @@ local function spatialEdgeKey(edge,quantumM)
     return a.."/"..b
 end
 
+local function cornerEventPayload(kind,entry,event)
+    return {detail=string.format("%s polygon=%s corner=%s worker=%s job=%s observation=%s edge=%s extentM=%s cornerAlongAxisM=%s reason=%s",
+        kind,entry.polygonKey,entry.cornerKey,tostring(event.assemblyId or "none"),tostring(event.sourceJobToken or "none"),
+        tostring(event.observationSnapshotId),tostring(event.edgeKey or "none"),numberText(event.extentM),numberText(event.cornerAlongAxisM),tostring(event.reason or "none"))}
+end
+
 local function cornerEvent(events,kind,entry,details)
     local event=copyKnowledge(details or {})
     event.kind=kind; event.cornerKey=entry.cornerKey; event.polygonKey=entry.polygonKey
     events[#events+1]=event
-    local message=string.format("%s polygon=%s corner=%s worker=%s job=%s observation=%s edge=%s extentM=%s cornerAlongAxisM=%s reason=%s",
-        kind,entry.polygonKey,entry.cornerKey,tostring(event.assemblyId or "none"),tostring(event.sourceJobToken or "none"),
-        tostring(event.observationSnapshotId),tostring(event.edgeKey or "none"),numberText(event.extentM),numberText(event.cornerAlongAxisM),tostring(event.reason or "none"))
-    if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] %s",message)
-    else print("[FS25_OuttaMyWay][CORNER-KNOWLEDGE] "..message) end
+    publication:publish("DIAGNOSTIC","INFO",kind,cornerEventPayload,kind,entry,event)
 end
 
 -- Cross-corridor dimensions are a measurement hypothesis, retaining the raw
@@ -1040,10 +1042,10 @@ function Assessment:assess(input)
         local r=pairRecord(input.operationId,projections[i],projections[j],input.followerBoundaryKnowledge); relationships[#relationships+1]=r
         local signature=table.concat({r.classification,r.reason,tostring(r.temporalYielderAssemblyId),tostring(r.spatialOverlay)},"|")
         if self.lastSignatures[r.identity]~=signature then self.lastSignatures[r.identity]=signature; local x=r.intersection or {}
-            logInfo(string.format("FORWARD_INTERSECTION_ASSESSED relationship=%s pair=%s|%s state=%s intersection=(%s,%s) distances=%s|%s rates=%s|%s rateSources=%s|%s times=%s|%s yielder=%s continuing=%s overlay=%s regulation=%s incumbent=%s reason=%s",
+            logInfo("FORWARD_INTERSECTION_ASSESSED","relationship=%s pair=%s|%s state=%s intersection=(%s,%s) distances=%s|%s rates=%s|%s rateSources=%s|%s times=%s|%s yielder=%s continuing=%s overlay=%s regulation=%s incumbent=%s reason=%s",
                 r.identity,tostring(r.subjectAssemblyId),tostring(r.otherAssemblyId),r.relationshipStatus,numberText(x.x),numberText(x.z),numberText(r.subjectForwardDistanceToIntersectionM),numberText(r.otherForwardDistanceToIntersectionM),
                 numberText(r.subjectProgressRateMps),numberText(r.otherProgressRateMps),tostring(r.subjectProgressRateSource),tostring(r.otherProgressRateSource),numberText(r.subjectTimeToIntersectionSec),numberText(r.otherTimeToIntersectionSec),
-                tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason))) end
+                tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason)) end
     end end
     local cornerKnowledge=assessCornerKnowledge(self,input,projections,relationships)
     for _,association in OuttaMyWay.ValueRecord.ipairs(cornerKnowledge.headlandAssociations or {}) do
@@ -1055,11 +1057,11 @@ function Assessment:assess(input)
         },"|")
         if self.lastSignatures[key]~=signature then
             self.lastSignatures[key]=signature
-            logCornerInfo(string.format(
-                "HEADLAND_ASSOCIATION operation=%s assembly=%s ref=%s corner=%s edge=%s contactDistanceToCornerM=%s basis=%s reason=%s negativeCornerAuthority=false decisionAuthority=false controlAuthority=false",
+            logCornerInfo("HEADLAND_ASSOCIATION",
+                "operation=%s assembly=%s ref=%s corner=%s edge=%s contactDistanceToCornerM=%s basis=%s reason=%s negativeCornerAuthority=false decisionAuthority=false controlAuthority=false",
                 tostring(input.operationId),tostring(association.assemblyId),tostring(association.assemblyReferenceKey),
                 tostring(association.cornerKey),tostring(association.terminatingBoundaryEdgeKey),
-                numberText(association.contactDistanceToCornerM),tostring(association.witness),tostring(association.reason)))
+                numberText(association.contactDistanceToCornerM),tostring(association.witness),tostring(association.reason))
         end
     end
     return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,cornerKnowledge=cornerKnowledge,decisionAuthority=false,controlAuthority=false,

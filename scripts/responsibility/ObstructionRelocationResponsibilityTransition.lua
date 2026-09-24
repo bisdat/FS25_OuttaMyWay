@@ -5,9 +5,9 @@ OuttaMyWay.ObstructionRelocationResponsibilityTransition={}
 local Transition=OuttaMyWay.ObstructionRelocationResponsibilityTransition
 Transition.__index=Transition
 
-local function logInfo(formatText,...)
-    local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY] "..message) end
+local publication=OuttaMyWay.LogPublication.origin("RESPONSIBILITY_TRANSITION")
+local function logInfo(code,formatText,...)
+    return publication:info("DEBUG",code,formatText,...)
 end
 
 local function selectedCandidate(evaluated)
@@ -80,8 +80,8 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
     local exposure=semantics and semantics.responsibilityAlreadyCurrent==true and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
-    logInfo("%s commitment=%s responsibility=%s relocation=%s beneficiaries=%s controlledSubject=%s beforePhysicalDispatch=true",
-        exposure,tostring(applied.commitment.identity),tostring(currentResponsibility.identity),tostring(bridge.relocationKey),
+    logInfo(exposure,"commitment=%s responsibility=%s relocation=%s beneficiaries=%s controlledSubject=%s beforePhysicalDispatch=true",
+        tostring(applied.commitment.identity),tostring(currentResponsibility.identity),tostring(bridge.relocationKey),
         table.concat(beneficiaryIds,","),tostring(bridge.blockerAssemblyId))
     return applied,nil
 end
