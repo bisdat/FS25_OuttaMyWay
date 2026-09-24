@@ -6,6 +6,10 @@ OuttaMyWay.LogPublication = {}
 local Publication = OuttaMyWay.LogPublication
 Publication.__index = Publication
 
+-- Temporary migration default. A future Configuration implementation may set this
+-- resolved publication input before LogPublication is constructed.
+if OuttaMyWay.LOG_DIAGNOSTIC==nil then OuttaMyWay.LOG_DIAGNOSTIC=true end
+
 local CLASS_RANK = { NORMAL=1, DEBUG=2, DIAGNOSTIC=3 }
 local SEVERITY_METHOD = { INFO="info", WARNING="warning", ERROR="error" }
 
