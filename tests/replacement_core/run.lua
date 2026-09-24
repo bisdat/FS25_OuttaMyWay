@@ -312,6 +312,12 @@ test("assembly identity persists across snapshots", function()
     equal(#a.assemblies[1].componentIds,2)
 end)
 
+test("Observation preserves absence of optional diagnostic projection", function()
+    local _,_,adapter=newObservationKernel()
+    local snapshot=adapter:publish(rawObservation(1,nil))
+    equal(snapshot.diagnostics,nil)
+end)
+
 
 test("Observation rejects duplicate assembly and episode evidence", function()
     local _,_,adapter=newObservationKernel()

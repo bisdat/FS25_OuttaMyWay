@@ -545,12 +545,18 @@ function Registry:_complete(state, result, success)
         fieldWorldIdentityAuthorityAssigned=false,controlAuthorityEnabled=false
     }
     self.records[#self.records+1]=record
-    logInfo("DIAGNOSTIC","FIELD_WORLD_SNAPSHOT_CAPTURED","ref=%s jobToken=%s snapshot=%s polygon=%s fingerprint=%s seed=(%.1f,%.1f) %s islands=%d immutable=true authority=pending control=false",
-        state.vehicleReferenceKey,tostring(state.jobToken),snapshotKey,polygonKey,canonical.fingerprint,
-        state.seedPosition.x,state.seedPosition.z,boundarySummary(canonical.boundary),canonical.islandCount)
-    local canonicalIslands=#canonical.canonicalIslandRings>0 and table.concat(canonical.canonicalIslandRings,"|") or "none"
-    logInfo("DIAGNOSTIC","FIELD_WORLD_SNAPSHOT_GEOMETRY","snapshot=%s ref=%s jobToken=%s fingerprint=%s quantum=%.3f %s islands=%d canonicalRoot=%s canonicalIslands=%s immutable=true authority=pending control=false",
-        snapshotKey,state.vehicleReferenceKey,tostring(state.jobToken),canonical.fingerprint,canonical.quantizationMetres,evidenceSummary(metrics),canonical.islandCount,canonical.canonicalRootRing,canonicalIslands)
+    local capturedEligible=publication:isEligible("DIAGNOSTIC","INFO","FIELD_WORLD_SNAPSHOT_CAPTURED")
+    if capturedEligible==true then
+        logInfo("DIAGNOSTIC","FIELD_WORLD_SNAPSHOT_CAPTURED","ref=%s jobToken=%s snapshot=%s polygon=%s fingerprint=%s seed=(%.1f,%.1f) %s islands=%d immutable=true authority=pending control=false",
+            state.vehicleReferenceKey,tostring(state.jobToken),snapshotKey,polygonKey,canonical.fingerprint,
+            state.seedPosition.x,state.seedPosition.z,boundarySummary(canonical.boundary),canonical.islandCount)
+    end
+    local geometryEligible=publication:isEligible("DIAGNOSTIC","INFO","FIELD_WORLD_SNAPSHOT_GEOMETRY")
+    if geometryEligible==true then
+        local canonicalIslands=#canonical.canonicalIslandRings>0 and table.concat(canonical.canonicalIslandRings,"|") or "none"
+        logInfo("DIAGNOSTIC","FIELD_WORLD_SNAPSHOT_GEOMETRY","snapshot=%s ref=%s jobToken=%s fingerprint=%s quantum=%.3f %s islands=%d canonicalRoot=%s canonicalIslands=%s immutable=true authority=pending control=false",
+            snapshotKey,state.vehicleReferenceKey,tostring(state.jobToken),canonical.fingerprint,canonical.quantizationMetres,evidenceSummary(metrics),canonical.islandCount,canonical.canonicalRootRing,canonicalIslands)
+    end
 end
 
 function Registry:_start(vehicle, pose, jobToken, captureToken)

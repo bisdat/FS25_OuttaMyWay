@@ -721,7 +721,8 @@ function Runtime:processLiveObservation(raw)
         if candidate~=nil then
             local bridge=candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
             local traceKey=tostring(bridge and bridge.conflictIdentity or candidate.identity)
-            if self.cooperativeVerdictTraceKey~=traceKey then
+            local diagnosticEligible=publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_CONSTRAINT_VERDICT")
+            if diagnosticEligible==true and self.cooperativeVerdictTraceKey~=traceKey then
                 self.cooperativeVerdictTraceKey=traceKey
                 local summary={}
                 for _,verdict in OuttaMyWay.ValueRecord.ipairs(evaluated.verdicts or {}) do

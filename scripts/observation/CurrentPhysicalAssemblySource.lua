@@ -9,6 +9,10 @@ local publication=OuttaMyWay.LogPublication.origin("OBSERVATION")
 local function logInfo(code,formatText,...)
     return publication:info("DIAGNOSTIC",code,formatText,...)
 end
+local function diagnosticPublicationEnabled(code)
+    local eligible=publication:isEligible("DIAGNOSTIC","INFO",code)
+    return eligible==true
+end
 
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
@@ -190,10 +194,12 @@ function Source:observe(mission)
         unresolvedMemberPositionCount=unresolvedMemberPositionCount
     }
 
-    local signature=recordSignature(self.records)
-    if signature~=self.lastMissionSignature then
-        self.lastMissionSignature=signature
-        logInfo("MISSION_ASSEMBLY_CENSUS","populationEntries=%d rootAssemblies=%d assemblies=%s",missionVehicleEntryCount,#self.records,signature)
+    if diagnosticPublicationEnabled("MISSION_ASSEMBLY_CENSUS") then
+        local signature=recordSignature(self.records)
+        if signature~=self.lastMissionSignature then
+            self.lastMissionSignature=signature
+            logInfo("MISSION_ASSEMBLY_CENSUS","populationEntries=%d rootAssemblies=%d assemblies=%s",missionVehicleEntryCount,#self.records,signature)
+        end
     end
     return self.records,self.diagnostics
 end
@@ -244,16 +250,18 @@ function Source:observeFieldWorldPresence(records,snapshots,fieldWorldReferenceK
     end
     table.sort(result,function(a,b) return a.assembly.referenceKey<b.assembly.referenceKey end)
 
-    local names={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(result) do
-        names[#names+1]=tostring(item.assembly.name).."="..tostring(item.assembly.referenceKey)
-    end
-    table.sort(names)
-    local signature=table.concat(names,",")
-    local fieldKey=tostring(fieldWorldReferenceKey)
-    if self.lastFieldSignatures[fieldKey]~=signature then
-        self.lastFieldSignatures[fieldKey]=signature
-        logInfo("FIELD_WITNESS_CENSUS","world=%s assemblies=%d witnessed=%s coverageComplete=false negativeExclusionAuthority=false",fieldKey,#result,signature)
+    if diagnosticPublicationEnabled("FIELD_WITNESS_CENSUS") then
+        local names={}
+        for _,item in OuttaMyWay.ValueRecord.ipairs(result) do
+            names[#names+1]=tostring(item.assembly.name).."="..tostring(item.assembly.referenceKey)
+        end
+        table.sort(names)
+        local signature=table.concat(names,",")
+        local fieldKey=tostring(fieldWorldReferenceKey)
+        if self.lastFieldSignatures[fieldKey]~=signature then
+            self.lastFieldSignatures[fieldKey]=signature
+            logInfo("FIELD_WITNESS_CENSUS","world=%s assemblies=%d witnessed=%s coverageComplete=false negativeExclusionAuthority=false",fieldKey,#result,signature)
+        end
     end
     return result
 end
