@@ -6,7 +6,7 @@ local Reminder=OuttaMyWay.DisabledStartupReminder
 Reminder.__index=Reminder
 
 local TEXT_KEY="omw_disabledStartupReminder"
-local WARNING_DURATION_MS=2000
+local WARNING_DURATION_MS=5000
 
 function Reminder.new(configuration)
     return setmetatable({

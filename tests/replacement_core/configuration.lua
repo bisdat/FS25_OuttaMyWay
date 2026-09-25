@@ -308,7 +308,7 @@ end)
 
 load("scripts/gui/DisabledStartupReminder.lua")
 
-test("disabled startup reminder waits for mission surface and shows once for 2000 ms",function()
+test("disabled startup reminder waits for mission surface and shows once for 5000 ms",function()
     local config={
         isResolved=function() return true end,
         isEnabled=function() return false end,
@@ -330,7 +330,7 @@ test("disabled startup reminder waits for mission surface and shows once for 200
     g_currentMission={showBlinkingWarning=function(self,message,duration)
         shown=shown+1
         equal(message,"OuttaMyWay disabled. Review General Settings.")
-        equal(duration,2000)
+        equal(duration,5000)
     end}
     reminder:update()
     equal(shown,1)

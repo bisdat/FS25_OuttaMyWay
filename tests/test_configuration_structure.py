@@ -195,7 +195,7 @@ def test_disabled_startup_reminder_is_product_status_not_operational_message():
     assert "function Reminder:loadMap()" in reminder
     assert "function Reminder:update()" in reminder
     assert "function Reminder:deleteMap()" in reminder
-    assert "WARNING_DURATION_MS=2000" in reminder
+    assert "WARNING_DURATION_MS=5000" in reminder
     assert "showBlinkingWarning" in reminder
     assert 'TEXT_KEY="omw_disabledStartupReminder"' in reminder
     assert "isResolved()" in reminder

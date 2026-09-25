@@ -34,7 +34,7 @@ When a mission starts or loads with resolved Configuration state `enabled=false`
 The reminder:
 
 - uses the same GIANTS blinking-warning presentation surface and position as the shutdown/hand-back notification;
-- has an explicit duration of **2000 ms**;
+- has an explicit duration of **5000 ms**;
 - appears at most once for that mission load;
 - waits until the mission warning surface is available rather than requiring normal Runtime bootstrap;
 - is not shown when Configuration is unresolved;
@@ -44,6 +44,10 @@ The reminder:
 > **Disabled Startup Reminder != Operational Player Message**
 
 Although the GIANTS warning presentation is visually red/flashing, the semantic state is carried explicitly by the localized text; colour is not the sole carrier of meaning.
+
+Reality validation of TEST 0.4.2.7 showed that a nominal 2000 ms blinking-warning lifetime produced materially less readable exposure than its wall-clock duration: the reminder was visible around 08:27:37 and effectively gone by 08:27:38. The startup reminder therefore uses 5000 ms.
+
+> **Warning Lifetime != Readable Exposure**
 
 Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, hands responsibility back on disablement, reports disabled product status on startup, or otherwise behaves in a way that could appear stuck.
 

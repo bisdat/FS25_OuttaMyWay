@@ -23,7 +23,7 @@ live observation, asset inspection, or current runtime use.
 
 | Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |
 |---|---|---|---|---|
-| `g_currentMission:showBlinkingWarning(text, durationMs, identifier)` | mission / HUD method | Displays a short player-facing warning at the standard blinking-warning position. Current FS25 `HUD:showBlinkingWarning` defaults an omitted duration to **2000 ms**. | Presentation mechanism only. OuttaMyWay passes `2000` explicitly for bounded product-status notices whose duration is part of the accepted contract. It does not own message meaning, priority policy, Configuration semantics or product lifecycle authority. | Current FS25 `BaseMission.lua` / `HUD.lua` source and OuttaMyWay live use |
+| `g_currentMission:showBlinkingWarning(text, durationMs, identifier)` | mission / HUD method | Displays a short player-facing warning at the standard blinking-warning position. Current FS25 `HUD:showBlinkingWarning` defaults an omitted duration to **2000 ms**. | Presentation mechanism only. OuttaMyWay passes an explicit duration when a product-status notice has an accepted lifetime contract; current startup and shutdown notices need not use the same duration. It does not own message meaning, priority policy, Configuration semantics or product lifecycle authority. | Current FS25 `BaseMission.lua` / `HUD.lua` source and OuttaMyWay live use |
 
 ## General Settings extension and mod-listener surfaces
 
