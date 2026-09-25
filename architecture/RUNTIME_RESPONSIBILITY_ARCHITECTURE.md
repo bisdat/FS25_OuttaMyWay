@@ -606,9 +606,15 @@ A compatible already-current responsibility on another subject is not superseded
 
 > **Responsibility Persistence != Decision-Horizon Exclusivity.**
 
-### Recovery Approach and Recovery Anchor
+### Recovery Approach, Recovery Approach Trail and Recovery Anchor
 
 The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Stall.
+
+A **Recovery Approach Trail** is purpose-specific bounded witness retention over that Approach. It preserves a small semi-continuous sequence of positively realised native-progress states so Assessment can identify a spatially useful Recovery Anchor without reconstructing productive routing or retaining historical world state.
+
+The Trail is evidence retention, not Responsibility, Candidate preference, path planning or Control authority. It MUST remain bounded to the active Recovery question and MUST be invalidated by Job Episode, ownership, native direction, material configuration/articulation or representation discontinuity that breaks the Approach.
+
+> **Recovery Approach Trail != Productive History.**
 
 A **Recovery Anchor** is the most recent positively realised state in that same Recovery Approach that remains fit as a bounded return reference. It must preserve Physical Assembly and Job Episode identity and must be invalidated by material ownership, lifecycle, direction, assembly/configuration or representation discontinuity relevant to the recovery question.
 

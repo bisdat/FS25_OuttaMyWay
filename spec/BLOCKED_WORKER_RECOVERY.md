@@ -75,11 +75,31 @@ Elapsed time MAY be required to obtain a usable motion observation interval. Tim
 
 Once the Stall basis is positively established, raw `isBlocked=false` alone MUST NOT be treated as proof that the Stall was semantically false. Positive native progression, lifecycle supersession or an authoritative responsibility transition supplies the relevant contrary evidence.
 
-### Recovery Approach and Recovery Anchor
+### Recovery Approach Trail and Recovery Anchor
 
 The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Blocked Progress Stall.
 
-The **Recovery Anchor** MUST identify the most recent positively realised state in that Approach that remains fit as a bounded return reference. Anchor fitness MUST preserve:
+Assessment MUST retain a bounded **Recovery Approach Trail** for the exact Physical Assembly + active Job Episode while that uninterrupted Approach remains current.
+
+Each retained witness MUST be small and purpose-specific. It MAY preserve only the evidence needed for this recovery question, such as:
+
+- observation identity / timestamp;
+- realised pose;
+- realised travel direction and forward/reverse relation;
+- exact Physical Assembly / Job Episode identity or stable references to them; and
+- current configuration-profile identity / other bounded continuity provenance already supplied by accepted evidence.
+
+The Trail MUST NOT retain whole ObservationSnapshots, OperationalPictures, copied DISC sets, copied Field World geometry, productive route/history, or other historical world state merely for future convenience.
+
+The initial production sampling calibration is one candidate witness per completed live runtime observation cycle while positively realised GIANTS-native progression is present. The current live runtime cadence is **250 ms**.
+
+> **Trail Sampling Cadence != Trail Retention Horizon.**
+
+The 250 ms cadence is implementation calibration, not architectural policy. Trail age/count/distance capacity MUST remain finite and purpose-bounded, but its exact retention horizon is a separate implementation/validation calibration and MUST NOT be inferred from the sampling cadence.
+
+A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Trail for the current recovery question when it breaks Recovery Approach continuity.
+
+The **Recovery Anchor** MUST identify the most recent positively realised Trail state in that Approach that remains fit and spatially useful as a bounded return reference. Anchor fitness MUST preserve:
 
 - Physical Assembly identity;
 - Job Episode identity;
@@ -90,6 +110,10 @@ The **Recovery Anchor** MUST identify the most recent positively realised state 
 - absence of a positive known blockage-associated spatial contradiction already implicating that candidate Anchor state.
 
 A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Anchor for the current recovery question when it breaks that continuity.
+
+Anchor selection MUST NOT simply choose the latest retained sample if it is already positively implicated in the blockage-associated spatial condition or is not spatially useful for a coherent bounded excursion. Assessment may walk backward within the bounded Trail to the most recent fit witness; it MUST NOT widen retention or reconstruct older history merely because no useful Anchor exists.
+
+> **Insufficient Anchor Span != Permission to Retain Productive History.**
 
 Anchor age alone MUST NOT establish or destroy fitness.
 
@@ -408,7 +432,9 @@ Future offline validation should challenge at least:
 - raw blocked spam while realised progression continues does not admit Recovery;
 - a positive Blocked Progress Contradiction can admit one Recovery Resolution;
 - OMW-caused quiescence does not recursively admit Recovery;
+- bounded Recovery Approach Trail sampling/retention remains purpose-specific and does not become Productive History;
 - Recovery Anchor invalidation on identity/lifecycle/direction/configuration discontinuity;
+- Anchor selection may choose the most recent spatially useful fit Trail witness rather than the newest sample;
 - absence of known conflict does not become negative-clearance authority;
 - mandatory Transit request occurs before recovery movement;
 - current positive spatial contradiction can veto/narrow movement;
