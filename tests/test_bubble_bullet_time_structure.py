@@ -44,6 +44,9 @@ def test_bubble_regulation_is_fixed_one_kmh_and_bounded_authority_gated():
     assert "local INTENT_REVELATION_CREEP_KMH = 1.0" in bubble
     assert 'local OWNER_TAG = "BUBBLE_BULLET_TIME"' in bubble
     assert "self.runtime.boundedAuthority:authorize" in bubble
+    assert 'local AUTHORITY_ROLE = "SUPPORTING_SPEED_CEILING"' in bubble
+    assert "supportingSpeedCeilingComposition" in bubble
+    assert "acquireSupportingRegulationAuthority" not in bubble
     assert 'target.operation=="APPLY" and request.boundedAuthorityId==nil' in control
     assert "boundedAuthorityRequiredOwnerTags" not in control
 

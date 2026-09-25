@@ -326,13 +326,13 @@ Primary current implementation routes include:
 
 The common `BoundedAuthority` module is not the entire Jurisdiction. Purpose-specific authority policies remain part of this contract even when placed elsewhere.
 
-### Current implementation gap — cross-responsibility Supporting Speed Ceilings
+### Current implementation — cross-responsibility Supporting Speed Ceilings
 
-The accepted Supporting Speed Ceiling contract is not yet fully realised for an assembly whose movement objective is owned by another Current Responsibility.
+Production distinguishes ordinary token-backed Regulation from an explicit `SUPPORTING_SPEED_CEILING` Bounded Authority role.
 
-Current production still binds positive `REGULATE_SPEED` grants to an assembly authority token owned by the same supporting Commitment. `BubbleBulletTime` therefore cannot currently apply its Passage-owned ceiling when an independent Recovery Commitment already owns that assembly's movement actuation.
+A Supporting Speed Ceiling grant does not carry the constrained assembly's movement-owner token. Positive permission still requires the current governing responsibility and Commitment, exact subject/capability/target, current primary movement-composition identity, explicit non-owning speed-ceiling composition evidence, validity scope and provenance.
 
-This gap is an implementation dependency of Blocked Worker Recovery. It MUST be closed without transferring the Recovery movement objective to the Passage Commitment and without weakening positive Bounded Authority requirements.
+`BubbleBulletTime` uses this role for its Passage-owned third-party 1 km/h ceiling. It does not acquire the third worker's `PROGRESS_ACTUATION` and does not rewrite the Passage pair's movement-objective composition merely to impose magnitude.
 
 ## Validation route
 

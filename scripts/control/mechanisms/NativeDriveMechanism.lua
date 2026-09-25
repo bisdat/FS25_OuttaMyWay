@@ -1,14 +1,16 @@
---- Provides subordinate GIANTS-native Regulation and Passage drive actuation below Control without policy or Commitment authority.
+--- Provides subordinate GIANTS-native movement and composable speed-ceiling actuation below Control without policy or Commitment authority.
 -- Specification Jurisdictions: `CONTROL`
 
 -- GIANTS-native drive mechanism below Control.
--- Positive Regulation preserves native permission; a zero effective cap is a
--- Hold and revokes drive permission. The same interception realises validated
--- Cooperative Passage point-Reposition and captured-axis travel.
+-- Speed ceilings preserve the underlying native or authorised movement objective; a zero
+-- effective cap revokes drive permission without deleting that objective. The same
+-- interception realises validated Cooperative Passage point-Reposition and captured-axis travel.
 
 OuttaMyWay.NativeDriveMechanism = {}
 local Mechanism = OuttaMyWay.NativeDriveMechanism
 Mechanism.__index = Mechanism
+
+local SUPPORTING_SPEED_CEILING="SUPPORTING_SPEED_CEILING"
 
 local function weakKeys()
     return setmetatable({}, {__mode = "k"})
@@ -53,9 +55,31 @@ local function recomputeRegulationState(state)
         local cap = lease and tonumber(lease.speedKmh) or nil
         if cap ~= nil then effective = effective == nil and cap or math.min(effective, cap) end
     end
-    state.speedKmh = effective or 0
+    state.regulationSpeedKmh = effective
     state.ownerTags = owners
     state.ownerTag = #owners == 1 and owners[1] or (#owners > 1 and "COMPOSED_REGULATION" or nil)
+    if state.mode == "REGULATE" then state.speedKmh = effective or 0 end
+    return state
+end
+
+local function speedCeilingApplied(state,baseSpeedKmh)
+    local base=math.max(0,tonumber(baseSpeedKmh) or 0)
+    local ceiling=state and tonumber(state.regulationSpeedKmh) or nil
+    if ceiling==nil then return base end
+    return math.min(base,math.max(0,ceiling))
+end
+
+local function retainSupportingSpeedCeilings(previous,state)
+    local retained={}
+    for ownerTag,lease in pairs(previous and previous.regulationLeases or {}) do
+        if lease and lease.authorityRole==SUPPORTING_SPEED_CEILING then
+            retained[ownerTag]=lease
+        end
+    end
+    if next(retained)~=nil then
+        state.regulationLeases=retained
+        recomputeRegulationState(state)
+    end
     return state
 end
 
@@ -79,7 +103,7 @@ function Mechanism:install()
         state.lastInputMaxSpeed = tonumber(maxSpeed)
 
         if state.mode == "REGULATE" then
-            local cap = tonumber(state.speedKmh) or 0
+            local cap = tonumber(state.regulationSpeedKmh) or tonumber(state.speedKmh) or 0
             local outputMax = cap
             if tonumber(maxSpeed) ~= nil then outputMax = math.min(tonumber(maxSpeed), cap) end
             -- Regulation–Hold Boundary: GIANTS derives drive permission
@@ -136,9 +160,11 @@ function Mechanism:install()
                 return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
             localX,localZ=localX/localLength,localZ/localLength
-            local cap=tonumber(state.speedKmh) or 0
+            local cap=speedCeilingApplied(state,state.speedKmh)
+            local allowed=cap>0
             state.lastOutputMaxSpeed=cap
-            return original(vehicle,dt,1,true,forwards,localX,localZ,cap)
+            state.lastOutputAllowed=allowed
+            return original(vehicle,dt,allowed and 1 or 0,allowed,forwards,localX,localZ,cap)
         end
 
         if state.mode == "REPOSITION" then
@@ -166,11 +192,13 @@ function Mechanism:install()
                 return original(vehicle, dt, 0, false, true, 0, 1, 0)
             end
             localX, localZ = localX / length, localZ / length
-            local cap = tonumber(state.speedKmh) or 0
+            local cap = speedCeilingApplied(state,state.speedKmh)
+            local allowed=cap>0
             state.lastOutputMaxSpeed = cap
+            state.lastOutputAllowed = allowed
             -- Current Reposition actuation supports forward travel only. Reverse remains
             -- architecturally valid but UNRESOLVED until dedicated discovery.
-            return original(vehicle, dt, 1, true, true, localX, localZ, cap)
+            return original(vehicle, dt, allowed and 1 or 0, allowed, true, localX, localZ, cap)
         end
 
         return original(vehicle, dt, acceleration, isAllowedToDrive, moveForwards, lx, lz, maxSpeed)
@@ -190,48 +218,58 @@ end
 -- may coexist.  The physical actuation is the least permissive active cap;
 -- each owner may release only its own lease. The mechanism realises bounded
 -- actuation and does not create Commitment or speed policy.
-function Mechanism:setRegulationLease(vehicle, speedKmh, ownerTag)
+function Mechanism:setRegulationLease(vehicle, speedKmh, ownerTag, authorityRole)
     if vehicle == nil or ownerTag == nil then return false, "regulation-lease-subject-or-owner-unavailable" end
     local ok, reason = self:install()
     if not ok then return false, reason end
     local state = self.states[vehicle]
-    if state ~= nil and state.mode ~= "REGULATE" then return false, "vehicle-has-non-regulation-drive-authority" end
+    if state ~= nil and state.mode ~= "REGULATE" and authorityRole~=SUPPORTING_SPEED_CEILING then
+        return false, "vehicle-has-non-regulation-drive-authority"
+    end
     if state == nil then
         state = {mode="REGULATE", regulationLeases={}, driveCalls=0}
         self.states[vehicle] = state
     elseif state.regulationLeases == nil then
-        -- Preserve an existing single-owner Regulation when converting the
-        -- temporary test authority into composable leases.
-        if state.ownerTag == nil then return false, "existing-regulation-owner-unavailable" end
-        state.regulationLeases = {
-            [tostring(state.ownerTag)] = {speedKmh=tonumber(state.speedKmh) or 0}
-        }
+        if state.mode=="REGULATE" and state.ownerTag~=nil then
+            -- Preserve an existing single-owner Regulation when converting the
+            -- temporary test authority into composable leases.
+            state.regulationLeases = {
+                [tostring(state.ownerTag)] = {speedKmh=tonumber(state.speedKmh) or 0}
+            }
+        else
+            -- Only an explicit Supporting Speed Ceiling may coexist with an
+            -- independently authorised movement objective.
+            state.regulationLeases = {}
+        end
     end
-    state.regulationLeases[tostring(ownerTag)] = {speedKmh=math.max(0, tonumber(speedKmh) or 0)}
+    state.regulationLeases[tostring(ownerTag)] = {
+        speedKmh=math.max(0, tonumber(speedKmh) or 0),
+        authorityRole=authorityRole
+    }
     recomputeRegulationState(state)
     return true
 end
 
 function Mechanism:hasRegulationLease(vehicle, ownerTag)
     local state = vehicle ~= nil and self.states[vehicle] or nil
-    if state == nil or state.mode ~= "REGULATE" then return false end
+    if state == nil then return false end
     if type(state.regulationLeases) == "table" then return state.regulationLeases[tostring(ownerTag)] ~= nil end
-    return state.ownerTag == ownerTag
+    return state.mode=="REGULATE" and state.ownerTag == ownerTag
 end
 
 function Mechanism:getRegulationLease(vehicle, ownerTag)
     local state = vehicle ~= nil and self.states[vehicle] or nil
-    if state == nil or state.mode ~= "REGULATE" then return nil end
+    if state == nil then return nil end
     if type(state.regulationLeases) == "table" then return state.regulationLeases[tostring(ownerTag)] end
-    if state.ownerTag == ownerTag then return {speedKmh=state.speedKmh} end
+    if state.mode=="REGULATE" and state.ownerTag == ownerTag then return {speedKmh=state.speedKmh} end
     return nil
 end
 
 function Mechanism:clearRegulationLease(vehicle, ownerTag)
     local state = vehicle ~= nil and self.states[vehicle] or nil
-    if state == nil or state.mode ~= "REGULATE" then return false end
+    if state == nil then return false end
     if type(state.regulationLeases) ~= "table" then
-        if state.ownerTag ~= ownerTag then return false end
+        if state.mode~="REGULATE" or state.ownerTag ~= ownerTag then return false end
         self.states[vehicle] = nil
         return true
     end
@@ -239,7 +277,11 @@ function Mechanism:clearRegulationLease(vehicle, ownerTag)
     if state.regulationLeases[key] == nil then return false end
     state.regulationLeases[key] = nil
     if next(state.regulationLeases) == nil then
-        self.states[vehicle] = nil
+        state.regulationLeases=nil
+        state.regulationSpeedKmh=nil
+        state.ownerTags=nil
+        state.ownerTag=nil
+        if state.mode=="REGULATE" then self.states[vehicle]=nil end
     else
         recomputeRegulationState(state)
     end
@@ -249,18 +291,20 @@ end
 function Mechanism:setAxisTravel(vehicle, originX, originZ, axisForwardX, axisForwardZ, targetStationM, speedKmh, moveForwards, stationToleranceM)
     local ok, reason = self:install()
     if not ok then return false, reason end
-    self.states[vehicle] = {
+    local previous=self.states[vehicle]
+    self.states[vehicle] = retainSupportingSpeedCeilings(previous,{
         mode="AXIS_TRAVEL", originX=originX, originZ=originZ, axisForwardX=axisForwardX, axisForwardZ=axisForwardZ,
         targetStationM=targetStationM, speedKmh=speedKmh, moveForwards=moveForwards~=false,
         stationToleranceM=stationToleranceM, targetReached=false, driveCalls=0
-    }
+    })
     return true
 end
 
 function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadiusM)
     local ok, reason = self:install()
     if not ok then return false, reason end
-    self.states[vehicle] = {
+    local previous=self.states[vehicle]
+    self.states[vehicle] = retainSupportingSpeedCeilings(previous,{
         mode = "REPOSITION",
         targetX = targetX,
         targetZ = targetZ,
@@ -268,12 +312,25 @@ function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadi
         targetRadiusM = targetRadiusM,
         targetReached = false,
         driveCalls = 0
-    }
+    })
     return true
 end
 
 function Mechanism:getState(vehicle)
     return vehicle ~= nil and self.states[vehicle] or nil
+end
+
+function Mechanism:clearMovementObjective(vehicle)
+    if vehicle == nil then return false end
+    local state=self.states[vehicle]
+    if state==nil or state.mode=="REGULATE" then return false end
+    local retained=retainSupportingSpeedCeilings(state,{mode="REGULATE",driveCalls=state.driveCalls or 0})
+    if type(retained.regulationLeases)=="table" and next(retained.regulationLeases)~=nil then
+        self.states[vehicle]=retained
+    else
+        self.states[vehicle]=nil
+    end
+    return true
 end
 
 function Mechanism:clear(vehicle)

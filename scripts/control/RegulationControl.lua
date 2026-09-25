@@ -1,15 +1,17 @@
---- Executes already-authorised Regulation lease application/release and physical Control observation.
+--- Executes already-authorised REGULATE_SPEED lease application/release and physical Control observation.
 -- Specification Jurisdictions: `CONTROL`
 
--- Regulation Control boundary.
--- Production boundary for already-authorised REGULATE_SPEED requests.
+-- REGULATE_SPEED Control boundary.
+-- Production boundary for already-authorised token-backed Regulation and explicit Supporting Speed Ceiling requests.
 -- Physical drive mechanics are supplied by the production NativeDriveMechanism;
 -- this module owns request validation, lease execution/cleanup and raw execution
--- observation only. It owns no Decision, Regulation magnitude or GIANTS routing.
+-- observation only. It owns no Decision, semantic Regulation, magnitude policy or GIANTS routing.
 
 OuttaMyWay.RegulationControl = {}
 local Control = OuttaMyWay.RegulationControl
 Control.__index = Control
+
+local SUPPORTING_SPEED_CEILING="SUPPORTING_SPEED_CEILING"
 
 local function referenceKey(vehicle)
     return "vehicle-root:" .. tostring(vehicle and (vehicle.rootNode or vehicle) or "nil")
@@ -78,15 +80,23 @@ function Control:executeControlRequest(request,candidate)
         return false,"CONTROL_REQUEST_COMPOSITION_STALE"
     end
 
-    local token=nil
-    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(request.commitmentId)) do
-        if candidateToken.identity==request.authorityToken and candidateToken.assemblyId==request.assemblyId then
-            token=candidateToken
-            break
-        end
+    local supportingSpeedCeiling=request.authorityRole==SUPPORTING_SPEED_CEILING
+    if request.authorityRole~=nil and not supportingSpeedCeiling then
+        return false,"CONTROL_REQUEST_AUTHORITY_ROLE_UNSUPPORTED"
     end
-    if token==nil or self.runtime.authorities:validate(token)~=true then
-        return false,"CONTROL_REQUEST_AUTHORITY_TOKEN_STALE"
+    if supportingSpeedCeiling then
+        if request.authorityToken~=nil then return false,"CONTROL_REQUEST_SUPPORTING_CEILING_MOVEMENT_TOKEN_PRESENT" end
+    else
+        local token=nil
+        for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(request.commitmentId)) do
+            if candidateToken.identity==request.authorityToken and candidateToken.assemblyId==request.assemblyId then
+                token=candidateToken
+                break
+            end
+        end
+        if token==nil or self.runtime.authorities:validate(token)~=true then
+            return false,"CONTROL_REQUEST_AUTHORITY_TOKEN_STALE"
+        end
     end
 
     local target=request.target or {}
@@ -113,7 +123,7 @@ function Control:executeControlRequest(request,candidate)
         if commitment.state~="ACTIVE" then return false,"CONTROL_REQUEST_COMMITMENT_NOT_ACTIVE" end
         local speed=tonumber(target.maxSpeedKmh)
         if speed==nil or speed<0 then return false,"CONTROL_REQUEST_REGULATION_SPEED_INVALID" end
-        local ok,reason=self.driveMechanism:setRegulationLease(vehicle,speed,target.ownerTag)
+        local ok,reason=self.driveMechanism:setRegulationLease(vehicle,speed,target.ownerTag,request.authorityRole)
         if not ok then return false,reason end
         return true,"REGULATION_LEASE_APPLIED"
     elseif target.operation=="RELEASE" then

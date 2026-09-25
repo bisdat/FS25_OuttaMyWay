@@ -24,6 +24,14 @@ function Composition.create(values)
         end
         local authorityClassCount=(entry.progressActuation and 1 or 0)+(entry.obstructionRelocationActuation and 1 or 0)
         if authorityClassCount>1 then error("composition entry cannot own multiple actuation authority classes",2) end
+        if entry.authorityRole~=nil then
+            if entry.authorityRole~="SUPPORTING_SPEED_CEILING" then error("composition entry contains unsupported authority role",2) end
+            if entry.capability~="REGULATE_SPEED" or entry.effectClass~="SPEED_LIMIT" or authorityClassCount~=0 then
+                error("supporting speed ceiling composition entry must be magnitude-only",2)
+            end
+        elseif entry.effectClass=="SPEED_LIMIT" and authorityClassCount==0 then
+            error("non-owning speed limit composition entry requires supporting speed ceiling role",2)
+        end
         local entryClass=nil
         if entry.progressActuation then entryClass="PROGRESS_ACTUATION"
         elseif entry.obstructionRelocationActuation then entryClass="OBSTRUCTION_RELOCATION_ACTUATION" end

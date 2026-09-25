@@ -5,6 +5,8 @@ OuttaMyWay.BoundedAuthority = {}
 local Authority = OuttaMyWay.BoundedAuthority
 Authority.__index = Authority
 
+local SUPPORTING_SPEED_CEILING="SUPPORTING_SPEED_CEILING"
+
 local function copyValue(value)
     if type(value)~="table" then return value end
     local result={}
@@ -69,6 +71,22 @@ function Authority.new(runtime)
     return setmetatable({runtime=runtime,grantsById={},grantIdsByResponsibilityId={},grantIdsByCommitmentId={}},Authority)
 end
 
+local function supportingSpeedCeilingCompositionMatches(values,commitmentId,assemblyId)
+    local composition=values.supportingSpeedCeilingComposition
+    if type(composition)~="table" then
+        return false,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_COMPOSITION_UNAVAILABLE"
+    end
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(composition.entries or {}) do
+        if entry.assemblyId==assemblyId and entry.commitmentId==commitmentId
+            and entry.capability=="REGULATE_SPEED" and entry.effectClass=="SPEED_LIMIT"
+            and entry.authorityRole==SUPPORTING_SPEED_CEILING
+            and entry.progressActuation~=true and entry.obstructionRelocationActuation~=true then
+            return true,nil
+        end
+    end
+    return false,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_COMPOSITION_MISMATCH"
+end
+
 function Authority:authorize(values)
     if type(values)~="table" then return nil,"BOUNDED_AUTHORITY_CONTEXT_REQUIRED" end
     local responsibilityId=values.responsibilityId
@@ -77,12 +95,26 @@ function Authority:authorize(values)
     local commitment=self.runtime.commitments:get(commitmentId)
     if commitment==nil or commitment.state~="ACTIVE" then return nil,"BOUNDED_AUTHORITY_RETAINED_COMMITMENT_NOT_ACTIVE" end
     if commitment.effectiveActuationCompositionId~=values.effectiveActuationCompositionId then return nil,"BOUNDED_AUTHORITY_COMPOSITION_STALE" end
-    local token=tokenFor(self.runtime,commitmentId,values.assemblyId,values.authorityToken)
-    if token==nil then return nil,"BOUNDED_AUTHORITY_TOKEN_INVALID" end
+    local supportingSpeedCeiling=values.authorityRole==SUPPORTING_SPEED_CEILING
+    if values.authorityRole~=nil and not supportingSpeedCeiling then return nil,"BOUNDED_AUTHORITY_ROLE_UNSUPPORTED" end
+    if supportingSpeedCeiling then
+        if values.capability~="REGULATE_SPEED" then return nil,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_CAPABILITY_INVALID" end
+        if values.authorityToken~=nil then return nil,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_MUST_NOT_OWN_MOVEMENT" end
+        local target=values.target
+        if type(target)~="table" or target.kind~="REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string"
+            or type(target.ownerTag)~="string" or tonumber(target.maxSpeedKmh)==nil or tonumber(target.maxSpeedKmh)<0 then
+            return nil,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_TARGET_INVALID"
+        end
+        local compositionOk,compositionReason=supportingSpeedCeilingCompositionMatches(values,commitmentId,values.assemblyId)
+        if not compositionOk then return nil,compositionReason end
+    else
+        local token=tokenFor(self.runtime,commitmentId,values.assemblyId,values.authorityToken)
+        if token==nil then return nil,"BOUNDED_AUTHORITY_TOKEN_INVALID" end
+    end
     local grant=OuttaMyWay.BoundedAuthorityGrant.new({
         identity=self.runtime.identities:issue("BOUNDED_AUTHORITY"),
         responsibilityId=responsibilityId,commitmentId=commitmentId,assemblyId=values.assemblyId,capability=values.capability,
-        target=copyValue(values.target),authorityToken=values.authorityToken,operationalPictureEpoch=values.operationalPictureEpoch,
+        target=copyValue(values.target),authorityToken=values.authorityToken,authorityRole=values.authorityRole,operationalPictureEpoch=values.operationalPictureEpoch,
         evidenceEpoch=values.evidenceEpoch,effectiveActuationCompositionId=values.effectiveActuationCompositionId,
         preconditions=copyValue(values.preconditions or {}),invalidationConditions=copyValue(values.invalidationConditions or {}),
         provenance=copyValue(values.provenance or {})
@@ -112,9 +144,14 @@ function Authority:validateRequest(request,expectedResponsibilityId)
     if request.commitmentId~=grant.commitmentId then return false,"BOUNDED_AUTHORITY_COMMITMENT_MISMATCH" end
     if request.assemblyId~=grant.assemblyId then return false,"BOUNDED_AUTHORITY_ASSEMBLY_MISMATCH" end
     if request.capability~=grant.capability then return false,"BOUNDED_AUTHORITY_CAPABILITY_MISMATCH" end
+    if request.authorityRole~=grant.authorityRole then return false,"BOUNDED_AUTHORITY_ROLE_MISMATCH" end
     if request.authorityToken~=grant.authorityToken then return false,"BOUNDED_AUTHORITY_TOKEN_MISMATCH" end
     if request.effectiveActuationCompositionId~=grant.effectiveActuationCompositionId then return false,"BOUNDED_AUTHORITY_COMPOSITION_MISMATCH" end
-    if tokenFor(self.runtime,grant.commitmentId,grant.assemblyId,grant.authorityToken)==nil then return false,"BOUNDED_AUTHORITY_TOKEN_STALE" end
+    if grant.authorityRole==SUPPORTING_SPEED_CEILING then
+        if grant.authorityToken~=nil or request.authorityToken~=nil then return false,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_MOVEMENT_TOKEN_PRESENT" end
+    elseif tokenFor(self.runtime,grant.commitmentId,grant.assemblyId,grant.authorityToken)==nil then
+        return false,"BOUNDED_AUTHORITY_TOKEN_STALE"
+    end
     local targetOk,targetReason=targetMatchesGrant(request.target,grant.target,grant.capability)
     if not targetOk then return false,targetReason end
     return true,nil,grant
@@ -134,6 +171,7 @@ function Authority:materializeRequest(values)
         capability=grant.capability,
         target=copyValue(target),
         authorityToken=grant.authorityToken,
+        authorityRole=grant.authorityRole,
         operationalPictureEpoch=values.operationalPictureEpoch or grant.operationalPictureEpoch,
         evidenceEpoch=values.evidenceEpoch or grant.evidenceEpoch,
         effectiveActuationCompositionId=grant.effectiveActuationCompositionId,

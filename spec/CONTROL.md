@@ -356,11 +356,13 @@ The dispatcher is not the whole Control Jurisdiction, and physical mechanism mod
 
 > **Primary Specification != Primary Source Module**
 
-### Current implementation gap — movement plus independent speed ceiling
+### Current implementation — movement plus independent speed ceiling
 
-The current `NativeDriveMechanism` stores Regulation and movement overrides as mutually exclusive drive modes. An active Regulation lease therefore cannot currently coexist physically with `AXIS_TRAVEL` or another non-Regulation movement mode, and creating one mode can replace the other mechanism state.
+`NativeDriveMechanism` retains the existing native / `AXIS_TRAVEL` / `REPOSITION` movement calculation while storing active speed-ceiling leases independently of that movement objective.
 
-The accepted Control contract requires those concerns to be represented independently so a current speed ceiling can narrow an already-authorised movement without clearing or replacing its objective. This composition is not yet implemented and is a prerequisite for Passage Bullet Time over Blocked Worker Recovery.
+At physical execution the mechanism derives the underlying command first, then clamps its permitted maximum by the least-permissive current ceiling. Applying or releasing a ceiling does not replace the movement target/axis; revising a supported movement objective preserves current ceiling leases; clearing an OuttaMyWay movement objective while a ceiling remains returns to GIANTS-native movement under that ceiling.
+
+Ordinary Regulation continues through its existing token-backed Control path. Only an explicitly authorised `SUPPORTING_SPEED_CEILING` request may use the non-owning magnitude-only path.
 
 ## Validation route
 

@@ -6,6 +6,7 @@ load("scripts/config.lua")
 load("scripts/publication/LogPublication.lua")
 OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function() return "DIAGNOSTIC" end)
 load("scripts/contracts/ValueRecord.lua")
+load("scripts/authority/EffectiveActuationComposition.lua")
 load("scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua")
 load("scripts/authority/BubbleBulletTime.lua")
 
@@ -60,32 +61,32 @@ test("Bubble decision horizon defers ordinary traffic negotiation while Passage 
     equal(delegateCalls,1)
 end)
 
-test("Bubble preparation precedes responsibility-backed fixed one kilometre per hour activation",function()
+test("Bubble preparation preserves movement ownership and fixed one kilometre per hour activation",function()
     local events={}
     local commitment={identity="CM-1",state="ACTIVE",effectiveActuationCompositionId="COMP-PAIR",strategy={capability="REPOSITION"}}
     local currentResponsibility={identity="RS-1"}
-    local supportToken={identity="AU-C",assemblyId="C"}
     local releaseCalls=0
     local cleared=0
+    local compositionSequence=0
 
     OuttaMyWay.CommitmentStateMachine={
         isTerminal=function(record) return record.state=="SUCCEEDED" or record.state=="FAILED" end
     }
-    OuttaMyWay.LiveTrafficCommitmentLifecycle={
-        acquireSupportingRegulationAuthority=function(runtime,commitmentId,assemblyId,evidence)
-            events[#events+1]="support-authority"
-            equal(commitmentId,"CM-1"); equal(assemblyId,"C")
-            equal(evidence.governingPurpose,"COOPERATIVE_PASSAGE_BUBBLE_BULLET_TIME")
-            commitment.effectiveActuationCompositionId="COMP-THREE"
-            return {commitment=commitment,authorityToken=supportToken,composition={identity="COMP-THREE"}},nil
-        end
-    }
 
     local runtime={
+        identities={
+            issue=function(_,kind)
+                equal(kind,"COMPOSITION")
+                compositionSequence=compositionSequence+1
+                return "COMP-SUPPORT-"..tostring(compositionSequence)
+            end
+        },
+        epochs={next=function() return 12 end},
         commitments={get=function(_,id) if id=="CM-1" then return commitment end end},
         authorities={
-            tokensForCommitment=function(_,id) if id=="CM-1" then return {supportToken} end return {} end,
-            validate=function(_,token) return token==supportToken end
+            ownerOf=function() error("Bubble Bullet Time must not inspect or acquire movement ownership") end,
+            tokensForCommitment=function() error("Bubble Bullet Time must not require movement-owner tokens") end,
+            validate=function() error("Bubble Bullet Time must not validate movement-owner tokens") end
         },
         boundedAuthority={
             authorize=function(_,values)
@@ -94,10 +95,20 @@ test("Bubble preparation precedes responsibility-backed fixed one kilometre per 
                 equal(values.commitmentId,"CM-1")
                 equal(values.assemblyId,"C")
                 equal(values.capability,"REGULATE_SPEED")
+                equal(values.authorityRole,"SUPPORTING_SPEED_CEILING")
+                equal(values.authorityToken,nil)
                 equal(values.target.ownerTag,"BUBBLE_BULLET_TIME")
                 equal(values.target.maxSpeedKmh,1.0)
-                equal(values.effectiveActuationCompositionId,"COMP-THREE")
-                return {identity="BA-1",preconditions={},invalidationConditions={}},nil
+                equal(values.effectiveActuationCompositionId,"COMP-PAIR")
+                local composition=values.supportingSpeedCeilingComposition
+                equal(composition.identity,"COMP-SUPPORT-1")
+                equal(composition.entries[1].assemblyId,"C")
+                equal(composition.entries[1].commitmentId,"CM-1")
+                equal(composition.entries[1].capability,"REGULATE_SPEED")
+                equal(composition.entries[1].effectClass,"SPEED_LIMIT")
+                equal(composition.entries[1].authorityRole,"SUPPORTING_SPEED_CEILING")
+                equal(composition.entries[1].progressActuation,nil)
+                return {identity="BA-1",preconditions={},invalidationConditions={},authorityRole="SUPPORTING_SPEED_CEILING"},nil
             end,
             materializeRequest=function(_,values)
                 events[#events+1]="request"
@@ -107,7 +118,7 @@ test("Bubble preparation precedes responsibility-backed fixed one kilometre per 
                 equal(values.target.maxSpeedKmh,1.0)
                 return {
                     identity="CR-1",boundedAuthorityId="BA-1",commitmentId="CM-1",assemblyId="C",capability="REGULATE_SPEED",
-                    target=values.target,authorityToken="AU-C",effectiveActuationCompositionId="COMP-THREE"
+                    target=values.target,authorityRole="SUPPORTING_SPEED_CEILING",effectiveActuationCompositionId="COMP-PAIR"
                 },nil
             end,
             release=function(_,id)
@@ -119,6 +130,8 @@ test("Bubble preparation precedes responsibility-backed fixed one kilometre per 
         liveControlDispatcher={
             dispatch=function(_,request)
                 events[#events+1]="dispatch"
+                equal(request.authorityRole,"SUPPORTING_SPEED_CEILING")
+                equal(request.authorityToken,nil)
                 equal(request.target.ownerTag,"BUBBLE_BULLET_TIME")
                 equal(request.target.maxSpeedKmh,1.0)
                 return true,"REGULATION_LEASE_APPLIED"
@@ -168,25 +181,27 @@ test("Bubble preparation precedes responsibility-backed fixed one kilometre per 
     equal(prepared.status,"PREPARED")
     equal(prepared.assemblyId,"C")
     equal(prepared.maxSpeedKmh,1.0)
+    equal(prepared.authorityRole,"SUPPORTING_SPEED_CEILING")
+    equal(prepared.effectiveActuationCompositionId,"COMP-PAIR")
+    equal(commitment.effectiveActuationCompositionId,"COMP-PAIR")
     equal(prepared.physicalActive,false)
-    equal(events[1],"support-authority")
-    equal(events[2],nil,"Positive Bounded Authority must wait for current Resolution responsibility")
+    equal(events[1],nil,"Positive Bounded Authority must wait for current Resolution responsibility")
 
     local pairRequestContext={
-        effectiveActuationCompositionId="COMP-THREE",operationalPictureEpoch=10,evidenceEpoch=11,
+        effectiveActuationCompositionId="COMP-PAIR",operationalPictureEpoch=10,evidenceEpoch=11,
         preconditions={},invalidationConditions={}
     }
     local lease,activateReason=bullet:activatePrepared("CM-1",pairRequestContext,candidate)
     equal(activateReason,nil)
     equal(lease.status,"ACTIVE")
     equal(lease.physicalActive,true)
-    equal(events[2],"bounded-authority")
-    equal(events[3],"request")
-    equal(events[4],"dispatch")
-    equal(events[5],"accepted")
+    equal(events[1],"bounded-authority")
+    equal(events[2],"request")
+    equal(events[3],"dispatch")
+    equal(events[4],"accepted")
     equal(releaseCalls,0)
 
-    -- A and B remain the only Passage participants. C is supporting Regulation only.
+    -- A and B remain the only Passage participants. C is a non-owning magnitude constraint.
     equal(candidate.evidenceBasis.cooperativePassageBridge.assemblyIds[1],"A")
     equal(candidate.evidenceBasis.cooperativePassageBridge.assemblyIds[2],"B")
 

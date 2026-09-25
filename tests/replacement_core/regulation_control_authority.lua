@@ -70,11 +70,12 @@ local function fixture()
     }
 
     local drive={applyCalls=0,releaseCalls=0}
-    function drive:setRegulationLease(appliedVehicle,speed,ownerTag)
+    function drive:setRegulationLease(appliedVehicle,speed,ownerTag,authorityRole)
         self.applyCalls=self.applyCalls+1
         self.lastAppliedVehicle=appliedVehicle
         self.lastAppliedSpeed=speed
         self.lastAppliedOwnerTag=ownerTag
+        self.lastAppliedAuthorityRole=authorityRole
         return true,nil
     end
     function drive:clearRegulationLease(releasedVehicle,ownerTag)
@@ -85,7 +86,9 @@ local function fixture()
     function drive:getState() return nil end
 
     local control=OuttaMyWay.RegulationControl.new(runtime,drive)
-    local function request(operation,ownerTag,boundedAuthorityId)
+    local function request(operation,ownerTag,boundedAuthorityId,authorityRole)
+        local authorityToken=token.identity
+        if authorityRole=="SUPPORTING_SPEED_CEILING" then authorityToken=nil end
         return OuttaMyWay.ControlRequest.new({
             identity="CR-RC-"..operation.."-"..ownerTag,
             commitmentId=commitment.identity,
@@ -99,7 +102,8 @@ local function fixture()
                 maxSpeedKmh=1,
                 governingPurpose="TEST_REGULATION_CONTROL_AUTHORITY"
             },
-            authorityToken=token.identity,
+            authorityToken=authorityToken,
+            authorityRole=authorityRole,
             boundedAuthorityId=boundedAuthorityId,
             operationalPictureEpoch=1,
             evidenceEpoch=1,
@@ -143,6 +147,20 @@ test("unknown owner APPLY with current Bounded Authority may reach physical actu
     equal(reason,"REGULATION_LEASE_APPLIED")
     equal(f.drive.applyCalls,1)
     equal(f.drive.lastAppliedOwnerTag,"FUTURE_UNKNOWN_OWNER")
+    equal(f.authorityValidationCalls(),1)
+end)
+
+test("Supporting Speed Ceiling APPLY uses positive Bounded Authority without movement-owner token",function()
+    local f=fixture()
+    local request=f.request("APPLY","BUBBLE_BULLET_TIME","BA-RC","SUPPORTING_SPEED_CEILING")
+    equal(request.authorityToken,nil)
+    equal(request.authorityRole,"SUPPORTING_SPEED_CEILING")
+    local ok,reason=f.control:executeControlRequest(request,nil)
+    equal(ok,true)
+    equal(reason,"REGULATION_LEASE_APPLIED")
+    equal(f.drive.applyCalls,1)
+    equal(f.drive.lastAppliedOwnerTag,"BUBBLE_BULLET_TIME")
+    equal(f.drive.lastAppliedAuthorityRole,"SUPPORTING_SPEED_CEILING")
     equal(f.authorityValidationCalls(),1)
 end)
 

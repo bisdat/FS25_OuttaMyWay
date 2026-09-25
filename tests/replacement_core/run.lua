@@ -729,6 +729,54 @@ test("Bounded Authority accepts Candidate-supplied composition identity without 
     equal(runtime.boundedAuthority:validateRequest(request,current.identity),true)
 end)
 
+test("Supporting Speed Ceiling Bounded Authority remains non-owning across another Commitment movement owner",function()
+    local runtime,commitment,_,current=boundedAuthorityRegulationFixture({assemblyId="AS-PASSAGE"})
+    local recovery=runtime.commitmentAdmission:admit({
+        objective={kind="RECOVERY_FIXTURE"},
+        governingBasis={responsibilityKey="recovery-fixture"},
+        progressAssemblyIds={"AS-C"}
+    }).commitment
+    equal(runtime.authorities:ownerOf("AS-C"),recovery.identity)
+
+    local supportingComposition=OuttaMyWay.EffectiveActuationComposition.create({
+        identity="EC-SUPPORTING-CEILING",epoch=240,relevantAssemblyIds={"AS-C"},
+        entries={{
+            assemblyId="AS-C",commitmentId=commitment.identity,capability="REGULATE_SPEED",
+            effectClass="SPEED_LIMIT",authorityRole="SUPPORTING_SPEED_CEILING"
+        }}
+    })
+    local grant,reason=runtime.boundedAuthority:authorize({
+        responsibilityId=current.identity,
+        commitmentId=commitment.identity,
+        assemblyId="AS-C",
+        capability="REGULATE_SPEED",
+        target={kind="REGULATION_LEASE",vehicleReferenceKey="ref:c",ownerTag="BUBBLE_BULLET_TIME",maxSpeedKmh=1,governingPurpose="COOPERATIVE_PASSAGE_BUBBLE_BULLET_TIME"},
+        authorityRole="SUPPORTING_SPEED_CEILING",
+        operationalPictureEpoch=220,
+        evidenceEpoch=230,
+        effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
+        supportingSpeedCeilingComposition=supportingComposition,
+        preconditions={},
+        invalidationConditions={},
+        provenance={source="test"}
+    })
+    equal(reason,nil)
+    equal(grant.authorityToken,nil)
+    equal(grant.authorityRole,"SUPPORTING_SPEED_CEILING")
+    equal(runtime.authorities:ownerOf("AS-C"),recovery.identity)
+
+    local request,requestReason=runtime.boundedAuthority:materializeRequest({
+        boundedAuthorityId=grant.identity,
+        target={kind="REGULATION_LEASE",operation="APPLY",vehicleReferenceKey="ref:c",ownerTag="BUBBLE_BULLET_TIME",maxSpeedKmh=1,governingPurpose="COOPERATIVE_PASSAGE_BUBBLE_BULLET_TIME"},
+        operationalPictureEpoch=220,evidenceEpoch=230,preconditions={},invalidationConditions={}
+    })
+    equal(requestReason,nil)
+    equal(request.authorityToken,nil)
+    equal(request.authorityRole,"SUPPORTING_SPEED_CEILING")
+    equal(runtime.boundedAuthority:validateRequest(request,current.identity),true)
+    equal(runtime.authorities:ownerOf("AS-C"),recovery.identity)
+end)
+
 test("Corner Right-of-Way initial Regulation applies fixed creep without Resolution-Space envelope",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture({
         responsibilityKey="corner-right-of-way:shared-corner:test",
@@ -3139,6 +3187,147 @@ test("Regulation leases compose by least-permissive cap and release independentl
     equal(authority:clearRegulationLease(vehicle,"MATURATION"),true)
     equal(authority:getState(vehicle),nil)
     AIVehicleUtil=oldAIVehicleUtil
+end)
+
+test("Ordinary Regulation does not acquire the new movement-overlay behaviour",function()
+    local oldAIVehicleUtil=AIVehicleUtil
+    AIVehicleUtil={driveToPoint=function(...) return true end}
+    local vehicle={rootNode=300}
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
+
+    equal(authority:setAxisTravel(vehicle,0,0,0,1,20,8,true,0.5),true)
+    local ok,reason=authority:setRegulationLease(vehicle,1.0,"ACTION_SPACE_REGULATION")
+    equal(ok,false)
+    equal(reason,"vehicle-has-non-regulation-drive-authority")
+    equal(authority:getState(vehicle).mode,"AXIS_TRAVEL")
+    equal(authority:getState(vehicle).targetStationM,20)
+
+    authority:clear(vehicle)
+    equal(authority:setRegulationLease(vehicle,5.0,"ACTION_SPACE_REGULATION"),true)
+    equal(authority:getState(vehicle).mode,"REGULATE")
+    equal(authority:setAxisTravel(vehicle,0,0,0,1,20,8,true,0.5),true)
+    equal(authority:getState(vehicle).mode,"AXIS_TRAVEL")
+    equal(authority:hasRegulationLease(vehicle,"ACTION_SPACE_REGULATION"),false)
+
+    AIVehicleUtil=oldAIVehicleUtil
+end)
+
+test("Supporting Speed Ceiling composes with Axis Travel and releases without restarting objective",function()
+    local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    local calls={}
+    AIVehicleUtil={driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+        calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+        return true
+    end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local vehicle={rootNode=301,getAISteeringNode=function(self) return self.rootNode end}
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
+
+    equal(authority:setAxisTravel(vehicle,0,0,0,1,20,8,true,0.5),true)
+    equal(authority:getState(vehicle).mode,"AXIS_TRAVEL")
+    equal(authority:setRegulationLease(vehicle,1.0,"BUBBLE_BULLET_TIME","SUPPORTING_SPEED_CEILING"),true)
+    local state=authority:getState(vehicle)
+    equal(state.mode,"AXIS_TRAVEL")
+    equal(state.targetStationM,20)
+    equal(state.speedKmh,8)
+    equal(state.regulationSpeedKmh,1.0)
+
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].allowed,true)
+    equal(calls[#calls].moveForwards,true)
+    equal(calls[#calls].maxSpeed,1.0)
+    equal(authority:getState(vehicle).targetStationM,20)
+
+    equal(authority:clearRegulationLease(vehicle,"BUBBLE_BULLET_TIME"),true)
+    state=authority:getState(vehicle)
+    equal(state.mode,"AXIS_TRAVEL")
+    equal(state.targetStationM,20)
+    equal(state.speedKmh,8)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].maxSpeed,8)
+
+    AIVehicleUtil, getWorldTranslation, worldDirectionToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection
+end)
+
+test("Supporting Speed Ceiling composes with Passage Reposition without changing target",function()
+    local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    local calls={}
+    AIVehicleUtil={driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+        calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+        return true
+    end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local vehicle={rootNode=302,getAISteeringNode=function(self) return self.rootNode end}
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
+
+    equal(authority:setReposition(vehicle,10,0,8,0.5),true)
+    equal(authority:setRegulationLease(vehicle,1.0,"BUBBLE_BULLET_TIME","SUPPORTING_SPEED_CEILING"),true)
+    local state=authority:getState(vehicle)
+    equal(state.mode,"REPOSITION")
+    equal(state.targetX,10)
+    equal(state.targetZ,0)
+    equal(state.speedKmh,8)
+    equal(state.regulationSpeedKmh,1.0)
+
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].allowed,true)
+    equal(calls[#calls].maxSpeed,1.0)
+    equal(authority:getState(vehicle).targetX,10)
+
+    equal(authority:clearRegulationLease(vehicle,"BUBBLE_BULLET_TIME"),true)
+    state=authority:getState(vehicle)
+    equal(state.mode,"REPOSITION")
+    equal(state.targetX,10)
+    equal(state.speedKmh,8)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].maxSpeed,8)
+
+    AIVehicleUtil, getWorldTranslation, worldDirectionToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection
+end)
+
+test("Supporting Speed Ceilings compose monotonically and survive movement-objective clear",function()
+    local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    local calls={}
+    AIVehicleUtil={driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+        calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+        return true
+    end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local vehicle={rootNode=303,getAISteeringNode=function(self) return self.rootNode end}
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
+
+    equal(authority:setAxisTravel(vehicle,0,0,0,1,20,8,true,0.5),true)
+    equal(authority:setRegulationLease(vehicle,4.0,"CEILING_A","SUPPORTING_SPEED_CEILING"),true)
+    equal(authority:setRegulationLease(vehicle,1.0,"CEILING_B","SUPPORTING_SPEED_CEILING"),true)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].maxSpeed,1.0)
+
+    equal(authority:setRegulationLease(vehicle,0.0,"ZERO_CEILING","SUPPORTING_SPEED_CEILING"),true)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].allowed,false)
+    equal(calls[#calls].maxSpeed,0.0)
+    equal(authority:getState(vehicle).mode,"AXIS_TRAVEL")
+    equal(authority:getState(vehicle).targetStationM,20)
+
+    equal(authority:clearRegulationLease(vehicle,"ZERO_CEILING"),true)
+    equal(authority:clearMovementObjective(vehicle),true)
+    local state=authority:getState(vehicle)
+    equal(state.mode,"REGULATE")
+    equal(authority:hasRegulationLease(vehicle,"CEILING_A"),true)
+    equal(authority:hasRegulationLease(vehicle,"CEILING_B"),true)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].maxSpeed,1.0)
+
+    equal(authority:clearRegulationLease(vehicle,"CEILING_B"),true)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].maxSpeed,4.0)
+    equal(authority:clearRegulationLease(vehicle,"CEILING_A"),true)
+    equal(authority:getState(vehicle),nil)
+
+    AIVehicleUtil, getWorldTranslation, worldDirectionToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
 test("Regulation-Hold Boundary maps zero cap to GIANTS no-drive permission", function()
