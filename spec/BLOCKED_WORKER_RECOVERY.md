@@ -31,6 +31,7 @@ A new Blocked Worker Recovery Resolution MUST be grounded in one coherent curren
 - purpose-fit current representation and physical-reference evidence;
 - recent Demonstrated Traversability sufficient to support the bounded local return domain being considered;
 - no current OuttaMyWay-owned physical effect that explains the quiescence or already governs the subject incompatibly;
+- no current supported active-traffic responsibility or other incompatible Current Responsibility that already owns the subject's condition;
 - no higher-authority Player Claim or lifecycle condition that prevents autonomous recovery;
 - any current positive spatial contradiction relevant to the proposed local release movement; and
 - the current responsibility/commitment context needed to distinguish fresh establishment from maintenance of the same Recovery Resolution.
@@ -282,7 +283,7 @@ Assessment Representation supplies purpose-fit current Physical Assembly evidenc
 
 ### Candidate Support, Constraint Evaluation and Decision
 
-Where strategic selection is required, prospective support and mandatory constraints remain upstream of Responsibility Transition. This Specification does not make Control availability equivalent to Candidate support.
+Where strategic selection is required, prospective support and mandatory constraints remain upstream of Responsibility Transition. A Blocked Progress Stall does not automatically outrank an independently supported active-traffic, Causal Obstruction or other purpose-specific Candidate. Decision selects among current supported alternatives before Responsibility Transition. This Specification does not make `isBlocked`, Stall classification or Control availability equivalent to Candidate selection.
 
 ### Responsibility Transition
 
