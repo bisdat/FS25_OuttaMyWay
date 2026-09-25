@@ -705,6 +705,24 @@ Mechanical exclusivity is not semantic permission. Retaining an actuator lease o
 
 Responsibility continuity allows authority discontinuity. The same Regulation responsibility may persist while a speed cap changes, actuation becomes quiescent, the controlled subject changes under accepted evidence, or a fresh grant is later acquired. One Resolution Commitment may also support multiple simultaneous bounded effects where its accepted obligations require them.
 
+### Movement Objective and Speed-Ceiling Composition
+
+A physical assembly may have one current **Movement Objective Authority** that owns the permitted movement direction, target, extent or other spatial objective while also being subject to one or more independently justified **Supporting Speed Ceilings**.
+
+A Supporting Speed Ceiling is magnitude-only authority. It may reduce the maximum speed of GIANTS-native movement or of another already-authorised OuttaMyWay movement, but it does not acquire that movement objective, select direction, change target, enlarge movement extent or create motion where none is otherwise authorised.
+
+> **Movement Objective Authority != Speed-Ceiling Authority.**
+
+Compatible speed ceilings compose monotonically. The realised maximum speed is no greater than the least-permissive current ceiling and no greater than the underlying movement authority already permits.
+
+> **One Movement Objective; Multiple Compatible Constraints.**
+
+> **A Speed Ceiling Can Narrow Motion; It Cannot Create Motion.**
+
+The responsibilities supporting the objective and the ceiling may be different when Architecture explicitly requires both. In particular, an independent third worker may remain under its own single-subject Blocked Worker Recovery while an A/B Cooperative Passage Bubble applies its fixed 1 km/h Bullet Time ceiling to that worker. The Passage Resolution does not acquire the third worker's Recovery movement objective, and Recovery does not cease merely because its physical magnitude is temporarily narrowed.
+
+Removing or changing a Supporting Speed Ceiling changes only the current permitted magnitude. It does not restart, replace or otherwise mutate an independently current movement responsibility.
+
 For Cooperative Passage, participant-scoped Bounded Authority may end independently when that participant's Passage Leg is handed back or vacated. Releasing one participant's permission does not imply termination of the surviving participant's permission or of the parent Resolution while legitimate obligations remain.
 
 Relinquishment does not require a new grant. A release or quiescence action narrows or ends the active permission. A Bounded Authority grant must not outlive its Current Responsibility.

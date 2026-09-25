@@ -140,6 +140,26 @@ The result may involve fold/raise/compact actuation, retention of an already sui
 
 A requested or settled Transit state MUST NOT itself be treated as proof of movement clearance. Movement uses fresh realised representation and current Bounded Authority.
 
+### Passage Bullet Time during Recovery
+
+Blocked Worker Recovery does not create a special traffic class.
+
+If an independent A/B Cooperative Passage Bubble forms while the recovering assembly is the Bubble's third active worker, the Recovery Resolution remains current and its Recovery Excursion continues under the Passage-owned **1 km/h Supporting Speed Ceiling**.
+
+The Bullet-Time ceiling:
+
+- narrows Recovery movement magnitude only;
+- MUST NOT acquire or replace the Recovery movement objective;
+- MUST NOT invalidate the Recovery Anchor merely because movement becomes slower;
+- MUST NOT restart the Recovery Excursion when the ceiling is applied or removed; and
+- MUST NOT be interpreted as Recovery failure merely because progress is slower while the cap is current.
+
+When the Bubble dissolves, removing the ceiling changes only current permitted magnitude. Recovery continues under its own still-current Bounded Authority if its Recovery Point has not yet been reached.
+
+Any Recovery progress-watchdog implementation MUST measure purpose-specific progress toward the current Recovery completion residual and MUST treat a current compatible speed ceiling as valid execution context rather than as evidence that the Recovery strategy has failed.
+
+> **Bullet Time Constrains Recovery; It Does Not Suspend Recovery.**
+
 ### Release direction and movement envelope
 
 The Recovery Excursion MUST use the Recovery Anchor / recent realised approach to establish which local direction represents retreat from the failed native progression.
