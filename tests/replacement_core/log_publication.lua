@@ -38,7 +38,9 @@ test("NORMAL publishes NORMAL and suppresses higher classes before payload const
     equal(ok,false); equal(reason,"SUPPRESSED"); equal(built,0); equal(#calls,0)
     ok,reason=origin:publish("NORMAL","INFO","NORMAL_EVENT",function() built=built+1; return {operation="OP-1",field=77,detail="visible"} end)
     equal(ok,true); equal(reason,"PUBLISHED"); equal(built,1); equal(#calls,1)
-    contains(calls[1].message,"[NORMAL][INFO][LOG_PUBLICATION_TEST][NORMAL_EVENT]")
+    contains(calls[1].message,"[FS25_OuttaMyWay][LOG_PUBLICATION_TEST][NORMAL_EVENT]")
+    if string.find(calls[1].message,"[NORMAL]",1,true)~=nil then error("NORMAL class was rendered") end
+    if string.find(calls[1].message,"[INFO]",1,true)~=nil then error("severity was duplicated in envelope") end
     contains(calls[1].message,"operation=OP-1 field=77 visible")
 end)
 
@@ -60,6 +62,11 @@ test("DIAGNOSTIC admits all classes and severity selects destination",function()
     origin:error("DIAGNOSTIC","DIAGNOSTIC_ERROR","x=1")
     equal(#calls,3)
     equal(calls[1].method,"info"); equal(calls[2].method,"warning"); equal(calls[3].method,"error")
+    contains(calls[1].message,"[FS25_OuttaMyWay][LOG_PUBLICATION_TEST][NORMAL_EVENT]")
+    contains(calls[2].message,"[FS25_OuttaMyWay][DEBUG][LOG_PUBLICATION_TEST][DEBUG_WARNING]")
+    contains(calls[3].message,"[FS25_OuttaMyWay][DIAGNOSTIC][LOG_PUBLICATION_TEST][DIAGNOSTIC_ERROR]")
+    if string.find(calls[2].message,"[WARNING]",1,true)~=nil then error("warning severity was duplicated in envelope") end
+    if string.find(calls[3].message,"[ERROR]",1,true)~=nil then error("error severity was duplicated in envelope") end
 end)
 
 test("payload context rendering is deterministic and one-line",function()

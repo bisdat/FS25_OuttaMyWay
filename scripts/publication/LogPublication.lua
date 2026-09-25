@@ -107,8 +107,13 @@ end
 
 function LogPublication:_render(descriptor,payload)
     local body=renderPayload(payload)
-    local envelope=string.format("[FS25_OuttaMyWay][%s][%s][%s][%s]",
-        descriptor.publicationClass,descriptor.severity,descriptor.origin,descriptor.code)
+    local envelope
+    if descriptor.publicationClass=="NORMAL" then
+        envelope=string.format("[FS25_OuttaMyWay][%s][%s]",descriptor.origin,descriptor.code)
+    else
+        envelope=string.format("[FS25_OuttaMyWay][%s][%s][%s]",
+            descriptor.publicationClass,descriptor.origin,descriptor.code)
+    end
     if body=="" then return envelope end
     return envelope.." "..body
 end
