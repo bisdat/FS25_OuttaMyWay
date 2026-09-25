@@ -8,6 +8,8 @@ SCRIPTS = ROOT / "scripts"
 PUBLISHER = SCRIPTS / "publication" / "LogPublication.lua"
 CONFIG = SCRIPTS / "config.lua"
 MAIN = SCRIPTS / "main.lua"
+DIAGNOSTIC_POLICY_SOURCE = SCRIPTS / "diagnostics" / "DiagnosticPublicationPolicySource.lua"
+DIAGNOSTIC_EXAMPLE = ROOT / "tools" / "diagnostics.example.xml"
 
 DESTINATION_RE = re.compile(r"\bLogging\s*(?:\.(?:info|warning|error)\b|\[[^\]]+\])")
 PREFIX_PRINT_RE = re.compile(r"""\bprint\s*\([^\n]*FS25_OuttaMyWay""")
@@ -27,15 +29,29 @@ def test_only_log_publication_addresses_runtime_log_destination() -> None:
     assert violations == []
 
 
-def test_publisher_owns_dynamic_destination_and_migration_policy_is_config_input() -> None:
+def test_publisher_owns_dynamic_destination_and_engineering_policy_is_separate_from_player_configuration() -> None:
     publisher = PUBLISHER.read_text(encoding="utf-8")
     config = CONFIG.read_text(encoding="utf-8")
     main = MAIN.read_text(encoding="utf-8")
+    policy_source = DIAGNOSTIC_POLICY_SOURCE.read_text(encoding="utf-8")
+    example = DIAGNOSTIC_EXAMPLE.read_text(encoding="utf-8")
 
     assert "Logging and Logging[method]" in publisher
     assert "DIAGNOSTIC_LOGGING" not in config
-    assert "if OuttaMyWay.DIAGNOSTIC_LOGGING==nil then OuttaMyWay.DIAGNOSTIC_LOGGING=true end" in main
-    assert 'OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"' in main
+    assert "DIAGNOSTIC_LOGGING" not in main
+    assert "DIAGNOSTIC_LOGGING" not in policy_source
+    assert '"scripts/diagnostics/DiagnosticPublicationPolicySource.lua"' in main
+    assert main.index('"scripts/diagnostics/DiagnosticPublicationPolicySource.lua"') < main.index('"scripts/publication/LogPublication.lua"')
+    assert "OuttaMyWay.DiagnosticPublicationPolicySource.new(OuttaMyWay.MOD_NAME)" in main
+    assert "OuttaMyWay.diagnosticPublicationPolicySource:loadSidecar()" in main
+    assert "return OuttaMyWay.diagnosticPublicationPolicySource:publicationPolicy()" in main
+    assert "fileExists" in policy_source
+    assert "XMLSchema.new" in policy_source
+    assert "XMLFile.loadIfExists" in policy_source
+    assert "XMLFile.create" not in policy_source
+    assert "createFolder" not in policy_source
+    assert "modSettings/<modName>/diagnostics.xml" in example
+    assert '<outtaMyWayDiagnostics enabled="true" />' in example
     assert 'OUTTAMYWAY_STARTED' in main
 
 

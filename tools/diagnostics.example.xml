@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Engineering-only OuttaMyWay DIAGNOSTIC publication switch.
+
+Copy this file to:
+  <Farming Simulator user profile>/modSettings/<modName>/diagnostics.xml
+
+For a normal installation <modName> is usually FS25_OuttaMyWay.
+
+enabled="true"  -> DIAGNOSTIC log publication enabled on next mod/game load.
+enabled="false" -> DIAGNOSTIC log publication disabled.
+Deleting the sidecar also disables DIAGNOSTIC publication.
+
+This file is not supported player Configuration and is never created automatically.
+-->
+<outtaMyWayDiagnostics enabled="true" />

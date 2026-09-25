@@ -108,6 +108,7 @@ jobs:
             scripts/representation/EntityLocalShapeEvidence.lua \
             scripts/representation/AssemblyRepresentationCache.lua \
             scripts/representation/CurrentPhysicalConflictRepresentation.lua \
+            scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
             scripts/diagnostics/PassiveLiveValidator.lua \
             scripts/observation/LiveInteractionObservation.lua \
             scripts/observation/LiveObservationSource.lua \
@@ -144,6 +145,7 @@ jobs:
           "$LUAJIT_BIN" tests/replacement_core/resolution_margin_demand.lua
           "$LUAJIT_BIN" tests/replacement_core/regulation_control_authority.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua
+          "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/prospective_decision_admissibility.lua
 
       - name: Run focused obstruction relocation contract
