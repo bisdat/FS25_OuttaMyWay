@@ -248,5 +248,62 @@ test("listener removal failure cannot keep product operational",function()
     equal(OuttaMyWay.runtime,nil)
 end)
 
+
+test("durable live re-enable creates fresh Runtime and initializes current map before registration",function()
+    local config={
+        isResolved=function() return true end,
+        isEnabled=function() return true end,
+        isHudVisible=function() return false end,
+        addChangeListener=function() return true,"LISTENER_ADDED" end
+    }
+    local factoryCalls,loadCalls,registerCalls=0,0,0
+    local createdRuntime=nil
+    local factory=function()
+        factoryCalls=factoryCalls+1
+        createdRuntime={identity="fresh-"..tostring(factoryCalls)}
+        local listener={
+            loadMap=function() loadCalls=loadCalls+1 end,
+            deleteMap=function() end
+        }
+        return {
+            runtime=createdRuntime,
+            listeners={listener},
+            registerListeners=function()
+                registerCalls=registerCalls+1
+                equal(loadCalls,1,"current map must initialize before listener registration")
+                return true,"REGISTERED"
+            end
+        }
+    end
+    local lifecycle=OuttaMyWay.ProductLifecycle.new(config,factory)
+    local ok,result=lifecycle:enable("PLAYER_CONFIGURATION_ENABLED",true)
+    equal(ok,true); equal(result.status,"ENABLED")
+    equal(factoryCalls,1); equal(loadCalls,1); equal(registerCalls,1)
+    equal(lifecycle:isOperational(),true)
+    equal(OuttaMyWay.runtime,createdRuntime)
+end)
+
+test("enabled notification ignores non-durable true and accepts durable true",function()
+    local listener=nil
+    local config={
+        isResolved=function() return true end,
+        isEnabled=function() return true end,
+        isHudVisible=function() return false end,
+        addChangeListener=function(self,fn) listener=fn; return true,"LISTENER_ADDED" end
+    }
+    local factoryCalls=0
+    local factory=function()
+        factoryCalls=factoryCalls+1
+        return {runtime={},listeners={},registerListeners=function() return true,"REGISTERED" end}
+    end
+    local lifecycle=OuttaMyWay.ProductLifecycle.new(config,factory)
+    equal(lifecycle:subscribe(),true)
+    listener({name="enabled",value=true,durable=false})
+    equal(factoryCalls,0)
+    listener({name="enabled",value=true,durable=true})
+    equal(factoryCalls,1)
+    equal(lifecycle:isOperational(),true)
+end)
+
 print(string.format("RESULT %d passed / %d failed",passed,failed))
 if failed>0 then os.exit(1) end

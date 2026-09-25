@@ -45,8 +45,11 @@ def test_regulation_control_reuses_mechanics_without_owning_policy():
     assert "driveMechanism:setRegulationLease" in control
     assert "driveMechanism:clearRegulationLease" in control
     assert "AIVehicleUtil.driveToPoint" in drive
-    assert "OuttaMyWay.RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)" in main
-    assert "OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
+    assert "local sharedPhysicalControlMechanisms={" in main
+    assert "local regulationControl=OuttaMyWay.RegulationControl.new(runtime,sharedPhysicalControlMechanisms.driveMechanism)" in main
+    assert "local cooperativePassageControl=OuttaMyWay.CooperativePassageControl.new(runtime,sharedPhysicalControlMechanisms)" in main
+    assert "runtime:setRegulationControl(regulationControl)" in main
+    assert "runtime:setCooperativePassageControl(cooperativePassageControl)" in main
 
     for forbidden in (
         "DecisionSelector",

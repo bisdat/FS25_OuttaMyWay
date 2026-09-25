@@ -43,7 +43,7 @@ observation is classified as new.
 - [Specification](../spec/README.md) — implementation-facing contracts and navigation from Architecture to current source.
 - [Engine Knowledge](engine/README.md) — reusable observed FS25/GIANTS runtime behaviour, API surfaces, and semantic limits.
 - [Configuration](../architecture/CONFIGURATION.md) — supported player-choice and consent surface, admission rules, defaults, persistence, and authority boundaries.
-- [GUI](../architecture/GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
+- [GUI](../architecture/GUI.md) — player-facing interface architecture; General Settings Configuration Section is reconciled while Operational Player Messages and Help / Reference remain open.
 
 The live root does not link `archive/`; archived material has no current
 authority and remains bounded recovery/harvesting material until deletion is

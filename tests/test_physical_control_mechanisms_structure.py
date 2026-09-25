@@ -25,12 +25,15 @@ def test_production_mechanisms_are_named_and_placed_truthfully():
 def test_main_is_production_composition_root_and_p22_is_retired():
     main=text("scripts/main.lua")
     prototype22=ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua"
-    assert "OuttaMyWay.physicalControlMechanisms={" in main
+    assert "local sharedPhysicalControlMechanisms={" in main
     assert "holdMechanism=OuttaMyWay.FieldWorkHoldMechanism.new()" in main
     assert "driveMechanism=OuttaMyWay.NativeDriveMechanism.new()" in main
     assert "configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new()" in main
-    assert "RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)" in main
-    assert "CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
+    assert "RegulationControl.new(runtime,sharedPhysicalControlMechanisms.driveMechanism)" in main
+    assert "CooperativePassageControl.new(runtime,sharedPhysicalControlMechanisms)" in main
+    assert "sharedPhysicalControlMechanisms.holdMechanism:clear()" in main
+    assert "sharedPhysicalControlMechanisms.driveMechanism:clearAll()" in main
+    assert "sharedPhysicalControlMechanisms.configurationMechanism:clearAll()" in main
     assert not prototype22.exists()
     assert "prototype22CapabilityGate" not in main
     assert "Prototype22CapabilityGate" not in main
@@ -51,7 +54,7 @@ def test_controls_consume_mechanisms_without_new_semantic_authority():
     assert "holdMechanism=OuttaMyWay.FieldWorkHoldMechanism.new()" in main
     assert "driveMechanism=OuttaMyWay.NativeDriveMechanism.new()" in main
     assert "configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new()" in main
-    assert "OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
+    assert "OuttaMyWay.CooperativePassageControl.new(runtime,sharedPhysicalControlMechanisms)" in main
 
 def test_native_drive_retires_only_uncalled_orientation_residue():
     drive=text("scripts/control/mechanisms/NativeDriveMechanism.lua")

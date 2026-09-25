@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="0.4.2.3">0.4.2.3</version>
+    <version value="0.4.2.6">0.4.2.6</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -23,6 +23,46 @@
             <fr>OuttaMyWay désactivé. Contrôle rendu à l’IA GIANTS. Vérifiez les ouvriers actifs.</fr>
             <es>OuttaMyWay desactivado. Control devuelto a la IA de GIANTS. Revisa los trabajadores activos.</es>
             <it>OuttaMyWay disattivato. Controllo restituito all'IA GIANTS. Controlla gli operatori attivi.</it>
+        </text>
+        <text name="omw_configSection_title">
+            <en>OuttaMyWay</en><de>OuttaMyWay</de><fr>OuttaMyWay</fr><es>OuttaMyWay</es><it>OuttaMyWay</it>
+        </text>
+        <text name="omw_configSection_enabled">
+            <en>Enabled</en><de>Aktiviert</de><fr>Activé</fr><es>Activado</es><it>Attivato</it>
+        </text>
+        <text name="omw_configSection_enabledTooltip">
+            <en>Allow OuttaMyWay to coordinate supported GIANTS AI field workers. Turning this off immediately returns all control to GIANTS AI.</en>
+            <de>OuttaMyWay darf unterstützte GIANTS-KI-Feldhelfer koordinieren. Beim Ausschalten gibt OuttaMyWay sofort jede Steuerung an die GIANTS-KI zurück.</de>
+            <fr>Autorise OuttaMyWay à coordonner les ouvriers de champ IA GIANTS pris en charge. La désactivation rend immédiatement tout contrôle à l'IA GIANTS.</fr>
+            <es>Permite que OuttaMyWay coordine los trabajadores de campo de la IA de GIANTS compatibles. Al desactivarlo, todo el control vuelve inmediatamente a la IA de GIANTS.</es>
+            <it>Consente a OuttaMyWay di coordinare gli operatori sul campo supportati dell'IA GIANTS. Disattivandolo, tutto il controllo torna immediatamente all'IA GIANTS.</it>
+        </text>
+        <text name="omw_configSection_operationalMessages">
+            <en>Operational messages</en><de>Betriebsmeldungen</de><fr>Messages opérationnels</fr><es>Mensajes operativos</es><it>Messaggi operativi</it>
+        </text>
+        <text name="omw_configSection_operationalMessagesTooltip">
+            <en>Show messages that explain OuttaMyWay activity and waiting. This does not hide the OuttaMyWay status indicator.</en>
+            <de>Zeigt Meldungen zu OuttaMyWay-Aktivität und Wartephasen. Die OuttaMyWay-Statusanzeige bleibt davon unberührt.</de>
+            <fr>Affiche les messages expliquant l'activité et les attentes d'OuttaMyWay. Cela ne masque pas l'indicateur d'état d'OuttaMyWay.</fr>
+            <es>Muestra mensajes que explican la actividad y las esperas de OuttaMyWay. Esto no oculta el indicador de estado de OuttaMyWay.</es>
+            <it>Mostra messaggi che spiegano l'attività e le attese di OuttaMyWay. Questo non nasconde l'indicatore di stato di OuttaMyWay.</it>
+        </text>
+        <text name="omw_configSection_debug">
+            <en>Debug</en><de>Debug</de><fr>Débogage</fr><es>Depuración</es><it>Debug</it>
+        </text>
+        <text name="omw_configSection_debugTooltip">
+            <en>Add extra troubleshooting detail to the log. Normal operational logging remains enabled.</en>
+            <de>Fügt dem Protokoll zusätzliche Informationen zur Fehlersuche hinzu. Die normale Betriebsprotokollierung bleibt aktiv.</de>
+            <fr>Ajoute au journal des détails supplémentaires pour le dépannage. La journalisation opérationnelle normale reste active.</fr>
+            <es>Añade al registro detalles adicionales para solucionar problemas. El registro operativo normal permanece activo.</es>
+            <it>Aggiunge al registro dettagli extra per la risoluzione dei problemi. La normale registrazione operativa resta attiva.</it>
+        </text>
+        <text name="omw_configSection_saveFailed">
+            <en>OuttaMyWay could not save this setting. The current value is shown in the menu.</en>
+            <de>OuttaMyWay konnte diese Einstellung nicht speichern. Der aktuelle Wert wird im Menü angezeigt.</de>
+            <fr>OuttaMyWay n'a pas pu enregistrer ce réglage. La valeur actuelle est affichée dans le menu.</fr>
+            <es>OuttaMyWay no pudo guardar este ajuste. El valor actual se muestra en el menú.</es>
+            <it>OuttaMyWay non ha potuto salvare questa impostazione. Il valore attuale è mostrato nel menu.</it>
         </text>
     </l10n>
     <iconFilename>icon.dds</iconFilename>
