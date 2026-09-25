@@ -375,6 +375,47 @@ function Control:update(dt)
         continuousCourseCorrection=false,directionEvidence=result,configurationResult=state.configurationResult
     })
 end
+function Control:relinquishAll(reason)
+    local state=self.active
+    if state==nil then
+        self.configurationMechanism:clearAll()
+        return {hadActiveControl=false,reason=reason}
+    end
+    local vehicle=state.vehicle or self:_vehicle(state.assemblyReferenceKey)
+    local neutralized=false
+    local neutralizeReason=nil
+    if state.phase=="INFIELD" and state.actuationIssued==true and vehicle~=nil
+        and not self.actuationMechanism:isPlayerClaimed(vehicle)
+        and not self.actuationMechanism:isSourceReactivated(vehicle) then
+        neutralized,neutralizeReason=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
+        if neutralized~=true then
+            logWarning("OBSTRUCTION_RELOCATION_DISABLE_NEUTRALIZATION_FAILED","commitment=%s reason=%s",
+                tostring(state.commitmentId),tostring(neutralizeReason))
+        end
+    end
+    local activityContextReleased=false
+    local activityContextReason=nil
+    if state.activityContext~=nil and vehicle~=nil then
+        activityContextReleased,activityContextReason=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
+        if activityContextReleased~=true then
+            logWarning("OBSTRUCTION_RELOCATION_DISABLE_ACTIVITY_CONTEXT_RELEASE_FAILED","commitment=%s reason=%s",
+                tostring(state.commitmentId),tostring(activityContextReason))
+        end
+    end
+    if vehicle~=nil then self:_releaseConfigurationOwnership(vehicle,state) end
+    self.configurationMechanism:clearAll()
+    self.active=nil
+    self.latestObservation=nil
+    return {
+        hadActiveControl=true,
+        neutralized=neutralized,
+        neutralizeReason=neutralizeReason,
+        activityContextReleased=activityContextReleased,
+        activityContextReason=activityContextReason,
+        reason=reason
+    }
+end
+
 function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
 function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
 function Control:keyEvent() end

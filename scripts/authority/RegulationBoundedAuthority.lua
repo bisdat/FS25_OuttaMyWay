@@ -1100,6 +1100,39 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
     return {released=released}
 end
 
+-- Product withdrawal does not require a fresh strategic or Bounded-Authority
+-- decision. It may only clear already-owned Regulation effects and bookkeeping.
+function Authority:relinquishAll(reason)
+    local why=reason or "PRODUCT_CONSENT_WITHDRAWN"
+    local result={actionSpace=false,followerBoundary=false}
+    local control=self.regulationControl
+    local actionSpace=self.actionSpaceRegulationLease
+    if actionSpace~=nil then
+        if control~=nil and type(control.clearRegulationLeaseByReference)=="function"
+            and type(actionSpace.regulatedReferenceKey)=="string" then
+            result.actionSpacePhysical=control:clearRegulationLeaseByReference(
+                actionSpace.regulatedReferenceKey,actionSpace.ownerTag or ACTION_SPACE_REGULATION_OWNER_TAG)==true
+        end
+        self:_releaseBoundedAuthority(actionSpace.boundedAuthorityId,why)
+        self.actionSpaceRegulationLease=nil
+        self.actionSpaceRegulationReleaseCount=self.actionSpaceRegulationReleaseCount+1
+        result.actionSpace=true
+    end
+    local follower=self.followerBoundaryLease
+    if follower~=nil then
+        if follower.actuationActive~=false and control~=nil and type(control.clearRegulationLeaseByReference)=="function"
+            and type(follower.followerReferenceKey)=="string" then
+            result.followerBoundaryPhysical=control:clearRegulationLeaseByReference(
+                follower.followerReferenceKey,FOLLOWER_BOUNDARY_OWNER_TAG)==true
+        end
+        self:_releaseBoundedAuthority(follower.boundedAuthorityId,why)
+        self.followerBoundaryLease=nil
+        self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
+        result.followerBoundary=true
+    end
+    return result
+end
+
 function Authority:getActionSpaceRegulationStatus()
     local lease=self.actionSpaceRegulationLease
     local envelope=lease and lease.progressionEnvelope or nil

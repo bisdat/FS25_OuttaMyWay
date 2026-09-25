@@ -189,5 +189,64 @@ test("debug changes current session and reports non-durable failure",function()
     equal(notification.name,"debug"); equal(notification.value,true); equal(notification.durable,false)
 end)
 
+
+OuttaMyWay.ValueRecord={ipairs=ipairs}
+OuttaMyWay.LogPublication={origin=function()
+    return {
+        error=function() end,
+        warning=function() end,
+        publish=function() return true,"PUBLISHED" end
+    }
+end}
+load("scripts/lifecycle/ProductLifecycle.lua")
+
+test("live disable consumes non-durable enabled false and discards runtime",function()
+    local listener=nil
+    local config={
+        addChangeListener=function(self,fn) listener=fn; return true,"LISTENER_ADDED" end,
+        isHudVisible=function() return false end
+    }
+    local lifecycle=OuttaMyWay.ProductLifecycle.new(config)
+    equal(lifecycle:subscribe(),true)
+    local relinquishCalls=0
+    local runtime={relinquishAllControl=function(self,reason)
+        relinquishCalls=relinquishCalls+1
+        equal(reason,"PLAYER_CONFIGURATION_DISABLED")
+        return {coordinationCeased=true}
+    end}
+    local removed=0
+    removeModEventListener=function(item) removed=removed+1 end
+    OuttaMyWay.runtime=runtime
+    lifecycle:adoptRuntime(runtime,{{},{}})
+    listener({name="enabled",value=false,durable=false,storageReason="XML_SAVE_FAILED"})
+    equal(relinquishCalls,1)
+    equal(removed,2)
+    equal(lifecycle:isOperational(),false)
+    equal(lifecycle.runtime,nil)
+    equal(OuttaMyWay.runtime,nil)
+end)
+
+test("listener removal failure cannot keep product operational",function()
+    local config={
+        addChangeListener=function() return true,"LISTENER_ADDED" end,
+        isHudVisible=function() return false end
+    }
+    local lifecycle=OuttaMyWay.ProductLifecycle.new(config)
+    local relinquishCalls=0
+    local runtime={relinquishAllControl=function()
+        relinquishCalls=relinquishCalls+1
+        return {coordinationCeased=true}
+    end}
+    removeModEventListener=nil
+    OuttaMyWay.runtime=runtime
+    lifecycle:adoptRuntime(runtime,{{}})
+    local ok,result=lifecycle:disable("PLAYER_CONFIGURATION_DISABLED")
+    equal(ok,true)
+    equal(result.status,"DISABLED")
+    equal(relinquishCalls,1)
+    equal(lifecycle:isOperational(),false)
+    equal(OuttaMyWay.runtime,nil)
+end)
+
 print(string.format("RESULT %d passed / %d failed",passed,failed))
 if failed>0 then os.exit(1) end

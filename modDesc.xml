@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="0.4.2.0">0.4.2.0</version>
+    <version value="0.4.2.3">0.4.2.3</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -16,6 +16,15 @@
         <es>Ayuda a los trabajadores de campo de la IA nativa de GIANTS a cooperar dentro de un campo mediante intervenciones temporales y limitadas, manteniendo GIANTS la responsabilidad del trabajo.</es>
         <it>Aiuta gli operatori agricoli dell’IA nativa GIANTS a cooperare all’interno di un campo tramite interventi temporanei e limitati, mantenendo a GIANTS la responsabilità del lavoro.</it>
     </description>
+    <l10n>
+        <text name="omw_disabledHandBack">
+            <en>OuttaMyWay disabled. Control returned to GIANTS AI. Review active workers.</en>
+            <de>OuttaMyWay deaktiviert. Steuerung an die GIANTS-KI zurückgegeben. Aktive Helfer prüfen.</de>
+            <fr>OuttaMyWay désactivé. Contrôle rendu à l’IA GIANTS. Vérifiez les ouvriers actifs.</fr>
+            <es>OuttaMyWay desactivado. Control devuelto a la IA de GIANTS. Revisa los trabajadores activos.</es>
+            <it>OuttaMyWay disattivato. Controllo restituito all'IA GIANTS. Controlla gli operatori attivi.</it>
+        </text>
+    </l10n>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />
     <extraSourceFiles>

@@ -15,7 +15,7 @@ function Hud:update() end
 function Hud:keyEvent() end
 function Hud:mouseEvent() end
 function Hud:draw()
-    if VERSION_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
+    if VERSION_HUD_ENABLED~=true or OuttaMyWay.runtime==nil or g_currentMission==nil or renderText==nil then return end
     local x=VERSION_HUD_X; local y=VERSION_HUD_Y; local size=VERSION_HUD_TEXT_SIZE
     local text=string.format("OuttaMyWay %s",tostring(OuttaMyWay.VERSION or "?"))
     if setTextAlignment~=nil then setTextAlignment((RenderText and RenderText.ALIGN_RIGHT) or 2) end

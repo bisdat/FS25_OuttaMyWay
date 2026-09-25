@@ -14,7 +14,7 @@ local modules={
     "scripts/commitment/CommitmentStateMachine.lua","scripts/commitment/CommitmentRegistry.lua","scripts/commitment/ObligationLedger.lua","scripts/authority/AuthorityRegistry.lua","scripts/control/mechanisms/NonJobActuationMechanism.lua","scripts/authority/EffectiveActuationComposition.lua","scripts/authority/BoundedAuthority.lua","scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua","scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua","scripts/commitment/LiveTrafficCommitmentLifecycle.lua","scripts/authority/BubbleBulletTime.lua","scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua","scripts/responsibility/ResolutionCommitmentAdapter.lua","scripts/responsibility/ResponsibilityTransitionAuthority.lua","scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua","scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua","scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua","scripts/responsibility/CooperativePassageResponsibilityTransition.lua","scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua",
     "scripts/candidates/CandidateSpace.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/candidates/LocalPassagePlanner.lua","scripts/candidates/ObstructionRelocationCandidateSupport.lua","scripts/candidates/LiveTrafficCandidateSupport.lua","scripts/decision/ProspectivePortfolioDecisionPolicy.lua","scripts/candidates/ProspectiveDecisionPortfolioSupport.lua","scripts/constraints/ConstraintEvidence.lua",
     "scripts/constraints/evaluators/RepresentationFitnessConstraint.lua","scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua","scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua","scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua",
-    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/VersionHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/FollowerBoundaryMagnitudePolicy.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
+    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/VersionHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/FollowerBoundaryMagnitudePolicy.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua","scripts/lifecycle/ProductLifecycle.lua"
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
@@ -44,6 +44,9 @@ else
         return {version=OuttaMyWay.VERSION,reason=configurationReason}
     end)
 end
+
+OuttaMyWay.productLifecycle=OuttaMyWay.ProductLifecycle.new(OuttaMyWay.configuration)
+OuttaMyWay.productLifecycle:subscribe()
 
 if configurationReady and OuttaMyWay.configuration:isEnabled()==true then
 OuttaMyWay.runtime=OuttaMyWay.Runtime.new()
@@ -88,5 +91,16 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)
     addModEventListener(OuttaMyWay.versionHud)
 end
+
+local runtimeListeners={
+    OuttaMyWay.liveRuntimeCoordinator,
+    OuttaMyWay.regulationControl,
+    OuttaMyWay.cooperativePassageControl
+}
+if OuttaMyWay.runtime.bubbleBulletTime~=nil then runtimeListeners[#runtimeListeners+1]=OuttaMyWay.runtime.bubbleBulletTime end
+runtimeListeners[#runtimeListeners+1]=OuttaMyWay.obstructionRelocationControl
+runtimeListeners[#runtimeListeners+1]=OuttaMyWay.runtime.passiveLiveValidator
+runtimeListeners[#runtimeListeners+1]=OuttaMyWay.versionHud
+OuttaMyWay.productLifecycle:adoptRuntime(OuttaMyWay.runtime,runtimeListeners)
 
 end
