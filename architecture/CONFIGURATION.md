@@ -8,11 +8,9 @@ Configuration exists to express choices the player is legitimately allowed to ma
 
 > **Configuration as Consent Surface**
 
-This document defines the current accepted Configuration responsibility and its boundaries. The implementation-facing contract is now mature and is operationalised by the primary Configuration Specification.
+This document defines the current accepted Configuration responsibility and its boundaries. The implementation-facing contract is mature and is operationalised by the primary Configuration Specification.
 
-**Status: Contract defined; production implementation not yet accepted.**
-
-The primary Specification carries `NOT_IMPLEMENTED` until production source realises this Jurisdiction. Issue #139 owns the bounded implementation work.
+Issue #139 owns the remaining bounded implementation and validation work beneath this architecture.
 
 The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Log Publication Architecture](LOG_PUBLICATION.md) owns runtime log-publication classes, eligibility and publication boundaries. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
 

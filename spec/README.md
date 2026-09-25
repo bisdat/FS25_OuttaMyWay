@@ -52,7 +52,7 @@ The currently migrated primary Specifications are:
 | **Log Publication** | [`LOG_PUBLICATION.md`](LOG_PUBLICATION.md) |
 | **Configuration** | [`CONFIGURATION.md`](CONFIGURATION.md) |
 
-All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Configuration** now also has a mature primary Specification but deliberately remains `NOT_IMPLEMENTED` until production source realises that contract.
+All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Configuration** now has both its mature primary Specification and production implementation participants.
 
 A genuine Jurisdiction whose implementation-facing contract is mature before production source exists may have a primary Specification carrying the exact declaration `**Implementation Status:** \`NOT_IMPLEMENTED\``. That state is distinct from a Deferred Responsibility: the contract is already normative, but no production mechanism yet realises it. Such a Specification has no production participant rows until implementation is accepted.
 
