@@ -323,7 +323,7 @@ function Source:capture(mission, nowSeconds)
             track.fieldWorldError = worldError
             local radius, width, length = radiusFor(object)
             local speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000
-            local motionDiagnostic = OuttaMyWay.LiveInteractionObservation.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
+            local motionSample = OuttaMyWay.LiveInteractionObservation.deriveMotion(track.previousMotionPose,pose,track.previousMotionTimestamp,nowSeconds,speedMps)
             local components = componentKeys(object)
             local assemblyRepresentation = self.assemblyRepresentationCache and self.assemblyRepresentationCache:observe(object,ref,sourceToken,nowSeconds) or nil
             local localIntentObserved=OuttaMyWay.LocalIntentObservation.observe(object)
@@ -331,7 +331,7 @@ function Source:capture(mission, nowSeconds)
             track.assemblyRepresentation=assemblyRepresentation
             track.localIntent=localIntent
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
-            track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
+            track.previousMotionPose=copyPose(pose); track.previousMotionTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionSample=motionSample
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
             track.name = objectName(object); track.components = components; track.radius = radius; track.width = width; track.length = length
             track.fieldActive = fieldActive; track.aiActive = aiActive; track.aiActiveObserved=aiActiveObserved; track.hasFieldWorker = hasFieldWorker
@@ -339,7 +339,7 @@ function Source:capture(mission, nowSeconds)
             local okEnteredActive,enteredActive=safeCall(object,"getIsEntered")
             local activePlayerPresent=(mission.controlledVehicle==object) or (okEnteredActive and enteredActive==true)
             addToGroup(groups, {
-                object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionDiagnostic=motionDiagnostic,
+                object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionSample=motionSample,
                 fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
                 fieldActive = fieldActive, aiActive = aiActive, aiActiveObserved=aiActiveObserved, hasFieldWorker = hasFieldWorker, activeObserved = true,
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
@@ -359,8 +359,8 @@ function Source:capture(mission, nowSeconds)
             local playerControlled = playerEntered
             local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
             if pose ~= nil then
-                track.motionDiagnostic=OuttaMyWay.LiveInteractionObservation.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
-                track.pose = pose; track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
+                track.motionSample=OuttaMyWay.LiveInteractionObservation.deriveMotion(track.previousMotionPose,pose,track.previousMotionTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
+                track.pose = pose; track.previousMotionPose=copyPose(pose); track.previousMotionTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
             elseif poseDiagnostic~=nil then
                 track.poseDiagnostic=poseDiagnostic
             end
@@ -373,7 +373,7 @@ function Source:capture(mission, nowSeconds)
                 track.assemblyRepresentation=self.assemblyRepresentationCache:observe(object,ref,track.sourceJobToken,nowSeconds)
             end
             addToGroup(groups, {
-                object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
+                object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionSample=track.motionSample,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
                 fieldActive = fieldActive, aiActive = aiActive, aiActiveObserved=aiActiveObserved, hasFieldWorker = hasFieldWorker, activeObserved = false,
                 playerControlled = playerControlled, playerPresent=playerEntered, playerEntered=playerEntered, playerEnteredObserved=okEntered,
@@ -411,19 +411,19 @@ function Source:capture(mission, nowSeconds)
             -- that conditional idiom.
             local retainedPose=track.pose
             local retainedPoseDiagnostic=track.poseDiagnostic
-            local retainedMotionDiagnostic=track.motionDiagnostic
+            local retainedMotionSample=track.motionSample
             local retainedAssemblyRepresentation=track.assemblyRepresentation
             if removed then
                 retainedPose=nil
                 retainedPoseDiagnostic=nil
-                retainedMotionDiagnostic=nil
+                retainedMotionSample=nil
                 retainedAssemblyRepresentation=nil
             end
 
             addToGroup(groups, {
                 runtimeRemovalEvidence=removalEvidence,
                 object = nil, referenceKey = ref, name = track.name or "AI vehicle",
-                pose = retainedPose, poseDiagnostic=retainedPoseDiagnostic, motionDiagnostic=retainedMotionDiagnostic, fieldId = track.fieldId or 0,
+                pose = retainedPose, poseDiagnostic=retainedPoseDiagnostic, motionSample=retainedMotionSample, fieldId = track.fieldId or 0,
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false, aiActiveObserved=false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, playerPresent=false, playerEntered=false, playerEnteredObserved=false, unresolvedTermination = not removed, objectUnavailable = not removed,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
@@ -566,7 +566,7 @@ function Source:capture(mission, nowSeconds)
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
             raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true, playerEnteredObserved=worker.playerEnteredObserved==true}
-            local md=worker.motionDiagnostic or {}
+            local md=worker.motionSample or {}
             local li=worker.localIntent or {}
             local nativeFieldWork=nil
             if worker.activeObserved==true and worker.object~=nil and OuttaMyWay.NativeFieldWorkObservation~=nil then
@@ -596,7 +596,7 @@ function Source:capture(mission, nowSeconds)
                 sampleIntervalSeconds=md.sampleIntervalSeconds,blocked=worker.blocked==true,
                 localIntentClassification=li.classification,intentEpoch=li.intentEpoch,intentValid=li.intentValid==true,
                 nativeFieldWork=nativeFieldWork,
-                provenance={source="LIVE_MOTION_DIAGNOSTIC_PLUS_GIANTS_LOCAL_INTENT_PLUS_RAW_FIELD_WORK",negativeClearanceAuthority=false,semanticAuthority=false}
+                provenance={source="LIVE_MOTION_SAMPLE_PLUS_GIANTS_LOCAL_INTENT_PLUS_RAW_FIELD_WORK",negativeClearanceAuthority=false,semanticAuthority=false}
             }
             raw.jobEpisodeEvidence[#raw.jobEpisodeEvidence + 1] = {
                 assemblyReferenceKey = worker.referenceKey, sourceJobToken = worker.sourceJobToken,
@@ -671,7 +671,7 @@ function Source:capture(mission, nowSeconds)
                     coverageComplete=false,
                     conservative=false,
                     underApproximationRisk=true,
-                    motion=worker.motionDiagnostic or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_DIAGNOSTIC_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
+                    motion=worker.motionSample or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
                     localIntent=worker.localIntent or {classification="UNRESOLVED",intentEpoch=0,intentValid=false,reason="LOCAL_INTENT_UNAVAILABLE"},
                     futureSpace=worker.futureSpace,
                     fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,

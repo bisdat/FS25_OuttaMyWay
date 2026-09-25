@@ -132,3 +132,44 @@ def test_issue152_stage2a_passive_diagnostics_are_ephemeral_and_do_not_own_runti
     assert "pcall(self.diagnosticObserver.observeRuntimeResult" in coordinator
 
 
+
+
+def test_issue286_semantic_motion_evidence_is_not_named_as_diagnostic():
+    source = read("scripts/observation/LiveObservationSource.lua")
+    interaction = read("scripts/observation/LiveInteractionObservation.lua")
+    situation = read("scripts/assessment/SituationAssessment.lua")
+    trajectory = read("scripts/assessment/TrajectoryConflictAssessment.lua")
+
+    # The motion sample is required Observation evidence even when optional
+    # diagnostic projection is absent.
+    assert "local motionSample = OuttaMyWay.LiveInteractionObservation.deriveMotion(" in source
+    assert "track.previousMotionPose" in source
+    assert "track.previousMotionTimestamp" in source
+    assert "track.motionSample=motionSample" in source
+    assert "local md=worker.motionSample or {}" in source
+    assert "raw.motion.progressionEvidence" in source
+    assert "LIVE_MOTION_SAMPLE_PLUS_GIANTS_LOCAL_INTENT_PLUS_RAW_FIELD_WORK" in source
+
+    # Downstream semantic assessment still consumes the same progression fields.
+    assert "snapshot.motion.progressionEvidence" in situation
+    assert "motionEvidence=motionEvidence" in situation
+    assert "motion.travelDirectionX" in trajectory
+    assert "motion.positionDerivedSpeedMps" in trajectory
+    assert "motion.sampleIntervalSeconds" in trajectory
+
+    # Diagnostic projection remains a distinct optional surface.
+    assert "local diagnosticActive=diagnosticProjectionEnabled()" in source
+    assert "if diagnosticActive then" in source
+    assert "poseDiagnostic" in source
+
+    for stale in (
+        "motionDiagnostic",
+        "diagnosticPose",
+        "diagnosticTimestamp",
+        "LIVE_MOTION_DIAGNOSTIC_PLUS_GIANTS_LOCAL_INTENT_PLUS_RAW_FIELD_WORK",
+        "NO_DIAGNOSTIC_MOTION_SAMPLE",
+    ):
+        assert stale not in source
+
+    assert "YAW_RATE_EXCEEDS_TURNING_THRESHOLD" in interaction
+    assert "HEADING_CHANGE_EXCEEDS_DIAGNOSTIC_THRESHOLD" not in interaction
