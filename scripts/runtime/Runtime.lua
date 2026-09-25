@@ -1,5 +1,5 @@
 --- Composes the runtime pipeline and directly implements purpose-specific Bounded Authority, Cooperative Passage and Obstruction Relocation integration rules.
--- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `CONFIGURATION`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`
 
 OuttaMyWay.Runtime = {}
 local Runtime = OuttaMyWay.Runtime
@@ -149,6 +149,73 @@ function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
     -- Physical Control remains typed, responsibility-bound and Bounded-Authority-gated; no generic Control path exists.
     -- Trajectory Situation Knowledge and Established Opposed Conflict feed Candidate-owned Local Passage Search, Passage Guide, Commitment and Control.
+end
+
+-- Product-level consent withdrawal is authority-reducing only: end semantic
+-- responsibility first, then relinquish every current OuttaMyWay physical effect.
+-- It never settles Commitments, completes manoeuvres, or invents terminal evidence.
+function Runtime:relinquishAllControl(reason)
+    local why=reason or "PRODUCT_CONSENT_WITHDRAWN"
+    local summary={errors={}}
+    local function attempt(stage,action)
+        local ok,result=pcall(action)
+        if ok then
+            summary[stage]=result
+            return true
+        end
+        summary.errors[#summary.errors+1]={stage=stage,reason=tostring(result)}
+        publication:error("NORMAL","PRODUCT_RELINQUISHMENT_STAGE_FAILED","stage=%s detail=%s",tostring(stage),tostring(result))
+        return false
+    end
+
+    attempt("coordinationCeased",function()
+        if self.liveRuntimeCoordinator~=nil and type(self.liveRuntimeCoordinator.ceaseCoordination)=="function" then
+            return self.liveRuntimeCoordinator:ceaseCoordination()
+        end
+        return true
+    end)
+    attempt("responsibilities",function()
+        if self.responsibilityTransitionAuthority~=nil and type(self.responsibilityTransitionAuthority.terminateAll)=="function" then
+            return self.responsibilityTransitionAuthority:terminateAll(why)
+        end
+        return nil
+    end)
+    attempt("regulation",function()
+        if self.regulationBoundedAuthority~=nil and type(self.regulationBoundedAuthority.relinquishAll)=="function" then
+            return self.regulationBoundedAuthority:relinquishAll(why)
+        end
+        return nil
+    end)
+    attempt("bubbleBulletTime",function()
+        if self.bubbleBulletTime~=nil and type(self.bubbleBulletTime.releaseAll)=="function" then
+            self.bubbleBulletTime:releaseAll(why)
+            return true
+        end
+        return nil
+    end)
+    attempt("cooperativePassage",function()
+        local dispatcher=self.liveControlDispatcher
+        local passage=dispatcher and dispatcher.cooperativePassageControl or nil
+        if passage~=nil and type(passage.relinquishAll)=="function" then
+            return passage:relinquishAll(why)
+        end
+        return nil
+    end)
+    attempt("obstructionRelocation",function()
+        local dispatcher=self.liveControlDispatcher
+        local relocation=dispatcher and dispatcher.obstructionRelocationControl or nil
+        if relocation~=nil and type(relocation.relinquishAll)=="function" then
+            return relocation:relinquishAll(why)
+        end
+        return nil
+    end)
+    attempt("residualBoundedAuthority",function()
+        if self.boundedAuthority~=nil and type(self.boundedAuthority.releaseAll)=="function" then
+            return self.boundedAuthority:releaseAll(why)
+        end
+        return nil
+    end)
+    return summary,#summary.errors
 end
 
 function Runtime:setRegulationControl(control)

@@ -39,7 +39,7 @@ local function appendObstructionRelocationObservation(raw,observation)
     return true
 end
 function Coordinator.new(runtime,source,fieldWorldSnapshots,diagnosticObserver)
-    return setmetatable({runtime=runtime,source=source,fieldWorldSnapshots=fieldWorldSnapshots,diagnosticObserver=diagnosticObserver,elapsed=0,cycleCount=0,errorCount=0},Coordinator)
+    return setmetatable({runtime=runtime,source=source,fieldWorldSnapshots=fieldWorldSnapshots,diagnosticObserver=diagnosticObserver,elapsed=0,cycleCount=0,errorCount=0,coordinationEnabled=true},Coordinator)
 end
 function Coordinator:loadMap()
     self.elapsed=0; self.cycleCount=0; self.errorCount=0
@@ -58,7 +58,13 @@ end
 function Coordinator:keyEvent() end
 function Coordinator:mouseEvent() end
 function Coordinator:draw() end
+function Coordinator:ceaseCoordination()
+    self.coordinationEnabled=false
+    return true
+end
+function Coordinator:isCoordinating() return self.coordinationEnabled==true end
 function Coordinator:update(dt)
+    if self.coordinationEnabled~=true then return end
     if g_currentMission==nil then return end
     if g_client~=nil and g_server==nil then return end
     if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:update(dt or 0,g_currentMission) end

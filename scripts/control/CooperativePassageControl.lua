@@ -206,6 +206,29 @@ function Control:deleteMap()
     self.run=nil
 end
 
+function Control:relinquishAll(reason)
+    local run=self.run
+    local participants=0
+    if run~=nil then
+        for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+            participants=participants+1
+            if participant.vehicle~=nil then
+                self.driveMechanism:clear(participant.vehicle)
+                self.holdMechanism:release(participant.vehicle)
+                self.configurationMechanism:clear(participant.vehicle)
+            end
+            self:_endRepresentationConfigurationAuthority(participant)
+        end
+    end
+    -- Clear only subordinate OuttaMyWay mechanism state. Do not attempt axis
+    -- return, configuration restoration, Passage completion, or native-job settlement.
+    self.driveMechanism:clearAll()
+    self.holdMechanism:clear()
+    self.configurationMechanism:clearAll()
+    self.run=nil
+    return {hadActiveRun=run~=nil,participantCount=participants,reason=reason}
+end
+
 -- Player-facing Passage presentation is deferred to GUI/HUD architecture (#89).
 -- Control owns no direct HUD rendering.
 function Control:draw() end

@@ -417,6 +417,23 @@ function Authority:terminateResolutionCommitment(commitmentId,reason)
     return true
 end
 
+function Authority:terminateAll(reason)
+    local commitmentIds,seen={},{}
+    for commitmentId,_ in OuttaMyWay.ValueRecord.pairs(self.regulationsByCommitmentId) do
+        if seen[commitmentId]~=true then seen[commitmentId]=true; commitmentIds[#commitmentIds+1]=commitmentId end
+    end
+    for commitmentId,_ in OuttaMyWay.ValueRecord.pairs(self.resolutionsByCommitmentId) do
+        if seen[commitmentId]~=true then seen[commitmentId]=true; commitmentIds[#commitmentIds+1]=commitmentId end
+    end
+    table.sort(commitmentIds)
+    local regulations,resolutions=0,0
+    for _,commitmentId in OuttaMyWay.ValueRecord.ipairs(commitmentIds) do
+        if self.regulationsByCommitmentId[commitmentId]~=nil then regulations=regulations+1; self:terminateRegulation(commitmentId,reason) end
+        if self.resolutionsByCommitmentId[commitmentId]~=nil then resolutions=resolutions+1; self:terminateResolutionCommitment(commitmentId,reason) end
+    end
+    return {commitmentCount=#commitmentIds,regulationCount=regulations,resolutionCount=resolutions}
+end
+
 function Authority:terminateSemanticResponsibilitiesForTerminalCommitment(commitmentId)
     local regulation=self.regulationsByCommitmentId[commitmentId]
     local resolution=self.resolutionsByCommitmentId[commitmentId]

@@ -270,6 +270,8 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 | --- | --- |
 | [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) | `REALISES` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
+| [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) | `REALISES` |
+| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
@@ -277,8 +279,10 @@ The current implementation establishes the supported local-profile state/persist
 
 - [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) owns schema-1 path construction, first-use materialisation, persisted validation/recovery, semantic getters, persistence-aware setters and change notification;
 - [`scripts/main.lua`](../scripts/main.lua) resolves Configuration in the product shell before Runtime bootstrap, blocks Runtime when persistence is unresolved or `enabled=false`, and composes Log Publication so the engineering DIAGNOSTIC sidecar remains independent while player `debug` resolves NORMAL/DEBUG.
+- [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) subscribes to semantic Configuration changes and implements live `enabled -> false` consent withdrawal by stopping Runtime listener participation, invoking universal authority-reducing relinquishment, discarding the current Runtime graph, and issuing the bounded player hand-back notification.
+- [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) supports that withdrawal by ceasing live coordination first, terminating current semantic responsibility through its existing authorities, and invoking authority-reducing relinquishment across current Regulation, Bubble Bullet Time, Cooperative Passage, Obstruction Relocation and residual Bounded Authority without settling the interrupted objective.
 
-Issue #139 still owns downstream player interaction and live consumer integration. In particular, there is not yet a supported settings GUI and no live product-lifecycle consumer is yet subscribed to Configuration change notification for enable/disable handoff/re-bootstrap.
+Issue #139 still owns downstream player interaction and the remaining live consumer work. In particular, there is not yet a supported settings GUI, live `enabled -> true` fresh Runtime bootstrap remains outstanding, and `hudVisible` is not yet consumed by the full Operational Player Message subsystem.
 
 The existing `scripts/config.lua` file is not a Configuration implementation. It continues to own root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
 

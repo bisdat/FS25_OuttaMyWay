@@ -19,6 +19,12 @@ live observation, asset inspection, or current runtime use.
 | `XMLFile.create(...)` / `xmlFile:save()` / `xmlFile:delete()` | GIANTS script XML API | Creates a typed XML representation, persists it, and releases the XML handle. | Suitable mechanism for first-use materialisation and replacement of invalid Configuration. Mechanical API success/failure must remain distinct from semantic recovery. | GIANTS FS25 scripting documentation/source; current Courseplay FS25 use |
 | `getUserProfileAppPath() .. "modSettings/" .. MOD_NAME .. "/"` | established FS25 mod convention | Current Courseplay FS25 stores user settings not tied to a savegame beneath this mod-scoped directory. | Evidence for a practical cross-save mod preference surface; it does not establish OuttaMyWay player-setting semantics by itself. | Current Courseplay FS25 source |
 
+## Player notification surfaces
+
+| Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |
+|---|---|---|---|---|
+| `g_currentMission:showBlinkingWarning(text, duration)` | mission / HUD method | Displays a short player-facing warning; current FS25 engine code uses it for immediate action feedback and permits the duration argument to be omitted. | Presentation mechanism only. It does not own message meaning, priority policy, Configuration semantics or product lifecycle authority. | GIANTS FS25 scripting documentation/current engine use |
+
 ## Field-course and AI surfaces
 
 | Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |

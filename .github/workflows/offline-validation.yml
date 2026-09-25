@@ -111,13 +111,15 @@ jobs:
             scripts/representation/CurrentPhysicalConflictRepresentation.lua \
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
             scripts/diagnostics/PassiveLiveValidator.lua \
+            scripts/diagnostics/VersionHud.lua \
             scripts/observation/LiveInteractionObservation.lua \
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
             scripts/responsibility/CooperativePassageResponsibilityTransition.lua \
             scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua \
             scripts/runtime/LiveRuntimeCoordinator.lua \
-            scripts/runtime/Runtime.lua
+            scripts/runtime/Runtime.lua \
+            scripts/lifecycle/ProductLifecycle.lua
           do
             CHECK_FILE="$file" "$LUAJIT_BIN" -e 'assert(loadfile(os.getenv("CHECK_FILE")))'
           done
