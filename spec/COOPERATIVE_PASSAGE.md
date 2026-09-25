@@ -204,8 +204,15 @@ The implementation MUST realise that requirement through the existing Regulation
 
 - add the third worker to the Bubble;
 - create a new Passage Leg for it;
-- create a new Regulation subtype; or
+- create a new Regulation subtype;
+- acquire or replace the third worker's independent movement objective merely to apply the speed ceiling; or
 - infer that the third worker's independent Situation has permanently disappeared.
+
+Bullet Time is a **Supporting Speed Ceiling**. It applies to the independent third worker regardless of whether that worker is currently progressing under ordinary GIANTS AI or under another compatible independently current OuttaMyWay movement responsibility such as Blocked Worker Recovery.
+
+Where the third worker is already under Blocked Worker Recovery, the Recovery Resolution and its authorised Recovery Excursion continue. Bullet Time narrows only the realised maximum speed to no more than **1 km/h** while the Bubble remains current. It does not pause, restart or replace Recovery and does not acquire the Recovery movement objective.
+
+When the Bubble dissolves, removal of Bullet Time removes only that Passage-owned speed ceiling. Any still-current independent movement responsibility continues under its own remaining authority without a new semantic transition.
 
 The third worker remains observed Reality, and hard-safety evidence remains authoritative during the epoch.
 
