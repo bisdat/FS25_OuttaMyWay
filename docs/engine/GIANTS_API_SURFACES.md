@@ -7,6 +7,18 @@ reference. Surface existence, observed behaviour, safe inference, and authority
 limits remain distinct. Provenance refers to the supplied FS25 1.21.1.0 SDK,
 live observation, asset inspection, or current runtime use.
 
+## User-profile persistence surfaces
+
+| Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |
+|---|---|---|---|---|
+| `getUserProfileAppPath()` | engine global function | Returns the Farming Simulator user-profile application path used by current FS25 code and mods as the base for profile-scoped files. | Suitable base for cross-save local-profile persistence. Path existence does not define OuttaMyWay semantics or multiplayer ownership. | GIANTS FS25 scripting documentation/current engine use; current Courseplay FS25 use |
+| `fileExists(path)` | engine global function | Tests whether a file path exists before attempting a load. GIANTS FS25 script code uses it as an existence gate. | Use only to distinguish first-use absence from an existing representation; existence does not prove XML validity. | GIANTS FS25 scripting source/examples |
+| `createFolder(path)` | engine global function | Creates a filesystem folder for writable user/mod data. Current FS25 code and Courseplay use it before creating XML under user-owned locations. | Mechanical storage preparation only; successful directory creation does not establish successful Configuration persistence. | GIANTS FS25 scripting source/examples; current Courseplay FS25 use |
+| `XMLSchema.new(...)` / `schema:register(...)` | GIANTS script XML schema API | Defines typed XML paths including BOOL, INT and STRING values. | Appropriate for validating the current supported Configuration representation. Schema acceptance is representation validity, not Runtime authority. | GIANTS FS25 scripting documentation/source |
+| `XMLFile.load(...)` / `XMLFile.loadIfExists(...)` | GIANTS script XML API | Loads XML into a typed XMLFile object and may return nil when loading cannot establish an object. | Load through the Configuration persistence boundary only. A successful load still requires schema/version/value validation before semantic state is accepted. | GIANTS FS25 scripting documentation/source; current Courseplay FS25 use |
+| `XMLFile.create(...)` / `xmlFile:save()` / `xmlFile:delete()` | GIANTS script XML API | Creates a typed XML representation, persists it, and releases the XML handle. | Suitable mechanism for first-use materialisation and replacement of invalid Configuration. Mechanical API success/failure must remain distinct from semantic recovery. | GIANTS FS25 scripting documentation/source; current Courseplay FS25 use |
+| `getUserProfileAppPath() .. "modSettings/" .. MOD_NAME .. "/"` | established FS25 mod convention | Current Courseplay FS25 stores user settings not tied to a savegame beneath this mod-scoped directory. | Evidence for a practical cross-save mod preference surface; it does not establish OuttaMyWay player-setting semantics by itself. | Current Courseplay FS25 source |
+
 ## Field-course and AI surfaces
 
 | Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |
