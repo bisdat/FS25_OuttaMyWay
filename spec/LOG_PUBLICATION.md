@@ -186,7 +186,10 @@ For each admitted Publication Event, Log Publication MUST:
 - render supplied common context deterministically;
 - preserve supplied scalar values faithfully, including rendering boolean `false` explicitly rather than treating it as absent; only unavailable/`nil` payload values are omitted;
 - preserve producer-owned semantic role names;
-- route through the severity-appropriate GIANTS logging facility; and
+- route through the severity-appropriate GIANTS logging facility;
+- rely on that GIANTS destination to communicate severity rather than duplicating `INFO`, `WARNING` or `ERROR` inside the OuttaMyWay envelope;
+- omit the `NORMAL` class marker from the rendered envelope because NORMAL is the ordinary baseline;
+- retain `DEBUG` and `DIAGNOSTIC` class markers in the rendered envelope because they communicate non-baseline support/engineering visibility; and
 - emit at most one log line for that Publication Event.
 
 A multi-line diagnostic dump MUST therefore be represented as several independently classified Publication Events rather than one event that emits an unbounded multi-line block.

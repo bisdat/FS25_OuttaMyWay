@@ -136,6 +136,11 @@ targeted DIAGNOSTIC
 
 Severity and publication class answer different questions.
 
+The Descriptor must retain both because eligibility and delivery need both. The rendered line does not need to repeat every Descriptor field when the GIANTS destination already communicates the same information or when the class is the ordinary baseline.
+
+> **Publication Metadata != Required Log Text**
+
+
 Publication class answers how broadly information should be visible. Severity answers how serious the already-classified event is within that class.
 
 The severity vocabulary is `INFO`, `WARNING` and `ERROR`.
