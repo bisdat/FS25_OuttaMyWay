@@ -327,6 +327,14 @@ Primary current implementation routes include:
 
 The common `BoundedAuthority` module is not the entire Jurisdiction. Purpose-specific authority policies remain part of this contract even when placed elsewhere.
 
+### Current implementation gap — cross-responsibility Supporting Speed Ceilings
+
+The accepted Supporting Speed Ceiling contract is not yet fully realised for an assembly whose movement objective is owned by another Current Responsibility.
+
+Current production still binds positive `REGULATE_SPEED` grants to an assembly authority token owned by the same supporting Commitment. `BubbleBulletTime` therefore cannot currently apply its Passage-owned ceiling when an independent Recovery Commitment already owns that assembly's movement actuation.
+
+This gap is an implementation dependency of Blocked Worker Recovery. It MUST be closed without transferring the Recovery movement objective to the Passage Commitment and without weakening positive Bounded Authority requirements.
+
 ## Validation route
 
 ### Structural/source-contract validation
