@@ -1,3 +1,26 @@
+# v0.4.3.0 PATCH CHECKPOINT — Supported Configuration Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #313, carrying field-validated TEST `0.4.2.8`.
+
+**Version rationale:** PATCH checkpoint under D-0223. The accepted delta since `0.4.2.0` completes and validates the already-accepted supported player Configuration responsibilities within the existing 0.4 architectural/capability epoch. It does not create a materially new architecture/capability epoch.
+
+**PATCH checkpoint boundary:** this increment changes version identity and release history only. It intentionally introduces no new Configuration, Runtime, traffic, Control, GUI/HUD or Log Publication behaviour beyond the already accepted and field-validated `0.4.2.8` baseline.
+
+**Validated plateau summary:**
+- PR #311 / TEST `0.4.2.3` implemented immediate live `enabled -> false` consent withdrawal, universal authority-reducing relinquishment, Runtime discard and bounded hand-back communication;
+- PR #312 corrected the initially falsified standalone-menu hypothesis and integrated exactly Enabled, Operational messages and Debug into the existing GIANTS General Settings surface;
+- TEST `0.4.2.6` validated the General Settings integration, clean shutdown, immediate disable, durable fresh re-enable and fresh Runtime reconstruction from current GIANTS Reality;
+- PR #313 added the one-shot disabled-startup Product Status reminder, independent of `hudVisible` and Runtime existence;
+- TEST `0.4.2.7` established **Warning Lifetime != Readable Exposure**, showing the 2000 ms blinking-warning lifetime was too short in practice;
+- TEST `0.4.2.8` increased the startup reminder to 5000 ms and validated that it remains readable for several seconds while enabled startup correctly produces no disabled reminder;
+- Issue #139 closed as completed with supported local-profile Configuration, General Settings presentation, immediate disable, fresh live re-enable, persistence, localisation and product-status startup communication all validated.
+
+**Validation basis:** blocking Offline Validation remained green through the accepted executable lineage, including runs #856, #861, #863 and #864. In-game Reality validation covered the General Settings surface, live disable/re-enable, clean shutdown, disabled-startup reminder readability and enabled-startup non-presentation.
+
+**Known separable work:** #89 still owns the broader Operational Player Message lifecycle and #293 owns enduring Help / Reference content. Multiplayer Configuration semantics remain outside the validated support claim. Those are separable responsibilities and are not required to make this Configuration plateau complete.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. Under D-0223, a future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.2.0 PATCH CHECKPOINT — Configuration and Publication Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #308, carrying field-validated TEST `0.4.1.4`.
