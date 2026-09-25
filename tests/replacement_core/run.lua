@@ -56,6 +56,7 @@ load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
+load("scripts/assessment/BlockedProgressAssessment.lua")
 load("scripts/assessment/StructuralFieldShapeAssessment.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
@@ -7733,6 +7734,8 @@ end)
 dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
+
+dofile(root.."/tests/replacement_core/BlockedProgressAssessment.lua")(test,equal)
 
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
