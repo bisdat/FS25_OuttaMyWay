@@ -117,6 +117,44 @@ Those conclusions MUST remain scoped to their evidence horizon. Transient turnin
 
 Where productive continuation is positively established, downstream spatial specialisations MAY consume the resulting bounded certainty according to Spatial Negotiation Architecture. When that evidence ceases, Situation Assessment MUST publish the current unresolved/changed meaning rather than preserve stale continuation as current Reality.
 
+### Blocked Progress and Recovery Approach knowledge
+
+Situation Assessment owns the upstream interpretation required to distinguish a raw native blockage assertion from a positively established **Blocked Progress Stall**.
+
+The assessment consumes authoritative current Local Operation membership / Job Episode identity, position-derived realised motion, raw GIANTS blockage assertion, current configuration-profile continuity and current OuttaMyWay progress-actuation ownership. It MUST NOT add a second productive-commencement membership gate, and it MUST NOT use the Observation placeholder `outtaMyWayHold=false` as proof that OuttaMyWay did not cause quiescence.
+
+For the initial implementation, Situation Assessment retains a bounded **Recovery Approach Trail** only for an exact active Operation member / Job Episode while positively realised GIANTS-native progression remains coherent. Operation Lifecycle's cold-start-invariant membership is consumed as given; productive/turning state affects Recovery evidence but not Operation participation.
+
+Implementation calibration:
+
+- one candidate witness per completed live runtime observation cycle while positive realised native progress is present;
+- current live runtime sampling cadence: **250 ms**;
+- maximum retained Trail capacity: **40 witnesses**;
+- minimum continuously observed post-assertion collapsed-progress span: **1.0 s**; and
+- minimum useful Recovery Anchor span: **5.0 m backward along the retained realised Approach Trail**.
+
+These literals are implementation/Reality calibration, not general Architecture.
+
+> **Trail Sampling Cadence != Trail Retention Horizon.**
+
+> **Collapse Observation Interval != Stall Timeout.**
+
+The Trail MUST retain only small physical/provenance witnesses required for this question. Whole Observation Snapshots, Operational Pictures, copied physical-geometry sets, Field World geometry and productive-route history MUST NOT be retained as Recovery Approach state.
+
+A raw `isBlocked=true` assertion MAY latch a Blocked Assertion Witness when a coherent Recovery Approach exists, but MUST NOT itself establish Stall. Stall requires fresh post-assertion evidence showing continuously collapsed position-derived physical progression for the calibrated observation span while the same Episode/Approach/configuration remains coherent and no OuttaMyWay progress-actuation owner explains the quiescence.
+
+Positive realised native progression disproves the pending collapse and positively clears an established Stall. Raw `isBlocked=false` alone MUST NOT clear an established Stall.
+
+Positive Job Episode succession/termination, native forward/reverse direction transition, material configuration-profile change or OuttaMyWay progress-actuation ownership invalidates the prior Recovery Approach for this question. Missing evidence MUST fail closed rather than manufacture a discontinuity or positive Stall.
+
+At Stall establishment, Situation Assessment selects the most recent retained witness that remains fit and provides at least the calibrated useful span along the retained realised Approach. If none exists, the Stall MAY remain positively established while Recovery Anchor remains unavailable.
+
+> **Blocked Progress Stall != Recovery Anchor Availability.**
+
+> **Insufficient Anchor Span != Permission to Retain Productive History.**
+
+The resulting Blocked Progress knowledge is Situation meaning only. It MUST NOT create a Recovery Candidate, acquire Current Responsibility, grant Bounded Authority or issue Control.
+
 ### Representation Fitness
 
 Assessment Representation publishes geometry, validity, uncertainty and claim permissions. Situation Assessment is the **Representation-Fitness Arbiter for the current question**.
@@ -390,6 +428,7 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) | `REALISES` |
 | [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) | `REALISES` |
+| [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) | `REALISES` |
 | [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) | `REALISES` |
 | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) | `REALISES` |
@@ -410,6 +449,7 @@ Current implementation routes include:
 - [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) — conservative Field-scoped Structural Field Shape / positive Corner Feature interpretation from immutable canonical Field World geometry;
 - [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua), [`FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) and [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) — current spatial relationship/constraint interpretation;
 - [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — current positive obstruction-cause interpretation;
+- [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) — bounded Recovery Approach Trail retention, Blocked Progress Stall interpretation and Recovery Anchor selection from current Operation/lifecycle/motion/ownership evidence;
 - [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) and [`PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) — current question-scoped representation-fitness interpretation;
 - [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) — current specialised semantic persistence/dissolution interpretation for established Regulation purposes; and
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) plus [`scripts/main.lua`](../scripts/main.lua) — current orchestration/composition placing the final Situation Assessment product after Observation and Operation lifecycle, before Candidate/Constraint/Decision.
@@ -428,11 +468,12 @@ Current structural evidence includes:
 - [`tests/test_live_interaction_observation_structure.py`](../tests/test_live_interaction_observation_structure.py), which challenges Observation-to-Situation evidence ownership;
 - [`tests/test_follower_boundary_assessment_value_ownership_structure.py`](../tests/test_follower_boundary_assessment_value_ownership_structure.py) and [`tests/test_trajectory_assessment_value_ownership_structure.py`](../tests/test_trajectory_assessment_value_ownership_structure.py), which protect Situation-owned relationship interpretation;
 - [`tests/test_resolution_margin_demand_structure.py`](../tests/test_resolution_margin_demand_structure.py), which protects one-sided Resolution-Margin evidence ownership and rejects downstream runtime consumption in the `.79` semantic increment; and
-- [`tests/test_obstruction_relocation_structure.py`](../tests/test_obstruction_relocation_structure.py), which protects the distinction between Causal Obstruction recognition and downstream relocation mechanics.
+- [`tests/test_obstruction_relocation_structure.py`](../tests/test_obstruction_relocation_structure.py), which protects the distinction between Causal Obstruction recognition and downstream relocation mechanics; and
+- [`tests/test_blocked_progress_assessment_structure.py`](../tests/test_blocked_progress_assessment_structure.py), which protects bounded Blocked Progress Situation ownership, production wiring, calibration locality, authoritative Operation-membership consumption and the continued absence of Recovery Candidate/Control authority.
 
 ### Offline behavioural/conformance validation
 
-[`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises sealed Observation → Operation Lifecycle → Operational Picture flows, relationship interpretation, uncertainty, representation fitness and downstream use. [`tests/replacement_core/resolution_margin_demand.lua`](../tests/replacement_core/resolution_margin_demand.lua) directly challenges the Resolution-Margin semantic product and its Situation-layer composition.
+[`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises sealed Observation → Operation Lifecycle → Operational Picture flows, relationship interpretation, uncertainty, representation fitness and downstream use. [`tests/replacement_core/resolution_margin_demand.lua`](../tests/replacement_core/resolution_margin_demand.lua) directly challenges the Resolution-Margin semantic product and its Situation-layer composition. [`tests/replacement_core/BlockedProgressAssessment.lua`](../tests/replacement_core/BlockedProgressAssessment.lua) directly challenges bounded Approach-Trail retention, moving blocked assertions, the calibrated Collapse Observation Interval, Stall persistence/clearance, useful Anchor selection and Job/direction/configuration/OMW-ownership discontinuities.
 
 Offline validation can challenge identity/provenance, deterministic Situation semantics and fail-closed behavior. It cannot prove that the GIANTS/runtime evidence being interpreted is physically complete or timely.
 

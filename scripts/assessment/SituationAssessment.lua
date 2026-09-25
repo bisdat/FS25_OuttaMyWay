@@ -166,6 +166,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.commitments = commitments
     self.obligations = obligations
     self.causalObstructionAssessment=causalObstructionAssessment
+    self.blockedProgressAssessment=OuttaMyWay.BlockedProgressAssessment.new(jobEpisodes)
     self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
@@ -481,6 +482,18 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         end
     end
 
+    local blockedProgressKnowledge=self.blockedProgressAssessment:assess({
+        observationSnapshotId=snapshot.identity,
+        timestamp=snapshot.timestamp,
+        motionEvidence=motionEvidence,
+        physicalSpaceEvidence=physicalSpaceEvidence,
+        operationByAssembly=operationByAssembly,
+        commitmentContext=commitmentContext
+    })
+    if diagnostics~=nil and diagnostics.counters~=nil then
+        diagnostics.counters.blockedProgressKnowledgeCount=#blockedProgressKnowledge
+    end
+
     local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
         observationSnapshotId=snapshot.identity,timestamp=snapshot.timestamp,
         motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge
@@ -573,6 +586,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
         causalObstructionKnowledge=causalObstructionKnowledge,
+        blockedProgressKnowledge=blockedProgressKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
         provenance={source="SituationAssessment", observationSnapshotId=snapshot.identity, observationEpoch=snapshot.epoch},
@@ -589,6 +603,7 @@ end
 function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
+    if self.blockedProgressAssessment~=nil then self.blockedProgressAssessment:reset() end
     if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
 end
 

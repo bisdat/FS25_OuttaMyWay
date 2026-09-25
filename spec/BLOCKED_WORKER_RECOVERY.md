@@ -413,7 +413,11 @@ No production source currently participates. This Specification is authoritative
 
 ## Implementation traceability
 
-There is intentionally no production implementation trace yet.
+No production source currently realises the `BLOCKED_WORKER_RECOVERY` Jurisdiction.
+
+Upstream [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) now realises the `SITUATION_ASSESSMENT` responsibility for bounded Recovery Approach Trail retention, Blocked Progress Stall interpretation and Recovery Anchor selection. Its `blockedProgressKnowledge` output is prerequisite Situation meaning consumed by future Recovery Candidate Support; it does not create Recovery responsibility or make this Jurisdiction implemented.
+
+Recovery Candidate Support, specialised Commitment / Responsibility Transition, Recovery Bounded Authority / Control, handback settlement and Recovery Recurrence disposition remain absent.
 
 Existing mechanisms such as Transit configuration and native drive actuation are potential subordinate implementation assets only. Their existence does not make this Jurisdiction implemented, and future implementation MUST classify only source that materially participates in the accepted contract.
 
@@ -423,7 +427,7 @@ Existing mechanisms such as Transit configuration and native drive actuation are
 
 Before implementation is accepted, structural validation must prove that the Jurisdiction identity, specialisation, primary Specification route and `NOT_IMPLEMENTED` state remain coherent and that no production source falsely acknowledges `BLOCKED_WORKER_RECOVERY`.
 
-When implementation begins, the same increment must remove `NOT_IMPLEMENTED`, declare truthful production participants and add reciprocal source Jurisdiction acknowledgements.
+When a production source first materially participates in the `BLOCKED_WORKER_RECOVERY` Jurisdiction itself, that same increment must remove `NOT_IMPLEMENTED`, declare truthful production participants and add reciprocal source Jurisdiction acknowledgements. Upstream `SITUATION_ASSESSMENT` implementation does not satisfy that boundary.
 
 ### Offline behavioural/conformance validation
 
