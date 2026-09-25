@@ -25,6 +25,26 @@ live observation, asset inspection, or current runtime use.
 |---|---|---|---|---|
 | `g_currentMission:showBlinkingWarning(text, duration)` | mission / HUD method | Displays a short player-facing warning; current FS25 engine code uses it for immediate action feedback and permits the duration argument to be omitted. | Presentation mechanism only. It does not own message meaning, priority policy, Configuration semantics or product lifecycle authority. | GIANTS FS25 scripting documentation/current engine use |
 
+## General Settings extension and mod-listener surfaces
+
+| Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |
+|---|---|---|---|---|
+| `InGameMenuSettingsFrame.generalSettingsLayout` | GIANTS Settings frame / layout | Existing General Settings row container. Current FS25 mods append section headers and option rows here for player-local/general mod preferences. | Appropriate OuttaMyWay Configuration host. Extending this layout does not confer Configuration semantic authority. | Current FS25 SlurryPipeSystem, SoilFertilizer and WorkplaceTriggers use |
+| `InGameMenuSettingsFrame.onFrameOpen` + `Utils.appendedFunction` | GIANTS Settings frame / hook | Current FS25 mods build injected settings rows once when the existing Settings frame opens. | Use one-time guarded construction. Do not create a separate OuttaMyWay top-level page. | Current FS25 SlurryPipeSystem / SoilFertilizer use |
+| `InGameMenuSettingsFrame.updateGeneralSettings` + `Utils.appendedFunction` | GIANTS Settings frame / hook | Refreshes general-setting row state whenever GIANTS refreshes the General Settings surface. | Synchronise presentation from semantic Configuration only; no direct storage ownership. | Current FS25 SlurryPipeSystem / SoilFertilizer use |
+| `BinaryOptionElement` + GIANTS settings profiles | GIANTS GUI elements | Native two-state Off/On setting row. `STATE_RIGHT` is On and `setIsChecked(...)` updates presentation without requiring custom page XML. | Appropriate for the three supported OuttaMyWay booleans. | Current FS25 source and mod use |
+| custom `TabbedMenu` page registration (`registerPage`, `addPageTab`, `unregisterPage`) | GIANTS tabbed-menu mechanics | Supports genuine new top-level pages. TEST 0.4.2.5 showed this was the wrong integration boundary for OuttaMyWay Configuration and its teardown caused a shutdown tab-reference failure. | **Not an OuttaMyWay Configuration mechanism.** Do not use for the three supported settings. | Current FS25 source; OuttaMyWay 0.4.2.5 live falsification |
+| `addModEventListener(listener)` | engine global function | Appends the listener to `g_modEventListeners`. Current FS25 source performs no replay of prior map-lifecycle events when a listener is added. | A listener added after the map is already loaded must not be assumed to have received `loadMap()`. Live Runtime re-bootstrap must explicitly establish any current-map initialization required by newly created listeners. | Current FS25 `scripts/mods.lua` source |
+| `removeModEventListener(listener)` | engine global function | Removes the matching listener from `g_modEventListeners`. | Listener removal stops future event dispatch only; it does not itself neutralise Control or release semantic authority. | Current FS25 `scripts/mods.lua` source |
+
+> **Settings Extension != Map Lifecycle Participant**
+
+The OuttaMyWay General Settings extension follows the GIANTS Settings-frame lifetime. It is installed by file-load callback extension and does not join `g_modEventListeners`; therefore it has no `deleteMap()` tab-removal responsibility.
+
+> **Listener Registration != Map Initialization**
+
+A fresh Runtime created while a mission is already loaded cannot rely on listener registration to replay `loadMap()`. Current-map initialization and future event registration are distinct mechanical steps.
+
 ## Field-course and AI surfaces
 
 | Surface | Owner / kind | Observed or documented purpose | Safe use and authority limit | Provenance |

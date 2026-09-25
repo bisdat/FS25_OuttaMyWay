@@ -15,7 +15,8 @@ def test_resolution_margin_modules_are_situation_jurisdiction_and_loaded_before_
     assert evaluator in main
     assert decorator in main
     assert main.index(evaluator) < main.index(decorator) < main.index(runtime)
-    assert "OuttaMyWay.runtime.situationAssessment=OuttaMyWay.ResolutionMarginSituationAssessment.new" in main
+    assert "runtime.situationAssessment=OuttaMyWay.ResolutionMarginSituationAssessment.new" in main
+    assert "runtime.situationAssessment=OuttaMyWay.CurrentResponsibilityContextSituationAssessment.new" in main
     for path in (
         "scripts/assessment/ResolutionMarginDemandAssessment.lua",
         "scripts/assessment/ResolutionMarginSituationAssessment.lua",

@@ -1,6 +1,6 @@
-# GUI — Architecture Responsibility Placeholder
+# GUI — Player Interface Architecture
 
-> **Status:** Recognised system-architecture responsibility; architecture not yet reconciled.
+> **Status:** Partially reconciled. Configuration Section architecture is accepted; Operational Player Messages and Help / Reference remain open under #89 and #293.
 
 ## Purpose
 
@@ -27,21 +27,62 @@ A disable action may leave active GIANTS AI jobs in an awkward or unresolved phy
 
 Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, hands responsibility back on disablement, or otherwise behaves in a way that could appear stuck.
 
+## Configuration Section
+
+OuttaMyWay exposes supported player Configuration through one dedicated **OuttaMyWay Configuration Section** inside the existing GIANTS **General Settings** layout.
+
+> **Configuration Section != Configuration Authority**
+
+The section owns presentation and player interaction only. It MUST consume the semantic `Configuration` interface and MUST NOT read, write or interpret `configuration.xml`, schema versions, persistence paths or Runtime state directly.
+
+The initial section exposes exactly the three accepted player choices:
+
+| Player-facing label | Configuration value | Meaning |
+| --- | --- | --- |
+| **Enabled** | `enabled` | Master OuttaMyWay consent. Off immediately relinquishes all OuttaMyWay control. On requests fresh Runtime bootstrap after durable persistence succeeds. |
+| **Operational messages** | `hudVisible` | Shows or hides Operational Player Messages only. It does not hide the Product Status Indicator. |
+| **Debug** | `debug` | Adds bounded troubleshooting detail to the normal operational log. It does not expose engineering DIAGNOSTIC mode. |
+
+Each choice is a simple **On / Off** option. No per-capability switches, tuning values, Logging switch, DIAGNOSTIC switch or Reset Defaults action belong in the initial section.
+
+The section extends `InGameMenuSettingsFrame.generalSettingsLayout` rather than registering a new top-level `TabbedMenu` page or input binding. This preserves GIANTS ownership of Settings navigation, focus, lifetime and shutdown teardown.
+
+> **Configuration Integration != Menu Ownership**
+
+The section follows the lifetime of the GIANTS Settings frame and is installed by extending its existing callbacks. It MUST NOT be registered as a map event listener and MUST NOT mutate the top-level tab registry during `loadMap()` or `deleteMap()`.
+
+> **Settings Extension != Map Lifecycle Participant**
+
+
+Reality validation of TEST 0.4.2.5 disproved the top-level-page approach: it appeared as an empty separate pause-menu page and its map-lifecycle tab teardown left GIANTS `TabbedMenu` in an inconsistent state during game shutdown.
+
+The Configuration area remains the architectural host for a future discoverable **Help / Reference** route. #293 owns the destination, content and navigation contract; until that responsibility is resolved, the Configuration Section MUST NOT expose an inert or misleading Help control.
+
+### English source wording
+
+English is the localisation source language under [`docs/LOCALISATION.md`](../docs/LOCALISATION.md). Initial Configuration Section wording is:
+
+- section title: **OuttaMyWay**
+- **Enabled** — “Allow OuttaMyWay to coordinate supported GIANTS AI field workers. Turning this off immediately returns all control to GIANTS AI.”
+- **Operational messages** — “Show messages that explain OuttaMyWay activity and waiting. This does not hide the OuttaMyWay status indicator.”
+- **Debug** — “Add extra troubleshooting detail to the log. Normal operational logging remains enabled.”
+- persistence warning — “OuttaMyWay could not save this setting. The current value is shown in the menu.”
+
+All user-facing strings use stable localisation keys and the required first-release language set. Colour is not used as the sole carrier of setting meaning.
+
 ## Explicit non-decisions
 
-This placeholder does not decide:
+The remaining GUI architecture does not yet decide:
 
-- screen or layout architecture;
-- widget hierarchy;
+- screen or layout architecture beyond the accepted Configuration Section;
+- widget hierarchy beyond the accepted three-option Configuration Section;
 - permanent HUD composition beyond the accepted Product Status Indicator / Operational Player Message responsibility split;
 - notification queueing or priorities;
-- settings UI;
-- input bindings;
-- interaction workflows;
-- final wording;
+- additional GUI input bindings beyond standard GIANTS menu navigation;
+- Operational Player Message and Help / Reference interaction workflows;
+- final wording outside the accepted Configuration Section source text;
 - colour palette beyond known accessibility constraints;
 - whether diagnostic HUD code is reused;
 - when or how status messages expire; or
 - how much internal state is exposed to the player.
 
-No GUI runtime implementation changes occur here.

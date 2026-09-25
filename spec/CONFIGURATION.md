@@ -272,6 +272,7 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
 | [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
+| [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) | `REALISES` |
 
 ## Implementation traceability
 
@@ -281,8 +282,9 @@ The current implementation establishes the supported local-profile state/persist
 - [`scripts/main.lua`](../scripts/main.lua) resolves Configuration in the product shell before Runtime bootstrap, blocks Runtime when persistence is unresolved or `enabled=false`, and composes Log Publication so the engineering DIAGNOSTIC sidecar remains independent while player `debug` resolves NORMAL/DEBUG.
 - [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) subscribes to semantic Configuration changes and implements live `enabled -> false` consent withdrawal by stopping Runtime listener participation, invoking universal authority-reducing relinquishment, discarding the current Runtime graph, and issuing the bounded player hand-back notification.
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) supports that withdrawal by ceasing live coordination first, terminating current semantic responsibility through its existing authorities, and invoking authority-reducing relinquishment across current Regulation, Bubble Bullet Time, Cooperative Passage, Obstruction Relocation and residual Bounded Authority without settling the interrupted objective.
+- [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) injects exactly the three supported semantic choices into GIANTS `InGameMenuSettingsFrame.generalSettingsLayout` and writes changes only through Configuration setters. It owns no persistence, Runtime, top-level menu page or map-lifecycle authority.
 
-Issue #139 still owns downstream player interaction and the remaining live consumer work. In particular, there is not yet a supported settings GUI, live `enabled -> true` fresh Runtime bootstrap remains outstanding, and `hudVisible` is not yet consumed by the full Operational Player Message subsystem.
+Issue #139 still owns the remaining Configuration integration and Reality validation. The General Settings Configuration Section provides the supported player interaction surface and master enablement is symmetric: durable `enabled -> true` triggers a fresh Runtime bootstrap from current GIANTS Reality. `hudVisible` remains intentionally without the full #89 Operational Player Message consumer.
 
 The existing `scripts/config.lua` file is not a Configuration implementation. It continues to own root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
 
@@ -291,6 +293,12 @@ The existing `scripts/config.lua` file is not a Configuration implementation. It
 The persistence mechanism relies on the FS25 user-profile/XML surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#user-profile-persistence-surfaces), including user-profile path resolution, file existence checks, folder creation, typed `XMLSchema`, and `XMLFile` create/load/save/delete lifecycle.
 
 Those engine surfaces supply mechanics only. They do not own Configuration semantics.
+
+The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. Live re-enable MUST initialise freshly registered Runtime listeners for the already-loaded map because `addModEventListener()` only registers future event delivery and does not replay `loadMap()`.
+
+Live re-enable creates fresh semantic Runtime state but MUST NOT repeatedly install equivalent mechanical interception wrappers. Current Hold and Native Drive mechanisms leave transparent engine/vehicle interception wrappers installed intentionally so other-mod overwrite chains are not broken. Their owned transient control state is cleared on disablement and the same subordinate mechanism instances are reused by the next fresh Runtime graph.
+
+> **Fresh Runtime State != Reinstalled Mechanical Interception**
 
 ## Repository validation participants
 

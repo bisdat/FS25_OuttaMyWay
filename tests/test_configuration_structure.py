@@ -1,4 +1,5 @@
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
 MAIN=ROOT/"scripts/main.lua"
@@ -11,6 +12,8 @@ COORDINATOR=ROOT/"scripts/runtime/LiveRuntimeCoordinator.lua"
 PASSAGE_CONTROL=ROOT/"scripts/control/CooperativePassageControl.lua"
 RELOCATION_CONTROL=ROOT/"scripts/control/ObstructionRelocationControl.lua"
 MOD_DESC=ROOT/"modDesc.xml"
+GUI_ARCH=ROOT/"architecture/GUI.md"
+CONFIG_SETTINGS_EXTENSION=ROOT/"scripts/gui/ConfigurationSettingsExtension.lua"
 
 def read(path):
     return path.read_text(encoding="utf-8")
@@ -30,8 +33,8 @@ def test_product_shell_resolves_configuration_before_runtime_bootstrap():
     assert main.index('"scripts/configuration/Configuration.lua"') < main.index('"scripts/publication/LogPublication.lua"')
     resolve=main.index("OuttaMyWay.configuration:resolvePersistedState()")
     publisher=main.index("OuttaMyWay.LogPublication.new(resolvedPublicationPolicy)")
-    runtime=main.index("OuttaMyWay.runtime=OuttaMyWay.Runtime.new()")
-    assert resolve < publisher < runtime
+    startup=main.index('OuttaMyWay.productLifecycle:enable("STARTUP",false)')
+    assert resolve < publisher < startup
     assert "if configurationReady and OuttaMyWay.configuration:isEnabled()==true then" in main
     assert 'OuttaMyWay.configuration:isDebugEnabled()==true then return "DEBUG"' in main
     assert 'publicationPolicy()=="DIAGNOSTIC"' in main
@@ -39,11 +42,17 @@ def test_product_shell_resolves_configuration_before_runtime_bootstrap():
     lifecycle=read(PRODUCT_LIFECYCLE)
     assert '"scripts/lifecycle/ProductLifecycle.lua"' in main
     assert "OuttaMyWay.productLifecycle:subscribe()" in main
-    assert "OuttaMyWay.productLifecycle:adoptRuntime(OuttaMyWay.runtime,runtimeListeners)" in main
+    assert "OuttaMyWay.ProductLifecycle.new(OuttaMyWay.configuration,createRuntimeBundle)" in main
+    assert "registerListeners=registerRuntimeBundleListeners" in main
     assert 'notification.name~="enabled"' in lifecycle
     assert 'notification.value==false' in lifecycle
     assert "runtime.relinquishAllControl" in lifecycle
     assert "removeModEventListener" in lifecycle
+    assert 'notification.value==true and notification.durable==true' in lifecycle
+    assert 'self:enable("PLAYER_CONFIGURATION_ENABLED",true)' in lifecycle
+    assert '"scripts/gui/ConfigurationSettingsExtension.lua"' in main
+    assert "ConfigurationPage.lua" not in main
+    assert "ConfigurationMenuIntegration.lua" not in main
 
 def test_configuration_uses_profile_modsettings_schema1_and_no_savegame_path():
     source=read(CONFIGURATION)
@@ -67,10 +76,12 @@ def test_configuration_spec_has_real_source_participants():
     assert "[`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS`" in spec
     assert "[`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) | `REALISES`" in spec
     assert "[`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS`" in spec
+    assert "[`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) | `REALISES`" in spec
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in source
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in main
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in read(PRODUCT_LIFECYCLE)
     assert "`CONFIGURATION`" in read(RUNTIME).splitlines()[1]
+    assert "-- Specification Jurisdictions: `CONFIGURATION`" in read(CONFIG_SETTINGS_EXTENSION)
 
 def test_live_disable_has_localised_hand_back_without_hard_coded_control_text():
     lifecycle=read(PRODUCT_LIFECYCLE)
@@ -107,3 +118,63 @@ def test_live_disable_relinquishment_does_not_finish_passage_or_relocation():
     assert "self:_complete" not in relocation_section
     assert "actuationMechanism:neutralize" in relocation_section
     assert "releaseVehicleActivityContext" in relocation_section
+
+
+def test_configuration_section_extends_giants_general_settings_without_menu_ownership():
+    extension=read(CONFIG_SETTINGS_EXTENSION)
+    arch=read(GUI_ARCH)
+    main=read(MAIN)
+
+    for forbidden in (
+        "configuration.xml","modSettings","XMLFile","registerPage","addPageTab",
+        "rebuildTabList","unregisterPage","g_gui.loadGui","addModEventListener",
+        "deleteMap","gameSettingsLayout",
+    ):
+        assert forbidden not in extension
+
+    assert "InGameMenuSettingsFrame.onFrameOpen=Utils.appendedFunction" in extension
+    assert "InGameMenuSettingsFrame.updateGeneralSettings=Utils.appendedFunction" in extension
+    assert "frame.generalSettingsLayout" in extension
+    assert extension.count("addBinaryOption(") == 4  # helper definition + exactly three rows
+    assert "BinaryOptionElement.new()" in extension
+    assert "option.useYesNoTexts=false" in extension
+    assert 'self:_apply("enabled",state==BinaryOptionElement.STATE_RIGHT)' in extension
+    assert 'self:_apply("hudVisible",state==BinaryOptionElement.STATE_RIGHT)' in extension
+    assert 'self:_apply("debug",state==BinaryOptionElement.STATE_RIGHT)' in extension
+
+    assert "Configuration Section != Configuration Authority" in arch
+    assert "Configuration Integration != Menu Ownership" in arch
+    assert "Settings Extension != Map Lifecycle Participant" in arch
+    assert "General Settings" in arch
+    assert '"scripts/gui/ConfigurationSettingsExtension.lua"' in main
+    assert "configurationMenuIntegration" not in main
+
+
+def test_configuration_section_localisation_has_all_required_languages():
+    root=ET.parse(MOD_DESC).getroot()
+    required_keys=(
+        "omw_configSection_title","omw_configSection_enabled","omw_configSection_enabledTooltip",
+        "omw_configSection_operationalMessages","omw_configSection_operationalMessagesTooltip",
+        "omw_configSection_debug","omw_configSection_debugTooltip","omw_configSection_saveFailed",
+    )
+    for key in required_keys:
+        node=root.find(f"./l10n/text[@name='{key}']")
+        assert node is not None, key
+        for language in ("en","de","fr","es","it"):
+            value=node.find(language)
+            assert value is not None and value.text and value.text.strip(), f"{key}:{language}"
+
+
+def test_fresh_runtime_reenable_reuses_mechanical_interceptors_but_not_semantic_runtime():
+    main=read(MAIN)
+    lifecycle=read(PRODUCT_LIFECYCLE)
+    factory=main[main.index("local function createRuntimeBundle()"):main.index("OuttaMyWay.productLifecycle=")]
+    assert "local sharedPhysicalControlMechanisms=" in main
+    assert "sharedPhysicalControlMechanisms.holdMechanism:clear()" in factory
+    assert "sharedPhysicalControlMechanisms.driveMechanism:clearAll()" in factory
+    assert "OuttaMyWay.Runtime.new()" in factory
+    assert "OuttaMyWay.FieldWorkHoldMechanism.new()" not in factory
+    assert "OuttaMyWay.NativeDriveMechanism.new()" not in factory
+    assert "initializeCurrentMap==true" in lifecycle
+    assert "pcall(listener.loadMap,listener)" in lifecycle
+    assert "Listener Registration != Map Initialization" in read(ROOT/"docs/engine/GIANTS_API_SURFACES.md")

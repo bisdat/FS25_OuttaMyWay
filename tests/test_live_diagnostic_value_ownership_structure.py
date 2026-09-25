@@ -89,7 +89,9 @@ def test_issue152_version_hud_remains_temporary_development_build_identity_only(
     hud = read("scripts/diagnostics/VersionHud.lua")
 
     assert "scripts/diagnostics/VersionHud.lua" in main
-    assert "OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()" in main
+    assert "local versionHud=OuttaMyWay.VersionHud.new()" in main
+    lifecycle = read("scripts/lifecycle/ProductLifecycle.lua")
+    assert "OuttaMyWay.versionHud=bundle.versionHud" in lifecycle
     assert "addModEventListener(OuttaMyWay.versionHud)" in main
     assert "local VERSION_HUD_ENABLED=true" in hud
     assert "local VERSION_HUD_X=0.985" in hud

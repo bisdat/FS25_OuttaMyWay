@@ -41,8 +41,7 @@ Other direct live Architecture responsibilities are:
 - [Log Publication Architecture](LOG_PUBLICATION.md) — controlled projection of
   already-established runtime/engineering facts into NORMAL, DEBUG and DIAGNOSTIC
   GIANTS-log publication without acquiring semantic authority;
-- [GUI Architecture](GUI.md) — deferred player-facing interface and communication
-  architecture responsibility.
+- [GUI Architecture](GUI.md) — player-facing interface architecture; the General Settings Configuration Section is reconciled while remaining communication responsibilities are still open.
 
 Phase/tranche closure audits do not own current architecture after their durable
 findings have been harvested. Historical Phase-13 closure evidence remains
