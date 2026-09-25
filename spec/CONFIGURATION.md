@@ -118,7 +118,26 @@ does configuration.xml exist?
         |
         v
 resolved enabled value decides whether normal Runtime may bootstrap
+        |
+        +-- enabled=true --> Runtime may bootstrap
+        |
+        `-- enabled=false -> Runtime remains absent
+                            -> arm one Disabled Startup Reminder
 ```
+
+When resolved startup state is `enabled=false`, the product shell MUST present one localized Disabled Startup Reminder after the mission warning surface becomes available:
+
+> **OuttaMyWay disabled. Review General Settings.**
+
+The reminder MUST use the GIANTS blinking-warning surface with an explicit **5000 ms** duration, MUST appear at most once for that mission load, and MUST NOT depend on normal Runtime existence. It MUST NOT be shown for unresolved Configuration storage. If Configuration becomes enabled before the reminder is presented, the pending reminder MUST be cancelled.
+
+Because the reminder communicates product operational status rather than Operational Player Messaging, `hudVisible` MUST NOT suppress it.
+
+> **Disabled Startup Reminder != Operational Player Message**
+
+The startup reminder duration is intentionally longer than the current shutdown hand-back warning. The latter follows an explicit player action; the startup reminder must remain readable through entry into gameplay. TEST 0.4.2.7 established that GIANTS blinking means nominal warning lifetime is not equivalent to continuously readable exposure.
+
+> **Warning Lifetime != Readable Exposure**
 
 No consumer may observe partially loaded Configuration state.
 
@@ -273,6 +292,7 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 | [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
 | [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) | `REALISES` |
+| [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) | `REALISES` |
 
 ## Implementation traceability
 
@@ -283,6 +303,7 @@ The current implementation establishes the supported local-profile state/persist
 - [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) subscribes to semantic Configuration changes and implements live `enabled -> false` consent withdrawal by stopping Runtime listener participation, invoking universal authority-reducing relinquishment, discarding the current Runtime graph, and issuing the bounded player hand-back notification.
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) supports that withdrawal by ceasing live coordination first, terminating current semantic responsibility through its existing authorities, and invoking authority-reducing relinquishment across current Regulation, Bubble Bullet Time, Cooperative Passage, Obstruction Relocation and residual Bounded Authority without settling the interrupted objective.
 - [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) injects exactly the three supported semantic choices into GIANTS `InGameMenuSettingsFrame.generalSettingsLayout` and writes changes only through Configuration setters. It owns no persistence, Runtime, top-level menu page or map-lifecycle authority.
+- [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) is a product-shell mission listener that consumes resolved `enabled=false` at mission load, waits for the GIANTS warning surface, presents the localized 5000 ms Disabled Startup Reminder once, and then becomes inert for that mission. It does not consume `hudVisible` and does not require Runtime.
 
 Issue #139 still owns the remaining Configuration integration and Reality validation. The General Settings Configuration Section provides the supported player interaction surface and master enablement is symmetric: durable `enabled -> true` triggers a fresh Runtime bootstrap from current GIANTS Reality. `hudVisible` remains intentionally without the full #89 Operational Player Message consumer.
 
@@ -325,4 +346,4 @@ Current offline validation SHOULD challenge at least:
 - disable/re-enable change semantics;
 - persistence failure not being reported as committed success.
 
-In-game validation MUST separately establish the GIANTS filesystem/XML behaviour that cannot be proven by the offline harness, especially first-use creation, cross-save reuse, replacement of invalid XML and storage-failure observations that can be reproduced safely.
+In-game validation MUST separately establish the GIANTS filesystem/XML behaviour that cannot be proven by the offline harness, especially first-use creation, cross-save reuse, replacement of invalid XML and storage-failure observations that can be reproduced safely. It MUST also establish that resolved disabled startup produces exactly one visible Disabled Startup Reminder at the expected GIANTS warning position/duration and that enabled startup produces none.

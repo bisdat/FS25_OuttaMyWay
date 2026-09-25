@@ -120,7 +120,8 @@ jobs:
             scripts/runtime/LiveRuntimeCoordinator.lua \
             scripts/runtime/Runtime.lua \
             scripts/lifecycle/ProductLifecycle.lua \
-            scripts/gui/ConfigurationSettingsExtension.lua
+            scripts/gui/ConfigurationSettingsExtension.lua \
+            scripts/gui/DisabledStartupReminder.lua
           do
             CHECK_FILE="$file" "$LUAJIT_BIN" -e 'assert(loadfile(os.getenv("CHECK_FILE")))'
           done

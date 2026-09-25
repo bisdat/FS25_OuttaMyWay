@@ -305,5 +305,98 @@ test("enabled notification ignores non-durable true and accepts durable true",fu
     equal(lifecycle:isOperational(),true)
 end)
 
+
+load("scripts/gui/DisabledStartupReminder.lua")
+
+test("disabled startup reminder waits for mission surface and shows once for 5000 ms",function()
+    local config={
+        isResolved=function() return true end,
+        isEnabled=function() return false end,
+        isHudVisible=function() return false end
+    }
+    local reminder=OuttaMyWay.DisabledStartupReminder.new(config)
+    local shown=0
+    g_i18n={getText=function(self,key)
+        equal(key,"omw_disabledStartupReminder")
+        return "OuttaMyWay disabled. Review General Settings."
+    end}
+    g_currentMission=nil
+
+    reminder:loadMap()
+    equal(reminder.isPending,true)
+    reminder:update()
+    equal(shown,0)
+
+    g_currentMission={showBlinkingWarning=function(self,message,duration)
+        shown=shown+1
+        equal(message,"OuttaMyWay disabled. Review General Settings.")
+        equal(duration,5000)
+    end}
+    reminder:update()
+    equal(shown,1)
+    equal(reminder.hasShown,true)
+    equal(reminder.isPending,false)
+    reminder:update()
+    equal(shown,1)
+end)
+
+test("enabled startup does not arm disabled reminder",function()
+    local config={
+        isResolved=function() return true end,
+        isEnabled=function() return true end
+    }
+    local reminder=OuttaMyWay.DisabledStartupReminder.new(config)
+    reminder:loadMap()
+    equal(reminder.isPending,false)
+    equal(reminder.hasShown,false)
+end)
+
+test("unresolved Configuration does not arm disabled reminder",function()
+    local config={
+        isResolved=function() return false end,
+        isEnabled=function() return false end
+    }
+    local reminder=OuttaMyWay.DisabledStartupReminder.new(config)
+    reminder:loadMap()
+    equal(reminder.isPending,false)
+end)
+
+test("pending disabled reminder cancels if product becomes enabled before presentation",function()
+    local enabled=false
+    local config={
+        isResolved=function() return true end,
+        isEnabled=function() return enabled end
+    }
+    local reminder=OuttaMyWay.DisabledStartupReminder.new(config)
+    local shown=0
+    g_i18n={getText=function() return "disabled" end}
+    g_currentMission={showBlinkingWarning=function() shown=shown+1 end}
+    reminder:loadMap()
+    equal(reminder.isPending,true)
+    enabled=true
+    reminder:update()
+    equal(reminder.isPending,false)
+    equal(shown,0)
+end)
+
+test("disabled startup reminder may show once again on a later mission load",function()
+    local config={
+        isResolved=function() return true end,
+        isEnabled=function() return false end
+    }
+    local reminder=OuttaMyWay.DisabledStartupReminder.new(config)
+    local shown=0
+    g_i18n={getText=function() return "disabled" end}
+    g_currentMission={showBlinkingWarning=function() shown=shown+1 end}
+
+    reminder:loadMap()
+    reminder:update()
+    equal(shown,1)
+    reminder:deleteMap()
+    reminder:loadMap()
+    reminder:update()
+    equal(shown,2)
+end)
+
 print(string.format("RESULT %d passed / %d failed",passed,failed))
 if failed>0 then os.exit(1) end

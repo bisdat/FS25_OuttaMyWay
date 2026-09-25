@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="0.4.2.6">0.4.2.6</version>
+    <version value="0.4.2.8">0.4.2.8</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -23,6 +23,13 @@
             <fr>OuttaMyWay désactivé. Contrôle rendu à l’IA GIANTS. Vérifiez les ouvriers actifs.</fr>
             <es>OuttaMyWay desactivado. Control devuelto a la IA de GIANTS. Revisa los trabajadores activos.</es>
             <it>OuttaMyWay disattivato. Controllo restituito all'IA GIANTS. Controlla gli operatori attivi.</it>
+        </text>
+        <text name="omw_disabledStartupReminder">
+            <en>OuttaMyWay disabled. Review General Settings.</en>
+            <de>OuttaMyWay deaktiviert. Allgemeine Einstellungen prüfen.</de>
+            <fr>OuttaMyWay désactivé. Vérifiez les paramètres généraux.</fr>
+            <es>OuttaMyWay desactivado. Revisa los ajustes generales.</es>
+            <it>OuttaMyWay disattivato. Controlla le impostazioni generali.</it>
         </text>
         <text name="omw_configSection_title">
             <en>OuttaMyWay</en><de>OuttaMyWay</de><fr>OuttaMyWay</fr><es>OuttaMyWay</es><it>OuttaMyWay</it>
