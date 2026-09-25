@@ -21,12 +21,13 @@ This architecture declares the following Specification Jurisdictions.
 | **Regulation** | Provide bounded temporal coordination while GIANTS retains productive routing. |
 | **Resolution Lifecycle** | Own the generic persistence and obligation semantics of Resolution Commitment. |
 | **Obstruction Relocation** | Specialise Resolution Lifecycle for bounded removal of a positively causal non-active unclaimed obstruction. |
+| **Blocked Worker Recovery** | Specialise Resolution Lifecycle for one bounded recovery excursion by a still-active GIANTS worker whose native progression has positively stalled. |
 | **Bounded Authority** | Determine what physical action is permitted now under current responsibility and Reality. |
 | **Control** | Realise an already-authorised physical request through available GIANTS mechanisms. |
 
-The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
+The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Blocked Progress Stall, Recovery Anchor, Recovery Recurrence, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../spec/CONTROL.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
+All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../spec/CONTROL.md). **Blocked Worker Recovery** routes to its mature but not-yet-implemented primary Specification at [`../../spec/BLOCKED_WORKER_RECOVERY.md`](../spec/BLOCKED_WORKER_RECOVERY.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -484,7 +485,7 @@ A Resolution may contain more than one subject-scoped obligation or bounded phys
 
 Generic terminal reasons are completion, failure, supersession, governing-basis cessation and escalation. Concrete Resolution Jurisdictions specialise these semantics without independently redefining them.
 
-The [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) owns Cooperative Passage admission, Bubble, Passage Leg and dissolution policy. The Obstruction Relocation specialisation is defined below.
+The [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) owns Cooperative Passage admission, Bubble, Passage Leg and dissolution policy. The Obstruction Relocation and Blocked Worker Recovery specialisations are defined below.
 
 ### Pre-Semantic Contradiction != Resolution Failure
 
@@ -548,6 +549,100 @@ Generic positive-conflict representation does not gain negative-clearance author
 Historical Job Episode identity may remain diagnostic provenance for a known subject, but it must not gate Causal Obstruction recognition, Resolution justification or bounded relocation of an otherwise-supported non-active unclaimed blocker.
 
 A cold-loaded parked vehicle, a formerly completed AI worker, a player-owned but currently unclaimed vehicle, or another supported non-active physical vehicle can be the same controlled subject when current positive Reality establishes the blocker relationship.
+
+---
+
+## Specification Jurisdiction — Blocked Worker Recovery
+
+**Parent Jurisdiction:** Resolution Lifecycle.
+
+**Owns:** the concrete single-subject Resolution contract for one bounded physical recovery excursion when a still-active GIANTS worker has a positively established Blocked Progress Stall and can be returned toward recently demonstrated native traversal before GIANTS regains ordinary control.
+
+**Does not own:** raw native blockage observation, generic Situation interpretation, obstacle identification, environmental map modelling, productive routing, arbitrary path planning, repeated autonomous obstacle bypass, generic Bounded Authority or generic Control mechanics.
+
+**Jurisdiction ID:** `BLOCKED_WORKER_RECOVERY`  
+**Primary Specification:** [`spec/BLOCKED_WORKER_RECOVERY.md`](../spec/BLOCKED_WORKER_RECOVERY.md)  
+**Specialises:** `RESOLUTION_LIFECYCLE`
+
+### Blocked Progress Contradiction and Stall
+
+A native `isBlocked` assertion is evidence, not recovery authority.
+
+A **Blocked Progress Contradiction** is established only when the same qualifying active Job Episode has recent positively realised native progression, GIANTS positively asserts blockage, fresh Reality shows that realised progression has collapsed, and no current OuttaMyWay-owned physical effect explains the quiescence.
+
+The resulting **Blocked Progress Stall** is current Situation meaning. Elapsed time may provide an observation interval needed to demonstrate lack of movement; timeout expiry does not create the Stall.
+
+> **Native Blocked Assertion != Blocked Progress Stall.**
+
+> **Observation Interval != Stall Timeout.**
+
+Raw `isBlocked=false` does not by itself disprove an already established Stall. Positive resumed native progression, Job Episode lifecycle change, Player Claim where applicable, or authoritative transition into/out of Blocked Worker Recovery provides the relevant lifecycle evidence.
+
+Pairwise or Resolution-owned blocked signals remain within their governing responsibilities. In particular, native blockage observed while OuttaMyWay itself is deliberately holding, regulating to zero, or physically controlling the subject cannot independently admit Blocked Worker Recovery.
+
+### Recovery Approach and Recovery Anchor
+
+The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Stall.
+
+A **Recovery Anchor** is the most recent positively realised state in that same Recovery Approach that remains fit as a bounded return reference. It must preserve Physical Assembly and Job Episode identity and must be invalidated by material ownership, lifecycle, direction, assembly/configuration or representation discontinuity relevant to the recovery question.
+
+Where positive supplementary evidence already implicates a later state in the blockage-associated spatial condition, that implicated state is not promoted merely because GIANTS had not yet asserted `isBlocked`.
+
+> **Last Unblocked Pose != Recovery Anchor.**
+
+> **Recovery Anchor != Known Safe Pose.**
+
+The Anchor supplies bounded provenance for where the failed native excursion came from and which local direction represents retreat. It does not establish universal collision clearance, arbitrary reverse feasibility, or a requirement to point-seek back to an exact historical pose.
+
+### Recovery Excursion and spatial authority
+
+Blocked Worker Recovery owns one generic **Recovery Excursion**, not obstacle-class-specific behaviour.
+
+The excursion uses the Recovery Anchor and recent **Demonstrated Traversability** as positive support for a bounded local return domain. It may use supplementary positive spatial evidence, including represented Physical Assembly interaction or DISC-to-Field-World boundary intersection, to strengthen direction choice or establish an earlier **Recovery Point**. Obstacle identity is not required.
+
+> **Recovery Need Does Not Require Blockage Cause.**
+
+> **Field Boundary Intersection != Environmental Collision.**
+
+> **Obstacle Identification != Spatial Release Evidence.**
+
+Absence of represented conflict never becomes negative-clearance authority. Fresh positive current contradiction may veto, narrow or stop movement even where the historical approach previously traversed that domain.
+
+The initial recovery capability does not invent steering or a route around scenery. It does not classify trees, pylons, hedges or parked objects into separate recovery strategies. A later broader repositioning responsibility would require separate architectural evidence.
+
+### Transit-first recovery choreography
+
+Once Blocked Worker Recovery has current responsibility and a Recovery Excursion is physically admissible, the assembly **always requests Transit before recovery movement**.
+
+Transit is execution choreography, not a strategic Candidate question about whether compaction is worthwhile. The physical configuration mechanism determines what the request means for the actual assembly and must settle the resulting realised configuration before movement authority proceeds.
+
+> **Transit Request Is Recovery Choreography, Not Recovery Admission.**
+
+Recovery does not infer that Transit itself proves clearance or safety. Fresh realised representation after configuration remains authoritative for the movement question.
+
+### Recovery Point and handback
+
+The **Recovery Point** is the bounded physical endpoint at which OuttaMyWay's one Recovery Excursion obligation is discharged.
+
+Where positive blockage-associated spatial evidence exists, discharge may occur when fresh Reality positively shows the known condition has been released or sufficiently reduced according to the specialised contract. Where cause remains unresolved, the Recovery Anchor bounds the available local return domain.
+
+At the Recovery Point, OuttaMyWay restores any intervention-created configuration debt, relinquishes owned physical effects, and hands control back to GIANTS. The Resolution does not retain control while waiting for GIANTS to prove subsequent productive success.
+
+> **Recovery Completion Belongs to OuttaMyWay; Subsequent Native Success Belongs to Reality.**
+
+This positive completion of OuttaMyWay's bounded excursion/restore/handback obligation satisfies the parent Resolution settlement requirement. It does not claim that an underlying environmental or native-route problem has been permanently removed.
+
+### Recovery Recurrence
+
+After handback, a bounded passive **Recovery Recurrence** watch may retain only the evidence needed to recognise whether the simple recovery hypothesis is disproved. It is not a Current Responsibility and grants no Bounded Authority.
+
+A new Blocked Progress Stall is a Recovery Recurrence only when current evidence associates it with the same Physical Assembly and Job Episode and places it within both a bounded post-handback recurrence interval and a bounded spatial neighbourhood of the prior blockage/recovery context. Exact time and distance literals are implementation/validation calibration, not Architecture.
+
+If no recurrence is observed through that bounded watch, the recovery attempt may be classified successful for this capability and the watch expires quietly. If recurrence is positively established, the simple one-excursion recovery hypothesis is disproved.
+
+> **Recovery Excursion Completed != Native Path Problem Resolved.**
+
+Recovery Recurrence does not authorise an automatic second Recovery Excursion or obstacle-bypass loop. The first capability fails closed toward reassessment or Player Intervention rather than proliferating obstacle-specific special cases.
 
 ---
 
