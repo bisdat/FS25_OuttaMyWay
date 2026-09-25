@@ -24,6 +24,8 @@ This classification does not itself create canonical `0.4.0.0`. Canonical author
 
 **Owner correction — 2026-09-24:** merged PATCH checkpoint `0.4.1.0` is Accepted Repository State but is **not canonical**. Canonical remains `0.4.0.0`. Under the clarified prospective rule, the next Canonical Merge would be an owner-selected MINOR epoch checkpoint, therefore `0.5.0.0`, not a `0.4.x.0` PATCH. This correction supersedes the erroneous canonical-effect wording in merged PR #291 while preserving that merge and version identity as historical repository provenance.
 
+**Owner plateau selection — 2026-09-25:** field-validated TEST `0.4.2.8` is selected as the next Validated Plateau and promoted by a behaviour-neutral checkpoint increment to **`0.4.3.0`**. The tranche completes and validates the supported player Configuration surface within the existing 0.4 architecture/capability epoch rather than creating a new epoch. `0.4.3.0` therefore advances Accepted Repository State as a PATCH checkpoint and remains non-canonical; canonical remains `0.4.0.0`.
+
 **Reason:** The previous wording defined PATCH as an “accepted compatible correction” but did not define when a growing TEST lineage should deliberately consolidate. That ambiguity encouraged indefinite BUILD growth and made PATCH appear to be either arbitrary or synonymous with bug-fix count. The project’s own historical promotion practice shows the missing concept: a release checkpoint captures a validated plateau, while MINOR records a changed architectural/capability epoch.
 
 ## D-0222 — Establish Log Publication as an Independent Cross-Cutting Jurisdiction
