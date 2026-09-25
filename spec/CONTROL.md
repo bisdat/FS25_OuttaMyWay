@@ -356,6 +356,12 @@ The dispatcher is not the whole Control Jurisdiction, and physical mechanism mod
 
 > **Primary Specification != Primary Source Module**
 
+### Current implementation gap — movement plus independent speed ceiling
+
+The current `NativeDriveMechanism` stores Regulation and movement overrides as mutually exclusive drive modes. An active Regulation lease therefore cannot currently coexist physically with `AXIS_TRAVEL` or another non-Regulation movement mode, and creating one mode can replace the other mechanism state.
+
+The accepted Control contract requires those concerns to be represented independently so a current speed ceiling can narrow an already-authorised movement without clearing or replacing its objective. This composition is not yet implemented and is a prerequisite for Passage Bullet Time over Blocked Worker Recovery.
+
 ## Validation route
 
 ### Structural/source-contract validation
