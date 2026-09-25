@@ -200,9 +200,8 @@ A Supporting Speed Ceiling MUST NOT:
 Multiple compatible current speed ceilings MAY constrain the same assembly. Their physical composition is monotonic:
 
 ```text
-realised maximum speed
-    <= underlying movement/native maximum
-    <= each active compatible ceiling
+realised maximum speed <= underlying movement/native maximum
+realised maximum speed <= every active compatible ceiling
 ```
 
 Equivalently, Control may realise no more than the least-permissive current compatible maximum.
