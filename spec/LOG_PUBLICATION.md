@@ -184,6 +184,7 @@ For each admitted Publication Event, Log Publication MUST:
 - render the stable event code visibly;
 - apply one consistent OuttaMyWay publication envelope;
 - render supplied common context deterministically;
+- preserve supplied scalar values faithfully, including rendering boolean `false` explicitly rather than treating it as absent; only unavailable/`nil` payload values are omitted;
 - preserve producer-owned semantic role names;
 - route through the severity-appropriate GIANTS logging facility; and
 - emit at most one log line for that Publication Event.

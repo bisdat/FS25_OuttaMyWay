@@ -73,6 +73,18 @@ test("payload context rendering is deterministic and one-line",function()
     if string.find(calls[1].message,"\n",1,true)~=nil then error("publication emitted literal newline") end
 end)
 
+test("boolean false is rendered as data rather than absence",function()
+    calls={}
+    policy="NORMAL"
+    origin:publish("NORMAL","INFO","BOOLEAN_EVENT",function()
+        return {enabled=false,visible=true,missing=nil}
+    end)
+    equal(#calls,1)
+    contains(calls[1].message,"enabled=false")
+    contains(calls[1].message,"visible=true")
+    if string.find(calls[1].message,"missing=",1,true)~=nil then error("nil payload value was rendered") end
+end)
+
 test("payload failure is isolated from semantic caller",function()
     calls={}
     policy="NORMAL"
