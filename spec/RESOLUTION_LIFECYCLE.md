@@ -177,7 +177,7 @@ Responsibility Transition establishes and ends the semantic Resolution Commitmen
 
 ### Specialised Resolution Jurisdictions
 
-Concrete Resolution Specifications, including [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md), own purpose-specific obligations, evidence contracts and choreography. They MUST inherit this parent persistence/terminal contract rather than restate or fork it.
+Concrete Resolution Specifications, including [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md), [`OBSTRUCTION_RELOCATION.md`](OBSTRUCTION_RELOCATION.md) and the currently `NOT_IMPLEMENTED` [`BLOCKED_WORKER_RECOVERY.md`](BLOCKED_WORKER_RECOVERY.md), own purpose-specific obligations, evidence contracts and choreography. They MUST inherit this parent persistence/terminal contract rather than restate or fork it.
 
 ### Observation and Situation Assessment
 
