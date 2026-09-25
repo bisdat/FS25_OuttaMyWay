@@ -44,7 +44,9 @@ def test_publisher_owns_dynamic_destination_and_engineering_policy_is_separate_f
     assert main.index('"scripts/diagnostics/DiagnosticPublicationPolicySource.lua"') < main.index('"scripts/publication/LogPublication.lua"')
     assert "OuttaMyWay.DiagnosticPublicationPolicySource.new(OuttaMyWay.MOD_NAME)" in main
     assert "OuttaMyWay.diagnosticPublicationPolicySource:loadSidecar()" in main
-    assert "return OuttaMyWay.diagnosticPublicationPolicySource:publicationPolicy()" in main
+    assert 'OuttaMyWay.diagnosticPublicationPolicySource:publicationPolicy()=="DIAGNOSTIC"' in main
+    assert 'OuttaMyWay.configuration:isDebugEnabled()==true then return "DEBUG"' in main
+    assert 'return "NORMAL"' in main
     assert "fileExists" in policy_source
     assert "XMLSchema.new" in policy_source
     assert "XMLFile.loadIfExists" in policy_source
