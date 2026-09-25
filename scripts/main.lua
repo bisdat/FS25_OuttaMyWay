@@ -1,10 +1,11 @@
 -- FS25_OuttaMyWay runtime entry point. Current build identity is owned by scripts/config.lua and modDesc.xml.
+-- Specification Jurisdictions: `CONFIGURATION`
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 -- Module source order is dependency-sensitive: sourced modules may consume globals established by earlier modules.
 -- Preserve source-before-consumer ordering; this bootstrap sequence does not define architectural authority.
 local modules={
-    "scripts/config.lua","scripts/diagnostics/DiagnosticPublicationPolicySource.lua","scripts/publication/LogPublication.lua",
+    "scripts/config.lua","scripts/configuration/Configuration.lua","scripts/diagnostics/DiagnosticPublicationPolicySource.lua","scripts/publication/LogPublication.lua",
     "scripts/contracts/ValueRecord.lua","scripts/contracts/ObservationSnapshot.lua","scripts/contracts/OperationalPicture.lua","scripts/contracts/CandidateAction.lua","scripts/contracts/CandidateInventory.lua","scripts/contracts/ConstraintVerdict.lua","scripts/contracts/ConstraintVerdictSet.lua","scripts/contracts/DecisionRecord.lua","scripts/contracts/CommitmentRecord.lua","scripts/contracts/ObligationRecord.lua","scripts/contracts/Regulation.lua","scripts/contracts/ResolutionCommitment.lua","scripts/contracts/BoundedAuthorityGrant.lua","scripts/contracts/ControlRequest.lua","scripts/contracts/ControlOutcome.lua","scripts/contracts/GoverningBasisVerdict.lua","scripts/contracts/CommitmentApplicationRecord.lua",
     "scripts/identity/EpochSequence.lua","scripts/identity/IdentityRegistry.lua",
     "scripts/representation/PlanViewFootprint.lua","scripts/representation/EntityLocalShapeEvidence.lua","scripts/representation/AssemblyRepresentationCache.lua","scripts/representation/CurrentPhysicalConflictRepresentation.lua","scripts/representation/PairSpecificPassageClearance.lua",
@@ -18,19 +19,33 @@ local modules={
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
 
--- Engineering-only DIAGNOSTIC publication is resolved before publisher
--- composition. Player Configuration (#139) remains a separate future input.
+-- Product-shell Configuration resolves before Log Publication policy and before
+-- any normal Runtime bootstrap. Engineering DIAGNOSTIC remains a separate override.
+OuttaMyWay.configuration=OuttaMyWay.Configuration.new(OuttaMyWay.MOD_NAME)
+local configurationReady,configurationReason=OuttaMyWay.configuration:resolvePersistedState()
+
 OuttaMyWay.diagnosticPublicationPolicySource=OuttaMyWay.DiagnosticPublicationPolicySource.new(OuttaMyWay.MOD_NAME)
 OuttaMyWay.diagnosticPublicationPolicySource:loadSidecar()
-local function resolvedEngineeringPublicationPolicy()
-    return OuttaMyWay.diagnosticPublicationPolicySource:publicationPolicy()
+local function resolvedPublicationPolicy()
+    if OuttaMyWay.diagnosticPublicationPolicySource:publicationPolicy()=="DIAGNOSTIC" then return "DIAGNOSTIC" end
+    if configurationReady and OuttaMyWay.configuration:isDebugEnabled()==true then return "DEBUG" end
+    return "NORMAL"
 end
-OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(resolvedEngineeringPublicationPolicy)
-local productPublication=OuttaMyWay.LogPublication.origin("PRODUCT_RUNTIME")
-productPublication:publish("NORMAL","INFO","OUTTAMYWAY_STARTED",function()
-    return {version=OuttaMyWay.VERSION,enabled=true}
-end)
+OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(resolvedPublicationPolicy)
 
+local productPublication=OuttaMyWay.LogPublication.origin("PRODUCT_RUNTIME")
+if configurationReady then
+    productPublication:publish("NORMAL","INFO","OUTTAMYWAY_STARTED",function()
+        return {version=OuttaMyWay.VERSION,enabled=OuttaMyWay.configuration:isEnabled()}
+    end)
+else
+    local configurationPublication=OuttaMyWay.LogPublication.origin("CONFIGURATION")
+    configurationPublication:publish("NORMAL","ERROR","CONFIGURATION_STORAGE_FAILED",function()
+        return {version=OuttaMyWay.VERSION,reason=configurationReason}
+    end)
+end
+
+if configurationReady and OuttaMyWay.configuration:isEnabled()==true then
 OuttaMyWay.runtime=OuttaMyWay.Runtime.new()
 OuttaMyWay.runtime.situationAssessment=OuttaMyWay.ResolutionMarginSituationAssessment.new(OuttaMyWay.runtime.situationAssessment)
 OuttaMyWay.runtime.situationAssessment=OuttaMyWay.CurrentResponsibilityContextSituationAssessment.new(
@@ -72,4 +87,6 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.obstructionRelocationControl)
     addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)
     addModEventListener(OuttaMyWay.versionHud)
+end
+
 end
