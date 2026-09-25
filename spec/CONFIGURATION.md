@@ -7,8 +7,6 @@
 
 **Primary Architecture Authority:** [`architecture/CONFIGURATION.md`](../architecture/CONFIGURATION.md#specification-jurisdiction--configuration)
 
-**Implementation Status:** `NOT_IMPLEMENTED`
-
 This Specification owns the implementation-facing contract for the supported local-profile player Configuration state, its persistence lifecycle, first-use materialisation, invalid-representation recovery, immediate semantic changes and handoff to consuming subsystems.
 
 It does not own GUI layout, player-message lifecycle, Log Publication internals, Runtime authority, diagnostic engineering controls, savegame state or multiplayer Configuration semantics.
@@ -270,19 +268,19 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 
 | Production source | Participation |
 | --- | --- |
-
-No production source currently realises this Jurisdiction.
+| [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) | `REALISES` |
+| [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
-Issue #139 owns the first production implementation. When that implementation is accepted, this Specification must in the same Engineering Increment:
+The current implementation establishes the supported local-profile state/persistence boundary:
 
-- remove the `NOT_IMPLEMENTED` declaration;
-- add at least one truthful `REALISES` production participant;
-- add reciprocal `Specification Jurisdictions: \`CONFIGURATION\`` acknowledgement to each participant; and
-- add validation participants that challenge this contract.
+- [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) owns schema-1 path construction, first-use materialisation, persisted validation/recovery, semantic getters, persistence-aware setters and change notification;
+- [`scripts/main.lua`](../scripts/main.lua) resolves Configuration in the product shell before Runtime bootstrap, blocks Runtime when persistence is unresolved or `enabled=false`, and composes Log Publication so the engineering DIAGNOSTIC sidecar remains independent while player `debug` resolves NORMAL/DEBUG.
 
-The existing `scripts/config.lua` file is not a Configuration implementation. It currently owns root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
+Issue #139 still owns downstream player interaction and live consumer integration. In particular, there is not yet a supported settings GUI and no live product-lifecycle consumer is yet subscribed to Configuration change notification for enable/disable handoff/re-bootstrap.
+
+The existing `scripts/config.lua` file is not a Configuration implementation. It continues to own root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
 
 ## Engine dependency
 
@@ -290,9 +288,16 @@ The persistence mechanism relies on the FS25 user-profile/XML surfaces recorded 
 
 Those engine surfaces supply mechanics only. They do not own Configuration semantics.
 
+## Repository validation participants
+
+| Validation surface | Relationship |
+| --- | --- |
+| [`tests/replacement_core/configuration.lua`](../tests/replacement_core/configuration.lua) | `CHALLENGES` |
+| [`tests/test_configuration_structure.py`](../tests/test_configuration_structure.py) | `CHALLENGES` |
+
 ## Validation route
 
-Before the first implementation is accepted, offline validation SHOULD challenge at least:
+Current offline validation SHOULD challenge at least:
 
 - first-use absence creating schema-1 defaults;
 - current valid representation loading all three values;
