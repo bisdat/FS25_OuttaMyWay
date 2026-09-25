@@ -63,8 +63,13 @@ local function activeMember(assemblyId)
         fieldWorldReferenceKey="FW-TEST",
         fieldWorldSnapshotReferenceKey="SNAP-" .. assemblyId,
         fieldPolygonReferenceKey="FIELD-TEST",
-        performingRecognisedFieldWork=true,
-        provenance={source="operation-lifecycle-focused-test"}
+        bootstrappedFieldDomainMember=true,
+        evidence={
+            bootstrappedFieldDomainMember=true,
+            activeJobVehicleMembership=true,
+            fieldWorkerSpecializationPresent=true
+        },
+        provenance={source="operation-lifecycle-focused-test",semanticAuthority=false}
     }
 end
 

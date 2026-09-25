@@ -199,10 +199,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local situations = {}
     local situationByOperation={}
     local operationMembership={}
-    local operationEvidenceByAssembly={}
-    for _,evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.operationMembershipEvidence or {}) do
-        operationEvidenceByAssembly[resolveAssembly(map,evidence)]=evidence
-    end
     for _, operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
         local operation = self.operations:get(operationId)
         local memberSet={}
@@ -214,32 +210,9 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             resolutionSpaceAssemblyIds[#resolutionSpaceAssemblyIds+1]=id
             resolutionSpaceParticipation[id]={
                 class="OPERATION_MEMBER",operationMember=true,resolutionSpaceEligible=true,
-                productiveCommencementPending=false,fieldWorldReferenceKey=operation.fieldWorldReferenceKey,
+                fieldWorldReferenceKey=operation.fieldWorldReferenceKey,
                 provenance={source="OperationAdmission",authority="ACTIVE_OPERATION_MEMBERSHIP"}
             }
-        end
-        -- Operational Membership and Situation Relevance are deliberately distinct.
-        -- An active GIANTS field-work worker whose Job Episode has not yet shown a
-        -- positive productive-commencement witness is not yet a cooperative Operation
-        -- participant, but it may already constrain a productive member of this Field
-        -- World.  Keep GIANTS in control of that unrevealed job-entry intent while
-        -- allowing Resolution-Space Conservation to regulate/hold the known
-        -- productive member. Completed/non-active workers are excluded from this class.
-        for assemblyId,evidence in OuttaMyWay.ValueRecord.pairs(operationEvidenceByAssembly) do
-            local details=evidence.evidence or {}
-            if memberSet[assemblyId]~=true
-                and evidence.fieldWorldReferenceKey==operation.fieldWorldReferenceKey
-                and details.activeJobVehicleMembership==true
-                and details.fieldWorkerSpecializationPresent==true
-                and details.productiveWorkCommenced~=true then
-                relevant[#relevant+1]=assemblyId
-                resolutionSpaceAssemblyIds[#resolutionSpaceAssemblyIds+1]=assemblyId
-                resolutionSpaceParticipation[assemblyId]={
-                    class="ACTIVE_JOB_INTENT_REVELATION_PENDING",operationMember=false,resolutionSpaceEligible=true,
-                    productiveCommencementPending=true,fieldWorldReferenceKey=evidence.fieldWorldReferenceKey,
-                    provenance={source="OperationMembershipEvidence",authority="SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING"}
-                }
-            end
         end
         resolutionSpaceAssemblyIds=sortedUnique(resolutionSpaceAssemblyIds)
         operationMembership[operationId]=memberSet

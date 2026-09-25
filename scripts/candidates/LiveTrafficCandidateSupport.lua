@@ -319,8 +319,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
                 nativeClosureContributionKmh=action.nativeClosureContributionKmh,nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,nativeMoveForwards=action.nativeMoveForwards,
                 governingPurpose=action.governingPurpose,separationM=action.separationM,actionSpaceReason=action.reason,
                 cooperativePassageEligible=relation.cooperativePassageEligible~=false,
-                subjectOperationMember=relation.subjectOperationMember,otherOperationMember=relation.otherOperationMember,
-                subjectProductiveCommencementPending=relation.subjectProductiveCommencementPending,otherProductiveCommencementPending=relation.otherProductiveCommencementPending
+                subjectOperationMember=relation.subjectOperationMember,otherOperationMember=relation.otherOperationMember
             }
         },
         representationFitness={requirements={{representationId=representationId,acceptedStates={"USABLE_WITH_UNCERTAINTY"}}}},
@@ -336,7 +335,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
-        uncertainty={"CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","PRE_PRODUCTIVE_ACTIVE_JOB_REMAINS_GIANTS_OWNED_UNTIL_POSITIVE_PRODUCTIVE_COMMENCEMENT"},comparisonCost=0
+        uncertainty={"CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY"},comparisonCost=0
     }
 end
 
@@ -352,7 +351,7 @@ local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
     local specification=makeActionSpaceRegulationCandidate(pictureId,values,item,requirement,existing,representationId)
     values.candidateSupportEvidence={
         complete=true,
-        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_INCLUDING_SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
         candidateSpecifications={specification},provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
     }
     local action=item.action
@@ -748,7 +747,7 @@ local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPict
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
     return {
-        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_INCLUDING_SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
         candidateSpecifications={specification},
         representationFitness=projectedFitnessAdditions(values,baseline),
         provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="ACTION_SPACE_REGULATION"}

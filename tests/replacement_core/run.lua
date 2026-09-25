@@ -432,7 +432,7 @@ local function pictureFixture(epoch, options)
         motion={closureEvidence={{followerAssemblyReferenceKey=follower,leaderAssemblyReferenceKey=leader,closingObserved=true,closingRate=2,horizon=5,provenance={source="fixture"}}}},
         aiStates={},playerControl={},
         jobEpisodeEvidence={{assemblyReferenceKey=follower,sourceJobToken=evidenceA.sourceJobToken,jobPresent=evidenceA.jobPresent,aiControlled=evidenceA.aiControlled,aiActive=evidenceA.aiActive,blocked=evidenceA.blocked,sourceJobEndEvidence=evidenceA.sourceJobEndEvidence,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-A",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}},{assemblyReferenceKey=leader,sourceJobToken=evidenceB.sourceJobToken,jobPresent=evidenceB.jobPresent,aiControlled=evidenceB.aiControlled,aiActive=evidenceB.aiActive,blocked=evidenceB.blocked,sourceJobEndEvidence=evidenceB.sourceJobEndEvidence,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-B",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}}},
-        operationMembershipEvidence=options.membership or {{assemblyReferenceKey=follower,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}},{assemblyReferenceKey=leader,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}},
+        operationMembershipEvidence=options.membership or {{assemblyReferenceKey=follower,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",evidence={bootstrappedFieldDomainMember=true,activeJobVehicleMembership=true,fieldWorkerSpecializationPresent=true},provenance={source="fixture"}},{assemblyReferenceKey=leader,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",evidence={bootstrappedFieldDomainMember=true,activeJobVehicleMembership=true,fieldWorkerSpecializationPresent=true},provenance={source="fixture"}}},
         physicalRepresentationEvidence=options.representations or {{assemblyReferenceKey=follower,representationId="REP-A",question="CURRENT_OCCUPANCY",assessmentHorizon=5,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=true,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT","CONFLICT_EXCLUSION"},provenance={source="fixture"}},{assemblyReferenceKey=leader,representationId="REP-B",question="CURRENT_OCCUPANCY",assessmentHorizon=5,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=true,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT"},provenance={source="fixture"}}},
         controlOutcomes={},unavailableSources=options.unavailableSources or {}
     }
@@ -468,7 +468,7 @@ end)
 
 test("Job Episode replacement rebuilds current pair scope without stale state",function()
     local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1)); local oldSignature=first.picture.currentPairAssessmentScope[1].episodeSignature
-    local stopped=runtime:processSealedObservation(pictureFixture(2,{interactions={},evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
+    local stopped=runtime:processSealedObservation(pictureFixture(2,{interactions={},evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",evidence={bootstrappedFieldDomainMember=true,activeJobVehicleMembership=true,fieldWorkerSpecializationPresent=true},provenance={source="fixture"}}}}))
     equal(#stopped.picture.currentPairAssessmentScope,0)
     local restarted=runtime:processSealedObservation(pictureFixture(3,{interactions={},evidenceB={sourceJobToken="job-B2",jobPresent=true,aiControlled=true,aiActive=true}})); local pair=restarted.picture.currentPairAssessmentScope[1]
     equal(#restarted.picture.currentPairAssessmentScope,1); equal(pair.relationshipStatus,"UNRESOLVED"); if pair.episodeSignature==oldSignature then error("replacement inherited stale pair state") end
@@ -477,7 +477,7 @@ end)
 
 test("Operation identity persists while membership changes",function()
     local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1))
-    local second=runtime:processSealedObservation(pictureFixture(2,{membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
+    local second=runtime:processSealedObservation(pictureFixture(2,{membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",evidence={bootstrappedFieldDomainMember=true,activeJobVehicleMembership=true,fieldWorkerSpecializationPresent=true},provenance={source="fixture"}}}}))
     equal(first.operation.activeOperationIds[1],second.operation.activeOperationIds[1])
     equal(#runtime.operations:get(second.operation.activeOperationIds[1]).memberAssemblyIds,1)
 end)
@@ -492,9 +492,9 @@ end)
 
 test("incomplete membership preserves pair scope only while exact Job Episodes remain active",function()
     local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1)); local operationId=first.operation.activeOperationIds[1]; local signature=first.picture.currentPairAssessmentScope[1].episodeSignature
-    local unresolved=runtime:processSealedObservation(pictureFixture(2,{interactions={},membershipComplete=false,evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
+    local unresolved=runtime:processSealedObservation(pictureFixture(2,{interactions={},membershipComplete=false,evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",evidence={bootstrappedFieldDomainMember=true,activeJobVehicleMembership=true,fieldWorkerSpecializationPresent=true},provenance={source="fixture"}}}}))
     equal(unresolved.operation.activeOperationIds[1],operationId); equal(#runtime.operations:get(operationId).memberAssemblyIds,2); equal(#unresolved.picture.currentPairAssessmentScope,1); equal(unresolved.picture.currentPairAssessmentScope[1].episodeSignature,signature); equal(unresolved.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
-    local ended=runtime:processSealedObservation(pictureFixture(3,{interactions={},evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}})); equal(#ended.picture.currentPairAssessmentScope,0)
+    local ended=runtime:processSealedObservation(pictureFixture(3,{interactions={},evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",evidence={bootstrappedFieldDomainMember=true,activeJobVehicleMembership=true,fieldWorkerSpecializationPresent=true},provenance={source="fixture"}}}})); equal(#ended.picture.currentPairAssessmentScope,0)
 end)
 
 test("explicit zero membership ends an Operation and later work creates a new identity",function()
@@ -1555,39 +1555,53 @@ test("live Field World handoff preserves canonical geometry into Structural Fiel
     end)
 end)
 
-test("Operation participation waits for latched productive Job-Episode commencement and survives later turns",function()
+test("cold-start turning GIANTS worker immediately reconstructs one-member Local Operation",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions,strategies)
         mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
         strategies.a.isTurn=true
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
 
-        local preRaw=runtime.liveObservationSource:capture(mission,10)[1]
-        equal(preRaw.operationMembershipEvidence[1].performingRecognisedFieldWork,false)
-        equal(preRaw.operationMembershipEvidence[1].evidence.productiveWorkCommenced,false)
-        local pre=runtime:processSealedObservation(preRaw)
-        equal(#pre.jobEpisodes.activeEpisodeIds,1)
-        equal(#pre.operation.activeOperationIds,0)
+        local turnRaw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(turnRaw.operationMembershipEvidence[1].bootstrappedFieldDomainMember,true)
+        equal(turnRaw.operationMembershipEvidence[1].evidence.bootstrappedFieldDomainMember,true)
+        equal(turnRaw.operationMembershipEvidence[1].evidence.activeJobVehicleMembership,true)
+        equal(turnRaw.operationMembershipEvidence[1].evidence.fieldDomainMembershipBasis,"JOB_SEEDED_FIELD_WORLD_SNAPSHOT_PLUS_EQUIVALENCE")
+        local turn=runtime:processSealedObservation(turnRaw)
+        equal(#turn.jobEpisodes.activeEpisodeIds,1)
+        equal(#turn.operation.activeOperationIds,1)
+        local operationId=turn.operation.activeOperationIds[1]
+        equal(#runtime.operations:get(operationId).memberAssemblyIds,1)
 
         strategies.a.isTurn=false
-        local workingRaw=runtime.liveObservationSource:capture(mission,11)[1]
-        equal(workingRaw.operationMembershipEvidence[1].performingRecognisedFieldWork,true)
-        equal(workingRaw.operationMembershipEvidence[1].evidence.productiveWorkCommenced,true)
-        equal(workingRaw.operationMembershipEvidence[1].evidence.productiveWorkCommencementCurrentSample,true)
-        local working=runtime:processSealedObservation(workingRaw)
-        equal(#working.operation.activeOperationIds,1)
-        local operationId=working.operation.activeOperationIds[1]
+        local working=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
+        equal(working.operation.activeOperationIds[1],operationId)
 
         strategies.a.isTurn=true
-        local turnRaw=runtime.liveObservationSource:capture(mission,12)[1]
-        equal(turnRaw.operationMembershipEvidence[1].performingRecognisedFieldWork,true)
-        equal(turnRaw.operationMembershipEvidence[1].evidence.productiveWorkCommenced,true)
-        equal(turnRaw.operationMembershipEvidence[1].evidence.productiveWorkCommencementCurrentSample,false)
-        local turn=runtime:processSealedObservation(turnRaw)
-        equal(turn.operation.activeOperationIds[1],operationId)
+        local laterTurn=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,12)[1])
+        equal(laterTurn.operation.activeOperationIds[1],operationId)
     end)
 end)
 
-test("pre-productive same-Field-World active Job remains Resolution-Space relevant without becoming an Operation member",function()
+test("cold-start blocked manoeuvring GIANTS worker still reconstructs one-member Local Operation",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions,strategies)
+        mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
+        strategies.a.isTurn=true
+        a.spec_aiFieldWorker.isBlocked=true
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(raw.operationMembershipEvidence[1].evidence.activeJobVehicleMembership,true)
+        equal(raw.operationMembershipEvidence[1].evidence.bootstrappedFieldDomainMember,true)
+        equal(raw.jobEpisodeEvidence[1].blocked,true)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.jobEpisodes.activeEpisodeIds,1)
+        equal(#processed.operation.activeOperationIds,1)
+        local operation=runtime.operations:get(processed.operation.activeOperationIds[1])
+        equal(#operation.memberAssemblyIds,1)
+    end)
+end)
+
+test("same-Field-World turning active Job is an Operation member while intent remains Situation evidence",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions,strategies)
         strategies.a.isTurn=false
         strategies.b.isTurn=true
@@ -1596,23 +1610,24 @@ test("pre-productive same-Field-World active Job remains Resolution-Space releva
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.operation.activeOperationIds,1)
         local situation=processed.picture.situations[1]
-        equal(#situation.memberAssemblyIds,1)
+        equal(#situation.memberAssemblyIds,2)
         equal(#situation.resolutionSpaceAssemblyIds,2)
-        local pendingCount,memberCount=0,0
+        local memberCount=0
         for _,status in OuttaMyWay.ValueRecord.pairs(situation.resolutionSpaceParticipation or {}) do
-            if status.class=="ACTIVE_JOB_INTENT_REVELATION_PENDING" then pendingCount=pendingCount+1; equal(status.operationMember,false); equal(status.productiveCommencementPending,true) end
-            if status.class=="OPERATION_MEMBER" then memberCount=memberCount+1; equal(status.operationMember,true) end
+            equal(status.class,"OPERATION_MEMBER")
+            equal(status.operationMember,true)
+            memberCount=memberCount+1
         end
-        equal(memberCount,1); equal(pendingCount,1)
+        equal(memberCount,2)
 
-        -- Removing the unrevealed worker from GIANTS activeJobVehicles removes this
-        -- pre-productive Resolution-Space relevance class; completed/non-active workers retain their separate
-        -- non-operational relevance semantics rather than inheriting pre-productive
-        -- Resolution-Space control authority.
+        -- Mere absence from the current activeJobVehicles census is not
+        -- authoritative Job termination. Lifecycle Evidence Asymmetry preserves the
+        -- admitted member until the exact Job Episode positively ends.
         setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
         local laterRaw=runtime.liveObservationSource:capture(mission,11)[1]
         local later=runtime:processSealedObservation(laterRaw)
-        equal(#later.picture.situations[1].resolutionSpaceAssemblyIds,1)
+        equal(#later.picture.situations[1].memberAssemblyIds,2)
+        equal(#later.picture.situations[1].resolutionSpaceAssemblyIds,2)
     end)
 end)
 
@@ -2268,7 +2283,8 @@ test("ambiguous live Snapshot receives no Operation authority",function()
             if raw.fieldWorld.identityStatus=="UNRESOLVED" then
                 unresolvedCount=unresolvedCount+1
                 equal(raw.fieldWorld.operationMembershipEvidenceComplete,false)
-                equal(raw.operationMembershipEvidence[1].performingRecognisedFieldWork,false)
+                equal(raw.operationMembershipEvidence[1].bootstrappedFieldDomainMember,false)
+                equal(raw.operationMembershipEvidence[1].evidence.bootstrappedFieldDomainMember,false)
             end
             runtime:processSealedObservation(raw)
         end
@@ -3421,7 +3437,7 @@ local function classifyTestTrajectoryConflict(trajectories,motions,spaces,physic
     })[1]
 end
 
-test("Trajectory Conflict: protects pre-productive native intent while regulating the known Operation member and denies Cooperative Passage",function()
+test("Trajectory Conflict: turning Operation member preserves transitional native intent and denies Passage until settled",function()
     local trajectories={
         {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
         {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",established=true,establishedDirectionX=0,establishedDirectionZ=-1,corridorAnchorX=0,corridorAnchorZ=60,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=false,contextEvidenceClass="TURN_SEGMENT"}
@@ -3432,41 +3448,43 @@ test("Trajectory Conflict: protects pre-productive native intent while regulatin
     }
     local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,60)}
     local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,60,3)}
+    local situation={{operationId="OR-COOPERATIVE-PASSAGE",memberAssemblyIds={"AS-A","AS-B"},resolutionSpaceAssemblyIds={"AS-A","AS-B"},resolutionSpaceParticipation={
+        ["AS-A"]={class="OPERATION_MEMBER",operationMember=true},
+        ["AS-B"]={class="OPERATION_MEMBER",operationMember=true}
+    }}}
     local relation=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
         trajectoryKnowledge=trajectories,motionEvidence=motions,currentSpace=spaces,physicalSpaceEvidence=physical,
-        situations={{
-            operationId="OR-COOPERATIVE-PASSAGE",memberAssemblyIds={"AS-A"},resolutionSpaceAssemblyIds={"AS-A","AS-B"},
-            resolutionSpaceParticipation={
-                ["AS-A"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false},
-                ["AS-B"]={class="ACTIVE_JOB_INTENT_REVELATION_PENDING",operationMember=false,productiveCommencementPending=true}
-            }
-        }},
+        situations=situation,
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
     equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(relation.subjectOperationMember,true); equal(relation.otherOperationMember,true)
+    equal(relation.subjectSettledContinuation,true); equal(relation.otherSettledContinuation,false)
     equal(relation.cooperativePassageEligible,false)
-    equal(relation.actionSpaceConservation.maxSeparationM,80)
-    equal(relation.subjectOperationMember,true); equal(relation.otherOperationMember,false)
-    equal(relation.otherProductiveCommencementPending,true)
     equal(relation.actionSpaceConservation.status,"REGULATE_SUPPORTED")
     equal(relation.actionSpaceConservation.regulatedAssemblyId,"AS-A")
     equal(relation.actionSpaceConservation.protectedAssemblyId,"AS-B")
-    equal(relation.actionSpaceConservation.roleBasis,"PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION")
-    equal(relation.actionSpaceConservation.requestedCapKmh,nil)
+    equal(relation.actionSpaceConservation.roleBasis,"PRESERVE_TRANSITIONAL_NATIVE_REVELATION")
 
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan({opposedCorridorKnowledge={relation}}, {})
     equal(plan,nil); equal(reason,"NO_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
 
-    local productiveRelation=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
-        trajectoryKnowledge=trajectories,motionEvidence=motions,currentSpace=spaces,physicalSpaceEvidence=physical,
-        situations={{operationId="OR-COOPERATIVE-PASSAGE",memberAssemblyIds={"AS-A","AS-B"},resolutionSpaceAssemblyIds={"AS-A","AS-B"},resolutionSpaceParticipation={
-            ["AS-A"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false},
-            ["AS-B"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
-        }}},
+    local settledTrajectories={
+        trajectories[1],
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",established=true,establishedDirectionX=0,establishedDirectionZ=-1,corridorAnchorX=0,corridorAnchorZ=60,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"}
+    }
+    local settledMotions={
+        motions[1],
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,3,1,15,"SETTLED_CONTINUATION",true,true,0,-1)
+    }
+    local settledRelation=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
+        trajectoryKnowledge=settledTrajectories,motionEvidence=settledMotions,currentSpace=spaces,physicalSpaceEvidence=physical,
+        situations=situation,
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
-    equal(productiveRelation.identity,relation.identity)
-    equal(productiveRelation.cooperativePassageEligible,true)
+    equal(settledRelation.identity,relation.identity)
+    equal(settledRelation.subjectSettledContinuation,true); equal(settledRelation.otherSettledContinuation,true)
+    equal(settledRelation.cooperativePassageEligible,true)
 end)
 
 test("Trajectory Conflict: Established Trajectory persists through Current Excursion and supersedes only after sustained contradictory travel",function()
@@ -4565,25 +4583,25 @@ test("Forward Intersection fixed creep role migration does not require a Resolut
     equal(requests[3].target.operation,"RELEASE"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
 end)
 
-test("Pre-productive intent relevance crosses Candidate as Regulation only and cannot become Cooperative Passage",function()
+test("Transitional Operation-member intent crosses Candidate as Regulation only and cannot become Cooperative Passage",function()
     local runtime=autonomousHeadOnRuntime()
     local values=OuttaMyWay.ValueRecord.toTable(actionSpaceRegulationPicture())
-    values.identity="OP-COOPERATIVE-PASSAGE-PREPRODUCTIVE-ACTION"; values.epoch=788
-    values.situations={{operationId="OR-1",memberAssemblyIds={"AS-A"},resolutionSpaceAssemblyIds={"AS-A","AS-B"},resolutionSpaceParticipation={
-        ["AS-A"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false},
-        ["AS-B"]={class="ACTIVE_JOB_INTENT_REVELATION_PENDING",operationMember=false,productiveCommencementPending=true}
+    values.identity="OP-COOPERATIVE-PASSAGE-TRANSITIONAL-ACTION"; values.epoch=788
+    values.situations={{operationId="OR-1",memberAssemblyIds={"AS-A","AS-B"},resolutionSpaceAssemblyIds={"AS-A","AS-B"},resolutionSpaceParticipation={
+        ["AS-A"]={class="OPERATION_MEMBER",operationMember=true},
+        ["AS-B"]={class="OPERATION_MEMBER",operationMember=true}
     }}}
     local relation=values.opposedCorridorKnowledge[1]
     relation.classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
     relation.reason="PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP"
-    relation.subjectOperationMember=true; relation.otherOperationMember=false
-    relation.subjectProductiveCommencementPending=false; relation.otherProductiveCommencementPending=true
+    relation.subjectOperationMember=true; relation.otherOperationMember=true
+    relation.subjectSettledContinuation=true; relation.otherSettledContinuation=false
     relation.cooperativePassageEligible=false
     relation.actionSpaceConservation={
         status="REGULATE_SUPPORTED",supported=true,admissionKind="ESTABLISHED_CONFLICT",
-        reason="PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION",
+        reason="TRANSITIONAL_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION",
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
-        roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION",separationM=60,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
+        roleBasis="PRESERVE_TRANSITIONAL_NATIVE_REVELATION",separationM=60,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
         currentClosing={resolved=true,separationM=60,closingRateMps=6},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,
         governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
@@ -4593,10 +4611,7 @@ test("Pre-productive intent relevance crosses Candidate as Regulation only and c
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"REGULATE_SPEED")
     equal(specification.preconditions.cooperativePassageEligible,false)
-    equal(specification.evidenceBasis.actionSpaceRegulationBridge.protectedAssemblyId,"AS-B")
-    equal(specification.evidenceBasis.actionSpaceRegulationBridge.otherProductiveCommencementPending,true)
 end)
-
 test("Cooperative Passage: Established conflict Resolution-Space Regulation crosses Candidate support when Passage is not selected",function()
     local runtime=autonomousHeadOnRuntime()
     local base=actionSpaceRegulationPicture()
