@@ -38,6 +38,26 @@ A new Blocked Worker Recovery Resolution MUST be grounded in one coherent curren
 
 Raw `spec_aiFieldWorker.isBlocked` MUST NOT independently satisfy admission.
 
+### Decision horizon and compatible responsibilities
+
+Blocked Worker Recovery is a single-subject Resolution. Its Current Responsibility owns the recovering assembly's bounded Recovery Excursion; it does not own the whole Local Operation's prospective Decision horizon.
+
+> **Resolution Commitment != Exclusive Traffic Decision Horizon.**
+
+An already-current compatible Regulation whose controlled subject is another assembly MUST NOT, by its existence alone, make Recovery inadmissible. Likewise, once Recovery is current, ordinary traffic Candidate support for other assemblies remains live.
+
+Examples of accepted coexistence include:
+
+- C under Recovery while B is tactically regulated to protect C's local movement domain;
+- C under Recovery while A is follower-regulated behind C; and
+- C under Recovery while A/B execute Cooperative Passage and Passage applies its independent 1 km/h Supporting Speed Ceiling to C.
+
+These are independent Current Responsibilities, not one combined Recovery traffic mode.
+
+A responsibility that would require an incompatible movement objective or incompatible actuation ownership on C remains inadmissible while Recovery owns C's movement objective. Fresh cross-purpose ambiguity or incompatibility MUST be handled by explicit Candidate / Constraint / Decision semantics; Recovery gains no implicit precedence from Stall status.
+
+Selection of a compatible new responsibility MUST NOT automatically terminate or restart the current Recovery Resolution.
+
 ### Blocked Progress Contradiction
 
 The upstream Blocked Progress Stall basis MUST preserve enough provenance to establish all of the following:
@@ -275,6 +295,35 @@ The Recovery Resolution MAY remain current while current Bounded Authority is te
 
 DISC geometry, Demonstrated Traversability, Field World geometry and absence of a represented conflict MUST retain their existing claim limits. This Jurisdiction does not promote generic negative-clearance authority.
 
+## Publication contract
+
+Blocked Worker Recovery follows the shared Log Publication support-escalation contract. Publication is observability, not semantic authority, and MUST NOT alter Stall admission, Candidate selection, Recovery persistence, Bounded Authority or Control.
+
+### NORMAL — sparse lifecycle/intervention journal
+
+Responsibility Transition owns the purpose-specific operational lifecycle events:
+
+- `BLOCKED_WORKER_RECOVERY_STARTED` when Recovery Current Responsibility is positively established; and
+- `BLOCKED_WORKER_RECOVERY_ENDED` when that Current Responsibility is authoritatively terminated after settlement, supersession, failure or escalation.
+
+The NORMAL payload SHOULD include the authoritative Operation identity when available, the Recovery responsibility/commitment identities, the recovering assembly and a stable reason/outcome.
+
+Recovery Recurrence classification by itself is not a periodic NORMAL heartbeat. If recurrence or another terminal condition positively establishes that autonomous continuation is exhausted and player action is required, the owning lifecycle publishes the existing NORMAL `PLAYER_INTERVENTION_REQUIRED` event.
+
+### DEBUG — bounded causal narrative
+
+DEBUG may publish transition/change evidence sufficient to explain why Recovery was or was not attempted, including positive Blocked Progress Stall establishment, Recovery Anchor selection/invalidation, Candidate rejection/selection, Bounded Authority refusal/revocation, Transit settlement, Recovery Point establishment, handback settlement and Recovery Recurrence establishment.
+
+DEBUG MUST remain change/transition-driven. It MUST NOT emit the same unchanged Stall, Anchor, residual or control phase every runtime cycle merely because Recovery remains current.
+
+### DIAGNOSTIC — targeted engineering evidence
+
+DIAGNOSTIC may expose detailed motion samples, observation-interval displacement, represented geometry, anchor fitness components, release-axis/residual calculations and other intermediate evidence needed to investigate a specific unresolved Recovery question.
+
+Such evidence is produced only by an independently justified diagnostic instrument or already-existing evidence source. DIAGNOSTIC publication eligibility does not authorise continuous expensive measurement, and suppressed publication MUST avoid publication-only projection work.
+
+> **Recovery Observability != Recovery Authority.**
+
 ## Failure and uncertainty semantics
 
 - **Raw `isBlocked` with continuing realised progress** — no Blocked Progress Stall; no Recovery admission.
@@ -305,6 +354,8 @@ Assessment Representation supplies purpose-fit current Physical Assembly evidenc
 
 Where strategic selection is required, prospective support and mandatory constraints remain upstream of Responsibility Transition. A Blocked Progress Stall does not automatically outrank an independently supported active-traffic, Causal Obstruction or other purpose-specific Candidate. Decision selects among current supported alternatives before Responsibility Transition. This Specification does not make `isBlocked`, Stall classification or Control availability equivalent to Candidate selection.
 
+Decision scope is not operation-global merely because a Recovery Resolution is current. Compatible independent traffic support remains eligible while Recovery persists. Conversely, selection of such a compatible purpose does not by itself supersede Recovery.
+
 ### Responsibility Transition
 
 Responsibility Transition establishes and ends the Blocked Worker Recovery Current Responsibility. Reaching the Recovery Point does not itself mutate Current Responsibility without that authoritative lifecycle transition.
@@ -320,6 +371,14 @@ Every positive Transit/configuration and release-movement effect requires curren
 ### Control
 
 Control executes only the granted Transit/configuration, movement, restoration and relinquishment effects. Control outcomes return through Reality and Observation; Control does not decide Blocked Progress Stall admission or Recovery Recurrence.
+
+## Current implementation gap — purpose-specific decision horizon
+
+Production `Runtime:processLiveObservation()` currently detects any active Resolution through one generic boolean and changes the prospective support path on that basis. That implementation shape is too coarse for Blocked Worker Recovery because Recovery must preserve its single-subject Resolution while independent traffic negotiation remains live.
+
+The implementation increment MUST replace generic Resolution-existence inference with purpose-compatible continuation/selection semantics. It MUST NOT add Recovery-specific traffic rules, and it MUST preserve Cooperative Passage's accepted Bubble decision horizon.
+
+Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHold=false` unconditionally. That placeholder MUST NOT be used as positive evidence that OuttaMyWay did not cause quiescence. Recovery admission must use truthful current semantic/actuation ownership until Observation owns a truthful equivalent field.
 
 ## Contract participants
 

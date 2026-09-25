@@ -38,6 +38,18 @@ Persistence is obligation-based, not prediction-based. Stale admission geometry,
 
 Execution MAY adapt to fresh Reality while the same accepted Resolution obligations remain legitimate. Adaptation that preserves the same obligations is maintenance, not a new Resolution responsibility.
 
+### Decision-horizon scope
+
+Resolution persistence does not itself confer exclusive control of the Local Operation's prospective Decision horizon.
+
+> **Resolution Commitment != Exclusive Traffic Decision Horizon.**
+
+A specialised Resolution MUST define any decision-horizon exclusivity required by its concrete purpose. Coupled Cooperative Passage may legitimately defer independent negotiation inside its Bubble contract. A single-subject Resolution such as Blocked Worker Recovery MUST NOT inherit that exclusivity merely because both use the parent Resolution Lifecycle.
+
+Where current responsibilities are independently compatible, one may persist while Decision establishes another. Selection of a fresh compatible responsibility MUST NOT be interpreted as implicit supersession of an unrelated current responsibility.
+
+Where purposes are incompatible, compatibility must be established or refused through explicit Candidate / Constraint / Decision / Responsibility Transition semantics. Parent Resolution persistence MUST NOT manufacture global exclusivity as a shortcut.
+
 ### Obligation contract
 
 Every obligation that participates in Resolution terminality MUST preserve enough semantic information to determine:

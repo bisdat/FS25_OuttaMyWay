@@ -582,6 +582,30 @@ Pairwise or Resolution-owned blocked signals remain within their governing respo
 
 A positive Blocked Progress Stall does not pre-empt another current supported resolution of the same Reality. Where active traffic meaning, Causal Obstruction or another purpose-specific Candidate is independently supported, the normal Candidate / Constraint / Decision boundary selects among legitimate prospective responsibilities. Blocked Worker Recovery does not acquire priority merely because `isBlocked` is true.
 
+### Purpose-specific Resolution decision horizon
+
+A current Resolution Commitment does not, merely by existing, own the whole Local Operation's prospective Decision horizon.
+
+> **Resolution Commitment != Exclusive Traffic Decision Horizon.**
+
+Decision-horizon exclusivity is purpose-specific.
+
+Cooperative Passage owns an exclusive coupled Bubble horizon because its accepted contract coordinates the pairwise Resolution and third-party Bubble protection as one interaction epoch.
+
+Blocked Worker Recovery is different. Its Current Responsibility owns only the recovering assembly's bounded Recovery Excursion and associated obligations. Independent surrounding traffic assessment remains live.
+
+Therefore, while C is under Blocked Worker Recovery:
+
+- B approaching C may still support ordinary tactical Regulation of B;
+- A following C may still support ordinary follower Regulation of A; and
+- an independent A/B Cooperative Passage may become current while C remains under Recovery, with Passage Bullet Time constraining C only through its Supporting Speed Ceiling.
+
+Recovery does not create a new traffic mode and does not globally suppress Candidate support for other assemblies.
+
+A compatible already-current responsibility on another subject is not superseded merely because Recovery is established, and a fresh compatible responsibility is not a semantic replacement merely because Decision selects it later. Compatibility remains an explicit subject / purpose / authority question. Two responsibilities MUST NOT acquire incompatible movement objectives for the same assembly, while independently scoped Regulation or magnitude-only constraints may coexist where their accepted contracts allow it.
+
+> **Responsibility Persistence != Decision-Horizon Exclusivity.**
+
 ### Recovery Approach and Recovery Anchor
 
 The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Stall.
