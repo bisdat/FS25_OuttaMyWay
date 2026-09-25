@@ -14,6 +14,7 @@ RELOCATION_CONTROL=ROOT/"scripts/control/ObstructionRelocationControl.lua"
 MOD_DESC=ROOT/"modDesc.xml"
 GUI_ARCH=ROOT/"architecture/GUI.md"
 CONFIG_SETTINGS_EXTENSION=ROOT/"scripts/gui/ConfigurationSettingsExtension.lua"
+DISABLED_STARTUP_REMINDER=ROOT/"scripts/gui/DisabledStartupReminder.lua"
 
 def read(path):
     return path.read_text(encoding="utf-8")
@@ -77,11 +78,13 @@ def test_configuration_spec_has_real_source_participants():
     assert "[`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) | `REALISES`" in spec
     assert "[`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS`" in spec
     assert "[`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) | `REALISES`" in spec
+    assert "[`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) | `REALISES`" in spec
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in source
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in main
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in read(PRODUCT_LIFECYCLE)
     assert "`CONFIGURATION`" in read(RUNTIME).splitlines()[1]
     assert "-- Specification Jurisdictions: `CONFIGURATION`" in read(CONFIG_SETTINGS_EXTENSION)
+    assert "-- Specification Jurisdictions: `CONFIGURATION`" in read(DISABLED_STARTUP_REMINDER)
 
 def test_live_disable_has_localised_hand_back_without_hard_coded_control_text():
     lifecycle=read(PRODUCT_LIFECYCLE)
@@ -178,3 +181,35 @@ def test_fresh_runtime_reenable_reuses_mechanical_interceptors_but_not_semantic_
     assert "initializeCurrentMap==true" in lifecycle
     assert "pcall(listener.loadMap,listener)" in lifecycle
     assert "Listener Registration != Map Initialization" in read(ROOT/"docs/engine/GIANTS_API_SURFACES.md")
+
+
+def test_disabled_startup_reminder_is_product_status_not_operational_message():
+    reminder=read(DISABLED_STARTUP_REMINDER)
+    main=read(MAIN)
+    arch=read(GUI_ARCH)
+    spec=read(SPEC)
+
+    assert '"scripts/gui/DisabledStartupReminder.lua"' in main
+    assert "OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)" in main
+    assert "addModEventListener(OuttaMyWay.disabledStartupReminder)" in main
+    assert "function Reminder:loadMap()" in reminder
+    assert "function Reminder:update()" in reminder
+    assert "function Reminder:deleteMap()" in reminder
+    assert "WARNING_DURATION_MS=2000" in reminder
+    assert "showBlinkingWarning" in reminder
+    assert 'TEXT_KEY="omw_disabledStartupReminder"' in reminder
+    assert "isResolved()" in reminder
+    assert "isEnabled()" in reminder
+    assert "isHudVisible" not in reminder
+    assert "OuttaMyWay.runtime" not in reminder
+    assert "Disabled Startup Reminder != Operational Player Message" in arch
+    assert "Disabled Startup Reminder != Operational Player Message" in spec
+
+
+def test_disabled_startup_reminder_localisation_has_all_required_languages():
+    root=ET.parse(MOD_DESC).getroot()
+    node=root.find("./l10n/text[@name='omw_disabledStartupReminder']")
+    assert node is not None
+    for language in ("en","de","fr","es","it"):
+        value=node.find(language)
+        assert value is not None and value.text and value.text.strip()

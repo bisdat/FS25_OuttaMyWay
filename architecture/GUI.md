@@ -19,13 +19,33 @@ Player-facing GUI has two distinct HUD responsibilities:
 
 > **Product Status Indicator != Operational Player Messaging**
 
-The Configuration **HUD visibility** choice governs Operational Player Messages only. It does not hide the Product Status Indicator while OuttaMyWay remains enabled.
+The Configuration **HUD visibility** choice governs Operational Player Messages only. It does not hide the Product Status Indicator while OuttaMyWay remains enabled, and it does not suppress Product Status notices whose purpose is to explain whether the product itself is operational.
 
 Master OuttaMyWay enablement governs whether the Product Status Indicator exists. Explicit disablement immediately supersedes OuttaMyWay functional responsibility and triggers bounded release/neutralisation of effects the mod already owns; there is no long-lived shutdown-drain state. The Product Status Indicator must disappear when that immediate hand-back has completed rather than remain visible for an unrelated GIANTS Job or Local Operation lifetime.
 
-A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. Player-facing communication must therefore support a truthful shutdown/hand-back message that confirms OuttaMyWay has stopped and tells the player that active AI jobs may require manual review or stopping. Exact wording, priority, duration and whether this confirmation bypasses ordinary Operational Player Message suppression remain #89 design questions.
+A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. The current bounded shutdown/hand-back notification therefore confirms that OuttaMyWay has stopped and tells the player to review active workers. It uses the GIANTS blinking-warning surface for 2000 ms and remains governed by the existing Operational messages visibility choice. Broader Operational Player Message queueing and prioritisation remain #89 work.
 
-Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, hands responsibility back on disablement, or otherwise behaves in a way that could appear stuck.
+### Disabled Startup Reminder
+
+When a mission starts or loads with resolved Configuration state `enabled=false`, the product shell presents one transient **Disabled Startup Reminder**:
+
+> **OuttaMyWay disabled. Review General Settings.**
+
+The reminder:
+
+- uses the same GIANTS blinking-warning presentation surface and position as the shutdown/hand-back notification;
+- has an explicit duration of **2000 ms**;
+- appears at most once for that mission load;
+- waits until the mission warning surface is available rather than requiring normal Runtime bootstrap;
+- is not shown when Configuration is unresolved;
+- is cancelled if Configuration becomes enabled before the warning can be presented; and
+- is **not** suppressed by `hudVisible`, because it reports product operational status rather than an Operational Player Message.
+
+> **Disabled Startup Reminder != Operational Player Message**
+
+Although the GIANTS warning presentation is visually red/flashing, the semantic state is carried explicitly by the localized text; colour is not the sole carrier of meaning.
+
+Player-facing communication is a real responsibility wherever OuttaMyWay intentionally delays, regulates, waits for evidence, requests intervention, hands responsibility back on disablement, reports disabled product status on startup, or otherwise behaves in a way that could appear stuck.
 
 ## Configuration Section
 
@@ -80,7 +100,7 @@ The remaining GUI architecture does not yet decide:
 - notification queueing or priorities;
 - additional GUI input bindings beyond standard GIANTS menu navigation;
 - Operational Player Message and Help / Reference interaction workflows;
-- final wording outside the accepted Configuration Section source text;
+- final wording outside the accepted Configuration Section and Disabled Startup Reminder source text;
 - colour palette beyond known accessibility constraints;
 - whether diagnostic HUD code is reused;
 - when or how status messages expire; or
