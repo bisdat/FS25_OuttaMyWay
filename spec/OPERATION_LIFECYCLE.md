@@ -102,27 +102,31 @@ Evaluator thresholds, sampling budgets and history-retention limits remain imple
 
 A **Local Operation** is one ephemeral cooperative lifecycle associated with exactly one resolved Field World.
 
-A Physical Assembly becomes a Local Operation participant only when current positive evidence establishes all of:
+A Physical Assembly becomes a Local Operation participant when current positive evidence establishes all of:
 
-1. a current qualifying Job Episode for that assembly;
-2. positively witnessed supported productive field work for that episode; and
-3. a resolved Field World relationship coherent with the Local Operation.
+1. the assembly is a known supported member of the resolved bootstrapped Field World / field polygon domain;
+2. a current qualifying Job Episode exists for that assembly; and
+3. that episode is currently under GIANTS AI control.
 
-The first qualifying participant establishes a new Local Operation when no active Operation exists for that Field World. Later qualifying episodes join the existing Operation.
+The active Local Operation membership is the current GIANTS-AI-controlled supported subset of that bootstrapped field domain.
 
-Job Episode existence, worker proximity, physical conflict or representation completeness alone MUST NOT establish participation.
+The first qualifying active member establishes a new Local Operation when no active Operation exists for that Field World. Later qualifying active episodes join the existing Operation.
 
 A Local Operation MAY exist with one participant and requires no active Regulation or Resolution Commitment.
 
 Within the supported envelope, at most three supported GIANTS AI worker assemblies are simultaneously active participants. Player-controlled vehicles do not count toward that three-AI envelope.
 
-### Productive commencement witness
+> **Bootstrap Defines the Operation Domain; GIANTS AI Control Defines Active Operation Membership.**
 
-Operation membership begins only after the Job Episode has positively demonstrated actual supported productive field work.
+> **Operation Membership != Productive State.**
 
-Once positively witnessed, productive commencement MAY remain latched for the same exact Job Episode through ordinary headland turns or other later non-productive samples. The latch MUST NOT transfer to a replacement/restarted Job Episode.
+Current productive work, headland turning, reversing, temporary stationarity, blockage or intent revelation MUST NOT independently add or remove Operation membership. Those are Observation/Situation facts whose meaning belongs downstream.
 
-This prevents ordinary Job-entry/turn revelation from being mistaken for established cooperative participation while avoiding repeated membership churn after genuine productive work has begun.
+Operation membership MUST be reconstructible from current authoritative bootstrap/lifecycle evidence after cold start, save reload or runtime enablement. Equivalent current GIANTS Reality MUST NOT produce different Operation membership merely because no post-start productive sample has yet been observed.
+
+> **Operation Membership Must Be Cold-Start Invariant.**
+
+Job Episode existence without resolved membership in the bootstrapped Field World, worker proximity, physical conflict or representation completeness alone MUST NOT establish participation.
 
 ### Dynamic membership
 
@@ -237,7 +241,7 @@ Job Episode/Operation admission does not create Regulation, Resolution Commitmen
 - **Conflicting authoritative succession causes** — reject/fail closed rather than selecting one arbitrarily.
 - **Field World Snapshot unavailable** — Job Episode may remain known, but Local Operation participation requiring resolved Field World remains unsupported.
 - **Field World equivalence UNRESOLVED** — no admission to an existing/new cooperative Field World context from that unresolved assignment.
-- **Productive commencement not positively witnessed** — do not admit the episode as an Operation participant; its physical/current GIANTS presence may still be relevant elsewhere.
+- **Current productive/manoeuvring state unresolved** — preserve Operation membership when bootstrap Field membership and current GIANTS AI control remain established; unresolved productive state narrows only downstream Situation conclusions.
 - **Membership evidence incomplete** — add positive members, preserve unresolved prior members against removal-by-absence, independently honour positive member-specific termination.
 - **Zero members with complete authoritative membership evidence** — close the Local Operation naturally.
 
@@ -255,7 +259,7 @@ Physical representation may be bootstrapped/cached during a Job Episode, but rep
 
 ### Situation Assessment
 
-[`SITUATION_ASSESSMENT.md`](SITUATION_ASSESSMENT.md) consumes authoritative lifecycle products to interpret current Situation meaning. It MUST NOT recreate, delay or override positive lifecycle transitions.
+[`SITUATION_ASSESSMENT.md`](SITUATION_ASSESSMENT.md) consumes authoritative lifecycle products to interpret current Situation meaning. It MUST NOT recreate, delay or override positive lifecycle transitions. Productive/manoeuvring state and Cooperative Passage readiness remain downstream Situation questions and MUST NOT be fed back into Operation membership.
 
 ### Responsibility Transition / Resolution Lifecycle
 
@@ -281,7 +285,7 @@ Current implementation routes include:
 - [`scripts/identity/OperationAdmission.lua`](../scripts/identity/OperationAdmission.lua) — current Local Operation establishment, dynamic membership, incomplete-membership preservation and natural closure;
 - [`scripts/identity/FieldWorldSnapshotRegistry.lua`](../scripts/identity/FieldWorldSnapshotRegistry.lua) — current immutable Job-seeded Field World Snapshot capture/registry mechanism;
 - [`scripts/identity/FieldWorldEquivalenceEvaluator.lua`](../scripts/identity/FieldWorldEquivalenceEvaluator.lua) and [`scripts/identity/FieldWorldEquivalenceAuthority.lua`](../scripts/identity/FieldWorldEquivalenceAuthority.lua) — current equivalence evidence and coherent Field World assignment;
-- [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — current live Job/productive-commencement/Field World/member evidence source; and
+- [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — current live GIANTS-control, bootstrapped Field World/member and dynamic motion/productive-state evidence source; and
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current ordered sealed-observation handoff: Observation publication → Job Episode admission → Operation admission → Situation Assessment.
 
 No one source module is the Operation Lifecycle Jurisdiction.
@@ -303,7 +307,7 @@ Offline fixtures are the appropriate first validation surface for mixed lifecycl
 
 ### Targeted in-game Reality validation
 
-In-game validation remains required for the truth and timing of GIANTS active-job membership, source-job end evidence, productive commencement, runtime removal and Field World capture/equivalence evidence.
+In-game validation remains required for the truth and timing of GIANTS active-job/control membership, source-job end evidence, runtime removal and Field World capture/equivalence evidence. Warm-start and cold-start observations of equivalent current Reality MUST reconstruct equivalent Local Operation membership even when workers are turning, reversing, stationary or blocked.
 
 ### Outside this Specification's validation claim
 

@@ -77,16 +77,17 @@ Situation Assessment MAY include a nonparticipant physical subject when current 
 
 Past Job Episode history, prior OuttaMyWay participation, vehicle ownership or completed-worker provenance are not prerequisites for current physical relevance.
 
-### Resolution-space participation before productive commencement
+### Operation membership and dynamic work state
 
-A current active GIANTS field-work worker whose Job Episode is in the same resolved Field World but whose productive-commencement witness is not yet positive is not yet an Operation participant.
+Situation Assessment consumes Local Operation membership as an authoritative lifecycle product. It MUST NOT recreate or narrow that membership from current productive, turning, reversing, stationary, blocked or intent-revelation state.
 
-Situation Assessment MAY nevertheless classify that worker as a current physical/intent-revelation constraint on a productive member when current evidence supports that relevance. Such a classification MUST retain the distinction:
+A current Operation member whose GIANTS-native continuation is transitional or unresolved remains an Operation member. Situation Assessment may classify that dynamic state and use it to constrain current traffic conclusions.
 
-- `operationMember = false`; and
-- current Situation relevance / Resolution-Space eligibility may be true.
+> **Operation Membership != Productive State.**
 
-This permits preservation of scarce option space without moving the membership boundary upstream.
+> **Operation Membership != Passage Readiness.**
+
+In particular, Cooperative Passage eligibility requires its own positive Situation evidence. Operation membership alone MUST NOT turn a manoeuvring or otherwise transitional participant into a Passage-ready participant. Existing settled-continuation / native-intent evidence owns that distinction.
 
 ## Relationship interpretation
 

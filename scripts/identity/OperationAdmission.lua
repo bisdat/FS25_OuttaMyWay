@@ -157,16 +157,23 @@ function Admission:observe(snapshot, episodeResult)
         if evidence.fieldWorldReferenceKey ~= nil and evidence.fieldWorldReferenceKey ~= fieldWorldKey then
             error("Operation membership evidence belongs to a different Field World", 2)
         end
-        if evidence.performingRecognisedFieldWork == true then
-            if evidence.fieldWorldReferenceKey==nil then error("recognised Operation membership requires resolved Field World identity",2) end
+        local details=evidence.evidence or {}
+        local activeFieldMember=details.bootstrappedFieldDomainMember==true
+            and details.activeJobVehicleMembership==true
+            and details.fieldWorkerSpecializationPresent==true
+        if activeFieldMember then
+            if evidence.fieldWorldReferenceKey==nil then error("active Operation member requires resolved Field World identity",2) end
             if evidence.fieldWorldSnapshotReferenceKey==nil or evidence.fieldPolygonReferenceKey==nil then
-                error("recognised Operation membership requires immutable Snapshot and polygon provenance",2)
+                error("active Operation member requires immutable Snapshot and polygon provenance",2)
+            end
+            local activeEpisode=self.jobEpisodes:getActiveForAssembly(evidence.assemblyId)
+            if activeEpisode==nil then
+                error("active Operation member requires current qualifying Job Episode",2)
             end
             memberAssemblyIds[#memberAssemblyIds + 1] = evidence.assemblyId
+            memberEpisodeIds[#memberEpisodeIds + 1] = activeEpisode.identity
             snapshotReferences[#snapshotReferences+1]=evidence.fieldWorldSnapshotReferenceKey
             polygonReferences[#polygonReferences+1]=evidence.fieldPolygonReferenceKey
-            local activeEpisode = self.jobEpisodes:getActiveForAssembly(evidence.assemblyId)
-            if activeEpisode ~= nil then memberEpisodeIds[#memberEpisodeIds + 1] = activeEpisode.identity end
         end
     end
 

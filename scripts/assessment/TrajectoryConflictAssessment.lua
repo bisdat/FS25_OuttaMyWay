@@ -483,46 +483,14 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
         return result
     end
 
-    local aPending=aParticipation and aParticipation.productiveCommencementPending==true
-    local bPending=bParticipation and bParticipation.productiveCommencementPending==true
-    local regulatedTrajectory,regulatedMotion,regulatedSpace,protectedTrajectory,protectedSpace
-    if aPending~=bPending then
-        if aPending then
-            protectedTrajectory,protectedSpace=aTrajectory,aSpace
-            regulatedTrajectory,regulatedMotion,regulatedSpace=bTrajectory,bMotion,bSpace
-        else
-            protectedTrajectory,protectedSpace=bTrajectory,bSpace
-            regulatedTrajectory,regulatedMotion,regulatedSpace=aTrajectory,aMotion,aSpace
-        end
-        if regulatedTrajectory==nil or protectedTrajectory==nil then result.reason="PRE_PRODUCTIVE_INTENT_REVELATION_ROLE_UNRESOLVED"; return result end
-        result.regulatedAssemblyId=regulatedTrajectory.assemblyId
-        result.regulatedReferenceKey=regulatedTrajectory.assemblyReferenceKey
-        result.protectedAssemblyId=protectedTrajectory.assemblyId
-        result.protectedReferenceKey=protectedTrajectory.assemblyReferenceKey
-        result.roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION"
-    else
-        regulatedTrajectory,regulatedMotion,regulatedSpace=stableTrajectory,stableMotion,stableSpace
-        protectedTrajectory,protectedSpace=excursionTrajectory,excursionSpace
-        result.regulatedAssemblyId=stableTrajectory and stableTrajectory.assemblyId or nil
-        result.regulatedReferenceKey=stableTrajectory and stableTrajectory.assemblyReferenceKey or nil
-        result.protectedAssemblyId=result.excursionAssemblyId
-        result.protectedReferenceKey=result.excursionReferenceKey
-    end
+    local regulatedTrajectory,regulatedMotion,regulatedSpace=stableTrajectory,stableMotion,stableSpace
+    local protectedTrajectory,protectedSpace=excursionTrajectory,excursionSpace
+    result.regulatedAssemblyId=stableTrajectory and stableTrajectory.assemblyId or nil
+    result.regulatedReferenceKey=stableTrajectory and stableTrajectory.assemblyReferenceKey or nil
+    result.protectedAssemblyId=result.excursionAssemblyId
+    result.protectedReferenceKey=result.excursionReferenceKey
 
-    local nativeRate=nil
-    if aPending~=bPending then
-        local contribution,contributionReason=nativeClosureContribution(regulatedMotion,regulatedSpace,protectedSpace)
-        result.nativeClosureContribution=contribution and copy(contribution) or nil
-        result.nativeClosureContributionReason=contributionReason
-        local positive=contribution and tonumber(contribution.positiveClosureContributionKmh) or nil
-        if not finite(positive) or positive<=0 then result.reason="KNOWN_OPERATION_MEMBER_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE"; return result end
-        nativeRate=contribution.nativeRateKmh
-        result.nativeClosureContributionKmh=positive
-        result.nativeSignedClosureContributionKmh=contribution.signedClosureContributionKmh
-        result.nativeMoveForwards=contribution.moveForwards
-    else
-        nativeRate=nativeForwardRateKmh(stableMotion)
-    end
+    local nativeRate=nativeForwardRateKmh(stableMotion)
     result.nativeUnrestrictedKmh=nativeRate
     if nativeRate==nil then result.reason="REGULATED_PARTICIPANT_POSITIVE_NATIVE_FORWARD_RATE_UNAVAILABLE"; return result end
     result.status="REGULATE_SUPPORTED"
@@ -530,9 +498,6 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     result.admissionKind="CURRENT_EXCURSION"
     if result.roleBasis==nil then result.roleBasis="PRESERVE_CURRENT_EXCURSION_NATIVE_REVELATION" end
     result.reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES"
-    if aPending~=bPending then
-        result.reason="PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION"
-    end
     result.governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     return result
 end
@@ -573,22 +538,8 @@ local function establishedConflictConservation(record,aTrajectory,bTrajectory,aM
 
     local aSettled=record.subjectSettledContinuation==true
     local bSettled=record.otherSettledContinuation==true
-    local aPending=aParticipation and aParticipation.productiveCommencementPending==true
-    local bPending=bParticipation and bParticipation.productiveCommencementPending==true
     local regulateA
-    if aPending~=bPending then
-        -- A Job-Episode whose productive intent has not yet been positively
-        -- revealed is Situation-relevant but not a cooperative participant.
-        -- Preserve GIANTS' native revelation and constrain the known Operation
-        -- member; do not fold, reposition, or otherwise replace the pending job.
-        regulateA=bPending
-        local knownContribution=regulateA and aPositive or bPositive
-        if not finite(knownContribution) or knownContribution<=0 then
-            result.reason="KNOWN_OPERATION_MEMBER_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE"
-            return result
-        end
-        result.roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION"
-    elseif aSettled~=bSettled then
+    if aSettled~=bSettled then
         -- Preserve the participant still revealing a GIANTS-native transition;
         -- defer the positively settled participant exactly as Current-Excursion
         -- conservation already does before Establishment.  If that settled
@@ -814,8 +765,8 @@ function Assessment.classifyPairs(context)
         for i=1,#members-1 do
             for j=i+1,#members do
                 local aId,bId=members[i],members[j]
-                local aParticipation=participation[aId] or {class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
-                local bParticipation=participation[bId] or {class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
+                local aParticipation=participation[aId] or {class="OPERATION_MEMBER",operationMember=true}
+                local bParticipation=participation[bId] or {class="OPERATION_MEMBER",operationMember=true}
                 if aParticipation.operationMember==true or bParticipation.operationMember==true then
                     local aTrajectory=trajectoryByAssembly[aId]
                     local bTrajectory=trajectoryByAssembly[bId]
@@ -829,9 +780,7 @@ function Assessment.classifyPairs(context)
                     otherOperationMember=bParticipation.operationMember==true,
                     subjectParticipationClass=aParticipation.class,
                     otherParticipationClass=bParticipation.class,
-                    subjectProductiveCommencementPending=aParticipation.productiveCommencementPending==true,
-                    otherProductiveCommencementPending=bParticipation.productiveCommencementPending==true,
-                    cooperativePassageEligible=aParticipation.operationMember==true and bParticipation.operationMember==true,
+                    cooperativePassageEligible=false,
                     classification=nil,
                     status="INSUFFICIENT_KNOWLEDGE",
                     reason="ESTABLISHED_TRAJECTORY_NOT_AVAILABLE_FOR_BOTH_PARTICIPANTS",
@@ -844,6 +793,10 @@ function Assessment.classifyPairs(context)
                     record.otherCurrentExcursion=bTrajectory.currentExcursion==true
                     record.subjectSettledContinuation=positiveSettledContinuation(aTrajectory,motionByAssembly[aId])
                     record.otherSettledContinuation=positiveSettledContinuation(bTrajectory,motionByAssembly[bId])
+                    record.cooperativePassageEligible=aParticipation.operationMember==true
+                        and bParticipation.operationMember==true
+                        and record.subjectSettledContinuation==true
+                        and record.otherSettledContinuation==true
                     record.subjectBlocked=motionByAssembly[aId]~=nil and motionByAssembly[aId].blocked==true
                     record.otherBlocked=motionByAssembly[bId]~=nil and motionByAssembly[bId].blocked==true
                     local futurePositive,futureOutcome,futureRelationshipKey=relevantFutureSpacePositive(situation,aId,bId)

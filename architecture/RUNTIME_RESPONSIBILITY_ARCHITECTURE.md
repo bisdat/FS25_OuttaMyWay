@@ -141,13 +141,13 @@ Evaluator tolerances and calibration are implementation concerns, not Architectu
 The Local Operation lifecycle exists independently of whether OuttaMyWay ever acquires Regulation or Resolution Commitment. A complete successful lifecycle may be entirely GIANTS-owned:
 
 ```text
-Job Episode starts
+Job Episode starts / Runtime cold-start observes current Job
     |
-Bootstrap
+Bootstrap establishes Field World / polygon / Physical Assembly domain
     |
-supported active field work
+current GIANTS AI-controlled supported field members
     |
-Local Operation established
+Local Operation established or reconstructed
     |
 GIANTS AI
     |
@@ -164,27 +164,45 @@ Normality is GIANTS-owned work. Intervention is sparse and must be positively ju
 
 **Job Episode Bootstrap** is the lifecycle opportunity to discover and cache expensive stable knowledge needed repeatedly during the active GIANTS Job Episode.
 
-Bootstrap is Job Episode-scoped. It may establish Job Episode identity, discover the Physical Assembly, and cache expensive stable active-work representation or capability knowledge. It grants no traffic responsibility.
+Bootstrap is Job Episode-scoped. It establishes or reconstructs the stable field-domain knowledge required by the active episode: resolved Field World / polygon membership, Physical Assembly identity, and expensive stable active-work representation or capability knowledge. It grants no traffic responsibility by itself.
 
-Bootstrap does not freeze dynamic pose, articulation, configuration state, heading, productive direction or future GIANTS intent. Its job-scoped cache may expire when the Job Episode ends and is not extended merely because a completed assembly remains physically present.
+> **Bootstrap Defines the Operation Domain; GIANTS AI Control Defines Active Operation Membership.**
+
+Bootstrap does not freeze dynamic pose, articulation, configuration state, heading, productive direction or future GIANTS intent. Those are current Situation evidence. Its job-scoped cache may expire when the Job Episode ends and is not extended merely because a completed assembly remains physically present.
 
 Later movement of a non-active Causal Obstruction may acquire only the fresh capabilities and evidence needed for that intervention. Historical Job Episode cache or provenance is not a prerequisite for recognising or relocating the blocker.
 
 ### Establishment and participation
 
-A Job Episode becomes a Local Operation participant when current positive evidence establishes:
+A Physical Assembly becomes a Local Operation participant when it is a known supported member of the resolved bootstrapped Field World and its qualifying Job Episode is currently under GIANTS AI control:
 
 ```text
-qualifying current GIANTS Job Episode
+bootstrapped Field World / polygon membership
         +
-positive supported active field work
-        +
-resolved Field World relationship
+qualifying current GIANTS AI-controlled Job Episode
+        ↓
+active Local Operation member
 ```
 
-The first qualifying participant establishes a Local Operation for that Field World when none exists. A later qualifying Job Episode joins the existing Local Operation.
+The current GIANTS-controlled subset of the bootstrapped field domain is the active Local Operation membership. If that supported subset contains one to three assemblies, the Local Operation exists with exactly those active members. The first member establishes the Operation when none exists; later active members join the same Field World Operation.
 
-Job Episode creation alone, worker proximity and conflict do not establish participation. Complete representation capability is not required merely to participate. Representation fitness determines which later conclusions and actions are supportable, not whether an active worker exists in the lifecycle.
+> **Operation Membership != Productive State.**
+
+> **Productive Commencement Is Situation Evidence, Not Operation Admission Authority.**
+
+A member may currently be productively working, turning, reversing, stationary, blocked or revealing intent without ceasing to be an Operation participant. Current productive/manoeuvring state may constrain Situation/traffic conclusions but MUST NOT gate lifecycle membership.
+
+Operation membership is therefore reconstructible from current Reality after save/load or runtime enablement:
+
+> **Operation Membership Must Be Cold-Start Invariant.**
+
+Operation membership also grants no strategic readiness by itself:
+
+> **Operation Membership != Passage Readiness.**
+
+A member whose current GIANTS-native intent is turning, reversing, unresolved or otherwise transitional remains a member while Situation Assessment determines which traffic conclusions are supportable.
+
+Job Episode creation without resolved field-domain membership, worker proximity alone and conflict alone do not establish participation. Complete representation capability is not required merely to participate. Representation fitness determines which later conclusions and actions are supportable, not whether an active worker exists in the lifecycle.
 
 **Participation Authority != Intervention Capability.** A worker may be an unquestioned Local Operation participant even when manoeuvre-specific representation or capability evidence remains unresolved.
 
