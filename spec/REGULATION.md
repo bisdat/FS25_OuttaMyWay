@@ -168,6 +168,8 @@ The semantic Regulation responsibility and the physical `REGULATE_SPEED` capabil
 
 A current Regulation responsibility normally obtains physical timing effects through Bounded Authority. However, another Current Responsibility may also legitimately require a bounded supporting temporal effect as part of its own accepted obligations, provided that effect is authorised by that responsibility and Bounded Authority.
 
+A supporting temporal effect may be a **Supporting Speed Ceiling** over movement whose objective belongs to GIANTS or to another compatible Current Responsibility. The ceiling owns only the permitted maximum magnitude. It does not acquire direction, target, movement extent or semantic ownership of the underlying movement. Multiple compatible speed ceilings may compose through least-permissive magnitude without becoming multiple movement objectives.
+
 Therefore:
 
 - observing a speed lease does not prove that semantic Current Responsibility is Regulation;
