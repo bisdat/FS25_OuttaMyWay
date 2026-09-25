@@ -14,7 +14,7 @@ local Origin={}
 Origin.__index=Origin
 
 local function oneLine(value)
-    local text=tostring(value or "")
+    local text=value==nil and "" or tostring(value)
     return (string.gsub(text,"[\r\n]+","\\n"))
 end
 
