@@ -184,6 +184,39 @@ Cleanup MUST NOT use a release path to tighten, redirect or create a physical ef
 
 > **Relinquishment Is Authority-Narrowing, Not Authority Creation.**
 
+## Movement objective and speed-ceiling composition
+
+When current Bounded Authority contains both a movement objective and one or more compatible Supporting Speed Ceilings for the same assembly, Control MUST compose them without transferring semantic or mechanical ownership of the movement objective to the ceiling.
+
+The physical execution order is conceptually:
+
+```text
+underlying GIANTS or authorised OMW movement objective
+        ↓
+direction / target / extent / base maximum
+        ↓
+apply every compatible current speed ceiling
+        ↓
+least-permissive permitted maximum
+        ↓
+physical drive command
+```
+
+A speed ceiling may therefore constrain:
+
+- ordinary GIANTS-native movement;
+- a Recovery fixed-axis excursion;
+- another supported OuttaMyWay movement whose contract permits magnitude composition; or
+- movement already subject to another compatible speed ceiling.
+
+Applying or releasing a speed ceiling MUST NOT overwrite, clear or recreate the underlying movement command. Conversely, creating/revising the movement objective MUST NOT silently discard still-current independent speed ceilings.
+
+If the least-permissive ceiling is zero, Control may revoke drive permission while preserving the underlying movement objective for later continuation. If no underlying movement currently authorises motion, a positive speed ceiling does not create it.
+
+> **Speed-Cap Execution Is Modulation, Not Movement Selection.**
+
+Control implementation state may combine objective and constraint data in one physical mechanism, but that storage convenience MUST NOT collapse their authority semantics.
+
 ## Purpose-specific physical boundaries
 
 ### Regulation Control
