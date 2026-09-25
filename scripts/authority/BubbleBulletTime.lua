@@ -7,6 +7,7 @@ BulletTime.__index = BulletTime
 
 local OWNER_TAG = "BUBBLE_BULLET_TIME"
 local GOVERNING_PURPOSE = "COOPERATIVE_PASSAGE_BUBBLE_BULLET_TIME"
+local AUTHORITY_ROLE = "SUPPORTING_SPEED_CEILING"
 local INTENT_REVELATION_CREEP_KMH = 1.0
 
 local publication=OuttaMyWay.LogPublication.origin("BOUNDED_AUTHORITY")
@@ -71,13 +72,6 @@ local function operationContainsAssembly(picture,operationId,assemblyId)
     return false
 end
 
-local function tokenFor(runtime,commitmentId,assemblyId,tokenId)
-    for _,token in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitmentId)) do
-        if token.identity==tokenId and token.assemblyId==assemblyId and runtime.authorities:validate(token)==true then return token end
-    end
-    return nil
-end
-
 function BulletTime.new(runtime)
     return setmetatable({runtime=runtime,leasesByCommitmentId={}},BulletTime)
 end
@@ -129,18 +123,24 @@ function BulletTime:prepareAtBubbleFormation(picture,candidate,applied)
         return notRequired,nil
     end
 
-    local supporting,supportingReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.acquireSupportingRegulationAuthority(
-        self.runtime,commitmentId,third.assemblyId,{governingPurpose=GOVERNING_PURPOSE})
-    if supporting==nil then return nil,"BUBBLE_BULLET_TIME_SUPPORTING_AUTHORITY_FAILED:"..tostring(supportingReason) end
+    local supportingComposition=OuttaMyWay.EffectiveActuationComposition.create({
+        identity=self.runtime.identities:issue("COMPOSITION"),epoch=self.runtime.epochs:next(),
+        entries={{
+            assemblyId=third.assemblyId,commitmentId=commitmentId,capability="REGULATE_SPEED",
+            effectClass="SPEED_LIMIT",authorityRole=AUTHORITY_ROLE
+        }},
+        relevantAssemblyIds={third.assemblyId}
+    })
 
     local prepared={
         status="PREPARED",commitmentId=commitmentId,operationId=bridge.operationId,assemblyId=third.assemblyId,referenceKey=third.referenceKey,
         ownerTag=OWNER_TAG,governingPurpose=GOVERNING_PURPOSE,maxSpeedKmh=INTENT_REVELATION_CREEP_KMH,
-        authorityTokenId=supporting.authorityToken.identity,effectiveActuationCompositionId=supporting.commitment.effectiveActuationCompositionId,
+        authorityRole=AUTHORITY_ROLE,effectiveActuationCompositionId=applied.commitment.effectiveActuationCompositionId,
+        supportingSpeedCeilingComposition=supportingComposition,
         physicalActive=false,pairAssemblyIds=bridge.assemblyIds
     }
     self.leasesByCommitmentId[commitmentId]=prepared
-    logInfo("BUBBLE_BULLET_TIME_PREPARED","commitment=%s operation=%s assembly=%s ref=%s composition=%s cap=%.2fkmh",tostring(commitmentId),tostring(bridge.operationId),tostring(third.assemblyId),tostring(third.referenceKey),tostring(prepared.effectiveActuationCompositionId),INTENT_REVELATION_CREEP_KMH)
+    logInfo("BUBBLE_BULLET_TIME_PREPARED","commitment=%s operation=%s assembly=%s ref=%s movementComposition=%s ceilingComposition=%s cap=%.2fkmh",tostring(commitmentId),tostring(bridge.operationId),tostring(third.assemblyId),tostring(third.referenceKey),tostring(prepared.effectiveActuationCompositionId),tostring(supportingComposition.identity),INTENT_REVELATION_CREEP_KMH)
     return prepared,nil
 end
 
@@ -161,15 +161,13 @@ function BulletTime:activatePrepared(commitmentId,requestContext,candidate)
         or lease.effectiveActuationCompositionId~=commitment.effectiveActuationCompositionId then
         return nil,"BUBBLE_BULLET_TIME_COMPOSITION_MISMATCH"
     end
-    local token=tokenFor(self.runtime,commitmentId,lease.assemblyId,lease.authorityTokenId)
-    if token==nil then return nil,"BUBBLE_BULLET_TIME_AUTHORITY_TOKEN_UNAVAILABLE" end
-
     local grantTarget={kind="REGULATION_LEASE",vehicleReferenceKey=lease.referenceKey,ownerTag=OWNER_TAG,maxSpeedKmh=INTENT_REVELATION_CREEP_KMH,governingPurpose=GOVERNING_PURPOSE}
     local grant,grantReason=self.runtime.boundedAuthority:authorize({
         responsibilityId=current.identity,commitmentId=commitmentId,assemblyId=lease.assemblyId,capability="REGULATE_SPEED",
-        target=grantTarget,authorityToken=token.identity,
+        target=grantTarget,authorityRole=AUTHORITY_ROLE,
         operationalPictureEpoch=requestContext.operationalPictureEpoch,evidenceEpoch=requestContext.evidenceEpoch,
         effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
+        supportingSpeedCeilingComposition=lease.supportingSpeedCeilingComposition,
         preconditions=requestContext.preconditions or {},invalidationConditions=requestContext.invalidationConditions or {},
         provenance={source="BubbleBulletTime",purpose=GOVERNING_PURPOSE,operationId=lease.operationId,thirdPartyAssemblyId=lease.assemblyId}
     })

@@ -34,6 +34,20 @@ def test_regulation_control_owns_production_speed_execution():
     assert "setLiveControlCapability" not in runtime
 
 
+def test_supporting_speed_ceiling_is_explicit_and_ordinary_regulation_stays_token_backed():
+    control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
+    bounded=(ROOT/"scripts"/"authority"/"BoundedAuthority.lua").read_text(encoding="utf-8")
+    bubble=(ROOT/"scripts"/"authority"/"BubbleBulletTime.lua").read_text(encoding="utf-8")
+
+    assert 'SUPPORTING_SPEED_CEILING' in control
+    assert 'SUPPORTING_SPEED_CEILING' in bounded
+    assert 'SUPPORTING_SPEED_CEILING' in bubble
+    assert 'request.authorityRole==SUPPORTING_SPEED_CEILING' in control
+    assert 'request.authorityRole~=nil and not supportingSpeedCeiling' in control
+    assert 'tokenFor(self.runtime,commitmentId,values.assemblyId,values.authorityToken)' in bounded
+    assert 'values.authorityRole==SUPPORTING_SPEED_CEILING' in bounded
+
+
 def test_regulation_control_reuses_mechanics_without_owning_policy():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")

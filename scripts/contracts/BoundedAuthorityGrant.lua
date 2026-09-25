@@ -12,14 +12,20 @@ OuttaMyWay.BoundedAuthorityGrant = OuttaMyWay.ValueRecord.register(
     "BoundedAuthorityGrant",
     OuttaMyWay.ValueRecord.define(
         "BoundedAuthorityGrant",
-        {"identity","responsibilityId","commitmentId","assemblyId","capability","target","authorityToken","operationalPictureEpoch","evidenceEpoch","effectiveActuationCompositionId","preconditions","invalidationConditions","provenance"},
-        {},
+        {"identity","responsibilityId","commitmentId","assemblyId","capability","target","operationalPictureEpoch","evidenceEpoch","effectiveActuationCompositionId","preconditions","invalidationConditions","provenance"},
+        {"authorityToken","authorityRole"},
         function(values)
             requireIdentity("identity",values.identity,"BA")
             requireIdentity("responsibilityId",values.responsibilityId,"RS")
             requireIdentity("commitmentId",values.commitmentId,"CM")
             requireIdentity("assemblyId",values.assemblyId,"AS")
-            requireIdentity("authorityToken",values.authorityToken,"AU")
+            if values.authorityRole=="SUPPORTING_SPEED_CEILING" then
+                if values.capability~="REGULATE_SPEED" then error("Supporting Speed Ceiling grant capability must be REGULATE_SPEED",3) end
+                if values.authorityToken~=nil then error("Supporting Speed Ceiling grant must not carry movement-owner token",3) end
+            else
+                if values.authorityRole~=nil then error("BoundedAuthorityGrant authorityRole unsupported",3) end
+                requireIdentity("authorityToken",values.authorityToken,"AU")
+            end
             requireIdentity("effectiveActuationCompositionId",values.effectiveActuationCompositionId)
             if values.capability~="REGULATE_SPEED" and values.capability~="REPOSITION" and values.capability~="HOLD" then
                 error("BoundedAuthorityGrant capability unsupported",3)

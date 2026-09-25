@@ -79,7 +79,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
 
-    -- Bubble Formation may prepare supporting third-party mechanical ownership
+    -- Bubble Formation may prepare non-owning third-party speed-ceiling evidence
     -- before semantic exposure. Positive Bounded Authority is deliberately
     -- deferred until ResponsibilityTransitionAuthority has registered this
     -- Resolution as current and LiveControlDispatcher is about to dispatch the
