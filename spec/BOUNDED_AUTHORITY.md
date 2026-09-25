@@ -169,6 +169,48 @@ A vocabulary label, owner tag, executor name or capability implementation MUST N
 
 > **Positive Physical Actuation Requires Positive Bounded Authority.**
 
+### Movement-objective ownership and Supporting Speed Ceilings
+
+Movement-objective authority and speed-ceiling authority are distinct physical permissions.
+
+A movement-objective grant may own direction, target, extent or another spatial movement envelope according to its purpose-specific contract. Where the implementation uses exclusive movement-actuation substrate, that exclusivity protects the movement objective from conflicting owners.
+
+A **Supporting Speed Ceiling** is a separate magnitude-only permission. Its grant MUST positively establish:
+
+- the current responsibility whose accepted contract requires the ceiling;
+- the exact constrained assembly;
+- the maximum permitted speed;
+- the current evidence / validity scope for that ceiling;
+- the effective-actuation composition or equivalent current composition evidence showing that the ceiling is compatible with the assembly's current movement objective; and
+- provenance for the supporting temporal purpose.
+
+A Supporting Speed Ceiling MUST NOT require transfer of the constrained assembly's movement objective merely in order to reduce magnitude. Where movement-objective exclusivity is represented by an actuation token, the ceiling MAY use a distinct non-owning substrate or no movement-owner token at all when the purpose-specific Bounded Authority policy and current composition positively support that narrower contract.
+
+> **Movement Objective Authority != Speed-Ceiling Authority.**
+
+A Supporting Speed Ceiling MUST NOT:
+
+- choose or change movement direction;
+- select or redirect a target;
+- enlarge spatial movement extent;
+- create drive permission when the underlying movement source has none;
+- keep an ended movement responsibility alive; or
+- become semantic Regulation merely because the physical capability is `REGULATE_SPEED`.
+
+Multiple compatible current speed ceilings MAY constrain the same assembly. Their physical composition is monotonic:
+
+```text
+realised maximum speed
+    <= underlying movement/native maximum
+    <= each active compatible ceiling
+```
+
+Equivalently, Control may realise no more than the least-permissive current compatible maximum.
+
+> **One Movement Objective; Multiple Compatible Constraints.**
+
+Releasing one ceiling removes only that constraint. It MUST NOT clear, restart, replace or otherwise mutate an independent movement objective or another still-current ceiling.
+
 ### Relinquishment / cleanup
 
 Authority-reducing action is different.
