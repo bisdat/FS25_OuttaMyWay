@@ -70,7 +70,7 @@ function Observation.deriveMotion(previousPose, currentPose, previousTimestamp, 
         result.reason = "TRAVEL_DIRECTION_OPPOSES_HEADING"
     elseif result.yawRateDegreesPerSecond > 5 then
         result.classification = "TURNING"
-        result.reason = "HEADING_CHANGE_EXCEEDS_DIAGNOSTIC_THRESHOLD"
+        result.reason = "YAW_RATE_EXCEEDS_TURNING_THRESHOLD"
     else
         result.classification = "STABLE_FORWARD"
         result.reason = "TRAVEL_DIRECTION_ALIGNS_WITH_HEADING"

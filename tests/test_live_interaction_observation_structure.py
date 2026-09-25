@@ -37,7 +37,7 @@ def test_raw_observation_evidence_and_diagnostic_projection_remain_distinct():
     for token in (
         "raw.geometry.futureSpaceRelationshipEvidence",
         "raw.geometry.interactionEvidence",
-        "motion=worker.motionDiagnostic",
+        "motion=worker.motionSample",
         "raw.diagnostics.pairDiagnostics",
     ):
         assert token in source
