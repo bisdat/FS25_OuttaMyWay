@@ -38,7 +38,8 @@ local function installApi(options)
         return {
             getValue=function(self,key)
                 if options.readError then error("read failure") end
-                return values and values[key] or nil
+                if values~=nil then return values[key] end
+                return nil
             end,
             setValue=function(self,key,value)
                 if options.writeError then error("write failure") end
