@@ -580,6 +580,8 @@ Raw `isBlocked=false` does not by itself disprove an already established Stall. 
 
 Pairwise or Resolution-owned blocked signals remain within their governing responsibilities. In particular, native blockage observed while OuttaMyWay itself is deliberately holding, regulating to zero, or physically controlling the subject cannot independently admit Blocked Worker Recovery.
 
+A positive Blocked Progress Stall does not pre-empt another current supported resolution of the same Reality. Where active traffic meaning, Causal Obstruction or another purpose-specific Candidate is independently supported, the normal Candidate / Constraint / Decision boundary selects among legitimate prospective responsibilities. Blocked Worker Recovery does not acquire priority merely because `isBlocked` is true.
+
 ### Recovery Approach and Recovery Anchor
 
 The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Stall.
