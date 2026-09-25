@@ -141,7 +141,7 @@ function Configuration:_readState()
     if schema==nil then return nil,schemaReason,false end
 
     local loadOk,xmlFile=pcall(XMLFile.loadIfExists,XML_FILE_ID,self.filePath,schema)
-    if not loadOk then return nil,"XML_LOAD_FAILED",false end
+    if not loadOk then return nil,"INVALID_OR_UNREADABLE",true end
     if xmlFile==nil then return nil,"INVALID_OR_UNREADABLE",true end
     if type(xmlFile.getValue)~="function" then
         releaseXml(xmlFile)
@@ -161,7 +161,7 @@ function Configuration:_readState()
     releaseXml(xmlFile)
 
     if not versionOk or not enabledOk or not hudOk or not debugOk then
-        return nil,"XML_READ_FAILED",false
+        return nil,"INVALID_OR_UNREADABLE",true
     end
     if type(version)~="number" then return nil,"INVALID_SCHEMA_VERSION",true end
     if version~=SCHEMA_VERSION then return nil,"UNSUPPORTED_SCHEMA",true end
