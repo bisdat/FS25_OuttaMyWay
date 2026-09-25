@@ -1,3 +1,26 @@
+# v0.4.2.0 PATCH CHECKPOINT — Configuration and Publication Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #308, carrying field-validated TEST `0.4.1.4`.
+
+**Version rationale:** PATCH checkpoint under D-0223. The accepted delta since `0.4.1.0` is a coherent, appropriately validated plateau within the existing 0.4 architectural/capability epoch. It implements and validates already-accepted Configuration and Log Publication responsibilities without creating a materially new architectural/capability epoch.
+
+**PATCH checkpoint boundary:** this increment changes version identity and release history only. It intentionally introduces no new Configuration, Runtime, traffic, Control, GUI/HUD or Log Publication behaviour beyond the already accepted and field-validated `0.4.1.4` baseline.
+
+**Validated plateau summary:**
+- PR #304 matured Configuration into the primary `CONFIGURATION` Specification Jurisdiction with schema-1 local-profile persistence;
+- PR #305 / TEST `0.4.1.1` implemented the engineering-only `diagnostics.xml` sidecar and retired the temporary hard-wired DIAGNOSTIC migration fallback;
+- PR #306 / TEST `0.4.1.2` implemented persisted player Configuration state, first-use materialisation, invalid-representation recovery, startup `enabled` gating and player `debug -> NORMAL/DEBUG` publication policy;
+- first-use creation, persisted Debug, disabled startup and invalid-schema recovery were validated in-game;
+- PR #307 / TEST `0.4.1.3` corrected boolean-false publication so `enabled=false` is rendered truthfully;
+- PR #308 / TEST `0.4.1.4` reduced redundant envelope metadata while retaining DEBUG/DIAGNOSTIC class visibility and GIANTS-owned severity presentation;
+- the two-run `0.4.1.4` Reality check confirmed the reduced envelope with no `[NORMAL]` or duplicated severity tags, while DEBUG and DIAGNOSTIC markers remain visible.
+
+**Validation basis:** Offline Validation was green through runs #842, #846, #848 and #850 for the accepted executable lineage. In-game Reality evidence validated the engineering DIAGNOSTIC sidecar, Configuration persistence/startup outcomes, truthful disabled-state publication and the final reduced log envelope.
+
+**Known separable work:** #139 still owns settings GUI and live Configuration consumers such as immediate enable/disable handoff/re-bootstrap and Operational Player Message visibility. #89 owns player-facing HUD/message lifecycle. Those are coherent next increments and are not required to make this plateau complete.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. Under D-0223, a future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.1.0 PATCH CHECKPOINT — Diagnostics and Log Publication Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #290, carrying TEST `0.4.0.3`.
