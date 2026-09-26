@@ -169,6 +169,21 @@ A successful preflight, readiness check or successor construction attempt MUST N
 
 A failed preflight MUST leave the current semantic responsibility unchanged unless a separate independently justified termination contract applies.
 
+Where establishment/replacement requires creation of retained Resolution substrate (Commitment, Obligations or actuation-authority tokens), every successor-semantic check that can be evaluated from the selected Candidate and intended Current Responsibility contract MUST run **before** that retained admission. In particular, required participant/subject identity, responsibility identity and compatible open-obligation outcome kinds MUST be validated before admission when those facts are already present upstream.
+
+If such semantic preflight fails:
+
+- no new retained Commitment may remain solely from the failed transition attempt;
+- no new actuation-authority ownership may remain;
+- no Bounded Authority request may be materialised; and
+- Control must not be dispatched.
+
+> **Successor Semantic Preflight Must Precede Retained Admission.**
+
+> **Failed Responsibility Transition Must Not Leak Actuation Ownership.**
+
+This rule does not turn Responsibility Transition into a rollback owner for arbitrary internal corruption. It requires predictable semantic incompatibility to be discovered before the retained-mutation boundary.
+
 ### Implementation substrate does not own responsibility continuity
 
 A commitment ID, actuator lease, retained record, correlation key or mechanical handle may support implementation continuity. It MUST NOT independently prove Current Responsibility continuity or succession.

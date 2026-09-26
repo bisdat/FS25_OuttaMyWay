@@ -60,7 +60,11 @@ return function(test,equal)
         equal(candidate.capability,"REPOSITION")
         equal(candidate.expectedEffect.recoveryPoint,"RECOVERY_ANCHOR")
         equal(candidate.expectedEffect.transitRequested,true)
-        equal(candidate.expectedEffect.configurationRestoredBeforeHandback,true)
+        equal(candidate.expectedEffect.nativeJobReplacement,true)
+        equal(candidate.expectedEffect.physicalReleaseAfterReplacementStart,true)
+        equal(#candidate.obligationsCreated,2)
+        equal(candidate.obligationsCreated[1].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT")
+        equal(candidate.obligationsCreated[2].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED")
         equal(candidate.evidenceBasis.independentConcurrentCommitment,true)
         equal(#candidate.representationFitness.requirements,1)
         equal(#group.representationFitness,1)
@@ -74,6 +78,39 @@ return function(test,equal)
         local anchor=candidate.evidenceBasis.blockedWorkerRecoveryBridge.recoveryAnchor
         equal(anchor.x,4.25); equal(anchor.z,17.5)
         equal(anchor.usefulSpanM,5.61)
+    end)
+
+    test("Recovery Resolution semantic preflight recognises both two-phase obligations",function()
+        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
+        local group,reason=support:buildFreshProjectedGroup(
+            pictureWithRecovery(),snapshot(),"PI-RECOVERY-TARGET",102)
+        if group==nil then error(reason or "Recovery group missing") end
+        local candidate=group.candidateSpecifications[1]
+
+        local preflight,preflightReason=OuttaMyWay.ResolutionCommitmentAdapter.preflightCandidate(candidate,{
+            source="BlockedWorkerRecoveryResponsibilityTransition",
+            purpose=candidate.purpose,
+            beneficiaryAssemblyIds={"AS-RECOVERY"},
+            controlledSubjectAssemblyIds={"AS-RECOVERY"},
+            resolutionOutcomeKinds={
+                "BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT",
+                "BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"
+            },
+            responsibilityIdentity="RS-RECOVERY"
+        })
+        if preflight==nil then error(preflightReason or "Recovery semantic preflight failed") end
+        equal(preflight.matchingCandidateObligationCount,2)
+
+        local rejected,rejectedReason=OuttaMyWay.ResolutionCommitmentAdapter.preflightCandidate(candidate,{
+            source="BlockedWorkerRecoveryResponsibilityTransition",
+            purpose=candidate.purpose,
+            beneficiaryAssemblyIds={"AS-RECOVERY"},
+            controlledSubjectAssemblyIds={"AS-RECOVERY"},
+            resolutionOutcomeKinds={"BLOCKED_WORKER_RECOVERY_RESTORED_AND_HANDED_BACK"},
+            responsibilityIdentity="RS-RECOVERY"
+        })
+        equal(rejected,nil)
+        equal(rejectedReason,"INCOMPATIBLE_RESOLUTION_OBLIGATION_SEMANTICS")
     end)
 
     test("Recovery Representation Fitness fails closed when current configuration no longer matches the Anchor",function()
@@ -118,8 +155,47 @@ return function(test,equal)
         equal(selected.rule,"BLOCKED_WORKER_RECOVERY_ESTABLISHMENT")
     end)
 
-    test("Recovery Control requests Transit then reverses directly to Anchor and hands back",function()
+    test("Recovery Control reaches Anchor, replaces native job, releases physically, then settles on successor admission",function()
+        local oldMission=g_currentMission
+        local calls={}
+        local currentJob={jobId=41}
+        local replacement={jobId=nil}
+        local currentEpisode={identity="JE-RECOVERY",sourceJobToken="JOB-RECOVERY"}
         local vehicle={name="Condor"}
+        vehicle.getJob=function() return currentJob end
+        vehicle.getAIJobFarmId=function() return 7 end
+
+        function replacement:applyCurrentState(v,mission,farmId,isDirectStart)
+            calls[#calls+1]={kind="APPLY",vehicle=v,mission=mission,farmId=farmId,directStart=isDirectStart}
+        end
+        function replacement:setValues() calls[#calls+1]={kind="SET_VALUES"} end
+        function replacement:validate(farmId)
+            calls[#calls+1]={kind="VALIDATE",farmId=farmId}
+            return true,nil
+        end
+        function replacement:delete() calls[#calls+1]={kind="DELETE"} end
+
+        local manager={
+            getJobTypeIndexByName=function(_,name) equal(name,"FIELDWORK"); return 3 end,
+            getJobTypeIndex=function(_,job) equal(job,currentJob); return 3 end,
+            createJob=function(_,jobType)
+                equal(jobType,3)
+                calls[#calls+1]={kind="CREATE"}
+                return replacement
+            end
+        }
+        local aiSystem={isServer=true}
+        function aiSystem:stopJob(job,message)
+            calls[#calls+1]={kind="STOP",job=job,message=message}
+            equal(job,currentJob); equal(message,nil)
+        end
+        function aiSystem:startJob(job,farmId)
+            calls[#calls+1]={kind="START",job=job,farmId=farmId}
+            job.jobId=42
+            currentJob=job
+        end
+        g_currentMission={aiSystem=aiSystem,aiJobTypeManager=manager}
+
         local driveState=nil
         local reposition=nil
         local drive={
@@ -135,14 +211,25 @@ return function(test,equal)
                 return false
             end
         }
-        local transitCalls=0
+        local transitCalls,clearCalls=0,0
+        local configurationState=nil
         local configuration={
             prepareCachedTransit=function()
                 transitCalls=transitCalls+1
-                return false,"bootstrap-non-foldable"
+                configurationState={owned=true}
+                return true,configurationState
             end,
-            getState=function() return nil end,
-            clear=function() end
+            getCachedTransitSettlement=function()
+                return {settled=true,exhausted=false}
+            end,
+            getState=function() return configurationState end,
+            clear=function()
+                clearCalls=clearCalls+1
+                configurationState=nil
+            end,
+            requestCachedTransitRestore=function() error("successful Recovery must not request restore") end,
+            getCachedRestoreSettlement=function() error("successful Recovery must not wait for restore") end,
+            finishCachedTransitRestore=function() error("successful Recovery must not finish restore") end
         }
         local runtime={
             boundedAuthority={validateRequest=function() return true end},
@@ -150,28 +237,32 @@ return function(test,equal)
                 if ref=="vehicle-root:recovery" then return vehicle end
             end},
             jobEpisodes={getActiveForAssembly=function(_,id)
-                if id=="AS-RECOVERY" then return {identity="JE-RECOVERY",sourceJobToken="JOB-RECOVERY"} end
+                if id=="AS-RECOVERY" then return currentEpisode end
             end},
             assemblyRepresentationCache={getTransitFoldCapability=function() return nil end}
         }
         local control=OuttaMyWay.BlockedWorkerRecoveryControl.new(runtime,{
             driveMechanism=drive,configurationMechanism=configuration
         })
-        local completion=nil
+        local phaseEvent,completion=nil,nil
+        control:setPhaseHandler(function(result) phaseEvent=result end)
         control:setCompletionHandler(function(result) completion=result end)
+
         local request={
             identity="CR-RECOVERY",commitmentId="CM-RECOVERY",assemblyId="AS-RECOVERY",
             capability="REPOSITION",boundedAuthorityId="BA-RECOVERY",
             target={
                 kind="BLOCKED_WORKER_RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",recoveryKey="blocked-worker-recovery:test",
-                configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_RESTORE",
+                configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN",
                 recoveryAnchor={x=4.25,z=17.5}
             }
         }
-        local started,result=control:executeControlRequest(request,{})
-        equal(started,true)
-        equal(transitCalls,1)
+        local started=control:executeControlRequest(request,{})
+        equal(started,true); equal(transitCalls,1)
+        equal(control:getStatus().phase,"WAITING_FOR_TRANSIT")
+
+        control:update(16)
         if reposition==nil then error("Recovery movement not started") end
         equal(reposition.x,4.25); equal(reposition.z,17.5)
         equal(reposition.moveForwards,false)
@@ -179,10 +270,99 @@ return function(test,equal)
 
         driveState.targetReached=true
         control:update(16)
-        if completion==nil then error("Recovery completion missing") end
+        if phaseEvent==nil then error("Physical Recovery phase settlement missing") end
+        equal(phaseEvent.phaseEvent,"PHYSICAL_RECOVERY_SATISFIED")
+        equal(phaseEvent.evidence.kind,"RECOVERY_ANCHOR_REACHED_IN_TRANSIT")
+        equal(control:getStatus().phase,"WAITING_FOR_REPLACEMENT_JOB_EPISODE")
+        equal(control:getStatus().expectedSuccessorSourceJobToken,"giants-ai-job-id:42")
+        equal(driveState,nil)
+        equal(configurationState,nil)
+        equal(clearCalls,1)
+        equal(completion,nil)
+
+        control:update(16)
+        equal(completion,nil)
+
+        currentEpisode={identity="JE-SUCCESSOR",sourceJobToken="giants-ai-job-id:42"}
+        control:update(16)
+        if completion==nil then error("Recovery completion missing after successor admission") end
         equal(completion.status,"SUCCEEDED")
-        equal(completion.evidence.kind,"RECOVERY_ANCHOR_REACHED_RESTORED_AND_HANDED_BACK")
+        equal(completion.evidence.kind,"RECOVERY_INTENDED_SUCCESSOR_JOB_EPISODE_ADMITTED")
+        equal(completion.evidence.successorJobEpisodeId,"JE-SUCCESSOR")
         equal(control:isActive(),false)
+        g_currentMission=oldMission
+    end)
+
+    test("Native job replacement prepares before synchronous stop-start commitment",function()
+        local oldMission=g_currentMission
+        local calls={}
+        local currentJob={jobId=41}
+        local replacement={jobId=nil}
+        function replacement:applyCurrentState(vehicle,mission,farmId,isDirectStart)
+            calls[#calls+1]={kind="APPLY",vehicle=vehicle,mission=mission,farmId=farmId,directStart=isDirectStart}
+        end
+        function replacement:setValues() calls[#calls+1]={kind="SET_VALUES"} end
+        function replacement:validate(farmId)
+            calls[#calls+1]={kind="VALIDATE",farmId=farmId}
+            return true,nil
+        end
+        function replacement:delete() calls[#calls+1]={kind="DELETE"} end
+
+        local vehicle={
+            getJob=function() return currentJob end,
+            getAIJobFarmId=function() return 7 end
+        }
+        local manager={
+            getJobTypeIndexByName=function(_,name)
+                equal(name,"FIELDWORK")
+                return 3
+            end,
+            getJobTypeIndex=function(_,job)
+                equal(job,currentJob)
+                return 3
+            end,
+            createJob=function(_,jobType)
+                equal(jobType,3)
+                calls[#calls+1]={kind="CREATE"}
+                return replacement
+            end
+        }
+        local aiSystem={isServer=true}
+        function aiSystem:stopJob(job,message)
+            calls[#calls+1]={kind="STOP",job=job,message=message}
+            equal(job,currentJob)
+            equal(message,nil)
+        end
+        function aiSystem:startJob(job,farmId)
+            calls[#calls+1]={kind="START",job=job,farmId=farmId}
+            job.jobId=42
+        end
+        g_currentMission={aiSystem=aiSystem,aiJobTypeManager=manager}
+
+        local drive={install=function() return true end,clearMovementObjective=function() return true end}
+        local configuration={}
+        local control=OuttaMyWay.BlockedWorkerRecoveryControl.new({},{
+            driveMechanism=drive,configurationMechanism=configuration
+        })
+        local state={vehicle=vehicle,commitmentId="CM-REPLACEMENT",assemblyId="AS-RECOVERY"}
+        local ok,evidence=control:_replaceNativeFieldWorkJob(state)
+        equal(ok,true)
+        equal(evidence.kind,"NATIVE_JOB_REPLACEMENT_STARTED")
+        equal(evidence.oldJobId,41)
+        equal(evidence.newJobId,42)
+        equal(evidence.farmId,7)
+        equal(evidence.directStart,true)
+        equal(evidence.stopMessageNil,true)
+        equal(evidence.expectedSourceJobToken,"giants-ai-job-id:42")
+        equal(#calls,6)
+        equal(calls[1].kind,"CREATE")
+        equal(calls[2].kind,"APPLY")
+        equal(calls[2].directStart,true)
+        equal(calls[3].kind,"SET_VALUES")
+        equal(calls[4].kind,"VALIDATE")
+        equal(calls[5].kind,"STOP")
+        equal(calls[6].kind,"START")
+        g_currentMission=oldMission
     end)
 
     test("Reverse Reposition preserves exact point target and Supporting Speed Ceiling",function()

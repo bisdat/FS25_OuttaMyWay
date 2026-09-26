@@ -17,6 +17,22 @@ function Lifecycle.applyDecision(runtime,picture,evaluated)
     return {application=application,commitment=commitment,authorityToken=token},nil
 end
 
+function Lifecycle.settlePhysicalRecovery(runtime,commitmentId,evidence)
+    local record=runtime.commitments:get(commitmentId)
+    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then
+        return nil,"BLOCKED_WORKER_RECOVERY_COMMITMENT_NOT_LIVE"
+    end
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
+        local outcome=obligation.requiredOutcome or {}
+        if outcome.kind=="BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT" then
+            return runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {
+                kind="RECOVERY_ANCHOR_REACHED_IN_TRANSIT"
+            }),nil
+        end
+    end
+    return nil,"BLOCKED_WORKER_RECOVERY_PHYSICAL_OBLIGATION_NOT_OPEN"
+end
+
 function Lifecycle.settle(runtime,commitmentId,eventKind,evidence)
     local record=runtime.commitments:get(commitmentId)
     if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return record,"ALREADY_TERMINAL" end

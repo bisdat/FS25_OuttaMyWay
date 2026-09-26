@@ -21,13 +21,13 @@ This architecture declares the following Specification Jurisdictions.
 | **Regulation** | Provide bounded temporal coordination while GIANTS retains productive routing. |
 | **Resolution Lifecycle** | Own the generic persistence and obligation semantics of Resolution Commitment. |
 | **Obstruction Relocation** | Specialise Resolution Lifecycle for bounded removal of a positively causal non-active unclaimed obstruction. |
-| **Blocked Worker Recovery** | Specialise Resolution Lifecycle for one bounded recovery excursion by a still-active GIANTS worker whose native progression has positively stalled. |
+| **Blocked Worker Recovery** | Specialise Resolution Lifecycle for a two-phase Recovery cycle: bounded physical return from a positive native Stall followed by deliberate GIANTS-native replanning through field-work Job replacement. |
 | **Bounded Authority** | Determine what physical action is permitted now under current responsibility and Reality. |
 | **Control** | Realise an already-authorised physical request through available GIANTS mechanisms. |
 
-The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Blocked Progress Stall, Recovery Anchor, Recovery Recurrence, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
+The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Blocked Progress Stall, Recovery Anchor, Recovery Continuity, Job Replacement Commitment Point, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
-All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../spec/CONTROL.md). **Blocked Worker Recovery** routes to its mature but not-yet-implemented primary Specification at [`../../spec/BLOCKED_WORKER_RECOVERY.md`](../spec/BLOCKED_WORKER_RECOVERY.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
+All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../spec/CONTROL.md). **Blocked Worker Recovery** routes to its implemented primary Specification at [`../../spec/BLOCKED_WORKER_RECOVERY.md`](../spec/BLOCKED_WORKER_RECOVERY.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
 
 ## 1. Cross-jurisdiction runtime loop
 
@@ -419,6 +419,18 @@ RESOLUTION COMMITMENT R2
 
 The labels illustrate distinct semantic identities, not a prescribed identifier format.
 
+### Transition preflight before retained admission
+
+Responsibility Transition may depend on retained implementation substrate such as a generic Resolution Commitment, Obligations and actuation-authority tokens. Where those records are created as preparation for establishing Current Responsibility, all **predictable successor semantic checks** that can be evaluated from the selected Candidate and intended responsibility contract MUST run before that retained admission.
+
+A failed responsibility materialisation must not leave behind a newly admitted Commitment or actuation ownership merely because implementation performed substrate mutation before discovering that the successor semantic product was impossible.
+
+> **Successor Semantic Preflight Must Precede Retained Admission.**
+
+> **Failed Responsibility Transition Must Not Leak Actuation Ownership.**
+
+This does not require speculative rollback for every internal invariant failure. It requires the transition to validate the successor contract it already possesses before crossing a retained-mutation boundary. Post-admission failures then represent genuine internal inconsistency or downstream failure and are governed separately.
+
 ### Responsibility-instance identity
 
 **Responsibility Identity Belongs to Responsibility, Not Its Substrate.** Identity remains stable while the same responsibility persists. Changing Situation evidence, governing basis, Bounded Authority, Control, actuation role, or authority quiescence/reactivation does not churn it. Genuine termination ends that identity; replacement establishes a distinct identity for the successor.
@@ -574,9 +586,9 @@ A cold-loaded parked vehicle, a formerly completed AI worker, a player-owned but
 
 **Parent Jurisdiction:** Resolution Lifecycle.
 
-**Owns:** the concrete single-subject Resolution contract for one bounded physical recovery excursion when a still-active GIANTS worker has a positively established Blocked Progress Stall and can be returned toward recently demonstrated native traversal before GIANTS regains ordinary control.
+**Owns:** the concrete single-subject Resolution contract for one two-phase Recovery cycle when a still-active GIANTS worker has a positively established Blocked Progress Stall: first return the assembly to a bounded Recovery Anchor in Transit, then deliberately cause GIANTS to replan by replacing the failed FIELDWORK Job.
 
-**Does not own:** raw native blockage observation, generic Situation interpretation, obstacle identification, environmental map modelling, productive routing, arbitrary path planning, repeated autonomous obstacle bypass, generic Bounded Authority or generic Control mechanics.
+**Does not own:** raw native blockage observation, generic Situation interpretation, obstacle identification, environmental map modelling, productive routing, arbitrary path planning, obstacle-specific bypass, player work-policy selection, generic Bounded Authority or generic Control mechanics.
 
 **Jurisdiction ID:** `BLOCKED_WORKER_RECOVERY`  
 **Primary Specification:** [`spec/BLOCKED_WORKER_RECOVERY.md`](../spec/BLOCKED_WORKER_RECOVERY.md)  
@@ -596,9 +608,9 @@ The resulting **Blocked Progress Stall** is current Situation meaning. Elapsed t
 
 Raw `isBlocked=false` does not by itself disprove an already established Stall. Positive resumed native progression, Job Episode lifecycle change, Player Claim where applicable, or authoritative transition into/out of Blocked Worker Recovery provides the relevant lifecycle evidence.
 
-Pairwise or Resolution-owned blocked signals remain within their governing responsibilities. In particular, native blockage observed while OuttaMyWay itself is deliberately holding, regulating to zero, or physically controlling the subject cannot independently admit Blocked Worker Recovery.
+Pairwise or Resolution-owned blocked signals remain within their governing responsibilities. Native blockage observed while OuttaMyWay itself is deliberately holding, regulating to zero, or physically controlling the subject cannot independently admit another Blocked Worker Recovery.
 
-A positive Blocked Progress Stall does not pre-empt another current supported resolution of the same Reality. Where active traffic meaning, Causal Obstruction or another purpose-specific Candidate is independently supported, the normal Candidate / Constraint / Decision boundary selects among legitimate prospective responsibilities. Blocked Worker Recovery does not acquire priority merely because `isBlocked` is true.
+A positive Blocked Progress Stall does not pre-empt another current supported resolution of the same Reality. The normal Candidate / Constraint / Decision boundary still selects among independently supported purposes.
 
 ### Purpose-specific Resolution decision horizon
 
@@ -606,23 +618,13 @@ A current Resolution Commitment does not, merely by existing, own the whole Loca
 
 > **Resolution Commitment != Exclusive Traffic Decision Horizon.**
 
-Decision-horizon exclusivity is purpose-specific.
-
-Cooperative Passage owns an exclusive coupled Bubble horizon because its accepted contract coordinates the pairwise Resolution and third-party Bubble protection as one interaction epoch.
-
-Blocked Worker Recovery is different. Its Current Responsibility owns only the recovering assembly's bounded Recovery Excursion and associated obligations. Independent surrounding traffic assessment remains live.
-
-Therefore, while C is under Blocked Worker Recovery:
-
-- B approaching C may still support ordinary tactical Regulation of B;
-- A following C may still support ordinary follower Regulation of A; and
-- an independent A/B Cooperative Passage may become current while C remains under Recovery, with Passage Bullet Time constraining C only through its Supporting Speed Ceiling.
+Blocked Worker Recovery owns only the recovering assembly's Recovery cycle and associated obligations. Independent surrounding traffic assessment remains live. Therefore, while C is under Recovery, ordinary Regulation involving another subject may remain supportable, and an independent A/B Cooperative Passage may become current with Passage Bullet Time constraining C only through its Supporting Speed Ceiling.
 
 Recovery does not create a new traffic mode and does not globally suppress Candidate support for other assemblies.
 
-A compatible already-current responsibility on another subject is not superseded merely because Recovery is established, and a fresh compatible responsibility is not a semantic replacement merely because Decision selects it later. Compatibility remains an explicit subject / purpose / authority question. Two responsibilities MUST NOT acquire incompatible movement objectives for the same assembly, while independently scoped Regulation or magnitude-only constraints may coexist where their accepted contracts allow it.
-
 > **Responsibility Persistence != Decision-Horizon Exclusivity.**
+
+> **Job Replacement Does Not Cancel Independent Traffic Constraints.**
 
 ### Recovery Approach, Recovery Approach Trail and Recovery Anchor
 
@@ -634,65 +636,94 @@ The Trail is evidence retention, not Responsibility, Candidate preference, path 
 
 > **Recovery Approach Trail != Productive History.**
 
-A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery attempt. The useful-span threshold qualifies the Trail; it does not choose the Recovery Point. The Anchor must preserve Physical Assembly and Job Episode identity and must be invalidated by material ownership, lifecycle, direction, assembly/configuration or representation discontinuity relevant to the recovery question.
+A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery cycle. The useful-span threshold qualifies the Trail; it does not choose the Recovery Point.
 
-Where positive supplementary evidence already implicates a later state in the blockage-associated spatial condition, that implicated state is not promoted merely because GIANTS had not yet asserted `isBlocked`.
+The originating Job Episode is required provenance for Stall, Trail and Anchor admission. Once the Recovery Resolution is established, however, the Recovery itself persists by its unresolved obligations and Physical Assembly subject; the originating Job Episode does not remain the persistence identity through an intentionally caused replacement.
 
-> **Last Unblocked Pose != Recovery Anchor.**
+> **Recovery Admission Basis != Recovery Persistence Basis.**
 
 > **Recovery Anchor != Known Safe Pose.**
 
-The Anchor supplies bounded provenance for where the failed native excursion came from and which local direction represents retreat. It does not establish universal collision clearance, arbitrary reverse feasibility, or a requirement to point-seek back to an exact historical pose.
+The Anchor supplies bounded provenance for where the failed native excursion came from and which local direction represents retreat. It does not establish universal collision clearance, productive routing or a route around the obstruction.
 
-### Recovery Excursion and spatial authority
+### Phase 1 — Physical Recovery
 
-Blocked Worker Recovery owns one generic **Recovery Excursion**, not obstacle-class-specific behaviour.
+Blocked Worker Recovery first owns one generic bounded physical **Recovery Excursion** to the selected Recovery Anchor.
 
-The excursion uses the Recovery Anchor and recent **Demonstrated Traversability** as positive support for a bounded local return domain. It may use supplementary positive spatial evidence, including represented Physical Assembly interaction or DISC-to-Field-World boundary intersection, to strengthen direction choice or establish an earlier **Recovery Point**. Obstacle identity is not required.
+The excursion uses recent **Demonstrated Traversability** as positive support for that bounded local return domain. It does not classify trees, pylons, hedges or parked objects into separate algorithms and does not invent a second target or bypass path.
+
+Once the Recovery Resolution is current, the assembly **always requests Transit before recovery movement**. Transit is execution choreography, not a strategic Candidate question. The physical configuration mechanism settles that request before movement proceeds.
+
+The initial physical manoeuvre is a direct return to the Recovery Anchor. The Anchor is the initial Recovery Point.
+
+> **Recovery Anchor = Initial Recovery Point.**
 
 > **Recovery Need Does Not Require Blockage Cause.**
 
-> **Field Boundary Intersection != Environmental Collision.**
+Reaching the Recovery Anchor positively satisfies the Physical Recovery phase. It does not complete the whole Recovery Resolution because the failed native Job still requires replanning.
 
-> **Obstacle Identification != Spatial Release Evidence.**
+> **Phase Completion != Resolution Completion.**
 
-Absence of represented conflict never becomes negative-clearance authority. Fresh positive current contradiction may veto, narrow or stop movement even where the historical approach previously traversed that domain.
+### Phase 2 — Native Replanning
 
-The initial recovery capability does not invent steering or a route around scenery. It does not classify trees, pylons, hedges or parked objects into separate recovery strategies. A later broader repositioning responsibility would require separate architectural evidence.
+Phase 2 remains part of the same Blocked Worker Recovery Resolution and is executed by Recovery Control. It is not a new strategic responsibility.
 
-### Transit-first recovery choreography
+Recovery Control prepares a fresh GIANTS FIELDWORK Job from the recovered pose using the supported direct-start lifecycle. Preparation and validation occur before OuttaMyWay deliberately terminates the failed Job.
 
-Once Blocked Worker Recovery has current responsibility and a Recovery Excursion is physically admissible, the assembly **always requests Transit before recovery movement**.
+The point at which OuttaMyWay stops the failed Job is the **Job Replacement Commitment Point**. Stop and start form one synchronous **Job Replacement Commitment choreography** for OuttaMyWay even though GIANTS and Observation truthfully expose the old Job Episode ending and the successor Job Episode starting as distinct lifecycle events.
 
-Transit is execution choreography, not a strategic Candidate question about whether compaction is worthwhile. The physical configuration mechanism determines what the request means for the actual assembly and must settle the resulting realised configuration before movement authority proceeds.
+> **Replacement Preparation != Replacement Commitment.**
 
-> **Transit Request Is Recovery Choreography, Not Recovery Admission.**
+> **Expected Job Replacement != Responsibility Supersession.**
 
-Recovery does not infer that Transit itself proves clearance or safety. Fresh realised representation after configuration remains authoritative for the movement question.
+Stopping/starting the GIANTS Job is lifecycle choreography authorised by the accepted Recovery Resolution and executed by Recovery Control. It is not a physical movement target and does not broaden the Phase-1 REPOSITION envelope.
 
-### Recovery Point and handback
+> **Lifecycle Permission != Physical Bounded Authority.**
 
-The **Recovery Point** is the bounded physical endpoint at which OuttaMyWay's one Recovery Excursion obligation is discharged.
+The failed Job Episode truthfully ends. A replacement Job Episode is independently admitted under normal Operation Lifecycle rules. Blocked Worker Recovery does not alter Job Episode identity, Operation membership or Field World admission semantics merely to preserve its own continuity.
 
-Where positive blockage-associated spatial evidence exists, discharge may occur when fresh Reality positively shows the known condition has been released or sufficiently reduced according to the specialised contract. Where cause remains unresolved, the Recovery Anchor bounds the available local return domain.
+### Player intent preservation
 
-At the Recovery Point, OuttaMyWay restores any intervention-created configuration debt, relinquishes owned physical effects, and hands control back to GIANTS. The Resolution does not retain control while waiting for GIANTS to prove subsequent productive success.
+Native replanning deliberately refreshes Job identity, native route/course execution state and current navigation plan. It must not deliberately replace the player's productive work policy.
 
-> **Recovery Completion Belongs to OuttaMyWay; Subsequent Native Success Belongs to Reality.**
+The current architectural strategy is **Player Intent Preservation by Non-Mutation**: Recovery does not clone the failed Job as an opaque object and does not rewrite vehicle-scoped GIANTS AI-mode/user settings. The fresh direct-start FIELDWORK Job is allowed to rebuild native execution from the recovered pose and the vehicle's surviving GIANTS settings.
 
-This positive completion of OuttaMyWay's bounded excursion/restore/handback obligation satisfies the parent Resolution settlement requirement. It does not claim that an underlying environmental or native-route problem has been permanently removed.
+> **Native Replanning != Player Intent Replacement.**
 
-### Recovery Recurrence
+Exact preservation of player-selected FIELDWORK parameters remains a Reality-validation item; absence of that validation does not authorise OuttaMyWay to manufacture substitute defaults or settings.
 
-After handback, a bounded passive **Recovery Recurrence** watch may retain only the evidence needed to recognise whether the simple recovery hypothesis is disproved. It is not a Current Responsibility and grants no Bounded Authority.
+### Physical release and semantic completion
 
-A new Blocked Progress Stall is a Recovery Recurrence only when current evidence associates it with the same Physical Assembly and Job Episode and places it within both a bounded post-handback recurrence interval and a bounded spatial neighbourhood of the prior blockage/recovery context. Exact time and distance literals are implementation/validation calibration, not Architecture.
+After the replacement Job has been successfully started, OuttaMyWay immediately relinquishes its Recovery movement objective and its Transit-configuration bookkeeping. It does **not** restore the pre-Recovery working posture, wait for fold/raise evidence, hold the assembly at the Anchor, or prove subsequent GIANTS motion. The fresh GIANTS Job owns configuration and movement from that point.
 
-If no recurrence is observed through that bounded watch, the recovery attempt may be classified successful for this capability and the watch expires quietly. If recurrence is positively established, the simple one-excursion recovery hypothesis is disproved.
+> **Physical Release != Semantic Completion.**
 
-> **Recovery Excursion Completed != Native Path Problem Resolved.**
+The Recovery Resolution may remain semantically current for the short evidence interval until Observation positively admits the **intended successor Job Episode for the same Physical Assembly**. API return from `startJob()` is mechanism evidence, not the semantic completion fact.
 
-Recovery Recurrence does not authorise an automatic second Recovery Excursion or obstacle-bypass loop. The first capability fails closed toward reassessment or Player Intervention rather than proliferating obstacle-specific special cases.
+> **Requested Replacement != Observed Successor.**
+
+Positive admission of that intended successor satisfies Native Replanning and therefore the final Recovery obligation. **RC-1 SUCCESS is a sharp boundary:** all remaining Recovery-owned authority, bookkeeping and Current Responsibility stickiness are released immediately. No recurrence watch, grace period or post-success hold remains.
+
+> **Resolution Completion = Immediate Recovery Release.**
+
+Subsequent GIANTS productive success or failure belongs to fresh Reality.
+
+### Fresh later blockage
+
+A later positive Blocked Progress Stall under the successor Job Episode is a fresh Situation, not a retry of the previous Recovery. It must establish a fresh Recovery Approach Trail and fit Recovery Anchor under the new Job Episode before another Recovery cycle is supportable.
+
+> **Cycle Repetition != Retry.**
+
+The architecture therefore retains no post-success recurrence veto, retry counter or spatial/time suppression window. A fresh supported Stall may admit a fresh two-phase Recovery cycle. If Reality later demonstrates pathological repeated replacement cycles, that evidence must justify any new escalation concept rather than pre-emptively inventing one.
+
+### Failure and intervention boundaries
+
+Before the Job Replacement Commitment Point, inability to prepare or validate the replacement does not authorise exposure of the already-known failed native plan merely for convenience. Recovery remains unresolved and Player Intervention is legitimate.
+
+After the Commitment Point, failure to establish a usable replacement creates an **Unresolved Native Reacquisition** condition because OuttaMyWay caused the original Job ownership to end. That condition does not authorise speculative movement or unbounded restart loops.
+
+Existing human authority remains sufficient: while a GIANTS Job exists, manual player stop is authoritative Job termination and Recovery releases through normal supersession; player-controlled intent remains higher authority. No Recovery-specific player-intervention protocol is introduced.
+
 
 ---
 

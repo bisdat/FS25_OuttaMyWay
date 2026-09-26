@@ -29,16 +29,26 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     if type(basis)~="table" or basis.kind~="BLOCKED_WORKER_RECOVERY" or basis.responsibilityKey~=bridge.recoveryKey then
         return nil,"BLOCKED_WORKER_RECOVERY_GOVERNING_BASIS_MISMATCH"
     end
-    local applied,reason=OuttaMyWay.BlockedWorkerRecoveryCommitmentLifecycle.applyDecision(self.runtime,picture,evaluated)
-    if applied==nil then return nil,reason end
-    local current,responsibilityReason=OuttaMyWay.ResolutionCommitmentAdapter.build(self.runtime,applied,{
+    local successorSemantics={
         source="BlockedWorkerRecoveryResponsibilityTransition",
         purpose=candidate.purpose,
         beneficiaryAssemblyIds={bridge.assemblyId},
         controlledSubjectAssemblyIds={bridge.assemblyId},
-        resolutionOutcomeKinds={"BLOCKED_WORKER_RECOVERY_RESTORED_AND_HANDED_BACK"},
+        resolutionOutcomeKinds={
+            "BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT",
+            "BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"
+        },
         responsibilityIdentity=semantics and semantics.responsibilityIdentity or nil
-    })
+    }
+    local preflight,preflightReason=OuttaMyWay.ResolutionCommitmentAdapter.preflightCandidate(candidate,successorSemantics)
+    if preflight==nil then
+        return nil,"BLOCKED_WORKER_RECOVERY_SUCCESSOR_SEMANTICS_PREFLIGHT_FAILED:"..tostring(preflightReason)
+    end
+
+    local applied,reason=OuttaMyWay.BlockedWorkerRecoveryCommitmentLifecycle.applyDecision(self.runtime,picture,evaluated)
+    if applied==nil then return nil,reason end
+    local current,responsibilityReason=OuttaMyWay.ResolutionCommitmentAdapter.build(
+        self.runtime,applied,successorSemantics)
     if current==nil then return nil,responsibilityReason end
     applied.currentResponsibility=current
     return applied,nil
