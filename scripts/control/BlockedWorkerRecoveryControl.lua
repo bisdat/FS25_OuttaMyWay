@@ -359,7 +359,7 @@ function Control:executeControlRequest(request,candidate)
         jobEpisodeId=target.jobEpisodeId,sourceJobToken=target.sourceJobToken,recoveryKey=target.recoveryKey,
         requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,vehicle=vehicle,
         anchorX=tonumber(anchor.x),anchorZ=tonumber(anchor.z),phase="REQUEST_TRANSIT",
-        transitRequested=false,transitChanged=false
+        transitRequested=false,transitChanged=false,nextMovementDiagnosticMs=0
     }
     if not self:_originatingJobStillCurrent(state) then return false,"BLOCKED_WORKER_RECOVERY_JOB_EPISODE_CHANGED" end
 
@@ -449,6 +449,19 @@ function Control:update(dt)
         local drive=self.driveMechanism:getState(state.vehicle)
         if drive==nil then self:_failBeforeRecoveryPoint(state,{kind="RECOVERY_MOVEMENT_AUTHORITY_LOST"}); return end
         if drive.invalidReason~=nil then self:_failBeforeRecoveryPoint(state,{kind="RECOVERY_MOVEMENT_FAILED",reason=drive.invalidReason}); return end
+        local nowMs=g_time or 0
+        if nowMs>=(state.nextMovementDiagnosticMs or 0) then
+            state.nextMovementDiagnosticMs=nowMs+1000
+            logInfo("DIAGNOSTIC","BLOCKED_WORKER_RECOVERY_MOVEMENT_STATE",
+                "commitment=%s assembly=%s remaining=%.2fm commandLocal=(%s,%s) reverseReference=%s distinctFromSteering=%s toolReverserDirection=%s nativeToolAdjustmentApplied=false targetReached=%s",
+                tostring(state.commitmentId),tostring(state.assemblyId),tonumber(drive.lastRemainingM) or -1,
+                drive.lastCommandLocalX and string.format("%.4f",drive.lastCommandLocalX) or "n/a",
+                drive.lastCommandLocalZ and string.format("%.4f",drive.lastCommandLocalZ) or "n/a",
+                tostring(drive.repositionReferenceNodeSource or "UNAVAILABLE"),
+                tostring(drive.reverseReferenceDistinctFromSteering==true),
+                tostring(drive.toolReverserDirectionNodeSource or "UNAVAILABLE"),
+                tostring(drive.targetReached==true))
+        end
         if drive.targetReached~=true then return end
         self:_beginNativeReplanning(state)
         return
