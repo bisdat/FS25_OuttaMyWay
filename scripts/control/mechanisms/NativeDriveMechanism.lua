@@ -228,7 +228,7 @@ function Mechanism:install()
                     state.invalidReason = "reposition-native-reverse-transform-unavailable"
                     return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
                 end
-                local poseOk,_,refY,_=pcall(getWorldTranslation,refNode)
+                local poseOk,refX,refY,refZ=pcall(getWorldTranslation,refNode)
                 if not poseOk then
                     state.invalidReason = "reposition-reverse-reference-pose-unavailable"
                     return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
@@ -246,6 +246,8 @@ function Mechanism:install()
                 return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
             localX, localZ = localX / length, localZ / length
+            state.lastCommandLocalX=localX
+            state.lastCommandLocalZ=localZ
             local cap = speedCeilingApplied(state,state.speedKmh)
             local allowed=cap>0
             state.lastOutputMaxSpeed = cap
