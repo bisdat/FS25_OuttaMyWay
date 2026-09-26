@@ -131,3 +131,12 @@ def test_reverse_reposition_is_a_narrow_extension_of_existing_reposition_primiti
     assert "moveForwards = moveForwards~=false" in drive
     assert 'mode = "REPOSITION"' in drive
     assert "speedCeilingApplied(state,state.speedKmh)" in drive
+
+def test_stall_diagnostic_publishes_existing_correlation_measurements_without_new_observation_state():
+    assessment=read("scripts/assessment/BlockedProgressAssessment.lua")
+    assert "stallTimestamp=track.stall and track.stall.timestamp or nil" in assessment
+    assert "stallX=track.stall and track.stall.poseX or nil" in assessment
+    assert "stallZ=track.stall and track.stall.poseZ or nil" in assessment
+    assert "timestamp=context.timestamp" in assessment
+    assert "poseX=motion.poseX,poseZ=motion.poseZ" in assessment
+
