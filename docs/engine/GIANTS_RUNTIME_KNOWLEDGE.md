@@ -151,6 +151,25 @@ context.
 
 **Evidence:** multiple live assembly observations.
 
+### Native reverse targets use a distinct steering frame
+
+**Finding:** current FS25 field-worker code transforms a forward world target through
+`getAISteeringNode()`, but transforms a reverse world target through
+`getAIReverserNode()` before calling `AIVehicleUtil.driveToPoint()`.
+`AIDriveStrategyFieldCourse` separately records an attached-tool reverser
+direction node where one is exposed.
+
+**Safe use:** when intentionally reusing GIANTS point-driving mechanics in
+reverse, preserve the native reverse reference frame and record whether a
+tool-reverser direction surface is present.
+
+**Do not infer:** `driveToPoint(..., moveForwards=false)` by itself reproduces
+GIANTS native reverse semantics, or the presence of a tool-reverser node grants
+OuttaMyWay authority to reconstruct GIANTS turn/path geometry.
+
+**Evidence:** current FS25 `AIFieldWorker`, `AIDriveStrategyFieldCourse` and
+`AIVehicleUtil` source.
+
 ### Native zero and blocked states are ambiguous and reactive
 
 **Finding:** GIANTS can hold an active field worker at zero without ending its
