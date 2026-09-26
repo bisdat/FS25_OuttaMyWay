@@ -323,11 +323,11 @@ Recovery completion does not require subsequent native speed, productive progres
 
 > **Recovery Completion Belongs to OuttaMyWay; Subsequent Native Success Belongs to Reality.**
 
-### Fresh later blockage
+### Fresh later blockage and Correlated Recovery Recurrence
 
-A subsequent positive Blocked Progress Stall under the replacement Job Episode is fresh Reality. It is not an automatic retry of the previous Recovery and does not require a recurrence suppression window.
+A subsequent positive Blocked Progress Stall under the replacement Job Episode is fresh Reality. It is not an automatic retry of the previous Recovery.
 
-A new Recovery cycle may be admitted only when the successor Job Episode independently establishes:
+A new Recovery cycle may be considered only when the successor Job Episode independently establishes:
 
 - recent positive native progression;
 - a new positive Blocked Progress Stall;
@@ -338,7 +338,37 @@ The previous Trail and Anchor MUST NOT be reused as permission for the new cycle
 
 > **Cycle Repetition != Retry.**
 
-No post-success recurrence watch, retry counter or same-location veto is required by this capability. If repeated fresh Job Episodes later demonstrate pathological cycling, that is new evidence requiring a separately justified escalation policy.
+Before admitting another Blocked Worker Recovery cycle, the implementation MUST correlate that fresh Stall against passive outcome/lineage memory from the immediately preceding successful Recovery for the same Physical Assembly.
+
+A **Correlated Recovery Recurrence** exists only when all of the following are true:
+
+- the current Stall was independently established by the normal Blocked Progress contract;
+- the current Physical Assembly matches the preceding successful Recovery subject;
+- the current Job Episode is the intended successor Job Episode produced by that Recovery;
+- planar Stall-to-Stall separation is **<= 5.0 m**; and
+- Stall-to-Stall elapsed time is **<= 60.0 s**.
+
+The temporal origin is the prior Stall timestamp, not Recovery completion or successor admission. The spatial comparison is prior Stall pose to fresh Stall pose.
+
+The 5 m and 60 s values are correlation bounds. They MUST NOT be used to establish Stall truth, obstacle identity, Recovery failure, environmental clearance or success-by-absence.
+
+> **Time Bounds Correlation; It Does Not Establish Failure.**
+
+> **Spatial Proximity Correlates Stalls; It Does Not Identify the Obstacle.**
+
+The first fresh correlated successor Stall is sufficient to establish **Recovery Strategy Exhausted** for this simple one-cycle Recovery strategy. The preceding Recovery remains semantically successful; recurrence is a later Reality conclusion that replaying the same strategy is no longer justified.
+
+When Recovery Strategy Exhausted is established:
+
+- another Blocked Worker Recovery Candidate MUST NOT be admitted for that correlated Stall;
+- no automatic Recovery retry/replacement loop may be started;
+- passive recurrence state MUST NOT acquire Current Responsibility, Bounded Authority or Control authority;
+- independently supported traffic or other Resolution responsibilities remain independently assessable; and
+- if no supported autonomous continuation remains, normal escalation may require Player Intervention.
+
+Outside the 5 m / 60 s bounds, or without exact intended-successor lineage, the later Stall is not a Correlated Recovery Recurrence and may independently support a new Recovery cycle if all ordinary admission requirements are satisfied.
+
+Correlation memory MAY be retired lazily when its successor lineage is no longer current/relevant or the temporal bound is exceeded. Expiry is correlation cleanup only; it MUST NOT manufacture success, failure or obstacle-clearance meaning.
 
 ### Failure before and after Job Replacement Commitment
 
@@ -358,9 +388,9 @@ Blocked Worker Recovery may deliberately replace one failed GIANTS FIELDWORK Job
 
 A positive Blocked Progress Stall plus fit recovery evidence can justify one bounded Physical Recovery phase without identifying the blocking object. Unknown cause MUST remain unknown rather than being guessed from persistence, boundary proximity or scenery expectations.
 
-### Fresh evidence may support another Recovery cycle
+### Fresh evidence may support another Recovery cycle unless the strategy is exhausted
 
-One Recovery Resolution does not recursively retry itself. After RC success, a later supported Stall under a fresh Job Episode may admit a new independent two-phase Recovery cycle from fresh Trail/Anchor evidence.
+One Recovery Resolution does not recursively retry itself. After RC success, a later supported Stall under a fresh Job Episode may admit a new independent two-phase Recovery cycle from fresh Trail/Anchor evidence **unless** it satisfies the Correlated Recovery Recurrence contract against the immediately preceding successful Recovery, in which case Recovery Strategy Exhausted vetoes replay of the same Recovery strategy for that Stall.
 
 ### Responsibility continuity and physical permission remain distinct
 
@@ -410,7 +440,7 @@ Such evidence is produced only by an independently justified diagnostic instrume
 - **Replacement preparation/validation fails before Commitment** — preserve unresolved Recovery and do not expose the known-failed Job merely as fallback.
 - **Replacement start succeeds** — physically release OMW movement/configuration control immediately; await only semantic intended-successor admission.
 - **Intended successor Job Episode admitted** — satisfy Native Replanning and end RC immediately through normal terminal settlement.
-- **Fresh later Stall under the successor** — assess from fresh evidence; a new Recovery cycle may be admitted if its own Trail/Anchor contract is satisfied.
+- **Fresh later Stall under the successor** — assess from fresh evidence first, then correlate against the immediately preceding successful Recovery; a 5 m / 60 s exact-successor recurrence establishes Recovery Strategy Exhausted and vetoes another Recovery cycle for that Stall.
 - **No supported autonomous continuation remains** — parent-consistent failure/escalation may require Player Intervention.
 
 ## Cross-Jurisdiction dependencies
