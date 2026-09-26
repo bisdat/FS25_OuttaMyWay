@@ -630,7 +630,7 @@ function Runtime:_blockedWorkerRecoveryRequest(picture,evaluated,candidate,appli
         kind="BLOCKED_WORKER_RECOVERY",assemblyReferenceKey=bridge.assemblyReferenceKey,
         jobEpisodeId=bridge.jobEpisodeId,sourceJobToken=bridge.sourceJobToken,recoveryKey=bridge.recoveryKey,
         configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN",
-        recoveryAnchor=bridge.recoveryAnchor
+        recoveryAnchor=bridge.recoveryAnchor,recoveryApproachAxis=bridge.recoveryApproachAxis
     }
     local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
         assemblyId=bridge.assemblyId,capability="REPOSITION",target=target,
