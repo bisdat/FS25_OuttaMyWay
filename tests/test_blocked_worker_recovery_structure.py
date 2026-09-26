@@ -125,12 +125,21 @@ def test_product_lifecycle_publishes_and_clears_recovery_control():
     assert "OuttaMyWay.blockedWorkerRecoveryControl=bundle.blockedWorkerRecoveryControl" in lifecycle
     assert "OuttaMyWay.blockedWorkerRecoveryControl=nil" in lifecycle
 
-def test_reverse_reposition_is_a_narrow_extension_of_existing_reposition_primitive():
+def test_reverse_reposition_preserves_giants_native_reverse_reference_frame():
     drive=read("scripts/control/mechanisms/NativeDriveMechanism.lua")
+    control=read("scripts/control/BlockedWorkerRecoveryControl.lua")
     assert "function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadiusM, moveForwards)" in drive
-    assert "moveForwards = moveForwards~=false" in drive
+    assert "getAIReverserNode" in drive
+    assert "worldToLocal" in drive
+    assert "getAIToolReverserDirectionNode" in drive
     assert 'mode = "REPOSITION"' in drive
     assert "speedCeilingApplied(state,state.speedKmh)" in drive
+    assert "reverseReferenceDistinctFromSteering" in drive
+    assert "toolAdjustedReverseTarget" in drive
+    assert "MathUtil.getProjectOnLineParameter" in drive
+    assert "MathUtil.getSignedAngleBetweenVectors2D" in drive
+    assert "nativeToolAdjustmentApplied" in drive
+    assert "nativeToolAdjustmentApplied=%s" in control
 
 def test_stall_diagnostic_publishes_existing_correlation_measurements_without_new_observation_state():
     assessment=read("scripts/assessment/BlockedProgressAssessment.lua")

@@ -151,6 +151,47 @@ context.
 
 **Evidence:** multiple live assembly observations.
 
+### Native reverse targets use a distinct steering frame
+
+**Finding:** current FS25 field-worker code transforms a forward world target through
+`getAISteeringNode()`, but transforms a reverse world target through
+`getAIReverserNode()` before calling `AIVehicleUtil.driveToPoint()`.
+`AIDriveStrategyFieldCourse` separately records an attached-tool reverser
+direction node where one is exposed.
+
+**Safe use:** when intentionally reusing GIANTS point-driving mechanics in
+reverse, preserve the native reverse reference frame and record whether a
+tool-reverser direction surface is present.
+
+**Do not infer:** `driveToPoint(..., moveForwards=false)` by itself reproduces
+GIANTS native reverse semantics, or the presence of a tool-reverser node grants
+OuttaMyWay authority to reconstruct GIANTS turn/path geometry.
+
+**Evidence:** current FS25 `AIFieldWorker`, `AIDriveStrategyFieldCourse` and
+`AIVehicleUtil` source.
+
+### Native field-course reverse applies tool-relative target geometry
+
+**Finding:** when `AIDriveStrategyFieldCourse` is reversing and
+`AIVehicleUtil.getAIToolReverserDirectionNode(vehicle)` returns a node, GIANTS
+does more than select the vehicle reverser frame. It expresses the current world
+target relative to the tool reverser node, rotates that lateral/longitudinal
+target by the signed tool-to-vehicle reverse-heading angle, and re-expresses the
+adjusted point from the vehicle reverser node before `AIFieldWorker` calls
+`driveToPoint()`.
+
+**Safe use:** a bounded OuttaMyWay reverse point objective may reuse this
+post-target transform as subordinate physical steering geometry while retaining
+its own target, completion residual and authority boundary.
+
+**Do not infer:** the transform imports the native field-course route, proves
+reverse clearance, or authorises calling `aiFieldCourse:getDriveData()`.
+Field-course target generation and post-target articulated steering correction
+remain distinct mechanisms.
+
+**Evidence:** current FS25 `AIDriveStrategyFieldCourse:getDriveData()` reverse
+path and Issue #336 S416/Condor comparison.
+
 ### Native zero and blocked states are ambiguous and reactive
 
 **Finding:** GIANTS can hold an active field worker at zero without ending its

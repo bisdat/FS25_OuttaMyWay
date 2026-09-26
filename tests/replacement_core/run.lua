@@ -3410,6 +3410,113 @@ test("Supporting Speed Ceiling composes with Passage Reposition without changing
     AIVehicleUtil, getWorldTranslation, worldDirectionToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
+test("Reverse Reposition preserves GIANTS AI reverser reference frame",function()
+    local oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal
+    local calls={}
+    AIVehicleUtil={
+        driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+            calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+            return true
+        end,
+        getAIToolReverserDirectionNode=function(vehicle) return 903 end
+    }
+    getWorldTranslation=function(node)
+        if node==900 then return 10,0,0 end
+        if node==901 then return 8,0,2 end
+        if node==903 then return 6,0,4 end
+        return 0,0,0
+    end
+    worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    worldToLocal=function(node,x,y,z)
+        equal(node,901)
+        return 0,0,-5
+    end
+    local vehicle={
+        rootNode=900,
+        getAISteeringNode=function(self) return 900 end,
+        getAIReverserNode=function(self) return 901 end
+    }
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
+
+    equal(authority:setReposition(vehicle,0,0,8,0.5,false),true)
+    local state=authority:getState(vehicle)
+    equal(state.repositionReferenceNode,901)
+    equal(state.repositionReferenceNodeSource,"AI_REVERSER_NODE")
+    equal(state.reverseReferenceDistinctFromSteering,true)
+    equal(state.toolReverserDirectionNode,903)
+    equal(state.toolReverserDirectionNodeSource,"AI_TOOL_REVERSER_DIRECTION_NODE")
+
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].moveForwards,false)
+    equal(math.abs(calls[#calls].lx)<0.0001,true)
+    equal(math.abs(calls[#calls].lz+1)<0.0001,true)
+    equal(math.abs(authority:getState(vehicle).lastRemainingM-10)<0.0001,true)
+
+    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal
+end)
+
+test("Reverse Reposition applies GIANTS tool-relative target transform when tool reverser node exists",function()
+    local oldAIVehicleUtil,oldMathUtil=AIVehicleUtil,MathUtil
+    local oldTranslation,oldWorldDirection,oldWorldToLocal,oldLocalToWorld=
+        getWorldTranslation,localDirectionToWorld,worldToLocal,localToWorld
+    local calls={}
+    AIVehicleUtil={
+        driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+            calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+            return true
+        end,
+        getAIToolReverserDirectionNode=function(vehicle) return 101 end
+    }
+    MathUtil={
+        vector2Length=function(x,z) return math.sqrt(x*x+z*z) end,
+        getProjectOnLineParameter=function(px,pz,lx,lz,dx,dz) return (px-lx)*dx+(pz-lz)*dz end,
+        vector2Normalize=function(x,z)
+            local l=math.sqrt(x*x+z*z)
+            if l<=0 then return 0,0 end
+            return x/l,z/l
+        end,
+        dotProduct=function(ax,ay,az,bx,by,bz) return ax*bx+ay*by+az*bz end,
+        getSignedAngleBetweenVectors2D=function() return 0 end,
+        isNan=function(v) return v~=v end
+    }
+    getWorldTranslation=function(node)
+        if node==100 then return 0,0,0 end
+        if node==101 then return 0,0,-2 end
+        return 0,0,0
+    end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    localToWorld=function(node,x,y,z)
+        equal(node,100)
+        return x,y,z
+    end
+    worldToLocal=function(node,x,y,z)
+        equal(node,100)
+        return x,y,z
+    end
+    local vehicle={
+        rootNode=100,
+        getAISteeringNode=function(self) return 100 end,
+        getAIReverserNode=function(self) return 100 end
+    }
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
+
+    equal(authority:setReposition(vehicle,2,-10,8,0.5,false),true)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    local state=authority:getState(vehicle)
+    equal(state.nativeToolAdjustmentApplied,true)
+    equal(state.nativeToolAdjustmentReason,"GIANTS_TOOL_REVERSE_TRANSFORM_APPLIED")
+    equal(math.abs(state.nativeToolAdjustedLocalX+2)<0.0001,true)
+    equal(math.abs(state.nativeToolAdjustedLocalZ+8)<0.0001,true)
+    equal(calls[#calls].moveForwards,false)
+    equal(calls[#calls].lx<0,true)
+    equal(calls[#calls].lz<0,true)
+    equal(math.abs(state.lastRemainingM-math.sqrt(104))<0.0001,true)
+
+    AIVehicleUtil,MathUtil=oldAIVehicleUtil,oldMathUtil
+    getWorldTranslation,localDirectionToWorld,worldToLocal,localToWorld=
+        oldTranslation,oldWorldDirection,oldWorldToLocal,oldLocalToWorld
+end)
+
 test("Supporting Speed Ceilings compose monotonically and survive movement-objective clear",function()
     local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
     local calls={}
