@@ -1,3 +1,31 @@
+# v0.4.4.0 PATCH CHECKPOINT — Blocked Worker Recovery Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #327 (`db8cedadb5e09549148c141a80c39bee5bf174c7`), carrying field-validated TEST `0.4.3.12`.
+
+**Version rationale:** owner-selected PATCH checkpoint under D-0223. The accepted delta since `0.4.3.0` forms a coherent, validated Blocked Worker Recovery plateau within the existing 0.4 responsibility-oriented architecture/capability epoch. The tranche discovers and implements the bounded two-phase recovery lifecycle without selecting a new MINOR epoch.
+
+**PATCH checkpoint boundary:** this increment changes version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration or player-facing behaviour beyond the already accepted and field-validated `0.4.3.12` baseline.
+
+**Validated plateau summary:**
+- Blocked Progress Assessment distinguishes native blocked assertions from a positively established **Blocked Progress Stall**, using a bounded Job-Episode-scoped Recovery Approach Trail rather than Productive History;
+- the Trail's 5 m useful-span calibration qualifies recovery evidence while the **first/oldest retained compatible witness** supplies the Recovery Anchor;
+- Phase 1 always requests Transit and performs one bounded direct return to that Anchor under purpose-specific REPOSITION authority;
+- Reality disproved same-Job handback as sufficient native replanning; Recovery therefore became a two-phase Resolution spanning **Physical Recovery** and **Native Replanning**;
+- Phase 2 prepares and validates a fresh GIANTS FIELDWORK Job before the **Job Replacement Commitment Point**, then performs supported synchronous `stopJob(oldJob,nil)` -> `startJob(replacement,farmId)`;
+- OMW immediately relinquishes Recovery movement and Transit-configuration bookkeeping after replacement start, leaving GIANTS to own subsequent configuration and movement;
+- semantic Recovery success requires positive admission of the intended successor Job Episode for the same Physical Assembly; RC SUCCESS then releases all remaining Recovery stickiness immediately;
+- a later Stall under the successor Job Episode is fresh Reality and may admit a new Recovery only from fresh Stall/Trail/Anchor evidence — **Cycle Repetition != Retry**;
+- TEST `0.4.3.11` exposed stale single-obligation Responsibility semantics plus leaked actuation ownership after failed materialisation; TEST `0.4.3.12` corrected this with successor-semantic preflight before retained admission and regression-protected **Failed Responsibility Transition Must Not Leak Actuation Ownership**;
+- `0.4.3.12` Reality validation exercised the complete Condor path from Stall through Transit, Anchor return, native Job replacement, intended successor Job Episode admission and RC SUCCESS with no Recovery tail;
+- targeted `0.4.3.12` video validation confirmed **Player Intent Preservation by Non-Mutation** for the tested non-default GIANTS FIELDWORK parameters across Recovery-induced Job replacement and observed no player-visible manual-stop notification;
+- Issues #288 and #326 closed as completed; PR #327 merged the accepted implementation to `main`.
+
+**Validation basis:** blocking Offline Validation run #928 passed Structural contracts, Lua offline behavioural contracts and Generated source reference on the exact `0.4.3.12` candidate. In-game Reality validation then passed the complete two-phase Recovery lifecycle and the separate non-default FIELDWORK parameter preservation test before PR #327 was merged.
+
+**Known separable work:** obstacle-specific tree/pylon/hedge bypass, broader stress coverage, Operational Player Messages/HUD (#89), performance/frame-pacing evidence (#86) and other open engineering work remain separable. Future blockage failures on different assemblies or environmental conditions should be investigated from fresh Reality evidence rather than reopening the completed #288 implementation tranche.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. Under D-0223, a future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.3.0 PATCH CHECKPOINT — Supported Configuration Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #313, carrying field-validated TEST `0.4.2.8`.
