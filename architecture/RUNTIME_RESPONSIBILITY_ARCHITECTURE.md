@@ -718,19 +718,43 @@ The Recovery Resolution may remain semantically current for the short evidence i
 
 > **Requested Replacement != Observed Successor.**
 
-Positive admission of that intended successor satisfies Native Replanning and therefore the final Recovery obligation. **RC-1 SUCCESS is a sharp boundary:** all remaining Recovery-owned authority, bookkeeping and Current Responsibility stickiness are released immediately. No recurrence watch, grace period or post-success hold remains.
+Positive admission of that intended successor satisfies Native Replanning and therefore the final Recovery obligation. **RC-1 SUCCESS is a sharp boundary:** all remaining Recovery-owned authority, actuation bookkeeping and Current Responsibility stickiness are released immediately. No recurrence hold, grace period or post-success actuation authority remains.
+
+Passive outcome/lineage memory MAY persist after success only to correlate a later independently established Stall against the completed Recovery. That memory is not Current Responsibility, Bounded Authority, Control state or a reason to delay release.
 
 > **Resolution Completion = Immediate Recovery Release.**
 
+> **Correlation Memory != Retained Recovery Authority.**
+
 Subsequent GIANTS productive success or failure belongs to fresh Reality.
 
-### Fresh later blockage
+### Fresh later blockage and Correlated Recovery Recurrence
 
-A later positive Blocked Progress Stall under the successor Job Episode is a fresh Situation, not a retry of the previous Recovery. It must establish a fresh Recovery Approach Trail and fit Recovery Anchor under the new Job Episode before another Recovery cycle is supportable.
+A later positive Blocked Progress Stall under the successor Job Episode is a fresh Situation, not a retry of the previous Recovery. It must independently establish a fresh Recovery Approach Trail and fit Recovery Anchor under the new Job Episode before any later Recovery Candidate could otherwise be supportable.
 
 > **Cycle Repetition != Retry.**
 
-The architecture therefore retains no post-success recurrence veto, retry counter or spatial/time suppression window. A fresh supported Stall may admit a fresh two-phase Recovery cycle. If Reality later demonstrates pathological repeated replacement cycles, that evidence must justify any new escalation concept rather than pre-emptively inventing one.
+Fresh Stall truth remains entirely upstream of recurrence correlation. Space, time and replacement lineage do not manufacture blockage and do not identify an obstacle.
+
+A **Correlated Recovery Recurrence** exists only when all of the following are true:
+
+- a fresh Blocked Progress Stall has been independently established;
+- the Physical Assembly is the same assembly recovered by the immediately preceding successful Recovery;
+- the fresh Stall belongs to the intended successor Job Episode produced by that Recovery;
+- the fresh Stall is spatially local to the prior Stall within the accepted recurrence radius; and
+- the fresh Stall occurs within the accepted Stall-to-Stall correlation horizon.
+
+> **Time Bounds Correlation; It Does Not Establish Failure.**
+
+> **Spatial Proximity Correlates Stalls; It Does Not Identify the Obstacle.**
+
+The first such correlated successor Stall is sufficient to establish **Recovery Strategy Exhausted** for the simple one-cycle Recovery strategy at that local condition. Recovery success is not retroactively revoked: the preceding Recovery truthfully succeeded when its intended successor Job Episode was admitted. The later recurrence instead proves that replaying the same bounded Recovery strategy is no longer a justified autonomous continuation.
+
+A Correlated Recovery Recurrence therefore vetoes another Blocked Worker Recovery cycle for that correlated Stall. It does not veto independently supported Regulation, Passage, Obstruction Relocation or another future capability. If no supported autonomous continuation remains after the Recovery strategy is exhausted, normal escalation may require Player Intervention.
+
+Outside the correlation bounds, or without the exact successor lineage, a later Stall remains fresh independent Reality and may support a new Recovery cycle from its own fresh Trail/Anchor evidence.
+
+Correlation state is passive lineage/outcome memory only. It carries no actuation authority, introduces no active timer/watch, and absence of recurrence during the temporal horizon proves neither success nor obstacle clearance.
 
 ### Failure and intervention boundaries
 
