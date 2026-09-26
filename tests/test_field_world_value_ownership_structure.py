@@ -72,3 +72,13 @@ def test_issue87_existing_field_world_behavioural_witnesses_remain_independent()
         assert witness in harness
     for name in RETIRED:
         assert name not in harness
+
+def test_issue331_job_succession_preserves_comparison_authority_without_identity_inheritance():
+    source = read("scripts/observation/LiveObservationSource.lua")
+    assert "fieldWorldSuccessionBridge" in source
+    assert "predecessorSnapshotReferenceKey" in source
+    assert "self.fieldWorldEquivalenceAuthority:markRelevant(bridge.predecessorSnapshotReferenceKey)" in source
+    assert "track.fieldWorldSnapshot=nil; track.fieldWorldResolution=nil; track.fieldWorldError=nil" in source
+    assert "SUCCESSOR_FIELD_WORLD_RESOLVED" in source
+    assert "inheritedIdentity=false" in source
+

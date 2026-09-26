@@ -192,8 +192,9 @@ function Authority:resolve(snapshot)
 end
 
 -- Retirement is lifecycle-scoped evidence retirement, not a claim that the physical
--- field ceased to exist: an equivalence class remains live only while a relevant
--- Job Episode continues to witness it across observation cycles.
+-- field ceased to exist. A class remains live while a current/retained Job Episode
+-- witnesses it, or while Observation explicitly preserves its already-assigned
+-- Snapshot as the comparison basis for a positively linked successor Job Episode.
 function Authority:endObservationCycle()
     local retired={}
     for _,key in OuttaMyWay.ValueRecord.ipairs(sortedClassKeys(self.classes)) do

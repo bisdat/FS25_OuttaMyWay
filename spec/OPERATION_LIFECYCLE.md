@@ -214,6 +214,22 @@ An assembly MUST NOT simultaneously have two active semantic Job Episodes. Posit
 
 Equivalent Snapshots remain distinct immutable evidence records even when they resolve to one Field World.
 
+### Job succession preserves comparison authority, not Field World identity
+
+When positive Job Episode succession clears the predecessor Job-scoped Snapshot and starts fresh successor capture, the predecessor's resolved Field World class MUST remain available as a comparison basis until the successor's fresh Snapshot independently reaches a positive equivalence result or the successor positively ends/is removed.
+
+During that interval:
+
+- the successor MUST NOT inherit the predecessor `fieldWorldReferenceKey`, Snapshot identity or equivalence status;
+- pending successor capture MUST NOT cause the predecessor class to retire merely because no other Job Episode witnesses it in that observation cycle;
+- the predecessor Snapshot MAY be used only to keep its established equivalence class available for later comparison;
+- a fresh successor Snapshot MUST still resolve through ordinary `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED` semantics; and
+- no timeout, grace period, Recovery-specific flag, player-facing field number or exact fingerprint shortcut may predetermine the result.
+
+> **Snapshot Capture Gap != Field World Lifecycle End.**
+
+> **Comparison Continuity != Identity Inheritance.**
+
 ### One active Local Operation per resolved Field World
 
 The implementation MUST NOT create parallel active Local Operations for the same resolved Field World merely because membership changes.
