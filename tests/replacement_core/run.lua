@@ -3456,7 +3456,7 @@ test("Reverse Reposition preserves GIANTS AI reverser reference frame",function(
 end)
 
 test("Reverse Reposition applies GIANTS tool-relative target transform when tool reverser node exists",function()
-    local oldAIVehicleUtil,oldMathUtil=MathUtil and AIVehicleUtil or AIVehicleUtil,MathUtil
+    local oldAIVehicleUtil,oldMathUtil=AIVehicleUtil,MathUtil
     local oldTranslation,oldWorldDirection,oldWorldToLocal,oldLocalToWorld=
         getWorldTranslation,localDirectionToWorld,worldToLocal,localToWorld
     local calls={}
