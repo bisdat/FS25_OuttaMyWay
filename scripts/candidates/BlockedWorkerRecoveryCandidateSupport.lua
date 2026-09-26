@@ -107,10 +107,10 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     local fitness=recoveryRepresentationFitness(picture,knowledge,anchor,recoveryKey,targetPictureId)
     local specification={
         referenceKey=recoveryKey..":to-anchor",
-        purpose={kind="BLOCKED_WORKER_RECOVERY",result="RETURN_TO_RECOVERY_ANCHOR_AND_HAND_BACK"},
+        purpose={kind="BLOCKED_WORKER_RECOVERY",result="RETURN_TO_RECOVERY_ANCHOR_AND_REPLAN_NATIVE_JOB"},
         subject={assemblyId=knowledge.assemblyId},
         capability="REPOSITION",
-        expectedEffect={physicalChange=true,recoveryPoint="RECOVERY_ANCHOR",transitRequested=true,configurationRestoredBeforeHandback=true,handbackToGiants=true},
+        expectedEffect={physicalChange=true,recoveryPoint="RECOVERY_ANCHOR",transitRequested=true,nativeJobReplacement=true,physicalReleaseAfterReplacementStart=true},
         evidenceBasis={
             governingBasis={
                 kind="BLOCKED_WORKER_RECOVERY",responsibilityKey=recoveryKey,
@@ -138,18 +138,29 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
         },
         representationFitness={requirements={{representationId=fitness.representationId,acceptedStates={"FIT_FOR_LIMITED_HORIZON"}}}},
         preconditions={evidenceContracts={{kind="BLOCKED_PROGRESS_STALL"},{kind="RECOVERY_ANCHOR"}}},
-        invalidationConditions={{kind="PLAYER_CLAIM"},{kind="JOB_EPISODE_CHANGED"},{kind="RECOVERY_ANCHOR_INVALIDATED"}},
-        reversibility={kind="ONE_RECOVERY_EXCURSION_TO_ANCHOR_THEN_GIANTS_HANDBACK"},
-        obligationsCreated={{
-            origin={kind="BLOCKED_PROGRESS_STALL",recoveryKey=recoveryKey},
-            basis={kind="BLOCKED_WORKER_RECOVERY",assemblyId=knowledge.assemblyId,jobEpisodeId=knowledge.jobEpisodeId},
-            requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_RESTORED_AND_HANDED_BACK"},
-            requiredAuthority={classes={"PROGRESS_ACTUATION"}},
-            evidenceContract={kind="RECOVERY_ANCHOR_REACHED_RESTORED_AND_HANDED_BACK"},
-            ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true,
-            creationEvidence={stall=knowledge.stallEvidence,anchor=knowledge.recoveryAnchor}
-        }},
-        releaseImplications={releaseBoundedAuthorityAfterActuation=true,handBackToGiants=true},
+        invalidationConditions={{kind="PLAYER_CLAIM"},{kind="UNEXPECTED_JOB_EPISODE_CHANGED_BEFORE_REPLACEMENT_COMMITMENT"},{kind="RECOVERY_ANCHOR_INVALIDATED"}},
+        reversibility={kind="ONE_RECOVERY_CYCLE_TO_ANCHOR_THEN_NATIVE_JOB_REPLACEMENT"},
+        obligationsCreated={
+            {
+                origin={kind="BLOCKED_PROGRESS_STALL",recoveryKey=recoveryKey},
+                basis={kind="BLOCKED_WORKER_RECOVERY_PHYSICAL",assemblyId=knowledge.assemblyId,jobEpisodeId=knowledge.jobEpisodeId},
+                requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT"},
+                requiredAuthority={classes={"PROGRESS_ACTUATION"}},
+                evidenceContract={kind="RECOVERY_ANCHOR_REACHED_IN_TRANSIT"},
+                ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true,
+                creationEvidence={stall=knowledge.stallEvidence,anchor=knowledge.recoveryAnchor}
+            },
+            {
+                origin={kind="BLOCKED_PROGRESS_STALL",recoveryKey=recoveryKey},
+                basis={kind="BLOCKED_WORKER_RECOVERY_NATIVE_REPLANNING",assemblyId=knowledge.assemblyId,originatingJobEpisodeId=knowledge.jobEpisodeId},
+                requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"},
+                requiredAuthority={classes={}},
+                evidenceContract={kind="INTENDED_SUCCESSOR_JOB_EPISODE_ADMITTED",samePhysicalAssembly=true},
+                ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true,
+                creationEvidence={stall=knowledge.stallEvidence,anchor=knowledge.recoveryAnchor}
+            }
+        },
+        releaseImplications={releaseBoundedAuthorityAfterActuation=true,giantsOwnsPostRestartConfigurationAndMovement=true},
         uncertainty={{kind="RECOVERY_ANCHOR_PURPOSE_SPECIFIC_NOT_GENERAL_CLEARANCE"}},
         comparisonCost=1
     }
@@ -158,7 +169,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     return {
         supportBoundary={
             mode="BLOCKED_WORKER_RECOVERY",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,
-            controlAuthority="SELECTED_RECOVERY_ANCHOR_ONLY",boundedScope="ONE_RECOVERY_EXCURSION_TO_SELECTED_ANCHOR",
+            controlAuthority="SELECTED_RECOVERY_ANCHOR_ONLY",boundedScope="ONE_RECOVERY_CYCLE_TO_SELECTED_ANCHOR_THEN_NATIVE_JOB_REPLACEMENT",
             targetOperationalPictureId=targetPictureId,parentOperationalPictureId=picture.identity
         },
         candidateSpecifications={specification},

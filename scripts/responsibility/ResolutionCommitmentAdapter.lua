@@ -26,6 +26,50 @@ local function openResolutionObligationIds(runtime,commitmentId,outcomeKinds)
     return sortedDistinct(identities)
 end
 
+local function acceptedOutcomeKinds(values)
+    local accepted={}
+    local count=0
+    for _,kind in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        if type(kind)~="string" or kind=="" then return nil,0,"INVALID_RESOLUTION_OUTCOME_KIND" end
+        if accepted[kind]~=true then accepted[kind]=true; count=count+1 end
+    end
+    return accepted,count,nil
+end
+
+-- Validates successor semantics that are already knowable from the selected
+-- Candidate before retained Commitment/Obligation/authority admission occurs.
+-- This is deliberately non-authoritative: it creates no retained state.
+function Adapter.preflightCandidate(candidate,semantics)
+    if type(candidate)~="table" or type(semantics)~="table" then
+        return nil,"MISSING_RESOLUTION_PREFLIGHT_CONTEXT"
+    end
+    local beneficiaries,beneficiaryReason=sortedDistinct(semantics.beneficiaryAssemblyIds)
+    if beneficiaries==nil then return nil,beneficiaryReason end
+    local subjects,subjectReason=sortedDistinct(semantics.controlledSubjectAssemblyIds)
+    if subjects==nil then return nil,subjectReason end
+    local responsibilityIdentity=semantics.responsibilityIdentity
+    if type(responsibilityIdentity)~="string" or responsibilityIdentity=="" then
+        return nil,"INVALID_RESOLUTION_RESPONSIBILITY_IDENTITY"
+    end
+    local accepted,acceptedCount,acceptedReason=acceptedOutcomeKinds(semantics.resolutionOutcomeKinds)
+    if accepted==nil then return nil,acceptedReason end
+    if #beneficiaries==0 or #subjects==0 or acceptedCount==0 then
+        return nil,"INCOMPLETE_RESOLUTION_SEMANTICS"
+    end
+
+    local matching=0
+    for _,specification in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
+        local outcome=specification.requiredOutcome
+        if type(outcome)=="table" and accepted[outcome.kind]==true then matching=matching+1 end
+    end
+    if matching==0 then return nil,"INCOMPATIBLE_RESOLUTION_OBLIGATION_SEMANTICS" end
+    return {
+        beneficiaryAssemblyIds=beneficiaries,
+        controlledSubjectAssemblyIds=subjects,
+        matchingCandidateObligationCount=matching
+    },nil
+end
+
 -- This adapter materializes a read-only architectural view. It owns no
 -- responsibility or retained Commitment/Obligation lifecycle authority.
 function Adapter.build(runtime,applied,semantics)

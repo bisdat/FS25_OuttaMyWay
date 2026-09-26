@@ -7,7 +7,7 @@
 **Parent Jurisdiction:** [`Resolution Lifecycle`](RESOLUTION_LIFECYCLE.md)  
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#specification-jurisdiction--blocked-worker-recovery)
 
-This Specification owns the implementation-facing contract for the single-subject **Resolution Commitment** that performs one bounded physical recovery excursion for a still-active GIANTS worker after current Situation evidence has established a **Blocked Progress Stall**.
+This Specification owns the implementation-facing contract for the single-subject **Resolution Commitment** that performs one two-phase Recovery cycle for a still-active GIANTS worker after current Situation evidence has established a **Blocked Progress Stall**: bounded physical return to a Recovery Anchor, followed by deliberate GIANTS-native replanning through FIELDWORK Job replacement.
 
 Blocked Worker Recovery does **not** own raw native blockage observation, generic Situation interpretation, obstacle identification, environmental map modelling, productive routing, arbitrary path planning, generic Bounded Authority or generic Control mechanics.
 
@@ -95,7 +95,7 @@ The initial production sampling calibration is one candidate witness per complet
 
 The 250 ms cadence is implementation calibration, not architectural policy. Trail age/count/distance capacity MUST remain finite and purpose-bounded, but its exact retention horizon is a separate implementation/validation calibration and MUST NOT be inferred from the sampling cadence.
 
-A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Trail for the current recovery question when it breaks Recovery Approach continuity.
+A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Trail as evidence for any later recovery question when it breaks Recovery Approach continuity. The intentionally caused Phase-2 Job replacement does not retroactively invalidate the already-admitted Recovery Resolution.
 
 The **Recovery Anchor** MUST identify the first/oldest retained compatible positively realised Trail state in that uninterrupted Approach once the retained Trail demonstrates sufficient cumulative useful span for a bounded recovery attempt. Anchor fitness MUST preserve:
 
@@ -107,7 +107,7 @@ The **Recovery Anchor** MUST identify the first/oldest retained compatible posit
 - representation relevance; and
 - absence of a positive known blockage-associated spatial contradiction already implicating that candidate Anchor state.
 
-A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Anchor for the current recovery question when it breaks that continuity.
+A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Anchor as admission evidence for any later Recovery cycle when it breaks that continuity. The current Recovery may retain the selected Anchor as provenance after its Phase-1 movement has completed.
 
 The minimum useful Trail-span requirement qualifies whether the retained Recovery Approach Trail is sufficient to support one bounded recovery attempt; it MUST NOT select the Recovery Point. Once the retained compatible Trail qualifies, Assessment MUST select its first/oldest retained compatible witness as the Recovery Anchor. Assessment MUST NOT widen retention or reconstruct older history merely because the bounded Trail is insufficient.
 
@@ -212,104 +212,159 @@ It MUST NOT reconstruct the complete historical GIANTS path, synthesize a turnin
 
 The granted movement envelope MUST remain no broader than the currently supported local release purpose.
 
-## Recovery Point, settlement and handback
+## Two-phase Recovery lifecycle
 
-### Recovery Point
+### Recovery obligations
 
-The **Recovery Point** is the bounded physical endpoint at which the specialised Resolution's one Recovery Excursion obligation has been discharged.
+One Blocked Worker Recovery Resolution owns two terminal-dependent obligations for the same Physical Assembly:
 
-For the initial capability, the selected Recovery Anchor **is** the Recovery Point. The authorised excursion ends when that Anchor is reached; it does not continue to seek a better location and does not substitute an earlier obstacle-specific endpoint.
+1. **Physical Recovery** — the assembly reaches the selected Recovery Anchor after the mandatory Transit request has settled sufficiently for the authorised movement; and
+2. **Native Replanning** — the intended replacement GIANTS FIELDWORK Job is positively admitted as the successor Job Episode for that same Physical Assembly.
 
-The exact implementation movement calibration within that bounded domain is not architectural policy unless later evidence promotes a literal into the contract.
+The originating Job Episode remains provenance for admission of the Stall, Recovery Approach and Recovery Anchor. It MUST NOT remain the persistence identity of the whole Recovery after OuttaMyWay deliberately replaces that Job.
 
-### Positive Resolution satisfaction
+> **Recovery Admission Basis != Recovery Persistence Basis.**
 
-Blocked Worker Recovery's terminal-dependent obligation is **not** to prove permanent GIANTS productive success.
+The first obligation may be satisfied while the second remains open. This MUST preserve the same Recovery Resolution under the parent Resolution Lifecycle.
 
-The obligation is positively satisfied when current evidence establishes that:
+> **Phase Completion != Resolution Completion.**
 
-- the authorised Recovery Excursion reached its supported Recovery Point;
-- owned recovery movement has stopped;
-- intervention-created configuration debt has been restored or otherwise discharged according to the accepted mechanism contract;
-- OuttaMyWay-owned physical effects for the Recovery Resolution have been relinquished; and
-- control has been handed back to GIANTS for the still-current qualifying Job Episode.
+### Phase 1 — Physical Recovery
 
-These are positive settlement facts and satisfy the parent Resolution Lifecycle's positive-settlement requirement.
+For the initial capability, the selected Recovery Anchor **is** the Recovery Point. The authorised excursion ends at that Anchor; it does not continue to seek a better location or substitute an obstacle-specific endpoint.
+
+On reaching the Recovery Point:
+
+- Recovery Control MUST stop further OMW-owned recovery movement;
+- the Physical Recovery obligation is positively satisfied;
+- the assembly remains in the Recovery-created Transit posture;
+- OuttaMyWay MUST NOT restore the pre-Recovery working posture as normal successful choreography; and
+- Native Replanning proceeds inside the same Recovery Resolution.
+
+Reaching the Anchor does not itself hand the known-failed Job back to GIANTS.
+
+> **Known-Failed Native Authority != Safe Handback Authority.**
+
+### Phase 2 — Native Replanning
+
+Native Replanning is subordinate choreography of **Blocked Worker Recovery Control**, not a new Candidate, Decision, Current Responsibility or Resolution type.
+
+Recovery Control MUST prepare the replacement before intentionally terminating the failed Job. For the current supported GIANTS FIELDWORK lifecycle, preparation consists of:
+
+- require the current native Job to be FIELDWORK;
+- identify the applicable farm;
+- create a fresh FIELDWORK Job;
+- seed it from the recovered vehicle pose with direct-start semantics;
+- apply the replacement Job's normal values;
+- validate the replacement; and
+- only after successful preparation, perform the Job Replacement Commitment.
+
+Preparation MUST NOT clone the failed Job object as productive routing authority.
+
+The **Job Replacement Commitment Point** occurs when OuttaMyWay deliberately stops the failed Job. The stop and immediate start calls are one synchronous Recovery choreography from OuttaMyWay's perspective. Observation and Operation Lifecycle MUST nevertheless continue to report the old Job Episode ending and the successor Job Episode starting truthfully.
+
+> **Replacement Preparation != Replacement Commitment.**
+
+> **Expected Job Replacement != Responsibility Supersession.**
+
+The stop/start lifecycle mutation is authorised by the accepted Blocked Worker Recovery Resolution. It is not a REPOSITION target and MUST NOT broaden physical Bounded Authority.
+
+> **Lifecycle Permission != Physical Bounded Authority.**
+
+### Player intent preservation
+
+Recovery MUST NOT deliberately rewrite vehicle-scoped GIANTS AI-mode/user settings merely to perform the Job replacement.
+
+The current preservation strategy is **Player Intent Preservation by Non-Mutation**:
+
+- discard the failed Job identity and its native execution/course state;
+- retain the vehicle and its existing GIANTS AI-mode/user settings unchanged;
+- direct-start the replacement from the recovered pose; and
+- let GIANTS construct the new field-work execution from its normal vehicle-side state.
+
+> **Native Replanning != Player Intent Replacement.**
+
+Exact preservation of non-default player FIELDWORK parameters remains an in-game validation obligation. Until validated, implementation MUST NOT manufacture replacement defaults or copy guessed parameters.
+
+### Physical release after replacement start
+
+After the replacement Job has been successfully started, Recovery Control MUST immediately:
+
+- clear the OMW Recovery movement objective;
+- relinquish OMW Transit-configuration bookkeeping **without restoring the old working posture**; and
+- allow the fresh GIANTS Job to own all subsequent configuration and movement.
+
+Recovery Control MUST NOT wait for fold/raise settlement, a first movement witness, productive progress or route success before physically releasing the worker.
+
+Any independently owned traffic constraint remains independent. For example, a Passage-owned 1 km/h Supporting Speed Ceiling is not removed merely because Recovery releases its movement objective.
+
+> **Physical Release != Semantic Completion.**
+
+### Intended successor evidence and success
+
+The API return from the replacement `startJob()` call is mechanism evidence only. Recovery semantic completion requires positive Observation/Job Episode evidence that the **intended replacement Job** has been admitted as the successor Job Episode for the same Physical Assembly.
+
+The implementation MUST correlate the intended successor to the replacement it actually requested, using the native replacement Job identity/token when available. Appearance of an unrelated Job MUST NOT satisfy Recovery.
+
+> **Requested Replacement != Observed Successor.**
+
+While waiting for that positive admission evidence:
+
+- Recovery may remain semantically current;
+- no Recovery movement objective or configuration mutation may remain merely for the wait;
+- GIANTS is free to configure and move the worker; and
+- no timeout may manufacture success.
+
+On positive intended-successor admission, the Native Replanning obligation is satisfied. All terminal-dependent Recovery obligations are then settled and **RC-1 SUCCESS MUST release any remaining Recovery authority, bookkeeping and Current Responsibility stickiness immediately**.
+
+> **Resolution Completion = Immediate Recovery Release.**
+
+Recovery completion does not require subsequent native speed, productive progress or proof that the environmental obstruction has permanently ceased.
 
 > **Recovery Completion Belongs to OuttaMyWay; Subsequent Native Success Belongs to Reality.**
 
-The Resolution MUST NOT retain Control merely to wait for a positive GIANTS speed, course-progress or productive-continuation witness after handback.
+### Fresh later blockage
 
-### Failure before Recovery Point
+A subsequent positive Blocked Progress Stall under the replacement Job Episode is fresh Reality. It is not an automatic retry of the previous Recovery and does not require a recurrence suppression window.
 
-If Transit cannot establish a coherent settled configuration, current Bounded Authority cannot support movement, Control cannot realise the granted movement, the Recovery Anchor becomes invalid, a higher-authority claim intervenes, or no supported local release remains, the implementation MUST fail closed.
+A new Recovery cycle may be admitted only when the successor Job Episode independently establishes:
 
-Such failure MUST NOT cause Control to invent:
-
-- another obstacle-specific route;
-- a wider relocation target;
-- an unbounded reverse/forward search;
-- a second independent autonomous Recovery Excursion; or
-- environmental object semantics unsupported by current evidence.
-
-A parent-consistent failure or escalation route, including Player Intervention where appropriate, may then become eligible from fresh evidence.
-
-## Post-handback Recovery Recurrence
-
-### Passive recurrence observation
-
-After positive recovery settlement and handback, a bounded passive **Recovery Recurrence** watch MAY retain only the evidence necessary to classify whether the simple recovery hypothesis is subsequently disproved.
-
-The recurrence watch:
-
-- is not a Current Responsibility;
-- owns no Bounded Authority;
-- MUST NOT delay GIANTS handback;
-- MUST NOT preserve the completed Recovery Resolution;
-- MUST NOT authorise a second Recovery Excursion; and
-- MUST remain bounded in evidence lifetime and scope rather than becoming Productive History.
-
-> **Bounded Witness Retention != Productive History.**
-
-### Recurrence classification
-
-A subsequent Blocked Progress Stall MAY be classified as a **Recovery Recurrence** only when current evidence establishes at least:
-
-- the same Physical Assembly;
-- the same qualifying Job Episode;
+- recent positive native progression;
 - a new positive Blocked Progress Stall;
-- occurrence within a bounded post-handback recurrence interval; and
-- occurrence within a bounded spatial neighbourhood of the prior blockage / Recovery context.
+- a fresh bounded Recovery Approach Trail; and
+- a fit Recovery Anchor from that new Trail.
 
-Supplementary matching evidence MAY strengthen the classification but is not mandatory.
+The previous Trail and Anchor MUST NOT be reused as permission for the new cycle.
 
-The exact recurrence duration and spatial radius are implementation/validation calibration values, not architectural policy.
+> **Cycle Repetition != Retry.**
 
-If the bounded watch expires without Recovery Recurrence, the recovery attempt is classified successful for this capability and the watch expires quietly. This success classification is retrospective and MUST NOT be used as a pre-handback Control gate.
+No post-success recurrence watch, retry counter or same-location veto is required by this capability. If repeated fresh Job Episodes later demonstrate pathological cycling, that is new evidence requiring a separately justified escalation policy.
 
-If Recovery Recurrence is positively established:
+### Failure before and after Job Replacement Commitment
 
-> **Recovery Excursion Completed != Native Path Problem Resolved.**
+If replacement preparation or validation fails **before** the Job Replacement Commitment Point, Control MUST NOT expose the already-known failed native Job merely as a fallback. Recovery remains unresolved at the bounded Recovery state and Player Intervention is legitimate.
 
-The simple one-excursion recovery hypothesis is disproved for that encounter. The recurrence MUST NOT automatically loop back into another autonomous Recovery Excursion. Fresh Situation/Decision evidence must select any later supported response; absent broader accepted capability, Player Intervention remains legitimate.
+If OuttaMyWay has passed the Job Replacement Commitment Point but cannot establish a usable replacement, the result is **Unresolved Native Reacquisition**. OuttaMyWay MUST NOT invent a wider movement, an obstacle-specific bypass or an unbounded Job-restart loop.
+
+Existing player authority remains sufficient. A manual player stop of a still-existing GIANTS Job is authoritative lifecycle evidence and Recovery releases through its normal supersession path; no Recovery-specific player-intervention protocol is required.
 
 ## Durable invariants
 
-### GIANTS retains productive-job ownership
+### Productive work remains GIANTS-owned
 
-Blocked Worker Recovery temporarily acquires bounded physical responsibility for release from a native stall. It MUST NOT terminate/restart the GIANTS Job Episode merely to obtain player-like control and MUST NOT take ownership of productive routing or normal navigation.
+Blocked Worker Recovery may deliberately replace one failed GIANTS FIELDWORK Job with a fresh GIANTS FIELDWORK Job for native replanning. OuttaMyWay does not acquire productive routing, course generation or ordinary post-restart navigation ownership.
 
 ### Obstacle identity is optional
 
-A positive Blocked Progress Stall plus fit recovery evidence can justify one bounded Recovery Excursion without identifying the blocking object. Unknown cause MUST remain unknown rather than being guessed from persistence, boundary proximity or scenery expectations.
+A positive Blocked Progress Stall plus fit recovery evidence can justify one bounded Physical Recovery phase without identifying the blocking object. Unknown cause MUST remain unknown rather than being guessed from persistence, boundary proximity or scenery expectations.
 
-### One Recovery Resolution does not become a recovery loop
+### Fresh evidence may support another Recovery cycle
 
-The first supported capability is one bounded excursion followed by restore and handback. Recurrent blockage is new evidence that the simple hypothesis failed, not implicit permission to repeat the same intervention indefinitely.
+One Recovery Resolution does not recursively retry itself. After RC success, a later supported Stall under a fresh Job Episode may admit a new independent two-phase Recovery cycle from fresh Trail/Anchor evidence.
 
 ### Responsibility continuity and physical permission remain distinct
 
-The Recovery Resolution MAY remain current while current Bounded Authority is temporarily unavailable. Fresh positive contradiction can quiesce or revoke movement permission without inventing a new strategic purpose.
+The Recovery Resolution MAY remain current after OMW physical release while intended-successor admission evidence is pending. Semantic persistence does not grant a new physical effect.
 
 ### No negative-clearance promotion
 
@@ -328,11 +383,11 @@ Responsibility Transition owns the purpose-specific operational lifecycle events
 
 The NORMAL payload SHOULD include the authoritative Operation identity when available, the Recovery responsibility/commitment identities, the recovering assembly and a stable reason/outcome.
 
-Recovery Recurrence classification by itself is not a periodic NORMAL heartbeat. If recurrence or another terminal condition positively establishes that autonomous continuation is exhausted and player action is required, the owning lifecycle publishes the existing NORMAL `PLAYER_INTERVENTION_REQUIRED` event.
+Fresh later Stall admission is not a periodic NORMAL heartbeat. If a supported failure condition establishes that autonomous continuation is exhausted and player action is required, the owning lifecycle publishes the existing NORMAL `PLAYER_INTERVENTION_REQUIRED` event.
 
 ### DEBUG — bounded causal narrative
 
-DEBUG may publish transition/change evidence sufficient to explain why Recovery was or was not attempted, including positive Blocked Progress Stall establishment, Recovery Anchor selection/invalidation, Candidate rejection/selection, Bounded Authority refusal/revocation, Transit settlement, Recovery Point establishment, handback settlement and Recovery Recurrence establishment.
+DEBUG may publish transition/change evidence sufficient to explain why Recovery was or was not attempted, including positive Blocked Progress Stall establishment, Recovery Anchor selection/invalidation, Candidate rejection/selection, Bounded Authority refusal/revocation, Transit settlement, Recovery Point establishment, Job Replacement Commitment, intended-successor admission and final Recovery settlement.
 
 DEBUG MUST remain change/transition-driven. It MUST NOT emit the same unchanged Stall, Anchor, residual or control phase every runtime cycle merely because Recovery remains current.
 
@@ -348,12 +403,14 @@ Such evidence is produced only by an independently justified diagnostic instrume
 
 - **Raw `isBlocked` with continuing realised progress** — no Blocked Progress Stall; no Recovery admission.
 - **Blocked assertion plus insufficient motion evidence** — remain unresolved; do not use timeout as proof.
-- **Blocked Progress Stall but no fit Recovery Anchor** — no autonomous Recovery Excursion.
+- **Blocked Progress Stall but no fit Recovery Anchor** — no autonomous Recovery cycle.
 - **Recovery Anchor fit but current movement permission contradicted** — preserve the Resolution only while its obligation remains legitimate; do not move without current Bounded Authority.
 - **Transit unsettled/unrealizable** — fail closed; do not move in an assumed compact state.
-- **Recovery Point reached and restore/handback positively completed** — settle the Recovery obligation and end the Resolution through Responsibility Transition.
-- **No Recovery Recurrence through the bounded passive watch** — classify the attempt successful for this capability; expire the watch.
-- **Recovery Recurrence** — simple recovery hypothesis disproved; do not automatically repeat.
+- **Recovery Point reached** — satisfy Physical Recovery; do not restore the old working posture or hand the failed Job back as successful completion.
+- **Replacement preparation/validation fails before Commitment** — preserve unresolved Recovery and do not expose the known-failed Job merely as fallback.
+- **Replacement start succeeds** — physically release OMW movement/configuration control immediately; await only semantic intended-successor admission.
+- **Intended successor Job Episode admitted** — satisfy Native Replanning and end RC immediately through normal terminal settlement.
+- **Fresh later Stall under the successor** — assess from fresh evidence; a new Recovery cycle may be admitted if its own Trail/Anchor contract is satisfied.
 - **No supported autonomous continuation remains** — parent-consistent failure/escalation may require Player Intervention.
 
 ## Cross-Jurisdiction dependencies
@@ -382,15 +439,15 @@ Responsibility Transition establishes and ends the Blocked Worker Recovery Curre
 
 ### Resolution Lifecycle
 
-This Jurisdiction specialises `RESOLUTION_LIFECYCLE`. Its bounded excursion/restore/handback obligation, persistence and terminal dispositions MUST remain parent-consistent.
+This Jurisdiction specialises `RESOLUTION_LIFECYCLE`. Its Physical Recovery and Native Replanning obligations, persistence and terminal dispositions MUST remain parent-consistent.
 
 ### Bounded Authority
 
-Every positive Transit/configuration and release-movement effect requires current purpose-specific Bounded Authority. A retained Recovery Resolution or Recovery Anchor is not physical permission.
+Every positive Transit/configuration and Recovery-movement effect requires current purpose-specific Bounded Authority. The GIANTS Job stop/start choreography is lifecycle permission of the accepted Recovery Resolution, not a physical Bounded Authority target.
 
 ### Control
 
-Control executes only the granted Transit/configuration, movement, restoration and relinquishment effects. Control outcomes return through Reality and Observation; Control does not decide Blocked Progress Stall admission or Recovery Recurrence.
+Control executes the granted Transit/configuration and Recovery movement, then the Resolution-authorised native FIELDWORK Job replacement and immediate OMW physical relinquishment. Control does not decide Blocked Progress Stall admission, productive routing or later fresh-Stall meaning.
 
 ## Current implementation — purpose-specific decision horizon
 
@@ -418,12 +475,12 @@ Production now implements the first complete Blocked Worker Recovery vertical sl
 - [`BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) projects one current Stall+Anchor into one Recovery Candidate;
 - [`BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) owns specialised Recovery commitment settlement;
 - [`BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) establishes the single-subject Current Responsibility;
-- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, moves directly to the selected Recovery Anchor, restores configuration debt and hands back to GIANTS; and
+- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, moves directly to the selected Recovery Anchor, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission; and
 - Runtime / Responsibility Transition integration preserves Recovery's non-exclusive traffic decision horizon while retaining Passage's Bubble horizon.
 
 Upstream [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) remains `SITUATION_ASSESSMENT` authority for Stall and Anchor meaning.
 
-Post-handback **Recovery Recurrence** disposition remains deferred to the next implementation jump.
+Fresh post-success blockage is handled by ordinary Blocked Progress assessment under the successor Job Episode; no post-success recurrence watch is retained.
 
 ## Validation route
 
@@ -440,13 +497,16 @@ Current offline validation should challenge at least:
 - OMW-caused quiescence does not recursively admit Recovery;
 - bounded Recovery Approach Trail sampling/retention remains purpose-specific and does not become Productive History;
 - Recovery Anchor invalidation on identity/lifecycle/direction/configuration discontinuity;
-- Anchor selection may choose the most recent spatially useful fit Trail witness rather than the newest sample;
+- once Trail qualification is satisfied, Anchor selection uses the first/oldest retained compatible witness rather than the newest sample;
 - absence of known conflict does not become negative-clearance authority;
 - mandatory Transit request occurs before recovery movement;
 - current positive spatial contradiction can veto/narrow movement;
-- Recovery Point/restore/handback positively settles the Resolution without waiting for later GIANTS success;
-- recurrence observation is passive and cannot acquire Control; and
-- Recovery Recurrence does not automatically admit another Recovery Excursion.
+- reaching the Anchor settles Physical Recovery without terminalising the Resolution;
+- replacement preparation precedes the synchronous stop/start Job Replacement Commitment;
+- successful replacement start immediately relinquishes OMW movement and Transit-configuration bookkeeping without restoring the former working posture;
+- API start success alone does not settle Native Replanning;
+- only positive admission of the intended successor Job Episode for the same Physical Assembly completes Recovery; and
+- a later fresh Stall requires its own fresh Trail/Anchor evidence rather than reusing completed-Recovery history.
 
 ### Targeted in-game Reality validation
 
@@ -455,15 +515,15 @@ In-game validation is required for the live GIANTS assumptions on which this cap
 Initial Reality validation should include:
 
 1. transient/native blocked signalling while the worker continues or resumes without intervention;
-2. the demonstrated Condor boundary-associated stall, including DISC/Field World supplementary evidence where available;
-3. an unknown-cause environmental blockage where obstacle identity is not available to OuttaMyWay;
-4. forward and reverse blocked-entry cases;
-5. a current represented traffic party entering the proposed release domain and correctly preventing unsafe autonomous movement;
-6. Transit request and settlement on materially different assemblies;
-7. successful one-excursion handback with no recurrence;
-8. same-locus recurrence within the bounded recurrence context, proving that the simple recovery hypothesis can be disproved without autonomous retry; and
-9. existing Cooperative Passage / Regulation blockage cases, proving they remain owned by their governing responsibilities rather than being misclassified as Blocked Worker Recovery.
+2. the demonstrated Condor boundary-associated Stall and direct return to the first/oldest retained compatible Anchor;
+3. Transit request and settlement on materially different assemblies;
+4. successful direct-start FIELDWORK Job replacement from the recovered pose, including truthful old/new Job Episode succession;
+5. immediate GIANTS ownership of post-restart configuration and movement with no OMW restore tail;
+6. absence or presence of a player-visible manual-stop notification when Recovery uses the supported nil-message stop lifecycle;
+7. preservation of deliberately distinctive player-selected FIELDWORK parameters across replacement in a dedicated scenario;
+8. a later independent obstruction under the successor Job Episode, proving that fresh Stall/Trail/Anchor evidence can admit a new Recovery cycle without historical retry permission; and
+9. existing Cooperative Passage / Regulation cases, proving that independent traffic responsibilities and Supporting Speed Ceilings remain correctly scoped during Recovery.
 
 ### Outside this Specification's validation claim
 
-A successful Recovery Excursion does not prove that arbitrary scenery is navigable, that the underlying GIANTS route is permanently corrected, that every environmental obstacle can be identified, or that a broader obstacle-bypass/repositioning capability exists.
+A successful Recovery cycle does not prove that arbitrary scenery is navigable, that every future GIANTS route will succeed, that every player FIELDWORK setting has already been validated as preserved, that every environmental obstacle can be identified, or that a broader obstacle-bypass/repositioning capability exists.
