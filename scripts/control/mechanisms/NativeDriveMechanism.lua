@@ -44,6 +44,65 @@ local function toolReverserNode(vehicle)
     return value,"AI_TOOL_REVERSER_DIRECTION_NODE"
 end
 
+local function toolAdjustedReverseTarget(reverseReferenceNode,toolNode,targetX,targetZ)
+    if reverseReferenceNode==nil or toolNode==nil then return targetX,targetZ,false,{reason="TOOL_REVERSE_GEOMETRY_UNAVAILABLE"} end
+    if MathUtil==nil
+        or type(MathUtil.vector2Length)~="function"
+        or type(MathUtil.getProjectOnLineParameter)~="function"
+        or type(MathUtil.vector2Normalize)~="function"
+        or type(MathUtil.dotProduct)~="function"
+        or type(MathUtil.getSignedAngleBetweenVectors2D)~="function"
+        or type(MathUtil.isNan)~="function"
+        or type(getWorldTranslation)~="function"
+        or type(localDirectionToWorld)~="function"
+        or type(localToWorld)~="function" then
+        return targetX,targetZ,false,{reason="GIANTS_TOOL_REVERSE_TRANSFORM_API_UNAVAILABLE"}
+    end
+
+    local okPose,rx,_,rz=pcall(getWorldTranslation,toolNode)
+    local okVehicleDir,dirX1,_,dirZ1=pcall(localDirectionToWorld,reverseReferenceNode,0,0,1)
+    local okToolDir,dirX2,_,dirZ2=pcall(localDirectionToWorld,toolNode,0,0,1)
+    if not okPose or not okVehicleDir or not okToolDir then
+        return targetX,targetZ,false,{reason="GIANTS_TOOL_REVERSE_TRANSFORM_POSE_UNAVAILABLE"}
+    end
+
+    local length1=MathUtil.vector2Length(dirX1,dirZ1)
+    local length2=MathUtil.vector2Length(dirX2,dirZ2)
+    if length1<=0 or length2<=0 then
+        return targetX,targetZ,false,{reason="GIANTS_TOOL_REVERSE_TRANSFORM_DIRECTION_DEGENERATE"}
+    end
+    dirX1,dirZ1=dirX1/length1,dirZ1/length1
+    dirX2,dirZ2=dirX2/length2,dirZ2/length2
+
+    local revDistance=MathUtil.vector2Length(targetX-rx,targetZ-rz)
+    local longitudinal=MathUtil.getProjectOnLineParameter(targetX,targetZ,rx,rz,dirX2,dirZ2)
+    local lateral=math.sqrt(revDistance*revDistance-longitudinal*longitudinal)
+    local sDirX,sDirZ=MathUtil.vector2Normalize(rx-targetX,rz-targetZ)
+    local side=MathUtil.dotProduct(-dirZ2,0,dirX2,sDirX,0,sDirZ)
+    local sideSign=side<0 and -1 or (side>0 and 1 or 0)
+    lateral=lateral*sideSign
+
+    local angle=MathUtil.getSignedAngleBetweenVectors2D(dirX1,dirZ1,dirX2,dirZ2)
+    local localTargetX=math.cos(angle)*lateral-math.sin(angle)*longitudinal
+    local localTargetZ=math.sin(angle)*lateral+math.cos(angle)*longitudinal
+    if MathUtil.isNan(localTargetX) or MathUtil.isNan(localTargetZ) then
+        return targetX,targetZ,false,{reason="GIANTS_TOOL_REVERSE_TRANSFORM_NAN"}
+    end
+
+    local okWorld,adjustedX,_,adjustedZ=pcall(localToWorld,reverseReferenceNode,-localTargetX,0,localTargetZ)
+    if not okWorld then
+        return targetX,targetZ,false,{reason="GIANTS_TOOL_REVERSE_TRANSFORM_WORLD_TARGET_FAILED"}
+    end
+    return adjustedX,adjustedZ,true,{
+        reason="GIANTS_TOOL_REVERSE_TRANSFORM_APPLIED",
+        angleRad=angle,
+        toolRelativeLateralM=lateral,
+        toolRelativeLongitudinalM=longitudinal,
+        adjustedLocalX=-localTargetX,
+        adjustedLocalZ=localTargetZ
+    }
+end
+
 local function position(vehicle)
     local node=steeringNode(vehicle)
     if node == nil or type(getWorldTranslation) ~= "function" then return nil end
@@ -233,7 +292,24 @@ function Mechanism:install()
                     state.invalidReason = "reposition-reverse-reference-pose-unavailable"
                     return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
                 end
-                local transformOk,lx,_,lz=pcall(worldToLocal,refNode,state.targetX,refY,state.targetZ)
+                local targetWorldX,targetWorldZ=state.targetX,state.targetZ
+                state.nativeToolAdjustmentApplied=false
+                state.nativeToolAdjustmentReason=toolNode~=nil and "PENDING" or "NO_TOOL_REVERSER_DIRECTION_NODE"
+                if toolNode~=nil then
+                    local adjustedX,adjustedZ,applied,evidence=
+                        toolAdjustedReverseTarget(refNode,toolNode,state.targetX,state.targetZ)
+                    targetWorldX,targetWorldZ=adjustedX,adjustedZ
+                    state.nativeToolAdjustmentApplied=applied==true
+                    state.nativeToolAdjustmentReason=evidence and evidence.reason or "UNKNOWN"
+                    state.nativeToolAdjustmentAngleRad=evidence and evidence.angleRad or nil
+                    state.nativeToolRelativeLateralM=evidence and evidence.toolRelativeLateralM or nil
+                    state.nativeToolRelativeLongitudinalM=evidence and evidence.toolRelativeLongitudinalM or nil
+                    state.nativeToolAdjustedLocalX=evidence and evidence.adjustedLocalX or nil
+                    state.nativeToolAdjustedLocalZ=evidence and evidence.adjustedLocalZ or nil
+                    state.nativeToolAdjustedTargetX=targetWorldX
+                    state.nativeToolAdjustedTargetZ=targetWorldZ
+                end
+                local transformOk,lx,_,lz=pcall(worldToLocal,refNode,targetWorldX,refY,targetWorldZ)
                 if not transformOk then
                     state.invalidReason = "reposition-native-reverse-transform-failed"
                     return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
