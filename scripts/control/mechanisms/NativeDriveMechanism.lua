@@ -357,6 +357,7 @@ function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadi
     if not ok then return false, reason end
     local previous=self.states[vehicle]
     local forwards=moveForwards~=false
+    local forwardReferenceNode,forwardReferenceNodeSource=steeringNode(vehicle)
     local reverseReferenceNode,reverseReferenceNodeSource=nil,nil
     local toolReverserDirectionNode,toolReverserDirectionNodeSource=nil,nil
     if not forwards then
@@ -372,8 +373,10 @@ function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadi
         moveForwards = forwards,
         targetReached = false,
         driveCalls = 0,
-        repositionReferenceNode=reverseReferenceNode,
-        repositionReferenceNodeSource=forwards and "AI_STEERING_NODE" or reverseReferenceNodeSource,
+        repositionReferenceNode=forwards and forwardReferenceNode or reverseReferenceNode,
+        repositionReferenceNodeSource=forwards and forwardReferenceNodeSource or reverseReferenceNodeSource,
+        reverseReferenceDistinctFromSteering=(not forwards) and reverseReferenceNode~=nil
+            and forwardReferenceNode~=nil and reverseReferenceNode~=forwardReferenceNode or false,
         toolReverserDirectionNode=toolReverserDirectionNode,
         toolReverserDirectionNodeSource=forwards and "NOT_APPLICABLE_FORWARD" or toolReverserDirectionNodeSource
     })
