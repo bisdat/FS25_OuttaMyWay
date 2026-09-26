@@ -197,12 +197,15 @@ return function(test,equal)
         g_currentMission={aiSystem=aiSystem,aiJobTypeManager=manager}
 
         local driveState=nil
-        local reposition=nil
+        local axisTravel=nil
         local drive={
             install=function() return true end,
-            setReposition=function(self,v,x,z,speed,radius,moveForwards)
-                reposition={vehicle=v,x=x,z=z,speed=speed,radius=radius,moveForwards=moveForwards}
-                driveState={mode="REPOSITION",targetReached=false}
+            setAxisTravel=function(self,v,originX,originZ,axisX,axisZ,targetStation,speed,moveForwards,tolerance)
+                axisTravel={
+                    vehicle=v,originX=originX,originZ=originZ,axisX=axisX,axisZ=axisZ,
+                    targetStation=targetStation,speed=speed,moveForwards=moveForwards,tolerance=tolerance
+                }
+                driveState={mode="AXIS_TRAVEL",targetReached=false}
                 return true
             end,
             getState=function() return driveState end,
@@ -255,7 +258,8 @@ return function(test,equal)
                 kind="BLOCKED_WORKER_RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",recoveryKey="blocked-worker-recovery:test",
                 configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN",
-                recoveryAnchor={x=4.25,z=17.5}
+                recoveryAnchor={x=4.25,z=17.5},
+                recoveryApproachAxis={forwardX=0,forwardZ=1}
             }
         }
         local started=control:executeControlRequest(request,{})
@@ -263,9 +267,11 @@ return function(test,equal)
         equal(control:getStatus().phase,"WAITING_FOR_TRANSIT")
 
         control:update(16)
-        if reposition==nil then error("Recovery movement not started") end
-        equal(reposition.x,4.25); equal(reposition.z,17.5)
-        equal(reposition.moveForwards,false)
+        if axisTravel==nil then error("Recovery axis movement not started") end
+        equal(axisTravel.originX,4.25); equal(axisTravel.originZ,17.5)
+        equal(axisTravel.axisX,0); equal(axisTravel.axisZ,1)
+        equal(axisTravel.targetStation,0); equal(axisTravel.moveForwards,false)
+        equal(axisTravel.tolerance,1.0)
         equal(control:getStatus().phase,"MOVING_TO_RECOVERY_ANCHOR")
 
         driveState.targetReached=true
