@@ -171,6 +171,12 @@ return function(test,equal)
         equal(knowledge[1].status,"BLOCKED_PROGRESS_STALL")
         approximately(knowledge[1].collapseObservation.observedSeconds,1.0,0.0001)
         equal(knowledge[1].collapseObservation.sufficient,true)
+        local evidence=knowledge[1].stallEvidence
+        if evidence==nil then error("expected Stall evidence") end
+        equal(evidence.establishedAtObservationSnapshotId,"OS-RECOVERY-025")
+        approximately(evidence.establishedAtTimestamp,6.25,0.0001)
+        approximately(evidence.poseX,10.5,0.0001)
+        approximately(evidence.poseZ,0,0.0001)
     end)
 
     test("Five metres qualifies the Trail but Recovery Anchor is the oldest retained compatible witness",function()
