@@ -35,11 +35,14 @@ def test_operation_membership_no_longer_depends_on_productive_commencement_worka
         assert "PRE_PRODUCTIVE" not in text
 
 
-def test_passage_readiness_is_separate_from_operation_membership():
+def test_passage_evaluation_readiness_is_pairwise_and_not_a_settled_continuation_gate():
     trajectory=read("scripts/assessment/TrajectoryConflictAssessment.lua")
-    assert "record.subjectSettledContinuation==true" in trajectory
-    assert "record.otherSettledContinuation==true" in trajectory
-    assert "record.cooperativePassageEligible=aParticipation.operationMember==true" in trajectory
+    assert "positiveSettledContinuation" in trajectory
+    assert "record.passageEvaluationReady=aParticipation.operationMember==true" in trajectory
+    assert 'record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"' in trajectory
+    assert "record.cooperativePassageEligible=record.passageEvaluationReady" in trajectory
+    assert "and record.subjectSettledContinuation==true" not in trajectory
+    assert "and record.otherSettledContinuation==true" not in trajectory
 
 
 def test_operation_architecture_records_cold_start_invariant():

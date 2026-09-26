@@ -202,6 +202,12 @@ Operation membership also grants no strategic readiness by itself:
 
 A member whose current GIANTS-native intent is turning, reversing, unresolved or otherwise transitional remains a member while Situation Assessment determines which traffic conclusions are supportable.
 
+For opposed-corridor traffic, **Passage Evaluation Readiness** is a pairwise Situation conclusion: once an **Established Opposed Corridor Conflict** is positively established between exactly two current Operation members, the Passage specialist may be asked to evaluate whether a Passage-Capable Theatre exists. Native `TURNING` or unsettled-continuation state may still inform Regulation and intent interpretation, but it does not independently veto that evaluation after the pairwise conflict is established.
+
+> **Passage Evaluation Readiness != Passage Candidate Support.**
+
+Evaluation readiness grants no Passage geometry, commitment or actuation authority; Cooperative Passage Candidate Support must still positively establish the purpose-specific Passage contract.
+
 Job Episode creation without resolved field-domain membership, worker proximity alone and conflict alone do not establish participation. Complete representation capability is not required merely to participate. Representation fitness determines which later conclusions and actions are supportable, not whether an active worker exists in the lifecycle.
 
 **Participation Authority != Intervention Capability.** A worker may be an unquestioned Local Operation participant even when manoeuvre-specific representation or capability evidence remains unresolved.
