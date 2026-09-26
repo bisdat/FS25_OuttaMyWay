@@ -119,7 +119,15 @@ Anchor age alone MUST NOT establish or destroy fitness.
 
 > **Recovery Anchor != Known Safe Pose.**
 
-The Anchor bounds return provenance. For the initial capability, the selected Recovery Anchor is also the **Recovery Point** and direct target of the one authorised Recovery Excursion. It MUST NOT be promoted into generic negative-clearance authority, arbitrary reverse-feasibility authority, productive routing or generic waypoint authority.
+The Anchor bounds return provenance. For the initial capability, the selected Recovery Anchor is also the **Recovery Point** and longitudinal return limit of the one authorised Recovery Excursion. It MUST NOT be promoted into generic negative-clearance authority, arbitrary reverse-feasibility authority, productive routing or generic waypoint authority.
+
+The same qualifying settled-A8 Recovery Approach MUST provide a finite native travel direction sufficient to define the **Recovery Approach Axis**. The Axis uses the selected Recovery Anchor as station origin and the observed native Approach direction as its positive longitudinal direction toward the Stall.
+
+The Anchor is not a reverse steering point.
+
+> **Recovery Anchor != Reverse Steering Target.**
+
+> **Settled A8 Approach Establishes the Initial Recovery Reverse Axis.**
 
 ## Recovery Excursion contract
 
@@ -204,11 +212,23 @@ Any Recovery progress-watchdog implementation MUST measure purpose-specific prog
 
 ### Direct Recovery Anchor movement
 
-The initial capability performs one direct bounded manoeuvre to the selected Recovery Anchor.
+The initial capability performs one direct bounded manoeuvre to the selected Recovery Anchor by reversing on the fixed Recovery Approach Axis.
+
+Control MUST use longitudinal axis travel rather than reverse world-point pursuit:
+
+- the Recovery Anchor is station origin / target station zero;
+- the retained native Recovery Approach direction is the positive axis toward the Stall;
+- reverse motion follows the fixed opposite axis direction;
+- completion is reaching the Anchor station within the accepted Recovery tolerance; and
+- lateral displacement MUST NOT rotate the reverse steering demand toward the Anchor point.
+
+Recovery MUST NOT move farther forward merely to straighten the assembly because the unresolved blockage lies ahead. The initial capability assumes its qualifying settled-A8 Approach is sufficiently straight for this bounded reverse. If that execution support is contradicted, Control fails closed rather than inventing a curved reverse correction or a forward Alignment Runout.
 
 It MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle, invent a second release direction, or derive a separate excursion-distance target.
 
 > **Recovery Anchor = Initial Recovery Point.**
+
+> **Straight Reverse Requires Axis Stability, Not Point Attraction.**
 
 The granted movement envelope MUST remain no broader than the currently supported local release purpose.
 
