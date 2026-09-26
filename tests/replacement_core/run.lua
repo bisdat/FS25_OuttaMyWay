@@ -1543,6 +1543,108 @@ test("live source admits GIANTS Job identities from activeJobVehicles",function(
 end)
 
 
+test("Field World succession bridge preserves comparison authority without inheriting predecessor identity",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+        mission.vehicles={a}
+        setActiveVehicles(mission,a)
+        mission.aiSystem.activeJobs={jobA}
+
+        local boundary={{x=-10,z=-10},{x=10,z=-10},{x=10,z=30},{x=-10,z=30}}
+        local canonical=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(boundary,{})
+        local metrics=OuttaMyWay.FieldWorldSnapshotRegistry.measureGeometry(canonical.boundary,canonical.islands)
+        local function snapshot(key,jobToken)
+            return {
+                referenceKey=key,
+                fieldWorldSnapshotReferenceKey=key,
+                fieldPolygonReferenceKey="field-world-polygon:"..canonical.canonicalizationVersion..":"..canonical.fingerprint,
+                geometryFingerprint=canonical.fingerprint,
+                canonicalGeometry=canonical.canonicalGeometry,
+                canonicalizationVersion=canonical.canonicalizationVersion,
+                quantizationMetres=canonical.quantizationMetres,
+                canonicalRootRing=canonical.canonicalRootRing,
+                canonicalRootVertices=canonical.canonicalRootVertices,
+                canonicalIslandRings=canonical.canonicalIslandRings,
+                boundary=canonical.boundary,
+                islands=canonical.islands,
+                geometryMetrics=metrics,
+                boundaryPointCount=canonical.boundaryPointCount,
+                islandCount=canonical.islandCount,
+                seedPosition={x=0,z=0},
+                sourceJobToken=jobToken,
+                vehicleReferenceKey="vehicle-root:101",
+                capturedAt=0,
+                immutableForJobEpisode=true,
+                fieldWorldIdentityAuthorityAssigned=false,
+                controlAuthorityEnabled=false
+            }
+        end
+
+        local firstToken="giants-ai-job-id:1001"
+        local successorToken="giants-ai-job-id:2001"
+        local firstSnapshot=snapshot("field-world-snapshot:first",firstToken)
+        local successorSnapshot=snapshot("field-world-snapshot:successor",successorToken)
+        local registry={tokens={},successorReady=false}
+        function registry:ensure(object,pose,jobToken,captureToken) self.tokens[captureToken]=jobToken end
+        function registry:update() end
+        function registry:get(ref,captureToken)
+            local token=self.tokens[captureToken]
+            if token==firstToken then return firstSnapshot,nil end
+            if token==successorToken and self.successorReady then return successorSnapshot,nil end
+            return nil,nil
+        end
+
+        local ids=OuttaMyWay.IdentityRegistry.new()
+        local evaluator=OuttaMyWay.FieldWorldEquivalenceEvaluator.new()
+        local authority=OuttaMyWay.FieldWorldEquivalenceAuthority.new(ids,evaluator)
+        local source=OuttaMyWay.LiveObservationSource.new(registry,authority)
+        local _,_,adapter,admission=newObservationKernel()
+
+        local function currentRaw(values)
+            for _,raw in ipairs(values) do
+                if #(raw.jobEpisodeEvidence or {})>0 then return raw end
+            end
+            error("expected one live Job Episode observation")
+        end
+
+        local firstRaw=currentRaw(source:capture(mission,10))
+        local firstResolution=firstRaw.jobEpisodeEvidence[1].fieldWorldReferenceKey
+        if firstResolution==nil then error("predecessor Field World did not resolve") end
+        admission:observe(adapter:publish(firstRaw))
+        equal(authority:getActiveClassCount(),1)
+
+        local parameter={getPosition=function() return 0,0 end}
+        local successorJob={jobId=2001,currentTaskIndex=2,helperIndex=2001,positionAngleParameter=parameter}
+        a.spec_aiFieldWorker.fieldJob=successorJob
+        a.spec_aiJobVehicle.job=successorJob
+        a.spec_aiJobVehicle.lastJob=successorJob
+        mission.aiSystem.activeJobs={successorJob}
+
+        local gapRaw=currentRaw(source:capture(mission,11))
+        local gapEvidence=gapRaw.jobEpisodeEvidence[1]
+        equal(gapEvidence.replacementObserved,true)
+        equal(gapEvidence.fieldWorldReferenceKey,nil)
+        equal(gapEvidence.fieldWorldSnapshotReferenceKey,nil)
+        equal(authority:getActiveClassCount(),1)
+        local gapResult=admission:observe(adapter:publish(gapRaw))
+        local successorEpisodeId=gapResult.activeEpisodeIds[1]
+        equal(admission:get(successorEpisodeId).fieldWorldReferenceKey,nil)
+        if source.tracks["vehicle-root:101"].fieldWorldSuccessionBridge==nil then
+            error("successor capture gap lost Field World comparison bridge")
+        end
+
+        registry.successorReady=true
+        local resolvedRaw=currentRaw(source:capture(mission,12))
+        local resolvedEvidence=resolvedRaw.jobEpisodeEvidence[1]
+        equal(resolvedEvidence.fieldWorldReferenceKey,firstResolution)
+        equal(resolvedEvidence.fieldWorldSnapshotReferenceKey,successorSnapshot.referenceKey)
+        local resolvedResult=admission:observe(adapter:publish(resolvedRaw))
+        equal(resolvedResult.activeEpisodeIds[1],successorEpisodeId)
+        equal(admission:get(successorEpisodeId).fieldWorldReferenceKey,firstResolution)
+        equal(authority:getActiveClassCount(),1)
+        equal(source.tracks["vehicle-root:101"].fieldWorldSuccessionBridge,nil)
+    end)
+end)
+
 test("live Field World handoff preserves canonical geometry into Structural Field Shape",function()
     withFakeLiveGlobals(function(mission)
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()

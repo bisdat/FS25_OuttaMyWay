@@ -132,6 +132,16 @@ Exact polygon equality may be sufficient positive same-world evidence. An exact 
 
 A snapshot may join an established Field World only when coherent with the accepted evidence for that Field World as a whole. Pairwise tolerance chaining must not manufacture an incoherent equivalence class. A restarted or replacement Job Episode captures and independently resolves against current Reality.
 
+Positive Job Episode succession may create a short interval after the predecessor Episode has truthfully ended but before the successor's fresh Job-Seeded Field World Snapshot has completed capture and equivalence resolution. That **Snapshot Capture Gap** does not establish that the experienced Field World lifecycle ended.
+
+A **Field World Succession Bridge** preserves the predecessor's already-resolved Field World class only as a comparison basis while the positively linked successor Job Episode is awaiting independent Field World resolution. The successor does not inherit the predecessor identity, Snapshot or equivalence result.
+
+> **Comparison Continuity != Identity Inheritance.**
+
+> **Replacement Evidence Preserves Comparison Authority; It Does Not Predetermine the Comparison Result.**
+
+The bridge discharges when the successor Snapshot reaches a positive Field World resolution or when positive lifecycle evidence ends/removes the successor before resolution. `UNRESOLVED` remains unresolved and grants no Operation authority. No timeout or grace period manufactures continuity.
+
 Evaluator tolerances and calibration are implementation concerns, not Architecture.
 
 ### Sparse intervention

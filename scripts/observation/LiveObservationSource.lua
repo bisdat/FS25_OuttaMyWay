@@ -188,6 +188,50 @@ function Source:_mintFieldWorldCaptureToken(reference, sourceJobToken)
     return string.format("field-world-capture:%s:%s:%06d",tostring(reference),tostring(sourceJobToken),self.nextFieldWorldCapture)
 end
 
+
+function Source:_establishFieldWorldSuccessionBridge(track, successorSourceJobToken, cause)
+    local snapshot=track and track.fieldWorldSnapshot or nil
+    local resolution=track and track.fieldWorldResolution or nil
+    local bridge=track and track.fieldWorldSuccessionBridge or nil
+    if snapshot~=nil and resolution~=nil and resolution.fieldWorldReferenceKey~=nil then
+        bridge={
+            predecessorSnapshotReferenceKey=snapshot.referenceKey,
+            predecessorFieldWorldReferenceKey=resolution.fieldWorldReferenceKey,
+            successorSourceJobToken=successorSourceJobToken,
+            cause=cause
+        }
+    elseif bridge~=nil then
+        bridge.successorSourceJobToken=successorSourceJobToken
+        bridge.cause=cause
+    end
+    track.fieldWorldSuccessionBridge=bridge
+    if bridge~=nil then
+        diagnosticPublication:info("DEBUG","FIELD_WORLD_SUCCESSION_BRIDGE_ESTABLISHED",
+            "ref=%s predecessorSnapshot=%s world=%s successorJob=%s cause=%s comparisonOnly=true control=false",
+            tostring(track.referenceKey),tostring(bridge.predecessorSnapshotReferenceKey),
+            tostring(bridge.predecessorFieldWorldReferenceKey),tostring(successorSourceJobToken),tostring(cause))
+        return true
+    end
+    return false
+end
+
+function Source:_retainFieldWorldSuccessionBridge(track)
+    local bridge=track and track.fieldWorldSuccessionBridge or nil
+    if bridge==nil or self.fieldWorldEquivalenceAuthority==nil then return false end
+    return self.fieldWorldEquivalenceAuthority:markRelevant(bridge.predecessorSnapshotReferenceKey)
+end
+
+function Source:_dischargeFieldWorldSuccessionBridge(track, reason)
+    local bridge=track and track.fieldWorldSuccessionBridge or nil
+    if bridge==nil then return false end
+    diagnosticPublication:info("DEBUG","FIELD_WORLD_SUCCESSION_BRIDGE_DISCHARGED",
+        "ref=%s predecessorSnapshot=%s world=%s successorJob=%s reason=%s inheritedIdentity=false control=false",
+        tostring(track.referenceKey),tostring(bridge.predecessorSnapshotReferenceKey),
+        tostring(bridge.predecessorFieldWorldReferenceKey),tostring(bridge.successorSourceJobToken),tostring(reason))
+    track.fieldWorldSuccessionBridge=nil
+    return true
+end
+
 local function playerFacingLocator(fieldEvidence)
     if fieldEvidence == nil then return nil, "UNAVAILABLE" end
     if fieldEvidence.resolved == true and tonumber(fieldEvidence.sourceFieldId or fieldEvidence.fieldId) ~= nil and tonumber(fieldEvidence.sourceFieldId or fieldEvidence.fieldId) ~= 0 then
@@ -284,7 +328,17 @@ function Source:capture(mission, nowSeconds)
                 sourceToken = track.fallbackEpisodeToken
             end
             if track.fieldWorldCaptureToken==nil or replacementObserved or reactivated then
-                track.fieldWorldSnapshot=nil; track.fieldWorldError=nil
+                if replacementObserved or reactivated then
+                    self:_establishFieldWorldSuccessionBridge(
+                        track,
+                        sourceToken,
+                        replacementObserved and "REPLACED" or "RESTARTED"
+                    )
+                end
+                -- A successor Job Episode must independently resolve its fresh
+                -- Job-seeded Snapshot. Preserve only the predecessor class as a
+                -- comparison basis; never carry the predecessor resolution forward.
+                track.fieldWorldSnapshot=nil; track.fieldWorldResolution=nil; track.fieldWorldError=nil
                 track.playerFacingFieldId=nil; track.playerFacingLocatorSource=nil
                 track.fieldWorldCaptureToken=self:_mintFieldWorldCaptureToken(ref,sourceToken)
             end
@@ -298,6 +352,13 @@ function Source:capture(mission, nowSeconds)
             if track.fieldWorldSnapshot == nil and capturedWorld ~= nil then track.fieldWorldSnapshot = capturedWorld end
             if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
+                if track.fieldWorldResolution~=nil and track.fieldWorldResolution.fieldWorldReferenceKey~=nil then
+                    self:_dischargeFieldWorldSuccessionBridge(track,"SUCCESSOR_FIELD_WORLD_RESOLVED")
+                else
+                    self:_retainFieldWorldSuccessionBridge(track)
+                end
+            else
+                self:_retainFieldWorldSuccessionBridge(track)
             end
             local locatorId, locatorSource = playerFacingLocator(field)
             if track.playerFacingFieldId == nil and locatorId ~= nil then
@@ -341,6 +402,9 @@ function Source:capture(mission, nowSeconds)
             -- flag is retained. Post-completion player control remains subject to the Player Claim boundary.
             local playerControlled = playerEntered
             local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
+            if sourceJobEndEvidence.observed==true then
+                self:_dischargeFieldWorldSuccessionBridge(track,"SUCCESSOR_JOB_ENDED")
+            end
             if pose ~= nil then
                 track.motionSample=OuttaMyWay.LiveInteractionObservation.deriveMotion(track.previousMotionPose,pose,track.previousMotionTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
                 track.pose = pose; track.previousMotionPose=copyPose(pose); track.previousMotionTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
@@ -351,6 +415,13 @@ function Source:capture(mission, nowSeconds)
             track.active = false; track.object = object; track.fieldActive = fieldActive; track.aiActive = aiActive; track.aiActiveObserved=aiActiveObserved
             if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
+                if track.fieldWorldResolution~=nil and track.fieldWorldResolution.fieldWorldReferenceKey~=nil then
+                    self:_dischargeFieldWorldSuccessionBridge(track,"SUCCESSOR_FIELD_WORLD_RESOLVED")
+                elseif sourceJobEndEvidence.observed~=true then
+                    self:_retainFieldWorldSuccessionBridge(track)
+                end
+            elseif sourceJobEndEvidence.observed~=true then
+                self:_retainFieldWorldSuccessionBridge(track)
             end
             if self.assemblyRepresentationCache~=nil and not isDeleted(object) and track.sourceJobToken~=nil then
                 track.assemblyRepresentation=self.assemblyRepresentationCache:observe(object,ref,track.sourceJobToken,nowSeconds)
@@ -378,12 +449,20 @@ function Source:capture(mission, nowSeconds)
     for ref, track in OuttaMyWay.ValueRecord.pairs(self.tracks) do
         if not present[ref] and track.everActive == true then
             track.active = false
-            if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
-                track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
-            end
             -- Only the retained object's explicit deletion flag is positive removal.
             -- Missing object/root/pose alone is unavailable evidence, not deletion.
             local removed=track.object~=nil and track.object.isDeleted==true
+            if removed then self:_dischargeFieldWorldSuccessionBridge(track,"SUCCESSOR_RUNTIME_REMOVED") end
+            if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
+                track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
+                if track.fieldWorldResolution~=nil and track.fieldWorldResolution.fieldWorldReferenceKey~=nil then
+                    self:_dischargeFieldWorldSuccessionBridge(track,"SUCCESSOR_FIELD_WORLD_RESOLVED")
+                elseif not removed then
+                    self:_retainFieldWorldSuccessionBridge(track)
+                end
+            elseif not removed then
+                self:_retainFieldWorldSuccessionBridge(track)
+            end
             local removalEvidence=removed and {observed=true,kind="POSITIVE_VEHICLE_RUNTIME_REMOVAL",source="retainedVehicle.isDeleted"} or nil
 
             -- Evidence-Bearing Removal Snapshot != Current Physical Occupancy.
