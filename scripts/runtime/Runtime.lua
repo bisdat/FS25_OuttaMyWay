@@ -1,5 +1,5 @@
 --- Composes the runtime pipeline and directly implements purpose-specific Bounded Authority, Cooperative Passage and Obstruction Relocation integration rules.
--- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `CONFIGURATION`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `CONFIGURATION`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`, `BLOCKED_WORKER_RECOVERY`
 
 OuttaMyWay.Runtime = {}
 local Runtime = OuttaMyWay.Runtime
@@ -87,6 +87,13 @@ local function relocationBridge(candidate)
     return nil
 end
 
+local function blockedWorkerRecoveryBridge(candidate)
+    local evidence=candidate and candidate.evidenceBasis or nil
+    local bridge=evidence and evidence.blockedWorkerRecoveryBridge or nil
+    if type(bridge)=="table" and bridge.architecture=="BLOCKED_WORKER_RECOVERY" and type(bridge.recoveryKey)=="string" then return bridge end
+    return nil
+end
+
 local function selectedGroupBoundary(evaluated)
     local inventory=evaluated and evaluated.candidateInventory or nil
     local boundary=inventory and inventory.supportBoundary or nil
@@ -138,9 +145,12 @@ function Runtime.new()
     runtime.liveObservationSource.currentPhysicalPoseSource=runtime.currentPhysicalPoseSource
     runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new(runtime.identities,runtime.epochs)
     runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new(runtime)
+    runtime.blockedWorkerRecoveryCandidateSupport=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
+    runtime.blockedWorkerRecoveryResponsibilityTransition=OuttaMyWay.BlockedWorkerRecoveryResponsibilityTransition.new(runtime)
     runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new(
         runtime.identities,runtime.epochs,
         runtime.obstructionRelocationCandidateSupport,
+        runtime.blockedWorkerRecoveryCandidateSupport,
         runtime.liveTrafficCandidateSupport,
         runtime.passiveCandidateSupport)
     return runtime
@@ -209,6 +219,14 @@ function Runtime:relinquishAllControl(reason)
         end
         return nil
     end)
+    attempt("blockedWorkerRecovery",function()
+        local dispatcher=self.liveControlDispatcher
+        local recovery=dispatcher and dispatcher.blockedWorkerRecoveryControl or nil
+        if recovery~=nil and type(recovery.relinquishAll)=="function" then
+            return recovery:relinquishAll(why)
+        end
+        return nil
+    end)
     attempt("residualBoundedAuthority",function()
         if self.boundedAuthority~=nil and type(self.boundedAuthority.releaseAll)=="function" then
             return self.boundedAuthority:releaseAll(why)
@@ -266,6 +284,13 @@ function Runtime:setObstructionRelocationControl(control)
     self.liveControlDispatcher:setObstructionRelocationControl(control)
     if control~=nil and type(control.setCompletionHandler)=="function" then
         control:setCompletionHandler(function(result) self:onObstructionRelocationControlCompletion(result) end)
+    end
+end
+
+function Runtime:setBlockedWorkerRecoveryControl(control)
+    self.liveControlDispatcher:setBlockedWorkerRecoveryControl(control)
+    if control~=nil and type(control.setCompletionHandler)=="function" then
+        control:setCompletionHandler(function(result) self:onBlockedWorkerRecoveryControlCompletion(result) end)
     end
 end
 
@@ -561,6 +586,82 @@ function Runtime:_obstructionRelocationRequest(picture,evaluated,candidate,appli
     return self:_materializeBoundedAuthorityRequest(picture,evaluated,candidate,grant,target)
 end
 
+function Runtime:onBlockedWorkerRecoveryControlCompletion(result)
+    if type(result)~="table" or type(result.commitmentId)~="string" then return end
+    if type(result.boundedAuthorityId)=="string" then
+        self.boundedAuthority:release(result.boundedAuthorityId,"BLOCKED_WORKER_RECOVERY_CONTROL_"..tostring(result.status))
+    end
+    if result.status=="FAILED" then
+        logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_CONTROL_REQUIRES_REASSESSMENT",
+            "commitment=%s physicalFailurePreserved=true semanticSettlement=false",tostring(result.commitmentId))
+        return
+    end
+    local eventKind=result.status=="SUCCEEDED" and "OBJECTIVE_SATISFIED"
+        or (result.status=="SUPERSEDED" and "NEW_AUTHORITATIVE_INTENT" or nil)
+    if eventKind==nil then
+        logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_CONTROL_COMPLETION_UNSUPPORTED",
+            "commitment=%s status=%s",tostring(result.commitmentId),tostring(result.status))
+        return
+    end
+    local terminal,reason=OuttaMyWay.BlockedWorkerRecoveryCommitmentLifecycle.settle(
+        self,result.commitmentId,eventKind,result.evidence or {kind="BLOCKED_WORKER_RECOVERY_CONTROL_COMPLETION"})
+    if terminal==nil then
+        logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_SETTLEMENT_FAILED","commitment=%s event=%s reason=%s",
+            tostring(result.commitmentId),tostring(eventKind),tostring(reason))
+    end
+end
+
+function Runtime:_blockedWorkerRecoveryRequest(picture,evaluated,candidate,applied,bridge)
+    local target={
+        kind="BLOCKED_WORKER_RECOVERY",assemblyReferenceKey=bridge.assemblyReferenceKey,
+        jobEpisodeId=bridge.jobEpisodeId,sourceJobToken=bridge.sourceJobToken,recoveryKey=bridge.recoveryKey,
+        configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_RESTORE",
+        recoveryAnchor=bridge.recoveryAnchor
+    }
+    local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
+        assemblyId=bridge.assemblyId,capability="REPOSITION",target=target,
+        operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
+        preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {},
+        provenance={source="BlockedWorkerRecoveryRuntimeIntegration",candidateId=candidate.identity,recoveryKey=bridge.recoveryKey}
+    })
+    if grant==nil then return nil,grantReason end
+    return self:_materializeBoundedAuthorityRequest(picture,evaluated,candidate,grant,target)
+end
+
+function Runtime:_dispatchBlockedWorkerRecovery(picture,evaluated,candidate,bridge)
+    local boundary=evaluated.candidateInventory and evaluated.candidateInventory.supportBoundary or nil
+    if type(boundary)~="table" or boundary.mode~="BLOCKED_WORKER_RECOVERY" then
+        return {status="NO_DISPATCH",reason="BLOCKED_WORKER_RECOVERY_SUPPORT_BOUNDARY_MISMATCH"}
+    end
+    local control=self.liveControlDispatcher.blockedWorkerRecoveryControl
+    if control==nil then return {status="NO_DISPATCH",reason="BLOCKED_WORKER_RECOVERY_CONTROL_UNAVAILABLE"} end
+    if type(control.isActive)=="function" and control:isActive() then
+        return {status="NO_DISPATCH",reason="BLOCKED_WORKER_RECOVERY_CONTROL_ALREADY_ACTIVE"}
+    end
+    local readiness={status="BLOCKED_WORKER_RECOVERY_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,recoveryKey=bridge.recoveryKey}
+    local applied,reason=self.responsibilityTransitionAuthority:transitionBlockedWorkerRecoveryResolution(
+        picture,evaluated,readiness,self.blockedWorkerRecoveryResponsibilityTransition)
+    if applied==nil then
+        return {status="NO_DISPATCH",reason="BLOCKED_WORKER_RECOVERY_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,candidateId=candidate.identity}
+    end
+    local request,requestReason=self:_blockedWorkerRecoveryRequest(picture,evaluated,candidate,applied,bridge)
+    if request==nil then
+        logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_REQUEST_REQUIRES_REASSESSMENT",
+            "commitment=%s reason=%s semanticSettlement=false",tostring(applied.commitment.identity),tostring(requestReason))
+        return {status="NO_DISPATCH",reason=requestReason,commitment=applied.commitment,blockedWorkerRecovery=true}
+    end
+    local started,result=self.liveControlDispatcher:dispatch(request,candidate)
+    local outcome=started and self.liveControlDispatcher:notifyAccepted(request,{kind="BLOCKED_WORKER_RECOVERY_CONTROL_ACCEPTED"})
+        or self.liveControlDispatcher:notifyRejected(request,result,{kind="NO_PHYSICAL_EFFECT_CONFIRMED"})
+    if started~=true then
+        self.boundedAuthority:release(request.boundedAuthorityId,"BLOCKED_WORKER_RECOVERY_START_REJECTED")
+        logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_START_REQUIRES_REASSESSMENT",
+            "commitment=%s reason=%s semanticSettlement=false",tostring(applied.commitment.identity),tostring(result))
+        return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,commitment=applied.commitment,blockedWorkerRecovery=true}
+    end
+    return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,currentResponsibility=applied.currentResponsibility,blockedWorkerRecovery=true,result=result}
+end
+
 function Runtime:onObstructionRelocationCompletion(result)
     if type(result)~="table" or type(result.commitmentId)~="string" then return end
     self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status))
@@ -664,6 +765,10 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
 
     local candidate=selectedCandidate(evaluated)
+    local recoveryBridge=blockedWorkerRecoveryBridge(candidate)
+    if recoveryBridge~=nil then
+        return self:_dispatchBlockedWorkerRecovery(picture,evaluated,candidate,recoveryBridge)
+    end
     local obstructionBridge=relocationBridge(candidate)
     if obstructionBridge~=nil then
         return self:_dispatchObstructionRelocation(picture,evaluated,candidate,obstructionBridge)
@@ -753,22 +858,23 @@ end
 
 function Runtime:processLiveObservation(raw)
     local processed=self:processSealedObservation(raw)
-    -- Tactical Regulation remains inside the same prospective Decision surface
-    -- as fresh GIANTS-native traffic. An already-active Resolution is different:
-    -- its own decision horizon remains authoritative and ordinary independent
-    -- traffic negotiation stays deferred until that Resolution dissolves.
+    -- Existing Resolution decision-horizon behavior remains fail-closed by default.
+    -- Blocked Worker Recovery is the explicit single-subject non-exclusive exception.
     local contexts=processed.picture.commitmentContext or {}
-    local activeResolution=false
+    local exclusiveResolution=false
     for _,context in OuttaMyWay.ValueRecord.ipairs(contexts) do
-        if type(context.commitmentId)=="string"
-            and self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(context.commitmentId)~=nil then
-            activeResolution=true
-            break
+        if type(context.commitmentId)=="string" then
+            local current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(context.commitmentId)
+            local kind=current and current.purpose and current.purpose.kind or nil
+            if kind~=nil and kind~="BLOCKED_WORKER_RECOVERY" then
+                exclusiveResolution=true
+                break
+            end
         end
     end
 
     local supported=nil
-    if activeResolution then
+    if exclusiveResolution then
         supported=self.obstructionRelocationCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
         if supported==nil then supported=self.liveTrafficCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot) end
     else
@@ -814,5 +920,5 @@ end
 
 function Runtime:getStatus()
     return {initialized=self.initialized,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportStatus=self.obstructionRelocationCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportCount=self.obstructionRelocationCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportStatus=self.obstructionRelocationCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportCount=self.obstructionRelocationCandidateSupport:getPublishedCount(),blockedWorkerRecoveryCandidateSupportStatus=self.blockedWorkerRecoveryCandidateSupport:getLastStatus(),blockedWorkerRecoveryCandidateSupportCount=self.blockedWorkerRecoveryCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),blockedWorkerRecoveryControlStatus=(self.liveControlDispatcher.blockedWorkerRecoveryControl and self.liveControlDispatcher.blockedWorkerRecoveryControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list()}
 end

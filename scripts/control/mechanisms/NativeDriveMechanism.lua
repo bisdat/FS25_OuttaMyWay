@@ -168,10 +168,11 @@ function Mechanism:install()
         end
 
         if state.mode == "REPOSITION" then
+            local forwards=state.moveForwards~=false
             local node, x, _, z = position(vehicle)
             if node == nil or state.targetX == nil or state.targetZ == nil then
                 state.invalidReason = "reposition-pose-unavailable"
-                return original(vehicle, dt, 0, false, true, 0, 1, 0)
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
             local dx, dz = state.targetX - x, state.targetZ - z
             local remaining = math.sqrt(dx * dx + dz * dz)
@@ -179,26 +180,24 @@ function Mechanism:install()
             if remaining <= (tonumber(state.targetRadiusM) or 1.0) then
                 state.targetReached = true
                 state.lastOutputMaxSpeed = 0
-                return original(vehicle, dt, 0, false, true, 0, 1, 0)
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
             if type(worldDirectionToLocal) ~= "function" then
                 state.invalidReason = "worldDirectionToLocal-unavailable"
-                return original(vehicle, dt, 0, false, true, 0, 1, 0)
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
             local localX, _, localZ = worldDirectionToLocal(node, dx, 0, dz)
             local length = math.sqrt(localX * localX + localZ * localZ)
             if length <= 0.0001 then
                 state.invalidReason = "reposition-direction-degenerate"
-                return original(vehicle, dt, 0, false, true, 0, 1, 0)
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
             localX, localZ = localX / length, localZ / length
             local cap = speedCeilingApplied(state,state.speedKmh)
             local allowed=cap>0
             state.lastOutputMaxSpeed = cap
             state.lastOutputAllowed = allowed
-            -- Current Reposition actuation supports forward travel only. Reverse remains
-            -- architecturally valid but UNRESOLVED until dedicated discovery.
-            return original(vehicle, dt, allowed and 1 or 0, allowed, true, localX, localZ, cap)
+            return original(vehicle, dt, allowed and 1 or 0, allowed, forwards, localX, localZ, cap)
         end
 
         return original(vehicle, dt, acceleration, isAllowedToDrive, moveForwards, lx, lz, maxSpeed)
@@ -300,7 +299,7 @@ function Mechanism:setAxisTravel(vehicle, originX, originZ, axisForwardX, axisFo
     return true
 end
 
-function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadiusM)
+function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadiusM, moveForwards)
     local ok, reason = self:install()
     if not ok then return false, reason end
     local previous=self.states[vehicle]
@@ -310,6 +309,7 @@ function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadi
         targetZ = targetZ,
         speedKmh = speedKmh,
         targetRadiusM = targetRadiusM,
+        moveForwards = moveForwards~=false,
         targetReached = false,
         driveCalls = 0
     })

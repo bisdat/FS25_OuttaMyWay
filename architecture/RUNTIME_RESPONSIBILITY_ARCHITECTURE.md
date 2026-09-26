@@ -634,7 +634,7 @@ The Trail is evidence retention, not Responsibility, Candidate preference, path 
 
 > **Recovery Approach Trail != Productive History.**
 
-A **Recovery Anchor** is the most recent positively realised state in that same Recovery Approach that remains fit as a bounded return reference. It must preserve Physical Assembly and Job Episode identity and must be invalidated by material ownership, lifecycle, direction, assembly/configuration or representation discontinuity relevant to the recovery question.
+A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery attempt. The useful-span threshold qualifies the Trail; it does not choose the Recovery Point. The Anchor must preserve Physical Assembly and Job Episode identity and must be invalidated by material ownership, lifecycle, direction, assembly/configuration or representation discontinuity relevant to the recovery question.
 
 Where positive supplementary evidence already implicates a later state in the blockage-associated spatial condition, that implicated state is not promoted merely because GIANTS had not yet asserted `isBlocked`.
 

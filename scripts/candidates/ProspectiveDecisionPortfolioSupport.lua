@@ -12,10 +12,10 @@ end
 
 local function candidateMetadata(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or evidence.blockedWorkerRecoveryBridge or {}
     local metadata={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
-        conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
+        conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,recoveryKey=bridge.recoveryKey,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
         assemblyIds=bridge.assemblyIds,existingCommitmentId=bridge.existingCommitmentId or evidence.existingCommitmentId
@@ -33,7 +33,7 @@ end
 
 local function descriptorFromSpecification(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or evidence.blockedWorkerRecoveryBridge or {}
     local descriptor={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
@@ -105,8 +105,8 @@ local function opposedRelations(picture)
     return result
 end
 
-function Support.new(identityRegistry,epochSequence,obstructionSupport,liveSupport,passiveSupport)
-    return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,liveSupport=liveSupport,passiveSupport=passiveSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
+function Support.new(identityRegistry,epochSequence,obstructionSupport,recoverySupport,liveSupport,passiveSupport)
+    return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,recoverySupport=recoverySupport,liveSupport=liveSupport,passiveSupport=passiveSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
 end
 
 function Support:publishDecisionPicture(picture,snapshot)
@@ -123,6 +123,16 @@ function Support:publishDecisionPicture(picture,snapshot)
 
     local relocation=self.obstructionSupport and self.obstructionSupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch) or nil
     if relocation~=nil then appendGroup(state,relocation,"OBSTRUCTION_RELOCATION","obstruction-relocation",1) end
+
+    local recovery,recoveryReason=nil,nil
+    if self.recoverySupport~=nil then
+        recovery,recoveryReason=self.recoverySupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
+    end
+    if recovery~=nil then
+        appendGroup(state,recovery,"RECOVERY","blocked-worker-recovery",1)
+    elseif recoveryReason=="MULTIPLE_RECOVERY_STALLS_REQUIRE_COMPARATOR" then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"RECOVERY_FAIL_CLOSED",recoveryReason,1)
+    end
 
     local follower,followerReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FOLLOWER_BOUNDARY"},targetPictureId,targetEpoch)
     if modeOfGroup(follower)=="FOLLOWER_BOUNDARY" then

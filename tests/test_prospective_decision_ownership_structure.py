@@ -89,7 +89,8 @@ def test_phase13_runtime_uses_one_portfolio_across_fresh_and_tactical_regulation
     runtime=read("scripts/runtime/Runtime.lua")
     for token in (
         "prospectiveDecisionPortfolioSupport",
-        "activeResolution",
+        "exclusiveResolution",
+        'kind~="BLOCKED_WORKER_RECOVERY"',
         "getCurrentResolutionCommitment",
         'boundary.mode=="PROSPECTIVE_DECISION_PORTFOLIO"',
         "selectedGroupBoundary",

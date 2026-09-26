@@ -1,5 +1,5 @@
 --- Owns authoritative Current Responsibility establishment, termination, atomic replacement and semantic identity continuity.
--- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`
+-- Specification Jurisdictions: `RESPONSIBILITY_TRANSITION`, `BLOCKED_WORKER_RECOVERY`
 
 OuttaMyWay.ResponsibilityTransitionAuthority = {}
 local Authority = OuttaMyWay.ResponsibilityTransitionAuthority
@@ -93,6 +93,7 @@ local function resolutionEventCode(current,suffix)
     local kind=resolutionKind(current)
     if kind=="COOPERATIVE_PASSAGE" then return "COOPERATIVE_PASSAGE_"..suffix end
     if kind=="CAUSAL_OBSTRUCTION_RELOCATION" then return "OBSTRUCTION_RELOCATION_"..suffix end
+    if kind=="BLOCKED_WORKER_RECOVERY" then return "BLOCKED_WORKER_RECOVERY_"..suffix end
     return nil
 end
 
@@ -112,6 +113,8 @@ local function resolutionPayload(runtime,current,commitmentId,reason)
     elseif kind=="CAUSAL_OBSTRUCTION_RELOCATION" then
         payload.blocker=(current.controlledSubjectAssemblyIds or {})[1]
         payload.beneficiaries=joinValues(current.beneficiaryAssemblyIds,",")
+    elseif kind=="BLOCKED_WORKER_RECOVERY" then
+        payload.worker=(current.controlledSubjectAssemblyIds or {})[1]
     end
     local commitment=runtime and runtime.commitments and runtime.commitments:get(commitmentId) or nil
     if commitment~=nil and OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then payload.outcome=commitment.state end
@@ -633,6 +636,17 @@ function Authority:transitionCooperativePassageResolution(picture,evaluated,read
     if not responsibilityAlreadyCurrent then
         publishResolution(self.runtime,applied.currentResponsibility,applied.commitment.identity,"STARTED","ESTABLISHED")
     end
+    return applied,nil
+end
+
+function Authority:transitionBlockedWorkerRecoveryResolution(picture,evaluated,readiness,recoveryTransition)
+    local identity=self.runtime.identities:issue("RESPONSIBILITY")
+    local applied,reason=recoveryTransition:transition(picture,evaluated,readiness,{
+        responsibilityIdentity=identity,responsibilityAlreadyCurrent=false
+    })
+    if applied==nil then return nil,reason end
+    self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
+    publishResolution(self.runtime,applied.currentResponsibility,applied.commitment.identity,"STARTED","ESTABLISHED")
     return applied,nil
 end
 

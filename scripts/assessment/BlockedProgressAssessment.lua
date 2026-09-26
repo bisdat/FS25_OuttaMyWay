@@ -11,7 +11,7 @@ Assessment.__index=Assessment
 
 local TRAIL_CAPACITY_COUNT=40
 local COLLAPSE_MIN_OBSERVATION_SECONDS=1.0
-local ANCHOR_MIN_USEFUL_SPAN_M=5.0
+local TRAIL_MIN_USEFUL_SPAN_M=5.0
 
 local publication=OuttaMyWay.LogPublication.origin("SITUATION_ASSESSMENT")
 
@@ -189,20 +189,22 @@ local function selectAnchor(track,stallPoseX,stallPoseZ)
     local previousX,previousZ=stallPoseX,stallPoseZ
     for index=#track.trail,1,-1 do
         local witness=track.trail[index]
+        if witness.configurationProfileId~=track.configurationProfileId
+            or witness.travelPolarity~=track.travelPolarity then
+            return nil
+        end
         local segment=distance(witness.poseX,witness.poseZ,previousX,previousZ)
         if segment==nil then return nil end
         span=span+segment
-        if witness.configurationProfileId==track.configurationProfileId
-            and witness.travelPolarity==track.travelPolarity
-            and span>=ANCHOR_MIN_USEFUL_SPAN_M then
-            local anchor=copyWitness(witness)
-            anchor.usefulSpanM=span
-            anchor.minimumUsefulSpanM=ANCHOR_MIN_USEFUL_SPAN_M
-            return anchor
-        end
         previousX,previousZ=witness.poseX,witness.poseZ
     end
-    return nil
+    if span<TRAIL_MIN_USEFUL_SPAN_M then return nil end
+    local first=track.trail[1]
+    if first==nil then return nil end
+    local anchor=copyWitness(first)
+    anchor.usefulSpanM=span
+    anchor.minimumUsefulSpanM=TRAIL_MIN_USEFUL_SPAN_M
+    return anchor
 end
 
 local function trackKnowledge(track)

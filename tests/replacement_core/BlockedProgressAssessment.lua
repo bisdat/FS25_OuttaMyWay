@@ -173,14 +173,15 @@ return function(test,equal)
         equal(knowledge[1].collapseObservation.sufficient,true)
     end)
 
-    test("Stall selects the most recent Trail witness with at least five metres useful span",function()
+    test("Five metres qualifies the Trail but Recovery Anchor is the oldest retained compatible witness",function()
         local f=fixture()
         progress(f,30,false)
         local knowledge=stall(f)
         local anchor=knowledge[1].recoveryAnchor
         if anchor==nil then error("expected Recovery Anchor") end
-        if anchor.usefulSpanM<5 then error("Recovery Anchor span below five metres") end
-        if anchor.usefulSpanM>5.51 then error("Recovery Anchor was not the most recent useful witness") end
+        equal(anchor.observationSnapshotId,"OS-RECOVERY-001")
+        approximately(anchor.poseX,0.5,0.0001)
+        approximately(anchor.usefulSpanM,15.0,0.0001)
         approximately(anchor.minimumUsefulSpanM,5.0,0.0001)
         equal(anchor.travelPolarity,"FORWARD")
     end)

@@ -228,6 +228,7 @@ Control realises already-authorised action. It does not establish or replace sem
 | [`scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua`](../scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) | `SUPPORTS` |
 
 ## Implementation traceability
@@ -237,7 +238,7 @@ The following mapping is **non-normative source traceability**.
 Primary current implementation routes include:
 
 - [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) — current central semantic responsibility authority, identity continuity, termination and atomic replacement boundary;
-- purpose-specific transition collaborators under [`scripts/responsibility/`](../scripts/responsibility/), including follower, Action-Space Regulation, Cooperative Passage and Obstruction Relocation transitions;
+- purpose-specific transition collaborators under [`scripts/responsibility/`](../scripts/responsibility/), including follower, Action-Space Regulation, Cooperative Passage, Obstruction Relocation and Blocked Worker Recovery transitions;
 - [`scripts/contracts/Regulation.lua`](../scripts/contracts/Regulation.lua) and [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua) — current value representations for implemented Current Responsibility kinds; and
 - runtime orchestration that presents supported transition intent to the authority before downstream physical dispatch.
 

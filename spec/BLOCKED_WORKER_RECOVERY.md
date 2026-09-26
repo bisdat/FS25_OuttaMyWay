@@ -4,8 +4,6 @@
 
 **Specification Jurisdiction:** Blocked Worker Recovery  
 **Jurisdiction ID:** `BLOCKED_WORKER_RECOVERY`  
-**Implementation Status:** `NOT_IMPLEMENTED`
-
 **Parent Jurisdiction:** [`Resolution Lifecycle`](RESOLUTION_LIFECYCLE.md)  
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#specification-jurisdiction--blocked-worker-recovery)
 
@@ -99,7 +97,7 @@ The 250 ms cadence is implementation calibration, not architectural policy. Trai
 
 A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Trail for the current recovery question when it breaks Recovery Approach continuity.
 
-The **Recovery Anchor** MUST identify the most recent positively realised Trail state in that Approach that remains fit and spatially useful as a bounded return reference. Anchor fitness MUST preserve:
+The **Recovery Anchor** MUST identify the first/oldest retained compatible positively realised Trail state in that uninterrupted Approach once the retained Trail demonstrates sufficient cumulative useful span for a bounded recovery attempt. Anchor fitness MUST preserve:
 
 - Physical Assembly identity;
 - Job Episode identity;
@@ -111,7 +109,7 @@ The **Recovery Anchor** MUST identify the most recent positively realised Trail 
 
 A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Anchor for the current recovery question when it breaks that continuity.
 
-Anchor selection MUST NOT simply choose the latest retained sample if it is already positively implicated in the blockage-associated spatial condition or is not spatially useful for a coherent bounded excursion. Assessment may walk backward within the bounded Trail to the most recent fit witness; it MUST NOT widen retention or reconstruct older history merely because no useful Anchor exists.
+The minimum useful Trail-span requirement qualifies whether the retained Recovery Approach Trail is sufficient to support one bounded recovery attempt; it MUST NOT select the Recovery Point. Once the retained compatible Trail qualifies, Assessment MUST select its first/oldest retained compatible witness as the Recovery Anchor. Assessment MUST NOT widen retention or reconstruct older history merely because the bounded Trail is insufficient.
 
 > **Insufficient Anchor Span != Permission to Retain Productive History.**
 
@@ -121,7 +119,7 @@ Anchor age alone MUST NOT establish or destroy fitness.
 
 > **Recovery Anchor != Known Safe Pose.**
 
-The Anchor bounds return provenance and direction. It MUST NOT be promoted into generic negative-clearance authority, arbitrary reverse-feasibility authority or an exact historical waypoint that Control must point-seek.
+The Anchor bounds return provenance. For the initial capability, the selected Recovery Anchor is also the **Recovery Point** and direct target of the one authorised Recovery Excursion. It MUST NOT be promoted into generic negative-clearance authority, arbitrary reverse-feasibility authority, productive routing or generic waypoint authority.
 
 ## Recovery Excursion contract
 
@@ -131,8 +129,8 @@ The initial Blocked Worker Recovery capability owns one generic bounded **Recove
 
 The excursion MUST:
 
+- move directly to the selected Recovery Anchor, which is the Recovery Point for the initial capability;
 - remain local to the Recovery Approach / Recovery Anchor domain;
-- use a supported local release direction back toward recently demonstrated traversal;
 - avoid inventing productive routing or general obstacle-bypass navigation;
 - return to fresh Reality as movement progresses; and
 - stop, narrow or refuse physical progression when fresh positive contradiction invalidates current permission.
@@ -162,7 +160,7 @@ Recovery MAY consume supplementary positive spatial evidence when available, inc
 - reduction or discharge of a previously positive represented spatial condition; or
 - another purpose-fit positive spatial witness accepted by the governing Architecture.
 
-Supplementary evidence MAY strengthen the release direction or establish an earlier Recovery Point. It MUST NOT be required merely to prove an obstacle identity.
+Supplementary evidence MAY strengthen current movement permission. It MUST NOT substitute a different Recovery Point or be required merely to prove an obstacle identity.
 
 A Field World boundary intersection proves represented occupancy across the agricultural boundary. It MUST NOT be relabelled as proof of hedge, tree, pylon, terrain or other environmental collision.
 
@@ -204,13 +202,13 @@ Any Recovery progress-watchdog implementation MUST measure purpose-specific prog
 
 > **Bullet Time Constrains Recovery; It Does Not Suspend Recovery.**
 
-### Release direction and movement envelope
+### Direct Recovery Anchor movement
 
-The Recovery Excursion MUST use the Recovery Anchor / recent realised approach to establish which local direction represents retreat from the failed native progression.
+The initial capability performs one direct bounded manoeuvre to the selected Recovery Anchor.
 
-The initial capability MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle or point-seek an arbitrary world-space destination.
+It MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle, invent a second release direction, or derive a separate excursion-distance target.
 
-Where the failed approach was curved or turning, the Recovery Anchor bounds the return domain while current local realised approach direction MAY provide the immediate release axis. Detailed manoeuvre-sweep reconstruction remains outside this contract.
+> **Recovery Anchor = Initial Recovery Point.**
 
 The granted movement envelope MUST remain no broader than the currently supported local release purpose.
 
@@ -220,9 +218,7 @@ The granted movement envelope MUST remain no broader than the currently supporte
 
 The **Recovery Point** is the bounded physical endpoint at which the specialised Resolution's one Recovery Excursion obligation has been discharged.
 
-Where a positive blockage-associated spatial condition exists, fresh Reality MAY establish the Recovery Point earlier when that known condition is positively released or sufficiently reduced under the purpose-specific contract.
-
-Where blockage cause remains unresolved, the Recovery Anchor bounds the available return domain and the authorised excursion MUST NOT extend beyond it merely to seek a better location.
+For the initial capability, the selected Recovery Anchor **is** the Recovery Point. The authorised excursion ends when that Anchor is reached; it does not continue to seek a better location and does not substitute an earlier obstacle-specific endpoint.
 
 The exact implementation movement calibration within that bounded domain is not architectural policy unless later evidence promotes a literal into the contract.
 
@@ -342,7 +338,7 @@ DEBUG MUST remain change/transition-driven. It MUST NOT emit the same unchanged 
 
 ### DIAGNOSTIC — targeted engineering evidence
 
-DIAGNOSTIC may expose detailed motion samples, observation-interval displacement, represented geometry, anchor fitness components, release-axis/residual calculations and other intermediate evidence needed to investigate a specific unresolved Recovery question.
+DIAGNOSTIC may expose detailed motion samples, observation-interval displacement, represented geometry, anchor fitness components, movement/residual calculations and other intermediate evidence needed to investigate a specific unresolved Recovery question.
 
 Such evidence is produced only by an independently justified diagnostic instrument or already-existing evidence source. DIAGNOSTIC publication eligibility does not authorise continuous expensive measurement, and suppressed publication MUST avoid publication-only projection work.
 
@@ -396,11 +392,11 @@ Every positive Transit/configuration and release-movement effect requires curren
 
 Control executes only the granted Transit/configuration, movement, restoration and relinquishment effects. Control outcomes return through Reality and Observation; Control does not decide Blocked Progress Stall admission or Recovery Recurrence.
 
-## Current implementation gap — purpose-specific decision horizon
+## Current implementation — purpose-specific decision horizon
 
-Production `Runtime:processLiveObservation()` currently detects any active Resolution through one generic boolean and changes the prospective support path on that basis. That implementation shape is too coarse for Blocked Worker Recovery because Recovery must preserve its single-subject Resolution while independent traffic negotiation remains live.
+Production `Runtime:processLiveObservation()` now treats current Blocked Worker Recovery as the explicit non-exclusive exception to the existing Resolution decision-horizon behavior. A current Recovery Resolution does not set the operation-global exclusivity flag, so compatible independent traffic Candidate support remains live.
 
-The implementation increment MUST replace generic Resolution-existence inference with purpose-compatible continuation/selection semantics. It MUST NOT add Recovery-specific traffic rules, and it MUST preserve Cooperative Passage's accepted Bubble decision horizon.
+Fresh independent Commitment creation is permitted beside an unrelated retained Recovery context. Existing responsibility-key and actuation-owner admission checks still fail closed on incompatible ownership.
 
 Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHold=false` unconditionally. That placeholder MUST NOT be used as positive evidence that OuttaMyWay did not cause quiescence. Recovery admission must use truthful current semantic/actuation ownership until Observation owns a truthful equivalent field.
 
@@ -408,30 +404,36 @@ Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHo
 
 | Production source | Participation |
 | --- | --- |
-
-No production source currently participates. This Specification is authoritative but `NOT_IMPLEMENTED`.
+| [`scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) | `REALISES` |
+| [`scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) | `REALISES` |
+| [`scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/control/BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) | `REALISES` |
+| [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) | `SUPPORTS` |
+| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
-No production source currently realises the `BLOCKED_WORKER_RECOVERY` Jurisdiction.
+Production now implements the first complete Blocked Worker Recovery vertical slice:
 
-Upstream [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) now realises the `SITUATION_ASSESSMENT` responsibility for bounded Recovery Approach Trail retention, Blocked Progress Stall interpretation and Recovery Anchor selection. Its `blockedProgressKnowledge` output is prerequisite Situation meaning consumed by future Recovery Candidate Support; it does not create Recovery responsibility or make this Jurisdiction implemented.
+- [`BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) projects one current Stall+Anchor into one Recovery Candidate;
+- [`BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) owns specialised Recovery commitment settlement;
+- [`BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) establishes the single-subject Current Responsibility;
+- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, moves directly to the selected Recovery Anchor, restores configuration debt and hands back to GIANTS; and
+- Runtime / Responsibility Transition integration preserves Recovery's non-exclusive traffic decision horizon while retaining Passage's Bubble horizon.
 
-Recovery Candidate Support, specialised Commitment / Responsibility Transition, Recovery Bounded Authority / Control, handback settlement and Recovery Recurrence disposition remain absent.
+Upstream [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) remains `SITUATION_ASSESSMENT` authority for Stall and Anchor meaning.
 
-Existing mechanisms such as Transit configuration and native drive actuation are potential subordinate implementation assets only. Their existence does not make this Jurisdiction implemented, and future implementation MUST classify only source that materially participates in the accepted contract.
+Post-handback **Recovery Recurrence** disposition remains deferred to the next implementation jump.
 
 ## Validation route
 
 ### Structural/source-contract validation
 
-Before implementation is accepted, structural validation must prove that the Jurisdiction identity, specialisation, primary Specification route and `NOT_IMPLEMENTED` state remain coherent and that no production source falsely acknowledges `BLOCKED_WORKER_RECOVERY`.
-
-When a production source first materially participates in the `BLOCKED_WORKER_RECOVERY` Jurisdiction itself, that same increment must remove `NOT_IMPLEMENTED`, declare truthful production participants and add reciprocal source Jurisdiction acknowledgements. Upstream `SITUATION_ASSESSMENT` implementation does not satisfy that boundary.
+Structural validation must prove that declared Recovery production participants acknowledge this Jurisdiction reciprocally, that the Candidate/Responsibility/Control path remains bounded to one selected Recovery Anchor, and that Recovery does not recreate operation-global Resolution exclusivity.
 
 ### Offline behavioural/conformance validation
 
-Future offline validation should challenge at least:
+Current offline validation should challenge at least:
 
 - raw blocked spam while realised progression continues does not admit Recovery;
 - a positive Blocked Progress Contradiction can admit one Recovery Resolution;

@@ -11,11 +11,12 @@ local function logWarning(code,formatText,...)
 end
 
 function Dispatcher.new(runtime)
-    return setmetatable({runtime=runtime,regulationControl=nil,cooperativePassageControl=nil,obstructionRelocationControl=nil,outcomes={},dispatchCount=0},Dispatcher)
+    return setmetatable({runtime=runtime,regulationControl=nil,cooperativePassageControl=nil,obstructionRelocationControl=nil,blockedWorkerRecoveryControl=nil,outcomes={},dispatchCount=0},Dispatcher)
 end
 function Dispatcher:setRegulationControl(control) self.regulationControl=control end
 function Dispatcher:setCooperativePassageControl(control) self.cooperativePassageControl=control end
 function Dispatcher:setObstructionRelocationControl(control) self.obstructionRelocationControl=control end
+function Dispatcher:setBlockedWorkerRecoveryControl(control) self.blockedWorkerRecoveryControl=control end
 function Dispatcher:getObstructionRelocationObservation()
     if self.obstructionRelocationControl~=nil and type(self.obstructionRelocationControl.getControlExecutionObservation)=="function" then return self.obstructionRelocationControl:getControlExecutionObservation() end
     return nil
@@ -51,6 +52,13 @@ function Dispatcher:dispatch(request,candidate)
         if target.kind=="OBSTRUCTION_RELOCATION" then
             local control=self.obstructionRelocationControl
             if control==nil or type(control.executeControlRequest)~="function" then return false,"OBSTRUCTION_RELOCATION_CONTROL_UNAVAILABLE" end
+            local started,result=control:executeControlRequest(request,candidate)
+            if started==true then self.dispatchCount=self.dispatchCount+1 end
+            return started,result
+        end
+        if target.kind=="BLOCKED_WORKER_RECOVERY" then
+            local control=self.blockedWorkerRecoveryControl
+            if control==nil or type(control.executeControlRequest)~="function" then return false,"BLOCKED_WORKER_RECOVERY_CONTROL_UNAVAILABLE" end
             local started,result=control:executeControlRequest(request,candidate)
             if started==true then self.dispatchCount=self.dispatchCount+1 end
             return started,result

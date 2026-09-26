@@ -67,6 +67,22 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     local groups=groupsFor(inventory,admissibleCandidates)
     if #groups==0 then return nil,"NO_MANDATORY_ADMISSIBLE_SUPPORT_GROUP" end
 
+    local recoveries=family(groups,"RECOVERY")
+    if #recoveries>1 then return nil,"MULTIPLE_SUPPORTED_RECOVERIES_REQUIRE_COMPARATOR" end
+    if #recoveries==1 then
+        local recovery=recoveries[1]
+        local others={}
+        for _,group in ipairs(groups) do if group.groupKey~=recovery.groupKey then others[#others+1]=group end end
+        local onlyRetained=true
+        for _,group in ipairs(others) do
+            if type(group.existingCommitmentId)~="string" then onlyRetained=false break end
+        end
+        if #others==0 or onlyRetained then
+            return choose(recovery,"BLOCKED_WORKER_RECOVERY_ESTABLISHMENT","SUPPORTED_RECOVERY_WITH_NO_FRESH_CROSS_PURPOSE_COMPETITOR")
+        end
+        return nil,"RECOVERY_WITH_FRESH_CROSS_PURPOSE_REQUIRES_COMPARATOR"
+    end
+
     local obstruction=family(groups,"OBSTRUCTION_RELOCATION")[1]
     if obstruction~=nil then
         return choose(obstruction,"OUTER_PURPOSE_PRECEDENCE","CURRENT_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC")
