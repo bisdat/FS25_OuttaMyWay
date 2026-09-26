@@ -40,6 +40,7 @@ function Lifecycle:_publishRuntimeBundle(bundle)
     OuttaMyWay.regulationControl=bundle.regulationControl
     OuttaMyWay.cooperativePassageControl=bundle.cooperativePassageControl
     OuttaMyWay.obstructionRelocationControl=bundle.obstructionRelocationControl
+    OuttaMyWay.blockedWorkerRecoveryControl=bundle.blockedWorkerRecoveryControl
     OuttaMyWay.liveRuntimeCoordinator=bundle.liveRuntimeCoordinator
 end
 
@@ -107,6 +108,7 @@ function Lifecycle:_clearRuntimeGlobals(runtime)
     OuttaMyWay.regulationControl=nil
     OuttaMyWay.cooperativePassageControl=nil
     OuttaMyWay.obstructionRelocationControl=nil
+    OuttaMyWay.blockedWorkerRecoveryControl=nil
     OuttaMyWay.physicalControlMechanisms=nil
     OuttaMyWay.versionHud=nil
 end

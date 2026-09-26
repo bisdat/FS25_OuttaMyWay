@@ -217,6 +217,7 @@ Situation Assessment owns the current semantic relationships and Operational Pic
 | [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua`](../scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) | `REALISES` |
+| [`scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/PassiveLiveCandidateSupport.lua`](../scripts/candidates/PassiveLiveCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
 | [`scripts/candidates/CandidateSpace.lua`](../scripts/candidates/CandidateSpace.lua) | `REALISES` |
@@ -233,6 +234,7 @@ Current implementation routes include:
 - [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) — current live-traffic purpose-local support construction;
 - [`scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua`](../scripts/candidates/BubbleDecisionHorizonCandidateSupport.lua) — current active-Passage decision-horizon projection that preserves observation while deferring ordinary independent traffic negotiation to passive support;
 - [`scripts/candidates/ObstructionRelocationCandidateSupport.lua`](../scripts/candidates/ObstructionRelocationCandidateSupport.lua) — obstruction-relocation support construction;
+- [`scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) — Blocked Progress Stall + Recovery Anchor support projection for one bounded Recovery excursion;
 - [`scripts/candidates/PassiveLiveCandidateSupport.lua`](../scripts/candidates/PassiveLiveCandidateSupport.lua) — explicit passive/fail-closed support paths;
 - [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) — current purpose-local Cooperative Passage planning support; and
 - [`scripts/candidates/CandidateSpace.lua`](../scripts/candidates/CandidateSpace.lua) plus [`scripts/contracts/CandidateAction.lua`](../scripts/contracts/CandidateAction.lua) and [`scripts/contracts/CandidateInventory.lua`](../scripts/contracts/CandidateInventory.lua) — materialisation of the supported Candidate inventory.

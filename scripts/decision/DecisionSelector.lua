@@ -22,6 +22,16 @@ local function portfolioBoundary(inventory)
     return nil
 end
 
+local function onlyBlockedWorkerRecoveryContexts(picture)
+    local contexts=picture and picture.commitmentContext or {}
+    if OuttaMyWay.ValueRecord.length(contexts)==0 then return false end
+    for _,context in OuttaMyWay.ValueRecord.ipairs(contexts) do
+        local basis=context.governingBasis or {}
+        if basis.kind~="BLOCKED_WORKER_RECOVERY" then return false end
+    end
+    return true
+end
+
 local function groupBoundary(inventory,groupKey)
     local boundary=portfolioBoundary(inventory)
     if boundary==nil then return nil end
@@ -142,6 +152,8 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         elseif selected.capability=="ESCALATE" then commitmentAction="SETTLE"
         elseif OuttaMyWay.ValueRecord.length(operationalPicture.commitmentContext)==0 then commitmentAction="CREATE"
         elseif selected.evidenceBasis.maintainsExistingCommitment==true then commitmentAction="MAINTAIN"
+        elseif selected.evidenceBasis.independentConcurrentCommitment==true then commitmentAction="CREATE"
+        elseif onlyBlockedWorkerRecoveryContexts(operationalPicture) then commitmentAction="CREATE"
         else commitmentAction="REVISE" end
         nonIntervention={explicit=nonActuating[selected.capability]==true,classification=selected.capability}
         if portfolioChoice~=nil then

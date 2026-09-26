@@ -334,6 +334,7 @@ Control may be required to neutralise predecessor physical effects around a tran
 | [`scripts/control/RegulationControl.lua`](../scripts/control/RegulationControl.lua) | `REALISES` |
 | [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
 | [`scripts/control/ObstructionRelocationControl.lua`](../scripts/control/ObstructionRelocationControl.lua) | `REALISES` |
+| [`scripts/control/BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) | `REALISES` |
 | [`scripts/control/mechanisms/FieldWorkHoldMechanism.lua`](../scripts/control/mechanisms/FieldWorkHoldMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeDriveMechanism.lua`](../scripts/control/mechanisms/NativeDriveMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NonJobActuationMechanism.lua`](../scripts/control/mechanisms/NonJobActuationMechanism.lua) | `SUPPORTS` |
@@ -349,7 +350,8 @@ Primary current implementation routes include:
 - [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) — current capability/target routing boundary;
 - [`scripts/control/RegulationControl.lua`](../scripts/control/RegulationControl.lua) — Regulation lease execution/cleanup and raw execution observation;
 - [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) — specialised Passage execution choreography;
-- [`scripts/control/ObstructionRelocationControl.lua`](../scripts/control/ObstructionRelocationControl.lua) — specialised non-active blocker relocation execution; and
+- [`scripts/control/ObstructionRelocationControl.lua`](../scripts/control/ObstructionRelocationControl.lua) — specialised non-active blocker relocation execution;
+- [`scripts/control/BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) — Transit, direct Recovery-Anchor movement, restoration and GIANTS handback for Blocked Worker Recovery; and
 - [`scripts/control/mechanisms/`](../scripts/control/mechanisms/) plus `NonJobActuationMechanism` — current physical mechanism implementations.
 
 The dispatcher is not the whole Control Jurisdiction, and physical mechanism modules do not acquire semantic authority merely because they call GIANTS APIs.

@@ -12,7 +12,7 @@ def test_active_loader_never_sources_archive_or_legacy_core():
         assert forbidden not in text
     assert "scripts/control/LiveControlDispatcher.lua" in text
     assert "scripts/control/CooperativePassageControl.lua" in text
-    assert text.count("scripts/control/") == 8
+    assert text.count("scripts/control/") == 9
 
 
 
@@ -197,7 +197,7 @@ def test_constraint_engine_declares_only_independently_owned_mandatory_questions
 def test_current_control_topology_has_one_obstruction_relocation_executor_beside_the_central_dispatcher():
     control_dir = ROOT / "scripts" / "control"
     assert control_dir.is_dir()
-    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "LiveControlDispatcher.lua", "ObstructionRelocationControl.lua", "RegulationControl.lua"]
+    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["BlockedWorkerRecoveryControl.lua", "CooperativePassageControl.lua", "LiveControlDispatcher.lua", "ObstructionRelocationControl.lua", "RegulationControl.lua"]
     assert not (control_dir / "TerminalEgressControl.lua").exists()
     dispatcher = (control_dir / "LiveControlDispatcher.lua").read_text(encoding="utf-8")
     for token in ("g_currentMission", "AIVehicleUtil.driveToPoint", "getCanAIFieldWorkerContinueWork"):

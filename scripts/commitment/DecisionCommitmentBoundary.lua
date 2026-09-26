@@ -149,14 +149,16 @@ function Boundary:apply(picture,decisionResult)
     if decision.candidateInventoryId ~= decisionResult.candidateInventory.identity then error("Decision inventory mismatch",2) end
     if decision.mandatoryVerdictSetId ~= decisionResult.verdictSet.identity then error("Decision verdict-set mismatch",2) end
     local candidate = selectedCandidate(decision,decisionResult.candidates)
-    local context = targetContext(picture)
+    local action = decision.commitmentAction
+    -- CREATE establishes an independent new responsibility and therefore does not
+    -- target unrelated retained contexts. CommitmentAdmission still enforces
+    -- responsibility-key and actuation-owner exclusivity.
+    local context = action=="CREATE" and nil or targetContext(picture)
     local previousState, resultingState, commitmentId, compositionId
     local createdObligationIds, authorityTokenIds = {}, {}
     local explanation
-    local action = decision.commitmentAction
 
     if action == "CREATE" then
-        if context ~= nil then error("CREATE Decision cannot target an existing Commitment",2) end
         local admitted = self:_admitFromCandidate(picture,decision,candidate)
         commitmentId=admitted.commitment.identity; resultingState=admitted.commitment.state
         createdObligationIds=admitted.obligationIds
