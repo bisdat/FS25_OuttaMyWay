@@ -356,15 +356,26 @@ function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadi
     local ok, reason = self:install()
     if not ok then return false, reason end
     local previous=self.states[vehicle]
+    local forwards=moveForwards~=false
+    local reverseReferenceNode,reverseReferenceNodeSource=nil,nil
+    local toolReverserDirectionNode,toolReverserDirectionNodeSource=nil,nil
+    if not forwards then
+        reverseReferenceNode,reverseReferenceNodeSource=reverseNode(vehicle)
+        toolReverserDirectionNode,toolReverserDirectionNodeSource=toolReverserNode(vehicle)
+    end
     self.states[vehicle] = retainSupportingSpeedCeilings(previous,{
         mode = "REPOSITION",
         targetX = targetX,
         targetZ = targetZ,
         speedKmh = speedKmh,
         targetRadiusM = targetRadiusM,
-        moveForwards = moveForwards~=false,
+        moveForwards = forwards,
         targetReached = false,
-        driveCalls = 0
+        driveCalls = 0,
+        repositionReferenceNode=reverseReferenceNode,
+        repositionReferenceNodeSource=forwards and "AI_STEERING_NODE" or reverseReferenceNodeSource,
+        toolReverserDirectionNode=toolReverserDirectionNode,
+        toolReverserDirectionNodeSource=forwards and "NOT_APPLICABLE_FORWARD" or toolReverserDirectionNodeSource
     })
     return true
 end
