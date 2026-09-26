@@ -6,7 +6,7 @@ local Control=OuttaMyWay.BlockedWorkerRecoveryControl
 Control.__index=Control
 
 local RECOVERY_SPEED_KMH=8.0
-local RECOVERY_ANCHOR_RADIUS_M=1.0
+local RECOVERY_ANCHOR_STATION_TOLERANCE_M=1.0
 local publication=OuttaMyWay.LogPublication.origin("CONTROL")
 
 local function logInfo(class,code,formatText,...)
@@ -247,13 +247,15 @@ function Control:_replaceNativeFieldWorkJob(state)
 end
 
 function Control:_beginMovement(state)
-    local ok,reason=self.driveMechanism:setReposition(
-        state.vehicle,state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH,RECOVERY_ANCHOR_RADIUS_M,false)
+    local ok,reason=self.driveMechanism:setAxisTravel(
+        state.vehicle,state.anchorX,state.anchorZ,state.axisForwardX,state.axisForwardZ,
+        0,RECOVERY_SPEED_KMH,false,RECOVERY_ANCHOR_STATION_TOLERANCE_M)
     if not ok then return false,reason end
     state.phase="MOVING_TO_RECOVERY_ANCHOR"
     logInfo("DEBUG","BLOCKED_WORKER_RECOVERY_MOVEMENT_STARTED",
-        "commitment=%s assembly=%s anchor=(%.2f,%.2f) speed=%.2f reverse=true",
-        tostring(state.commitmentId),tostring(state.assemblyId),state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH)
+        "commitment=%s assembly=%s anchor=(%.2f,%.2f) axis=(%.4f,%.4f) targetStation=0.00m tolerance=%.2fm speed=%.2f reverse=true steering=RECOVERY_APPROACH_AXIS_ONLY pointSeeking=false",
+        tostring(state.commitmentId),tostring(state.assemblyId),state.anchorX,state.anchorZ,
+        state.axisForwardX,state.axisForwardZ,RECOVERY_ANCHOR_STATION_TOLERANCE_M,RECOVERY_SPEED_KMH)
     return true,nil
 end
 
@@ -298,7 +300,7 @@ function Control:_beginNativeReplanning(state)
             state.phase="UNRESOLVED_NATIVE_REACQUISITION"
         else
             -- The known-failed originating Job still exists.  Keep the already
-            -- reached REPOSITION target as the bounded zero-speed state rather
+            -- reached Axis-Travel target as the bounded zero-speed state rather
             -- than exposing that failed native plan again.
             state.phase="WAITING_FOR_PLAYER_INTERVENTION"
         end
@@ -347,12 +349,22 @@ function Control:executeControlRequest(request,candidate)
     if type(anchor)~="table" or tonumber(anchor.x)==nil or tonumber(anchor.z)==nil then
         return false,"BLOCKED_WORKER_RECOVERY_ANCHOR_UNAVAILABLE"
     end
+    local axis=target.recoveryApproachAxis
+    if type(axis)~="table" or tonumber(axis.forwardX)==nil or tonumber(axis.forwardZ)==nil then
+        return false,"BLOCKED_WORKER_RECOVERY_APPROACH_AXIS_UNAVAILABLE"
+    end
+    local axisX,axisZ=tonumber(axis.forwardX),tonumber(axis.forwardZ)
+    local axisLength=math.sqrt(axisX*axisX+axisZ*axisZ)
+    if axisLength<=0.0001 then
+        return false,"BLOCKED_WORKER_RECOVERY_APPROACH_AXIS_DEGENERATE"
+    end
 
     local state={
         commitmentId=request.commitmentId,assemblyId=request.assemblyId,assemblyReferenceKey=target.assemblyReferenceKey,
         jobEpisodeId=target.jobEpisodeId,sourceJobToken=target.sourceJobToken,recoveryKey=target.recoveryKey,
         requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,vehicle=vehicle,
-        anchorX=tonumber(anchor.x),anchorZ=tonumber(anchor.z),phase="REQUEST_TRANSIT",
+        anchorX=tonumber(anchor.x),anchorZ=tonumber(anchor.z),
+        axisForwardX=axisX/axisLength,axisForwardZ=axisZ/axisLength,phase="REQUEST_TRANSIT",
         transitRequested=false,transitChanged=false
     }
     if not self:_originatingJobStillCurrent(state) then return false,"BLOCKED_WORKER_RECOVERY_JOB_EPISODE_CHANGED" end
