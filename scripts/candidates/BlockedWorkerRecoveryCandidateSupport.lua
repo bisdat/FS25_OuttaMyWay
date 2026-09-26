@@ -79,6 +79,7 @@ local function recoveryKnowledge(picture)
         local anchor=knowledge.recoveryAnchor
         if knowledge.blockedProgressStall==true and type(anchor)=="table"
             and finite(anchor.poseX) and finite(anchor.poseZ)
+            and finite(anchor.travelDirectionX) and finite(anchor.travelDirectionZ)
             and type(anchor.configurationProfileId)=="string"
             and type(knowledge.assemblyId)=="string" and type(knowledge.assemblyReferenceKey)=="string"
             and type(knowledge.jobEpisodeId)=="string" and type(knowledge.operationId)=="string"
@@ -133,6 +134,12 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
                     observationSnapshotId=anchor.observationSnapshotId,
                     x=anchor.poseX,z=anchor.poseZ,usefulSpanM=anchor.usefulSpanM,
                     configurationProfileId=anchor.configurationProfileId
+                },
+                recoveryApproachAxis={
+                    observationSnapshotId=anchor.observationSnapshotId,
+                    originX=anchor.poseX,originZ=anchor.poseZ,
+                    forwardX=anchor.travelDirectionX,forwardZ=anchor.travelDirectionZ,
+                    targetStationM=0
                 }
             }
         },
