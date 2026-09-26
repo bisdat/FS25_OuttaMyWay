@@ -135,7 +135,11 @@ def test_reverse_reposition_preserves_giants_native_reverse_reference_frame():
     assert 'mode = "REPOSITION"' in drive
     assert "speedCeilingApplied(state,state.speedKmh)" in drive
     assert "reverseReferenceDistinctFromSteering" in drive
-    assert "nativeToolAdjustmentApplied=false" in control
+    assert "toolAdjustedReverseTarget" in drive
+    assert "MathUtil.getProjectOnLineParameter" in drive
+    assert "MathUtil.getSignedAngleBetweenVectors2D" in drive
+    assert "nativeToolAdjustmentApplied" in drive
+    assert "nativeToolAdjustmentApplied=%s" in control
 
 def test_stall_diagnostic_publishes_existing_correlation_measurements_without_new_observation_state():
     assessment=read("scripts/assessment/BlockedProgressAssessment.lua")
