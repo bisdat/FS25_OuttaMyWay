@@ -16,15 +16,37 @@ local function weakKeys()
     return setmetatable({}, {__mode = "k"})
 end
 
-local function position(vehicle)
+local function steeringNode(vehicle)
     if vehicle == nil then return nil end
-    local node = nil
     if type(vehicle.getAISteeringNode) == "function" then
-        local ok, value = pcall(vehicle.getAISteeringNode, vehicle)
-        if ok and value ~= nil and value ~= 0 then node = value end
+        local ok,value=pcall(vehicle.getAISteeringNode,vehicle)
+        if ok and value~=nil and value~=0 then return value,"AI_STEERING_NODE" end
     end
-    node = node or vehicle.rootNode
-    if node == nil or node == 0 or type(getWorldTranslation) ~= "function" then return nil end
+    local root=vehicle.rootNode
+    if root~=nil and root~=0 then return root,"ROOT_NODE_FALLBACK" end
+    return nil,"STEERING_REFERENCE_UNAVAILABLE"
+end
+
+local function reverseNode(vehicle)
+    if vehicle == nil then return nil,"VEHICLE_UNAVAILABLE" end
+    if type(vehicle.getAIReverserNode) ~= "function" then return nil,"AI_REVERSER_NODE_API_UNAVAILABLE" end
+    local ok,value=pcall(vehicle.getAIReverserNode,vehicle)
+    if not ok or value==nil or value==0 then return nil,"AI_REVERSER_NODE_UNAVAILABLE" end
+    return value,"AI_REVERSER_NODE"
+end
+
+local function toolReverserNode(vehicle)
+    if AIVehicleUtil==nil or type(AIVehicleUtil.getAIToolReverserDirectionNode)~="function" then
+        return nil,"AI_TOOL_REVERSER_DIRECTION_NODE_API_UNAVAILABLE"
+    end
+    local ok,value=pcall(AIVehicleUtil.getAIToolReverserDirectionNode,vehicle)
+    if not ok or value==nil or value==0 then return nil,"AI_TOOL_REVERSER_DIRECTION_NODE_UNAVAILABLE" end
+    return value,"AI_TOOL_REVERSER_DIRECTION_NODE"
+end
+
+local function position(vehicle)
+    local node=steeringNode(vehicle)
+    if node == nil or type(getWorldTranslation) ~= "function" then return nil end
     local ok, x, y, z = pcall(getWorldTranslation, node)
     if not ok then return nil end
     return node, x, y, z
@@ -182,11 +204,42 @@ function Mechanism:install()
                 state.lastOutputMaxSpeed = 0
                 return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
             end
-            if type(worldDirectionToLocal) ~= "function" then
-                state.invalidReason = "worldDirectionToLocal-unavailable"
-                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+            local localX,localZ
+            if forwards then
+                if type(worldDirectionToLocal) ~= "function" then
+                    state.invalidReason = "worldDirectionToLocal-unavailable"
+                    return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+                end
+                local lx,_,lz=worldDirectionToLocal(node,dx,0,dz)
+                localX,localZ=lx,lz
+                state.repositionReferenceNodeSource="AI_STEERING_NODE"
+            else
+                local refNode,refSource=reverseNode(vehicle)
+                state.repositionReferenceNodeSource=refSource
+                state.repositionReferenceNode=refNode
+                local toolNode,toolSource=toolReverserNode(vehicle)
+                state.toolReverserDirectionNode=toolNode
+                state.toolReverserDirectionNodeSource=toolSource
+                if refNode==nil then
+                    state.invalidReason = "reposition-reverse-reference-unavailable:"..tostring(refSource)
+                    return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+                end
+                if type(getWorldTranslation)~="function" or type(worldToLocal)~="function" then
+                    state.invalidReason = "reposition-native-reverse-transform-unavailable"
+                    return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+                end
+                local poseOk,_,refY,_=pcall(getWorldTranslation,refNode)
+                if not poseOk then
+                    state.invalidReason = "reposition-reverse-reference-pose-unavailable"
+                    return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+                end
+                local transformOk,lx,_,lz=pcall(worldToLocal,refNode,state.targetX,refY,state.targetZ)
+                if not transformOk then
+                    state.invalidReason = "reposition-native-reverse-transform-failed"
+                    return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+                end
+                localX,localZ=lx,lz
             end
-            local localX, _, localZ = worldDirectionToLocal(node, dx, 0, dz)
             local length = math.sqrt(localX * localX + localZ * localZ)
             if length <= 0.0001 then
                 state.invalidReason = "reposition-direction-degenerate"
