@@ -253,10 +253,13 @@ function Control:_beginMovement(state)
     state.phase="MOVING_TO_RECOVERY_ANCHOR"
     local driveState=self.driveMechanism:getState(state.vehicle) or {}
     logInfo("DEBUG","BLOCKED_WORKER_RECOVERY_MOVEMENT_STARTED",
-        "commitment=%s assembly=%s anchor=(%.2f,%.2f) speed=%.2f reverse=true reverseReference=%s toolReverserDirection=%s nativeToolAdjustmentApplied=false",
+        "commitment=%s assembly=%s anchor=(%.2f,%.2f) speed=%.2f reverse=true reverseReference=%s reverseNode=%s distinctFromSteering=%s toolReverserDirection=%s toolNode=%s nativeToolAdjustmentApplied=false",
         tostring(state.commitmentId),tostring(state.assemblyId),state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH,
-        tostring(driveState.repositionReferenceNodeSource or "PENDING_FIRST_DRIVE_CALL"),
-        tostring(driveState.toolReverserDirectionNodeSource or "PENDING_FIRST_DRIVE_CALL"))
+        tostring(driveState.repositionReferenceNodeSource or "UNAVAILABLE"),
+        tostring(driveState.repositionReferenceNode or "n/a"),
+        tostring(driveState.reverseReferenceDistinctFromSteering==true),
+        tostring(driveState.toolReverserDirectionNodeSource or "UNAVAILABLE"),
+        tostring(driveState.toolReverserDirectionNode or "n/a"))
     return true,nil
 end
 
