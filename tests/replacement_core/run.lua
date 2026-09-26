@@ -3442,7 +3442,7 @@ local function classifyTestTrajectoryConflict(trajectories,motions,spaces,physic
     })[1]
 end
 
-test("Trajectory Conflict: turning Operation member preserves transitional native intent and denies Passage until settled",function()
+test("Trajectory Conflict: established opposed pair is Passage-evaluation-ready while one member remains transitional",function()
     local trajectories={
         {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
         {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",established=true,establishedDirectionX=0,establishedDirectionZ=-1,corridorAnchorX=0,corridorAnchorZ=60,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=false,contextEvidenceClass="TURN_SEGMENT"}
@@ -3465,14 +3465,12 @@ test("Trajectory Conflict: turning Operation member preserves transitional nativ
     equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
     equal(relation.subjectOperationMember,true); equal(relation.otherOperationMember,true)
     equal(relation.subjectSettledContinuation,true); equal(relation.otherSettledContinuation,false)
-    equal(relation.cooperativePassageEligible,false)
+    equal(relation.passageEvaluationReady,true)
+    equal(relation.cooperativePassageEligible,true)
     equal(relation.actionSpaceConservation.status,"REGULATE_SUPPORTED")
     equal(relation.actionSpaceConservation.regulatedAssemblyId,"AS-A")
     equal(relation.actionSpaceConservation.protectedAssemblyId,"AS-B")
     equal(relation.actionSpaceConservation.roleBasis,"PRESERVE_TRANSITIONAL_NATIVE_REVELATION")
-
-    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan({opposedCorridorKnowledge={relation}}, {})
-    equal(plan,nil); equal(reason,"NO_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
 
     local settledTrajectories={
         trajectories[1],
@@ -3489,6 +3487,7 @@ test("Trajectory Conflict: turning Operation member preserves transitional nativ
     })[1]
     equal(settledRelation.identity,relation.identity)
     equal(settledRelation.subjectSettledContinuation,true); equal(settledRelation.otherSettledContinuation,true)
+    equal(settledRelation.passageEvaluationReady,true)
     equal(settledRelation.cooperativePassageEligible,true)
 end)
 
@@ -4588,7 +4587,7 @@ test("Forward Intersection fixed creep role migration does not require a Resolut
     equal(requests[3].target.operation,"RELEASE"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
 end)
 
-test("Transitional Operation-member intent crosses Candidate as Regulation only and cannot become Cooperative Passage",function()
+test("Transitional Operation-member intent may evaluate Passage and retains Regulation fallback when planning is unsupported",function()
     local runtime=autonomousHeadOnRuntime()
     local values=OuttaMyWay.ValueRecord.toTable(actionSpaceRegulationPicture())
     values.identity="OP-COOPERATIVE-PASSAGE-TRANSITIONAL-ACTION"; values.epoch=788
@@ -4601,7 +4600,8 @@ test("Transitional Operation-member intent crosses Candidate as Regulation only 
     relation.reason="PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP"
     relation.subjectOperationMember=true; relation.otherOperationMember=true
     relation.subjectSettledContinuation=true; relation.otherSettledContinuation=false
-    relation.cooperativePassageEligible=false
+    relation.passageEvaluationReady=true
+    relation.cooperativePassageEligible=true
     relation.actionSpaceConservation={
         status="REGULATE_SUPPORTED",supported=true,admissionKind="ESTABLISHED_CONFLICT",
         reason="TRANSITIONAL_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION",
@@ -4615,7 +4615,7 @@ test("Transitional Operation-member intent crosses Candidate as Regulation only 
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"REGULATE_SPEED")
-    equal(specification.preconditions.cooperativePassageEligible,false)
+    equal(specification.preconditions.cooperativePassageEligible,true)
 end)
 test("Cooperative Passage: Established conflict Resolution-Space Regulation crosses Candidate support when Passage is not selected",function()
     local runtime=autonomousHeadOnRuntime()

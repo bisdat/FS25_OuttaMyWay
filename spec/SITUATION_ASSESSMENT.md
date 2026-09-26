@@ -87,7 +87,13 @@ A current Operation member whose GIANTS-native continuation is transitional or u
 
 > **Operation Membership != Passage Readiness.**
 
-In particular, Cooperative Passage eligibility requires its own positive Situation evidence. Operation membership alone MUST NOT turn a manoeuvring or otherwise transitional participant into a Passage-ready participant. Existing settled-continuation / native-intent evidence owns that distinction.
+In particular, Operation membership alone MUST NOT turn a manoeuvring or otherwise transitional participant into a Passage-ready participant.
+
+**Passage Evaluation Readiness** is established when Situation Assessment positively establishes an **Established Opposed Corridor Conflict** between exactly two current Operation members. That pairwise Situation conclusion is sufficient to ask Cooperative Passage Candidate Support whether a Passage-Capable Theatre exists. It does not itself establish a Passage Candidate, commitment, geometry or actuation authority.
+
+Settled-continuation / native-intent evidence remains valid Situation evidence for interpreting transitional motion and selecting Regulation roles, but it MUST NOT independently veto Passage evaluation after the opposed-corridor conflict has already been positively established.
+
+> **Passage Evaluation Readiness != Passage Candidate Support.**
 
 ## Relationship interpretation
 

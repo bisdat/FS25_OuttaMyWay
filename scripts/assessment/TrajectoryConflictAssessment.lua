@@ -780,6 +780,7 @@ function Assessment.classifyPairs(context)
                     otherOperationMember=bParticipation.operationMember==true,
                     subjectParticipationClass=aParticipation.class,
                     otherParticipationClass=bParticipation.class,
+                    passageEvaluationReady=false,
                     cooperativePassageEligible=false,
                     classification=nil,
                     status="INSUFFICIENT_KNOWLEDGE",
@@ -793,10 +794,6 @@ function Assessment.classifyPairs(context)
                     record.otherCurrentExcursion=bTrajectory.currentExcursion==true
                     record.subjectSettledContinuation=positiveSettledContinuation(aTrajectory,motionByAssembly[aId])
                     record.otherSettledContinuation=positiveSettledContinuation(bTrajectory,motionByAssembly[bId])
-                    record.cooperativePassageEligible=aParticipation.operationMember==true
-                        and bParticipation.operationMember==true
-                        and record.subjectSettledContinuation==true
-                        and record.otherSettledContinuation==true
                     record.subjectBlocked=motionByAssembly[aId]~=nil and motionByAssembly[aId].blocked==true
                     record.otherBlocked=motionByAssembly[bId]~=nil and motionByAssembly[bId].blocked==true
                     local futurePositive,futureOutcome,futureRelationshipKey=relevantFutureSpacePositive(situation,aId,bId)
@@ -876,6 +873,16 @@ function Assessment.classifyPairs(context)
                         end
                     end
                 end
+                    -- Passage Evaluation Readiness is a pairwise Situation conclusion,
+                    -- not a lifecycle-membership or native work-state shortcut.
+                    -- Once the opposed-corridor conflict itself is positively
+                    -- established for two current Operation members, Candidate Support
+                    -- may evaluate Passage. The Passage planner still owns whether a
+                    -- Passage-Capable Theatre is actually supported.
+                    record.passageEvaluationReady=aParticipation.operationMember==true
+                        and bParticipation.operationMember==true
+                        and record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
+                    record.cooperativePassageEligible=record.passageEvaluationReady
                     record.resolutionSpaceRelationship=resolutionSpaceRelationship(record)
                     result[#result+1]=record
                 end
