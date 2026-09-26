@@ -40,15 +40,21 @@ def test_recovery_candidate_owns_physical_and_native_replanning_obligations():
     assert "Phase Completion != Resolution Completion" in spec
     assert "Resolution Completion = Immediate Recovery Release" in spec
 
-def test_initial_recovery_moves_directly_to_selected_anchor_without_second_geometry_policy():
+def test_initial_recovery_reverses_on_native_approach_axis_to_selected_anchor_station():
     candidate=read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
+    runtime=read("scripts/runtime/Runtime.lua")
     control=read("scripts/control/BlockedWorkerRecoveryControl.lua")
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
 
     assert 'recoveryPoint="RECOVERY_ANCHOR"' in candidate
-    assert "state.anchorX,state.anchorZ" in control
-    assert "setReposition" in control
-    assert ",false)" in control
+    assert "recoveryApproachAxis={" in candidate
+    assert "forwardX=anchor.travelDirectionX,forwardZ=anchor.travelDirectionZ" in candidate
+    assert "recoveryApproachAxis=bridge.recoveryApproachAxis" in runtime
+    assert "setAxisTravel" in control
+    assert "state.anchorX,state.anchorZ,state.axisForwardX,state.axisForwardZ" in control
+    assert "RECOVERY_APPROACH_AXIS_ONLY" in control
+    assert "pointSeeking=false" in control
+    assert "setReposition" not in control
     assert "Recovery Anchor = Initial Recovery Point" in spec
 
     combined=candidate+"\n"+control
