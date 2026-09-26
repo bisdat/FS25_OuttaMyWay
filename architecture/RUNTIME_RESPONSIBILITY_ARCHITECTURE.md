@@ -662,6 +662,14 @@ The originating Job Episode is required provenance for Stall, Trail and Anchor a
 
 The Anchor supplies bounded provenance for where the failed native excursion came from and which local direction represents retreat. It does not establish universal collision clearance, productive routing or a route around the obstruction.
 
+For the initial capability, a qualifying Blocked Progress Stall is established from settled A8 native work. That uninterrupted straight productive approach provides a **Recovery Approach Axis** from the retained native travel direction. The Axis is physical execution evidence only: it describes the straight retreat direction already demonstrated by GIANTS; it is not a reconstructed route or predicted obstacle bypass.
+
+> **Settled A8 Approach Establishes the Initial Recovery Reverse Axis.**
+
+The Recovery Anchor and Recovery Approach Axis have different roles. The Anchor bounds how far the Recovery Excursion may retreat; the Axis governs how that reverse is physically steered.
+
+> **Recovery Anchor != Reverse Steering Target.**
+
 ### Phase 1 — Physical Recovery
 
 Blocked Worker Recovery first owns one generic bounded physical **Recovery Excursion** to the selected Recovery Anchor.
@@ -670,9 +678,13 @@ The excursion uses recent **Demonstrated Traversability** as positive support fo
 
 Once the Recovery Resolution is current, the assembly **always requests Transit before recovery movement**. Transit is execution choreography, not a strategic Candidate question. The physical configuration mechanism settles that request before movement proceeds.
 
-The initial physical manoeuvre is a direct return to the Recovery Anchor. The Anchor is the initial Recovery Point.
+The initial physical manoeuvre reverses on the fixed Recovery Approach Axis until the assembly reaches the Recovery Anchor's longitudinal station. It MUST NOT continuously steer toward the Anchor as a world-space point. Recovery does not move farther forward to perform Passage-style Alignment Runout because the unresolved blockage is ahead of the worker.
+
+The Anchor remains the initial Recovery Point.
 
 > **Recovery Anchor = Initial Recovery Point.**
+
+> **Straight Reverse Requires Axis Stability, Not Point Attraction.**
 
 > **Recovery Need Does Not Require Blockage Cause.**
 
