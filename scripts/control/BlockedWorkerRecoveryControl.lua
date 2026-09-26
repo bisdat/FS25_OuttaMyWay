@@ -253,7 +253,7 @@ function Control:_beginMovement(state)
     state.phase="MOVING_TO_RECOVERY_ANCHOR"
     local driveState=self.driveMechanism:getState(state.vehicle) or {}
     logInfo("DEBUG","BLOCKED_WORKER_RECOVERY_MOVEMENT_STARTED",
-        "commitment=%s assembly=%s anchor=(%.2f,%.2f) speed=%.2f reverse=true reverseReference=%s reverseNode=%s distinctFromSteering=%s toolReverserDirection=%s toolNode=%s nativeToolAdjustmentApplied=false",
+        "commitment=%s assembly=%s anchor=(%.2f,%.2f) speed=%.2f reverse=true reverseReference=%s reverseNode=%s distinctFromSteering=%s toolReverserDirection=%s toolNode=%s nativeToolAdjustment=DRIVE_TIME_WHEN_AVAILABLE",
         tostring(state.commitmentId),tostring(state.assemblyId),state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH,
         tostring(driveState.repositionReferenceNodeSource or "UNAVAILABLE"),
         tostring(driveState.repositionReferenceNode or "n/a"),
@@ -453,13 +453,18 @@ function Control:update(dt)
         if nowMs>=(state.nextMovementDiagnosticMs or 0) then
             state.nextMovementDiagnosticMs=nowMs+1000
             logInfo("DIAGNOSTIC","BLOCKED_WORKER_RECOVERY_MOVEMENT_STATE",
-                "commitment=%s assembly=%s remaining=%.2fm commandLocal=(%s,%s) reverseReference=%s distinctFromSteering=%s toolReverserDirection=%s nativeToolAdjustmentApplied=false targetReached=%s",
+                "commitment=%s assembly=%s remaining=%.2fm commandLocal=(%s,%s) reverseReference=%s distinctFromSteering=%s toolReverserDirection=%s nativeToolAdjustmentApplied=%s toolAngleDeg=%s adjustedLocal=(%s,%s) transform=%s targetReached=%s",
                 tostring(state.commitmentId),tostring(state.assemblyId),tonumber(drive.lastRemainingM) or -1,
                 drive.lastCommandLocalX and string.format("%.4f",drive.lastCommandLocalX) or "n/a",
                 drive.lastCommandLocalZ and string.format("%.4f",drive.lastCommandLocalZ) or "n/a",
                 tostring(drive.repositionReferenceNodeSource or "UNAVAILABLE"),
                 tostring(drive.reverseReferenceDistinctFromSteering==true),
                 tostring(drive.toolReverserDirectionNodeSource or "UNAVAILABLE"),
+                tostring(drive.nativeToolAdjustmentApplied==true),
+                drive.nativeToolAdjustmentAngleRad and string.format("%.2f",math.deg(drive.nativeToolAdjustmentAngleRad)) or "n/a",
+                drive.nativeToolAdjustedLocalX and string.format("%.4f",drive.nativeToolAdjustedLocalX) or "n/a",
+                drive.nativeToolAdjustedLocalZ and string.format("%.4f",drive.nativeToolAdjustedLocalZ) or "n/a",
+                tostring(drive.nativeToolAdjustmentReason or "NONE"),
                 tostring(drive.targetReached==true))
         end
         if drive.targetReached~=true then return end
