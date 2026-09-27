@@ -14,8 +14,15 @@ return function(test,equal)
         local commitments={}
         if options.owned==true then
             commitments={{
-                identity="CM-RMD",state="ACTIVE",
-                progressActuationOwnership={{assemblyId="AS-BENEFICIARY",authorityTokenId="AU-RMD"}}
+                identity="CM-RMD",state="ACTIVE",strategy={capability="REPOSITION"},
+                progressActuationOwnership={{assemblyId="AS-BENEFICIARY",authorityTokenId="AU-RMD"}},
+                obstructionRelocationActuationOwnership={}
+            }}
+        elseif options.relocationHold==true then
+            commitments={{
+                identity="CM-RELOCATION",state="WAITING_FOR_EVIDENCE",strategy={capability="REPOSITION"},
+                progressActuationOwnership={{assemblyId="AS-BENEFICIARY",authorityTokenId="AU-HOLD"}},
+                obstructionRelocationActuationOwnership={{assemblyId="AS-BLOCKER",authorityTokenId="AU-MOVE"}}
             }}
         end
         return {
@@ -70,6 +77,12 @@ return function(test,equal)
     test("Realised Motion Demand fails closed while OMW owns beneficiary progress actuation",function()
         local records=OuttaMyWay.RealisedMotionDemandAssessment.build(context({owned=true}))
         equal(#records,0)
+    end)
+
+    test("Retained Obstruction Relocation beneficiary authority does not masquerade as current movement ownership",function()
+        local records=OuttaMyWay.RealisedMotionDemandAssessment.build(context({relocationHold=true}))
+        equal(#records,1)
+        equal(records[1].beneficiaryAssemblyId,"AS-BENEFICIARY")
     end)
 
     local function obstructionFixture(blockerZ,future)
