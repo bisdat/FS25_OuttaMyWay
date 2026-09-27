@@ -941,7 +941,7 @@ def test_v47100_trajectory_conflict_remains_situation_owned_knowledge_under_coop
         assert token in module
     for token in ("trajectoryKnowledge","opposedCorridorKnowledge","trajectoryTracks"):
         assert token in assessment
-    assert '"trajectoryKnowledge", "opposedCorridorKnowledge"' in picture
+    assert '"trajectoryKnowledge", "realisedMotionDemandKnowledge", "opposedCorridorKnowledge"' in picture
     assert "TRAJECTORY assembly=%s" in validator
     assert "OPPOSED_CORRIDOR pair=%s" in validator
     assert "positive=positive" in module and "local positive=overlapM>0" in module
