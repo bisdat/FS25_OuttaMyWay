@@ -5,7 +5,28 @@ OuttaMyWay.BlockedWorkerRecoveryCandidateSupport={}
 local Support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport
 Support.__index=Support
 
+local RECOVERY_RETURN_SEPARATION_TARGET_M=20.0
+
 local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
+
+local function recoveryReturnRegion(knowledge,anchor)
+    local stall=knowledge and knowledge.stallEvidence or nil
+    local sx,sz=stall and tonumber(stall.poseX) or nil,stall and tonumber(stall.poseZ) or nil
+    local ax,az=anchor and tonumber(anchor.poseX) or nil,anchor and tonumber(anchor.poseZ) or nil
+    if not finite(sx) or not finite(sz) or not finite(ax) or not finite(az) then return nil end
+    local dx,dz=ax-sx,az-sz
+    local anchorDistance=math.sqrt(dx*dx+dz*dz)
+    if not finite(anchorDistance) or anchorDistance<=0.0001 then return nil end
+    local requiredRetreat=math.min(RECOVERY_RETURN_SEPARATION_TARGET_M,anchorDistance)
+    return {
+        stallX=sx,stallZ=sz,
+        directionX=dx/anchorDistance,directionZ=dz/anchorDistance,
+        calibratedTargetRetreatM=RECOVERY_RETURN_SEPARATION_TARGET_M,
+        requiredRetreatM=requiredRetreat,
+        maximumSupportedRetreatM=anchorDistance,
+        cappedByAnchor=anchorDistance<RECOVERY_RETURN_SEPARATION_TARGET_M
+    }
+end
 
 local function recoveryAlreadyCurrent(picture,recoveryKey)
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture.commitmentContext or {}) do
@@ -77,7 +98,9 @@ local function recoveryKnowledge(picture)
     local result={}
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.blockedProgressKnowledge or {}) do
         local anchor=knowledge.recoveryAnchor
-        if knowledge.blockedProgressStall==true and type(anchor)=="table"
+        local stall=knowledge.stallEvidence
+        if knowledge.blockedProgressStall==true and type(anchor)=="table" and type(stall)=="table"
+            and finite(stall.poseX) and finite(stall.poseZ)
             and finite(anchor.poseX) and finite(anchor.poseZ)
             and type(anchor.configurationProfileId)=="string"
             and type(knowledge.assemblyId)=="string" and type(knowledge.assemblyReferenceKey)=="string"
@@ -102,15 +125,17 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if #available>1 then self.lastStatus="MULTIPLE_RECOVERY_STALLS_REQUIRE_COMPARATOR"; return nil,"MULTIPLE_RECOVERY_STALLS_REQUIRE_COMPARATOR" end
     local knowledge=available[1]
     local anchor=knowledge.recoveryAnchor
+    local returnRegion=recoveryReturnRegion(knowledge,anchor)
+    if returnRegion==nil then self.lastStatus="RECOVERY_RETURN_REGION_UNRESOLVED"; return nil,"RECOVERY_RETURN_REGION_UNRESOLVED" end
     local recoveryKey="blocked-worker-recovery:"..knowledge.operationId..":"..knowledge.assemblyId..":"..knowledge.jobEpisodeId
     if recoveryAlreadyCurrent(picture,recoveryKey) then self.lastStatus="RECOVERY_ALREADY_CURRENT"; return nil,"RECOVERY_ALREADY_CURRENT" end
     local fitness=recoveryRepresentationFitness(picture,knowledge,anchor,recoveryKey,targetPictureId)
     local specification={
-        referenceKey=recoveryKey..":to-anchor",
-        purpose={kind="BLOCKED_WORKER_RECOVERY",result="RETURN_TO_RECOVERY_ANCHOR_AND_REPLAN_NATIVE_JOB"},
+        referenceKey=recoveryKey..":to-return-region",
+        purpose={kind="BLOCKED_WORKER_RECOVERY",result="RETREAT_TO_RECOVERY_RETURN_REGION_AND_REPLAN_NATIVE_JOB"},
         subject={assemblyId=knowledge.assemblyId},
         capability="REPOSITION",
-        expectedEffect={physicalChange=true,recoveryPoint="RECOVERY_ANCHOR",transitRequested=true,nativeJobReplacement=true,physicalReleaseAfterReplacementStart=true},
+        expectedEffect={physicalChange=true,recoveryCompletion="RECOVERY_RETURN_REGION",transitRequested=true,nativeJobReplacement=true,physicalReleaseAfterReplacementStart=true},
         evidenceBasis={
             governingBasis={
                 kind="BLOCKED_WORKER_RECOVERY",responsibilityKey=recoveryKey,
@@ -133,20 +158,21 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
                     observationSnapshotId=anchor.observationSnapshotId,
                     x=anchor.poseX,z=anchor.poseZ,usefulSpanM=anchor.usefulSpanM,
                     configurationProfileId=anchor.configurationProfileId
-                }
+                },
+                recoveryReturnRegion=returnRegion
             }
         },
         representationFitness={requirements={{representationId=fitness.representationId,acceptedStates={"FIT_FOR_LIMITED_HORIZON"}}}},
-        preconditions={evidenceContracts={{kind="BLOCKED_PROGRESS_STALL"},{kind="RECOVERY_ANCHOR"}}},
+        preconditions={evidenceContracts={{kind="BLOCKED_PROGRESS_STALL"},{kind="RECOVERY_ANCHOR"},{kind="RECOVERY_RETURN_REGION"}}},
         invalidationConditions={{kind="PLAYER_CLAIM"},{kind="UNEXPECTED_JOB_EPISODE_CHANGED_BEFORE_REPLACEMENT_COMMITMENT"},{kind="RECOVERY_ANCHOR_INVALIDATED"}},
-        reversibility={kind="ONE_RECOVERY_CYCLE_TO_ANCHOR_THEN_NATIVE_JOB_REPLACEMENT"},
+        reversibility={kind="ONE_RECOVERY_CYCLE_TO_RETURN_REGION_THEN_NATIVE_JOB_REPLACEMENT"},
         obligationsCreated={
             {
                 origin={kind="BLOCKED_PROGRESS_STALL",recoveryKey=recoveryKey},
                 basis={kind="BLOCKED_WORKER_RECOVERY_PHYSICAL",assemblyId=knowledge.assemblyId,jobEpisodeId=knowledge.jobEpisodeId},
-                requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT"},
+                requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT"},
                 requiredAuthority={classes={"PROGRESS_ACTUATION"}},
-                evidenceContract={kind="RECOVERY_ANCHOR_REACHED_IN_TRANSIT"},
+                evidenceContract={kind="RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT"},
                 ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true,
                 creationEvidence={stall=knowledge.stallEvidence,anchor=knowledge.recoveryAnchor}
             },
@@ -169,7 +195,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     return {
         supportBoundary={
             mode="BLOCKED_WORKER_RECOVERY",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,
-            controlAuthority="SELECTED_RECOVERY_ANCHOR_ONLY",boundedScope="ONE_RECOVERY_CYCLE_TO_SELECTED_ANCHOR_THEN_NATIVE_JOB_REPLACEMENT",
+            controlAuthority="RECOVERY_RETURN_REGION_WITH_SELECTED_ANCHOR_BOUND",boundedScope="ONE_RECOVERY_CYCLE_TO_RETURN_REGION_THEN_NATIVE_JOB_REPLACEMENT",
             targetOperationalPictureId=targetPictureId,parentOperationalPictureId=picture.identity
         },
         candidateSpecifications={specification},
