@@ -113,8 +113,11 @@ local function recoveryKnowledge(picture)
     return result
 end
 
-function Support.new()
-    return setmetatable({publishedCount=0,lastStatus="INACTIVE"},Support)
+function Support.new(recurrenceAssessment)
+    return setmetatable({
+        recurrenceAssessment=recurrenceAssessment,
+        publishedCount=0,lastStatus="INACTIVE",lastRecurrence=nil
+    },Support)
 end
 
 function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
@@ -129,6 +132,15 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if returnRegion==nil then self.lastStatus="RECOVERY_RETURN_REGION_UNRESOLVED"; return nil,"RECOVERY_RETURN_REGION_UNRESOLVED" end
     local recoveryKey="blocked-worker-recovery:"..knowledge.operationId..":"..knowledge.assemblyId..":"..knowledge.jobEpisodeId
     if recoveryAlreadyCurrent(picture,recoveryKey) then self.lastStatus="RECOVERY_ALREADY_CURRENT"; return nil,"RECOVERY_ALREADY_CURRENT" end
+    self.lastRecurrence=nil
+    if self.recurrenceAssessment~=nil then
+        local recurrence=self.recurrenceAssessment:assess(knowledge)
+        self.lastRecurrence=recurrence
+        if recurrence and recurrence.correlated==true then
+            self.lastStatus="RECOVERY_STRATEGY_EXHAUSTED"
+            return nil,"RECOVERY_STRATEGY_EXHAUSTED"
+        end
+    end
     local fitness=recoveryRepresentationFitness(picture,knowledge,anchor,recoveryKey,targetPictureId)
     local specification={
         referenceKey=recoveryKey..":to-return-region",
@@ -159,7 +171,11 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
                     x=anchor.poseX,z=anchor.poseZ,usefulSpanM=anchor.usefulSpanM,
                     configurationProfileId=anchor.configurationProfileId
                 },
-                recoveryReturnRegion=returnRegion
+                recoveryReturnRegion=returnRegion,
+                recoveryRecurrenceContext={
+                    stallTimestamp=stall.establishedAtTimestamp,
+                    stallX=stall.poseX,stallZ=stall.poseZ
+                }
             }
         },
         representationFitness={requirements={{representationId=fitness.representationId,acceptedStates={"FIT_FOR_LIMITED_HORIZON"}}}},
@@ -205,3 +221,4 @@ end
 
 function Support:getPublishedCount() return self.publishedCount end
 function Support:getLastStatus() return self.lastStatus end
+function Support:getLastRecurrence() return self.lastRecurrence end
