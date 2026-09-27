@@ -17,3 +17,5 @@ htmlcov/
 
 # Derived documentation/reference output
 .generated/
+
+.~lock*
