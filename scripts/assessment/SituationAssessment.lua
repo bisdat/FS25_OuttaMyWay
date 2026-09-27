@@ -494,7 +494,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local blockedWorkerRecoveryRecurrenceKnowledge={}
     if self.blockedWorkerRecoveryRecurrenceAssessment~=nil then
         for _,knowledge in OuttaMyWay.ValueRecord.ipairs(blockedProgressKnowledge) do
-            if knowledge.blockedProgressStall==true then
+            if knowledge.blockedProgressStall==true and type(knowledge.recoveryAnchor)=="table" then
                 local recurrence=self.blockedWorkerRecoveryRecurrenceAssessment:assess(knowledge)
                 if recurrence and recurrence.correlated==true then
                     blockedWorkerRecoveryRecurrenceKnowledge[#blockedWorkerRecoveryRecurrenceKnowledge+1]=recurrence
