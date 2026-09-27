@@ -154,6 +154,7 @@ def test_correlated_recovery_recurrence_is_passive_and_vetoes_candidate_replay()
     control=read("scripts/control/BlockedWorkerRecoveryControl.lua")
     runtime=read("scripts/runtime/Runtime.lua")
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
+    situation_spec=read("spec/SITUATION_ASSESSMENT.md")
 
     assert "RECOVERY_RECURRENCE_RADIUS_M=5.0" in recurrence
     assert "RECOVERY_RECURRENCE_HORIZON_S=60.0" in recurrence
@@ -168,6 +169,7 @@ def test_correlated_recovery_recurrence_is_passive_and_vetoes_candidate_replay()
     assert "eventKind==\"OBJECTIVE_SATISFIED\"" in runtime
     assert "Correlated Recovery Recurrence" in spec
     assert "Recovery Strategy Exhausted" in spec
+    assert "scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua" in situation_spec
 
 def test_stall_diagnostic_publishes_existing_correlation_measurements_without_new_observation_state():
     assessment=read("scripts/assessment/BlockedProgressAssessment.lua")
