@@ -176,6 +176,35 @@ Situation Assessment MAY conclude that a representation is currently fit, unfit 
 
 Fitness is question-relative. A representation rejected for one conclusion may remain valid for another supported purpose.
 
+### Realised Motion Demand
+
+**Realised Motion Demand** is positive Situation evidence that an active Operation member's fresh coherent physical progression is consuming a bounded local spatial corridor even when prospective GIANTS route intent is not positively available.
+
+> **Prospective Demand != Realised Motion Demand.**
+
+A Realised Motion Demand record MUST identify, where supported:
+
+- beneficiary active Operation member and exact current Job Episode;
+- fresh realised movement basis and current motion classification;
+- Established Trajectory identity/direction supporting the local progression claim;
+- current alignment between realised movement and that Established Trajectory;
+- current physical representation used to express the beneficiary's local demand width;
+- the bounded local horizon used for the current question;
+- evidence/provenance required to invalidate or refresh the witness; and
+- explicit claim limits stating that the witness provides positive local demand only, not future-route or negative-clearance authority.
+
+It MUST NOT be established merely because GIANTS reports `TURNING`, the subject is near another assembly, the subject has a long historical travel span, or an old trajectory/witness once existed.
+
+The current witness MUST fail closed to unresolved when its basis is unavailable or contradicted, including material lifecycle discontinuity, current trajectory excursion/contradictory motion, unusable current physical representation, or incompatible OuttaMyWay progress-actuation ownership.
+
+> **Established Trajectory != Future Route Authority.**
+
+`TURNING` remains insufficient for prospective future-space authority. Realised Motion Demand MAY exist while `TURNING` only because it is grounded in separate fresh physical progression evidence. It MUST NOT establish or imply A8 / `SETTLED_CONTINUATION`, Passage readiness, Forward Intersection, follower ordering, Corner Arrival or Headland Association.
+
+The local horizon MUST be bounded and calibrated from Reality. An implementation MAY combine a spatial cap with current progression/closing-rate evidence, but MUST NOT infer an unbounded route from accumulated trajectory history. No universal distance literal is specified by this contract.
+
+Realised Motion Demand is Situation evidence only. It MUST NOT itself establish Causal Obstruction, Candidate Support, Current Responsibility, Bounded Authority or Control.
+
 ### Causal Obstruction
 
 A **Causal Obstruction** is a current positive Situation relationship in which one physical subject is established as the cause preventing an active supported beneficiary from continuing supported work.
@@ -195,6 +224,10 @@ Conversely, a positively causal blocker MUST NOT be ignored because it lacks his
 > **Obstruction Is the Predicate.**
 
 > **Physical Relevance != Historical Provenance.**
+
+A positive Causal Obstruction basis MAY be established from current physical occupancy, positively supported prospective continuation / future-space demand, or bounded Realised Motion Demand intersecting the current physical blocker. These bases MUST retain their own claim limits.
+
+For a Realised Motion Demand basis, fresh reassessment after any blocker relocation is mandatory. A prior witness MUST NOT remain positive solely to justify repeated relocation after the current demand basis has changed or disappeared.
 
 Causal Obstruction is Situation meaning only. Obstruction Relocation, Bounded Authority and Control remain downstream.
 
@@ -455,7 +488,7 @@ Current implementation routes include:
 - [`scripts/assessment/CurrentPairAssessmentScope.lua`](../scripts/assessment/CurrentPairAssessmentScope.lua) — current ephemeral exact-member pair scope;
 - [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) — conservative Field-scoped Structural Field Shape / positive Corner Feature interpretation from immutable canonical Field World geometry;
 - [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua), [`FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) and [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) — current spatial relationship/constraint interpretation;
-- [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — current positive obstruction-cause interpretation;
+- [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — current positive obstruction-cause interpretation; current production source does not yet consume Realised Motion Demand as a Causal Obstruction basis;
 - [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) — bounded Recovery Approach Trail retention, Blocked Progress Stall interpretation and Recovery Anchor selection from current Operation/lifecycle/motion/ownership evidence;
 - [`scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) — passive correlation of a fresh independently established successor Stall against the immediately preceding successful Recovery lineage/outcome evidence, producing Recovery Strategy Exhausted without acquiring Recovery authority;
 - [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) and [`PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) — current question-scoped representation-fitness interpretation;
@@ -491,6 +524,14 @@ Focused Resolution-Margin validation MUST challenge at least these three boundar
 1. **Positive target:** supported native progression has a positive represented Current-Space/Demand witness within its bounded horizon before, during or after a Current-Excursion classification window; the Situation evidence follows the represented demand rather than requiring that proxy relationship.
 2. **Negative neighbour:** a nearby or `TURNING` worker with no positive represented witness on the subject's supported progression does not create positive Resolution-Margin Demand merely from proximity, turn state or shared Local Operation membership.
 3. **Established regression:** existing Current-Excursion/opposed-corridor Action-Space semantics retain their accepted relationship, role-allocation and Regulation lifecycle meaning when equivalent evidence is supplied. Downstream consumption is limited to the Bounded-Authority quiescence boundary: a positive exact-pair witness may keep an already-active Regulation effect from becoming quiescent, while witness distance remains prohibited as speed, stopping-distance or safe-clearance authority.
+
+Focused Realised Motion Demand validation MUST challenge at least:
+
+1. **Positive obstruction target:** long coherent realised progression may establish bounded local demand materially before native blockage even while prospective GIANTS intent remains unresolved.
+2. **TURNING negative control:** ordinary turning/manoeuvring with no current physical blocker in the bounded realised-demand corridor does not create a positive blocker intersection.
+3. **Mixed-traffic discrimination:** non-active physical presence outside the bounded realised-demand corridor remains non-causal; proximity or Field World co-membership is insufficient.
+4. **Independent existing positive path:** an existing Causal Obstruction established from supported future-space demand remains valid without requiring Realised Motion Demand.
+5. **Freshness:** trajectory excursion, contradictory motion, lifecycle discontinuity, incompatible OuttaMyWay movement ownership or representation loss clears the Realised Motion Demand witness to unresolved rather than preserving stale path authority.
 
 ### Targeted in-game Reality validation
 

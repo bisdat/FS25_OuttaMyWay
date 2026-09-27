@@ -342,6 +342,28 @@ A **physically relevant entity** can materially affect active work without being
 
 A temporarily stopped active GIANTS AI worker remains an active participant and does not become a non-active blocker merely because its speed is zero.
 
+### Realised Motion Demand
+
+**Architectural role:** current positive Situation evidence produced by Situation Assessment from fresh realised physical progression.
+
+> **Prospective Demand != Realised Motion Demand.**
+
+A bounded future continuation such as `SETTLED_CONTINUATION` answers where GIANTS has positively revealed that a worker is entitled to continue. **Realised Motion Demand** answers what local space the worker's fresh coherent physical progression is demonstrably consuming now.
+
+It may be supported by current active Operation/Job identity, fresh realised movement, an Established Trajectory, current alignment with that trajectory, sufficient current physical representation and no incompatible OuttaMyWay progress-actuation owner.
+
+Its horizon MUST remain fresh, local and bounded. Calibration may consider spatial lookahead and current progression/closing rate, but Architecture does not prescribe a universal distance. Long historical travel does not grant equally long future demand.
+
+> **Established Trajectory != Future Route Authority.**
+
+> **Intent Evidence != Progress Evidence.**
+
+Realised Motion Demand does **not** promote `TURNING`, make it equivalent to A8 / `SETTLED_CONTINUATION`, manufacture a GIANTS route, or independently establish Passage readiness, Forward Intersection, follower ordering, Corner Arrival, Headland Association or negative clearance.
+
+Loss of its current positive basis returns this question to unresolved unless another independent positive basis exists. Historical trajectory alone MUST NOT preserve demand after contradictory motion, lifecycle discontinuity, incompatible actuation ownership or representation loss.
+
+Realised Motion Demand is reusable Situation evidence, not a Causal Obstruction conclusion by itself. Fresh Reality must re-establish it after blocker relocation; a prior witness MUST NOT become stale synthetic path memory merely to justify repeated relocation.
+
 ### Causal Obstruction
 
 **Architectural role:** Situation relationship produced by Situation Assessment.
@@ -361,6 +383,8 @@ CAUSAL OBSTRUCTION
 **Obstruction Is the Predicate.** A parked, completed, player-owned or otherwise non-active vehicle creates no responsibility merely by existing in the Field World. Conversely, a positively causal blocker must not be made invisible merely because OuttaMyWay has no historical record of it.
 
 **Physical Relevance != Historical Provenance.** Past Job Episode history, previous OuttaMyWay observation, completed-worker provenance, vehicle ownership and prior Local Operation membership are not prerequisites for Causal Obstruction recognition.
+
+Positive Causal Obstruction evidence may arise from distinct current Situation bases, including current physical occupancy, positively supported prospective continuation / future-space demand, or bounded Realised Motion Demand intersecting a current physical subject. These evidence routes remain distinct; Realised Motion Demand MUST NOT be reused as prospective route authority elsewhere.
 
 ### Non-active classification and Player Claim
 
