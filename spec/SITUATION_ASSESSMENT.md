@@ -153,7 +153,7 @@ Positive realised native progression disproves the pending collapse and positive
 
 Positive Job Episode succession/termination, native forward/reverse direction transition, material configuration-profile change or OuttaMyWay progress-actuation ownership invalidates the prior Recovery Approach for this question. Missing evidence MUST fail closed rather than manufacture a discontinuity or positive Stall.
 
-At Stall establishment, Situation Assessment selects the most recent retained witness that remains fit and provides at least the calibrated useful span along the retained realised Approach. If none exists, the Stall MAY remain positively established while Recovery Anchor remains unavailable.
+At Stall establishment, if the retained compatible Recovery Approach Trail demonstrates at least the calibrated useful span, Situation Assessment selects the first/oldest retained compatible positively realised witness as the Recovery Anchor. The useful-span requirement qualifies the retained Trail as a whole; it does not select a nearer witness. If the retained Trail does not demonstrate that span, the Stall MAY remain positively established while Recovery Anchor remains unavailable.
 
 > **Blocked Progress Stall != Recovery Anchor Availability.**
 
