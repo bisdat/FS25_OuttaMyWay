@@ -652,7 +652,7 @@ The Trail is evidence retention, not Responsibility, Candidate preference, path 
 
 > **Recovery Approach Trail != Productive History.**
 
-A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery cycle. The useful-span threshold qualifies the Trail; it does not choose the Recovery Point.
+A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery cycle. The useful-span threshold qualifies the Trail; it does not determine the physical Recovery travel requirement.
 
 The originating Job Episode is required provenance for Stall, Trail and Anchor admission. Once the Recovery Resolution is established, however, the Recovery itself persists by its unresolved obligations and Physical Assembly subject; the originating Job Episode does not remain the persistence identity through an intentionally caused replacement.
 
