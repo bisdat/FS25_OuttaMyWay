@@ -124,7 +124,7 @@ function Runtime.new()
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
         commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
-        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,causalObstructionAssessment),
+        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,causalObstructionAssessment=causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment=blockedWorkerRecoveryRecurrenceAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
         initialized=false,cooperativeVerdictTraceKey=nil
@@ -146,8 +146,7 @@ function Runtime.new()
     runtime.liveObservationSource.currentPhysicalPoseSource=runtime.currentPhysicalPoseSource
     runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new(runtime.identities,runtime.epochs)
     runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new(runtime)
-    runtime.blockedWorkerRecoveryCandidateSupport=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new(
-        runtime.blockedWorkerRecoveryRecurrenceAssessment)
+    runtime.blockedWorkerRecoveryCandidateSupport=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
     runtime.blockedWorkerRecoveryResponsibilityTransition=OuttaMyWay.BlockedWorkerRecoveryResponsibilityTransition.new(runtime)
     runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new(
         runtime.identities,runtime.epochs,
@@ -247,9 +246,6 @@ function Runtime:resetLiveTrafficCandidateSupportStatus()
 end
 function Runtime:resetSituationKnowledge()
     if self.situationAssessment and type(self.situationAssessment.resetSituationKnowledge)=="function" then self.situationAssessment:resetSituationKnowledge() end
-    if self.blockedWorkerRecoveryRecurrenceAssessment and type(self.blockedWorkerRecoveryRecurrenceAssessment.reset)=="function" then
-        self.blockedWorkerRecoveryRecurrenceAssessment:reset()
-    end
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end
