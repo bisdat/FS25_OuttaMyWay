@@ -428,17 +428,26 @@ return function(test,equal)
         g_currentMission=oldMission
     end)
 
-    test("Reverse Reposition preserves exact point target and Supporting Speed Ceiling",function()
-        local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    test("Reverse Reposition preserves exact point target, GIANTS reverser frame and Supporting Speed Ceiling",function()
+        local oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal=
+            AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal
         local x,z=10,0
         local calls={}
-        AIVehicleUtil={driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
-            calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
-            return true
-        end}
+        AIVehicleUtil={
+            driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+                calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+                return true
+            end,
+            getAIToolReverserDirectionNode=function() return nil end
+        }
         getWorldTranslation=function() return x,0,z end
         worldDirectionToLocal=function(node,wx,wy,wz) return wx,wy,wz end
-        local vehicle={rootNode=22001,getAISteeringNode=function(self) return self.rootNode end}
+        worldToLocal=function(node,wx,wy,wz) return wx-x,wy,wz-z end
+        local vehicle={
+            rootNode=22001,
+            getAISteeringNode=function(self) return self.rootNode end,
+            getAIReverserNode=function(self) return self.rootNode end
+        }
         local drive=OuttaMyWay.NativeDriveMechanism.new()
         equal(drive:setReposition(vehicle,4,0,8,1,false),true)
         equal(drive:setRegulationLease(vehicle,1,"BUBBLE_BULLET_TIME","SUPPORTING_SPEED_CEILING"),true)
@@ -446,9 +455,11 @@ return function(test,equal)
         equal(calls[#calls].moveForwards,false)
         equal(calls[#calls].maxSpeed,1)
         equal(drive:getState(vehicle).targetX,4)
+        equal(drive:getState(vehicle).repositionReferenceNodeSource,"AI_REVERSER_NODE")
         x=4.5
         AIVehicleUtil.driveToPoint(vehicle,16,1,false,true,0,1,25)
         equal(drive:getState(vehicle).targetReached,true)
-        AIVehicleUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection
+        AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal=
+            oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal
     end)
 end
