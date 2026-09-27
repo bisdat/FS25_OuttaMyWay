@@ -141,6 +141,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if #available>1 then self.lastStatus="MULTIPLE_RECOVERY_STALLS_REQUIRE_COMPARATOR"; return nil,"MULTIPLE_RECOVERY_STALLS_REQUIRE_COMPARATOR" end
     local knowledge=available[1]
     local anchor=knowledge.recoveryAnchor
+    local stall=knowledge.stallEvidence
     local returnRegion=recoveryReturnRegion(knowledge,anchor)
     if returnRegion==nil then self.lastStatus="RECOVERY_RETURN_REGION_UNRESOLVED"; return nil,"RECOVERY_RETURN_REGION_UNRESOLVED" end
     local recoveryKey="blocked-worker-recovery:"..knowledge.operationId..":"..knowledge.assemblyId..":"..knowledge.jobEpisodeId
