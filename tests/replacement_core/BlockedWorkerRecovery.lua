@@ -18,7 +18,7 @@ return function(test,equal)
                 assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",operationId="OR-RECOVERY",
                 status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
-                stallEvidence={establishedAtObservationSnapshotId="OS-STALL",poseX=10,poseZ=20,collapseObservedSeconds=1.25},
+                stallEvidence={establishedAtObservationSnapshotId="OS-STALL",establishedAtTimestamp=10,poseX=10,poseZ=20,collapseObservedSeconds=1.25},
                 recoveryAnchor={
                     observationSnapshotId="OS-ANCHOR",timestamp=1,
                     poseX=4.25,poseZ=17.5,travelDirectionX=1,travelDirectionZ=0,
@@ -47,6 +47,77 @@ return function(test,equal)
             snapshot(),"PI-RECOVERY-TARGET",102)
         equal(group,nil)
         equal(reason,"RECOVERY_ALREADY_CURRENT")
+    end)
+
+    test("Sealed correlated successor Stall knowledge exhausts Recovery strategy before Candidate admission",function()
+        local recurrence=OuttaMyWay.BlockedWorkerRecoveryRecurrenceAssessment.new()
+        local recorded,recordReason=recurrence:recordSuccessfulRecovery({
+            assemblyId="AS-RECOVERY",recoveryKey="blocked-worker-recovery:OR-RECOVERY:AS-RECOVERY:JE-RECOVERY",
+            stallTimestamp=10,stallX=10,stallZ=20,
+            successorJobEpisodeId="JE-SUCCESSOR",successorSourceJobToken="JOB-SUCCESSOR"
+        })
+        equal(recorded,true,recordReason)
+
+        local freshKnowledge={
+            assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+            jobEpisodeId="JE-SUCCESSOR",sourceJobToken="JOB-SUCCESSOR",operationId="OR-RECOVERY",
+            status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
+            stallEvidence={
+                establishedAtObservationSnapshotId="OS-STALL-SUCCESSOR",establishedAtTimestamp=36,
+                poseX=10.4,poseZ=20.1,collapseObservedSeconds=1.25
+            },
+            recoveryAnchor={
+                observationSnapshotId="OS-ANCHOR-SUCCESSOR",timestamp=34,
+                poseX=4.4,poseZ=17.6,travelDirectionX=1,travelDirectionZ=0,
+                travelPolarity="FORWARD",motionClassification="STABLE_FORWARD",
+                configurationProfileId="CFG-WORKING",sourceJobToken="JOB-SUCCESSOR",
+                usefulSpanM=6.5,minimumUsefulSpanM=5.0
+            }
+        }
+        local result=recurrence:assess(freshKnowledge)
+        equal(result.correlated,true)
+        equal(result.status,"RECOVERY_STRATEGY_EXHAUSTED")
+        equal(result.successorJobEpisodeId,"JE-SUCCESSOR")
+        equal(result.separationM<5,true)
+        equal(result.elapsedSeconds,26)
+
+        local picture=OuttaMyWay.OperationalPicture.new({
+            identity="PI-RECOVERY-RECURRENCE",epoch=101,observationSnapshotId="OS-RECOVERY-RECURRENCE",
+            situations={},currentPairAssessmentScope={},identities={},currentSpace={},futureSpace={},
+            demand={committedDemand={},potentialDemand={},temporarySlack={}},
+            responsibilityRelations={},uncertainty={},representationFitness={},provenance={source="BlockedWorkerRecoveryTest"},
+            physicalSpaceEvidence={{
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+                configurationProfileId="CFG-WORKING",
+                primitives={{kind="DISC"}},summary={physicalPrimitiveCount=1},
+                coverageComplete=false,negativeClearanceAuthority=false,
+                provenance={source="BlockedWorkerRecoveryTest"}
+            }},
+            controlOutcomeEvidence={},candidateSupportEvidence={},commitmentContext={},
+            blockedProgressKnowledge={freshKnowledge},
+            blockedWorkerRecoveryRecurrenceKnowledge={result}
+        })
+        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
+        local group,reason=support:buildFreshProjectedGroup(
+            picture,snapshot(),"PI-RECOVERY-RECURRENCE-TARGET",102)
+        equal(group,nil)
+        equal(reason,"RECOVERY_STRATEGY_EXHAUSTED")
+        equal(support:getLastRecurrence().status,"RECOVERY_STRATEGY_EXHAUSTED")
+    end)
+
+    test("Recurrence correlation does not veto a fresh Stall outside the accepted bounds",function()
+        local recurrence=OuttaMyWay.BlockedWorkerRecoveryRecurrenceAssessment.new()
+        equal(recurrence:recordSuccessfulRecovery({
+            assemblyId="AS-RECOVERY",stallTimestamp=10,stallX=10,stallZ=20,
+            successorJobEpisodeId="JE-SUCCESSOR",successorSourceJobToken="JOB-SUCCESSOR"
+        }),true)
+        local result=recurrence:assess({
+            assemblyId="AS-RECOVERY",jobEpisodeId="JE-SUCCESSOR",sourceJobToken="JOB-SUCCESSOR",
+            blockedProgressStall=true,
+            stallEvidence={establishedAtObservationSnapshotId="OS-OTHER",establishedAtTimestamp=30,poseX=16,poseZ=20}
+        })
+        equal(result.correlated,false)
+        equal(result.status,"OUTSIDE_CORRELATION_RADIUS")
     end)
 
     test("Recovery Candidate derives an Anchor-bounded Recovery Return Region",function()
@@ -105,7 +176,7 @@ return function(test,equal)
                 assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",operationId="OR-RECOVERY",
                 status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
-                stallEvidence={establishedAtObservationSnapshotId="OS-STALL",poseX=30,poseZ=0,collapseObservedSeconds=1.25},
+                stallEvidence={establishedAtObservationSnapshotId="OS-STALL",establishedAtTimestamp=10,poseX=30,poseZ=0,collapseObservedSeconds=1.25},
                 recoveryAnchor={
                     observationSnapshotId="OS-ANCHOR",timestamp=1,
                     poseX=0,poseZ=0,travelDirectionX=1,travelDirectionZ=0,
@@ -314,7 +385,8 @@ return function(test,equal)
                     stallX=30,stallZ=0,directionX=-1,directionZ=0,
                     calibratedTargetRetreatM=20,requiredRetreatM=20,
                     maximumSupportedRetreatM=30,cappedByAnchor=false
-                }
+                },
+                recoveryRecurrenceContext={stallTimestamp=10,stallX=30,stallZ=0}
             }
         }
         local started=control:executeControlRequest(request,{})
@@ -352,6 +424,8 @@ return function(test,equal)
         equal(completion.status,"SUCCEEDED")
         equal(completion.evidence.kind,"RECOVERY_INTENDED_SUCCESSOR_JOB_EPISODE_ADMITTED")
         equal(completion.evidence.successorJobEpisodeId,"JE-SUCCESSOR")
+        equal(completion.recoveryRecurrenceContext.stallTimestamp,10)
+        equal(completion.recoveryRecurrenceContext.stallX,30)
         equal(control:isActive(),false)
         g_currentMission,getWorldTranslation=oldMission,oldTranslation
     end)

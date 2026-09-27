@@ -435,6 +435,7 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) | `REALISES` |
 | [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) | `REALISES` |
+| [`scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) | `REALISES` |
 | [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) | `REALISES` |
 | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) | `REALISES` |
@@ -456,6 +457,7 @@ Current implementation routes include:
 - [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua), [`FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) and [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) — current spatial relationship/constraint interpretation;
 - [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — current positive obstruction-cause interpretation;
 - [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) — bounded Recovery Approach Trail retention, Blocked Progress Stall interpretation and Recovery Anchor selection from current Operation/lifecycle/motion/ownership evidence;
+- [`scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) — passive correlation of a fresh independently established successor Stall against the immediately preceding successful Recovery lineage/outcome evidence, producing Recovery Strategy Exhausted without acquiring Recovery authority;
 - [`scripts/assessment/RepresentationFitness.lua`](../scripts/assessment/RepresentationFitness.lua) and [`PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua) — current question-scoped representation-fitness interpretation;
 - [`scripts/assessment/CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua) — current specialised semantic persistence/dissolution interpretation for established Regulation purposes; and
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) plus [`scripts/main.lua`](../scripts/main.lua) — current orchestration/composition placing the final Situation Assessment product after Observation and Operation lifecycle, before Candidate/Constraint/Decision.
@@ -476,6 +478,7 @@ Current structural evidence includes:
 - [`tests/test_resolution_margin_demand_structure.py`](../tests/test_resolution_margin_demand_structure.py), which protects one-sided Resolution-Margin evidence ownership and rejects downstream runtime consumption in the `.79` semantic increment; and
 - [`tests/test_obstruction_relocation_structure.py`](../tests/test_obstruction_relocation_structure.py), which protects the distinction between Causal Obstruction recognition and downstream relocation mechanics; and
 - [`tests/test_blocked_progress_assessment_structure.py`](../tests/test_blocked_progress_assessment_structure.py), which protects bounded Blocked Progress Situation ownership, production wiring, calibration locality, authoritative Operation-membership consumption and the continued absence of Recovery Candidate/Control authority.
+- [`tests/test_blocked_worker_recovery_structure.py`](../tests/test_blocked_worker_recovery_structure.py), which protects passive Correlated Recovery Recurrence ownership and the boundary between Situation classification and Candidate replay veto.
 
 ### Offline behavioural/conformance validation
 

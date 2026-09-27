@@ -506,6 +506,7 @@ Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHo
 
 | Production source | Participation |
 | --- | --- |
+| [`scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) | `REALISES` |
 | [`scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) | `REALISES` |
 | [`scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) | `REALISES` |
@@ -515,23 +516,23 @@ Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHo
 
 ## Implementation traceability
 
-Production now implements the first complete Blocked Worker Recovery vertical slice:
+Production implements one bounded Recovery cycle plus passive correlated-recurrence exhaustion:
 
-- [`BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) projects one current Stall+Anchor into one Recovery Candidate;
+- [`BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) remains `SITUATION_ASSESSMENT` authority for fresh Stall, Recovery Approach Trail and Recovery Anchor meaning;
+- [`BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) retains only the immediately preceding successful Recovery's prior-Stall + intended-successor lineage provenance and correlates a later independently established Stall without acquiring Recovery authority;
+- [`BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) projects one current Stall+Anchor into one Recovery Candidate only when Correlated Recovery Recurrence has not established Recovery Strategy Exhausted;
 - [`BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) owns specialised Recovery commitment settlement;
 - [`BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) establishes the single-subject Current Responsibility;
-- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, moves directly to the selected Recovery Anchor, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission; and
-- Runtime / Responsibility Transition integration preserves Recovery's non-exclusive traffic decision horizon while retaining Passage's Bubble horizon.
+- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, retreats into the Recovery Return Region using the selected Anchor as subordinate steering reference, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission; and
+- Runtime records passive recurrence provenance only after semantic Recovery success and preserves Recovery's non-exclusive traffic decision horizon while retaining Passage's Bubble horizon.
 
-Upstream [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) remains `SITUATION_ASSESSMENT` authority for Stall and Anchor meaning.
-
-Fresh post-success blockage is handled by ordinary Blocked Progress assessment under the successor Job Episode; no post-success recurrence watch is retained.
+A correlated successor Stall does not become a failed prior Recovery and does not start another Control lifecycle. Candidate replay is vetoed and the runtime remains fail-closed with existing player authority available for intervention.
 
 ## Validation route
 
 ### Structural/source-contract validation
 
-Structural validation must prove that declared Recovery production participants acknowledge this Jurisdiction reciprocally, that the Candidate/Responsibility/Control path remains bounded to one selected Recovery Anchor, and that Recovery does not recreate operation-global Resolution exclusivity.
+Structural validation must prove that declared Recovery production participants acknowledge this Jurisdiction reciprocally, that Physical Recovery remains bounded by the selected Anchor/Return Region contract, that recurrence memory remains passive and can only veto Candidate replay, and that Recovery does not recreate operation-global Resolution exclusivity.
 
 ### Offline behavioural/conformance validation
 
@@ -546,12 +547,14 @@ Current offline validation should challenge at least:
 - absence of known conflict does not become negative-clearance authority;
 - mandatory Transit request occurs before recovery movement;
 - current positive spatial contradiction can veto/narrow movement;
-- reaching the Anchor settles Physical Recovery without terminalising the Resolution;
+- entering the Recovery Return Region settles Physical Recovery without terminalising the Resolution;
 - replacement preparation precedes the synchronous stop/start Job Replacement Commitment;
 - successful replacement start immediately relinquishes OMW movement and Transit-configuration bookkeeping without restoring the former working posture;
 - API start success alone does not settle Native Replanning;
-- only positive admission of the intended successor Job Episode for the same Physical Assembly completes Recovery; and
-- a later fresh Stall requires its own fresh Trail/Anchor evidence rather than reusing completed-Recovery history.
+- only positive admission of the intended successor Job Episode for the same Physical Assembly completes Recovery;
+- a later fresh Stall requires its own fresh Trail/Anchor evidence before recurrence correlation;
+- exact intended-successor lineage + <=5 m + <=60 s establishes Correlated Recovery Recurrence and vetoes Recovery Candidate replay; and
+- different lineage or a Stall outside either correlation bound does not manufacture Recovery Strategy Exhausted.
 
 ### Targeted in-game Reality validation
 
@@ -560,13 +563,13 @@ In-game validation is required for the live GIANTS assumptions on which this cap
 Initial Reality validation should include:
 
 1. transient/native blocked signalling while the worker continues or resumes without intervention;
-2. the demonstrated Condor boundary-associated Stall and direct return to the first/oldest retained compatible Anchor;
+2. the demonstrated Condor boundary-associated Stall and Anchor-bounded retreat into the Recovery Return Region;
 3. Transit request and settlement on materially different assemblies;
 4. successful direct-start FIELDWORK Job replacement from the recovered pose, including truthful old/new Job Episode succession;
 5. immediate GIANTS ownership of post-restart configuration and movement with no OMW restore tail;
 6. absence or presence of a player-visible manual-stop notification when Recovery uses the supported nil-message stop lifecycle;
 7. preservation of deliberately distinctive player-selected FIELDWORK parameters across replacement in a dedicated scenario;
-8. a later independent obstruction under the successor Job Episode, proving that fresh Stall/Trail/Anchor evidence can admit a new Recovery cycle without historical retry permission; and
+8. the demonstrated S416 successor recurrence, proving that the fresh correlated Stall is classified Recovery Strategy Exhausted and Recovery #2 is not admitted; plus a non-correlated successor Stall proving independent fresh Recovery remains supportable outside the accepted correlation bounds; and
 9. existing Cooperative Passage / Regulation cases, proving that independent traffic responsibilities and Supporting Speed Ceilings remain correctly scoped during Recovery.
 
 ### Outside this Specification's validation claim

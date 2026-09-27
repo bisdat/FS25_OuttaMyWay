@@ -157,7 +157,7 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, causalObstructionAssessment)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, causalObstructionAssessment, blockedWorkerRecoveryRecurrenceAssessment)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
@@ -166,6 +166,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.commitments = commitments
     self.obligations = obligations
     self.causalObstructionAssessment=causalObstructionAssessment
+    self.blockedWorkerRecoveryRecurrenceAssessment=blockedWorkerRecoveryRecurrenceAssessment
     self.blockedProgressAssessment=OuttaMyWay.BlockedProgressAssessment.new(jobEpisodes)
     self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
@@ -490,8 +491,23 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         operationByAssembly=operationByAssembly,
         commitmentContext=commitmentContext
     })
+    local blockedWorkerRecoveryRecurrenceKnowledge={}
+    if self.blockedWorkerRecoveryRecurrenceAssessment~=nil then
+        for _,knowledge in OuttaMyWay.ValueRecord.ipairs(blockedProgressKnowledge) do
+            if knowledge.blockedProgressStall==true and type(knowledge.recoveryAnchor)=="table" then
+                local recurrence=self.blockedWorkerRecoveryRecurrenceAssessment:assess(knowledge)
+                if recurrence and recurrence.correlated==true then
+                    blockedWorkerRecoveryRecurrenceKnowledge[#blockedWorkerRecoveryRecurrenceKnowledge+1]=recurrence
+                end
+            end
+        end
+        table.sort(blockedWorkerRecoveryRecurrenceKnowledge,function(a,b)
+            return tostring(a.assemblyId)<tostring(b.assemblyId)
+        end)
+    end
     if diagnostics~=nil and diagnostics.counters~=nil then
         diagnostics.counters.blockedProgressKnowledgeCount=#blockedProgressKnowledge
+        diagnostics.counters.blockedWorkerRecoveryRecurrenceKnowledgeCount=#blockedWorkerRecoveryRecurrenceKnowledge
     end
 
     local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
@@ -587,6 +603,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         cooperativePassageKnowledge=cooperativePassageKnowledge,
         causalObstructionKnowledge=causalObstructionKnowledge,
         blockedProgressKnowledge=blockedProgressKnowledge,
+        blockedWorkerRecoveryRecurrenceKnowledge=blockedWorkerRecoveryRecurrenceKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
         provenance={source="SituationAssessment", observationSnapshotId=snapshot.identity, observationEpoch=snapshot.epoch},
@@ -604,6 +621,7 @@ function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
     if self.blockedProgressAssessment~=nil then self.blockedProgressAssessment:reset() end
+    if self.blockedWorkerRecoveryRecurrenceAssessment~=nil then self.blockedWorkerRecoveryRecurrenceAssessment:reset() end
     if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
 end
 

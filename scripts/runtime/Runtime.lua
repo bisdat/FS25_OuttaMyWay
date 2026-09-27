@@ -120,12 +120,13 @@ function Runtime.new()
     local governingBasis=OuttaMyWay.GoverningBasisEvaluator.new(identities,epochs)
     local terminalSettlement=OuttaMyWay.TerminalSettlementEvaluator.new(epochs,commitments,obligations,authorities)
     local causalObstructionAssessment=OuttaMyWay.CausalObstructionAssessment.new(jobEpisodes)
+    local blockedWorkerRecoveryRecurrenceAssessment=OuttaMyWay.BlockedWorkerRecoveryRecurrenceAssessment.new()
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
         commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
-        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,causalObstructionAssessment),
+        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
-        fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,causalObstructionAssessment=causalObstructionAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
+        fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,causalObstructionAssessment=causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment=blockedWorkerRecoveryRecurrenceAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
         initialized=false,cooperativeVerdictTraceKey=nil
     },Runtime)
     runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots,runtime.fieldWorldEquivalenceAuthority,runtime.assemblyRepresentationCache,runtime.currentPhysicalAssemblySource,runtime.currentPhysicalConflictRepresentation)
@@ -622,6 +623,21 @@ function Runtime:onBlockedWorkerRecoveryControlCompletion(result)
     if terminal==nil then
         logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_SETTLEMENT_FAILED","commitment=%s event=%s reason=%s",
             tostring(result.commitmentId),tostring(eventKind),tostring(reason))
+        return
+    end
+    if eventKind=="OBJECTIVE_SATISFIED" and self.blockedWorkerRecoveryRecurrenceAssessment~=nil then
+        local recurrence=result.recoveryRecurrenceContext or {}
+        local evidence=result.evidence or {}
+        local recorded,recordReason=self.blockedWorkerRecoveryRecurrenceAssessment:recordSuccessfulRecovery({
+            assemblyId=result.assemblyId,recoveryKey=result.recoveryKey,
+            stallTimestamp=tonumber(recurrence.stallTimestamp),stallX=tonumber(recurrence.stallX),stallZ=tonumber(recurrence.stallZ),
+            successorJobEpisodeId=evidence.successorJobEpisodeId,
+            successorSourceJobToken=evidence.observedSuccessorSourceJobToken
+        })
+        if recorded~=true then
+            logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_RECURRENCE_PROVENANCE_UNAVAILABLE",
+                "commitment=%s reason=%s",tostring(result.commitmentId),tostring(recordReason))
+        end
     end
 end
 
@@ -631,7 +647,8 @@ function Runtime:_blockedWorkerRecoveryRequest(picture,evaluated,candidate,appli
         jobEpisodeId=bridge.jobEpisodeId,sourceJobToken=bridge.sourceJobToken,recoveryKey=bridge.recoveryKey,
         configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN",
         recoveryAnchor=bridge.recoveryAnchor,
-        recoveryReturnRegion=bridge.recoveryReturnRegion
+        recoveryReturnRegion=bridge.recoveryReturnRegion,
+        recoveryRecurrenceContext=bridge.recoveryRecurrenceContext
     }
     local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
         assemblyId=bridge.assemblyId,capability="REPOSITION",target=target,
@@ -935,5 +952,5 @@ end
 
 function Runtime:getStatus()
     return {initialized=self.initialized,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportStatus=self.obstructionRelocationCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportCount=self.obstructionRelocationCandidateSupport:getPublishedCount(),blockedWorkerRecoveryCandidateSupportStatus=self.blockedWorkerRecoveryCandidateSupport:getLastStatus(),blockedWorkerRecoveryCandidateSupportCount=self.blockedWorkerRecoveryCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),blockedWorkerRecoveryControlStatus=(self.liveControlDispatcher.blockedWorkerRecoveryControl and self.liveControlDispatcher.blockedWorkerRecoveryControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportStatus=self.obstructionRelocationCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportCount=self.obstructionRelocationCandidateSupport:getPublishedCount(),blockedWorkerRecoveryCandidateSupportStatus=self.blockedWorkerRecoveryCandidateSupport:getLastStatus(),blockedWorkerRecoveryCandidateSupportCount=self.blockedWorkerRecoveryCandidateSupport:getPublishedCount(),blockedWorkerRecoveryRecurrenceCount=self.blockedWorkerRecoveryRecurrenceAssessment and self.blockedWorkerRecoveryRecurrenceAssessment:getCorrelatedCount() or 0,liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),blockedWorkerRecoveryControlStatus=(self.liveControlDispatcher.blockedWorkerRecoveryControl and self.liveControlDispatcher.blockedWorkerRecoveryControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list()}
 end
