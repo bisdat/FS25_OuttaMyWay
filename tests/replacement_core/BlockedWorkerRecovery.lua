@@ -49,7 +49,7 @@ return function(test,equal)
         equal(reason,"RECOVERY_ALREADY_CURRENT")
     end)
 
-    test("Correlated successor Stall exhausts Recovery strategy before Candidate admission",function()
+    test("Sealed correlated successor Stall knowledge exhausts Recovery strategy before Candidate admission",function()
         local recurrence=OuttaMyWay.BlockedWorkerRecoveryRecurrenceAssessment.new()
         local recorded,recordReason=recurrence:recordSuccessfulRecovery({
             assemblyId="AS-RECOVERY",recoveryKey="blocked-worker-recovery:OR-RECOVERY:AS-RECOVERY:JE-RECOVERY",
@@ -57,6 +57,29 @@ return function(test,equal)
             successorJobEpisodeId="JE-SUCCESSOR",successorSourceJobToken="JOB-SUCCESSOR"
         })
         equal(recorded,true,recordReason)
+
+        local freshKnowledge={
+            assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+            jobEpisodeId="JE-SUCCESSOR",sourceJobToken="JOB-SUCCESSOR",operationId="OR-RECOVERY",
+            status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
+            stallEvidence={
+                establishedAtObservationSnapshotId="OS-STALL-SUCCESSOR",establishedAtTimestamp=36,
+                poseX=10.4,poseZ=20.1,collapseObservedSeconds=1.25
+            },
+            recoveryAnchor={
+                observationSnapshotId="OS-ANCHOR-SUCCESSOR",timestamp=34,
+                poseX=4.4,poseZ=17.6,travelDirectionX=1,travelDirectionZ=0,
+                travelPolarity="FORWARD",motionClassification="STABLE_FORWARD",
+                configurationProfileId="CFG-WORKING",sourceJobToken="JOB-SUCCESSOR",
+                usefulSpanM=6.5,minimumUsefulSpanM=5.0
+            }
+        }
+        local result=recurrence:assess(freshKnowledge)
+        equal(result.correlated,true)
+        equal(result.status,"RECOVERY_STRATEGY_EXHAUSTED")
+        equal(result.successorJobEpisodeId,"JE-SUCCESSOR")
+        equal(result.separationM<5,true)
+        equal(result.elapsedSeconds,26)
 
         local picture=OuttaMyWay.OperationalPicture.new({
             identity="PI-RECOVERY-RECURRENCE",epoch=101,observationSnapshotId="OS-RECOVERY-RECURRENCE",
@@ -71,34 +94,15 @@ return function(test,equal)
                 provenance={source="BlockedWorkerRecoveryTest"}
             }},
             controlOutcomeEvidence={},candidateSupportEvidence={},commitmentContext={},
-            blockedProgressKnowledge={{
-                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
-                jobEpisodeId="JE-SUCCESSOR",sourceJobToken="JOB-SUCCESSOR",operationId="OR-RECOVERY",
-                status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
-                stallEvidence={
-                    establishedAtObservationSnapshotId="OS-STALL-SUCCESSOR",establishedAtTimestamp=36,
-                    poseX=10.4,poseZ=20.1,collapseObservedSeconds=1.25
-                },
-                recoveryAnchor={
-                    observationSnapshotId="OS-ANCHOR-SUCCESSOR",timestamp=34,
-                    poseX=4.4,poseZ=17.6,travelDirectionX=1,travelDirectionZ=0,
-                    travelPolarity="FORWARD",motionClassification="STABLE_FORWARD",
-                    configurationProfileId="CFG-WORKING",sourceJobToken="JOB-SUCCESSOR",
-                    usefulSpanM=6.5,minimumUsefulSpanM=5.0
-                }
-            }}
+            blockedProgressKnowledge={freshKnowledge},
+            blockedWorkerRecoveryRecurrenceKnowledge={result}
         })
-        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new(recurrence)
+        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
         local group,reason=support:buildFreshProjectedGroup(
             picture,snapshot(),"PI-RECOVERY-RECURRENCE-TARGET",102)
         equal(group,nil)
         equal(reason,"RECOVERY_STRATEGY_EXHAUSTED")
-        local result=support:getLastRecurrence()
-        equal(result.correlated,true)
-        equal(result.status,"RECOVERY_STRATEGY_EXHAUSTED")
-        equal(result.successorJobEpisodeId,"JE-SUCCESSOR")
-        equal(result.separationM<5,true)
-        equal(result.elapsedSeconds,26)
+        equal(support:getLastRecurrence().status,"RECOVERY_STRATEGY_EXHAUSTED")
     end)
 
     test("Recurrence correlation does not veto a fresh Stall outside the accepted bounds",function()
