@@ -87,6 +87,47 @@ return function(test,equal)
         equal(math.abs(region.requiredRetreatM-region.maximumSupportedRetreatM)<0.0001,true)
     end)
 
+    test("Recovery Return Region uses full twenty metre calibration when Anchor permits it",function()
+        local picture=OuttaMyWay.OperationalPicture.new({
+            identity="PI-RECOVERY-LONG",epoch=101,observationSnapshotId="OS-RECOVERY",
+            situations={},currentPairAssessmentScope={},identities={},currentSpace={},futureSpace={},
+            demand={committedDemand={},potentialDemand={},temporarySlack={}},
+            responsibilityRelations={},uncertainty={},representationFitness={},provenance={source="BlockedWorkerRecoveryTest"},
+            physicalSpaceEvidence={{
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+                configurationProfileId="CFG-WORKING",
+                primitives={{kind="DISC"}},summary={physicalPrimitiveCount=1},
+                coverageComplete=false,negativeClearanceAuthority=false,
+                provenance={source="BlockedWorkerRecoveryTest"}
+            }},
+            controlOutcomeEvidence={},candidateSupportEvidence={},commitmentContext={},
+            blockedProgressKnowledge={{
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+                jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",operationId="OR-RECOVERY",
+                status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
+                stallEvidence={establishedAtObservationSnapshotId="OS-STALL",poseX=30,poseZ=0,collapseObservedSeconds=1.25},
+                recoveryAnchor={
+                    observationSnapshotId="OS-ANCHOR",timestamp=1,
+                    poseX=0,poseZ=0,travelDirectionX=1,travelDirectionZ=0,
+                    travelPolarity="FORWARD",motionClassification="STABLE_FORWARD",
+                    configurationProfileId="CFG-WORKING",sourceJobToken="JOB-RECOVERY",
+                    usefulSpanM=30,minimumUsefulSpanM=5.0
+                }
+            }}
+        })
+        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
+        local group,reason=support:buildFreshProjectedGroup(
+            picture,snapshot(),"PI-RECOVERY-LONG-TARGET",102)
+        if group==nil then error(reason or "Recovery group missing") end
+        local region=group.candidateSpecifications[1].evidenceBasis.blockedWorkerRecoveryBridge.recoveryReturnRegion
+        equal(region.calibratedTargetRetreatM,20)
+        equal(region.requiredRetreatM,20)
+        equal(region.maximumSupportedRetreatM,30)
+        equal(region.cappedByAnchor,false)
+        equal(region.directionX,-1)
+        equal(region.directionZ,0)
+    end)
+
     test("Recovery Resolution semantic preflight recognises both two-phase obligations",function()
         local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
         local group,reason=support:buildFreshProjectedGroup(
