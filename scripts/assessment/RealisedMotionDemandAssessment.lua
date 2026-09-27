@@ -43,12 +43,20 @@ local function sortedKeys(map)
     return result
 end
 
-local function liveProgressActuationOwner(commitments,assemblyId)
+local function incompatibleProgressActuationOwner(commitments,assemblyId)
     for _,record in OuttaMyWay.ValueRecord.ipairs(commitments or {}) do
         local live=record.state=="ACTIVE" or record.state=="WAITING_FOR_EVIDENCE" or record.state=="SETTLING"
         if live then
+            local ownsProgress=false
             for _,item in OuttaMyWay.ValueRecord.ipairs(record.progressActuationOwnership or {}) do
-                if item.assemblyId==assemblyId then return record.identity end
+                if item.assemblyId==assemblyId then ownsProgress=true; break end
+            end
+            if ownsProgress then
+                local relocationOwnsDifferentSubject=OuttaMyWay.ValueRecord.length(record.obstructionRelocationActuationOwnership or {})>0
+                local capability=record.strategy and record.strategy.capability or nil
+                if capability=="REPOSITION" and not relocationOwnsDifferentSubject then
+                    return record.identity
+                end
             end
         end
     end
@@ -93,7 +101,7 @@ function Assessment.build(context)
         local motionItem=motion[assemblyId]
         local trajectory=trajectories[assemblyId]
         local physicalItem=physical[assemblyId]
-        local owner=liveProgressActuationOwner(context.commitments,assemblyId)
+        local owner=incompatibleProgressActuationOwner(context.commitments,assemblyId)
 
         if type(operationId)=="string"
             and activeEpisode~=nil
