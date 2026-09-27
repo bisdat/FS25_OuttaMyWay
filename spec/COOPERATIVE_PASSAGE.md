@@ -70,7 +70,7 @@ After Decision selects a supported, constraint-admissible Passage Candidate, the
 
 Bubble Formation Readiness MUST remain false when the selected Candidate is stale, inadmissible, or no longer supports the complete Passage-Capable Theatre.
 
-When the selected Candidate remains current and complete, Bubble Formation Readiness MAY become positive through either of two supported timing routes:
+When the selected Candidate remains current and complete, Bubble Formation Readiness MUST become positive when either of two supported timing routes is positively established:
 
 1. **settled native-revelation route** — current positive evidence establishes the participants' native continuation sufficiently settled for the selected arrangement; positive settled-continuation evidence for both participants is sufficient for this route; or
 2. **latest-safe-capture route** — current independent progression has consumed disposable native approach margin to the arrangement-specific latest safe capture point, so further waiting would begin consuming capture/control reserve or another required part of the complete Passage-Capable Theatre.
