@@ -1,4 +1,4 @@
---- Constructs one Blocked Worker Recovery Candidate from current positive Stall + Anchor knowledge.
+--- Constructs one Blocked Worker Recovery Candidate from current positive Stall + Anchor knowledge, deriving one Anchor-bounded Return Region.
 -- Specification Jurisdictions: `CANDIDATE_SUPPORT`, `BLOCKED_WORKER_RECOVERY`
 
 OuttaMyWay.BlockedWorkerRecoveryCandidateSupport={}
@@ -61,18 +61,18 @@ local function recoveryRepresentationFitness(picture,knowledge,anchor,recoveryKe
         representationId=representationId,
         assemblyId=knowledge.assemblyId,
         question="BLOCKED_WORKER_RECOVERY_LOCAL_RETURN_REFERENCE",
-        assessmentHorizon="CURRENT_STALL_TO_SELECTED_RECOVERY_ANCHOR",
+        assessmentHorizon="CURRENT_STALL_TO_RECOVERY_RETURN_REGION_WITH_SELECTED_ANCHOR_BOUND",
         state=fit and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED",
         claimPermissions=fit and {"BLOCKED_WORKER_RECOVERY_LOCAL_RETURN_REFERENCE"} or {},
         coverage={complete=false,conservative=false,underApproximationRisk=true},
         uncertainty=fit and {
-            "RECOVERY_ANCHOR_PURPOSE_SPECIFIC_NOT_GENERAL_CLEARANCE",
+            "RECOVERY_RETURN_REGION_PURPOSE_SPECIFIC_NOT_GENERAL_CLEARANCE",
             "REVERSE_FEASIBILITY_NOT_INFERRED_FROM_REPRESENTATION",
             "NO_PRODUCTIVE_ROUTING_AUTHORITY"
         } or {"CURRENT_RECOVERY_PHYSICAL_REFERENCE_UNAVAILABLE_OR_CONFIGURATION_MISMATCH"},
         validityDependencies={
             "CURRENT_OPERATIONAL_PICTURE","SAME_PHYSICAL_ASSEMBLY","SAME_JOB_EPISODE",
-            "SAME_RECOVERY_ANCHOR_CONFIGURATION","CURRENT_POSITIVE_PHYSICAL_PRIMITIVES"
+            "SAME_RECOVERY_ANCHOR_CONFIGURATION","SAME_RECOVERY_RETURN_REGION_PROVENANCE","CURRENT_POSITIVE_PHYSICAL_PRIMITIVES"
         },
         evidence={
             recoveryKey=recoveryKey,
@@ -187,7 +187,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
             }
         },
         releaseImplications={releaseBoundedAuthorityAfterActuation=true,giantsOwnsPostRestartConfigurationAndMovement=true},
-        uncertainty={{kind="RECOVERY_ANCHOR_PURPOSE_SPECIFIC_NOT_GENERAL_CLEARANCE"}},
+        uncertainty={{kind="RECOVERY_RETURN_REGION_PURPOSE_SPECIFIC_NOT_GENERAL_CLEARANCE"}},
         comparisonCost=1
     }
     self.publishedCount=self.publishedCount+1
