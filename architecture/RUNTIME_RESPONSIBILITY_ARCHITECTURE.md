@@ -21,11 +21,11 @@ This architecture declares the following Specification Jurisdictions.
 | **Regulation** | Provide bounded temporal coordination while GIANTS retains productive routing. |
 | **Resolution Lifecycle** | Own the generic persistence and obligation semantics of Resolution Commitment. |
 | **Obstruction Relocation** | Specialise Resolution Lifecycle for bounded removal of a positively causal non-active unclaimed obstruction. |
-| **Blocked Worker Recovery** | Specialise Resolution Lifecycle for a two-phase Recovery cycle: bounded physical return from a positive native Stall followed by deliberate GIANTS-native replanning through field-work Job replacement. |
+| **Blocked Worker Recovery** | Specialise Resolution Lifecycle for a two-phase Recovery cycle: bounded retreat from a positive native Stall into a Recovery Return Region followed by deliberate GIANTS-native replanning through field-work Job replacement. |
 | **Bounded Authority** | Determine what physical action is permitted now under current responsibility and Reality. |
 | **Control** | Realise an already-authorised physical request through available GIANTS mechanisms. |
 
-The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Blocked Progress Stall, Recovery Anchor, Recovery Continuity, Job Replacement Commitment Point, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
+The Current Responsibility model, Reality, Field World Equivalence Authority, Causal Obstruction, Blocked Progress Stall, Recovery Anchor, Recovery Return Region, Recovery Continuity, Job Replacement Commitment Point, Lifecycle Evidence Asymmetry, Pairwise Resolution Exclusivity and Downstream Authority Monotonicity are architectural concepts, authorities, evidence rules or constraints; they do not create additional Specification Jurisdictions merely by being separately named.
 
 All currently implemented runtime Specification Jurisdictions route to primary Specifications: **Operation Lifecycle** to [`../../spec/OPERATION_LIFECYCLE.md`](../spec/OPERATION_LIFECYCLE.md), **Observation** to [`../../spec/OBSERVATION.md`](../spec/OBSERVATION.md), **Situation Assessment** to [`../../spec/SITUATION_ASSESSMENT.md`](../spec/SITUATION_ASSESSMENT.md), **Responsibility Transition** to [`../../spec/RESPONSIBILITY_TRANSITION.md`](../spec/RESPONSIBILITY_TRANSITION.md), **Regulation** to [`../../spec/REGULATION.md`](../spec/REGULATION.md), **Resolution Lifecycle** to [`../../spec/RESOLUTION_LIFECYCLE.md`](../spec/RESOLUTION_LIFECYCLE.md), **Obstruction Relocation** to [`../../spec/OBSTRUCTION_RELOCATION.md`](../spec/OBSTRUCTION_RELOCATION.md), **Bounded Authority** to [`../../spec/BOUNDED_AUTHORITY.md`](../spec/BOUNDED_AUTHORITY.md), and **Control** to [`../../spec/CONTROL.md`](../spec/CONTROL.md). **Blocked Worker Recovery** routes to its implemented primary Specification at [`../../spec/BLOCKED_WORKER_RECOVERY.md`](../spec/BLOCKED_WORKER_RECOVERY.md). Configuration remains a separate Deferred Responsibility and correctly has no placeholder Specification.
 
@@ -602,7 +602,7 @@ A cold-loaded parked vehicle, a formerly completed AI worker, a player-owned but
 
 **Parent Jurisdiction:** Resolution Lifecycle.
 
-**Owns:** the concrete single-subject Resolution contract for one two-phase Recovery cycle when a still-active GIANTS worker has a positively established Blocked Progress Stall: first return the assembly to a bounded Recovery Anchor in Transit, then deliberately cause GIANTS to replan by replacing the failed FIELDWORK Job.
+**Owns:** the concrete single-subject Resolution contract for one two-phase Recovery cycle when a still-active GIANTS worker has a positively established Blocked Progress Stall: first retreat the assembly in Transit into a bounded Recovery Return Region supported by its recent Recovery Approach and Recovery Anchor, then deliberately cause GIANTS to replan by replacing the failed FIELDWORK Job.
 
 **Does not own:** raw native blockage observation, generic Situation interpretation, obstacle identification, environmental map modelling, productive routing, arbitrary path planning, obstacle-specific bypass, player work-policy selection, generic Bounded Authority or generic Control mechanics.
 
@@ -642,7 +642,7 @@ Recovery does not create a new traffic mode and does not globally suppress Candi
 
 > **Job Replacement Does Not Cancel Independent Traffic Constraints.**
 
-### Recovery Approach, Recovery Approach Trail and Recovery Anchor
+### Recovery Approach, Recovery Approach Trail, Recovery Anchor and Recovery Return Region
 
 The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Stall.
 
@@ -652,7 +652,7 @@ The Trail is evidence retention, not Responsibility, Candidate preference, path 
 
 > **Recovery Approach Trail != Productive History.**
 
-A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery cycle. The useful-span threshold qualifies the Trail; it does not choose the Recovery Point.
+A **Recovery Anchor** is the first/oldest retained compatible positively realised state in that same uninterrupted Recovery Approach once the bounded Trail contains sufficient useful span to justify one Recovery cycle. The useful-span threshold qualifies the Trail; it does not determine the physical Recovery travel requirement.
 
 The originating Job Episode is required provenance for Stall, Trail and Anchor admission. Once the Recovery Resolution is established, however, the Recovery itself persists by its unresolved obligations and Physical Assembly subject; the originating Job Episode does not remain the persistence identity through an intentionally caused replacement.
 
@@ -662,21 +662,31 @@ The originating Job Episode is required provenance for Stall, Trail and Anchor a
 
 The Anchor supplies bounded provenance for where the failed native excursion came from and which local direction represents retreat. It does not establish universal collision clearance, productive routing or a route around the obstruction.
 
+A **Recovery Return Region** is the bounded part of that demonstrated return domain within which further OuttaMyWay retreat is no longer required before fresh GIANTS-native replanning. It is derived from the current Blocked Progress Stall plus the qualified Recovery Approach / Anchor evidence. The Anchor remains the maximum supported retreat bound; it is not an exact pose-restoration requirement.
+
+> **Recovery Retreats From the Stall; It Does Not Return To the Anchor.**
+
+> **Recovery Anchor Bounds Retreat; Recovery Return Region Ends It.**
+
+Recovery completion geometry may be approximate while its provenance remains exact. A Return Region therefore MUST remain within positively demonstrated Recovery Approach support and MUST NOT extend beyond the Anchor merely to satisfy a preferred distance.
+
+> **Approximate In Geometry; Precise In Provenance.**
+
 ### Phase 1 — Physical Recovery
 
-Blocked Worker Recovery first owns one generic bounded physical **Recovery Excursion** to the selected Recovery Anchor.
+Blocked Worker Recovery first owns one generic bounded physical **Recovery Excursion** from the Stall into the Recovery Return Region.
 
-The excursion uses recent **Demonstrated Traversability** as positive support for that bounded local return domain. It does not classify trees, pylons, hedges or parked objects into separate algorithms and does not invent a second target or bypass path.
+The excursion uses recent **Demonstrated Traversability** as positive support for that bounded local return domain. It does not classify trees, pylons, hedges or parked objects into separate algorithms and does not invent a bypass path.
 
 Once the Recovery Resolution is current, the assembly **always requests Transit before recovery movement**. Transit is execution choreography, not a strategic Candidate question. The physical configuration mechanism settles that request before movement proceeds.
 
-The initial physical manoeuvre is a direct return to the Recovery Anchor. The Anchor is the initial Recovery Point.
+The Recovery Anchor may remain a subordinate steering/look-through reference because it proves the supported retreat direction and maximum bound. It is not the semantic destination. Physical Recovery completes as soon as fresh Reality establishes that the assembly has entered the Recovery Return Region.
 
-> **Recovery Anchor = Initial Recovery Point.**
+> **Recovery Target Reference != Recovery Completion Condition.**
 
 > **Recovery Need Does Not Require Blockage Cause.**
 
-Reaching the Recovery Anchor positively satisfies the Physical Recovery phase. It does not complete the whole Recovery Resolution because the failed native Job still requires replanning.
+Entering the Recovery Return Region positively satisfies the Physical Recovery phase. It does not complete the whole Recovery Resolution because the failed native Job still requires replanning.
 
 > **Phase Completion != Resolution Completion.**
 

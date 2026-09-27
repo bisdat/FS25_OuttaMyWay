@@ -35,7 +35,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
         beneficiaryAssemblyIds={bridge.assemblyId},
         controlledSubjectAssemblyIds={bridge.assemblyId},
         resolutionOutcomeKinds={
-            "BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT",
+            "BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT",
             "BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"
         },
         responsibilityIdentity=semantics and semantics.responsibilityIdentity or nil

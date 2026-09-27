@@ -49,7 +49,7 @@ return function(test,equal)
         equal(reason,"RECOVERY_ALREADY_CURRENT")
     end)
 
-    test("Recovery Candidate uses the selected Recovery Anchor as its only Recovery Point",function()
+    test("Recovery Candidate derives an Anchor-bounded Recovery Return Region",function()
         local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
         local group,reason=support:buildFreshProjectedGroup(
             pictureWithRecovery(),snapshot(),"PI-RECOVERY-TARGET",102)
@@ -58,12 +58,12 @@ return function(test,equal)
         equal(#group.candidateSpecifications,1)
         local candidate=group.candidateSpecifications[1]
         equal(candidate.capability,"REPOSITION")
-        equal(candidate.expectedEffect.recoveryPoint,"RECOVERY_ANCHOR")
+        equal(candidate.expectedEffect.recoveryCompletion,"RECOVERY_RETURN_REGION")
         equal(candidate.expectedEffect.transitRequested,true)
         equal(candidate.expectedEffect.nativeJobReplacement,true)
         equal(candidate.expectedEffect.physicalReleaseAfterReplacementStart,true)
         equal(#candidate.obligationsCreated,2)
-        equal(candidate.obligationsCreated[1].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT")
+        equal(candidate.obligationsCreated[1].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT")
         equal(candidate.obligationsCreated[2].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED")
         equal(candidate.evidenceBasis.independentConcurrentCommitment,true)
         equal(#candidate.representationFitness.requirements,1)
@@ -75,9 +75,57 @@ return function(test,equal)
             identity="PI-RECOVERY-TARGET",representationFitness=group.representationFitness
         })
         equal(verdict.result,"PASS")
-        local anchor=candidate.evidenceBasis.blockedWorkerRecoveryBridge.recoveryAnchor
+        local bridge=candidate.evidenceBasis.blockedWorkerRecoveryBridge
+        local anchor=bridge.recoveryAnchor
         equal(anchor.x,4.25); equal(anchor.z,17.5)
         equal(anchor.usefulSpanM,5.61)
+        local region=bridge.recoveryReturnRegion
+        equal(region.stallX,10); equal(region.stallZ,20)
+        equal(region.calibratedTargetRetreatM,20)
+        equal(region.cappedByAnchor,true)
+        equal(math.abs(region.maximumSupportedRetreatM-math.sqrt(39.3125))<0.0001,true)
+        equal(math.abs(region.requiredRetreatM-region.maximumSupportedRetreatM)<0.0001,true)
+    end)
+
+    test("Recovery Return Region uses full twenty metre calibration when Anchor permits it",function()
+        local picture=OuttaMyWay.OperationalPicture.new({
+            identity="PI-RECOVERY-LONG",epoch=101,observationSnapshotId="OS-RECOVERY",
+            situations={},currentPairAssessmentScope={},identities={},currentSpace={},futureSpace={},
+            demand={committedDemand={},potentialDemand={},temporarySlack={}},
+            responsibilityRelations={},uncertainty={},representationFitness={},provenance={source="BlockedWorkerRecoveryTest"},
+            physicalSpaceEvidence={{
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+                configurationProfileId="CFG-WORKING",
+                primitives={{kind="DISC"}},summary={physicalPrimitiveCount=1},
+                coverageComplete=false,negativeClearanceAuthority=false,
+                provenance={source="BlockedWorkerRecoveryTest"}
+            }},
+            controlOutcomeEvidence={},candidateSupportEvidence={},commitmentContext={},
+            blockedProgressKnowledge={{
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+                jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",operationId="OR-RECOVERY",
+                status="BLOCKED_PROGRESS_STALL",blockedProgressStall=true,
+                stallEvidence={establishedAtObservationSnapshotId="OS-STALL",poseX=30,poseZ=0,collapseObservedSeconds=1.25},
+                recoveryAnchor={
+                    observationSnapshotId="OS-ANCHOR",timestamp=1,
+                    poseX=0,poseZ=0,travelDirectionX=1,travelDirectionZ=0,
+                    travelPolarity="FORWARD",motionClassification="STABLE_FORWARD",
+                    configurationProfileId="CFG-WORKING",sourceJobToken="JOB-RECOVERY",
+                    usefulSpanM=30,minimumUsefulSpanM=5.0
+                }
+            }}
+        })
+        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
+        local group,reason=support:buildFreshProjectedGroup(
+            picture,snapshot(),"PI-RECOVERY-LONG-TARGET",102)
+        if group==nil then error(reason or "Recovery group missing") end
+        local region=group.candidateSpecifications[1].evidenceBasis.blockedWorkerRecoveryBridge.recoveryReturnRegion
+        equal(region.calibratedTargetRetreatM,20)
+        equal(region.requiredRetreatM,20)
+        equal(region.maximumSupportedRetreatM,30)
+        equal(region.cappedByAnchor,false)
+        equal(region.directionX,-1)
+        equal(region.directionZ,0)
     end)
 
     test("Recovery Resolution semantic preflight recognises both two-phase obligations",function()
@@ -93,7 +141,7 @@ return function(test,equal)
             beneficiaryAssemblyIds={"AS-RECOVERY"},
             controlledSubjectAssemblyIds={"AS-RECOVERY"},
             resolutionOutcomeKinds={
-                "BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT",
+                "BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT",
                 "BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"
             },
             responsibilityIdentity="RS-RECOVERY"
@@ -155,15 +203,21 @@ return function(test,equal)
         equal(selected.rule,"BLOCKED_WORKER_RECOVERY_ESTABLISHMENT")
     end)
 
-    test("Recovery Control reaches Anchor, replaces native job, releases physically, then settles on successor admission",function()
-        local oldMission=g_currentMission
+    test("Recovery Control enters Return Region before Anchor, replaces native job, releases physically, then settles on successor admission",function()
+        local oldMission,oldTranslation=g_currentMission,getWorldTranslation
         local calls={}
         local currentJob={jobId=41}
         local replacement={jobId=nil}
         local currentEpisode={identity="JE-RECOVERY",sourceJobToken="JOB-RECOVERY"}
-        local vehicle={name="Condor"}
+        local poseX=30
+        local vehicle={name="Condor",rootNode=21001}
+        vehicle.getAISteeringNode=function(self) return self.rootNode end
         vehicle.getJob=function() return currentJob end
         vehicle.getAIJobFarmId=function() return 7 end
+        getWorldTranslation=function(node)
+            equal(node,21001)
+            return poseX,0,0
+        end
 
         function replacement:applyCurrentState(v,mission,farmId,isDirectStart)
             calls[#calls+1]={kind="APPLY",vehicle=v,mission=mission,farmId=farmId,directStart=isDirectStart}
@@ -255,7 +309,12 @@ return function(test,equal)
                 kind="BLOCKED_WORKER_RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",recoveryKey="blocked-worker-recovery:test",
                 configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN",
-                recoveryAnchor={x=4.25,z=17.5}
+                recoveryAnchor={x=0,z=0},
+                recoveryReturnRegion={
+                    stallX=30,stallZ=0,directionX=-1,directionZ=0,
+                    calibratedTargetRetreatM=20,requiredRetreatM=20,
+                    maximumSupportedRetreatM=30,cappedByAnchor=false
+                }
             }
         }
         local started=control:executeControlRequest(request,{})
@@ -264,15 +323,19 @@ return function(test,equal)
 
         control:update(16)
         if reposition==nil then error("Recovery movement not started") end
-        equal(reposition.x,4.25); equal(reposition.z,17.5)
+        equal(reposition.x,0); equal(reposition.z,0)
         equal(reposition.moveForwards,false)
-        equal(control:getStatus().phase,"MOVING_TO_RECOVERY_ANCHOR")
+        equal(control:getStatus().phase,"MOVING_TO_RECOVERY_RETURN_REGION")
 
-        driveState.targetReached=true
+        poseX=10
+        equal(driveState.targetReached,false)
         control:update(16)
         if phaseEvent==nil then error("Physical Recovery phase settlement missing") end
         equal(phaseEvent.phaseEvent,"PHYSICAL_RECOVERY_SATISFIED")
-        equal(phaseEvent.evidence.kind,"RECOVERY_ANCHOR_REACHED_IN_TRANSIT")
+        equal(phaseEvent.evidence.kind,"RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT")
+        equal(phaseEvent.evidence.requiredRetreatM,20)
+        equal(phaseEvent.evidence.retreatProgressM,20)
+        equal(phaseEvent.evidence.completionBasis,"RECOVERY_RETURN_REGION_PROGRESS")
         equal(control:getStatus().phase,"WAITING_FOR_REPLACEMENT_JOB_EPISODE")
         equal(control:getStatus().expectedSuccessorSourceJobToken,"giants-ai-job-id:42")
         equal(driveState,nil)
@@ -290,7 +353,7 @@ return function(test,equal)
         equal(completion.evidence.kind,"RECOVERY_INTENDED_SUCCESSOR_JOB_EPISODE_ADMITTED")
         equal(completion.evidence.successorJobEpisodeId,"JE-SUCCESSOR")
         equal(control:isActive(),false)
-        g_currentMission=oldMission
+        g_currentMission,getWorldTranslation=oldMission,oldTranslation
     end)
 
     test("Native job replacement prepares before synchronous stop-start commitment",function()
@@ -365,17 +428,26 @@ return function(test,equal)
         g_currentMission=oldMission
     end)
 
-    test("Reverse Reposition preserves exact point target and Supporting Speed Ceiling",function()
-        local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    test("Reverse Reposition preserves exact point target, GIANTS reverser frame and Supporting Speed Ceiling",function()
+        local oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal=
+            AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal
         local x,z=10,0
         local calls={}
-        AIVehicleUtil={driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
-            calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
-            return true
-        end}
+        AIVehicleUtil={
+            driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+                calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}
+                return true
+            end,
+            getAIToolReverserDirectionNode=function() return nil end
+        }
         getWorldTranslation=function() return x,0,z end
         worldDirectionToLocal=function(node,wx,wy,wz) return wx,wy,wz end
-        local vehicle={rootNode=22001,getAISteeringNode=function(self) return self.rootNode end}
+        worldToLocal=function(node,wx,wy,wz) return wx-x,wy,wz-z end
+        local vehicle={
+            rootNode=22001,
+            getAISteeringNode=function(self) return self.rootNode end,
+            getAIReverserNode=function(self) return self.rootNode end
+        }
         local drive=OuttaMyWay.NativeDriveMechanism.new()
         equal(drive:setReposition(vehicle,4,0,8,1,false),true)
         equal(drive:setRegulationLease(vehicle,1,"BUBBLE_BULLET_TIME","SUPPORTING_SPEED_CEILING"),true)
@@ -383,9 +455,11 @@ return function(test,equal)
         equal(calls[#calls].moveForwards,false)
         equal(calls[#calls].maxSpeed,1)
         equal(drive:getState(vehicle).targetX,4)
+        equal(drive:getState(vehicle).repositionReferenceNodeSource,"AI_REVERSER_NODE")
         x=4.5
         AIVehicleUtil.driveToPoint(vehicle,16,1,false,true,0,1,25)
         equal(drive:getState(vehicle).targetReached,true)
-        AIVehicleUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldTranslation,oldWorldDirection
+        AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal=
+            oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal
     end)
 end

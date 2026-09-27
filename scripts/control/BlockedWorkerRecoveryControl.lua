@@ -6,7 +6,7 @@ local Control=OuttaMyWay.BlockedWorkerRecoveryControl
 Control.__index=Control
 
 local RECOVERY_SPEED_KMH=8.0
-local RECOVERY_ANCHOR_RADIUS_M=1.0
+local RECOVERY_STEERING_TARGET_RADIUS_M=1.0
 local publication=OuttaMyWay.LogPublication.origin("CONTROL")
 
 local function logInfo(class,code,formatText,...)
@@ -14,6 +14,40 @@ local function logInfo(class,code,formatText,...)
 end
 local function logWarning(class,code,formatText,...)
     return publication:warning(class,code,formatText,...)
+end
+
+local function finite(value)
+    return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
+end
+
+local function currentPose(vehicle)
+    if vehicle==nil or type(getWorldTranslation)~="function" then return nil end
+    local node=nil
+    if type(vehicle.getAISteeringNode)=="function" then
+        local ok,value=pcall(vehicle.getAISteeringNode,vehicle)
+        if ok and value~=nil and value~=0 then node=value end
+    end
+    node=node or vehicle.rootNode
+    if node==nil or node==0 then return nil end
+    local ok,x,_,z=pcall(getWorldTranslation,node)
+    if not ok or not finite(x) or not finite(z) then return nil end
+    return x,z
+end
+
+local function returnRegionProgress(state)
+    local x,z=currentPose(state and state.vehicle or nil)
+    if x==nil then return nil end
+    local dx,dz=x-state.returnOriginX,z-state.returnOriginZ
+    local progress=dx*state.returnDirectionX+dz*state.returnDirectionZ
+    local lateral=math.abs(dx*state.returnDirectionZ-dz*state.returnDirectionX)
+    return {
+        x=x,z=z,
+        retreatProgressM=progress,
+        remainingRetreatM=math.max(0,state.requiredRetreatM-progress),
+        lateralOffsetM=lateral,
+        requiredRetreatM=state.requiredRetreatM,
+        maximumSupportedRetreatM=state.maximumSupportedRetreatM
+    }
 end
 
 function Control.new(runtime,mechanisms)
@@ -87,10 +121,10 @@ function Control:_finish(status,evidence)
     })
 end
 
--- Failures before the Recovery Anchor retain the previous cleanup contract:
+-- Failures before the Recovery Return Region retain the previous cleanup contract:
 -- restore any partially created Transit debt before reporting a pre-semantic
--- Control failure.  Normal successful Recovery never restores after the Anchor.
-function Control:_failBeforeRecoveryPoint(state,evidence)
+-- Control failure. Normal successful Recovery never restores after Return Region entry.
+function Control:_failBeforeReturnRegion(state,evidence)
     self.driveMechanism:clearMovementObjective(state.vehicle)
     state.pendingFailureEvidence=evidence or {kind="BLOCKED_WORKER_RECOVERY_FAILED"}
     if self.configurationMechanism:getState(state.vehicle)==nil then
@@ -248,12 +282,20 @@ end
 
 function Control:_beginMovement(state)
     local ok,reason=self.driveMechanism:setReposition(
-        state.vehicle,state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH,RECOVERY_ANCHOR_RADIUS_M,false)
+        state.vehicle,state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH,RECOVERY_STEERING_TARGET_RADIUS_M,false)
     if not ok then return false,reason end
-    state.phase="MOVING_TO_RECOVERY_ANCHOR"
+    state.phase="MOVING_TO_RECOVERY_RETURN_REGION"
+    local driveState=self.driveMechanism:getState(state.vehicle) or {}
     logInfo("DEBUG","BLOCKED_WORKER_RECOVERY_MOVEMENT_STARTED",
-        "commitment=%s assembly=%s anchor=(%.2f,%.2f) speed=%.2f reverse=true",
-        tostring(state.commitmentId),tostring(state.assemblyId),state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH)
+        "commitment=%s assembly=%s stall=(%.2f,%.2f) anchor=(%.2f,%.2f) targetRetreat=%.2fm maxSupported=%.2fm cappedByAnchor=%s speed=%.2f reverse=true completion=RECOVERY_RETURN_REGION steeringTarget=RECOVERY_ANCHOR reverseReference=%s reverseNode=%s distinctFromSteering=%s toolReverserDirection=%s toolNode=%s nativeToolAdjustment=DRIVE_TIME_WHEN_AVAILABLE",
+        tostring(state.commitmentId),tostring(state.assemblyId),
+        state.returnOriginX,state.returnOriginZ,state.anchorX,state.anchorZ,
+        state.requiredRetreatM,state.maximumSupportedRetreatM,tostring(state.cappedByAnchor==true),RECOVERY_SPEED_KMH,
+        tostring(driveState.repositionReferenceNodeSource or "UNAVAILABLE"),
+        tostring(driveState.repositionReferenceNode or "n/a"),
+        tostring(driveState.reverseReferenceDistinctFromSteering==true),
+        tostring(driveState.toolReverserDirectionNodeSource or "UNAVAILABLE"),
+        tostring(driveState.toolReverserDirectionNode or "n/a"))
     return true,nil
 end
 
@@ -277,10 +319,17 @@ function Control:_requestTransit(state)
     return self:_beginMovement(state)
 end
 
-function Control:_beginNativeReplanning(state)
+function Control:_beginNativeReplanning(state,returnEvidence)
     local phaseEvidence={
-        kind="RECOVERY_ANCHOR_REACHED_IN_TRANSIT",
+        kind="RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT",
         anchorX=state.anchorX,anchorZ=state.anchorZ,
+        returnOriginX=state.returnOriginX,returnOriginZ=state.returnOriginZ,
+        requiredRetreatM=state.requiredRetreatM,
+        maximumSupportedRetreatM=state.maximumSupportedRetreatM,
+        cappedByAnchor=state.cappedByAnchor==true,
+        retreatProgressM=returnEvidence and returnEvidence.retreatProgressM or nil,
+        lateralOffsetM=returnEvidence and returnEvidence.lateralOffsetM or nil,
+        completionBasis=returnEvidence and returnEvidence.completionBasis or "RECOVERY_RETURN_REGION_PROGRESS",
         transitRequested=state.transitRequested==true,
         transitChanged=state.transitChanged==true
     }
@@ -297,9 +346,9 @@ function Control:_beginNativeReplanning(state)
             self:_clearOwnedPhysicalState(state)
             state.phase="UNRESOLVED_NATIVE_REACQUISITION"
         else
-            -- The known-failed originating Job still exists.  Keep the already
-            -- reached REPOSITION target as the bounded zero-speed state rather
-            -- than exposing that failed native plan again.
+            -- The known-failed originating Job still exists. Keep the already
+            -- satisfied Recovery Return Region as the bounded zero-speed state
+            -- rather than exposing that failed native plan again.
             state.phase="WAITING_FOR_PLAYER_INTERVENTION"
         end
         logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_NATIVE_JOB_REPLACEMENT_UNRESOLVED",
@@ -347,13 +396,34 @@ function Control:executeControlRequest(request,candidate)
     if type(anchor)~="table" or tonumber(anchor.x)==nil or tonumber(anchor.z)==nil then
         return false,"BLOCKED_WORKER_RECOVERY_ANCHOR_UNAVAILABLE"
     end
+    local region=target.recoveryReturnRegion
+    local requiredRetreat=type(region)=="table" and tonumber(region.requiredRetreatM) or nil
+    local maximumSupportedRetreat=type(region)=="table" and tonumber(region.maximumSupportedRetreatM) or nil
+    local directionX=type(region)=="table" and tonumber(region.directionX) or nil
+    local directionZ=type(region)=="table" and tonumber(region.directionZ) or nil
+    local directionLength=finite(directionX) and finite(directionZ) and math.sqrt(directionX*directionX+directionZ*directionZ) or nil
+    if type(region)~="table"
+        or not finite(tonumber(region.stallX)) or not finite(tonumber(region.stallZ))
+        or not finite(directionX) or not finite(directionZ)
+        or directionLength==nil or directionLength<=0.0001
+        or not finite(requiredRetreat) or requiredRetreat<=0
+        or not finite(maximumSupportedRetreat) or maximumSupportedRetreat<=0
+        or requiredRetreat>maximumSupportedRetreat+0.001 then
+        return false,"BLOCKED_WORKER_RECOVERY_RETURN_REGION_UNAVAILABLE"
+    end
 
     local state={
         commitmentId=request.commitmentId,assemblyId=request.assemblyId,assemblyReferenceKey=target.assemblyReferenceKey,
         jobEpisodeId=target.jobEpisodeId,sourceJobToken=target.sourceJobToken,recoveryKey=target.recoveryKey,
         requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,vehicle=vehicle,
         anchorX=tonumber(anchor.x),anchorZ=tonumber(anchor.z),phase="REQUEST_TRANSIT",
-        transitRequested=false,transitChanged=false
+        returnOriginX=tonumber(region.stallX),returnOriginZ=tonumber(region.stallZ),
+        returnDirectionX=directionX/directionLength,returnDirectionZ=directionZ/directionLength,
+        requiredRetreatM=requiredRetreat,
+        maximumSupportedRetreatM=maximumSupportedRetreat,
+        calibratedTargetRetreatM=tonumber(region.calibratedTargetRetreatM),
+        cappedByAnchor=region.cappedByAnchor==true,
+        transitRequested=false,transitChanged=false,nextMovementDiagnosticMs=0
     }
     if not self:_originatingJobStillCurrent(state) then return false,"BLOCKED_WORKER_RECOVERY_JOB_EPISODE_CHANGED" end
 
@@ -431,20 +501,53 @@ function Control:update(dt)
         local settlement=self.configurationMechanism:getCachedTransitSettlement(state.vehicle)
         if settlement.settled~=true then return end
         if settlement.exhausted==true then
-            self:_failBeforeRecoveryPoint(state,{kind="RECOVERY_TRANSIT_SETTLEMENT_FAILED",reason=settlement.reason})
+            self:_failBeforeReturnRegion(state,{kind="RECOVERY_TRANSIT_SETTLEMENT_FAILED",reason=settlement.reason})
             return
         end
         local ok,reason=self:_beginMovement(state)
-        if not ok then self:_failBeforeRecoveryPoint(state,{kind="RECOVERY_MOVEMENT_START_FAILED",reason=reason}) end
+        if not ok then self:_failBeforeReturnRegion(state,{kind="RECOVERY_MOVEMENT_START_FAILED",reason=reason}) end
         return
     end
 
-    if state.phase=="MOVING_TO_RECOVERY_ANCHOR" then
+    if state.phase=="MOVING_TO_RECOVERY_RETURN_REGION" then
         local drive=self.driveMechanism:getState(state.vehicle)
-        if drive==nil then self:_failBeforeRecoveryPoint(state,{kind="RECOVERY_MOVEMENT_AUTHORITY_LOST"}); return end
-        if drive.invalidReason~=nil then self:_failBeforeRecoveryPoint(state,{kind="RECOVERY_MOVEMENT_FAILED",reason=drive.invalidReason}); return end
-        if drive.targetReached~=true then return end
-        self:_beginNativeReplanning(state)
+        if drive==nil then self:_failBeforeReturnRegion(state,{kind="RECOVERY_MOVEMENT_AUTHORITY_LOST"}); return end
+        if drive.invalidReason~=nil then self:_failBeforeReturnRegion(state,{kind="RECOVERY_MOVEMENT_FAILED",reason=drive.invalidReason}); return end
+        local progress=returnRegionProgress(state)
+        if progress==nil then
+            self:_failBeforeReturnRegion(state,{kind="RECOVERY_RETURN_REGION_PROGRESS_UNAVAILABLE"})
+            return
+        end
+        local nowMs=g_time or 0
+        if nowMs>=(state.nextMovementDiagnosticMs or 0) then
+            state.nextMovementDiagnosticMs=nowMs+1000
+            logInfo("DIAGNOSTIC","BLOCKED_WORKER_RECOVERY_RETURN_PROGRESS",
+                "commitment=%s assembly=%s retreat=%.2fm required=%.2fm remaining=%.2fm lateral=%.2fm maxSupported=%.2fm anchorRemaining=%s commandLocal=(%s,%s) reverseReference=%s distinctFromSteering=%s toolReverserDirection=%s nativeToolAdjustmentApplied=%s toolAngleDeg=%s adjustedLocal=(%s,%s) transform=%s",
+                tostring(state.commitmentId),tostring(state.assemblyId),progress.retreatProgressM,
+                state.requiredRetreatM,progress.remainingRetreatM,progress.lateralOffsetM,
+                state.maximumSupportedRetreatM,
+                drive.lastRemainingM and string.format("%.2f",drive.lastRemainingM) or "n/a",
+                drive.lastCommandLocalX and string.format("%.4f",drive.lastCommandLocalX) or "n/a",
+                drive.lastCommandLocalZ and string.format("%.4f",drive.lastCommandLocalZ) or "n/a",
+                tostring(drive.repositionReferenceNodeSource or "UNAVAILABLE"),
+                tostring(drive.reverseReferenceDistinctFromSteering==true),
+                tostring(drive.toolReverserDirectionNodeSource or "UNAVAILABLE"),
+                tostring(drive.nativeToolAdjustmentApplied==true),
+                drive.nativeToolAdjustmentAngleRad and string.format("%.2f",math.deg(drive.nativeToolAdjustmentAngleRad)) or "n/a",
+                drive.nativeToolAdjustedLocalX and string.format("%.4f",drive.nativeToolAdjustedLocalX) or "n/a",
+                drive.nativeToolAdjustedLocalZ and string.format("%.4f",drive.nativeToolAdjustedLocalZ) or "n/a",
+                tostring(drive.nativeToolAdjustmentReason or "NONE"))
+        end
+        if progress.retreatProgressM>=state.requiredRetreatM then
+            progress.completionBasis="RECOVERY_RETURN_REGION_PROGRESS"
+            self:_beginNativeReplanning(state,progress)
+            return
+        end
+        if drive.targetReached==true then
+            progress.completionBasis="RECOVERY_ANCHOR_STEERING_TARGET_REACHED_WITHIN_BOUND"
+            self:_beginNativeReplanning(state,progress)
+            return
+        end
         return
     end
 

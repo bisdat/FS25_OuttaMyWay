@@ -7,7 +7,7 @@
 **Parent Jurisdiction:** [`Resolution Lifecycle`](RESOLUTION_LIFECYCLE.md)  
 **Primary Architecture Authority:** [`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`](../architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#specification-jurisdiction--blocked-worker-recovery)
 
-This Specification owns the implementation-facing contract for the single-subject **Resolution Commitment** that performs one two-phase Recovery cycle for a still-active GIANTS worker after current Situation evidence has established a **Blocked Progress Stall**: bounded physical return to a Recovery Anchor, followed by deliberate GIANTS-native replanning through FIELDWORK Job replacement.
+This Specification owns the implementation-facing contract for the single-subject **Resolution Commitment** that performs one two-phase Recovery cycle for a still-active GIANTS worker after current Situation evidence has established a **Blocked Progress Stall**: bounded physical retreat into a Recovery Return Region supported by the Recovery Approach / Recovery Anchor, followed by deliberate GIANTS-native replanning through FIELDWORK Job replacement.
 
 Blocked Worker Recovery does **not** own raw native blockage observation, generic Situation interpretation, obstacle identification, environmental map modelling, productive routing, arbitrary path planning, generic Bounded Authority or generic Control mechanics.
 
@@ -25,7 +25,7 @@ A new Blocked Worker Recovery Resolution MUST be grounded in one coherent curren
 
 - one exact active supported Physical Assembly and qualifying GIANTS Job Episode;
 - a current positive **Blocked Progress Stall** established from a Blocked Progress Contradiction;
-- the recent **Recovery Approach** and one fit **Recovery Anchor** for that same assembly/Job Episode;
+- the recent **Recovery Approach**, one fit **Recovery Anchor**, and one bounded **Recovery Return Region** derived from the Stall-to-Anchor domain for that same assembly/Job Episode;
 - purpose-fit current representation and physical-reference evidence;
 - recent Demonstrated Traversability sufficient to support the bounded local return domain being considered;
 - no current OuttaMyWay-owned physical effect that explains the quiescence or already governs the subject incompatibly;
@@ -73,7 +73,7 @@ Elapsed time MAY be required to obtain a usable motion observation interval. Tim
 
 Once the Stall basis is positively established, raw `isBlocked=false` alone MUST NOT be treated as proof that the Stall was semantically false. Positive native progression, lifecycle supersession or an authoritative responsibility transition supplies the relevant contrary evidence.
 
-### Recovery Approach Trail and Recovery Anchor
+### Recovery Approach Trail, Recovery Anchor and Recovery Return Region
 
 The **Recovery Approach** is the uninterrupted recent GIANTS-native progression episode leading into the Blocked Progress Stall.
 
@@ -109,9 +109,11 @@ The **Recovery Anchor** MUST identify the first/oldest retained compatible posit
 
 A Job replacement/restart, Player Claim, incompatible OuttaMyWay actuation, native direction-transition discontinuity or material assembly/configuration discontinuity MUST invalidate the prior Anchor as admission evidence for any later Recovery cycle when it breaks that continuity. The current Recovery may retain the selected Anchor as provenance after its Phase-1 movement has completed.
 
-The minimum useful Trail-span requirement qualifies whether the retained Recovery Approach Trail is sufficient to support one bounded recovery attempt; it MUST NOT select the Recovery Point. Once the retained compatible Trail qualifies, Assessment MUST select its first/oldest retained compatible witness as the Recovery Anchor. Assessment MUST NOT widen retention or reconstruct older history merely because the bounded Trail is insufficient.
+The minimum useful Trail-span requirement qualifies whether the retained Recovery Approach Trail is sufficient to support one bounded recovery attempt; it MUST NOT determine how far the physical Recovery must travel. Once the retained compatible Trail qualifies, Assessment MUST select its first/oldest retained compatible witness as the Recovery Anchor. Assessment MUST NOT widen retention or reconstruct older history merely because the bounded Trail is insufficient.
 
 > **Insufficient Anchor Span != Permission to Retain Productive History.**
+
+> **Anchor Span != Recovery Travel Requirement.**
 
 Anchor age alone MUST NOT establish or destroy fitness.
 
@@ -119,7 +121,17 @@ Anchor age alone MUST NOT establish or destroy fitness.
 
 > **Recovery Anchor != Known Safe Pose.**
 
-The Anchor bounds return provenance. For the initial capability, the selected Recovery Anchor is also the **Recovery Point** and direct target of the one authorised Recovery Excursion. It MUST NOT be promoted into generic negative-clearance authority, arbitrary reverse-feasibility authority, productive routing or generic waypoint authority.
+The Anchor bounds return provenance and the maximum positively demonstrated retreat domain. It MAY be used as a subordinate steering/look-through reference for the authorised retreat, but exact Anchor reproduction is not the Physical Recovery completion condition.
+
+The **Recovery Return Region** is the bounded portion of the demonstrated Stall-to-Anchor return domain in which further OuttaMyWay retreat is unnecessary before fresh GIANTS-native replanning. It MUST remain no farther from the Stall than the selected Anchor permits.
+
+For the first implementation calibration, Candidate Support projects a target retreat separation of **20 m from the Blocked Progress Stall toward the Recovery Anchor**. If the Anchor bound is closer than 20 m, the Anchor caps the supported excursion rather than permitting invented additional retreat. The 20 m value is a validation calibration, not universal architectural policy.
+
+> **Recovery Retreats From the Stall; It Does Not Return To the Anchor.**
+
+> **Recovery Anchor Bounds Retreat; Recovery Return Region Ends It.**
+
+> **Approximate In Geometry; Precise In Provenance.**
 
 ## Recovery Excursion contract
 
@@ -129,7 +141,8 @@ The initial Blocked Worker Recovery capability owns one generic bounded **Recove
 
 The excursion MUST:
 
-- move directly to the selected Recovery Anchor, which is the Recovery Point for the initial capability;
+- retreat from the Stall toward the selected Recovery Anchor only as far as required to enter the Recovery Return Region;
+- treat the Anchor as the maximum positively demonstrated retreat bound rather than an exact destination;
 - remain local to the Recovery Approach / Recovery Anchor domain;
 - avoid inventing productive routing or general obstacle-bypass navigation;
 - return to fresh Reality as movement progresses; and
@@ -160,7 +173,7 @@ Recovery MAY consume supplementary positive spatial evidence when available, inc
 - reduction or discharge of a previously positive represented spatial condition; or
 - another purpose-fit positive spatial witness accepted by the governing Architecture.
 
-Supplementary evidence MAY strengthen current movement permission. It MUST NOT substitute a different Recovery Point or be required merely to prove an obstacle identity.
+Supplementary evidence MAY strengthen current movement permission. It MUST NOT invent a different Recovery Return Region or expand the Anchor-bounded retreat domain and MUST NOT be required merely to prove an obstacle identity.
 
 A Field World boundary intersection proves represented occupancy across the agricultural boundary. It MUST NOT be relabelled as proof of hedge, tree, pylon, terrain or other environmental collision.
 
@@ -196,19 +209,21 @@ The Bullet-Time ceiling:
 - MUST NOT restart the Recovery Excursion when the ceiling is applied or removed; and
 - MUST NOT be interpreted as Recovery failure merely because progress is slower while the cap is current.
 
-When the Bubble dissolves, removing the ceiling changes only current permitted magnitude. Recovery continues under its own still-current Bounded Authority if its Recovery Point has not yet been reached.
+When the Bubble dissolves, removing the ceiling changes only current permitted magnitude. Recovery continues under its own still-current Bounded Authority if its Recovery Return Region has not yet been reached.
 
 Any Recovery progress-watchdog implementation MUST measure purpose-specific progress toward the current Recovery completion residual and MUST treat a current compatible speed ceiling as valid execution context rather than as evidence that the Recovery strategy has failed.
 
 > **Bullet Time Constrains Recovery; It Does Not Suspend Recovery.**
 
-### Direct Recovery Anchor movement
+### Direct Anchor-referenced retreat
 
-The initial capability performs one direct bounded manoeuvre to the selected Recovery Anchor.
+The initial capability performs one direct bounded retreat toward the selected Recovery Anchor and ends the manoeuvre when the Recovery Return Region is reached.
 
-It MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle, invent a second release direction, or derive a separate excursion-distance target.
+The Anchor may remain the subordinate steering reference so Control does not invent a second route or steering geometry. Completion, however, is measured from the Stall-side retreat requirement rather than exact Anchor arrival.
 
-> **Recovery Anchor = Initial Recovery Point.**
+It MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle, invent a second release direction, or extend beyond the Anchor merely to satisfy the calibrated retreat target.
+
+> **Recovery Target Reference != Recovery Completion Condition.**
 
 The granted movement envelope MUST remain no broader than the currently supported local release purpose.
 
@@ -218,7 +233,7 @@ The granted movement envelope MUST remain no broader than the currently supporte
 
 One Blocked Worker Recovery Resolution owns two terminal-dependent obligations for the same Physical Assembly:
 
-1. **Physical Recovery** — the assembly reaches the selected Recovery Anchor after the mandatory Transit request has settled sufficiently for the authorised movement; and
+1. **Physical Recovery** — the assembly enters the bounded Recovery Return Region after the mandatory Transit request has settled sufficiently for the authorised movement; and
 2. **Native Replanning** — the intended replacement GIANTS FIELDWORK Job is positively admitted as the successor Job Episode for that same Physical Assembly.
 
 The originating Job Episode remains provenance for admission of the Stall, Recovery Approach and Recovery Anchor. It MUST NOT remain the persistence identity of the whole Recovery after OuttaMyWay deliberately replaces that Job.
@@ -231,9 +246,9 @@ The first obligation may be satisfied while the second remains open. This MUST p
 
 ### Phase 1 — Physical Recovery
 
-For the initial capability, the selected Recovery Anchor **is** the Recovery Point. The authorised excursion ends at that Anchor; it does not continue to seek a better location or substitute an obstacle-specific endpoint.
+For the initial capability, the authorised excursion ends when current Control evidence establishes entry into the Recovery Return Region. It does not continue merely to reproduce the historical Anchor pose and it does not substitute an obstacle-specific endpoint.
 
-On reaching the Recovery Point:
+On entering the Recovery Return Region:
 
 - Recovery Control MUST stop further OMW-owned recovery movement;
 - the Physical Recovery obligation is positively satisfied;
@@ -241,7 +256,7 @@ On reaching the Recovery Point:
 - OuttaMyWay MUST NOT restore the pre-Recovery working posture as normal successful choreography; and
 - Native Replanning proceeds inside the same Recovery Resolution.
 
-Reaching the Anchor does not itself hand the known-failed Job back to GIANTS.
+Entering the Return Region does not itself hand the known-failed Job back to GIANTS.
 
 > **Known-Failed Native Authority != Safe Handback Authority.**
 
@@ -387,7 +402,7 @@ Fresh later Stall admission is not a periodic NORMAL heartbeat. If a supported f
 
 ### DEBUG — bounded causal narrative
 
-DEBUG may publish transition/change evidence sufficient to explain why Recovery was or was not attempted, including positive Blocked Progress Stall establishment, Recovery Anchor selection/invalidation, Candidate rejection/selection, Bounded Authority refusal/revocation, Transit settlement, Recovery Point establishment, Job Replacement Commitment, intended-successor admission and final Recovery settlement.
+DEBUG may publish transition/change evidence sufficient to explain why Recovery was or was not attempted, including positive Blocked Progress Stall establishment, Recovery Anchor selection/invalidation, Candidate rejection/selection, Bounded Authority refusal/revocation, Transit settlement, Recovery Return Region establishment, Job Replacement Commitment, intended-successor admission and final Recovery settlement.
 
 DEBUG MUST remain change/transition-driven. It MUST NOT emit the same unchanged Stall, Anchor, residual or control phase every runtime cycle merely because Recovery remains current.
 
@@ -403,10 +418,10 @@ Such evidence is produced only by an independently justified diagnostic instrume
 
 - **Raw `isBlocked` with continuing realised progress** — no Blocked Progress Stall; no Recovery admission.
 - **Blocked assertion plus insufficient motion evidence** — remain unresolved; do not use timeout as proof.
-- **Blocked Progress Stall but no fit Recovery Anchor** — no autonomous Recovery cycle.
-- **Recovery Anchor fit but current movement permission contradicted** — preserve the Resolution only while its obligation remains legitimate; do not move without current Bounded Authority.
+- **Blocked Progress Stall but no fit Recovery Anchor / Recovery Return Region projection** — no autonomous Recovery cycle.
+- **Recovery Anchor / Return Region fit but current movement permission contradicted** — preserve the Resolution only while its obligation remains legitimate; do not move without current Bounded Authority.
 - **Transit unsettled/unrealizable** — fail closed; do not move in an assumed compact state.
-- **Recovery Point reached** — satisfy Physical Recovery; do not restore the old working posture or hand the failed Job back as successful completion.
+- **Recovery Return Region reached** — satisfy Physical Recovery; do not restore the old working posture or hand the failed Job back as successful completion.
 - **Replacement preparation/validation fails before Commitment** — preserve unresolved Recovery and do not expose the known-failed Job merely as fallback.
 - **Replacement start succeeds** — physically release OMW movement/configuration control immediately; await only semantic intended-successor admission.
 - **Intended successor Job Episode admitted** — satisfy Native Replanning and end RC immediately through normal terminal settlement.
@@ -435,7 +450,7 @@ Decision scope is not operation-global merely because a Recovery Resolution is c
 
 ### Responsibility Transition
 
-Responsibility Transition establishes and ends the Blocked Worker Recovery Current Responsibility. Reaching the Recovery Point does not itself mutate Current Responsibility without that authoritative lifecycle transition.
+Responsibility Transition establishes and ends the Blocked Worker Recovery Current Responsibility. Entering the Recovery Return Region does not itself mutate Current Responsibility without that authoritative lifecycle transition.
 
 ### Resolution Lifecycle
 
