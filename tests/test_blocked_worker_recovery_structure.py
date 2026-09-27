@@ -18,7 +18,7 @@ def test_recovery_jurisdiction_is_implemented_by_truthful_vertical_slice():
         assert "`BLOCKED_WORKER_RECOVERY`" in source
         assert path in spec
 
-def test_recovery_trail_qualification_does_not_select_the_recovery_point():
+def test_recovery_trail_qualification_does_not_define_physical_recovery_distance():
     assessment=read("scripts/assessment/BlockedProgressAssessment.lua")
     architecture=read("architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md")
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
@@ -28,33 +28,36 @@ def test_recovery_trail_qualification_does_not_select_the_recovery_point():
     assert "span>=TRAIL_MIN_USEFUL_SPAN_M" not in assessment
     assert "first/oldest retained compatible" in architecture
     assert "first/oldest retained compatible" in spec
+    assert "Anchor Span != Recovery Travel Requirement" in spec
+    assert "Recovery Return Region" in architecture
 
 def test_recovery_candidate_owns_physical_and_native_replanning_obligations():
     candidate=read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
     lifecycle=read("scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua")
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
 
-    assert 'requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT"}' in candidate
+    assert 'requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT"}' in candidate
     assert 'requiredOutcome={kind="BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"}' in candidate
     assert "function Lifecycle.settlePhysicalRecovery" in lifecycle
     assert "Phase Completion != Resolution Completion" in spec
     assert "Resolution Completion = Immediate Recovery Release" in spec
 
-def test_initial_recovery_moves_directly_to_selected_anchor_without_second_geometry_policy():
+def test_initial_recovery_uses_anchor_as_steering_reference_but_return_region_as_completion():
     candidate=read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
     control=read("scripts/control/BlockedWorkerRecoveryControl.lua")
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
 
-    assert 'recoveryPoint="RECOVERY_ANCHOR"' in candidate
+    assert "RECOVERY_RETURN_SEPARATION_TARGET_M=20.0" in candidate
+    assert 'recoveryCompletion="RECOVERY_RETURN_REGION"' in candidate
     assert "state.anchorX,state.anchorZ" in control
     assert "setReposition" in control
-    assert ",false)" in control
-    assert "Recovery Anchor = Initial Recovery Point" in spec
+    assert "returnRegionProgress" in control
+    assert 'state.phase="MOVING_TO_RECOVERY_RETURN_REGION"' in control
+    assert "Recovery Target Reference != Recovery Completion Condition" in spec
 
     combined=candidate+"\n"+control
     assert "RecoveryReleaseDirection" not in combined
     assert "recoveryReleaseDirection" not in combined
-    assert "excursionDistance" not in combined
     assert "releaseDirection" not in combined
 
 def test_recovery_always_requests_transit_then_native_replans_without_success_restore():
@@ -67,7 +70,7 @@ def test_recovery_always_requests_transit_then_native_replans_without_success_re
     assert "WAITING_FOR_REPLACEMENT_JOB_EPISODE" in control
     assert "RECOVERY_INTENDED_SUCCESSOR_JOB_EPISODE_ADMITTED" in control
     assert "configurationMechanism:clear(state.vehicle)" in control
-    assert "successful Recovery never restores after the Anchor" in control
+    assert "Normal successful Recovery never restores after Return Region entry" in control
     assert "BLOCKED_WORKER_RECOVERY_LOCAL_RETURN_REFERENCE" in read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
     assert 'acceptedStates={"FIT_FOR_LIMITED_HORIZON"}' in read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
     assert 'configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN"' in read("scripts/runtime/Runtime.lua")
@@ -81,7 +84,7 @@ def test_recovery_responsibility_semantics_are_preflighted_before_commitment_adm
     preflight_pos=transition.index("ResolutionCommitmentAdapter.preflightCandidate")
     admission_pos=transition.index("BlockedWorkerRecoveryCommitmentLifecycle.applyDecision")
     assert preflight_pos < admission_pos
-    assert '"BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT"' in transition
+    assert '"BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT"' in transition
     assert '"BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"' in transition
     assert "BLOCKED_WORKER_RECOVERY_RESTORED_AND_HANDED_BACK" not in transition
     assert "function Adapter.preflightCandidate" in adapter
@@ -106,14 +109,14 @@ def test_concurrent_recovery_create_is_explicit_and_still_uses_generic_admission
     assert "actuation authority already owned for assembly" in admission
     assert "unresolved responsibility already owned by Commitment" in admission
 
-def test_recovery_failure_before_anchor_restores_partial_transit_but_success_relinquishes_without_restore():
+def test_recovery_failure_before_return_region_restores_partial_transit_but_success_relinquishes_without_restore():
     runtime=read("scripts/runtime/Runtime.lua")
     lifecycle=read("scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua")
     control=read("scripts/control/BlockedWorkerRecoveryControl.lua")
 
     assert "BLOCKED_WORKER_RECOVERY_CONTROL_REQUIRES_REASSESSMENT" in runtime
     assert 'eventKind=="OBJECTIVE_FAILED"' not in lifecycle
-    assert "function Control:_failBeforeRecoveryPoint" in control
+    assert "function Control:_failBeforeReturnRegion" in control
     assert "requestCachedTransitRestore" in control
     assert "finishCachedTransitRestore" in control
     assert "function Control:_clearOwnedPhysicalState" in control
