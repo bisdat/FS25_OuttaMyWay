@@ -25,14 +25,15 @@ function Assessment.new()
         successfulRecoveryByAssembly={},
         correlatedCount=0,
         lastResult=nil,
-        lastPublishedKey=nil
+        lastPublishedByAssembly={}
     },Assessment)
 end
 
 function Assessment:reset()
     self.successfulRecoveryByAssembly={}
+    self.correlatedCount=0
     self.lastResult=nil
-    self.lastPublishedKey=nil
+    self.lastPublishedByAssembly={}
 end
 
 function Assessment:recordSuccessfulRecovery(values)
@@ -119,8 +120,8 @@ function Assessment:assess(knowledge)
         tostring(assemblyId),tostring(prior.successorJobEpisodeId),
         tostring(stall.establishedAtObservationSnapshotId or timestamp)
     },"|")
-    if self.lastPublishedKey~=publishKey then
-        self.lastPublishedKey=publishKey
+    if self.lastPublishedByAssembly[assemblyId]~=publishKey then
+        self.lastPublishedByAssembly[assemblyId]=publishKey
         self.correlatedCount=self.correlatedCount+1
         publication:warning(
             "NORMAL","BLOCKED_WORKER_RECOVERY_STRATEGY_EXHAUSTED",
