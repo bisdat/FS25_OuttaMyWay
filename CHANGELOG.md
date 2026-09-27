@@ -1,3 +1,31 @@
+# v0.4.5.0 PATCH CHECKPOINT — Recovery Robustness and Recurrence Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #342 (`4dd5b373332cb8c0fa86d15838f89708616c24a0`), carrying field-validated TEST `0.4.4.10`.
+
+**Version rationale:** owner-selected PATCH checkpoint under D-0223. The accepted delta since `0.4.4.0` hardens the existing Blocked Worker Recovery capability and its surrounding traffic/runtime boundaries, then closes the repeated-obstruction loop with Correlated Recovery Recurrence and Recovery Strategy Exhausted. These are compatible corrections and completion of the existing 0.4 responsibility-oriented architecture, not a new MINOR capability epoch.
+
+**PATCH checkpoint boundary:** this increment changes version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted and field-validated `0.4.4.10` baseline.
+
+**Validated plateau summary:**
+- PR #334 / TEST `0.4.4.2` restored Passage evaluation after an Established Opposed Corridor Conflict so retained Regulation could transition correctly rather than suppressing the supported Passage path;
+- PR #335 / TEST `0.4.4.3` preserved Field World comparison continuity across Recovery-induced GIANTS Job succession, preventing replacement Jobs from invalidating otherwise-equivalent Field World identity;
+- PR #330 / TEST `0.4.4.4` published Stall time/position evidence needed to calibrate recurrence from Reality without turning correlation measurements into Stall truth;
+- Reality disproved exact Recovery Anchor arrival as the correct physical completion requirement. PR #341 replaced exact-pose restoration with an **Anchor-bounded Recovery Return Region**: preferred retreat is 20 m from Stall toward the Anchor, capped by positively demonstrated fresh Job-Episode history when shorter;
+- Recovery now separates **movement authority**, **completion condition**, and **steering reference**: the Anchor bounds authorised retreat and remains a subordinate steering/look-through reference, while Return Region progress ends Physical Recovery;
+- GIANTS-native reverse geometry was retained beneath OMW semantics, including `getAIReverserNode()`, tool reverser-direction evidence, the GIANTS tool-relative reverse-target transform and `AIVehicleUtil.driveToPoint()`;
+- targeted Reality established clean first-cycle Recovery for both Condor and S416 with the Return Region model, avoiding S416's previously observed late exact-Anchor jackknife;
+- PR #337 formalised **Correlated Recovery Recurrence** and **Recovery Strategy Exhausted**: recurrence requires a fresh independently established successor Stall, the same Physical Assembly, exact intended-successor Job Episode lineage, Stall-to-Stall separation <=5 m and elapsed time <=60 s;
+- PR #342 / TEST `0.4.4.10` implemented recurrence as Situation meaning consumed by Candidate Support. The first correlated successor Stall vetoes another Blocked Worker Recovery Candidate without retroactively revoking the preceding Recovery success;
+- targeted S416 `0.4.4.10` Reality validation measured a successor Stall only ~0.01 m from the prior Stall after ~26.25 s, published `BLOCKED_WORKER_RECOVERY_STRATEGY_EXHAUSTED`, and confirmed exactly one Recovery movement start and one native Job replacement with no Recovery #2 actuation;
+- player-facing communication for Recovery Strategy Exhausted / possible Player Intervention is explicitly deferred to #89 rather than being invented inside the Recovery tranche;
+- Issues #329, #331, #333 and #336 are closed as completed; experimental PRs #338, #339 and #340 were closed unmerged after their hypotheses informed the accepted #341/#342 path.
+
+**Validation basis:** blocking Offline Validation is green on the accepted TEST `0.4.4.10` head, including Generated source reference, Structural contracts and Lua offline behavioural contracts. GIANTS Reality validation covers the one-cycle Condor and S416 Recovery paths plus the S416 same-obstacle successor recurrence, including positive evidence that Recovery replay is vetoed before a second movement or Job replacement begins.
+
+**Known separable work:** #89 owns player-facing Operational Message/HUD lifecycle, including Recovery Strategy Exhausted intervention messaging; #332 remains the separate Traffic-Owned Stall / Recovery-admission ownership problem; #86 retains performance/frame-pacing work. Obstacle-class routing or generic bypass remains unsupported unless future Reality evidence justifies a distinct capability.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. Under D-0223, a future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.4.0 PATCH CHECKPOINT — Blocked Worker Recovery Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #327 (`db8cedadb5e09549148c141a80c39bee5bf174c7`), carrying field-validated TEST `0.4.3.12`.
