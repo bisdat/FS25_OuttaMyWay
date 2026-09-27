@@ -30,6 +30,16 @@ local function futureByAssembly(values)
     return result
 end
 
+local function realisedDemandByAssembly(values)
+    local result={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        if item.positive==true and type(item.beneficiaryAssemblyId)=="string" then
+            result[item.beneficiaryAssemblyId]=item
+        end
+    end
+    return result
+end
+
 local function referencesByAssembly(snapshot)
     local result={}
     for _,assembly in OuttaMyWay.ValueRecord.ipairs(snapshot and snapshot.assemblies or {}) do
@@ -131,10 +141,71 @@ local function futureSweepConflict(blockerPhysical,beneficiaryPhysical,beneficia
     return nil
 end
 
-local function positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficiaryFuture)
+local function realisedMotionDemandConflict(blockerPhysical,demand)
+    if blockerPhysical==nil or type(demand)~="table" or demand.positive~=true then return nil end
+    local directionX,directionZ=tonumber(demand.directionX),tonumber(demand.directionZ)
+    local horizonM=tonumber(demand.horizonM)
+    if not finite(directionX) or not finite(directionZ) or not finite(horizonM) or horizonM<=0 then return nil end
+
+    local best=nil
+    for _,blockerPrimitive in OuttaMyWay.ValueRecord.ipairs(blockerPhysical.primitives or {}) do
+        if blockerPrimitive.kind=="DISC"
+            and blockerPrimitive.positiveConflictSupport==true
+            and finite(blockerPrimitive.x) and finite(blockerPrimitive.z)
+            and finite(blockerPrimitive.radius) then
+            for _,sweep in OuttaMyWay.ValueRecord.ipairs(demand.physicalDemandSweeps or {}) do
+                if sweep.kind=="DISC_SWEEP"
+                    and finite(sweep.startX) and finite(sweep.startZ)
+                    and finite(sweep.radius) then
+                    local rx,rz=blockerPrimitive.x-sweep.startX,blockerPrimitive.z-sweep.startZ
+                    local forward=rx*directionX+rz*directionZ
+                    local lateralSquared=math.max(0,rx*rx+rz*rz-forward*forward)
+                    local required=blockerPrimitive.radius+sweep.radius
+                    local requiredSquared=required*required
+                    if lateralSquared<=requiredSquared then
+                        local halfChord=math.sqrt(math.max(0,requiredSquared-lateralSquared))
+                        local entry=forward-halfChord
+                        local exit=forward+halfChord
+                        if exit>=0 and entry<=horizonM then
+                            local witnessDistance=math.max(0,entry)
+                            if witnessDistance<=horizonM and (best==nil or witnessDistance<best.witnessDistanceM) then
+                                local rate=tonumber(demand.progressionRateMps)
+                                best={
+                                    kind="REALISED_MOTION_DEMAND",
+                                    witnessDistanceM=witnessDistance,
+                                    estimatedTimeToWitnessSeconds=finite(rate) and rate>0 and witnessDistance/rate or nil,
+                                    beneficiaryProgressionRateMps=rate,
+                                    centreForwardDistanceM=forward,
+                                    lateralOffsetM=math.sqrt(lateralSquared),
+                                    required=required,
+                                    blockerPrimitiveId=blockerPrimitive.identity,
+                                    beneficiaryPrimitiveId=sweep.beneficiaryPrimitiveId,
+                                    horizonM=horizonM,
+                                    demandIdentity=demand.identity,
+                                    demandJobEpisodeId=demand.jobEpisodeId,
+                                    localIntentClassification=demand.localIntentClassification,
+                                    currentMotionClassification=demand.currentMotionClassification,
+                                    trajectoryAlignment=demand.alignment,
+                                    authority="POSITIVE_CONFLICT_SUPPORT_ONLY",
+                                    futureRouteAuthority=false,
+                                    negativeClearanceAuthority=false
+                                }
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return best
+end
+
+local function positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficiaryFuture,realisedDemand)
     local current=currentOverlap(blockerPhysical,beneficiaryPhysical)
     if current~=nil then return current end
-    return futureSweepConflict(blockerPhysical,beneficiaryPhysical,beneficiaryFuture)
+    local future=futureSweepConflict(blockerPhysical,beneficiaryPhysical,beneficiaryFuture)
+    if future~=nil then return future end
+    return realisedMotionDemandConflict(blockerPhysical,realisedDemand)
 end
 
 local function sortedKeys(map)
@@ -152,9 +223,10 @@ function Assessment:reset()
     self.lastSignature=nil
 end
 
-function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly)
+function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,realisedMotionDemandKnowledge)
     local physical=physicalByAssembly(physicalSpaceEvidence)
     local future=futureByAssembly(futureSpace)
+    local realisedDemand=realisedDemandByAssembly(realisedMotionDemandKnowledge)
     local references=referencesByAssembly(snapshot)
     local activeEpisodes,endedEpisodes=jobEpisodesByAssembly(self.jobEpisodes)
     local records={}
@@ -168,7 +240,8 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                     local evidence=positiveObstruction(
                         physical[blockerAssemblyId],
                         beneficiaryPhysical,
-                        beneficiaryFuture
+                        beneficiaryFuture,
+                        realisedDemand[beneficiaryAssemblyId]
                     )
                     if evidence~=nil then
                         local blockerReferenceKey=references[blockerAssemblyId]
