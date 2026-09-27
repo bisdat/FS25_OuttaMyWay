@@ -331,10 +331,28 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local activeOperationMemberCount=0
     for _ in OuttaMyWay.ValueRecord.pairs(activeOperationMemberSet) do activeOperationMemberCount=activeOperationMemberCount+1 end
 
+    -- Established Trajectory is realised-motion Situation evidence and must exist
+    -- before Realised Motion Demand or Causal Obstruction can consume it.
+    local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
+        observationSnapshotId=snapshot.identity,timestamp=snapshot.timestamp,
+        motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge
+    })
+    local realisedMotionDemandKnowledge=OuttaMyWay.RealisedMotionDemandAssessment.build({
+        observationSnapshotId=snapshot.identity,
+        motionEvidence=motionEvidence,
+        trajectoryKnowledge=trajectoryKnowledge,
+        physicalSpaceEvidence=physicalSpaceEvidence,
+        activeOperationMemberSet=activeOperationMemberSet,
+        operationByAssembly=operationByAssembly,
+        jobEpisodes=self.jobEpisodes,
+        commitments=self.commitments:list()
+    })
+
     local causalObstructionKnowledge={}
     if self.causalObstructionAssessment~=nil then
         causalObstructionKnowledge=self.causalObstructionAssessment:assess(
-            snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly
+            snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,
+            realisedMotionDemandKnowledge
         )
         for _,relation in OuttaMyWay.ValueRecord.ipairs(causalObstructionKnowledge) do
             relevant[#relevant+1]=relation.beneficiaryAssemblyId
@@ -510,10 +528,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         diagnostics.counters.blockedWorkerRecoveryRecurrenceKnowledgeCount=#blockedWorkerRecoveryRecurrenceKnowledge
     end
 
-    local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
-        observationSnapshotId=snapshot.identity,timestamp=snapshot.timestamp,
-        motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge
-    })
     local opposedCorridorKnowledge=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
         situations=situations,trajectoryKnowledge=trajectoryKnowledge,motionEvidence=motionEvidence,currentSpace=currentSpace,
         physicalSpaceEvidence=physicalSpaceEvidence
@@ -598,6 +612,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         productiveContinuationKnowledge=productiveKnowledge,
         followerBoundaryKnowledge=followerBoundaryKnowledge,
         trajectoryKnowledge=trajectoryKnowledge,
+        realisedMotionDemandKnowledge=realisedMotionDemandKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
         spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
