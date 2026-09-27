@@ -9,6 +9,7 @@ def test_recovery_jurisdiction_is_implemented_by_truthful_vertical_slice():
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
     assert "Implementation Status" not in spec
     for path in (
+        "scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua",
         "scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua",
         "scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua",
         "scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua",
@@ -146,6 +147,27 @@ def test_reverse_reposition_preserves_giants_native_reverse_reference_frame_belo
     assert "nativeToolAdjustmentApplied=%s" in control
     assert "returnRegionProgress" in control
     assert "Recovery Target Reference != Recovery Completion Condition" in spec
+
+def test_correlated_recovery_recurrence_is_passive_and_vetoes_candidate_replay():
+    recurrence=read("scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua")
+    candidate=read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
+    control=read("scripts/control/BlockedWorkerRecoveryControl.lua")
+    runtime=read("scripts/runtime/Runtime.lua")
+    spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
+
+    assert "RECOVERY_RECURRENCE_RADIUS_M=5.0" in recurrence
+    assert "RECOVERY_RECURRENCE_HORIZON_S=60.0" in recurrence
+    assert "function Assessment:recordSuccessfulRecovery" in recurrence
+    assert "function Assessment:assess" in recurrence
+    assert 'status="RECOVERY_STRATEGY_EXHAUSTED"' in recurrence
+    assert "playerInterventionMayBeRequired=true" in recurrence
+    assert "self.recurrenceAssessment:assess(knowledge)" in candidate
+    assert 'return nil,"RECOVERY_STRATEGY_EXHAUSTED"' in candidate
+    assert "recoveryRecurrenceContext=state.recoveryRecurrenceContext" in control
+    assert "recordSuccessfulRecovery" in runtime
+    assert "eventKind==\"OBJECTIVE_SATISFIED\"" in runtime
+    assert "Correlated Recovery Recurrence" in spec
+    assert "Recovery Strategy Exhausted" in spec
 
 def test_stall_diagnostic_publishes_existing_correlation_measurements_without_new_observation_state():
     assessment=read("scripts/assessment/BlockedProgressAssessment.lua")
