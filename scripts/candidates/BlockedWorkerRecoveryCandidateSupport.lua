@@ -113,11 +113,24 @@ local function recoveryKnowledge(picture)
     return result
 end
 
-function Support.new(recurrenceAssessment)
-    return setmetatable({
-        recurrenceAssessment=recurrenceAssessment,
-        publishedCount=0,lastStatus="INACTIVE",lastRecurrence=nil
-    },Support)
+local function correlatedRecurrence(picture,knowledge)
+    local stall=knowledge and knowledge.stallEvidence or nil
+    for _,recurrence in OuttaMyWay.ValueRecord.ipairs(picture.blockedWorkerRecoveryRecurrenceKnowledge or {}) do
+        if recurrence.correlated==true
+            and recurrence.status=="RECOVERY_STRATEGY_EXHAUSTED"
+            and recurrence.assemblyId==knowledge.assemblyId
+            and recurrence.successorJobEpisodeId==knowledge.jobEpisodeId
+            and recurrence.successorSourceJobToken==knowledge.sourceJobToken
+            and type(stall)=="table"
+            and recurrence.currentStallObservationSnapshotId==stall.establishedAtObservationSnapshotId then
+            return recurrence
+        end
+    end
+    return nil
+end
+
+function Support.new()
+    return setmetatable({publishedCount=0,lastStatus="INACTIVE",lastRecurrence=nil},Support)
 end
 
 function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
@@ -132,14 +145,10 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if returnRegion==nil then self.lastStatus="RECOVERY_RETURN_REGION_UNRESOLVED"; return nil,"RECOVERY_RETURN_REGION_UNRESOLVED" end
     local recoveryKey="blocked-worker-recovery:"..knowledge.operationId..":"..knowledge.assemblyId..":"..knowledge.jobEpisodeId
     if recoveryAlreadyCurrent(picture,recoveryKey) then self.lastStatus="RECOVERY_ALREADY_CURRENT"; return nil,"RECOVERY_ALREADY_CURRENT" end
-    self.lastRecurrence=nil
-    if self.recurrenceAssessment~=nil then
-        local recurrence=self.recurrenceAssessment:assess(knowledge)
-        self.lastRecurrence=recurrence
-        if recurrence and recurrence.correlated==true then
-            self.lastStatus="RECOVERY_STRATEGY_EXHAUSTED"
-            return nil,"RECOVERY_STRATEGY_EXHAUSTED"
-        end
+    self.lastRecurrence=correlatedRecurrence(picture,knowledge)
+    if self.lastRecurrence~=nil then
+        self.lastStatus="RECOVERY_STRATEGY_EXHAUSTED"
+        return nil,"RECOVERY_STRATEGY_EXHAUSTED"
     end
     local fitness=recoveryRepresentationFitness(picture,knowledge,anchor,recoveryKey,targetPictureId)
     local specification={
