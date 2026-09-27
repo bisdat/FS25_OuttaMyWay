@@ -54,6 +54,7 @@ load("scripts/assessment/CurrentPairAssessmentScope.lua")
 load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
+load("scripts/assessment/RealisedMotionDemandAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/BlockedProgressAssessment.lua")
@@ -7950,6 +7951,7 @@ dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
 dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/BlockedProgressAssessment.lua")(test,equal)
+dofile(root.."/tests/replacement_core/RealisedMotionDemandAssessment.lua")(test,equal)
 dofile(root.."/tests/replacement_core/BlockedWorkerRecovery.lua")(test,equal)
 
 
