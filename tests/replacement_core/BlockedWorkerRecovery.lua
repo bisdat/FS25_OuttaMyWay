@@ -49,7 +49,7 @@ return function(test,equal)
         equal(reason,"RECOVERY_ALREADY_CURRENT")
     end)
 
-    test("Recovery Candidate uses the selected Recovery Anchor as its only Recovery Point",function()
+    test("Recovery Candidate derives an Anchor-bounded Recovery Return Region",function()
         local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
         local group,reason=support:buildFreshProjectedGroup(
             pictureWithRecovery(),snapshot(),"PI-RECOVERY-TARGET",102)
@@ -58,12 +58,12 @@ return function(test,equal)
         equal(#group.candidateSpecifications,1)
         local candidate=group.candidateSpecifications[1]
         equal(candidate.capability,"REPOSITION")
-        equal(candidate.expectedEffect.recoveryPoint,"RECOVERY_ANCHOR")
+        equal(candidate.expectedEffect.recoveryCompletion,"RECOVERY_RETURN_REGION")
         equal(candidate.expectedEffect.transitRequested,true)
         equal(candidate.expectedEffect.nativeJobReplacement,true)
         equal(candidate.expectedEffect.physicalReleaseAfterReplacementStart,true)
         equal(#candidate.obligationsCreated,2)
-        equal(candidate.obligationsCreated[1].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT")
+        equal(candidate.obligationsCreated[1].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT")
         equal(candidate.obligationsCreated[2].requiredOutcome.kind,"BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED")
         equal(candidate.evidenceBasis.independentConcurrentCommitment,true)
         equal(#candidate.representationFitness.requirements,1)
@@ -75,9 +75,16 @@ return function(test,equal)
             identity="PI-RECOVERY-TARGET",representationFitness=group.representationFitness
         })
         equal(verdict.result,"PASS")
-        local anchor=candidate.evidenceBasis.blockedWorkerRecoveryBridge.recoveryAnchor
+        local bridge=candidate.evidenceBasis.blockedWorkerRecoveryBridge
+        local anchor=bridge.recoveryAnchor
         equal(anchor.x,4.25); equal(anchor.z,17.5)
         equal(anchor.usefulSpanM,5.61)
+        local region=bridge.recoveryReturnRegion
+        equal(region.stallX,10); equal(region.stallZ,20)
+        equal(region.calibratedTargetRetreatM,20)
+        equal(region.cappedByAnchor,true)
+        equal(math.abs(region.maximumSupportedRetreatM-math.sqrt(39.3125))<0.0001,true)
+        equal(math.abs(region.requiredRetreatM-region.maximumSupportedRetreatM)<0.0001,true)
     end)
 
     test("Recovery Resolution semantic preflight recognises both two-phase obligations",function()
@@ -93,7 +100,7 @@ return function(test,equal)
             beneficiaryAssemblyIds={"AS-RECOVERY"},
             controlledSubjectAssemblyIds={"AS-RECOVERY"},
             resolutionOutcomeKinds={
-                "BLOCKED_WORKER_RECOVERY_ANCHOR_REACHED_IN_TRANSIT",
+                "BLOCKED_WORKER_RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT",
                 "BLOCKED_WORKER_RECOVERY_SUCCESSOR_JOB_EPISODE_ADMITTED"
             },
             responsibilityIdentity="RS-RECOVERY"
@@ -155,15 +162,21 @@ return function(test,equal)
         equal(selected.rule,"BLOCKED_WORKER_RECOVERY_ESTABLISHMENT")
     end)
 
-    test("Recovery Control reaches Anchor, replaces native job, releases physically, then settles on successor admission",function()
-        local oldMission=g_currentMission
+    test("Recovery Control enters Return Region before Anchor, replaces native job, releases physically, then settles on successor admission",function()
+        local oldMission,oldTranslation=g_currentMission,getWorldTranslation
         local calls={}
         local currentJob={jobId=41}
         local replacement={jobId=nil}
         local currentEpisode={identity="JE-RECOVERY",sourceJobToken="JOB-RECOVERY"}
-        local vehicle={name="Condor"}
+        local poseX=30
+        local vehicle={name="Condor",rootNode=21001}
+        vehicle.getAISteeringNode=function(self) return self.rootNode end
         vehicle.getJob=function() return currentJob end
         vehicle.getAIJobFarmId=function() return 7 end
+        getWorldTranslation=function(node)
+            equal(node,21001)
+            return poseX,0,0
+        end
 
         function replacement:applyCurrentState(v,mission,farmId,isDirectStart)
             calls[#calls+1]={kind="APPLY",vehicle=v,mission=mission,farmId=farmId,directStart=isDirectStart}
@@ -255,7 +268,12 @@ return function(test,equal)
                 kind="BLOCKED_WORKER_RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",recoveryKey="blocked-worker-recovery:test",
                 configurationPolicy="ALWAYS_REQUEST_TRANSIT_THEN_NATIVE_REPLAN",
-                recoveryAnchor={x=4.25,z=17.5}
+                recoveryAnchor={x=0,z=0},
+                recoveryReturnRegion={
+                    stallX=30,stallZ=0,directionX=-1,directionZ=0,
+                    calibratedTargetRetreatM=20,requiredRetreatM=20,
+                    maximumSupportedRetreatM=30,cappedByAnchor=false
+                }
             }
         }
         local started=control:executeControlRequest(request,{})
@@ -264,15 +282,19 @@ return function(test,equal)
 
         control:update(16)
         if reposition==nil then error("Recovery movement not started") end
-        equal(reposition.x,4.25); equal(reposition.z,17.5)
+        equal(reposition.x,0); equal(reposition.z,0)
         equal(reposition.moveForwards,false)
-        equal(control:getStatus().phase,"MOVING_TO_RECOVERY_ANCHOR")
+        equal(control:getStatus().phase,"MOVING_TO_RECOVERY_RETURN_REGION")
 
-        driveState.targetReached=true
+        poseX=10
+        equal(driveState.targetReached,false)
         control:update(16)
         if phaseEvent==nil then error("Physical Recovery phase settlement missing") end
         equal(phaseEvent.phaseEvent,"PHYSICAL_RECOVERY_SATISFIED")
-        equal(phaseEvent.evidence.kind,"RECOVERY_ANCHOR_REACHED_IN_TRANSIT")
+        equal(phaseEvent.evidence.kind,"RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT")
+        equal(phaseEvent.evidence.requiredRetreatM,20)
+        equal(phaseEvent.evidence.retreatProgressM,20)
+        equal(phaseEvent.evidence.completionBasis,"RECOVERY_RETURN_REGION_PROGRESS")
         equal(control:getStatus().phase,"WAITING_FOR_REPLACEMENT_JOB_EPISODE")
         equal(control:getStatus().expectedSuccessorSourceJobToken,"giants-ai-job-id:42")
         equal(driveState,nil)
@@ -290,7 +312,7 @@ return function(test,equal)
         equal(completion.evidence.kind,"RECOVERY_INTENDED_SUCCESSOR_JOB_EPISODE_ADMITTED")
         equal(completion.evidence.successorJobEpisodeId,"JE-SUCCESSOR")
         equal(control:isActive(),false)
-        g_currentMission=oldMission
+        g_currentMission,getWorldTranslation=oldMission,oldTranslation
     end)
 
     test("Native job replacement prepares before synchronous stop-start commitment",function()
