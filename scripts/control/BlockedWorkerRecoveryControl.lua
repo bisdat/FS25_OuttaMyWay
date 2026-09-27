@@ -117,7 +117,8 @@ function Control:_finish(status,evidence)
     self:_notify({
         status=status,commitmentId=state.commitmentId,assemblyId=state.assemblyId,
         requestId=state.requestId,boundedAuthorityId=state.boundedAuthorityId,
-        recoveryKey=state.recoveryKey,evidence=evidence or {}
+        recoveryKey=state.recoveryKey,recoveryRecurrenceContext=state.recoveryRecurrenceContext,
+        evidence=evidence or {}
     })
 end
 
@@ -423,6 +424,7 @@ function Control:executeControlRequest(request,candidate)
         maximumSupportedRetreatM=maximumSupportedRetreat,
         calibratedTargetRetreatM=tonumber(region.calibratedTargetRetreatM),
         cappedByAnchor=region.cappedByAnchor==true,
+        recoveryRecurrenceContext=target.recoveryRecurrenceContext,
         transitRequested=false,transitChanged=false,nextMovementDiagnosticMs=0
     }
     if not self:_originatingJobStillCurrent(state) then return false,"BLOCKED_WORKER_RECOVERY_JOB_EPISODE_CHANGED" end
