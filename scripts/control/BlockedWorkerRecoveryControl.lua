@@ -391,11 +391,18 @@ function Control:executeControlRequest(request,candidate)
         return false,"BLOCKED_WORKER_RECOVERY_ANCHOR_UNAVAILABLE"
     end
     local region=target.recoveryReturnRegion
+    local requiredRetreat=type(region)=="table" and tonumber(region.requiredRetreatM) or nil
+    local maximumSupportedRetreat=type(region)=="table" and tonumber(region.maximumSupportedRetreatM) or nil
+    local directionX=type(region)=="table" and tonumber(region.directionX) or nil
+    local directionZ=type(region)=="table" and tonumber(region.directionZ) or nil
+    local directionLength=finite(directionX) and finite(directionZ) and math.sqrt(directionX*directionX+directionZ*directionZ) or nil
     if type(region)~="table"
         or not finite(tonumber(region.stallX)) or not finite(tonumber(region.stallZ))
-        or not finite(tonumber(region.directionX)) or not finite(tonumber(region.directionZ))
-        or not finite(tonumber(region.requiredRetreatM)) or tonumber(region.requiredRetreatM)<=0
-        or not finite(tonumber(region.maximumSupportedRetreatM)) or tonumber(region.maximumSupportedRetreatM)<=0 then
+        or not finite(directionX) or not finite(directionZ)
+        or directionLength==nil or directionLength<=0.0001
+        or not finite(requiredRetreat) or requiredRetreat<=0
+        or not finite(maximumSupportedRetreat) or maximumSupportedRetreat<=0
+        or requiredRetreat>maximumSupportedRetreat+0.001 then
         return false,"BLOCKED_WORKER_RECOVERY_RETURN_REGION_UNAVAILABLE"
     end
 
@@ -405,9 +412,9 @@ function Control:executeControlRequest(request,candidate)
         requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,vehicle=vehicle,
         anchorX=tonumber(anchor.x),anchorZ=tonumber(anchor.z),phase="REQUEST_TRANSIT",
         returnOriginX=tonumber(region.stallX),returnOriginZ=tonumber(region.stallZ),
-        returnDirectionX=tonumber(region.directionX),returnDirectionZ=tonumber(region.directionZ),
-        requiredRetreatM=tonumber(region.requiredRetreatM),
-        maximumSupportedRetreatM=tonumber(region.maximumSupportedRetreatM),
+        returnDirectionX=directionX/directionLength,returnDirectionZ=directionZ/directionLength,
+        requiredRetreatM=requiredRetreat,
+        maximumSupportedRetreatM=maximumSupportedRetreat,
         calibratedTargetRetreatM=tonumber(region.calibratedTargetRetreatM),
         cappedByAnchor=region.cappedByAnchor==true,
         transitRequested=false,transitChanged=false,nextMovementDiagnosticMs=0
