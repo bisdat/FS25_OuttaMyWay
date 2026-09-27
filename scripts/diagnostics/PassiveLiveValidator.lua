@@ -77,16 +77,17 @@ function Validator.new(runtime)
         runtime=runtime,
         lastLogAt=-math.huge,lastSignature=nil,
         acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
-        futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={}
+        futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={},
+        realisedMotionDemandSignatures={},realisedMotionDemandRelationSignatures={}
     },Validator)
 end
 function Validator:loadMap()
     self.lastSignature=nil; self.lastLogAt=-math.huge
-    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
+    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.realisedMotionDemandSignatures={}; self.realisedMotionDemandRelationSignatures={}
     logInfo("DIAGNOSTIC_OBSERVER_ACTIVE","Runtime processing and bounded Control dispatch are already complete before diagnostic publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
-    self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}
+    self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.realisedMotionDemandSignatures={}; self.realisedMotionDemandRelationSignatures={}
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
@@ -267,6 +268,46 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
     end
 end
 
+function Validator:_logRealisedMotionDemandProbe(picture,snapshot,due)
+    if OuttaMyWay.RealisedMotionDemandProbe==nil then return end
+    local probe=OuttaMyWay.RealisedMotionDemandProbe.evaluate(picture,snapshot)
+
+    for _,item in OuttaMyWay.ValueRecord.ipairs(probe.demands or {}) do
+        local key=tostring(item.beneficiaryAssemblyId or item.beneficiaryReferenceKey or "assembly")
+        local signature=table.concat({
+            tostring(item.status),tostring(item.reason),tostring(item.localIntentClassification),
+            tostring(item.currentMotionClassification),tostring(item.positiveIntersectionCount),
+            tostring(item.relocationEligibleIntersectionCount)
+        },"|")
+        if self.realisedMotionDemandSignatures[key]~=signature or due then
+            self.realisedMotionDemandSignatures[key]=signature
+            logInfo("PASSIVE_REALISED_MOTION_DEMAND","DEMAND beneficiary=%s operation=%s status=%s reason=%s horizon=%sm speed=%smps alignment=%s aligned=%sm motion=%s localIntent=%s productivePositive=%s intersections=%d relocationEligible=%d nearestWitness=%sm nearestTime=%ss authority=DIAGNOSTIC_ONLY semanticAuthority=false decisionAuthority=false controlAuthority=false",
+                key,tostring(item.operationId or "n/a"),tostring(item.status),tostring(item.reason),
+                numberText(item.lookaheadM),numberText(item.speedMps),numberText(item.alignment),numberText(item.currentAlignedDistanceM),
+                tostring(item.currentMotionClassification or "n/a"),tostring(item.localIntentClassification or "n/a"),booleanText(item.productiveContextPositive),
+                tonumber(item.positiveIntersectionCount) or 0,tonumber(item.relocationEligibleIntersectionCount) or 0,
+                numberText(item.nearestWitnessDistanceM),numberText(item.nearestTimeToWitnessSeconds))
+        end
+    end
+
+    for _,item in OuttaMyWay.ValueRecord.ipairs(probe.relations or {}) do
+        local key=tostring(item.identity or (tostring(item.beneficiaryAssemblyId).."->"..tostring(item.blockerAssemblyId)))
+        local signature=table.concat({
+            tostring(item.blockerClassification),booleanText(item.relocationEligible),booleanText(item.positive)
+        },"|")
+        if self.realisedMotionDemandRelationSignatures[key]~=signature or due then
+            self.realisedMotionDemandRelationSignatures[key]=signature
+            logInfo("PASSIVE_REALISED_MOTION_DEMAND_INTERSECTION","INTERSECTION relation=%s operation=%s beneficiary=%s blocker=%s blockerClass=%s relocationEligible=%s horizon=%sm witnessDistance=%sm timeToWitness=%ss closingRate=%smps centreForward=%sm lateral=%sm required=%sm alignment=%s motion=%s localIntent=%s productivePositive=%s authority=DIAGNOSTIC_ONLY semanticAuthority=false decisionAuthority=false controlAuthority=false",
+                key,tostring(item.operationId or "n/a"),tostring(item.beneficiaryAssemblyId),tostring(item.blockerAssemblyId),
+                tostring(item.blockerClassification),booleanText(item.relocationEligible),numberText(item.lookaheadM),
+                numberText(item.witnessDistanceM),numberText(item.timeToWitnessSeconds),numberText(item.closingRateMps),
+                numberText(item.centreForwardDistanceM),numberText(item.lateralOffsetM),numberText(item.requiredM),
+                numberText(item.alignment),tostring(item.currentMotionClassification or "n/a"),tostring(item.localIntentClassification or "n/a"),
+                booleanText(item.productiveContextPositive))
+        end
+    end
+end
+
 function Validator:beginRuntimeCycle(cycleDiagnostics,nowMilliseconds)
     if not publicationEnabled() then return false end
     local due=nowMilliseconds-self.lastLogAt >= (PASSIVE_HEARTBEAT_INTERVAL_MS)
@@ -287,6 +328,7 @@ function Validator:observeRuntimeResult(live,due,nowMilliseconds)
     self:_logFutureSpaceRelationships(projection)
     self:_logFollowerBoundaryKnowledge(live.picture,due)
     self:_logTrajectoryConflictKnowledge(live.picture,due)
+    self:_logRealisedMotionDemandProbe(live.picture,live.snapshot,due)
 end
 
 function Validator:update(dt) end
