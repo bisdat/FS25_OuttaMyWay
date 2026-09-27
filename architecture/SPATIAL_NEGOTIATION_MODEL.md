@@ -383,7 +383,13 @@ Corner right-of-way and Passage-theatre shaping remain distinct tactical Regulat
 
 > **Sharp Responsibility Transition — No Hybrid Spatial Modes**
 
-Stop shaping once one complete Passage Candidate is positively supportable and admissible; least intervention wins. If shaping moves the encounter beyond either productive-certainty horizon, the forecast legitimately disappears and fresh Situation Assessment takes over. Regulation is never obliged to preserve Passage.
+Stop further theatre shaping once one complete Passage Candidate is positively supportable and admissible; least intervention wins. Candidate support ends the need to keep moving the encounter theatre, but it does **not** by itself establish Bubble Formation Readiness or dissolve another still-positive Regulation purpose such as preservation of transitional native revelation.
+
+> **Passage Candidate Support != Bubble Formation Readiness**
+
+> **Shaping Completion != Regulation Dissolution**
+
+While disposable native approach margin remains, a current Regulation purpose may therefore remain authoritative without continuing to reshape the supported theatre. If shaping moves the encounter beyond either productive-certainty horizon, the forecast legitimately disappears and fresh Situation Assessment takes over. Regulation is never obliged to preserve Passage.
 
 ---
 
@@ -423,13 +429,37 @@ using supported complete-assembly Transit geometry
 Candidate Support / mandatory constraints / Decision
     |
     v
+Bubble Formation Readiness
+    |
+    v
 Responsibility Transition
     |
     v
 Cooperative Passage Resolution Commitment
 ```
 
-Selection and commitment occur only after a supported Candidate and Transit arrangement exist. Physical Transit realisation is not a prerequisite for Candidate planning authority.
+Selection occurs only after a supported Candidate and Transit arrangement exist. Selection alone does not establish the Resolution or prove that the pair should couple **now**.
+
+**Bubble Formation Readiness** is the Cooperative-Passage-specific successor-readiness conclusion between Decision and Responsibility Transition. It answers:
+
+> **Is the selected, still-supported Passage solution ready to become the pair's Current Responsibility now?**
+
+Bubble Formation Readiness is positive only while the selected Candidate remains fresh and admissible and the complete Passage-Capable Theatre remains viable. In addition, one of two timing conditions must be positively supported:
+
+- current native-revelation evidence is sufficiently settled for the selected arrangement, so continued independent approach is no longer required merely to reveal a materially different Passage geometry; or
+- independent approach has consumed the disposable native approach margin to the arrangement-specific **latest safe capture point**, so further waiting would begin consuming the capture/control reserve or another required part of the complete Passage-Capable Theatre.
+
+Positive settled-continuation evidence for both participants is sufficient evidence for the first route. It is not a hard prerequisite for Passage: persistent native `TURNING` or another transitional state cannot veto the second route once the latest safe capture point is reached and the selected Passage remains supported.
+
+> **Passage Evaluation Readiness != Passage Candidate Support != Bubble Formation Readiness**
+
+A pair may therefore be ready for Passage evaluation, may even have a supported and selected Passage Candidate, and still not be ready to form the Bubble while useful native revelation can continue without consuming required Passage reserve.
+
+A pairwise Passage-entry or `entryReady` conclusion does not replace this whole-theatre admission question.
+
+> **Passage Entry Readiness != Bubble Formation Readiness**
+
+Physical Transit realisation is not a prerequisite for Candidate planning authority.
 
 After commitment/capture, both Passage participants must positively realise the required Transit configuration before geometry-dependent Passage movement begins. Planned Transit geometry must not be treated as realised Reality. Fresh Reality at the configuration/settlement and execution-origin boundary governs whether the retained Transit Passage geometry remains executable or requires supported adaptation before physical Passage movement.
 
@@ -459,7 +489,11 @@ A Return Corridor required by Axis Return is not a second generic rearward reser
 
 > **Return Corridor != Rearward Reserve**
 
-For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed. Commitment becomes due before independent approach consumes the space/time needed to acquire and settle both workers while retaining the complete Passage-Capable Theatre.
+For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed.
+
+The **latest safe capture point** is the arrangement-specific boundary at which further independent progression would begin consuming the space/time required to acquire and settle the pair or would otherwise make the complete Passage-Capable Theatre no longer positively supportable. It is derived from current supported theatre geometry, current progression and the selected arrangement. It is not the Passage Entry Boundary, not a universal distance, and not a fixed time-to-contact literal.
+
+Commitment becomes due before independent approach crosses that boundary.
 
 Configuration duration is not itself pre-commit lead time because capture controls closing progression. Candidate-scoped geometry may support the Shared Crossing Core and participant-specific Lateral Excursion Development/Reacquisition before commitment; physical movement under the accepted Resolution remains Reality-bound.
 
@@ -471,7 +505,9 @@ Under the parent Pairwise Resolution Exclusivity constraint, Cooperative Passage
 
 A **Bubble** is the coupled pairwise context created specifically by Cooperative Passage Resolution Commitment.
 
-It forms only when fresh evidence still supports Passage, the required reserve remains viable, independent approach nears the latest safe capture point, and the pair accepts jointly dependent Passage obligations.
+It forms only when **Bubble Formation Readiness** is positive: fresh evidence still supports the selected Passage, the required reserve remains viable, and either native-revelation evidence is sufficiently settled for the selected arrangement or independent approach has reached the arrangement-specific latest safe capture point. The pair must then accept the jointly dependent Passage obligations through Responsibility Transition.
+
+A still-supported Regulation predecessor is not a hybrid Passage mode. It remains Regulation until Bubble Formation Readiness positively supports atomic replacement; Candidate selection alone does not dissolve it.
 
 At Bubble Formation the accepted Passage is expressed as two participant-scoped **Passage Legs** under one Resolution Commitment. The pair is required to establish the coupled responsibility; the two execution legs need not remain symmetrically live afterwards.
 
