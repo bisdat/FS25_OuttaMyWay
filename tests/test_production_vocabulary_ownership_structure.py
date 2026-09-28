@@ -532,16 +532,22 @@ def test_cooperative_passage_control_owns_execution_calibration():
         assert use in passage
 
 
-def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners():
+def test_passage_guide_radius_return_staging_tolerance_and_return_region_have_independent_owners():
     planner_owner = ROOT / "scripts/candidates/LocalPassagePlanner.lua"
     control_owner = ROOT / "scripts/control/CooperativePassageControl.lua"
     planner = planner_owner.read_text(encoding="utf-8")
     passage = control_owner.read_text(encoding="utf-8")
     config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
     radius = "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"
-    tolerance = "COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M"
-    # Calibration equality does not create shared policy or a mutable root seam.
-    for name, owner, text in ((radius, planner_owner, planner), (tolerance, control_owner, passage)):
+    staging_tolerance = "COOPERATIVE_PASSAGE_RETURN_STAGING_STATION_TOLERANCE_M"
+    return_region = "COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M"
+    # Equal calibrations do not create shared policy: guide reach, staging
+    # station completion and Return Region entry remain purpose-specific owners.
+    for name, owner, text in (
+        (radius, planner_owner, planner),
+        (staging_tolerance, control_owner, passage),
+        (return_region, control_owner, passage),
+    ):
         assert name not in config
         assert re.search(rf"^local {name} = 1\.0$", text, re.M)
         assert len(re.findall(rf"\b{name}\s*=(?!=)", text)) == 1
@@ -556,6 +562,8 @@ def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners
     assert f"local traversalRadius={radius}" in guide
     assert "participantProgress" in guide
     assert 'append("CROSSING_WINDOW_ENTRY",progress(subjectDevelopment,' in guide
+    assert f"local tolerance={staging_tolerance}" in passage
+    assert f"participant.vehicle,originX,originZ,run.speedKmh,{return_region},false" in passage
     assert ',otherDevelopment,' in guide
     assert 'append("CROSSING_WINDOW_EXIT",progress(subjectDevelopment+traversal,' in guide
     assert ',otherDevelopment+traversal,' in guide
