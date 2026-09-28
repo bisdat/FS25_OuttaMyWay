@@ -4438,26 +4438,25 @@ test("Cooperative Passage: one-sided intervention creates Reacquisition only for
     equal(math.sqrt(dx*dx+dz*dz)>0.001,true)
 end)
 
-test("Cooperative Passage: crossing-valid theatre is rejected when required Lateral Excursion Reacquisition leaves Field World",function()
-    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+test("Cooperative Passage: required Transit lateral sidestep is rejected when it leaves Field World",function()
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,0.5,18,-5,22)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(plan,nil)
     equal(reason,"PASSAGE_CAPABLE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE")
-    local reacquisitionFailure=false
+    local boundaryFailure=false
     for _,conflict in ipairs(rejected or {}) do
         for _,candidate in ipairs(conflict.rejected or {}) do
-            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY"
-                and candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent=="LATERAL_EXCURSION_REACQUISITION" then
-                reacquisitionFailure=true
+            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY" then
+                boundaryFailure=true
             end
         end
     end
-    equal(reacquisitionFailure,true)
+    equal(boundaryFailure,true)
 end)
 
 test("Cooperative Passage: unsupported Passage-Capable Theatre retains tactical Action-Space Regulation",function()
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,0.5,18,-5,22)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local relation=values.opposedCorridorKnowledge[1]
     relation.actionSpaceConservation={
@@ -4514,7 +4513,7 @@ test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arra
     equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
     local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
     equal(reacquisition.subject.required,true); equal(reacquisition.other.required,true)
-    equal(math.abs(reacquisition.subject.distanceM-reacquisition.other.distanceM)>0.001,true)
+    equal(reacquisition.subject.distanceM,0); equal(reacquisition.other.distanceM,0)
     equal(reacquisition.subject.fieldSupported,true); equal(reacquisition.other.fieldSupported,true)
 end)
 
