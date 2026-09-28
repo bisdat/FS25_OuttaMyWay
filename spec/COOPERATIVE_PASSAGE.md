@@ -211,6 +211,10 @@ Before Crossing Clearance, the unresolved original crossing conflict prevents bl
 
 > **Crossing Clearance != Exact Axis Restitution**
 
+A pre-Crossing execution-validity check MUST NOT reject an otherwise supported opposed crossing solely because predicted post-Crossing lateral reacquisition, runout, Axis Return or restoration may later be unsupported. Those obligations are participant-scoped recovery after positive Crossing Clearance and MUST be reassessed at the downstream responsibility that owns them.
+
+> **Post-Crossing Recovery Cannot Retroactively Veto Crossing**
+
 Passage commitment does not freeze execution geometry.
 
 Before geometry-dependent physical Passage movement begins after capture, both participants MUST positively realise their required Transit configuration. The implementation MUST then return to **fresh Reality** and establish that the accepted Transit Passage remains executable for the realised physical state.
@@ -234,7 +238,7 @@ A guide may be rebased to current execution origins only after its retained geom
 
 Rebasing coordinates while preserving stale lateral/clearance assumptions does not satisfy this execution-validity contract.
 
-If fresh Reality cannot positively support the retained or validly adapted Passage arrangement, physical Passage progression MUST fail closed at that boundary rather than treating earlier Candidate support as permanent authority.
+If fresh Reality cannot positively support the retained or validly adapted Passage arrangement **through Crossing Clearance**, physical Passage progression MUST fail closed at that boundary rather than treating earlier Candidate support as permanent authority. Predicted support loss confined to post-Crossing recovery MUST NOT be promoted into a pre-Crossing Passage veto.
 
 Once a physical leg is underway, its locally authorised execution choice SHOULD remain stable enough to avoid oscillatory retargeting. Hard-safety evidence remains authoritative and may force narrowing, stopping or failure according to the parent/downstream contracts.
 
