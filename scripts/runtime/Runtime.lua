@@ -140,6 +140,7 @@ function Runtime.new()
     terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority
     runtime.followerBoundaryResponsibilityTransition=OuttaMyWay.FollowerBoundaryResponsibilityTransition.new(runtime)
     runtime.actionSpaceRegulationResponsibilityTransition=OuttaMyWay.ActionSpaceRegulationResponsibilityTransition.new(runtime)
+    runtime.bubbleFormationReadinessEvaluator=OuttaMyWay.BubbleFormationReadinessEvaluator.new()
     runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
     runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime)
     runtime.currentPhysicalPoseSource=OuttaMyWay.CurrentPhysicalPoseSource.new()
@@ -815,6 +816,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         end
     end
     local bridge=cooperativePassageBridge(candidate)
+    local bubbleFormationReadiness=nil
     local dispatch=nil
     if candidate~=nil and candidate.capability=="REPOSITION" and bridge~=nil then
         if self.liveControlDispatcher.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
@@ -826,7 +828,14 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if type(self.liveControlDispatcher.cooperativePassageControl.isActive)=="function" and self.liveControlDispatcher.cooperativePassageControl:isActive() then
             return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE",candidateId=candidate.identity}
         end
-        dispatch={status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity}
+        bubbleFormationReadiness=self.bubbleFormationReadinessEvaluator:evaluate(picture,evaluated,candidate,bridge)
+        if bubbleFormationReadiness.status=="READY" then
+            dispatch={
+                status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",
+                candidateId=candidate.identity,
+                bubbleFormationReadiness=bubbleFormationReadiness
+            }
+        end
     end
 
     local actionBridge=actionSpaceBridge(candidate)
@@ -845,6 +854,15 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
     if dispatch==nil then
         if candidate==nil then return {status="NO_DISPATCH",reason="NO_SELECTED_PHYSICAL_CANDIDATE"} end
+        if bubbleFormationReadiness~=nil and bubbleFormationReadiness.status~="READY" then
+            return {
+                status="NO_DISPATCH",
+                reason="COOPERATIVE_PASSAGE_BUBBLE_FORMATION_NOT_READY",
+                detail=bubbleFormationReadiness.reason,
+                candidateId=candidate.identity,
+                bubbleFormationReadiness=bubbleFormationReadiness
+            }
+        end
         return {status="NO_DISPATCH",reason="PHYSICAL_CANDIDATE_NOT_ALIGNED_FOR_LIVE_CONTROL",candidateId=candidate.identity}
     end
     if dispatch.status=="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED" then

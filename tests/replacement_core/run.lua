@@ -110,6 +110,7 @@ load("scripts/responsibility/ResolutionCommitmentAdapter.lua")
 load("scripts/responsibility/ResponsibilityTransitionAuthority.lua")
 load("scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua")
 load("scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua")
+load("scripts/responsibility/BubbleFormationReadinessEvaluator.lua")
 load("scripts/responsibility/CooperativePassageResponsibilityTransition.lua")
 load("scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua")
 load("scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua")
@@ -139,6 +140,86 @@ local function permittedFollowerCap(evidence)
     local permission=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize(evidence)
     return permission and permission.permittedFollowerCapKmh or nil
 end
+
+local function bubbleFormationReadinessFixture(values)
+    values=values or {}
+    local relation={
+        identity="opposed-test",
+        classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",
+        subjectSettledContinuation=values.subjectSettled==true,
+        otherSettledContinuation=values.otherSettled==true,
+        currentClosing={closingRateMps=values.closingRateMps==nil and 4.0 or values.closingRateMps}
+    }
+    local bridge={
+        architecture="COOPERATIVE_PASSAGE",
+        conflictIdentity=relation.identity,
+        passageCapableTheatre={
+            complete=values.theatreComplete~=false,
+            captureControlReserve={fieldSupported=true},
+            sharedCrossingCore={fieldSupported=true,pairSweepSupported=true},
+            lateralExcursionReacquisition={
+                subject={required=false,fieldSupported=true},
+                other={required=false,fieldSupported=true}
+            }
+        },
+        passageEntry={
+            ready=values.entryReady==true,
+            boundarySeparationM=values.entryBoundaryM or 18.0,
+            controlAllowanceM=values.controlAllowanceM or 3.0,
+            approachDistancePerParticipantM=values.approachDistancePerParticipantM or 12.0,
+            selectionLongitudinalSeparationM=values.selectionLongitudinalSeparationM or 42.0
+        }
+    }
+    local candidate={identity="CA-BUBBLE-READY",capability="REPOSITION"}
+    local evaluated={decision={selectedCandidateId=candidate.identity}}
+    local picture={opposedCorridorKnowledge={relation}}
+    return OuttaMyWay.BubbleFormationReadinessEvaluator.new(),picture,evaluated,candidate,bridge
+end
+
+test("Bubble Formation readiness preserves transitional native revelation while disposable margin remains", function()
+    local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
+        subjectSettled=true,otherSettled=false,approachDistancePerParticipantM=12.0
+    })
+    local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
+    equal(readiness.status,"NOT_READY")
+    equal(readiness.reason,"DISPOSABLE_NATIVE_APPROACH_MARGIN_REMAINS")
+end)
+
+test("Bubble Formation readiness accepts a fresh selected Passage after both participants settle", function()
+    local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
+        subjectSettled=true,otherSettled=true,approachDistancePerParticipantM=12.0
+    })
+    local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
+    equal(readiness.status,"READY")
+    equal(readiness.route,"SETTLED_NATIVE_REVELATION")
+end)
+
+test("Bubble Formation readiness accepts persistent transition at the latest safe capture point", function()
+    local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
+        subjectSettled=true,otherSettled=false,approachDistancePerParticipantM=2.5,controlAllowanceM=3.0,closingRateMps=4.0
+    })
+    local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
+    equal(readiness.status,"READY")
+    equal(readiness.route,"LATEST_SAFE_CAPTURE_POINT")
+end)
+
+test("Passage Entry readiness alone does not establish Bubble Formation readiness", function()
+    local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
+        subjectSettled=true,otherSettled=false,entryReady=true,approachDistancePerParticipantM=0.0,closingRateMps=0.0
+    })
+    local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
+    equal(readiness.status,"NOT_READY")
+    equal(readiness.reason,"CURRENT_POSITIVE_CLOSURE_NOT_ESTABLISHED")
+end)
+
+test("Bubble Formation readiness fails closed when the selected theatre is incomplete", function()
+    local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
+        subjectSettled=true,otherSettled=true,theatreComplete=false
+    })
+    local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
+    equal(readiness.status,"NOT_READY")
+    equal(readiness.reason,"PASSAGE_CAPABLE_THEATRE_NOT_COMPLETE")
+end)
 
 test("Entity-Local Shape Evidence preserves coherence and root-alias discrimination", function()
     local localSphere={valid=true,x=0,y=0,z=0,radius=2.0}
@@ -4021,6 +4102,7 @@ local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSe
         identity="OC-COOPERATIVE-PASSAGE",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
         status="SUPPORTED",classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",reason="PERSISTENT_CURRENT_MOTION_SUBSTANTIATES_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",
         trajectoryDot=-1,mutuallyFacing=true,currentOpposed=true,currentClosingPositive=true,subjectCurrentStable=true,otherCurrentStable=true,subjectCurrentExcursion=false,otherCurrentExcursion=false,
+        subjectSettledContinuation=true,otherSettledContinuation=true,
         currentClosing={separationM=longitudinalSeparationM,currentDirectionDot=-1,closingRateMps=10},
         actionSpaceConservation={admissionKind="ESTABLISHED_CONFLICT",maxSeparationM=80},
         supportedCorridorOverlap={status="SUPPORTED",positive=true,overlapM=4,sharedRightX=1,sharedRightZ=0,subjectPhysicalPrimitiveCount=2,otherPhysicalPrimitiveCount=2}
