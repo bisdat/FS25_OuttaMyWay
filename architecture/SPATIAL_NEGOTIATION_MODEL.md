@@ -492,6 +492,14 @@ The **Capture Reserve** is pairwise longitudinal space outside the Geometric Ent
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
+Once Cooperative Passage becomes the accepted Resolution Commitment, Passage owns the rate at which its two participants consume the remaining disposable approach margin. Both participants retain GIANTS-native productive routing, but each is subject to a **Passage Approach Speed Ceiling** until Capture/Hold supersedes approach progression.
+
+The initial Passage Approach Speed Ceiling calibration is **10 km/h per participant**. It is a maximum, not a target: a participant already progressing more slowly is not accelerated to the ceiling, and any independently valid more-restrictive speed authority remains more restrictive. The ceiling is Passage Control calibration validated against Reality; it is not a braking-distance model, does not enlarge Capture Reserve and does not replace latest-safe-capture boundary conformance.
+
+> **Passage Approach Responsibility != Unrestricted Native Reset**
+
+Third-party Bubble Bullet Time remains the separate 1 km/h policy. After Capture and Transit settlement, the existing common 8 km/h Cooperative Passage actuation calibration governs coupled Passage movement.
+
 Once the pair is settled in Transit, required lateral excursion is a transverse sidestep. It owns no proportional forward Development/Reacquisition distance and creates no second longitudinal reserve.
 
 Prospective Candidate Support and realised execution support answer different questions. Candidate Support must establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core, but it must not require an exact pairwise sweep from a hypothetical future Entry origin. After Capture and Transit settlement, the realised execution origin becomes Reality and pairwise execution support is mandatory **through positive Crossing Clearance** before Passage movement begins.

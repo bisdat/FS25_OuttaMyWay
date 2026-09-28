@@ -108,6 +108,14 @@ The Geometric Entry Boundary MUST be derived from the selected pair's supported 
 
 Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
+Once Cooperative Passage becomes the accepted Resolution Commitment, both original Passage participants MUST be subject to a **Passage Approach Speed Ceiling** while GIANTS-native approach progression remains active. The ceiling MUST be effective before further ordinary Passage-Approach progression is allowed after responsibility establishment and MUST remain active until Capture/Hold supersedes that approach or the Passage responsibility terminates.
+
+The accepted initial Passage Approach Speed Ceiling calibration is **10 km/h per participant**. It is a maximum, not a target: the implementation MUST NOT accelerate a slower participant merely to reach 10 km/h, and any independently valid more-restrictive speed ceiling MUST remain effective through least-permissive composition.
+
+The Passage Approach Speed Ceiling MUST NOT be represented as additional Capture Reserve, a braking-distance model, a replacement for latest-safe-capture timing, or the third-party 1 km/h Bullet Time policy. After Capture and Transit settlement, the existing common **8 km/h** Cooperative Passage actuation speed remains the coupled-movement calibration.
+
+> **Passage Approach Responsibility != Unrestricted Native Reset**
+
 Required lateral excursion MUST be expressed as Transit sidestep rather than proportional forward Development/Reacquisition.
 
 Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete pair sweep from a hypothetical future Entry origin.
@@ -409,6 +417,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) | `REALISES` |
+| [`scripts/authority/PassageApproachSpeedCeiling.lua`](../scripts/authority/PassageApproachSpeedCeiling.lua) | `REALISES` |
 | [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
 | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `SUPPORTS` |
@@ -426,6 +435,7 @@ Current implementation routes include:
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
 - [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) — current Passage-Leg obligation creation/settlement, participant-loss vacatur and parent terminal integration;
 - [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) — current formation-time independent-third supporting-ownership preparation, fixed 1 km/h Regulation activation after Passage responsibility exposure, and Resolution-Epoch/basis cleanup;
+- [`scripts/authority/PassageApproachSpeedCeiling.lua`](../scripts/authority/PassageApproachSpeedCeiling.lua) — current pair-participant 10 km/h supporting speed-ceiling preparation, post-transition Bounded Authority activation and Capture/termination cleanup while GIANTS retains productive approach routing;
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current Passage-specific joint Bounded Authority request construction, survivor-leg authority rebind/failure handling and completion integration;
 - [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) — current semantic Resolution Commitment view over the retained implementation substrate; and
 - [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) — current physical Passage executor, configuration settlement, guide execution, recovery and handback mechanism.
