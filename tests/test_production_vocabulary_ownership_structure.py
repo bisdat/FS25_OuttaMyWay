@@ -506,8 +506,6 @@ def test_cooperative_passage_control_owns_execution_calibration():
          "_assemblyAxisSettled", "local headingMinDot="),
         ("COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH", "0.25",
          "_allStopped", "local limit="),
-        ("COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S", "1.0",
-         "update", "local captureHorizon="),
         ("COOPERATIVE_PASSAGE_HEARTBEAT_MS", "1000",
          "update", "self.nextHeartbeatMs=nowMs+"),
     )
@@ -522,9 +520,10 @@ def test_cooperative_passage_control_owns_execution_calibration():
                 assert name not in path.read_text(encoding="utf-8"), path
 
     assert "run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS" in passage
+    assert "COOPERATIVE_PASSAGE_CAPTURE_ACQUISITION_HORIZON_S" not in passage
+    assert "captureTimeToBoundary" not in passage
     for use in (
         "actualSpeedKmh(p.vehicle)>limit",
-        "timeToBoundary<=captureHorizon",
         "math.abs(vehicleLateral)>lateralTolerance",
         "vehicleHeadingDot<headingMinDot",
         "memberHeadingDot<headingMinDot",
@@ -602,9 +601,8 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     expected = {
         "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M": "1.0",
         "COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO": "0.95",
-        "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M": "4.0",
         "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M": "2.0",
-        "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M": "3.0",
+        "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M": "9.0",
         "COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M": "2.0",
         "COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M": "2.0",
         "COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M": "2.0",
@@ -621,6 +619,9 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
             if path != owner:
                 assert name not in path.read_text(encoding="utf-8"), path
 
+    assert "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M" not in planner
+    assert "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M" not in planner
+
     # Whitespace-independent expressions protect calculation and use, including
     # both independent sweep sites. Existing guide/Transit/Control contracts remain.
     code = re.sub(r"\s+", "", re.sub(r"--[^\n]*", "", planner))
@@ -629,13 +630,13 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)",
         "localburden=math.abs(offset)",
         "localrequired=burden>0.001",
-        "development=math.max(COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M,burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M)",
+        "development=burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "reacquisitionDistanceM=development",
         "localsubjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)",
         "localotherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)",
         "localdevelopmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM",
-        "localentryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
-        "localentryBoundary=frontOverlap+developmentSum+entryAllowance",
+        "localcaptureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
+        "localentryBoundary=frontOverlap+developmentSum",
         "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
         "localmaximumDevelopment=math.max(subjectDevelopment,otherDevelopment)",
         "localmaximumReacquisition=math.max(subjectReacquisition,otherReacquisition)",

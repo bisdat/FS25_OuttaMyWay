@@ -1347,12 +1347,19 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
         "D0146_STEP2_REACQUISITION_DISTANCE_M",
     ):
         assert retired not in config
-    for token in (
+    for retired in (
         "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M",
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
     ):
+        assert retired not in planner
+    for token in (
+        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
+        "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
+        "entryBoundary=frontOverlap+developmentSum",
+        "captureReserveM=geometry.passageCaptureReserveM",
+    ):
         assert token in planner
+    assert "margin<=captureReserve" in control
     for token in (
         "longitudinalPairSeparation",
         "passageEntryReady",
@@ -2088,5 +2095,5 @@ def test_issue345_bubble_formation_readiness_is_explicit_pretransition_boundary(
     assert 'bubbleReadiness.status~="READY"' in transition
     assert 'route="SETTLED_NATIVE_REVELATION"' in evaluator
     assert 'route="LATEST_SAFE_CAPTURE_POINT"' in evaluator
-    assert 'approach<=allowance' in evaluator
+    assert 'result.captureMarginM<=captureReserve' in evaluator
     assert 'closingRate<=0' in evaluator

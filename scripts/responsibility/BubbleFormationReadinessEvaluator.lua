@@ -59,11 +59,11 @@ local function trace(self,result)
     if key==self.lastTraceKey then return end
     self.lastTraceKey=key
     publication:info("DEBUG","BUBBLE_FORMATION_READINESS",
-        "conflict=%s candidate=%s status=%s route=%s reason=%s settled=%s/%s approachPerParticipant=%.2fm controlAllowance=%.2fm closingRate=%.2fmps entryReady=%s",
+        "conflict=%s candidate=%s status=%s route=%s reason=%s settled=%s/%s captureMargin=%.2fm captureReserve=%.2fm closingRate=%.2fmps entryReady=%s",
         tostring(result.conflictIdentity or "NONE"),tostring(result.candidateId or "NONE"),tostring(result.status),
         tostring(result.route or "NONE"),tostring(result.reason),
         tostring(result.subjectSettled==true),tostring(result.otherSettled==true),
-        tonumber(result.approachDistancePerParticipantM) or -1,tonumber(result.controlAllowanceM) or -1,
+        tonumber(result.captureMarginM) or -1,tonumber(result.captureReserveM) or -1,
         tonumber(result.closingRateMps) or -1,tostring(result.entryReady==true))
 end
 
@@ -121,21 +121,20 @@ function Evaluator:evaluate(picture,evaluated,candidate,bridge)
         return result
     end
 
-    local approach=tonumber(entry.approachDistancePerParticipantM)
-    local allowance=tonumber(entry.controlAllowanceM)
     local currentLongitudinal=tonumber(entry.selectionLongitudinalSeparationM)
     local entryBoundary=tonumber(entry.boundarySeparationM)
+    local captureReserve=tonumber(entry.captureReserveM)
     local closing=relation.currentClosing or {}
     local closingRate=tonumber(closing.closingRateMps)
 
-    result.approachDistancePerParticipantM=approach
-    result.controlAllowanceM=allowance
     result.currentLongitudinalSeparationM=currentLongitudinal
     result.entryBoundarySeparationM=entryBoundary
+    result.captureReserveM=captureReserve
+    result.captureMarginM=(finite(currentLongitudinal) and finite(entryBoundary)) and math.max(0,currentLongitudinal-entryBoundary) or nil
     result.closingRateMps=closingRate
     result.entryReady=entry.ready==true
 
-    if not finite(approach) or approach<0 or not finite(allowance) or allowance<0
+    if not finite(captureReserve) or captureReserve<0
         or not finite(currentLongitudinal) or currentLongitudinal<0
         or not finite(entryBoundary) or entryBoundary<0 then
         result.reason="CURRENT_PASSAGE_RESERVE_EVIDENCE_UNRESOLVED"
@@ -148,15 +147,12 @@ function Evaluator:evaluate(picture,evaluated,candidate,bridge)
         return result
     end
 
-    -- The candidate planner already converts current pair geometry into the
-    -- arrangement-specific disposable approach remaining for each participant.
-    -- Reuse the architecture-owned 3 m capture/control allowance rather than
-    -- inventing another distance or a fixed time-to-contact literal.  Once each
-    -- participant has no more disposable native approach than that current
-    -- allowance, further independent closure would consume the reserve intended
-    -- to acquire and settle the pair.
-    result.latestSafeCaptureApproachM=allowance
-    if approach<=allowance then
+    -- Capture Reserve is pairwise longitudinal space outside the pure
+    -- Geometric Entry Boundary. Count it once: when current pair margin falls
+    -- to that reserve, further independent closure would consume geometry
+    -- required after control acquisition and settling.
+    result.latestSafeCaptureMarginM=captureReserve
+    if result.captureMarginM<=captureReserve then
         result.status="READY"
         result.route="LATEST_SAFE_CAPTURE_POINT"
         result.reason="DISPOSABLE_NATIVE_APPROACH_MARGIN_REACHED_CAPTURE_CONTROL_RESERVE"

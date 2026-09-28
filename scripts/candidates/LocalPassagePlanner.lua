@@ -21,10 +21,11 @@ local Planner=OuttaMyWay.LocalPassagePlanner
 local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
 local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95
 
--- Excursion/entry calibration. Entry allowance is not assembly length or braking distance.
-local COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M = 4.0
+-- Excursion geometry and provisional Capture calibration.
+-- Development follows actual lateral burden. Capture Reserve is pairwise
+-- longitudinal control space outside the Geometric Entry Boundary.
 local COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
-local COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M = 3.0
+local COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M = 9.0
 
 -- Two-dimensional guide target radii, independent of Control axis station tolerance.
 local COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
@@ -229,7 +230,7 @@ local function participantExcursionProfile(lateralOffsetM)
     local required=burden>0.001
     local development=0
     if required then
-        development=math.max(COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M,burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M)
+        development=burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M
     end
     return {
         lateralOffsetM=offset,
@@ -250,8 +251,8 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
     local developmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
-    local entryAllowance=COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M
-    local entryBoundary=frontOverlap+developmentSum+entryAllowance
+    local captureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M
+    local entryBoundary=frontOverlap+developmentSum
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
     local entryReady=executionCaptured==true or currentSeparation<=entryBoundary
@@ -274,7 +275,7 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
         crossingWindowEntrySeparationM=frontOverlap,crossingWindowRearClearSeparationM=rearClear,
         crossingWindowBasis=(aLong.basis~="CONFIGURATION_CONDITIONED_REPRESENTED_DISCS" and bLong.basis~="CONFIGURATION_CONDITIONED_REPRESENTED_DISCS") and ((aLong.basis=="GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE" and bLong.basis=="GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE") and "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "CONFIGURATION_CONDITIONED_REPRESENTED_LONGITUDINAL_EXTENTS",
         crossingWindowForwardPerParticipantM=crossingForward,
-        passageEntryControlAllowanceM=entryAllowance,passageEntryBoundarySeparationM=entryBoundary,
+        passageCaptureReserveM=captureReserve,passageEntryBoundarySeparationM=entryBoundary,
         passageEntryReady=entryReady,approachDistancePerParticipantM=approachPerParticipant,
         plannedEntrySeparationM=plannedEntrySeparation,
         model="PARTICIPANT_SCOPED_PASSAGE_CAPABLE_THEATRE",
@@ -364,7 +365,7 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
             entrySeparationM=geometry.crossingWindowEntrySeparationM,rearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
             forwardPerParticipantM=traversal,reference=geometry.crossingWindowBasis or "PASSAGE_CONFIGURED_REPRESENTED_LONGITUDINAL_EXTENTS"
         },
-        passageEntry={ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,controlAllowanceM=geometry.passageEntryControlAllowanceM,approachDistancePerParticipantM=approach},
+        passageEntry={ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,captureReserveM=geometry.passageCaptureReserveM,approachDistancePerParticipantM=approach},
         excursionModel=geometry.model,totalForwardDistanceM=geometry.totalForwardDistanceM,clearanceDeficitM=geometry.clearanceDeficitM
     },nil
 end
@@ -1107,7 +1108,7 @@ local function planConflict(picture,snapshot,conflict)
                     fieldWorldReferenceKey=fieldWorld and fieldWorld.referenceKey or nil,
                     captureControlReserve={
                         fieldSupported=fieldEvidence and fieldEvidence.captureControlReserve and fieldEvidence.captureControlReserve.fieldSupported==true,
-                        controlAllowanceM=geometry.passageEntryControlAllowanceM,
+                        captureReserveM=geometry.passageCaptureReserveM,
                         approachDistancePerParticipantM=geometry.approachDistancePerParticipantM,
                         subjectDevelopmentDistanceM=geometry.participantProfiles.subject.developmentDistanceM,
                         otherDevelopmentDistanceM=geometry.participantProfiles.other.developmentDistanceM
@@ -1149,7 +1150,7 @@ local function planConflict(picture,snapshot,conflict)
                     passageArrangement=arrangement,passageGuide=guide,passageConfiguration=passageConfiguration,pairSpecificPassageClearance=pairClearance,passageCapableTheatre=theatre,
                     passageEntry={
                         ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,
-                        controlAllowanceM=geometry.passageEntryControlAllowanceM,approachDistancePerParticipantM=geometry.approachDistancePerParticipantM,
+                        captureReserveM=geometry.passageCaptureReserveM,approachDistancePerParticipantM=geometry.approachDistancePerParticipantM,
                         selectionSeparationM=separation,selectionLongitudinalSeparationM=longitudinalSeparation,plannedEntrySeparationM=geometry.plannedEntrySeparationM
                     },
                     passageExcursion={

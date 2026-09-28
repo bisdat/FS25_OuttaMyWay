@@ -165,7 +165,7 @@ local function bubbleFormationReadinessFixture(values)
         passageEntry={
             ready=values.entryReady==true,
             boundarySeparationM=values.entryBoundaryM or 18.0,
-            controlAllowanceM=values.controlAllowanceM or 3.0,
+            captureReserveM=values.captureReserveM or 9.0,
             approachDistancePerParticipantM=values.approachDistancePerParticipantM or 12.0,
             selectionLongitudinalSeparationM=values.selectionLongitudinalSeparationM or 42.0
         }
@@ -196,7 +196,7 @@ end)
 
 test("Bubble Formation readiness accepts persistent transition at the latest safe capture point", function()
     local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
-        subjectSettled=true,otherSettled=false,approachDistancePerParticipantM=2.5,controlAllowanceM=3.0,closingRateMps=4.0
+        subjectSettled=true,otherSettled=false,entryBoundaryM=18.0,selectionLongitudinalSeparationM=26.0,captureReserveM=9.0,closingRateMps=4.0
     })
     local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
     equal(readiness.status,"READY")
@@ -4187,11 +4187,12 @@ test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing 
     equal(clearance.negativeClearanceAuthority,false)
 end)
 
-test("Cooperative Passage: Passage Excursion enters only when derived Entry Boundary is reached and uses a physical Crossing Window",function()
+test("Cooperative Passage: Geometric Entry Boundary excludes Capture Reserve and retains physical Crossing Window",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION")
-    equal(plan.passageEntry.ready,true); equal(plan.passageEntry.boundarySeparationM>=18,true)
+    equal(plan.passageEntry.ready,false); equal(plan.passageEntry.boundarySeparationM<18,true)
+    equal(plan.passageEntry.captureReserveM,9.0)
     equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
     equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
     equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_ENTRY")
@@ -4390,7 +4391,8 @@ test("Cooperative Passage: zero Clearance Deficit produces straight Passage with
     values.opposedCorridorKnowledge[1].currentClosing.separationM=math.sqrt(80)
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
-    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.passageEntry.ready,true)
+    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.passageEntry.ready,false)
+    equal(plan.passageEntry.captureReserveM,9.0)
     equal(plan.passageArrangement.currentSeparationAlreadySufficient,true)
     equal(plan.passageExcursion.clearanceDeficitM,0)
     equal(plan.passageArrangement.subjectLateralOffsetM,0); equal(plan.passageArrangement.otherLateralOffsetM,0)
@@ -6480,7 +6482,7 @@ test("Cooperative Passage: Passage Approach with no positive closing stays nativ
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-APPROACH",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
-        passageEntry={boundarySeparationM=20},thirdPartyConstraints={},failureReason=nil,
+        passageEntry={boundarySeparationM=20,captureReserveM=9.0},thirdPartyConstraints={},failureReason=nil,
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",startJobToken="JOB-A",startForwardX=0,startForwardZ=1},
         b={vehicle=vehicleB,name="B",assemblyId="AS-B",startJobToken="JOB-B",startForwardX=0,startForwardZ=-1},
         participants={}
@@ -6498,12 +6500,12 @@ test("Cooperative Passage: Passage Approach with no positive closing stays nativ
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
 end)
 
-test("Cooperative Passage: positive current closing starts capture before Entry Boundary when acquisition horizon is reached",function()
+test("Cooperative Passage: pairwise Capture Reserve starts capture before Geometric Entry Boundary",function()
     local vehicleA={rootNode=1211,lastSpeedReal=25/3600,movingDirection=1,job={token="JOB-A"}}
     local vehicleB={rootNode=1212,lastSpeedReal=25/3600,movingDirection=1,job={token="JOB-B"}}
     function vehicleA:getAISteeringNode() return self.rootNode end
     function vehicleB:getAISteeringNode() return self.rootNode end
-    local positions={[1211]={0,0,0},[1212]={0,0,30}}
+    local positions={[1211]={0,0,0},[1212]={0,0,28}}
     local directions={[1211]={0,1},[1212]={0,-1}}
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local oldCurrentJob,oldJobToken=OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken
@@ -6520,7 +6522,7 @@ test("Cooperative Passage: positive current closing starts capture before Entry 
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-TIME-AWARE-CAPTURE",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
-        passageEntry={boundarySeparationM=20},thirdPartyConstraints={},failureReason=nil,
+        passageEntry={boundarySeparationM=20,captureReserveM=9.0},thirdPartyConstraints={},failureReason=nil,
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",startJobToken="JOB-A",startForwardX=0,startForwardZ=1},
         b={vehicle=vehicleB,name="B",assemblyId="AS-B",startJobToken="JOB-B",startForwardX=0,startForwardZ=-1},
         participants={}
@@ -6530,8 +6532,7 @@ test("Cooperative Passage: positive current closing starts capture before Entry 
     control:update(16)
     equal(control.run.phase,"SETTLING"); equal(holds,2)
     equal(control.run.captureClosingRateMps>13,true)
-    equal(control.run.captureTimeToBoundaryS<1,true)
-    equal(control.run.captureTimeToBoundaryS>0,true)
+    equal(math.abs(control.run.captureMarginM-8.0)<0.01,true)
     g_time=oldTime
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
