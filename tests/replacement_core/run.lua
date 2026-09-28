@@ -6062,13 +6062,13 @@ local function passageVacaturControl(runtime,commitmentId,assemblyA,assemblyB,ve
     end
     local a=participant(assemblyA,vehicleA or {})
     local b=participant(assemblyB,vehicleB or {})
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId=commitmentId,phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId=commitmentId,phase="PASSAGE_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
     local continued=0
-    control._beginAxisReturn=function(self,run,p)
+    control._beginPassageReturn=function(self,run,p)
         local valid=runtime.boundedAuthority:validateRequest(p.request,"RS-LEG-LIFECYCLE")
         equal(valid,true)
         equal(p.request.effectiveActuationCompositionId,runtime.commitments:get(commitmentId).effectiveActuationCompositionId)
-        continued=continued+1; run.activeReturnParticipant=p; return true
+        continued=continued+1; run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true
     end
     runtime:setCooperativePassageControl(control)
     return control,donor,function() return continued end
@@ -7143,28 +7143,28 @@ test("Axis Return: Axis Travel reverses on captured axis rather than pursuing a 
     AIVehicleUtil, getWorldTranslation, worldDirectionToLocal = oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
-test("Alignment Runout settles the assembly on the captured axis rather than reproducing Phase-5 articulation",function()
-    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+test("Passage Return: native-steered reverse targets captured origin region without exact axis readiness",function()
+    local oldTranslation=getWorldTranslation
     local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
-    getWorldTranslation=function(node) return 0.1,0,12 end
-    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
-    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism={},configurationMechanism={}})
-    local participant={vehicle=vehicle,referenceKey="vehicle-root:19011",startJobToken="JE",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1}
-    control._alignmentSnapshot=function() return {members={
-        {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
-        -- A side-offset member is allowed; unresolved articulation is not.
-        {memberReferenceKey="side-implement",lateralOffsetM=3.5,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0.8,headingX=0.2,headingZ=math.sqrt(0.96)}
-    }} end
-    local aligned,reason=control:_assemblyAxisSettled(participant)
-    equal(aligned,false); equal(string.find(reason,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED",1,true)~=nil,true)
-    control._alignmentSnapshot=function() return {members={
-        {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
-        {memberReferenceKey="side-implement",lateralOffsetM=3.5,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0.8,headingX=0.02,headingZ=math.sqrt(0.9996)}
-    }} end
-    equal(control:_assemblyAxisSettled(participant),true)
-    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    getWorldTranslation=function(node) return 0.8,0,12 end
+    local call=nil
+    local drive={
+        setReposition=function(self,v,x,z,speed,radius,moveForwards)
+            call={v=v,x=x,z=z,speed=speed,radius=radius,moveForwards=moveForwards}
+            self.state={targetReached=false,repositionReferenceNodeSource="AI_REVERSE_DIRECTION_NODE"}
+            return true,nil
+        end,
+        getState=function(self) return self.state end
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism=drive,configurationMechanism={}})
+    local participant={name="P",vehicle=vehicle,executionOriginX=0,executionOriginZ=0}
+    local run={commitmentId="CM-RETURN-REGION",speedKmh=8}
+    local ok,reason=control:_beginPassageReturn(run,participant,nil,false)
+    equal(ok,true); equal(reason,nil)
+    equal(call.v,vehicle); equal(call.x,0); equal(call.z,0); equal(call.speed,8)
+    equal(call.radius,1.0); equal(call.moveForwards,false)
+    equal(run.phase,"PASSAGE_RETURN"); equal(run.activeReturnParticipant,participant)
+    getWorldTranslation=oldTranslation
 end)
 
 test("Axis Return: Return Staging places each Transit assembly beyond the other's return occupancy",function()
@@ -7183,7 +7183,7 @@ test("Axis Return: Return Staging places each Transit assembly beyond the other'
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Axis Return: Return token transfers only after released current occupancy clears waiting Transit return space",function()
+test("Passage Return: Return token transfers only after released current occupancy clears waiting Transit return space",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local z=18
     getWorldTranslation=function(node) return 0,0,z end
@@ -7202,8 +7202,8 @@ test("Axis Return: Return token transfers only after released current occupancy 
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Second Axis Return aborts safely if released clearance is lost",function()
-    local waiting={name="Waiting",vehicle={},axisReturnSkipped=false}
+test("Second Passage Return aborts safely if released clearance is lost",function()
+    local waiting={name="Waiting",vehicle={},passageReturnSkipped=false}
     local released={name="Released",vehicle={},released=true}
     local donor={
         holdMechanism={},
@@ -7211,7 +7211,7 @@ test("Second Axis Return aborts safely if released clearance is lost",function()
         configurationMechanism={}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-AXIS-RETURN-CLEAR",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-PASSAGE-RETURN-CLEAR",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
     control.nextHeartbeatMs=math.huge
     control._allSameJob=function() return true,nil end
     control._thirdPartySupport=function() return true,nil end
@@ -7220,27 +7220,26 @@ test("Second Axis Return aborts safely if released clearance is lost",function()
     control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     local oldTime=g_time; g_time=1000
     control:update(16)
-    equal(waiting.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
+    equal(waiting.passageReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
     g_time=oldTime
 end)
 
-test("Axis Return alignment loss aborts reverse instead of steering into a circle",function()
-    local participant={name="S416",vehicle={}}
+test("Passage Return: reaching the return region begins restoration without exact alignment proof",function()
+    local participant={name="S416",vehicle={},executionOriginX=0,executionOriginZ=0}
     local other={name="Other",vehicle={}}
-    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},configurationMechanism={}}
+    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=true} end},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-AXIS-RETURN-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-PASSAGE-RETURN-REGION",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
-    control._assemblyAxisSettled=function() return false,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED:trailer:0.90000" end
     local restoreCalls=0; control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     local oldTime=g_time; g_time=1000; control:update(16)
-    equal(participant.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
+    equal(participant.passageReturnCompleted,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
     g_time=oldTime
 end)
 
 
 
-test("Axis Return: participant release prevents the first returned worker from soft-locking the second token",function()
+test("Passage Return: participant release prevents the first returned worker from soft-locking the second token",function()
     local first={name="First",vehicle={},released=false}
     local second={name="Second",vehicle={},released=false}
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
@@ -7251,27 +7250,27 @@ test("Axis Return: participant release prevents the first returned worker from s
     control._releaseParticipant=function(self,run,p) p.released=true; return true,nil end
     control._releasedParticipantClearedReturnSpace=function() return true,nil,{rearStationM=22,requiredStationM=20,clearanceM=2} end
     local beginCalls=0
-    control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginCalls=beginCalls+1; equal(p,second); equal(other,first); equal(requiresClearance,true); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
+    control._beginPassageReturn=function(self,run,p,other,requiresClearance) beginCalls=beginCalls+1; equal(p,second); equal(other,first); equal(requiresClearance,true); run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true,nil end
     local oldTime=g_time; g_time=1000
     control:update(16)
     equal(first.released,true); equal(control.run.phase,"WAIT_NATIVE_CLEARANCE"); equal(control.run.waitingParticipant,second)
     g_time=1100; control:update(16)
-    equal(beginCalls,1); equal(control.run.phase,"AXIS_RETURN")
+    equal(beginCalls,1); equal(control.run.phase,"PASSAGE_RETURN")
     g_time=oldTime
 end)
 
-test("Cooperative Passage Leg: vacating active Axis Return participant starts survivor return without new Candidate",function()
+test("Cooperative Passage Leg: vacating active Passage Return participant starts survivor return without new Candidate",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"}}
     local donor={holdMechanism={release=function() end,isHolding=function() return false end},driveMechanism={clear=function() end,getState=function() return nil end},configurationMechanism={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
-    control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
+    control._beginPassageReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-AXIS",phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
-    control:vacateParticipant("CM-VACATE-AXIS","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-RETURN",phase="PASSAGE_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    control:vacateParticipant("CM-VACATE-RETURN","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
     equal(beginReturn,0); equal(beginRestore,0)
-    control:continueAfterParticipantVacatur("CM-VACATE-AXIS","AS-A")
+    control:continueAfterParticipantVacatur("CM-VACATE-RETURN","AS-A")
     equal(a.vacated,true)
     equal(beginReturn,1)
     equal(beginRestore,0)
@@ -7280,11 +7279,11 @@ end)
 
 test("Cooperative Passage Leg: vacating active restoring participant starts survivor return without repeating completed debt",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
-    local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"},axisReturnCompleted=true}
+    local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"},passageReturnCompleted=true}
     local donor={holdMechanism={release=function() end,isHolding=function() return false end},driveMechanism={clear=function() end,getState=function() return nil end},configurationMechanism={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
-    control._beginAxisReturn=function() beginReturn=beginReturn+1; return true,nil end
+    control._beginPassageReturn=function() beginReturn=beginReturn+1; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; equal(p,b); run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-RESTORE",phase="RESTORING_PARTICIPANT",a=a,b=b,participants={a,b},activeRestoreParticipant=a}
     control:vacateParticipant("CM-VACATE-RESTORE","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
