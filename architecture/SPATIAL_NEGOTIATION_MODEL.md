@@ -492,7 +492,7 @@ The **Capture Reserve** is pairwise longitudinal space outside the Geometric Ent
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
-Architecture does not impose a generic minimum or proportional Development distance as longitudinal reserve. Development belongs to Transit choreography for the selected lateral excursion; it may shape the participant guide but it does not pre-book longitudinal separation. Represented non-contact and accepted crossing clearance remain hard execution-validity conditions rather than additional reserve literals.
+Architecture does not impose a generic minimum or proportional **forward Development** distance for lateral excursion. Once the pair is settled in Transit, lateral Development is a transverse sidestep: it changes lateral position without consuming additional longitudinal station before the Shared Crossing Core. Reacquisition returns that lateral displacement after Crossing Clearance without creating forward recovery debt. Represented non-contact and accepted crossing clearance remain hard execution-validity conditions rather than additional reserve literals.
 
 The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
