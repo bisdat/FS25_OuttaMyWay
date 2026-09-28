@@ -36,7 +36,11 @@ local function completeTheatre(bridge)
         return false,"PASSAGE_CAPTURE_CONTROL_RESERVE_NOT_SUPPORTED"
     end
     local core=theatre.sharedCrossingCore
-    if type(core)~="table" or core.fieldSupported~=true or core.pairSweepSupported~=true then
+    local legacySweepSupported=type(core)=="table" and core.pairSweepSupported==true
+    local realisedSweepDeferred=type(core)=="table"
+        and core.transitArrangementSupported==true
+        and core.executionPairSweepRequired==true
+    if type(core)~="table" or core.fieldSupported~=true or (not legacySweepSupported and not realisedSweepDeferred) then
         return false,"PASSAGE_SHARED_CROSSING_CORE_NOT_SUPPORTED"
     end
     local reacquisition=theatre.lateralExcursionReacquisition or {}
