@@ -4471,7 +4471,7 @@ test("Cooperative Passage: unsupported Passage-Capable Theatre retains tactical 
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REGULATE_SPEED")
 end)
 
-test("Cooperative Passage: Passage Selection immediately supersedes Action-Space Regulation even when physical Entry is later",function()
+test("Cooperative Passage: confirmed Passage outside Capture Reserve first establishes pairwise Passage Approach Regulation",function()
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,60)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
@@ -4486,11 +4486,14 @@ test("Cooperative Passage: Passage Selection immediately supersedes Action-Space
     }
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(adapted,snapshot)
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
-    equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
-    equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
-    equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageCapableTheatre.complete,true)
-    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
+    local candidate=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(candidate.capability,"REGULATE_SPEED")
+    equal(candidate.evidenceBasis.actionSpaceRegulationBridge.admissionKind,"PASSAGE_APPROACH")
+    equal(candidate.evidenceBasis.actionSpaceRegulationBridge.fixedRegulationSpeedKmh,10)
+    equal(candidate.evidenceBasis.actionSpaceRegulationBridge.pairwisePassageApproachCeiling,true)
+    equal(#candidate.evidenceBasis.effectiveActuationComposition.entries,2)
+    equal(candidate.evidenceBasis.effectiveActuationComposition.entries[2].authorityRole,"SUPPORTING_SPEED_CEILING")
 end)
 
 test("Cooperative Passage has no arbitrary minimum entry separation and lets concrete Passage Guide support decide below 50 m",function()
@@ -4718,7 +4721,7 @@ test("Forward Intersection Regulation same-pair Passage replaces responsibility 
     local predecessorObligation=runtime.obligations:openForOwner(commitmentId)[1]
     equal(predecessorObligation.basis.kind,"FORWARD_INTERSECTION_INTENT_REVELATION")
 
-    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,14)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
     values.identity="OP-FORWARD-INTERSECTION-PASSAGE-SUCCESSION"; values.epoch=794
     values.commitmentContext={{commitmentId=commitmentId}}
@@ -4778,7 +4781,7 @@ test("Viable Passage replaces unrelated live Forward Intersection without incumb
     local predecessorResponsibilityId=predecessor.currentResponsibility.identity
     equal(runtime.authorities:ownerOf("AS-B"),predecessorCommitmentId)
 
-    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,14)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
     values.identity="OP-CROSS-CONTEXT-PASSAGE"
     values.epoch=805
@@ -4965,7 +4968,7 @@ test("Cooperative Passage: Action-Space Regulation crosses Candidate Decision Co
     local actionObligation=runtime.obligations:openForOwner(commitmentId)[1]
     equal(actionObligation.basis.kind,"ACTION_SPACE_REGULATION")
 
-    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,14)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
     values.identity="OP-COOPERATIVE-PASSAGE-SUCCESSION"; values.epoch=802; values.commitmentContext={{commitmentId=commitmentId}}
     passagePicture=OuttaMyWay.OperationalPicture.new(values)
@@ -5032,7 +5035,7 @@ local function followerResponsibilityFixture()
 end
 
 local function followerPassageFixture(runtime,admitted,events)
-    local picture,snapshot=buildCooperativePassageFixture(nil,nil,60)
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,14)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     values.commitmentContext={{commitmentId=admitted.commitment.identity}}
     picture=OuttaMyWay.OperationalPicture.new(values)
@@ -5208,7 +5211,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     equal(#obligationsBefore,1)
     local actionObligationId=obligationsBefore[1].identity
     local leaseBefore=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
-    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,60)
+    local passagePicture,passageSnapshot=buildCooperativePassageFixture(nil,nil,14)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
     values.identity="OP-RESPONSIBILITY-REPLACEMENT-FAILURE"; values.epoch=803; values.commitmentContext={{commitmentId=commitmentId}}
     passagePicture=OuttaMyWay.OperationalPicture.new(values)
