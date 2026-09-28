@@ -690,6 +690,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     assert "rightX,rightZ,nominalClearanceM)" in helper
     assert "local margin=tonumber(nominalClearanceM)" in helper
     assert re.findall(r"function Planner\.([^\n]+)", planner) == [
+        "realiseExecutionSteeringGuide(guide,arrangement,subjectPose,otherPose)",
         "validateRebasedGuidePairSweep(guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)",
         "adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation)",
         "planConflict(picture,snapshot,conflict)", "plan(picture,snapshot)"
