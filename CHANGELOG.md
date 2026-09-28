@@ -1,3 +1,27 @@
+# v0.4.6.0 PATCH CHECKPOINT — Spatial Negotiation and Cooperative Passage Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #367 (`964b6efa41128dd46f49cd04158fc05c20fba2c3`), carrying field-validated TEST `0.4.5.17`.
+
+**Version rationale:** owner-selected PATCH checkpoint under the current pre-1.0 policy. The accepted delta since `0.4.5.0` refines the existing 0.4 responsibility-oriented architecture: Situation evidence for bounded realised motion, Cooperative Passage successor readiness, Passage capture/reserve ownership, realised-origin execution validation, post-Crossing restitution, bounded Passage approach speed, and mechanically steerable lateral-excursion choreography. These are corrections and refinements inside the current architectural/capability epoch rather than a materially new MINOR capability epoch.
+
+**PATCH checkpoint boundary:** this increment changes product version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted and field-validated `0.4.5.17` baseline.
+
+**Validated plateau summary:**
+- PRs #350/#351 promoted and implemented **Realised Motion Demand** as bounded current Situation evidence, allowing Causal Obstruction to use positively realised movement without promoting GIANTS `TURNING` into future-route authority;
+- PRs #353/#354 separated **Passage Candidate Support** from **Bubble Formation Readiness**, with fresh settled-native and latest-safe-capture routes preventing a newly supported Passage Candidate from prematurely replacing still-justified Regulation;
+- PR #357 separated the **Geometric Entry Boundary** from one pairwise **Capture Reserve**, eliminating hidden duplicate longitudinal reserve while retaining the existing Passage-clearance policy;
+- the #358 tranche separated prospective Transit support from exact execution proof: helper-independent prospective support no longer requires a hypothetical-origin pair sweep, while exact pair-sweep validation is deferred to the realised settled Transit execution origin before movement;
+- the same #358 tranche bounded pre-Crossing hard-veto authority at **Crossing Clearance**, then replaced exact captured-axis restitution with sequential **Passage Return Regions** and a subordinate Transit-derived **Reverse Steering Horizon**, restoring locality before same-Job GIANTS handback rather than demanding exact productive pose reconstruction;
+- PR #366 introduced **Passage Approach Regulation** using a pairwise 10 km/h maximum through native GIANTS Cruise Control before Cooperative Passage responsibility, preserving the ceiling across Passage and restoring each participant's original values on terminal exit;
+- PR #367 separated **Lateral Excursion Outcome** from steering trajectory and materialised the **Forward-Diagonal Steering Helper** only from the realised Transit execution origin. Its 2:1 forward/lateral calibration is mechanical choreography with `reserveAuthority=false`, so steering development does not recreate lateral-derived Entry or Capture reserve;
+- Issues #345, #347, #355, #358, #364 and #365 are closed as completed after their targeted engineering and Reality evidence.
+
+**Validation basis:** blocking Offline Validation remained green through the accepted TEST lineage; the final PR #367 head completed Offline Validation run **36463822196 PASS** across Structural contracts, Lua offline behavioural contracts and Generated source reference. Targeted GIANTS Reality validation covered the Realised Motion Demand obstruction witness and controls, corrected Bubble/Entry behaviour, realised-origin Passage execution and Return, the bounded 10 km/h approach path, and TEST `0.4.5.17` successfully completing the previously failing head-on Forward-Diagonal steering witness without the former gate-progress watchdog/circular-driving failure.
+
+**Known separable work:** current open Issues remain independent of this checkpoint, including #348 constrained-boundary temporal coordination, #352 Obstruction Relocation centroid objective safety, #336 Blocked Worker Recovery reverse divergence, #228 adversarial stress validation, #89 Operational Player Messages/HUD, #293 Help / Reference, #210 LDoc portability/navigation, and #86 performance/frame-pacing evidence.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. A future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.5.0 PATCH CHECKPOINT — Recovery Robustness and Recurrence Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #342 (`4dd5b373332cb8c0fa86d15838f89708616c24a0`), carrying field-validated TEST `0.4.4.10`.
