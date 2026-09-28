@@ -369,11 +369,23 @@ Regulation changes relative timing only. It does not create Passage, reserve Pas
 
 A foreseeable Passage does not imply that its current prospective encounter point is a suitable Passage theatre. A **Passage-Capable Theatre** is a prospective encounter interval that positively supports the complete intervention OuttaMyWay proposes to create: capture/control reserve, the pair's **Shared Crossing Core**, and any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The Shared Crossing Core is the coupled region in which the two Transit-configured Physical Assemblies require positive non-contact and Passage-clearance support. Lateral Excursion is optional Passage geometry: where the selected arrangement requires sideways displacement to create clearance, the theatre must support both development of that displacement and reacquisition of the captured axis. Where no lateral excursion is required, those guide components are simply absent; on-axis and laterally displaced arrangements share the same downstream lifecycle.
+The Shared Crossing Core is the coupled region in which the two Transit-configured Physical Assemblies require positive non-contact and Passage-clearance support. Lateral Excursion is optional Passage geometry: where the selected arrangement requires sideways displacement to create clearance, the theatre must support development of that lateral outcome and subsequent participant restitution. Where no lateral excursion is required, those guide components are simply absent; on-axis and laterally displaced arrangements share the same downstream lifecycle.
+
+The **Lateral Excursion Outcome** describes the spatial displacement that must be achieved. It does not prescribe a kinematically impossible transverse translation. After Transit settlement, a **Steering Helper** may consume longitudinal movement inside the already-captured Passage theatre to realise that outcome with GIANTS steering. Helper-specific forward travel is mechanical choreography, not additional Passage Entry or Capture reserve.
+
+The first supported helper family is **Forward-Diagonal Steering**: forward progression is paired with lateral development so a wheeled vehicle receives a steerable point target rather than a pure transverse target. Its calibration belongs to the helper and MUST NOT be reused as a reserve formula.
+
+Development toward the lateral outcome and post-Crossing reacquisition are independently represented steering responsibilities even when the same helper family currently serves both. One value MUST NOT silently own both reserve policy and steering mechanics.
 
 > **Shared Crossing Core != Symmetric Passage Excursion**
 
 > **Lateral Excursion Support Is Participant-Scoped**
+
+> **Development Reserve != Steering Trajectory**
+
+> **Steering Helper May Consume Reserve; It Does Not Define Reserve**
+
+> **Lateral Excursion Outcome != Steering Trajectory**
 
 Changing progression for an opposed A8 pair changes its prospective encounter position. Regulation may move that position into a Passage-Capable Theatre. Category-1 Corner and Category-2 Headland/Boundary space are particularly important because constrained space can allow the Shared Crossing Core while denying that participant's required Lateral Excursion Development/Reacquisition.
 
@@ -609,7 +621,9 @@ Before geometry-dependent Passage movement begins after capture, both participan
 
 There is no supported full-width/working-configuration Cooperative Passage execution fallback.
 
-Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry.
+Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry. Concrete Steering Helper geometry is materialised at that **realised Transit execution origin** and must pass current pairwise execution validation before movement begins.
+
+> **Correct Origin + Correct Trajectory Must Be Validated Together**
 
 Once a physical leg begins, its locally authorised execution choice should remain stable enough to avoid unsafe oscillation. Hard safety remains authoritative.
 
