@@ -104,11 +104,15 @@ The implementation MUST preserve the distinction among:
 - the **Shared Crossing Core** required by the selected Transit-configured pair; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The Geometric Entry Boundary MUST be derived from supported facing longitudinal extents plus the actual Development required by the selected participant-specific lateral excursion. A generic control-acquisition allowance MUST NOT be embedded in that boundary.
+The Geometric Entry Boundary MUST be derived from the selected pair's supported **Transit-configured facing longitudinal extents**. Participant-specific lateral excursion MUST NOT be added as longitudinal Entry reserve.
 
-Capture Reserve MUST be represented as one pairwise longitudinal margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant or duplicated elsewhere in Entry geometry.
+Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
-A generic minimum Development floor MUST NOT be used as hidden Capture Reserve. Development belongs to the selected lateral excursion; Capture Reserve owns control acquisition and settling.
+Required lateral excursion MUST be expressed as Transit sidestep rather than proportional forward Development/Reacquisition.
+
+Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete pair sweep from a hypothetical future Entry origin.
+
+After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement is unsupported, a fresh arrangement MAY be selected from the same realised origin. If no fresh realised-origin arrangement is supported, autonomous Passage movement MUST NOT begin.
 
 The Capture Reserve magnitude remains Control calibration validated against Reality. It MUST NOT be treated as a braking-model claim, universal stopping-distance claim or fixed time-to-contact literal.
 
