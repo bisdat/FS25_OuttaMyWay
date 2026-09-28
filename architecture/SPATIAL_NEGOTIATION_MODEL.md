@@ -484,13 +484,21 @@ The required Passage theatre is arrangement-specific and contains distinct spati
 - the **Shared Crossing Core** required for the selected Transit-configured pair to cross with represented non-contact and accepted Passage clearance; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The **Geometric Entry Boundary** is the pairwise longitudinal boundary from which the selected Passage manoeuvre remains geometrically supportable. It is derived from the participants' facing longitudinal extents plus the actual participant-specific Development required by the selected lateral arrangement. Capture/control margin does not belong inside this geometric boundary.
+The **Geometric Entry Boundary** is the pairwise longitudinal boundary defined by the participants' supported **Transit-configured facing longitudinal extents**. Lateral excursion does not add longitudinal reserve to this boundary.
 
-The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It exists solely to absorb control acquisition and physical settling before geometry-dependent Passage execution. It is counted once and consumed once.
+> **Working Geometry Identifies Passage; Transit Geometry Executes Passage**
+
+The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It is the one explicit longitudinal safety reserve and exists solely to absorb control acquisition and physical settling before Transit-configured Passage execution. It is counted once and consumed once.
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
-Architecture does not impose a generic minimum Development distance as a substitute for Capture Reserve. Development belongs to the actual selected lateral excursion; control-acquisition uncertainty belongs to Capture Reserve.
+Once the pair is settled in Transit, required lateral excursion is a transverse sidestep. It owns no proportional forward Development/Reacquisition distance and creates no second longitudinal reserve.
+
+Prospective Candidate Support and realised execution support answer different questions. Candidate Support must establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core, but it must not require an exact pairwise sweep from a hypothetical future Entry origin. After Capture and Transit settlement, the realised execution origin becomes Reality and the complete pair sweep from that origin is mandatory before any Passage guide movement begins.
+
+> **Prospective Transit Capability != Realised Execution-Origin Guide Support**
+
+A failed realised-origin pair sweep invalidates autonomous Passage execution; Control must fail safe rather than move on unsupported geometry.
 
 The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
