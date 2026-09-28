@@ -693,6 +693,7 @@ function Control:_rebasePassageGuide(run)
     if legLive(subjectParticipant) and legLive(otherParticipant) then
         local planner=OuttaMyWay.LocalPassagePlanner
         if type(planner)~="table" or type(planner.validateRebasedGuidePairSweep)~="function"
+            or type(planner.realiseExecutionSteeringGuide)~="function"
             or type(planner.adaptExecutionGuide)~="function" then
             return false,"PASSAGE_EXECUTION_REVALIDATION_UNAVAILABLE"
         end
@@ -712,6 +713,22 @@ function Control:_rebasePassageGuide(run)
         if subjectRepresentation==nil then return false,subjectRepresentationReason end
         local otherRepresentation,otherRepresentationReason=realisedRepresentation(otherParticipant)
         if otherRepresentation==nil then return false,otherRepresentationReason end
+
+        local realisedGuide,steeringReason,steeringEvidence=planner.realiseExecutionSteeringGuide(
+            guide,arrangement,subjectPose,otherPose)
+        if realisedGuide==nil then
+            return false,"PASSAGE_EXECUTION_STEERING_HELPER_FAILED:"..tostring(steeringReason)
+        end
+        guide=realisedGuide
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_STEERING_HELPER_REALISED",
+            "commitment=%s helper=%s origin=REALISED_TRANSIT forwardPerLateral=%.2f Adevelopment=%.2fm Bdevelopment=%.2fm Areacquisition=%.2fm Breacquisition=%.2fm crossingForward=%.2fm reserveAuthority=false",
+            tostring(run.commitmentId),tostring(steeringEvidence and steeringEvidence.kind or "UNKNOWN"),
+            tonumber(steeringEvidence and steeringEvidence.forwardPerLateralM) or 0,
+            tonumber(steeringEvidence and steeringEvidence.subjectDevelopmentForwardM) or 0,
+            tonumber(steeringEvidence and steeringEvidence.otherDevelopmentForwardM) or 0,
+            tonumber(steeringEvidence and steeringEvidence.subjectReacquisitionForwardM) or 0,
+            tonumber(steeringEvidence and steeringEvidence.otherReacquisitionForwardM) or 0,
+            tonumber(steeringEvidence and steeringEvidence.crossingForwardPerParticipantM) or 0)
 
         local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(
             guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)

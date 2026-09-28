@@ -56,7 +56,7 @@ As applicable, the semantic product includes:
 - Passage guide semantics sufficient to express the intended physical choreography; and
 - any third-party occupancy/protection facts that constrain commitment.
 
-A Candidate MUST NOT become supported merely because the Shared Crossing Core fits. Where the selected arrangement requires lateral excursion, the Candidate MUST also positively support the corresponding Development and Reacquisition geometry. This is the implementation-facing meaning of a **Passage-Capable Theatre**.
+A Candidate MUST NOT become supported merely because the Shared Crossing Core fits. Where the selected arrangement requires lateral excursion, the Candidate MUST positively support the required lateral outcome and prospective theatre. Concrete helper-specific steering geometry remains Reality-bound and is materialised only after Transit settlement at the captured execution origin. This is the implementation-facing meaning of a **Passage-Capable Theatre** without allowing helper mechanics to become hidden reserve policy.
 
 The Candidate is prospective. Selection of the Candidate does not establish the Resolution; [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) owns that semantic lifecycle boundary.
 
@@ -134,11 +134,19 @@ The 10 km/h ceiling MUST NOT be represented as additional Capture Reserve, a bra
 
 > **Passage Approach Responsibility != Unrestricted Native Reset**
 
-Required lateral excursion MUST be expressed as Transit sidestep rather than proportional forward Development/Reacquisition.
+Required lateral excursion MUST be represented first as a **Lateral Excursion Outcome**, independent of the mechanical trajectory used to realise it. A Steering Helper MAY use forward progression to make that outcome steerable, but helper-specific forward travel MUST NOT be added to the Geometric Entry Boundary, Capture Reserve, or disposable native approach margin.
 
-Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete pair sweep from a hypothetical future Entry origin.
+The initial Forward-Diagonal Steering Helper uses a **2.0 m forward per 1.0 m lateral** calibration. This is a mechanical steering calibration, not a reserve formula. Development and Reacquisition MUST hold independent helper state even when both currently use the same helper family and calibration.
 
-After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement is unsupported, a fresh arrangement MAY be selected from the same realised origin. If no fresh realised-origin arrangement is supported, autonomous Passage movement MUST NOT begin.
+Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete helper-specific pair sweep from a hypothetical future Entry origin. Prospective planning MUST NOT materialise Forward-Diagonal travel as hidden Entry reserve.
+
+After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin. Candidate Support MUST then materialise the selected Steering Helper from that realised origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement with its materialised helper is unsupported, a fresh arrangement MAY be selected from the same realised origin and subjected to the same helper realisation and pair-sweep requirement. If no fresh realised-origin arrangement is supported, autonomous Passage movement MUST NOT begin.
+
+> **Development Reserve != Steering Trajectory**
+
+> **Steering Helper May Consume Reserve; It Does Not Define Reserve**
+
+> **Lateral Excursion Outcome != Steering Trajectory**
 
 The Capture Reserve magnitude remains Control calibration validated against Reality. It MUST NOT be treated as a braking-model claim, universal stopping-distance claim or fixed time-to-contact literal.
 
@@ -431,6 +439,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | --- | --- |
 | [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
+| [`scripts/candidates/ForwardDiagonalSteeringHelper.lua`](../scripts/candidates/ForwardDiagonalSteeringHelper.lua) | `REALISES` |
 | [`scripts/responsibility/BubbleFormationReadinessEvaluator.lua`](../scripts/responsibility/BubbleFormationReadinessEvaluator.lua) | `REALISES` |
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
@@ -448,6 +457,7 @@ The following mapping is **non-normative source traceability**.
 Current implementation routes include:
 
 - [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) and [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) — current Passage-specific Candidate support, arrangement planning and reserve/guide construction within the wider Candidate Support machinery;
+- [`scripts/candidates/ForwardDiagonalSteeringHelper.lua`](../scripts/candidates/ForwardDiagonalSteeringHelper.lua) — current mechanically scoped 2:1 forward-diagonal helper used only when realised Transit execution geometry is materialised; it owns no Entry or Capture reserve authority;
 - [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) and Passage-purpose products from [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current purpose-specific geometry/clearance evidence;
 - [`scripts/responsibility/BubbleFormationReadinessEvaluator.lua`](../scripts/responsibility/BubbleFormationReadinessEvaluator.lua) — current purpose-specific successor-readiness evaluation between selected Passage Decision and Responsibility Transition, including settled-native and latest-safe-capture routes;
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;

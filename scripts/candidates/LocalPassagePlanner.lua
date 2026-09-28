@@ -21,9 +21,11 @@ local Planner=OuttaMyWay.LocalPassagePlanner
 local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
 local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95
 
--- Excursion geometry and provisional Capture calibration.
--- Development follows actual lateral burden. Capture Reserve is pairwise
--- longitudinal control space outside the Geometric Entry Boundary.
+-- Passage reserve and prospective excursion semantics remain independent of
+-- steering mechanics. Capture Reserve is the sole explicit pairwise
+-- longitudinal safety reserve outside the Geometric Entry Boundary.
+-- Concrete steering helpers are materialised only at the realised Transit
+-- execution origin.
 local COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M = 9.0
 
 -- Two-dimensional guide target radii, independent of Control axis station tolerance.
@@ -361,6 +363,205 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
         passageEntry={ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,captureReserveM=geometry.passageCaptureReserveM,approachDistancePerParticipantM=approach},
         excursionModel=geometry.model,totalForwardDistanceM=geometry.totalForwardDistanceM,clearanceDeficitM=geometry.clearanceDeficitM
     },nil
+end
+
+local function realiseExecutionSteeringGuide(guide,arrangement,subjectPose,otherPose)
+    if type(guide)~="table" or type(guide.executionFrame)~="table" then
+        return nil,"EXECUTION_STEERING_GUIDE_UNAVAILABLE"
+    end
+    if type(arrangement)~="table" then return nil,"EXECUTION_STEERING_ARRANGEMENT_UNAVAILABLE" end
+    for _,poseValue in OuttaMyWay.ValueRecord.ipairs({subjectPose,otherPose}) do
+        if type(poseValue)~="table" or not finite(tonumber(poseValue.x)) or not finite(tonumber(poseValue.z)) then
+            return nil,"EXECUTION_STEERING_POSE_UNAVAILABLE"
+        end
+    end
+    local helper=OuttaMyWay.ForwardDiagonalSteeringHelper
+    if type(helper)~="table" or type(helper.profile)~="function" then
+        return nil,"FORWARD_DIAGONAL_STEERING_HELPER_UNAVAILABLE"
+    end
+
+    local frame=guide.executionFrame
+    local rightX,rightZ=tonumber(frame.sharedRightX),tonumber(frame.sharedRightZ)
+    local subjectForwardX,subjectForwardZ=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
+    local otherForwardX,otherForwardZ=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
+    if not finite(rightX) or not finite(rightZ) or not finite(subjectForwardX) or not finite(subjectForwardZ)
+        or not finite(otherForwardX) or not finite(otherForwardZ) then
+        return nil,"EXECUTION_STEERING_FRAME_UNRESOLVED"
+    end
+    local rightLength=math.sqrt(rightX*rightX+rightZ*rightZ)
+    local subjectForwardLength=math.sqrt(subjectForwardX*subjectForwardX+subjectForwardZ*subjectForwardZ)
+    local otherForwardLength=math.sqrt(otherForwardX*otherForwardX+otherForwardZ*otherForwardZ)
+    if rightLength<=0.0001 or subjectForwardLength<=0.0001 or otherForwardLength<=0.0001 then
+        return nil,"EXECUTION_STEERING_FRAME_DEGENERATE"
+    end
+    rightX,rightZ=rightX/rightLength,rightZ/rightLength
+    subjectForwardX,subjectForwardZ=subjectForwardX/subjectForwardLength,subjectForwardZ/subjectForwardLength
+    otherForwardX,otherForwardZ=otherForwardX/otherForwardLength,otherForwardZ/otherForwardLength
+
+    local subjectOffset=tonumber(arrangement.subjectLateralOffsetM) or 0
+    local otherOffset=tonumber(arrangement.otherLateralOffsetM) or 0
+    -- Development and Reacquisition deliberately receive independent helper
+    -- profiles. They use the same initial calibration in this experiment, but
+    -- neither value is Passage reserve and they may diverge in future helpers.
+    local subjectDevelopment,subjectDevelopmentReason=helper.profile(subjectOffset)
+    if subjectDevelopment==nil then return nil,subjectDevelopmentReason end
+    local otherDevelopment,otherDevelopmentReason=helper.profile(otherOffset)
+    if otherDevelopment==nil then return nil,otherDevelopmentReason end
+    local subjectReacquisition,subjectReacquisitionReason=helper.profile(subjectOffset)
+    if subjectReacquisition==nil then return nil,subjectReacquisitionReason end
+    local otherReacquisition,otherReacquisitionReason=helper.profile(otherOffset)
+    if otherReacquisition==nil then return nil,otherReacquisitionReason end
+
+    if subjectDevelopment.required~=true and otherDevelopment.required~=true then
+        guide.executionSteeringHelper={
+            kind="NO_LATERAL_EXCURSION",activation="REALISED_TRANSIT_EXECUTION_ORIGIN",
+            reserveAuthority=false,subjectDevelopmentForwardM=0,otherDevelopmentForwardM=0,
+            subjectReacquisitionForwardM=0,otherReacquisitionForwardM=0,
+            crossingForwardPerParticipantM=tonumber(guide.sharedCrossingCore and guide.sharedCrossingCore.forwardPerParticipantM)
+                or tonumber(guide.crossingWindow and guide.crossingWindow.forwardPerParticipantM)
+                or 0,
+            forwardPerLateralM=helper.forwardPerLateralM()
+        }
+        return guide,nil,guide.executionSteeringHelper
+    end
+
+    local subjectSpace={occupancy={x=subjectPose.x,z=subjectPose.z}}
+    local otherSpace={occupancy={x=otherPose.x,z=otherPose.z}}
+    local subjectTrajectory={establishedDirectionX=subjectForwardX,establishedDirectionZ=subjectForwardZ}
+    local otherTrajectory={establishedDirectionX=otherForwardX,establishedDirectionZ=otherForwardZ}
+    local longitudinal=longitudinalPairSeparation(subjectSpace,otherSpace,subjectTrajectory,otherTrajectory)
+    if not finite(longitudinal) then return nil,"EXECUTION_STEERING_LONGITUDINAL_SEPARATION_UNRESOLVED" end
+    local rearClear=tonumber(guide.sharedCrossingCore and guide.sharedCrossingCore.rearClearSeparationM)
+        or tonumber(guide.crossingWindow and guide.crossingWindow.rearClearSeparationM)
+    if not finite(rearClear) or rearClear<0 then
+        -- Legacy retained guides may predate explicit Shared Crossing Core
+        -- metadata. Infer only the already-encoded rear-clear outcome from the
+        -- existing Crossing Window Exit station; do not invent new reserve.
+        local exitGate=nil
+        for _,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates or {}) do
+            if gate.kind=="CROSSING_WINDOW_EXIT" then exitGate=gate; break end
+        end
+        if exitGate~=nil then
+            local subjectExit=tonumber(exitGate.participantProgress and exitGate.participantProgress.subject and exitGate.participantProgress.subject.forwardM)
+                or tonumber(exitGate.forwardM)
+            local otherExit=tonumber(exitGate.participantProgress and exitGate.participantProgress.other and exitGate.participantProgress.other.forwardM)
+                or tonumber(exitGate.forwardM)
+            if finite(subjectExit) and finite(otherExit) then
+                rearClear=math.abs(longitudinal-subjectExit-otherExit)
+            end
+        end
+    end
+    if not finite(rearClear) or rearClear<0 then return nil,"EXECUTION_STEERING_REAR_CLEAR_UNRESOLVED" end
+
+    local subjectDevelopmentForward=subjectDevelopment.forwardDistanceM
+    local otherDevelopmentForward=otherDevelopment.forwardDistanceM
+    local subjectReacquisitionForward=subjectReacquisition.forwardDistanceM
+    local otherReacquisitionForward=otherReacquisition.forwardDistanceM
+    local postDevelopmentSeparation=math.max(0,longitudinal-subjectDevelopmentForward-otherDevelopmentForward)
+    local traversal=math.max(0,(postDevelopmentSeparation+rearClear)*0.5)
+
+    local maximumDevelopment=math.max(subjectDevelopmentForward,otherDevelopmentForward)
+    local maximumReacquisition=math.max(subjectReacquisitionForward,otherReacquisitionForward)
+    local traversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M
+    local developmentRadius=math.min(COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M,math.max(traversalRadius,maximumDevelopment*0.25))
+    local reacquisitionRadius=math.min(COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M,math.max(traversalRadius,maximumReacquisition*0.25))
+    local gates={}
+
+    local function progress(subjectForward,subjectFraction,otherForward,otherFraction)
+        return {
+            subject={forwardM=subjectForward,lateralFraction=subjectFraction},
+            other={forwardM=otherForward,lateralFraction=otherFraction}
+        }
+    end
+    local function append(kind,participantProgress,radiusM)
+        gates[#gates+1]={kind=kind,participantProgress=participantProgress,radiusM=radiusM}
+    end
+    if maximumDevelopment>0.001 then
+        append("DEVELOPMENT_ENTRY",progress(
+            subjectDevelopmentForward*0.5,subjectDevelopment.required and 0.5 or 0,
+            otherDevelopmentForward*0.5,otherDevelopment.required and 0.5 or 0),developmentRadius)
+    end
+    append("CROSSING_WINDOW_ENTRY",progress(
+        subjectDevelopmentForward,subjectDevelopment.required and 1.0 or 0,
+        otherDevelopmentForward,otherDevelopment.required and 1.0 or 0),traversalRadius)
+    append("CROSSING_WINDOW_EXIT",progress(
+        subjectDevelopmentForward+traversal,subjectDevelopment.required and 1.0 or 0,
+        otherDevelopmentForward+traversal,otherDevelopment.required and 1.0 or 0),traversalRadius)
+    if maximumReacquisition>0.001 then
+        append("REACQUISITION_PROGRESS",progress(
+            subjectDevelopmentForward+traversal+subjectReacquisitionForward*0.5,subjectReacquisition.required and 0.5 or 0,
+            otherDevelopmentForward+traversal+otherReacquisitionForward*0.5,otherReacquisition.required and 0.5 or 0),reacquisitionRadius)
+    end
+    append("NATIVE_REACQUISITION",progress(
+        subjectDevelopmentForward+traversal+subjectReacquisitionForward,0,
+        otherDevelopmentForward+traversal+otherReacquisitionForward,0),reacquisitionRadius)
+
+    for index,gate in OuttaMyWay.ValueRecord.ipairs(gates) do
+        local sp=gate.participantProgress.subject
+        local op=gate.participantProgress.other
+        gate.index=index
+        gate.forwardM=math.max(sp.forwardM,op.forwardM)
+        gate.lateralFraction=math.max(sp.lateralFraction,op.lateralFraction)
+        gate.subject={
+            assemblyId=guide.gates and guide.gates[1] and guide.gates[1].subject and guide.gates[1].subject.assemblyId,
+            x=subjectPose.x+subjectForwardX*sp.forwardM+rightX*(sp.lateralFraction*subjectOffset),
+            z=subjectPose.z+subjectForwardZ*sp.forwardM+rightZ*(sp.lateralFraction*subjectOffset),
+            radiusM=gate.radiusM
+        }
+        gate.other={
+            assemblyId=guide.gates and guide.gates[1] and guide.gates[1].other and guide.gates[1].other.assemblyId,
+            x=otherPose.x+otherForwardX*op.forwardM+rightX*(op.lateralFraction*otherOffset),
+            z=otherPose.z+otherForwardZ*op.forwardM+rightZ*(op.lateralFraction*otherOffset),
+            radiusM=gate.radiusM
+        }
+    end
+
+    guide.gates=gates
+    guide.entryOrigins={subject={x=subjectPose.x,z=subjectPose.z},other={x=otherPose.x,z=otherPose.z}}
+    guide.executionFrame.sharedRightX,guide.executionFrame.sharedRightZ=rightX,rightZ
+    guide.executionFrame.subjectForwardX,guide.executionFrame.subjectForwardZ=subjectForwardX,subjectForwardZ
+    guide.executionFrame.otherForwardX,guide.executionFrame.otherForwardZ=otherForwardX,otherForwardZ
+    if type(guide.sharedCrossingCore)=="table" then guide.sharedCrossingCore.forwardPerParticipantM=traversal end
+    if type(guide.crossingWindow)=="table" then guide.crossingWindow.forwardPerParticipantM=traversal end
+    guide.executionSteeringHelper={
+        kind="FORWARD_DIAGONAL_2_TO_1",activation="REALISED_TRANSIT_EXECUTION_ORIGIN",
+        reserveAuthority=false,
+        subjectDevelopmentForwardM=subjectDevelopmentForward,otherDevelopmentForwardM=otherDevelopmentForward,
+        subjectReacquisitionForwardM=subjectReacquisitionForward,otherReacquisitionForwardM=otherReacquisitionForward,
+        crossingForwardPerParticipantM=traversal,
+        realisedLongitudinalSeparationM=longitudinal,
+        postDevelopmentLongitudinalSeparationM=postDevelopmentSeparation,
+        forwardPerLateralM=helper.forwardPerLateralM()
+    }
+    if type(guide.participantDevelopment)=="table" then
+        if type(guide.participantDevelopment.subject)=="table" then
+            guide.participantDevelopment.subject.steeringForwardM=subjectDevelopmentForward
+            guide.participantDevelopment.subject.steeringHelperKind=subjectDevelopment.kind
+        end
+        if type(guide.participantDevelopment.other)=="table" then
+            guide.participantDevelopment.other.steeringForwardM=otherDevelopmentForward
+            guide.participantDevelopment.other.steeringHelperKind=otherDevelopment.kind
+        end
+    end
+    if type(guide.lateralExcursionReacquisition)=="table" then
+        if type(guide.lateralExcursionReacquisition.subject)=="table" then
+            guide.lateralExcursionReacquisition.subject.steeringForwardM=subjectReacquisitionForward
+            guide.lateralExcursionReacquisition.subject.steeringHelperKind=subjectReacquisition.kind
+        end
+        if type(guide.lateralExcursionReacquisition.other)=="table" then
+            guide.lateralExcursionReacquisition.other.steeringForwardM=otherReacquisitionForward
+            guide.lateralExcursionReacquisition.other.steeringHelperKind=otherReacquisition.kind
+        end
+    end
+    guide.totalForwardDistanceM=math.max(
+        subjectDevelopmentForward+traversal+subjectReacquisitionForward,
+        otherDevelopmentForward+traversal+otherReacquisitionForward)
+
+    return guide,nil,guide.executionSteeringHelper
+end
+
+function Planner.realiseExecutionSteeringGuide(guide,arrangement,subjectPose,otherPose)
+    return realiseExecutionSteeringGuide(guide,arrangement,subjectPose,otherPose)
 end
 
 local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
@@ -1045,6 +1246,9 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
             local guide,guideReason=makeGuide(
                 conflict,subjectTrajectory,otherTrajectory,subjectSpace,otherSpace,
                 arrangement.subjectLateralOffsetM,arrangement.otherLateralOffsetM,geometry)
+            if guide~=nil then
+                guide,guideReason=realiseExecutionSteeringGuide(guide,arrangement,subjectPose,otherPose)
+            end
             if guide~=nil then
                 guide.executionFrame.subjectEnvelopeForwardX=subjectPose.dx
                 guide.executionFrame.subjectEnvelopeForwardZ=subjectPose.dz
