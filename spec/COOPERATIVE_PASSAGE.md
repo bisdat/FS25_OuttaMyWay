@@ -116,9 +116,15 @@ After Passage Approach Regulation has acquired the pairwise ceiling, Candidate S
 
 > **Regulation Acquisition != Capture Readiness**
 
-A Passage-owned supporting speed ceiling MUST preserve the already-established maximum across that transition until Capture/Hold has positively acquired both participants. That supporting lease is handoff continuity; it MUST NOT be treated as evidence that post-transition Passage responsibility can retroactively protect approach margin consumed before the Regulation existed.
+The temporarily modified GIANTS Cruise Control values MUST persist across the Regulation-to-Passage Responsibility Transition and remain in force for the complete Passage lifecycle, including Return. The Cruise Ceiling is configuration state, not movement authority; it MUST NOT create steering, direction, target or displacement authority.
 
-If first complete Passage support occurs only when Capture Reserve is already due, Candidate Support MAY expose Passage directly through the existing latest-safe-capture route rather than manufacturing a zero-duration predecessor Regulation.
+OMW MUST capture each participant's original forward and reverse Cruise Control values before modification and MUST restore those original values on every Passage terminal exit, including success, failure, product disable and other fail-safe relinquishment. Pair application MUST be fail-safe: if both participants cannot be configured, any participant already changed in that attempt MUST be restored before the operation reports failure.
+
+If first complete Passage support occurs only when Capture Reserve is already due, Candidate Support MAY expose Passage directly through the existing latest-safe-capture route; the same Cruise Ceiling MUST then be acquired before physical Passage dispatch rather than manufacturing a zero-duration predecessor Regulation.
+
+> **Speed Configuration != Movement Authority**
+
+> **Passage Speed Envelope Spans Responsibility Transitions**
 
 > **Confirmed Passage != Immediate Passage Responsibility**
 
