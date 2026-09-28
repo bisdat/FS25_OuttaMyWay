@@ -707,8 +707,40 @@ local function decisionPicture(specifications,options)
     })
 end
 
+local function installPassageCruiseTestDouble(runtime)
+    local leases={}
+    runtime.passageCruiseControl={
+        hasLease=function(_,commitmentId) return leases[commitmentId]~=nil end,
+        getCeilingKmh=function() return 10.0 end,
+        acquirePair=function(_,commitmentId,participants,ceilingKmh)
+            if type(commitmentId)~="string" or OuttaMyWay.ValueRecord.length(participants or {})~=2 then
+                return false,"TEST_PASSAGE_CRUISE_CONTEXT_INVALID"
+            end
+            leases[commitmentId]={participants=participants,ceilingKmh=ceilingKmh}
+            return true,"TEST_PASSAGE_CRUISE_PAIR_APPLIED"
+        end,
+        releaseForCommitment=function(_,commitmentId)
+            local existed=leases[commitmentId]~=nil
+            leases[commitmentId]=nil
+            return existed,"TEST_PASSAGE_CRUISE_RESTORED"
+        end,
+        releaseAll=function()
+            local count=0
+            for commitmentId,_ in OuttaMyWay.ValueRecord.pairs(leases) do
+                leases[commitmentId]=nil
+                count=count+1
+            end
+            return count
+        end
+    }
+    return runtime
+end
+
 local function newDecisionRuntime()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); return runtime
+    local runtime=OuttaMyWay.Runtime.new()
+    installPassageCruiseTestDouble(runtime)
+    runtime:initialize()
+    return runtime
 end
 
 local function boundedAuthorityRegulationFixture(options)
