@@ -11,9 +11,10 @@ def test_confirmed_passage_outside_entry_readiness_becomes_regulation_not_passag
     support = text("scripts/candidates/LiveTrafficCandidateSupport.lua")
     assert "local PASSAGE_APPROACH_SPEED_CEILING_KMH = 10.0" in support
     assert 'action.admissionKind=="PASSAGE_APPROACH"' in support
-    guard = "if not (plan.passageEntry and plan.passageEntry.ready==true) then"
+    guard = "if captureState.due~=true and existingApproachCommitment==nil and existingApproachReason==nil then"
     regulation = "return publishActionSpaceRegulationPicture(self,picture,snapshot,approachItem)"
     passage = "local specification=makeCooperativePassageCandidate(pictureId,values,plan,governingRequirementKey)"
+    assert "local function passageCaptureState(plan)" in support
     assert guard in support and regulation in support and passage in support
     assert support.index(guard) < support.index(regulation) < support.index(passage)
     assert "PASSAGE_APPROACH_REGULATION_SUPPORTED" in support
@@ -30,7 +31,8 @@ def test_passage_approach_regulation_composes_pairwise_ten_kmh_ceiling():
     assert "function Authority:_supportingSpeedCeilingRequest" in authority
     assert "fixedPassageApproach=bridge.admissionKind==\"PASSAGE_APPROACH\"" in authority
     assert "PASSAGE_APPROACH_REGULATION_APPLIED" in authority
-    assert 'effectClass="PAIRWISE_SPEED_CEILING"' in authority
+    assert '"PAIRWISE_SPEED_CEILING"' in authority
+    assert "supportingSpeedCeilingComposition=supportingComposition" in authority
 
 
 def test_passage_approach_regulation_is_fixed_until_capture_succession_not_elastic_envelope():
@@ -79,5 +81,6 @@ def test_specs_separate_passage_approach_regulation_from_passage_resolution():
         assert "Passage Approach Regulation" in content
         assert "Confirmed Passage != Immediate Passage Responsibility" in content
         assert "Passage Approach Regulation != Passage Resolution" in content
+        assert "Regulation Acquisition != Capture Readiness" in content
     assert "**10 km/h per participant**" in passage
     assert "common **8 km/h** Cooperative Passage actuation speed" in passage
