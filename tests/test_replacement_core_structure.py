@@ -1475,19 +1475,16 @@ def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
     assert "clearanceAcceptanceRatio" in planner
 
 
-def test_v0146_clearance_telemetry_reuses_existing_sweep_evidence_without_extra_planner_calls():
+def test_clearance_telemetry_does_not_restore_prospective_pair_sweep_authority():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     assert "COOPERATIVE_PASSAGE_CLEARANCE_TRACE" in support
     assert "passageClearanceRejectionTelemetry" in support
     assert "passageClearanceSelectedTelemetry" in support
-    assert "candidate.sweepEvidence" in support
-    assert "minimumCrossingWindowClearanceM" in support
-    assert "requiredNominalClearanceM" in support
-    assert "nominalResidue" in support
-    assert "floorResidue" in support
-    assert "sweepEvidence=sweepEvidence" in planner
+    assert "prospectivePairSupport=transitEvidence" in planner
+    assert "sweepEvidence=sweepEvidence" not in planner
+    assert "executionPairSweepRequired=true" in planner
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     window="COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M"
     assert window not in config
