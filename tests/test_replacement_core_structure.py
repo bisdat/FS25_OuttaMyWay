@@ -1481,7 +1481,7 @@ def test_pair_sweep_failure_probe_reports_segment_sample_and_world_witness_witho
     for token in (
         "minimumOutsideCrossingWitness",
         "minimumCrossingWindowWitness",
-        'segment="SIDESTEP_OUT"',
+        '"SIDESTEP_OUT"',
         "outsideCrossingOverlapToleranceM=0.001",
         'minimumOutsideCrossing<-0.001',
     ):
