@@ -541,12 +541,15 @@ def test_passage_guide_radius_return_staging_tolerance_and_return_region_have_in
     radius = "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"
     staging_tolerance = "COOPERATIVE_PASSAGE_RETURN_STAGING_STATION_TOLERANCE_M"
     return_region = "COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M"
+    steering_horizon_target = "COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M"
     # Equal calibrations do not create shared policy: guide reach, staging
-    # station completion and Return Region entry remain purpose-specific owners.
+    # station completion, Return Region entry and subordinate steering-target
+    # arrival remain purpose-specific owners.
     for name, owner, text in (
         (radius, planner_owner, planner),
         (staging_tolerance, control_owner, passage),
         (return_region, control_owner, passage),
+        (steering_horizon_target, control_owner, passage),
     ):
         assert name not in config
         assert re.search(rf"^local {name} = 1\.0$", text, re.M)
@@ -563,7 +566,7 @@ def test_passage_guide_radius_return_staging_tolerance_and_return_region_have_in
     assert "participantProgress" in guide
     assert 'append("CROSSING_WINDOW_ENTRY",progress(subjectDevelopment,' in guide
     assert f"local tolerance={staging_tolerance}" in passage
-    assert f"participant.vehicle,originX,originZ,run.speedKmh,{return_region},false" in passage
+    assert "local horizonDistance=envelopeLength(participant.transitPassageEnvelope)" in passage
     assert ',otherDevelopment,' in guide
     assert 'append("CROSSING_WINDOW_EXIT",progress(subjectDevelopment+traversal,' in guide
     assert ',otherDevelopment+traversal,' in guide
@@ -577,7 +580,13 @@ def test_passage_guide_radius_return_staging_tolerance_and_return_region_have_in
             "progress+stepDistance,run.speedKmh,true,tolerance)") in staging
 
     passage_return = passage.split("function Control:_beginPassageReturn(", 1)[1].split("\nfunction Control:", 1)[0]
-    assert f"participant.vehicle,originX,originZ,run.speedKmh,{return_region},false" in passage_return
+    assert "local horizonDistance=envelopeLength(participant.transitPassageEnvelope)" in passage_return
+    assert "local steeringTargetX=originX-fx*horizonDistance" in passage_return
+    assert "local steeringTargetZ=originZ-fz*horizonDistance" in passage_return
+    assert f"participant.vehicle,steeringTargetX,steeringTargetZ,run.speedKmh,{steering_horizon_target},false" in passage_return
+    assert f"participant.vehicle,originX,originZ,run.speedKmh,{return_region},false" not in passage_return
+    assert "horizonBasis=TRANSIT_LENGTH" in passage_return
+    assert "completionOwner=CONTROL_RETURN_REGION" in passage_return
     assert "setAxisTravel" not in passage_return
 
     gate = passage.split("function Control:_startGuideGate(", 1)[1].split("\nfunction Control:", 1)[0]

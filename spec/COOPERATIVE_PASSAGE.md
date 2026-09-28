@@ -221,19 +221,27 @@ After positive Crossing Clearance, Passage restitution MUST restore **locality**
 
 Each still-live participant MAY require bounded forward Return Staging so that sequential reverse has positively protected space. Return Staging MUST be owned by separation/occupancy requirements; exact captured-axis alignment MUST NOT be a prerequisite.
 
-A participant with remaining displacement debt MUST then reverse under native steering toward its captured execution origin / original work-lane locality. The completion condition is entry into a bounded **Passage Return Region**, not exact centreline, heading or articulation reproduction.
+A participant with remaining displacement debt MUST then reverse under native steering toward a subordinate **Reverse Steering Horizon** beyond its captured execution origin / original work-lane locality. The completion condition remains entry into a bounded **Passage Return Region**, not steering-target arrival and not exact centreline, heading or articulation reproduction.
+
+For the current capability, Reverse Steering Horizon look-through MUST be derived from the participant's cached Transit longitudinal length. It is steering geometry only: it MUST NOT extend movement authority, enlarge the Return Region, add another longitudinal reserve or become restitution-completion evidence.
 
 The return mechanism MUST:
 - keep the participant in Transit while spatial restitution is active;
 - return participants sequentially rather than simultaneously;
 - preserve positive released-participant clearance before the waiting participant begins return;
 - retain the existing GIANTS FIELDWORK Job Episode;
+- determine Return Region entry independently from the reverse steering mechanism's point-target completion;
+- stop/fail safe if the subordinate steering horizon is reached before Return Region entry;
 - restore intervention-created configuration debt after the Return Region is reached; and
 - hand control back to GIANTS for residual productive-route correction.
 
 Passage MUST NOT restart or replace the FIELDWORK job merely to perturb GIANTS routing. That behaviour belongs to Blocked Worker Recovery, where blockage invalidates the useful native route; Cooperative Passage does not invalidate the participant's productive route.
 
 > **Passage Return Region != BWR Recovery Return Region**
+
+> **Passage Return Region != Reverse Steering Horizon**
+
+> **Movement Completion Region != Reverse Steering Target**
 
 > **Restitution Sufficiency != Geometric Restoration**
 

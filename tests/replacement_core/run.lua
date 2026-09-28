@@ -7143,7 +7143,7 @@ test("Axis Return: Axis Travel reverses on captured axis rather than pursuing a 
     AIVehicleUtil, getWorldTranslation, worldDirectionToLocal = oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
-test("Passage Return: native-steered reverse targets captured origin region without exact axis readiness",function()
+test("Passage Return: reverse steering horizon is derived from Transit length while Return Region remains Control-owned",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
     getWorldTranslation=function(node) return 0.8,0,12 end
@@ -7152,19 +7152,27 @@ test("Passage Return: native-steered reverse targets captured origin region with
     local drive={
         setReposition=function(self,v,x,z,speed,radius,moveForwards)
             call={v=v,x=x,z=z,speed=speed,radius=radius,moveForwards=moveForwards}
-            self.state={targetReached=false,repositionReferenceNodeSource="AI_REVERSE_DIRECTION_NODE"}
+            self.state={targetReached=false,repositionReferenceNodeSource="AI_REVERSER_NODE",toolReverserDirectionNodeSource="UNAVAILABLE"}
             return true,nil
         end,
         getState=function(self) return self.state end
     }
     local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism=drive,configurationMechanism={}})
-    local participant={name="P",vehicle=vehicle,executionOriginX=0,executionOriginZ=0}
+    local participant={
+        name="P",vehicle=vehicle,executionOriginX=0,executionOriginZ=0,
+        axisForwardX=0,axisForwardZ=1,
+        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
+    }
     local run={commitmentId="CM-RETURN-REGION",speedKmh=8}
     local ok,reason=control:_beginPassageReturn(run,participant,nil,false)
     equal(ok,true); equal(reason,nil)
-    equal(call.v,vehicle); equal(call.x,0); equal(call.z,0); equal(call.speed,8)
+    equal(call.v,vehicle); equal(call.x,0); equal(call.z,-4); equal(call.speed,8)
     equal(call.radius,1.0); equal(call.moveForwards,false)
+    equal(participant.returnSteeringHorizonM,4)
+    equal(participant.returnSteeringTargetX,0); equal(participant.returnSteeringTargetZ,-4)
     equal(run.phase,"PASSAGE_RETURN"); equal(run.activeReturnParticipant,participant)
+    local region=control:_passageReturnRegionState(participant)
+    equal(region.reached,false); equal(math.abs(region.distanceM-math.sqrt(144.64))<0.001,true)
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
@@ -7225,10 +7233,14 @@ test("Second Passage Return aborts safely if released clearance is lost",functio
     g_time=oldTime
 end)
 
-test("Passage Return: reaching the return region begins restoration without exact alignment proof",function()
-    local participant={name="S416",vehicle={},executionOriginX=0,executionOriginZ=0}
+test("Passage Return: Control-owned Return Region begins restoration before steering horizon target completion",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local vehicle={rootNode=19301,getAISteeringNode=function(self) return self.rootNode end}
+    getWorldTranslation=function(node) return 0.6,0,0.6 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local participant={name="S416",vehicle=vehicle,executionOriginX=0,executionOriginZ=0}
     local other={name="Other",vehicle={}}
-    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=true} end},configurationMechanism={}}
+    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-PASSAGE-RETURN-REGION",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
@@ -7236,6 +7248,26 @@ test("Passage Return: reaching the return region begins restoration without exac
     local oldTime=g_time; g_time=1000; control:update(16)
     equal(participant.passageReturnCompleted,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
     g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
+
+test("Passage Return: steering horizon arrival cannot substitute for Return Region entry",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local vehicle={rootNode=19311,getAISteeringNode=function(self) return self.rootNode end}
+    getWorldTranslation=function(node) return 0,0,3 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local participant={name="Articulated",vehicle=vehicle,executionOriginX=0,executionOriginZ=0}
+    local other={name="Other",vehicle={}}
+    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=true} end},configurationMechanism={}}
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-HORIZON-NOT-COMPLETION",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
+    control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
+    control._failHeld=function(self,reason) self.run.failureReason=reason end
+    local oldTime=g_time; g_time=1000; control:update(16)
+    equal(participant.passageReturnCompleted==true,false)
+    equal(control.run.failureReason,"PASSAGE_RETURN_STEERING_HORIZON_REACHED_BEFORE_RETURN_REGION")
+    g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
 

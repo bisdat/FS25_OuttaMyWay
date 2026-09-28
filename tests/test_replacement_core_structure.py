@@ -1588,7 +1588,7 @@ def test_v0181_cooperative_passage_restore_uses_cached_actuator_symmetry_only():
     assert 'function Mechanism:finishCachedTransitRestore(vehicle)' in authority
 
 
-def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
+def test_v01124_bounded_passage_return_is_isolated_after_canonical_passage_guide():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"control"/"mechanisms"/"NativeDriveMechanism.lua").read_text(encoding="utf-8")
@@ -1605,13 +1605,17 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     assert 'COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG' in planner
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
     # Post-Crossing restitution uses bounded staging plus native-steered
-    # reverse into a Passage Return Region. Exact captured-axis restoration is
-    # not a Passage requirement.
+    # reverse. The semantic Return Region and subordinate Reverse Steering
+    # Horizon remain distinct; exact captured-axis restoration is not required.
     assert 'COOPERATIVE_PASSAGE_GUIDE_COMPLETE' in control
     assert 'RETURN_STAGING_START' in control
     assert 'RETURN_STAGING_READY' in control
     assert 'PASSAGE_RETURN_STARTED' in control
-    assert 'steering=NATIVE_POINT_SEEKING' in control
+    assert 'steering=NATIVE_POINT_SEEKING_WITH_TRANSIT_HORIZON' in control
+    assert 'horizonBasis=TRANSIT_LENGTH' in control
+    assert 'completionOwner=CONTROL_RETURN_REGION' in control
+    assert 'COOPERATIVE_PASSAGE_RETURN_STEERING_STATE' in control
+    assert 'PASSAGE_RETURN_STEERING_HORIZON_REACHED_BEFORE_RETURN_REGION' in control
     assert 'existingJobPreserved=true' in control
     assert 'RETURN_CLEARANCE_WAIT' in control
     assert 'PASSAGE_RETURN_CLEARANCE_LOST' in control
@@ -1624,6 +1628,11 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     assert 'AXIS_RETURN_ALIGNMENT_LOST' not in control
     assert 'exactAxisAlignmentRequired=false' in control
     assert 'COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M = 1.0' in control
+    assert 'COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M = 1.0' in control
+    assert 'local horizonDistance=envelopeLength(participant.transitPassageEnvelope)' in control
+    assert 'local steeringTargetX=originX-fx*horizonDistance' in control
+    assert 'local steeringTargetZ=originZ-fz*horizonDistance' in control
+    assert 'function Control:_passageReturnRegionState(participant)' in control
     assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995' in control
 
 

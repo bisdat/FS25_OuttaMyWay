@@ -9,10 +9,12 @@
 -- the pair and instantiates the guide from actual execution origins before
 -- forward-only point pursuit. TRANSIT_BASE participants always
 -- request Transit and wait only for positive native fold-motion settlement. Final
--- Recovery restores whole-assembly axis alignment, performs one-at-a-time Axis
--- Return, then completes participant-specific restore/handoff. The captured member
--- pose is an execution origin, not a target articulation shape. Unsupported return
--- fails safely to restore/handoff rather than reverse point-seeking.
+-- Recovery creates bounded sequential return space, then performs one-at-a-time
+-- native-steered reverse. Passage Return completion remains a Control-owned region
+-- around the captured execution origin; the subordinate reverse steering target is
+-- a geometry-derived horizon beyond that region. The captured member pose is an
+-- execution origin, not a target articulation shape. Unsupported return fails
+-- safely rather than allowing steering-target arrival to manufacture restitution.
 
 OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
@@ -38,9 +40,13 @@ local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 -- Post-Crossing return staging remains bounded and Reality-reassessed.
 local COOPERATIVE_PASSAGE_RETURN_STAGING_STATION_TOLERANCE_M = 1.0
 local COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M = 5.0
--- Passage restores locality, not the exact productive pose. Native-steered
--- reverse completes when the participant re-enters this captured-origin region.
+-- Passage restores locality, not the exact productive pose. Control completes
+-- restitution when the participant re-enters this captured-origin region.
 local COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M = 1.0
+-- Reverse steering needs look-through beyond the semantic completion region.
+-- This radius belongs only to the subordinate steering target; reaching that
+-- target before Return Region entry is a fail-safe contradiction, not success.
+local COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M = 1.0
 
 local publication=OuttaMyWay.LogPublication.origin("CONTROL")
 local function logInfo(publicationClass,code,formatText,...)
@@ -130,6 +136,13 @@ local function pose(vehicle)
     local length=math.sqrt(dx*dx+dz*dz)
     if length<=0.0001 then return nil end
     return {node=node,x=x,y=y,z=z,dx=dx/length,dz=dz/length}
+end
+
+local function nodeWorldPosition(node)
+    if node==nil or node==0 or type(getWorldTranslation)~="function" then return nil end
+    local ok,x,_,z=pcall(getWorldTranslation,node)
+    if not ok then return nil end
+    return {x=x,z=z}
 end
 
 local function wakeNativeContinuation(vehicle)
@@ -909,21 +922,107 @@ function Control:_chooseReturnOrder(run)
     return list
 end
 
+function Control:_passageReturnRegionState(participant)
+    local pp=pose(participant and participant.vehicle)
+    if pp==nil then return nil,"PASSAGE_RETURN_POSE_UNAVAILABLE" end
+    local originX,originZ=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    if originX==nil or originZ==nil then return nil,"PASSAGE_RETURN_ORIGIN_UNAVAILABLE" end
+    local regionDistance=distance(pp.x,pp.z,originX,originZ)
+    return {
+        pose=pp,
+        distanceM=regionDistance,
+        residualM=math.max(0,regionDistance-COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M),
+        reached=regionDistance<=COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M
+    },nil
+end
+
+function Control:_publishPassageReturnSteeringState(run,participant,drive)
+    if not diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_RETURN_STEERING_STATE") then return end
+    local nowMs=g_time or 0
+    if nowMs<(participant.nextReturnSteeringDiagnosticMs or 0) then return end
+    participant.nextReturnSteeringDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
+
+    local region=self:_passageReturnRegionState(participant)
+    if region==nil then return end
+    local originX,originZ=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    local fx,fz=tonumber(participant.returnSteeringAxisForwardX),tonumber(participant.returnSteeringAxisForwardZ)
+    local horizon=tonumber(participant.returnSteeringHorizonM)
+    if originX==nil or originZ==nil or fx==nil or fz==nil or horizon==nil then return end
+
+    local reversePoint=nodeWorldPosition(drive and drive.repositionReferenceNode)
+    local toolPoint=nodeWorldPosition(drive and drive.toolReverserDirectionNode)
+    local function station(point)
+        if point==nil then return nil end
+        return (point.x-originX)*fx+(point.z-originZ)*fz
+    end
+    local function metric(value)
+        return value~=nil and string.format("%.2f",value) or "n/a"
+    end
+    local function pointText(point)
+        return point~=nil and string.format("(%.2f,%.2f)",point.x,point.z) or "n/a"
+    end
+    local steeringStation=station(region.pose)
+    local reverseStation=station(reversePoint)
+    local toolStation=station(toolPoint)
+    local reverseLookthrough=reverseStation~=nil and reverseStation+horizon or nil
+    local toolLookthrough=toolStation~=nil and toolStation+horizon or nil
+    local angleDeg=drive and tonumber(drive.nativeToolAdjustmentAngleRad)
+    if angleDeg~=nil then angleDeg=math.deg(angleDeg) end
+
+    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_STEERING_STATE",
+        "commitment=%s participant=%s regionDistance=%.2fm regionResidual=%.2fm horizon=%.2fm steeringTarget=(%.2f,%.2f) steeringNode=%s steeringStation=%sm reverseReference=%s reverseNode=%s reverseStation=%sm reverseLookthrough=%sm toolReference=%s toolNode=%s toolStation=%sm toolLookthrough=%sm toolAdjustmentApplied=%s toolAngleDeg=%s toolLongitudinal=%sm adjustedLocalZ=%s",
+        tostring(run.commitmentId),participant.name,region.distanceM,region.residualM,horizon,
+        tonumber(participant.returnSteeringTargetX) or 0,tonumber(participant.returnSteeringTargetZ) or 0,
+        pointText(region.pose),metric(steeringStation),tostring(drive and drive.repositionReferenceNodeSource or "UNAVAILABLE"),
+        pointText(reversePoint),metric(reverseStation),metric(reverseLookthrough),
+        tostring(drive and drive.toolReverserDirectionNodeSource or "UNAVAILABLE"),pointText(toolPoint),
+        metric(toolStation),metric(toolLookthrough),tostring(drive and drive.nativeToolAdjustmentApplied==true),
+        metric(angleDeg),metric(drive and tonumber(drive.nativeToolRelativeLongitudinalM)),
+        metric(drive and tonumber(drive.nativeToolAdjustedLocalZ)))
+end
+
 function Control:_beginPassageReturn(run,participant,other,requiresReleasedClearance)
     local pp=pose(participant.vehicle)
     if pp==nil then return false,"PASSAGE_RETURN_POSE_UNAVAILABLE" end
     local originX,originZ=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    local fx,fz=tonumber(participant.axisForwardX),tonumber(participant.axisForwardZ)
     if originX==nil or originZ==nil then return false,"PASSAGE_RETURN_ORIGIN_UNAVAILABLE" end
+    if fx==nil or fz==nil then return false,"PASSAGE_RETURN_AXIS_UNAVAILABLE" end
+    local axisLength=math.sqrt(fx*fx+fz*fz)
+    if axisLength<=0.0001 then return false,"PASSAGE_RETURN_AXIS_DEGENERATE" end
+    fx,fz=fx/axisLength,fz/axisLength
+
+    -- Passage Return Region owns semantic completion. Reverse Steering Horizon
+    -- owns only subordinate GIANTS steering look-through. The first calibration
+    -- derives that look-through from already-supported participant Transit length
+    -- rather than introducing a universal distance literal.
+    local horizonDistance=envelopeLength(participant.transitPassageEnvelope)
+    if horizonDistance==nil or horizonDistance<=0 then return false,"PASSAGE_RETURN_STEERING_HORIZON_UNAVAILABLE" end
+    if horizonDistance<=COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M+COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M then
+        return false,"PASSAGE_RETURN_STEERING_HORIZON_NOT_BEYOND_RETURN_REGION"
+    end
+    local steeringTargetX=originX-fx*horizonDistance
+    local steeringTargetZ=originZ-fz*horizonDistance
+
     local ok,reason=self.driveMechanism:setReposition(
-        participant.vehicle,originX,originZ,run.speedKmh,COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M,false)
+        participant.vehicle,steeringTargetX,steeringTargetZ,run.speedKmh,COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M,false)
     if not ok then return false,"PASSAGE_RETURN_ACTUATION:"..tostring(reason) end
+
+    participant.returnSteeringHorizonM=horizonDistance
+    participant.returnSteeringTargetX=steeringTargetX
+    participant.returnSteeringTargetZ=steeringTargetZ
+    participant.returnSteeringAxisForwardX=fx
+    participant.returnSteeringAxisForwardZ=fz
+    participant.nextReturnSteeringDiagnosticMs=0
+
     run.activeReturnParticipant=participant; run.waitingParticipant=other; run.returnRequiresReleasedClearance=requiresReleasedClearance==true
     self:_setPhase(run,"PASSAGE_RETURN",g_time or 0)
     local drive=self.driveMechanism:getState(participant.vehicle) or {}
     logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STARTED",
-        "commitment=%s participant=%s startDistance=%.2fm returnOrigin=(%.2f,%.2f) regionRadius=%.2fm reverse=true steering=NATIVE_POINT_SEEKING existingJobPreserved=true reverseReference=%s",
+        "commitment=%s participant=%s startDistance=%.2fm returnOrigin=(%.2f,%.2f) regionRadius=%.2fm steeringHorizon=%.2fm steeringTarget=(%.2f,%.2f) horizonBasis=TRANSIT_LENGTH reverse=true steering=NATIVE_POINT_SEEKING_WITH_TRANSIT_HORIZON completionOwner=CONTROL_RETURN_REGION existingJobPreserved=true reverseReference=%s toolReference=%s",
         tostring(run.commitmentId),participant.name,distance(pp.x,pp.z,originX,originZ),originX,originZ,
-        COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M,tostring(drive.repositionReferenceNodeSource or "UNAVAILABLE"))
+        COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M,horizonDistance,steeringTargetX,steeringTargetZ,
+        tostring(drive.repositionReferenceNodeSource or "UNAVAILABLE"),tostring(drive.toolReverserDirectionNodeSource or "UNAVAILABLE"))
     return true,nil
 end
 
@@ -1436,11 +1535,9 @@ function Control:_phaseCompletionResidual(run)
     if phase=="PASSAGE_RETURN" then
         local participant=run.activeReturnParticipant
         if participant==nil then return nil,"PASSAGE_RETURN_PARTICIPANT_UNAVAILABLE" end
-        local pp=pose(participant.vehicle)
-        local ox,oz=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
-        if pp==nil or ox==nil or oz==nil then return nil,"PASSAGE_RETURN_REGION_RESIDUAL_UNAVAILABLE" end
-        local residual=math.max(0,distance(pp.x,pp.z,ox,oz)-COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M)
-        return {kind="PASSAGE_RETURN_REGION_DISTANCE_M",value=residual,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
+        local region,reason=self:_passageReturnRegionState(participant)
+        if region==nil then return nil,"PASSAGE_RETURN_REGION_RESIDUAL_UNAVAILABLE:"..tostring(reason) end
+        return {kind="PASSAGE_RETURN_REGION_DISTANCE_M",value=region.residualM,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
     end
 
     if phase=="RESTORING_PARTICIPANT" then
@@ -1634,10 +1731,19 @@ function Control:update(dt)
             self:_failHeld("PASSAGE_RETURN_DRIVE_UNAVAILABLE:"..tostring(drive and drive.invalidReason or "NO_DRIVE_STATE"))
             return
         end
-        if targetReached(self.driveMechanism,participant.vehicle) then
+        local region,regionReason=self:_passageReturnRegionState(participant)
+        if region==nil then
+            self:_failHeld("PASSAGE_RETURN_REGION_EVIDENCE_UNAVAILABLE:"..tostring(regionReason))
+            return
+        end
+        self:_publishPassageReturnSteeringState(run,participant,drive)
+        if region.reached==true then
             self.driveMechanism:clear(participant.vehicle); participant.passageReturnCompleted=true
-            logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_COMPLETE","commitment=%s participant=%s returnRegionReached=true exactAxisRestoration=false existingJobPreserved=true",tostring(run.commitmentId),participant.name)
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_COMPLETE","commitment=%s participant=%s returnRegionReached=true finalRegionDistance=%.2fm steeringHorizonNotCompletion=true exactAxisRestoration=false existingJobPreserved=true",tostring(run.commitmentId),participant.name,region.distanceM)
             local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
+        elseif drive.targetReached==true then
+            self:_failHeld("PASSAGE_RETURN_STEERING_HORIZON_REACHED_BEFORE_RETURN_REGION")
+            return
         end
     elseif run.phase=="RESTORING_PARTICIPANT" then
         local participant=run.activeRestoreParticipant

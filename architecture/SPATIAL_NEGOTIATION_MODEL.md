@@ -504,11 +504,17 @@ A failed realised-origin pair sweep **before or within the Shared Crossing Core*
 
 The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
-A **Passage Return Region** is the bounded neighbourhood of a participant's captured execution origin / original work-lane locality into which OMW returns that participant after Crossing Clearance. It is not an exact captured-axis pose and not a second generic rearward reserve.
+A **Passage Return Region** is the bounded neighbourhood of a participant's captured execution origin / original work-lane locality into which OMW returns that participant after Crossing Clearance. It is the semantic completion region for spatial restitution; it is not an exact captured-axis pose and not a second generic rearward reserve.
+
+A **Reverse Steering Horizon** is subordinate mechanical look-through used only to let GIANTS realise a stable native reverse until the Return Region is reached. It is distinct from the Return Region and may lie beyond it without extending movement authority, restitution debt or the permitted handback locality. For the current capability its first calibration is derived from the participant's already-supported Transit longitudinal geometry rather than a universal distance literal.
 
 Sequential return space is already-created Passage space that must remain positively protected from conflicting occupancy while each participant returns.
 
 > **Passage Return Region != Exact Axis Return**
+
+> **Passage Return Region != Reverse Steering Horizon**
+
+> **Movement Completion Region != Reverse Steering Target**
 
 > **Restitution Sufficiency != Geometric Restoration**
 
@@ -547,7 +553,7 @@ Depending on what OuttaMyWay actually changed for that participant, a leg may in
 - capture and coupled Passage movement;
 - participant-specific displacement or reorientation recovery;
 - bounded Return Staging where forward separation is required before sequential return;
-- native-steered reverse into a participant-specific Passage Return Region where the intervention created spatial restitution debt;
+- native-steered reverse using a participant-specific Reverse Steering Horizon until the participant enters its Passage Return Region where the intervention created spatial restitution debt;
 - intervention-created configuration or other physical restoration debt; and
 - GIANTS handback to the participant's existing FIELDWORK Job Episode.
 
@@ -561,7 +567,7 @@ The two Passage Legs may progress and terminate at different times where current
 
 Passage owns only the physical state changes it actually creates. It does not reconstruct pre-existing imperfections or articulation. A selected arrangement may require lateral excursion or may remain on-axis; that distinction changes guide geometry only. Both cases share the same coupled crossing, Return Staging, Passage Return Region, restoration and GIANTS-handback lifecycle where those downstream steps remain required by current Control evidence.
 
-Passage restores locality, not the exact productive pose. OMW returns the participant approximately to the captured execution-origin / work-lane region using native-steered reverse, then restores intervention-created configuration debt and releases the unchanged GIANTS FIELDWORK Job Episode. GIANTS owns residual productive-path correction. Passage MUST NOT replace/restart the FIELDWORK job merely to obtain exact restitution.
+Passage restores locality, not the exact productive pose. OMW returns the participant approximately to the captured execution-origin / work-lane region using native-steered reverse while maintaining a subordinate Reverse Steering Horizon beyond the semantic completion region. Control, not steering-target arrival, decides when the Passage Return Region has been reached. OMW then restores intervention-created configuration debt and releases the unchanged GIANTS FIELDWORK Job Episode. GIANTS owns residual productive-path correction. Passage MUST NOT replace/restart the FIELDWORK job merely to obtain exact restitution.
 
 ### Reality-verified execution
 
