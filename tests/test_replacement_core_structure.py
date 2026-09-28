@@ -2095,5 +2095,5 @@ def test_issue345_bubble_formation_readiness_is_explicit_pretransition_boundary(
     assert 'bubbleReadiness.status~="READY"' in transition
     assert 'route="SETTLED_NATIVE_REVELATION"' in evaluator
     assert 'route="LATEST_SAFE_CAPTURE_POINT"' in evaluator
-    assert 'approach<=allowance' in evaluator
+    assert 'result.captureMarginM<=captureReserve' in evaluator
     assert 'closingRate<=0' in evaluator
