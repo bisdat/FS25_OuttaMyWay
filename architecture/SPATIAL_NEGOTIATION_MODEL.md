@@ -477,13 +477,22 @@ If Reality demonstrates that accepted representation plus the current margin is 
 
 Passage commitment is governed by remaining usable space and time, not by one universal distance literal.
 
-The required Passage reserve is arrangement-specific and contains three distinct spatial responsibilities:
+The required Passage theatre is arrangement-specific and contains distinct spatial responsibilities:
 
-- **capture/control reserve** sufficient to acquire and settle the pair before independent approach consumes the supported manoeuvre;
+- the **Geometric Entry Boundary** for the planned manoeuvre itself;
+- a pairwise **Capture Reserve** outside that boundary, sufficient to acquire and settle the pair before independent approach consumes required Passage geometry;
 - the **Shared Crossing Core** required for the selected Transit-configured pair to cross with represented non-contact and accepted Passage clearance; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The coarse **3 m Passage Entry Control Allowance** remains capture/control reserve. It is not a GIANTS braking model.
+The **Geometric Entry Boundary** is the pairwise longitudinal boundary from which the selected Passage manoeuvre remains geometrically supportable. It is derived from the participants' facing longitudinal extents plus the actual participant-specific Development required by the selected lateral arrangement. Capture/control margin does not belong inside this geometric boundary.
+
+The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It exists solely to absorb control acquisition and physical settling before geometry-dependent Passage execution. It is counted once and consumed once.
+
+> **Capture Reserve Is Counted Once And Consumed Once**
+
+Architecture does not impose a generic minimum Development distance as a substitute for Capture Reserve. Development belongs to the actual selected lateral excursion; control-acquisition uncertainty belongs to Capture Reserve.
+
+The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
 A Return Corridor required by Axis Return is not a second generic rearward reserve. It is already-created Passage space between a participant's execution origin and recovery position that must remain positively protected from conflicting occupancy while return is required.
 
