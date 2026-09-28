@@ -484,13 +484,15 @@ The required Passage theatre is arrangement-specific and contains distinct spati
 - the **Shared Crossing Core** required for the selected Transit-configured pair to cross with represented non-contact and accepted Passage clearance; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The **Geometric Entry Boundary** is the pairwise longitudinal boundary from which the selected Passage manoeuvre remains geometrically supportable. It is derived from the participants' facing longitudinal extents plus the actual participant-specific Development required by the selected lateral arrangement. Capture/control margin does not belong inside this geometric boundary.
+The **Geometric Entry Boundary** is the pairwise longitudinal boundary defined by the participants' supported **Transit-configured facing longitudinal extents**. Lateral Excursion Development does not add longitudinal reserve to this boundary.
 
-The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It exists solely to absorb control acquisition and physical settling before geometry-dependent Passage execution. It is counted once and consumed once.
+> **Working Geometry Identifies Passage; Transit Geometry Executes Passage**
+
+The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It is the one explicit longitudinal safety reserve and exists solely to absorb control acquisition and physical settling before Transit-configured Passage execution. It is counted once and consumed once.
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
-Architecture does not impose a generic minimum Development distance as a substitute for Capture Reserve. Development belongs to the actual selected lateral excursion; control-acquisition uncertainty belongs to Capture Reserve.
+Architecture does not impose a generic minimum or proportional Development distance as longitudinal reserve. Development belongs to Transit choreography for the selected lateral excursion; it may shape the participant guide but it does not pre-book longitudinal separation. Represented non-contact and accepted crossing clearance remain hard execution-validity conditions rather than additional reserve literals.
 
 The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
