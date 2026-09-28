@@ -439,6 +439,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | --- | --- |
 | [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
+| [`scripts/candidates/ForwardDiagonalSteeringHelper.lua`](../scripts/candidates/ForwardDiagonalSteeringHelper.lua) | `REALISES` |
 | [`scripts/responsibility/BubbleFormationReadinessEvaluator.lua`](../scripts/responsibility/BubbleFormationReadinessEvaluator.lua) | `REALISES` |
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
@@ -456,6 +457,7 @@ The following mapping is **non-normative source traceability**.
 Current implementation routes include:
 
 - [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) and [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) — current Passage-specific Candidate support, arrangement planning and reserve/guide construction within the wider Candidate Support machinery;
+- [`scripts/candidates/ForwardDiagonalSteeringHelper.lua`](../scripts/candidates/ForwardDiagonalSteeringHelper.lua) — current mechanically scoped 2:1 forward-diagonal helper used only when realised Transit execution geometry is materialised; it owns no Entry or Capture reserve authority;
 - [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) and Passage-purpose products from [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current purpose-specific geometry/clearance evidence;
 - [`scripts/responsibility/BubbleFormationReadinessEvaluator.lua`](../scripts/responsibility/BubbleFormationReadinessEvaluator.lua) — current purpose-specific successor-readiness evaluation between selected Passage Decision and Responsibility Transition, including settled-native and latest-safe-capture routes;
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
