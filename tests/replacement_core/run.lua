@@ -4194,16 +4194,16 @@ test("Cooperative Passage: Geometric Entry Boundary excludes Capture Reserve and
     equal(plan.passageEntry.ready,false); equal(plan.passageEntry.boundarySeparationM<18,true)
     equal(plan.passageEntry.captureReserveM,9.0)
     equal(math.abs(plan.passageEntry.boundarySeparationM-plan.passageExcursion.crossingWindowEntrySeparationM)<0.0001,true)
-    equal(plan.passageExcursion.developmentDistanceM>0,true)
-    equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
-    equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
-    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_ENTRY")
-    equal(plan.passageGuide.gates[3].kind,"CROSSING_WINDOW_EXIT")
-    equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
+    equal(plan.passageExcursion.developmentDistanceM,0)
+    equal(plan.passageExcursion.reacquisitionDistanceM,0)
+    equal(#plan.passageGuide.gates,3); equal(plan.progressiveSearch.satisficed,true)
+    equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
+    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_EXIT")
+    equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-6)<0.0001,true)
     equal(math.abs(plan.passageArrangement.nominalInterAssemblyClearanceM-1)<0.0001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-7)<0.0001,true)
-    equal(plan.passageExcursion.developmentDistanceM<12,true)
+    equal(plan.passageExcursion.developmentDistanceM,0)
     equal(plan.passageExcursion.crossingWindowEntrySeparationM>0,true)
     equal(plan.passageExcursion.crossingWindowRearClearSeparationM>0,true)
     equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
@@ -4424,7 +4424,7 @@ test("Cooperative Passage: one-sided intervention creates Reacquisition only for
     if onAxisRole==nil then error("expected one-sided Passage arrangement") end
     local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
     equal(reacquisition[onAxisRole].required,false); equal(reacquisition[onAxisRole].distanceM,0)
-    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM>0,true)
+    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM,0)
     local crossingExit,native=nil,nil
     for _,gate in ipairs(plan.passageGuide.gates or {}) do
         if gate.kind=="CROSSING_WINDOW_EXIT" then crossingExit=gate end
