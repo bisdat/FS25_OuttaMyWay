@@ -6795,7 +6795,7 @@ test("Cooperative Passage Leg: vacatur before execution-origin rebase preserves 
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
-test("Cooperative Passage: Alignment Runout step is capped at five metres before readiness reassessment",function()
+test("Cooperative Passage: Return Staging step is capped at five metres before readiness reassessment",function()
     local oldTranslation=getWorldTranslation
     local oldDirection=localDirectionToWorld
     local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
@@ -6819,7 +6819,7 @@ test("Cooperative Passage: Alignment Runout step is capped at five metres before
         executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,
         transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-18,maxForwardM=18}
     }
-    local ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-5M"},participant)
+    local ok,reason=control:_startReturnStagingChunk({speedKmh=8,commitmentId="CM-5M"},participant)
     equal(ok,true); equal(reason,nil)
     equal(captured.targetStation,15)
     equal(captured.forward,true)
@@ -6827,7 +6827,7 @@ test("Cooperative Passage: Alignment Runout step is capped at five metres before
 
     participant.transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2}
     captured=nil
-    ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-SHORT"},participant)
+    ok,reason=control:_startReturnStagingChunk({speedKmh=8,commitmentId="CM-SHORT"},participant)
     equal(ok,true); equal(reason,nil)
     equal(captured.targetStation,14)
 
