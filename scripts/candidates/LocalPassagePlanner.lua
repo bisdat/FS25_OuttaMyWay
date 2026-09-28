@@ -499,16 +499,39 @@ end
 local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearanceM,aEnvelope,bEnvelope)
     local directional=directionalEnvelopeValid(aEnvelope) and directionalEnvelopeValid(bEnvelope)
     if not directional and (type(aDiscs)~="table" or type(bDiscs)~="table") then return false,"CONFIGURATION_CONDITIONED_PAIR_SWEEP_PHYSICAL_UNAVAILABLE" end
+    local representationBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" or (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES")) or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
     local minimum=math.huge
     local minimumCrossing=math.huge
     local minimumOutsideCrossing=math.huge
+    local minimumCrossingWitness=nil
+    local minimumOutsideCrossingWitness=nil
     local samples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG
     local entryOrigins=guide.entryOrigins or {}
     local previous={
         subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
         other={x=tonumber(entryOrigins.other and entryOrigins.other.x) or tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(entryOrigins.other and entryOrigins.other.z) or tonumber(bSpace.occupancy and bSpace.occupancy.z)}
     }
+    local previousGateKind="EXECUTION_ORIGIN"
+    local previousGateIndex=0
     local crossingActive=false
+    local function segmentKind(gate)
+        if gate.kind=="CROSSING_WINDOW_ENTRY" then return "SIDESTEP_IN" end
+        if gate.kind=="CROSSING_WINDOW_EXIT" then return "CROSSING" end
+        if gate.kind=="NATIVE_REACQUISITION" then return "SIDESTEP_OUT" end
+        if gate.kind=="DEVELOPMENT_ENTRY" then return "DEVELOPMENT" end
+        if gate.kind=="REACQUISITION_PROGRESS" then return "REACQUISITION" end
+        return "GUIDE_SEGMENT"
+    end
+    local function witness(gate,i,t,clearance,ax,az,bx,bz,inCrossing)
+        return {
+            segment=segmentKind(gate),fromGateKind=previousGateKind,fromGateIndex=previousGateIndex,
+            toGateKind=gate.kind,toGateIndex=tonumber(gate.index),sampleIndex=i,sampleCount=samples,sampleFraction=t,
+            clearanceM=clearance,classification=inCrossing and "CROSSING_WINDOW" or "OUTSIDE_CROSSING_WINDOW",
+            subjectX=ax,subjectZ=az,otherX=bx,otherZ=bz,representationBasis=representationBasis,
+            subjectEnvelopeAuthority=directional and tostring(aEnvelope.authority or "UNRESOLVED") or "DISC_FALLBACK",
+            otherEnvelopeAuthority=directional and tostring(bEnvelope.authority or "UNRESOLVED") or "DISC_FALLBACK"
+        }
+    end
     for _,gate in ipairs(guide.gates or {}) do
         local segmentIsCrossing=crossingActive and gate.kind=="CROSSING_WINDOW_EXIT"
         for i=0,samples do
@@ -522,18 +545,37 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
             minimum=math.min(minimum,clearance)
             local atCrossingEntry=(gate.kind=="CROSSING_WINDOW_ENTRY" and i==samples)
             local inCrossing=segmentIsCrossing or atCrossingEntry
-            if inCrossing then minimumCrossing=math.min(minimumCrossing,clearance) else minimumOutsideCrossing=math.min(minimumOutsideCrossing,clearance) end
+            if inCrossing then
+                if clearance<minimumCrossing then
+                    minimumCrossing=clearance
+                    minimumCrossingWitness=witness(gate,i,t,clearance,ax,az,bx,bz,true)
+                end
+            else
+                if clearance<minimumOutsideCrossing then
+                    minimumOutsideCrossing=clearance
+                    minimumOutsideCrossingWitness=witness(gate,i,t,clearance,ax,az,bx,bz,false)
+                end
+            end
         end
         if gate.kind=="CROSSING_WINDOW_ENTRY" then crossingActive=true elseif gate.kind=="CROSSING_WINDOW_EXIT" then crossingActive=false end
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
+        previousGateKind=tostring(gate.kind or "UNRESOLVED")
+        previousGateIndex=tonumber(gate.index) or previousGateIndex
     end
     local required=tonumber(nominalClearanceM) or 1.0
     local acceptanceRatio=COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO
     acceptanceRatio=math.max(0,acceptanceRatio)
     local acceptedFloor=required*acceptanceRatio
-    -- Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Reacquisition may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
+    -- Probe retains the existing 1 mm Boolean threshold unchanged. The witness
+    -- records where the represented minimum occurs so Reality can judge whether
+    -- that tolerance has meaningful authority at this representation scale.
     local function evidence()
-        return {minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required,acceptedNominalClearanceFloorM=acceptedFloor,clearanceAcceptanceRatio=acceptanceRatio}
+        return {
+            minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,
+            minimumOutsideCrossingWitness=minimumOutsideCrossingWitness,minimumCrossingWindowWitness=minimumCrossingWitness,
+            requiredNominalClearanceM=required,acceptedNominalClearanceFloorM=acceptedFloor,clearanceAcceptanceRatio=acceptanceRatio,
+            outsideCrossingOverlapToleranceM=0.001,representationBasis=representationBasis,negativeClearanceAuthority=false
+        }
     end
     if minimumOutsideCrossing<-0.001 then
         return false,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",evidence()
@@ -543,8 +585,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     end
     local supported=evidence()
     supported.clearanceContract="NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW"
-    supported.supportBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" or (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES")) or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
-    supported.negativeClearanceAuthority=false
+    supported.supportBasis=representationBasis
     return true,nil,supported
 end
 
@@ -991,6 +1032,11 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
                 local supported,sweepReason,sweepEvidence=pairSweepSupport(
                     guide,subjectSpace,otherSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominal,
                     arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
+                if type(sweepEvidence)=="table" then
+                    sweepEvidence.executionGeometryBasis="CURRENT_REALISED_TRANSIT_CONFIGURATION"
+                    sweepEvidence.subjectConfigurationProfileId=subjectGeometry.configurationProfileId
+                    sweepEvidence.otherConfigurationProfileId=otherGeometry.configurationProfileId
+                end
                 if supported then
                     arrangement.identity=tostring(retainedArrangement.identity or "cooperative-passage-arrangement")..":execution-adapted:"..tostring(index)
                     arrangement.currentSignedSeparationM=currentSigned
@@ -1030,7 +1076,7 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
                         reason="FRESH_EXECUTION_ORIGIN_PAIR_SWEEP_SUPPORTED"
                     },nil
                 end
-                rejected[#rejected+1]={index=index,reason=sweepReason or "PAIR_SWEEP_UNSUPPORTED"}
+                rejected[#rejected+1]={index=index,reason=sweepReason or "PAIR_SWEEP_UNSUPPORTED",evidence=sweepEvidence}
             else
                 rejected[#rejected+1]={index=index,reason=guideReason}
             end
@@ -1038,7 +1084,12 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
             rejected[#rejected+1]={index=index,reason=geometryReason}
         end
     end
-    return nil,"NO_FRESH_EXECUTION_PASSAGE_ARRANGEMENT_SUPPORTED"
+    return nil,"NO_FRESH_EXECUTION_PASSAGE_ARRANGEMENT_SUPPORTED",{
+        currentSignedSeparationM=currentSigned,currentLongitudinalSeparationM=longitudinal,
+        subjectConfigurationProfileId=subjectGeometry.configurationProfileId,
+        otherConfigurationProfileId=otherGeometry.configurationProfileId,
+        rejected=rejected
+    }
 end
 
 local function planConflict(picture,snapshot,conflict)
