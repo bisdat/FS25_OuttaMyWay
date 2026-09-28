@@ -601,7 +601,6 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     expected = {
         "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M": "1.0",
         "COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO": "0.95",
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M": "2.0",
         "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M": "9.0",
         "COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M": "2.0",
         "COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M": "2.0",
@@ -621,6 +620,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
 
     assert "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M" not in planner
     assert "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M" not in planner
+    assert "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M" not in planner
 
     # Whitespace-independent expressions protect calculation and use, including
     # both independent sweep sites. Existing guide/Transit/Control contracts remain.
@@ -630,13 +630,13 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)",
         "localburden=math.abs(offset)",
         "localrequired=burden>0.001",
-        "development=burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
-        "reacquisitionDistanceM=development",
+        "developmentDistanceM=0",
+        "reacquisitionDistanceM=0",
         "localsubjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)",
         "localotherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)",
-        "localdevelopmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM",
         "localcaptureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
-        "localentryBoundary=frontOverlap+developmentSum",
+        "localentryBoundary=frontOverlap",
+        "prospectiveTransitArrangementSupport(arrangement,nominalClearance)",
         "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
         "localmaximumDevelopment=math.max(subjectDevelopment,otherDevelopment)",
         "localmaximumReacquisition=math.max(subjectReacquisition,otherReacquisition)",
