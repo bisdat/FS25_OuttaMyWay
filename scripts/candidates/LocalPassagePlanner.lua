@@ -24,7 +24,6 @@ local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95
 -- Excursion geometry and provisional Capture calibration.
 -- Development follows actual lateral burden. Capture Reserve is pairwise
 -- longitudinal control space outside the Geometric Entry Boundary.
-local COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
 local COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M = 9.0
 
 -- Two-dimensional guide target radii, independent of Control axis station tolerance.
@@ -228,15 +227,11 @@ local function participantExcursionProfile(lateralOffsetM)
     local offset=tonumber(lateralOffsetM) or 0
     local burden=math.abs(offset)
     local required=burden>0.001
-    local development=0
-    if required then
-        development=burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M
-    end
     return {
         lateralOffsetM=offset,
         lateralExcursionRequired=required,
-        developmentDistanceM=development,
-        reacquisitionDistanceM=development
+        developmentDistanceM=0,
+        reacquisitionDistanceM=0
     }
 end
 
@@ -248,20 +243,18 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
 
     local subjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)
     local otherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)
-    local developmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
     local captureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M
-    local entryBoundary=frontOverlap+developmentSum
+    local entryBoundary=frontOverlap
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
     local entryReady=executionCaptured==true or currentSeparation<=entryBoundary
     local approachPerParticipant=entryReady and 0 or math.max(0,(currentSeparation-entryBoundary)*0.5)
     local plannedEntrySeparation=entryReady and currentSeparation or entryBoundary
-    local postDevelopmentSeparation=math.max(0,plannedEntrySeparation-developmentSum)
-    local crossingForward=math.max(0,(postDevelopmentSeparation+rearClear)*0.5)
-    subjectProfile.totalForwardDistanceM=subjectProfile.developmentDistanceM+crossingForward+subjectProfile.reacquisitionDistanceM
-    otherProfile.totalForwardDistanceM=otherProfile.developmentDistanceM+crossingForward+otherProfile.reacquisitionDistanceM
+    local crossingForward=math.max(0,(plannedEntrySeparation+rearClear)*0.5)
+    subjectProfile.totalForwardDistanceM=crossingForward
+    otherProfile.totalForwardDistanceM=crossingForward
 
     return {
         maximumParticipantLateralExcursionM=math.max(math.abs(subjectProfile.lateralOffsetM),math.abs(otherProfile.lateralOffsetM)),
@@ -477,6 +470,30 @@ local function directionalRectangleClearance(ax,az,bx,bz,guide,aEnvelope,bEnvelo
     local a=rectangleCorners(ax,az,afx,afz,aEnvelope); local b=rectangleCorners(bx,bz,bfx,bfz,bEnvelope)
     if a==nil or b==nil then return nil end
     return polygonSeparation(a,b)
+end
+
+local function prospectiveTransitArrangementSupport(arrangement,nominalClearanceM)
+    local contact=tonumber(arrangement and arrangement.physicalContactThresholdM)
+    local target=tonumber(arrangement and arrangement.policyRequiredSeparationM)
+    local required=tonumber(nominalClearanceM) or 1.0
+    local acceptanceRatio=math.max(0,COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO)
+    local acceptedFloor=required*acceptanceRatio
+    if not finite(contact) or not finite(target) or target<contact then
+        return false,"TRANSIT_ARRANGEMENT_TARGET_CLEARANCE_UNRESOLVED"
+    end
+    local targetClearance=target-contact
+    if targetClearance+0.001<acceptedFloor then
+        return false,"TRANSIT_ARRANGEMENT_TARGET_CLEARANCE_BELOW_POLICY_FLOOR"
+    end
+    return true,nil,{
+        supportBasis="TRANSIT_ARRANGEMENT_TARGET_WITH_REALISED_EXECUTION_PAIR_SWEEP_REQUIRED",
+        targetClearanceM=targetClearance,
+        requiredNominalClearanceM=required,
+        acceptedNominalClearanceFloorM=acceptedFloor,
+        clearanceAcceptanceRatio=acceptanceRatio,
+        executionPairSweepRequired=true,
+        negativeClearanceAuthority=false
+    }
 end
 
 local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearanceM,aEnvelope,bEnvelope)
@@ -1072,9 +1089,9 @@ local function planConflict(picture,snapshot,conflict)
         end
         if guide~=nil then
             local fieldOk,fieldReason,fieldEvidence=guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
-            local sweepOk,sweepReason,sweepEvidence=pairSweepSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominalClearance,arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
+            local transitOk,transitReason,transitEvidence=prospectiveTransitArrangementSupport(arrangement,nominalClearance)
             local thirdOk,thirdReason,thirdEvidence=thirdPartyGuideSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,picture,conflict,nominalClearance,arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
-            if fieldOk and sweepOk and thirdOk then
+            if fieldOk and transitOk and thirdOk then
                 arrangement.identity="cooperative-passage-arrangement:"..tostring(conflict.identity)..":"..tostring(index)
                 arrangement.currentSignedSeparationM=currentSigned
                 arrangement.targetCentrelineSeparationM=arrangement.policyRequiredSeparationM
@@ -1115,18 +1132,19 @@ local function planConflict(picture,snapshot,conflict)
                     },
                     sharedCrossingCore={
                         fieldSupported=fieldEvidence and fieldEvidence.sharedCrossingCore and fieldEvidence.sharedCrossingCore.fieldSupported==true,
-                        pairSweepSupported=true,entrySeparationM=geometry.crossingWindowEntrySeparationM,
+                        transitArrangementSupported=true,executionPairSweepRequired=true,
+                        entrySeparationM=geometry.crossingWindowEntrySeparationM,
                         rearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
                         forwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
                         representationBasis=geometry.crossingWindowBasis,
-                        minimumRepresentedClearanceM=sweepEvidence and sweepEvidence.minimumRepresentedClearanceM or nil
+                        prospectiveTargetClearanceM=transitEvidence and transitEvidence.targetClearanceM or nil
                     },
                     lateralExcursionReacquisition=lateralExcursionReacquisition,
                     thirdPartySupport=thirdEvidence
                 }
                 guide.identity="cooperative-passage-guide:"..tostring(conflict.identity)..":"..tostring(index)
                 guide.fieldSupport=fieldEvidence
-                guide.pairSweepSupport=sweepEvidence
+                guide.prospectivePairSupport=transitEvidence
                 guide.thirdPartySupport=thirdEvidence
                 return {
                     status="SUPPORTED",reason="COOPERATIVE_PASSAGE_SUFFICIENT_LOCAL_ARRANGEMENT_FOUND",
@@ -1171,8 +1189,8 @@ local function planConflict(picture,snapshot,conflict)
             -- normal Candidate pass so diagnostics can expose NO -> YES -> NO
             -- clearance behaviour without repeating any geometric work.
             rejected[#rejected+1]={
-                index=index,fieldReason=fieldReason,fieldEvidence=fieldEvidence,sweepReason=sweepReason,thirdPartyReason=thirdReason,thirdPartyEvidence=thirdEvidence,
-                sweepEvidence=sweepEvidence,separationM=separation,longitudinalSeparationM=longitudinalSeparation,
+                index=index,fieldReason=fieldReason,fieldEvidence=fieldEvidence,sweepReason=transitReason,thirdPartyReason=thirdReason,thirdPartyEvidence=thirdEvidence,
+                sweepEvidence=transitEvidence,separationM=separation,longitudinalSeparationM=longitudinalSeparation,
                 currentLateralSeparationM=pairClearance.currentLateralSeparationM,relationSign=arrangement.relationSign,
                 subjectLateralOffsetM=arrangement.subjectLateralOffsetM,otherLateralOffsetM=arrangement.otherLateralOffsetM,
                 physicalContactThresholdM=arrangement.physicalContactThresholdM,policyRequiredSeparationM=arrangement.policyRequiredSeparationM,
