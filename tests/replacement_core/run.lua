@@ -5844,7 +5844,7 @@ test("Cooperative Passage Established Conflict crosses Candidate Decision Commit
         error=function(formatText,message) passagePublications[#passagePublications+1]=string.format(formatText,message) end
     }
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,10)
     local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -5886,7 +5886,7 @@ end)
 
 test("Cooperative Passage: production Candidate binds each Passage Leg to exact assembly and Job Episode",function()
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,10)
     local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(#specification.obligationsCreated,2)
@@ -6447,7 +6447,7 @@ end)
 
 test("Direct Cooperative Passage failure removes semantic Resolution Commitment",function()
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,10)
     local supported=runtime.liveTrafficCandidateSupport:publishDecisionPicture(picture,snapshot)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local control={}
