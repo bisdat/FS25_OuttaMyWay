@@ -1347,12 +1347,19 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
         "D0146_STEP2_REACQUISITION_DISTANCE_M",
     ):
         assert retired not in config
-    for token in (
+    for retired in (
         "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M",
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
     ):
+        assert retired not in planner
+    for token in (
+        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
+        "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
+        "entryBoundary=frontOverlap+developmentSum",
+        "captureReserveM=geometry.passageCaptureReserveM",
+    ):
         assert token in planner
+    assert "margin<=captureReserve" in control
     for token in (
         "longitudinalPairSeparation",
         "passageEntryReady",
