@@ -252,7 +252,7 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
     local captureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M
-    local entryBoundary=frontOverlap+developmentSum
+    local entryBoundary=frontOverlap
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
     local entryReady=executionCaptured==true or currentSeparation<=entryBoundary
