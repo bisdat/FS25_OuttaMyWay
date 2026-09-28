@@ -4187,25 +4187,26 @@ test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing 
     equal(clearance.negativeClearanceAuthority,false)
 end)
 
-test("Cooperative Passage: Geometric Entry Boundary excludes Capture Reserve and retains physical Crossing Window",function()
+test("Cooperative Passage: prospective Transit support defers exact pair sweep to realised execution origin",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION")
     equal(plan.passageEntry.ready,false); equal(plan.passageEntry.boundarySeparationM<18,true)
     equal(plan.passageEntry.captureReserveM,9.0)
-    equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
-    equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
-    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_ENTRY")
-    equal(plan.passageGuide.gates[3].kind,"CROSSING_WINDOW_EXIT")
-    equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
+    equal(math.abs(plan.passageEntry.boundarySeparationM-plan.passageExcursion.crossingWindowEntrySeparationM)<0.0001,true)
+    equal(plan.passageExcursion.developmentDistanceM,0); equal(plan.passageExcursion.reacquisitionDistanceM,0)
+    equal(#plan.passageGuide.gates,3); equal(plan.progressiveSearch.satisficed,true)
+    equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
+    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_EXIT")
+    equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-6)<0.0001,true)
     equal(math.abs(plan.passageArrangement.nominalInterAssemblyClearanceM-1)<0.0001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-7)<0.0001,true)
-    equal(plan.passageExcursion.developmentDistanceM<12,true)
-    equal(plan.passageExcursion.crossingWindowEntrySeparationM>0,true)
-    equal(plan.passageExcursion.crossingWindowRearClearSeparationM>0,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.executionPairSweepRequired,true)
+    equal(plan.passageGuide.prospectivePairSupport.targetClearanceM>=0.95,true)
+    equal(plan.passageCapableTheatre.sharedCrossingCore.transitArrangementSupported,true)
+    equal(plan.passageCapableTheatre.sharedCrossingCore.executionPairSweepRequired,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-7)<0.0001,true)
 end)
 
@@ -4307,11 +4308,12 @@ test("Cooperative Passage: Transit Passage envelope uses cached GIANTS base size
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-4.70)<0.001,true)
     equal(math.abs(plan.passageExcursion.subjectFrontExtentM-5.55)<0.001,true)
     equal(math.abs(plan.passageExcursion.otherFrontExtentM-4.5)<0.001,true)
-    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.supportBasis,"TRANSIT_ARRANGEMENT_TARGET_WITH_REALISED_EXECUTION_PAIR_SWEEP_REQUIRED")
+    equal(plan.passageGuide.prospectivePairSupport.targetClearanceM>=0.95,true)
 end)
 
-test("Crossing-Window Clearance: Nominal Passage Clearance is required only through the Crossing Window",function()
+test("Crossing-Window Clearance: prospective Transit arrangement targets nominal Passage Clearance",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,30)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     values.physicalSpaceEvidence[1].primitives={
@@ -4325,11 +4327,12 @@ test("Crossing-Window Clearance: Nominal Passage Clearance is required only thro
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    local sweep=plan.passageGuide.pairSweepSupport
-    equal(sweep.minimumCrossingWindowClearanceM>=0.999,true)
-    equal(sweep.minimumOutsideCrossingClearanceM>=-0.001,true)
-    equal(sweep.minimumRepresentedClearanceM<=sweep.minimumCrossingWindowClearanceM,true)
-    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
+    local support=plan.passageGuide.prospectivePairSupport
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(support.executionPairSweepRequired,true)
+    equal(support.targetClearanceM>=0.999,true)
+    equal(math.abs(support.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(support.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
 end)
 
 test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor while construction remains at one metre",function()
@@ -4339,12 +4342,12 @@ test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor w
     -- is protected by the Planner ownership structural contract.
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    local sweep=plan.passageGuide.pairSweepSupport
-    equal(math.abs(sweep.requiredNominalClearanceM-1.0)<0.0001,true)
-    equal(math.abs(sweep.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
-    equal(math.abs(sweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
-    equal(sweep.minimumCrossingWindowClearanceM+0.001>=sweep.acceptedNominalClearanceFloorM,true)
-    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
+    local support=plan.passageGuide.prospectivePairSupport
+    equal(math.abs(support.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(support.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
+    equal(math.abs(support.clearanceAcceptanceRatio-0.95)<0.0001,true)
+    equal(support.targetClearanceM+0.001>=support.acceptedNominalClearanceFloorM,true)
+    equal(support.executionPairSweepRequired,true)
 
     -- A coherent lateral pose just inside the existing construction-sufficiency
     -- tolerance needs no excursion. Its represented gap is 0.9995 m: below the
@@ -4358,14 +4361,12 @@ test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor w
     end
     local boundaryPlan,boundaryReason=OuttaMyWay.LocalPassagePlanner.plan(OuttaMyWay.OperationalPicture.new(values),snapshot)
     equal(boundaryReason,nil); equal(boundaryPlan.status,"SUPPORTED")
-    local boundarySweep=boundaryPlan.passageGuide.pairSweepSupport
+    local boundarySupport=boundaryPlan.passageGuide.prospectivePairSupport
     equal(boundaryPlan.passageArrangement.currentSeparationAlreadySufficient,true)
-    equal(math.abs(boundarySweep.requiredNominalClearanceM-1.0)<0.0001,true)
-    equal(math.abs(boundarySweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
-    equal(math.abs(boundarySweep.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
-    equal(boundarySweep.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(boundarySweep.minimumCrossingWindowClearanceM<1.0,true)
-    equal(math.abs(boundarySweep.minimumCrossingWindowClearanceM-0.9995)<0.0001,true)
+    equal(math.abs(boundarySupport.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(boundarySupport.clearanceAcceptanceRatio-0.95)<0.0001,true)
+    equal(math.abs(boundarySupport.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
+    equal(boundarySupport.executionPairSweepRequired,true)
 end)
 
 test("Cooperative Passage: Passage Selection may precede Entry while Resolution Space remains available",function()
@@ -4375,8 +4376,8 @@ test("Cooperative Passage: Passage Selection may precede Entry while Resolution 
     equal(plan.passageEntry.ready,false)
     equal(plan.passageEntry.boundarySeparationM<60,true)
     equal(plan.passageEntry.approachDistancePerParticipantM>0,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.executionPairSweepRequired,true)
 end)
 
 test("Cooperative Passage: zero Clearance Deficit produces straight Passage with no manufactured one-metre excursion",function()
@@ -4400,7 +4401,8 @@ test("Cooperative Passage: zero Clearance Deficit produces straight Passage with
     equal(#plan.passageGuide.gates,3)
     equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
     equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
-    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.targetClearanceM>=1,true)
     local theatre=plan.passageCapableTheatre
     equal(theatre.complete,true)
     equal(theatre.sharedCrossingCore.fieldSupported,true)
@@ -4422,7 +4424,7 @@ test("Cooperative Passage: one-sided intervention creates Reacquisition only for
     if onAxisRole==nil then error("expected one-sided Passage arrangement") end
     local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
     equal(reacquisition[onAxisRole].required,false); equal(reacquisition[onAxisRole].distanceM,0)
-    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM>0,true)
+    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM,0)
     local crossingExit,native=nil,nil
     for _,gate in ipairs(plan.passageGuide.gates or {}) do
         if gate.kind=="CROSSING_WINDOW_EXIT" then crossingExit=gate end
@@ -4436,26 +4438,23 @@ test("Cooperative Passage: one-sided intervention creates Reacquisition only for
     equal(math.sqrt(dx*dx+dz*dz)>0.001,true)
 end)
 
-test("Cooperative Passage: crossing-valid theatre is rejected when required Lateral Excursion Reacquisition leaves Field World",function()
-    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+test("Cooperative Passage: required Transit lateral sidestep is rejected when it leaves Field World",function()
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,0.5,18,-5,22)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(plan,nil)
     equal(reason,"PASSAGE_CAPABLE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE")
-    local reacquisitionFailure=false
+    local boundaryFailure=false
     for _,conflict in ipairs(rejected or {}) do
         for _,candidate in ipairs(conflict.rejected or {}) do
-            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY"
-                and candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent=="LATERAL_EXCURSION_REACQUISITION" then
-                reacquisitionFailure=true
-            end
+            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY" then boundaryFailure=true end
         end
     end
-    equal(reacquisitionFailure,true)
+    equal(boundaryFailure,true)
 end)
 
 test("Cooperative Passage: unsupported Passage-Capable Theatre retains tactical Action-Space Regulation",function()
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,0.5,18,-5,22)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local relation=values.opposedCorridorKnowledge[1]
     relation.actionSpaceConservation={
@@ -4499,8 +4498,8 @@ test("Cooperative Passage has no arbitrary minimum entry separation and lets con
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(plan.separationM,30)
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.executionPairSweepRequired,true)
 end)
 
 test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arrangement when local field support requires it",function()
@@ -4509,10 +4508,9 @@ test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arra
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(math.abs(plan.passageArrangement.combinedLateralBurdenM-7)<0.0001,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)-math.abs(plan.passageArrangement.otherLateralOffsetM))>0.001,true)
-    equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
     local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
     equal(reacquisition.subject.required,true); equal(reacquisition.other.required,true)
-    equal(math.abs(reacquisition.subject.distanceM-reacquisition.other.distanceM)>0.001,true)
+    equal(reacquisition.subject.distanceM,0); equal(reacquisition.other.distanceM,0)
     equal(reacquisition.subject.fieldSupported,true); equal(reacquisition.other.fieldSupported,true)
 end)
 
