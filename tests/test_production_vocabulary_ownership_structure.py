@@ -707,6 +707,9 @@ def test_retired_recovery_tail_vocabulary_absent_from_sourced_production():
         "PARTICIPANT_SCOPED_RECOVERY_CAPABLE_THEATRE",
         "RECOVERY_ALIGNMENT_THEN_AXIS_RETURN",
         "RECOVERY_ALIGNMENT_START",
+        "COOPERATIVE_PASSAGE_AXIS_RETURN_STARTED",
+        "COOPERATIVE_PASSAGE_AXIS_RETURN_COMPLETE",
+        "COOPERATIVE_PASSAGE_AXIS_RETURN_ALIGNMENT_LOST",
     )
     for path in _loaded_production_lua_paths():
         source = path.read_text(encoding="utf-8")
