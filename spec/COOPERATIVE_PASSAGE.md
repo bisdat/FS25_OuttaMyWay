@@ -99,11 +99,18 @@ Passage commitment MUST be governed by the Architecture's current reserve policy
 
 The implementation MUST preserve the distinction among:
 
-- **capture/control reserve**, including the coarse **3 m Passage Entry Control Allowance** used to acquire and settle the pair;
+- the **Geometric Entry Boundary** required by the selected manoeuvre itself;
+- one pairwise **Capture Reserve** outside that boundary, used to acquire and settle the pair;
 - the **Shared Crossing Core** required by the selected Transit-configured pair; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The Entry Control Allowance MUST NOT be treated as a braking-model claim.
+The Geometric Entry Boundary MUST be derived from supported facing longitudinal extents plus the actual Development required by the selected participant-specific lateral excursion. A generic control-acquisition allowance MUST NOT be embedded in that boundary.
+
+Capture Reserve MUST be represented as one pairwise longitudinal margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant or duplicated elsewhere in Entry geometry.
+
+A generic minimum Development floor MUST NOT be used as hidden Capture Reserve. Development belongs to the selected lateral excursion; Capture Reserve owns control acquisition and settling.
+
+The Capture Reserve magnitude remains Control calibration validated against Reality. It MUST NOT be treated as a braking-model claim, universal stopping-distance claim or fixed time-to-contact literal.
 
 A Return Corridor required by Axis Return MUST be represented as protected already-created Passage space, not as a second generic rearward reserve.
 
