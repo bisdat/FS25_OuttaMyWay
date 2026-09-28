@@ -7144,9 +7144,10 @@ test("Axis Return: Axis Travel reverses on captured axis rather than pursuing a 
 end)
 
 test("Passage Return: native-steered reverse targets captured origin region without exact axis readiness",function()
-    local oldTranslation=getWorldTranslation
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
     getWorldTranslation=function(node) return 0.8,0,12 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
     local call=nil
     local drive={
         setReposition=function(self,v,x,z,speed,radius,moveForwards)
@@ -7164,10 +7165,10 @@ test("Passage Return: native-steered reverse targets captured origin region with
     equal(call.v,vehicle); equal(call.x,0); equal(call.z,0); equal(call.speed,8)
     equal(call.radius,1.0); equal(call.moveForwards,false)
     equal(run.phase,"PASSAGE_RETURN"); equal(run.activeReturnParticipant,participant)
-    getWorldTranslation=oldTranslation
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Axis Return: Return Staging places each Transit assembly beyond the other's return occupancy",function()
+test("Passage Return: Return Staging places each Transit assembly beyond the other's return occupancy",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local positions={[19101]={0,0,14},[19102]={0,0,-4}}
     local directions={[19101]={0,1},[19102]={0,-1}}
