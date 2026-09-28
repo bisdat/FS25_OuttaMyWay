@@ -2074,3 +2074,19 @@ def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
     assert "PROGRESS_WATCHDOG_NO_COMPLETION_PROGRESS" in control
     assert "semanticTerminality=false" in control
     assert "completionResidual" in mechanism
+
+
+def test_issue345_bubble_formation_readiness_is_explicit_pretransition_boundary():
+    main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    evaluator = (ROOT / "scripts" / "responsibility" / "BubbleFormationReadinessEvaluator.lua").read_text(encoding="utf-8")
+    transition = (ROOT / "scripts" / "responsibility" / "CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
+
+    assert "scripts/responsibility/BubbleFormationReadinessEvaluator.lua" in main
+    assert "bubbleFormationReadinessEvaluator:evaluate" in runtime
+    assert 'bubbleFormationReadiness.status=="READY"' in runtime
+    assert 'bubbleReadiness.status~="READY"' in transition
+    assert 'route="SETTLED_NATIVE_REVELATION"' in evaluator
+    assert 'route="LATEST_SAFE_CAPTURE_POINT"' in evaluator
+    assert 'approach<=allowance' in evaluator
+    assert 'closingRate<=0' in evaluator
