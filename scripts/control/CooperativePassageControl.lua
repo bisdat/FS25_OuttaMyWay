@@ -433,11 +433,11 @@ function Control:_beginPassageSettling(run,reason)
     end
     self:_setPhase(run,"SETTLING",g_time or 0)
     local separation=self:_passageLongitudinalSeparation(run)
-    logInfo("DEBUG","COOPERATIVE_PASSAGE_ENTRY_TRIGGER","commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm approachPerParticipant=%s controlAllowance=%.2fm closingRate=%.2fmps action=HOLD_THEN_CONFIGURE",
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_ENTRY_TRIGGER","commitment=%s reason=%s longitudinalSeparation=%s geometricEntryBoundary=%.2fm captureMargin=%s captureReserve=%.2fm closingRate=%.2fmps action=HOLD_THEN_CONFIGURE",
         tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",
         tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1,
-        run.captureApproachDistancePerParticipantM and string.format("%.2fm",run.captureApproachDistancePerParticipantM) or "n/a",
-        tonumber(run.passageEntry and run.passageEntry.controlAllowanceM) or -1,
+        run.captureMarginM and string.format("%.2fm",run.captureMarginM) or "n/a",
+        tonumber(run.passageEntry and run.passageEntry.captureReserveM) or -1,
         tonumber(run.captureClosingRateMps) or 0)
     return true,nil
 end
@@ -1256,10 +1256,10 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         local settleOk,settleReason=self:_beginPassageSettling(run,"ENTRY_READY_AT_SELECTION")
         if not settleOk then self.run=nil; return false,settleReason end
     else
-        logInfo("DEBUG","COOPERATIVE_PASSAGE_APPROACH_STARTED","commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm latestSafeCaptureAllowance=%.2fm",
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_APPROACH_STARTED","commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm geometricEntryBoundary=%.2fm captureReserve=%.2fm",
             tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,
             tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1,
-            tonumber(bridge.passageEntry and bridge.passageEntry.controlAllowanceM) or -1)
+            tonumber(bridge.passageEntry and bridge.passageEntry.captureReserveM) or -1)
     end
     local arrangement=bridge.passageArrangement or {}
     local excursion=run.passageExcursion or {}
@@ -1520,15 +1520,14 @@ function Control:update(dt)
         if longitudinal==nil then self:_failHeld("PASSAGE_APPROACH_LONGITUDINAL_SEPARATION_UNAVAILABLE"); return end
         local boundary=tonumber(run.passageEntry and run.passageEntry.boundarySeparationM)
         if boundary==nil then self:_failHeld("PASSAGE_ENTRY_BOUNDARY_UNAVAILABLE"); return end
-        local allowance=tonumber(run.passageEntry and run.passageEntry.controlAllowanceM)
-        if allowance==nil then self:_failHeld("PASSAGE_CAPTURE_CONTROL_ALLOWANCE_UNAVAILABLE"); return end
+        local captureReserve=tonumber(run.passageEntry and run.passageEntry.captureReserveM)
+        if captureReserve==nil then self:_failHeld("PASSAGE_CAPTURE_RESERVE_UNAVAILABLE"); return end
         local closingRate=self:_passageApproachClosingRateMps(run,pa,pb)
         local margin=math.max(0,longitudinal-boundary)
-        local approachPerParticipant=margin*0.5
-        local captureDue=longitudinal<=boundary or approachPerParticipant<=allowance
+        local captureDue=longitudinal<=boundary or margin<=captureReserve
         if captureDue then
             run.captureClosingRateMps=closingRate
-            run.captureApproachDistancePerParticipantM=approachPerParticipant
+            run.captureMarginM=margin
             local triggerReason=longitudinal<=boundary and "ENTRY_BOUNDARY_REACHED" or "LATEST_SAFE_CAPTURE_POINT_REACHED"
             local ok,reason=self:_beginPassageSettling(run,triggerReason)
             if not ok then self:_failHeld(reason) end
