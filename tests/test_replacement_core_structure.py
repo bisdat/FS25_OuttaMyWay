@@ -1352,10 +1352,13 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
         "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
     ):
         assert retired not in planner
+    assert "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M" not in planner
     for token in (
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
-        "entryBoundary=frontOverlap+developmentSum",
+        "entryBoundary=frontOverlap",
+        "prospectiveTransitArrangementSupport",
+        "transitArrangementSupported=true",
+        "executionPairSweepRequired=true",
         "captureReserveM=geometry.passageCaptureReserveM",
     ):
         assert token in planner
