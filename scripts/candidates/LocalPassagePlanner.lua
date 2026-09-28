@@ -419,6 +419,25 @@ local function realiseExecutionSteeringGuide(guide,arrangement,subjectPose,other
     local longitudinal=longitudinalPairSeparation(subjectSpace,otherSpace,subjectTrajectory,otherTrajectory)
     if not finite(longitudinal) then return nil,"EXECUTION_STEERING_LONGITUDINAL_SEPARATION_UNRESOLVED" end
     local rearClear=tonumber(guide.sharedCrossingCore and guide.sharedCrossingCore.rearClearSeparationM)
+        or tonumber(guide.crossingWindow and guide.crossingWindow.rearClearSeparationM)
+    if not finite(rearClear) or rearClear<0 then
+        -- Legacy retained guides may predate explicit Shared Crossing Core
+        -- metadata. Infer only the already-encoded rear-clear outcome from the
+        -- existing Crossing Window Exit station; do not invent new reserve.
+        local exitGate=nil
+        for _,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates or {}) do
+            if gate.kind=="CROSSING_WINDOW_EXIT" then exitGate=gate; break end
+        end
+        if exitGate~=nil then
+            local subjectExit=tonumber(exitGate.participantProgress and exitGate.participantProgress.subject and exitGate.participantProgress.subject.forwardM)
+                or tonumber(exitGate.forwardM)
+            local otherExit=tonumber(exitGate.participantProgress and exitGate.participantProgress.other and exitGate.participantProgress.other.forwardM)
+                or tonumber(exitGate.forwardM)
+            if finite(subjectExit) and finite(otherExit) then
+                rearClear=math.abs(longitudinal-subjectExit-otherExit)
+            end
+        end
+    end
     if not finite(rearClear) or rearClear<0 then return nil,"EXECUTION_STEERING_REAR_CLEAR_UNRESOLVED" end
 
     local subjectDevelopmentForward=subjectDevelopment.forwardDistanceM
