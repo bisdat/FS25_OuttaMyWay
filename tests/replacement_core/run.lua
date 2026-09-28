@@ -6652,7 +6652,7 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
-test("Cooperative Passage: pair-sweep failure evidence identifies exact outside-Crossing segment and sample",function()
+test("Cooperative Passage: post-Crossing SIDESTEP_OUT overlap is measured but cannot veto the crossing",function()
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
     local arrangement={
         nominalInterAssemblyClearanceM=1,
@@ -6669,22 +6669,42 @@ test("Cooperative Passage: pair-sweep failure evidence identifies exact outside-
         }
     }
     local ok,reason,evidence=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(guide,arrangement)
-    equal(ok,false)
-    equal(reason,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW")
-    equal(type(evidence.minimumOutsideCrossingWitness),"table")
-    local witness=evidence.minimumOutsideCrossingWitness
+    equal(ok,true); equal(reason,nil)
+    equal(evidence.postCrossingRecoveryPreVetoAuthority,false)
+    equal(type(evidence.minimumPostCrossingRecoveryWitness),"table")
+    local witness=evidence.minimumPostCrossingRecoveryWitness
     equal(witness.segment,"SIDESTEP_OUT")
     equal(witness.fromGateKind,"CROSSING_WINDOW_EXIT")
     equal(witness.toGateKind,"NATIVE_REACQUISITION")
-    equal(witness.classification,"OUTSIDE_CROSSING_WINDOW")
+    equal(witness.classification,"POST_CROSSING_RECOVERY")
     equal(witness.sampleCount,20)
-    equal(type(witness.sampleIndex),"number")
-    equal(type(witness.sampleFraction),"number")
     equal(witness.clearanceM<0,true)
-    equal(type(witness.subjectX),"number"); equal(type(witness.subjectZ),"number")
-    equal(type(witness.otherX),"number"); equal(type(witness.otherZ),"number")
-    equal(evidence.outsideCrossingOverlapToleranceM,0.001)
+    equal(evidence.preCrossingOverlapToleranceM,0.001)
     equal(evidence.negativeClearanceAuthority,false)
+end)
+
+test("Cooperative Passage: represented overlap before Crossing Clearance still vetoes execution",function()
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local arrangement={
+        nominalInterAssemblyClearanceM=1,
+        subjectDirectionalPassageEnvelope=envelope,otherDirectionalPassageEnvelope=envelope,
+        subjectPassageDiscs={},otherPassageDiscs={}
+    }
+    local guide={
+        entryOrigins={subject={x=0,z=0},other={x=0,z=3}},
+        executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},
+        gates={
+            {index=1,kind="CROSSING_WINDOW_ENTRY",subject={x=2.5,z=0},other={x=-2.5,z=3}},
+            {index=2,kind="CROSSING_WINDOW_EXIT",subject={x=2.5,z=4},other={x=-2.5,z=-1}},
+            {index=3,kind="NATIVE_REACQUISITION",subject={x=0,z=4},other={x=0,z=-1}}
+        }
+    }
+    local ok,reason,evidence=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(guide,arrangement)
+    equal(ok,false)
+    equal(reason,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE")
+    equal(type(evidence.minimumPreCrossingOutsideWitness),"table")
+    equal(evidence.minimumPreCrossingOutsideWitness.classification,"PRE_CROSSING_OUTSIDE_WINDOW")
+    equal(evidence.minimumPreCrossingOutsideWitness.clearanceM<0,true)
 end)
 
 test("Cooperative Passage: realised Transit configuration geometry can preserve a close captured Passage rejected by prospective Transit base",function()
