@@ -2,8 +2,9 @@
 -- Specification Jurisdictions: `CONTROL`, `COOPERATIVE_PASSAGE`
 
 -- Cooperative Passage bounded Control executes an already-established pair plan.
--- PASSAGE_APPROACH remains GIANTS-native while disposable approach margin is
--- safe; current positive closing may begin Hold before the Candidate Entry
+-- PASSAGE_APPROACH preserves GIANTS-native routing under the Passage-owned
+-- approach speed ceiling while disposable approach margin remains available;
+-- current positive closing may begin Hold before the Candidate Entry
 -- Boundary when the empirical Capture Acquisition Horizon is reached. The Entry
 -- Boundary remains the literal fallback trigger. Control then settles/configures
 -- the pair and instantiates the guide from actual execution origins before
@@ -480,6 +481,10 @@ function Control:_beginPassageSettling(run,reason)
             return false,tostring(participant.name).."_HOLD_UNAVAILABLE:"..tostring(holdReason)
         end
         held[#held+1]=participant
+    end
+    local approachCeiling=self.runtime and self.runtime.passageApproachSpeedCeiling or nil
+    if approachCeiling~=nil and type(approachCeiling.releaseForCommitment)=="function" then
+        approachCeiling:releaseForCommitment(run.commitmentId,"PASSAGE_CAPTURE_HOLD_SUPERSEDES_APPROACH_CEILING")
     end
     self:_setPhase(run,"SETTLING",g_time or 0)
     local separation=self:_passageLongitudinalSeparation(run)
@@ -1397,7 +1402,7 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         local settleOk,settleReason=self:_beginPassageSettling(run,"ENTRY_READY_AT_SELECTION")
         if not settleOk then self.run=nil; return false,settleReason end
     else
-        logInfo("DEBUG","COOPERATIVE_PASSAGE_APPROACH_STARTED","commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm geometricEntryBoundary=%.2fm captureReserve=%.2fm",
+        logInfo("DEBUG","COOPERATIVE_PASSAGE_APPROACH_STARTED","commitment=%s resolutionSpaceSuperseded=true nativeProductiveRouting=true passageApproachSpeedCeilingOwned=true longitudinalSeparation=%.2fm geometricEntryBoundary=%.2fm captureReserve=%.2fm",
             tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,
             tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1,
             tonumber(bridge.passageEntry and bridge.passageEntry.captureReserveM) or -1)

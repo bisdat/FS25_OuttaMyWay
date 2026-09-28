@@ -67,6 +67,16 @@ function Dispatcher:dispatch(request,candidate)
     end
     return false,"CONTROL_REQUEST_CAPABILITY_UNSUPPORTED"
 end
+function Dispatcher:dispatchPassageCruisePair(requestA,requestB,candidate)
+    local control=self.regulationControl
+    if control==nil or type(control.executePassageCruisePair)~="function" then
+        return false,"PASSAGE_CRUISE_CONTROL_CAPABILITY_UNAVAILABLE"
+    end
+    local started,result=control:executePassageCruisePair(requestA,requestB,candidate)
+    if started==true then self.dispatchCount=self.dispatchCount+1 end
+    return started,result
+end
+
 -- Cooperative Passage uses a joint dispatch boundary because the two authorised
 -- reposition requests form one coordinated physical actuation. Single dispatch
 -- deliberately refuses that case rather than starting one participant independently.
@@ -86,11 +96,38 @@ function Dispatcher:dispatchJoint(requestA,requestB,candidate)
         bubbleState=activated
     end
 
+    local cruise=self.runtime and self.runtime.passageCruiseControl or nil
+    local cruiseWasExisting=cruise~=nil and cruise:hasLease(requestA.commitmentId) or false
+    if cruise~=nil and not cruiseWasExisting then
+        local bridge=candidate and candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
+        if type(bridge)~="table" then
+            if bubble~=nil and bubbleState~=nil and type(bubble.releaseForCommitment)=="function" then
+                bubble:releaseForCommitment(requestA.commitmentId,"PASSAGE_CRUISE_CONTEXT_UNAVAILABLE")
+            end
+            return false,"PASSAGE_CRUISE_CONTEXT_UNAVAILABLE"
+        end
+        local applied,reason=cruise:acquirePair(requestA.commitmentId,{
+            {assemblyId=bridge.subjectAssemblyId,referenceKey=bridge.subjectReferenceKey},
+            {assemblyId=bridge.otherAssemblyId,referenceKey=bridge.otherReferenceKey}
+        },cruise:getCeilingKmh())
+        if applied~=true then
+            if bubble~=nil and bubbleState~=nil and type(bubble.releaseForCommitment)=="function" then
+                bubble:releaseForCommitment(requestA.commitmentId,"PASSAGE_CRUISE_APPLY_FAILED")
+            end
+            return false,"PASSAGE_CRUISE_APPLY_FAILED:"..tostring(reason)
+        end
+    end
+
     local started,result=control:executeJointRequests(requestA,requestB,candidate)
     if started==true then
         self.dispatchCount=self.dispatchCount+1
-    elseif bubble~=nil and bubbleState~=nil and bubbleState.status=="ACTIVE" and type(bubble.releaseForCommitment)=="function" then
-        bubble:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+    else
+        if cruise~=nil and type(cruise.releaseForCommitment)=="function" then
+            cruise:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+        end
+        if bubble~=nil and bubbleState~=nil and type(bubble.releaseForCommitment)=="function" then
+            bubble:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+        end
     end
     return started,result
 end

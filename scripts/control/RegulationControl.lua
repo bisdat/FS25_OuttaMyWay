@@ -134,6 +134,36 @@ function Control:executeControlRequest(request,candidate)
     return false,"CONTROL_REQUEST_REGULATION_OPERATION_UNSUPPORTED"
 end
 
+function Control:executePassageCruisePair(requestA,requestB,candidate)
+    if requestA==nil or requestB==nil then return false,"PASSAGE_CRUISE_PAIR_REQUESTS_REQUIRED" end
+    if requestA.commitmentId~=requestB.commitmentId then return false,"PASSAGE_CRUISE_PAIR_COMMITMENT_MISMATCH" end
+    local commitment=self.runtime.commitments:get(requestA.commitmentId)
+    if commitment==nil or commitment.state~="ACTIVE" then return false,"PASSAGE_CRUISE_COMMITMENT_NOT_ACTIVE" end
+    local requests={requestA,requestB}
+    local participants={}
+    local cap=nil
+    for _,request in OuttaMyWay.ValueRecord.ipairs(requests) do
+        OuttaMyWay.ValueRecord.assertType(request,"ControlRequest")
+        if request.capability~="REGULATE_SPEED" then return false,"PASSAGE_CRUISE_CAPABILITY_UNSUPPORTED" end
+        if request.effectiveActuationCompositionId~=commitment.effectiveActuationCompositionId then return false,"PASSAGE_CRUISE_COMPOSITION_STALE" end
+        local target=request.target or {}
+        if target.kind~="PASSAGE_CRUISE_CEILING" or target.operation~="APPLY" or type(target.vehicleReferenceKey)~="string" then
+            return false,"PASSAGE_CRUISE_TARGET_UNSUPPORTED"
+        end
+        local ok,reason=self.runtime.boundedAuthority:validateRequest(request)
+        if ok~=true then return false,reason end
+        local vehicle=self:_vehicleForReferenceKey(target.vehicleReferenceKey)
+        if vehicle==nil then return false,"PASSAGE_CRUISE_VEHICLE_UNAVAILABLE" end
+        local speed=tonumber(target.maxSpeedKmh)
+        if speed==nil or speed<=0 then return false,"PASSAGE_CRUISE_SPEED_INVALID" end
+        if cap~=nil and math.abs(cap-speed)>0.001 then return false,"PASSAGE_CRUISE_PAIR_SPEED_MISMATCH" end
+        cap=speed
+        participants[#participants+1]={assemblyId=request.assemblyId,referenceKey=target.vehicleReferenceKey}
+    end
+    if self.runtime.passageCruiseControl==nil then return false,"PASSAGE_CRUISE_CONTROL_UNAVAILABLE" end
+    return self.runtime.passageCruiseControl:acquirePair(requestA.commitmentId,participants,cap)
+end
+
 -- Fail-safe cleanup only relaxes an already-owned lease. It cannot grant or
 -- tighten physical authority.
 function Control:clearRegulationLeaseByReference(vehicleReferenceKey,ownerTag)

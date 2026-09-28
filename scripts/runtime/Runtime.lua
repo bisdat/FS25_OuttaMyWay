@@ -134,6 +134,7 @@ function Runtime.new()
     terminalSettlement.boundedAuthority=runtime.boundedAuthority
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
+    runtime.passageCruiseControl=OuttaMyWay.PassageCruiseControl.new()
     runtime.regulationBoundedAuthority=OuttaMyWay.RegulationBoundedAuthority.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.responsibilityTransitionAuthority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
@@ -202,6 +203,12 @@ function Runtime:relinquishAllControl(reason)
         if self.bubbleBulletTime~=nil and type(self.bubbleBulletTime.releaseAll)=="function" then
             self.bubbleBulletTime:releaseAll(why)
             return true
+        end
+        return nil
+    end)
+    attempt("passageCruiseControl",function()
+        if self.passageCruiseControl~=nil and type(self.passageCruiseControl.releaseAll)=="function" then
+            return self.passageCruiseControl:releaseAll(why)
         end
         return nil
     end)
@@ -518,6 +525,11 @@ end
 
 function Runtime:onCooperativePassageCompletion(result)
     if type(result)~="table" or type(result.commitmentId)~="string" then return end
+    if result.status=="SUCCEEDED" or result.status=="FAILED" then
+        if self.passageCruiseControl~=nil and type(self.passageCruiseControl.releaseForCommitment)=="function" then
+            self.passageCruiseControl:releaseForCommitment(result.commitmentId,"COOPERATIVE_PASSAGE_"..tostring(result.status))
+        end
+    end
     if result.status=="PARTICIPANT_HANDED_BACK" or result.status=="PARTICIPANT_VACATED" then
         local disposition=result.status=="PARTICIPANT_HANDED_BACK" and "HANDED_BACK" or "VACATED"
         local assemblyId=result.assemblyId or (result.assemblyIds and result.assemblyIds[1])

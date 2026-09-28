@@ -492,6 +492,30 @@ The **Capture Reserve** is pairwise longitudinal space outside the Geometric Ent
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
+A complete supported Passage arrangement does not itself mean that Passage should become Current Responsibility immediately. While the pair remains outside Capture readiness, the system may know **what** Passage will solve without yet being at the semantic boundary where spatial displacement should begin.
+
+During that interval the pair is governed by **Passage Approach Regulation**: ordinary tactical Regulation whose purpose is to bound closing progression while GIANTS retains productive routing and steering. The physical actuator for this purpose is the workers' native **GIANTS Cruise Control** setting, not an OMW-owned drive-speed loop. The initial calibration is a **10 km/h maximum per Passage participant**, applied as `min(original cruise setting, 10 km/h)` independently to forward and reverse cruise values. A slower original setting is therefore never increased.
+
+> **Confirmed Passage != Immediate Passage Responsibility**
+
+> **Passage Approach Regulation != Passage Resolution**
+
+Passage Approach Regulation establishes the pairwise temporal ceiling before Cooperative Passage becomes Current Responsibility whenever disposable approach margin still provides that opportunity. After that Regulation has acquired the cap, the normal Cooperative Passage Candidate and **Bubble Formation Readiness** machinery resumes authority over transition timing. Regulation remains the predecessor while Bubble Formation Readiness is false; either the settled-native-revelation route or the latest-safe-capture route may then justify the sharp transition to Passage.
+
+> **Regulation Acquisition != Capture Readiness**
+
+Responsibility Transition sharply replaces Regulation with the Cooperative Passage Resolution; there is no hybrid Regulation/Passage spatial mode. The temporary GIANTS Cruise Control values are **Passage Episode configuration debt** and therefore persist unchanged across Regulation -> Passage -> Capture -> Transit -> Crossing -> Return. They do not transfer movement authority: GIANTS still owns ordinary route/steering and Passage Control still owns only its already-authorised manoeuvre. When Passage terminates, OMW restores each participant's captured original forward/reverse Cruise Control values. If the first complete Passage support arrives with Capture Reserve already due, Passage acquires the same Cruise Ceiling directly before physical Passage dispatch rather than manufacturing a zero-duration predecessor Regulation.
+
+> **Speed Configuration != Movement Authority**
+
+> **Passage Speed Envelope Spans Responsibility Transitions**
+
+The 10 km/h calibration is temporal-control policy validated against Reality. It is not a braking-distance model, does not enlarge the 9 m Capture Reserve, and does not replace latest-safe-capture boundary conformance.
+
+> **Passage Approach Responsibility != Unrestricted Native Reset**
+
+Third-party Bubble Bullet Time remains the separate 1 km/h policy. After Capture and Transit settlement, the existing common 8 km/h Cooperative Passage actuation calibration governs coupled Passage movement.
+
 Once the pair is settled in Transit, required lateral excursion is a transverse sidestep. It owns no proportional forward Development/Reacquisition distance and creates no second longitudinal reserve.
 
 Prospective Candidate Support and realised execution support answer different questions. Candidate Support must establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core, but it must not require an exact pairwise sweep from a hypothetical future Entry origin. After Capture and Transit settlement, the realised execution origin becomes Reality and pairwise execution support is mandatory **through positive Crossing Clearance** before Passage movement begins.

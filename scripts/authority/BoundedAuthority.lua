@@ -101,7 +101,7 @@ function Authority:authorize(values)
         if values.capability~="REGULATE_SPEED" then return nil,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_CAPABILITY_INVALID" end
         if values.authorityToken~=nil then return nil,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_MUST_NOT_OWN_MOVEMENT" end
         local target=values.target
-        if type(target)~="table" or target.kind~="REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string"
+        if type(target)~="table" or (target.kind~="REGULATION_LEASE" and target.kind~="PASSAGE_CRUISE_CEILING") or type(target.vehicleReferenceKey)~="string"
             or type(target.ownerTag)~="string" or tonumber(target.maxSpeedKmh)==nil or tonumber(target.maxSpeedKmh)<0 then
             return nil,"BOUNDED_AUTHORITY_SUPPORTING_CEILING_TARGET_INVALID"
         end

@@ -108,6 +108,32 @@ The Geometric Entry Boundary MUST be derived from the selected pair's supported 
 
 Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
+A complete supported Cooperative Passage Candidate MAY exist while the pair is still outside the current Capture boundary. In that state the implementation MUST NOT establish Cooperative Passage merely to obtain pre-Capture speed control. Instead, the pair MUST remain under the Regulation Jurisdiction through a **Passage Approach Regulation** while GIANTS-native routing and steering continue.
+
+Passage Approach Regulation MUST cap both prospective Passage participants at an initial maximum of **10 km/h per participant** by temporarily lowering their native **GIANTS Cruise Control** values. For each direction the applied value MUST be `min(original value, 10 km/h)`; OMW MUST NOT increase a lower existing Cruise Control value.
+
+After Passage Approach Regulation has acquired the pairwise ceiling, Candidate Support MUST allow the normal Cooperative Passage Candidate and Bubble Formation Readiness contract to resume. Regulation remains the predecessor while Bubble Formation Readiness is false. Either the settled-native-revelation route or the latest-safe-capture route MAY justify the subsequent sharp Responsibility Transition to Cooperative Passage.
+
+> **Regulation Acquisition != Capture Readiness**
+
+The temporarily modified GIANTS Cruise Control values MUST persist across the Regulation-to-Passage Responsibility Transition and remain in force for the complete Passage lifecycle, including Return. The Cruise Ceiling is configuration state, not movement authority; it MUST NOT create steering, direction, target or displacement authority.
+
+OMW MUST capture each participant's original forward and reverse Cruise Control values before modification and MUST restore those original values on every Passage terminal exit, including success, failure, product disable and other fail-safe relinquishment. Pair application MUST be fail-safe: if both participants cannot be configured, any participant already changed in that attempt MUST be restored before the operation reports failure.
+
+If first complete Passage support occurs only when Capture Reserve is already due, Candidate Support MAY expose Passage directly through the existing latest-safe-capture route; the same Cruise Ceiling MUST then be acquired before physical Passage dispatch rather than manufacturing a zero-duration predecessor Regulation.
+
+> **Speed Configuration != Movement Authority**
+
+> **Passage Speed Envelope Spans Responsibility Transitions**
+
+> **Confirmed Passage != Immediate Passage Responsibility**
+
+> **Passage Approach Regulation != Passage Resolution**
+
+The 10 km/h ceiling MUST NOT be represented as additional Capture Reserve, a braking-distance model, a replacement for latest-safe-capture timing, or the third-party 1 km/h Bullet Time policy. After Capture and Transit settlement, the existing common **8 km/h** Cooperative Passage actuation speed remains the coupled-movement calibration.
+
+> **Passage Approach Responsibility != Unrestricted Native Reset**
+
 Required lateral excursion MUST be expressed as Transit sidestep rather than proportional forward Development/Reacquisition.
 
 Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete pair sweep from a hypothetical future Entry origin.
@@ -409,6 +435,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) | `REALISES` |
+| [`scripts/control/mechanisms/PassageCruiseControl.lua`](../scripts/control/mechanisms/PassageCruiseControl.lua) | `REALISES` |
 | [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
 | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `SUPPORTS` |
@@ -426,6 +453,7 @@ Current implementation routes include:
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
 - [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) — current Passage-Leg obligation creation/settlement, participant-loss vacatur and parent terminal integration;
 - [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) — current formation-time independent-third supporting-ownership preparation, fixed 1 km/h Regulation activation after Passage responsibility exposure, and Resolution-Epoch/basis cleanup;
+- [`scripts/control/mechanisms/PassageCruiseControl.lua`](../scripts/control/mechanisms/PassageCruiseControl.lua) — captures/restores native GIANTS forward/reverse Cruise Control values and applies the pairwise 10 km/h Passage ceiling atomically while leaving route and steering with GIANTS;
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current Passage-specific joint Bounded Authority request construction, survivor-leg authority rebind/failure handling and completion integration;
 - [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) — current semantic Resolution Commitment view over the retained implementation substrate; and
 - [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) — current physical Passage executor, configuration settlement, guide execution, recovery and handback mechanism.
