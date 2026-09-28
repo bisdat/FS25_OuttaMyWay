@@ -57,10 +57,12 @@ local function logPairSweepFailureWitness(commitmentId,source,reason,evidence,ca
     if not diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS") then return end
     local witness=nil
     if type(evidence)=="table" then
-        if reason=="PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW" then
+        if reason=="PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE" then
+            witness=evidence.minimumPreCrossingOutsideWitness
+        elseif reason=="PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW" then
             witness=evidence.minimumOutsideCrossingWitness
         else
-            witness=evidence.minimumCrossingWindowWitness or evidence.minimumOutsideCrossingWitness
+            witness=evidence.minimumCrossingWindowWitness or evidence.minimumPreCrossingOutsideWitness or evidence.minimumOutsideCrossingWitness
         end
     end
     if type(witness)~="table" then
@@ -78,7 +80,7 @@ local function logPairSweepFailureWitness(commitmentId,source,reason,evidence,ca
         tostring(witness.segment),tostring(witness.fromGateKind),tostring(witness.fromGateIndex),
         tostring(witness.toGateKind),tostring(witness.toGateIndex),tostring(witness.sampleIndex),tostring(witness.sampleCount),
         tonumber(witness.sampleFraction) or -1,tonumber(witness.clearanceM) or 0,
-        tonumber(evidence and evidence.outsideCrossingOverlapToleranceM) or 0,
+        tonumber(evidence and (evidence.preCrossingOverlapToleranceM or evidence.outsideCrossingOverlapToleranceM)) or 0,
         tostring(witness.classification),tonumber(witness.subjectX) or 0,tonumber(witness.subjectZ) or 0,
         tonumber(witness.otherX) or 0,tonumber(witness.otherZ) or 0,tostring(witness.representationBasis),
         tostring(witness.subjectEnvelopeAuthority),tostring(witness.otherEnvelopeAuthority),
