@@ -649,7 +649,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "acceptanceRatio=math.max(0,acceptanceRatio)",
         "localacceptedFloor=required*acceptanceRatio",
         'ifminimumCrossing==math.hugeorminimumCrossing+0.001<acceptedFloorthenreturnfalse,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW",evidence()end',
-        'ifminimumOutsideCrossing<-0.001thenreturnfalse,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",evidence()end',
+        'ifminimumPreCrossingOutside<-0.001thenreturnfalse,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE",evidence()end',
     ):
         assert expression in code, expression
     assert code.count("localsamples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG") == 2
