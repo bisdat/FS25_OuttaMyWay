@@ -110,7 +110,7 @@ Capture Reserve MUST be represented as the one explicit pairwise longitudinal sa
 
 A complete supported Cooperative Passage Candidate MAY exist while the pair is still outside the current Capture boundary. In that state the implementation MUST NOT establish Cooperative Passage merely to obtain pre-Capture speed control. Instead, the pair MUST remain under the Regulation Jurisdiction through a **Passage Approach Regulation** while GIANTS-native routing and steering continue.
 
-Passage Approach Regulation MUST cap both prospective Passage participants at an initial maximum of **10 km/h per participant**. The ceiling is a maximum, not a target: a slower participant MUST NOT be accelerated merely to reach 10 km/h, and any independently valid more-restrictive temporal authority MUST remain effective through least-permissive composition.
+Passage Approach Regulation MUST cap both prospective Passage participants at an initial maximum of **10 km/h per participant** by temporarily lowering their native **GIANTS Cruise Control** values. For each direction the applied value MUST be `min(original value, 10 km/h)`; OMW MUST NOT increase a lower existing Cruise Control value.
 
 After Passage Approach Regulation has acquired the pairwise ceiling, Candidate Support MUST allow the normal Cooperative Passage Candidate and Bubble Formation Readiness contract to resume. Regulation remains the predecessor while Bubble Formation Readiness is false. Either the settled-native-revelation route or the latest-safe-capture route MAY justify the subsequent sharp Responsibility Transition to Cooperative Passage.
 
