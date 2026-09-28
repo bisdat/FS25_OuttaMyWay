@@ -50,7 +50,7 @@ As applicable, the semantic product includes:
 - the **Shared Crossing Core** with required Passage clearance and represented non-contact support;
 - capture/control reserve and disposable native approach margin;
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement;
-- any Return Corridor that must remain protected for an actually required Axis Return;
+- any sequential return space that must remain protected while a participant returns toward its Passage Return Region;
 - entry/capture boundary evidence;
 - the required Transit configuration plan for both participants;
 - Passage guide semantics sufficient to express the intended physical choreography; and
@@ -104,15 +104,19 @@ The implementation MUST preserve the distinction among:
 - the **Shared Crossing Core** required by the selected Transit-configured pair; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The Geometric Entry Boundary MUST be derived from supported facing longitudinal extents plus the actual Development required by the selected participant-specific lateral excursion. A generic control-acquisition allowance MUST NOT be embedded in that boundary.
+The Geometric Entry Boundary MUST be derived from the selected pair's supported **Transit-configured facing longitudinal extents**. Participant-specific lateral excursion MUST NOT be added as longitudinal Entry reserve.
 
-Capture Reserve MUST be represented as one pairwise longitudinal margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant or duplicated elsewhere in Entry geometry.
+Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
-A generic minimum Development floor MUST NOT be used as hidden Capture Reserve. Development belongs to the selected lateral excursion; Capture Reserve owns control acquisition and settling.
+Required lateral excursion MUST be expressed as Transit sidestep rather than proportional forward Development/Reacquisition.
+
+Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete pair sweep from a hypothetical future Entry origin.
+
+After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement is unsupported, a fresh arrangement MAY be selected from the same realised origin. If no fresh realised-origin arrangement is supported, autonomous Passage movement MUST NOT begin.
 
 The Capture Reserve magnitude remains Control calibration validated against Reality. It MUST NOT be treated as a braking-model claim, universal stopping-distance claim or fixed time-to-contact literal.
 
-A Return Corridor required by Axis Return MUST be represented as protected already-created Passage space, not as a second generic rearward reserve.
+Sequential return space MUST be represented as protected already-created Passage space, not as a second generic rearward reserve.
 
 The implementation MUST also preserve **disposable native approach margin** that can be consumed before capture while retaining the complete required theatre.
 
@@ -158,7 +162,7 @@ The implementation MUST NOT reconstruct or "correct" pre-existing articulation, 
 
 A selected arrangement may require lateral excursion or may remain on-axis. That distinction changes only the guide geometry used to create and later remove lateral displacement. It does not create an alternate downstream lifecycle or imply early handback.
 
-The two legs may progress and terminate independently where current evidence supports it. Physical crossing alone does not settle a leg while runout/return staging, Axis Return, restoration or handback remains open.
+The two legs may progress and terminate independently where current evidence supports it. Physical crossing alone does not settle a leg while Return Staging, Passage Return, restoration or handback remains open.
 
 > **Pairwise Resolution != Symmetric Progress Requirement**
 
@@ -187,7 +191,7 @@ Vacatur settles only the vacated leg's obligation and physical authority. It MUS
 
 ### Survivor Invariance
 
-When one leg is vacated, the surviving Passage Leg continues the same already-committed Passage contract, including its own remaining Passage, runout, axis recovery, intervention-created restoration and GIANTS handback obligations as applicable.
+When one leg is vacated, the surviving Passage Leg continues the same already-committed Passage contract, including its own remaining Passage, Return Staging, Passage Return Region, intervention-created restoration and GIANTS handback obligations as applicable.
 
 The vacated leg ceases to be a procedural dependency, but its physical assembly remains current Reality if still present.
 
@@ -206,6 +210,40 @@ Crossing Clearance MUST be established from current pair geometry / rear-clear e
 Before Crossing Clearance, the unresolved original crossing conflict prevents blind native release merely because a downstream recovery mechanism has become difficult. After Crossing Clearance, the implementation MAY discharge and hand back one leg independently when its own intervention-created debt is positively satisfied.
 
 > **Crossing Clearance != Exact Axis Restitution**
+
+A pre-Crossing execution-validity check MUST NOT reject an otherwise supported opposed crossing solely because predicted post-Crossing lateral reacquisition, Return Staging, Passage Return or restoration may later be unsupported. Those obligations are participant-scoped recovery after positive Crossing Clearance and MUST be reassessed at the downstream responsibility that owns them.
+
+> **Post-Crossing Recovery Cannot Retroactively Veto Crossing**
+
+### Passage Return Region
+
+After positive Crossing Clearance, Passage restitution MUST restore **locality**, not an exact productive pose.
+
+Each still-live participant MAY require bounded forward Return Staging so that sequential reverse has positively protected space. Return Staging MUST be owned by separation/occupancy requirements; exact captured-axis alignment MUST NOT be a prerequisite.
+
+A participant with remaining displacement debt MUST then reverse under native steering toward a subordinate **Reverse Steering Horizon** beyond its captured execution origin / original work-lane locality. The completion condition remains entry into a bounded **Passage Return Region**, not steering-target arrival and not exact centreline, heading or articulation reproduction.
+
+For the current capability, Reverse Steering Horizon look-through MUST be derived from the participant's cached Transit longitudinal length. It is steering geometry only: it MUST NOT extend movement authority, enlarge the Return Region, add another longitudinal reserve or become restitution-completion evidence.
+
+The return mechanism MUST:
+- keep the participant in Transit while spatial restitution is active;
+- return participants sequentially rather than simultaneously;
+- preserve positive released-participant clearance before the waiting participant begins return;
+- retain the existing GIANTS FIELDWORK Job Episode;
+- determine Return Region entry independently from the reverse steering mechanism's point-target completion;
+- stop/fail safe if the subordinate steering horizon is reached before Return Region entry;
+- restore intervention-created configuration debt after the Return Region is reached; and
+- hand control back to GIANTS for residual productive-route correction.
+
+Passage MUST NOT restart or replace the FIELDWORK job merely to perturb GIANTS routing. That behaviour belongs to Blocked Worker Recovery, where blockage invalidates the useful native route; Cooperative Passage does not invalidate the participant's productive route.
+
+> **Passage Return Region != BWR Recovery Return Region**
+
+> **Passage Return Region != Reverse Steering Horizon**
+
+> **Movement Completion Region != Reverse Steering Target**
+
+> **Restitution Sufficiency != Geometric Restoration**
 
 Passage commitment does not freeze execution geometry.
 
@@ -230,7 +268,7 @@ A guide may be rebased to current execution origins only after its retained geom
 
 Rebasing coordinates while preserving stale lateral/clearance assumptions does not satisfy this execution-validity contract.
 
-If fresh Reality cannot positively support the retained or validly adapted Passage arrangement, physical Passage progression MUST fail closed at that boundary rather than treating earlier Candidate support as permanent authority.
+If fresh Reality cannot positively support the retained or validly adapted Passage arrangement **through Crossing Clearance**, physical Passage progression MUST fail closed at that boundary rather than treating earlier Candidate support as permanent authority. Predicted support loss confined to post-Crossing recovery MUST NOT be promoted into a pre-Crossing Passage veto.
 
 Once a physical leg is underway, its locally authorised execution choice SHOULD remain stable enough to avoid oscillatory retargeting. Hard-safety evidence remains authoritative and may force narrowing, stopping or failure according to the parent/downstream contracts.
 

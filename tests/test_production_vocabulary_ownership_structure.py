@@ -532,16 +532,25 @@ def test_cooperative_passage_control_owns_execution_calibration():
         assert use in passage
 
 
-def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners():
+def test_passage_guide_radius_return_staging_tolerance_and_return_region_have_independent_owners():
     planner_owner = ROOT / "scripts/candidates/LocalPassagePlanner.lua"
     control_owner = ROOT / "scripts/control/CooperativePassageControl.lua"
     planner = planner_owner.read_text(encoding="utf-8")
     passage = control_owner.read_text(encoding="utf-8")
     config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
     radius = "COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M"
-    tolerance = "COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M"
-    # Calibration equality does not create shared policy or a mutable root seam.
-    for name, owner, text in ((radius, planner_owner, planner), (tolerance, control_owner, passage)):
+    staging_tolerance = "COOPERATIVE_PASSAGE_RETURN_STAGING_STATION_TOLERANCE_M"
+    return_region = "COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M"
+    steering_horizon_target = "COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M"
+    # Equal calibrations do not create shared policy: guide reach, staging
+    # station completion, Return Region entry and subordinate steering-target
+    # arrival remain purpose-specific owners.
+    for name, owner, text in (
+        (radius, planner_owner, planner),
+        (staging_tolerance, control_owner, passage),
+        (return_region, control_owner, passage),
+        (steering_horizon_target, control_owner, passage),
+    ):
         assert name not in config
         assert re.search(rf"^local {name} = 1\.0$", text, re.M)
         assert len(re.findall(rf"\b{name}\s*=(?!=)", text)) == 1
@@ -556,21 +565,33 @@ def test_passage_guide_radius_and_axis_station_tolerance_have_independent_owners
     assert f"local traversalRadius={radius}" in guide
     assert "participantProgress" in guide
     assert 'append("CROSSING_WINDOW_ENTRY",progress(subjectDevelopment,' in guide
+    assert f"local tolerance={staging_tolerance}" in passage
+    assert "local horizonDistance=envelopeLength(participant.transitPassageEnvelope)" in passage
     assert ',otherDevelopment,' in guide
     assert 'append("CROSSING_WINDOW_EXIT",progress(subjectDevelopment+traversal,' in guide
     assert ',otherDevelopment+traversal,' in guide
     for participant in ("subject", "other"):
         assert re.search(rf"gate\.{participant}=\{{[^\n]+radiusM=gate\.radiusM\}}", guide)
 
-    for method, station, forwards in (("_startRunoutChunk", "progress+stepDistance", "true"),
-                                      ("_beginAxisReturn", "0", "false")):
-        block = passage.split(f"function Control:{method}(", 1)[1].split("\nfunction Control:", 1)[0]
-        assert f"local tolerance={tolerance}" in block
-        assert ("self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,"
-                "participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,"
-                f"{station},run.speedKmh,{forwards},tolerance)") in block
+    staging = passage.split("function Control:_startReturnStagingChunk(", 1)[1].split("\nfunction Control:", 1)[0]
+    assert f"local tolerance={staging_tolerance}" in staging
+    assert ("self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,"
+            "participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,"
+            "progress+stepDistance,run.speedKmh,true,tolerance)") in staging
+
+    passage_return = passage.split("function Control:_beginPassageReturn(", 1)[1].split("\nfunction Control:", 1)[0]
+    assert "local horizonDistance=envelopeLength(participant.transitPassageEnvelope)" in passage_return
+    assert "local steeringTargetX=originX-fx*horizonDistance" in passage_return
+    assert "local steeringTargetZ=originZ-fz*horizonDistance" in passage_return
+    assert f"participant.vehicle,steeringTargetX,steeringTargetZ,run.speedKmh,{steering_horizon_target},false" in passage_return
+    assert f"participant.vehicle,originX,originZ,run.speedKmh,{return_region},false" not in passage_return
+    assert "horizonBasis=TRANSIT_LENGTH" in passage_return
+    assert "completionOwner=CONTROL_RETURN_REGION" in passage_return
+    assert "setAxisTravel" not in passage_return
+
     gate = passage.split("function Control:_startGuideGate(", 1)[1].split("\nfunction Control:", 1)[0]
-    assert tolerance not in gate
+    assert staging_tolerance not in gate
+    assert return_region not in gate
     assert "local target=self:_guideTargetFor(run,p,gate)" in gate
     assert "p.targetX,p.targetZ,p.targetRadiusM=target.x,target.z,target.radiusM" in gate
     assert "self.driveMechanism:setReposition(p.vehicle,target.x,target.z,run.speedKmh,target.radiusM)" in gate
@@ -601,7 +622,6 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     expected = {
         "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M": "1.0",
         "COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO": "0.95",
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M": "2.0",
         "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M": "9.0",
         "COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M": "2.0",
         "COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M": "2.0",
@@ -621,6 +641,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
 
     assert "COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M" not in planner
     assert "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M" not in planner
+    assert "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M" not in planner
 
     # Whitespace-independent expressions protect calculation and use, including
     # both independent sweep sites. Existing guide/Transit/Control contracts remain.
@@ -630,13 +651,13 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)",
         "localburden=math.abs(offset)",
         "localrequired=burden>0.001",
-        "development=burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
-        "reacquisitionDistanceM=development",
+        "developmentDistanceM=0",
+        "reacquisitionDistanceM=0",
         "localsubjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)",
         "localotherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)",
-        "localdevelopmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM",
         "localcaptureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
-        "localentryBoundary=frontOverlap+developmentSum",
+        "localentryBoundary=frontOverlap",
+        "prospectiveTransitArrangementSupport(arrangement,nominalClearance)",
         "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
         "localmaximumDevelopment=math.max(subjectDevelopment,otherDevelopment)",
         "localmaximumReacquisition=math.max(subjectReacquisition,otherReacquisition)",
@@ -649,7 +670,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "acceptanceRatio=math.max(0,acceptanceRatio)",
         "localacceptedFloor=required*acceptanceRatio",
         'ifminimumCrossing==math.hugeorminimumCrossing+0.001<acceptedFloorthenreturnfalse,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW",evidence()end',
-        'ifminimumOutsideCrossing<-0.001thenreturnfalse,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",evidence()end',
+        'ifminimumPreCrossingOutside<-0.001thenreturnfalse,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE",evidence()end',
     ):
         assert expression in code, expression
     assert code.count("localsamples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG") == 2
@@ -707,6 +728,9 @@ def test_retired_recovery_tail_vocabulary_absent_from_sourced_production():
         "PARTICIPANT_SCOPED_RECOVERY_CAPABLE_THEATRE",
         "RECOVERY_ALIGNMENT_THEN_AXIS_RETURN",
         "RECOVERY_ALIGNMENT_START",
+        "COOPERATIVE_PASSAGE_AXIS_RETURN_STARTED",
+        "COOPERATIVE_PASSAGE_AXIS_RETURN_COMPLETE",
+        "COOPERATIVE_PASSAGE_AXIS_RETURN_ALIGNMENT_LOST",
     )
     for path in _loaded_production_lua_paths():
         source = path.read_text(encoding="utf-8")

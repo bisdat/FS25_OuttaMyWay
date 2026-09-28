@@ -1352,10 +1352,13 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
         "COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M",
     ):
         assert retired not in planner
+    assert "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M" not in planner
     for token in (
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
-        "entryBoundary=frontOverlap+developmentSum",
+        "entryBoundary=frontOverlap",
+        "prospectiveTransitArrangementSupport",
+        "transitArrangementSupported=true",
+        "executionPairSweepRequired=true",
         "captureReserveM=geometry.passageCaptureReserveM",
     ):
         assert token in planner
@@ -1457,13 +1460,16 @@ def test_passage_rejection_telemetry_reports_candidate_failure_class_without_cha
     assert "theatreComponent" in support
 
 
-def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
+def test_nominal_passage_clearance_and_hard_non_contact_are_scoped_through_crossing_clearance():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     assert "minimumCrossingWindowClearanceM" in planner
-    assert "minimumOutsideCrossingClearanceM" in planner
-    assert "NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW" in planner
-    assert "PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW" in planner
+    assert "minimumPreCrossingOutsideClearanceM" in planner
+    assert "minimumPostCrossingRecoveryClearanceM" in planner
+    assert "NON_CONTACT_BEFORE_CROSSING_CLEARANCE_NOMINAL_TARGET_WITH_POLICY_FLOOR_IN_CROSSING_WINDOW_POST_CROSSING_RECOVERY_DEFERRED" in planner
+    assert "PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE" in planner
     assert "PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW" in planner
+    assert "postCrossingRecoveryPreVetoAuthority=false" in planner
+    assert "minimumPostCrossingRecovery<-0.001" not in planner
     assert 'gate.kind=="CROSSING_WINDOW_ENTRY"' in planner
     assert 'gate.kind=="CROSSING_WINDOW_EXIT"' in planner
     assert 'local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0' in planner
@@ -1472,19 +1478,35 @@ def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
     assert "clearanceAcceptanceRatio" in planner
 
 
-def test_v0146_clearance_telemetry_reuses_existing_sweep_evidence_without_extra_planner_calls():
+def test_pair_sweep_probe_retains_post_crossing_witness_without_giving_it_pre_veto_authority():
+    planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    for token in (
+        "minimumPreCrossingOutsideWitness",
+        "minimumPostCrossingRecoveryWitness",
+        "minimumCrossingWindowWitness",
+        '"SIDESTEP_OUT"',
+        "preCrossingOverlapToleranceM=0.001",
+        'minimumPreCrossingOutside<-0.001',
+        "postCrossingRecoveryPreVetoAuthority=false",
+    ):
+        assert token in planner
+    assert "COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS" in control
+    assert 'source="RETAINED"' not in control  # runtime source is data, not a hard-coded special path
+    assert 'logPairSweepFailureWitness(run.commitmentId,"RETAINED"' in control
+    assert 'logPairSweepFailureWitness(run.commitmentId,"ADAPTATION"' in control
+
+
+def test_clearance_telemetry_does_not_restore_prospective_pair_sweep_authority():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     assert "COOPERATIVE_PASSAGE_CLEARANCE_TRACE" in support
     assert "passageClearanceRejectionTelemetry" in support
     assert "passageClearanceSelectedTelemetry" in support
-    assert "candidate.sweepEvidence" in support
-    assert "minimumCrossingWindowClearanceM" in support
-    assert "requiredNominalClearanceM" in support
-    assert "nominalResidue" in support
-    assert "floorResidue" in support
-    assert "sweepEvidence=sweepEvidence" in planner
+    assert "prospectivePairSupport=transitEvidence" in planner
+    assert "sweepEvidence=sweepEvidence" not in planner
+    assert "executionPairSweepRequired=true" in planner
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     window="COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M"
     assert window not in config
@@ -1566,7 +1588,7 @@ def test_v0181_cooperative_passage_restore_uses_cached_actuator_symmetry_only():
     assert 'function Mechanism:finishCachedTransitRestore(vehicle)' in authority
 
 
-def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
+def test_v01124_bounded_passage_return_is_isolated_after_canonical_passage_guide():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"control"/"mechanisms"/"NativeDriveMechanism.lua").read_text(encoding="utf-8")
@@ -1582,25 +1604,35 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' not in situation
     assert 'COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG' in planner
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
-    # Bounded Axis Return begins only after the existing guide completes.
+    # Post-Crossing restitution uses bounded staging plus native-steered
+    # reverse. The semantic Return Region and subordinate Reverse Steering
+    # Horizon remain distinct; exact captured-axis restoration is not required.
     assert 'COOPERATIVE_PASSAGE_GUIDE_COMPLETE' in control
-    assert 'ALIGNMENT_RUNOUT_START' in control
+    assert 'RETURN_STAGING_START' in control
     assert 'RETURN_STAGING_READY' in control
-    assert 'AXIS_RETURN_START' in control
-    assert 'steering=CAPTURED_AXIS_ONLY' in control
-    assert 'AXIS_RETURN_ALIGNMENT_LOST' in control
+    assert 'PASSAGE_RETURN_STARTED' in control
+    assert 'steering=NATIVE_POINT_SEEKING_WITH_TRANSIT_HORIZON' in control
+    assert 'horizonBasis=TRANSIT_LENGTH' in control
+    assert 'completionOwner=CONTROL_RETURN_REGION' in control
+    assert 'COOPERATIVE_PASSAGE_RETURN_STEERING_STATE' in control
+    assert 'PASSAGE_RETURN_STEERING_HORIZON_REACHED_BEFORE_RETURN_REGION' in control
+    assert 'existingJobPreserved=true' in control
     assert 'RETURN_CLEARANCE_WAIT' in control
-    assert 'AXIS_RETURN_CLEARANCE_LOST' in control
+    assert 'PASSAGE_RETURN_CLEARANCE_LOST' in control
     assert 'PARTICIPANT_WAVE_ON' in control
     assert 'PAIR_CONTEXT_DISSOLVED' in control
-    assert 'function Mechanism:setAxisTravel' in drive
-    assert 'state.mode == "AXIS_TRAVEL"' in drive
-    assert 'function Cache:getAssemblyAlignmentSnapshot' in cache
-    assert 'function Control:_assemblyAxisSettled' in control
-    assert 'ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED' in control
-    assert 'ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED' not in control
-    assert 'alignmentBaseline' not in control
-    assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50' in control
+    assert 'function Mechanism:setReposition' in drive
+    assert 'state.mode == "REPOSITION"' in drive
+    assert 'moveForwards = forwards' in drive
+    assert 'steering=CAPTURED_AXIS_ONLY' not in control
+    assert 'AXIS_RETURN_ALIGNMENT_LOST' not in control
+    assert 'exactAxisAlignmentRequired=false' in control
+    assert 'COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M = 1.0' in control
+    assert 'COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M = 1.0' in control
+    assert 'local horizonDistance=envelopeLength(participant.transitPassageEnvelope)' in control
+    assert 'local steeringTargetX=originX-fx*horizonDistance' in control
+    assert 'local steeringTargetZ=originZ-fz*horizonDistance' in control
+    assert 'function Control:_passageReturnRegionState(participant)' in control
     assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995' in control
 
 
@@ -2050,12 +2082,12 @@ def test_issue240_feature_relative_corner_arrival_is_production_situation_meanin
     assert "workingWidthM" not in assessment[assessment.index("local function terminalEdgeCornerAssociation"):assessment.index("-- Current Corner Occupancy")]
 
 
-def test_issue227_runout_uses_five_metre_maximum_reassessment_step_from_124_lifecycle():
+def test_issue358_return_staging_uses_five_metre_maximum_reassessment_step():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
-    assert re.search(r"^local COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M = 5\.0$", control, re.M)
-    assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M)" in control
+    assert re.search(r"^local COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M = 5\.0$", control, re.M)
+    assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M)" in control
     assert "progress+stepDistance" in control
-    assert "derivedFrom=MAX_5M_REASSESSMENT_STEP" in control
+    assert "purpose=CREATE_SEQUENTIAL_RETURN_SPACE" in control
 
 
 def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
@@ -2070,14 +2102,16 @@ def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
         "SETTLING_COMPLETION_UNITS",
         "TRANSIT_CONFIGURATION_ACTUATOR_DISTANCE",
         "GUIDE_TARGET_DISTANCE_M",
-        "RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS",
-        "AXIS_RETURN_STATION_DISTANCE_M",
+        "RETURN_STAGING_CLEARANCE_COMPLETION_UNITS",
+        "PASSAGE_RETURN_REGION_DISTANCE_M",
         "RESTORE_ACTUATOR_DISTANCE",
         "RETURN_CLEARANCE_DEFICIT_M",
     ):
         assert residual in control
     assert "RETURN_CLEARANCE_EXHAUSTED" not in control
     assert "SKIP_AXIS_RETURN_AND_RESTORE" not in control
+    assert "AXIS_RETURN_STATION_DISTANCE_M" not in control
+    assert "RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS" not in control
     assert "PROGRESS_WATCHDOG_NO_COMPLETION_PROGRESS" in control
     assert "semanticTerminality=false" in control
     assert "completionResidual" in mechanism

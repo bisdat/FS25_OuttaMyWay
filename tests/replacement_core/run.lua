@@ -4187,25 +4187,26 @@ test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing 
     equal(clearance.negativeClearanceAuthority,false)
 end)
 
-test("Cooperative Passage: Geometric Entry Boundary excludes Capture Reserve and retains physical Crossing Window",function()
+test("Cooperative Passage: prospective Transit support defers exact pair sweep to realised execution origin",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION")
     equal(plan.passageEntry.ready,false); equal(plan.passageEntry.boundarySeparationM<18,true)
     equal(plan.passageEntry.captureReserveM,9.0)
-    equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
-    equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
-    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_ENTRY")
-    equal(plan.passageGuide.gates[3].kind,"CROSSING_WINDOW_EXIT")
-    equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
+    equal(math.abs(plan.passageEntry.boundarySeparationM-plan.passageExcursion.crossingWindowEntrySeparationM)<0.0001,true)
+    equal(plan.passageExcursion.developmentDistanceM,0); equal(plan.passageExcursion.reacquisitionDistanceM,0)
+    equal(#plan.passageGuide.gates,3); equal(plan.progressiveSearch.satisficed,true)
+    equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
+    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_EXIT")
+    equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-6)<0.0001,true)
     equal(math.abs(plan.passageArrangement.nominalInterAssemblyClearanceM-1)<0.0001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-7)<0.0001,true)
-    equal(plan.passageExcursion.developmentDistanceM<12,true)
-    equal(plan.passageExcursion.crossingWindowEntrySeparationM>0,true)
-    equal(plan.passageExcursion.crossingWindowRearClearSeparationM>0,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.executionPairSweepRequired,true)
+    equal(plan.passageGuide.prospectivePairSupport.targetClearanceM>=0.95,true)
+    equal(plan.passageCapableTheatre.sharedCrossingCore.transitArrangementSupported,true)
+    equal(plan.passageCapableTheatre.sharedCrossingCore.executionPairSweepRequired,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-7)<0.0001,true)
 end)
 
@@ -4307,11 +4308,12 @@ test("Cooperative Passage: Transit Passage envelope uses cached GIANTS base size
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-4.70)<0.001,true)
     equal(math.abs(plan.passageExcursion.subjectFrontExtentM-5.55)<0.001,true)
     equal(math.abs(plan.passageExcursion.otherFrontExtentM-4.5)<0.001,true)
-    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.supportBasis,"TRANSIT_ARRANGEMENT_TARGET_WITH_REALISED_EXECUTION_PAIR_SWEEP_REQUIRED")
+    equal(plan.passageGuide.prospectivePairSupport.targetClearanceM>=0.95,true)
 end)
 
-test("Crossing-Window Clearance: Nominal Passage Clearance is required only through the Crossing Window",function()
+test("Crossing-Window Clearance: prospective Transit arrangement targets nominal Passage Clearance",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,30)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     values.physicalSpaceEvidence[1].primitives={
@@ -4325,11 +4327,12 @@ test("Crossing-Window Clearance: Nominal Passage Clearance is required only thro
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    local sweep=plan.passageGuide.pairSweepSupport
-    equal(sweep.minimumCrossingWindowClearanceM>=0.999,true)
-    equal(sweep.minimumOutsideCrossingClearanceM>=-0.001,true)
-    equal(sweep.minimumRepresentedClearanceM<=sweep.minimumCrossingWindowClearanceM,true)
-    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
+    local support=plan.passageGuide.prospectivePairSupport
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(support.executionPairSweepRequired,true)
+    equal(support.targetClearanceM>=0.999,true)
+    equal(math.abs(support.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(support.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
 end)
 
 test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor while construction remains at one metre",function()
@@ -4339,12 +4342,12 @@ test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor w
     -- is protected by the Planner ownership structural contract.
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    local sweep=plan.passageGuide.pairSweepSupport
-    equal(math.abs(sweep.requiredNominalClearanceM-1.0)<0.0001,true)
-    equal(math.abs(sweep.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
-    equal(math.abs(sweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
-    equal(sweep.minimumCrossingWindowClearanceM+0.001>=sweep.acceptedNominalClearanceFloorM,true)
-    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
+    local support=plan.passageGuide.prospectivePairSupport
+    equal(math.abs(support.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(support.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
+    equal(math.abs(support.clearanceAcceptanceRatio-0.95)<0.0001,true)
+    equal(support.targetClearanceM+0.001>=support.acceptedNominalClearanceFloorM,true)
+    equal(support.executionPairSweepRequired,true)
 
     -- A coherent lateral pose just inside the existing construction-sufficiency
     -- tolerance needs no excursion. Its represented gap is 0.9995 m: below the
@@ -4358,14 +4361,12 @@ test("Crossing-Window Clearance: nominal Passage Clearance uses a policy floor w
     end
     local boundaryPlan,boundaryReason=OuttaMyWay.LocalPassagePlanner.plan(OuttaMyWay.OperationalPicture.new(values),snapshot)
     equal(boundaryReason,nil); equal(boundaryPlan.status,"SUPPORTED")
-    local boundarySweep=boundaryPlan.passageGuide.pairSweepSupport
+    local boundarySupport=boundaryPlan.passageGuide.prospectivePairSupport
     equal(boundaryPlan.passageArrangement.currentSeparationAlreadySufficient,true)
-    equal(math.abs(boundarySweep.requiredNominalClearanceM-1.0)<0.0001,true)
-    equal(math.abs(boundarySweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
-    equal(math.abs(boundarySweep.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
-    equal(boundarySweep.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(boundarySweep.minimumCrossingWindowClearanceM<1.0,true)
-    equal(math.abs(boundarySweep.minimumCrossingWindowClearanceM-0.9995)<0.0001,true)
+    equal(math.abs(boundarySupport.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(boundarySupport.clearanceAcceptanceRatio-0.95)<0.0001,true)
+    equal(math.abs(boundarySupport.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
+    equal(boundarySupport.executionPairSweepRequired,true)
 end)
 
 test("Cooperative Passage: Passage Selection may precede Entry while Resolution Space remains available",function()
@@ -4375,8 +4376,8 @@ test("Cooperative Passage: Passage Selection may precede Entry while Resolution 
     equal(plan.passageEntry.ready,false)
     equal(plan.passageEntry.boundarySeparationM<60,true)
     equal(plan.passageEntry.approachDistancePerParticipantM>0,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.executionPairSweepRequired,true)
 end)
 
 test("Cooperative Passage: zero Clearance Deficit produces straight Passage with no manufactured one-metre excursion",function()
@@ -4400,7 +4401,8 @@ test("Cooperative Passage: zero Clearance Deficit produces straight Passage with
     equal(#plan.passageGuide.gates,3)
     equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
     equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
-    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.targetClearanceM>=1,true)
     local theatre=plan.passageCapableTheatre
     equal(theatre.complete,true)
     equal(theatre.sharedCrossingCore.fieldSupported,true)
@@ -4422,7 +4424,7 @@ test("Cooperative Passage: one-sided intervention creates Reacquisition only for
     if onAxisRole==nil then error("expected one-sided Passage arrangement") end
     local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
     equal(reacquisition[onAxisRole].required,false); equal(reacquisition[onAxisRole].distanceM,0)
-    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM>0,true)
+    equal(reacquisition[excursionRole].required,true); equal(reacquisition[excursionRole].fieldSupported,true); equal(reacquisition[excursionRole].distanceM,0)
     local crossingExit,native=nil,nil
     for _,gate in ipairs(plan.passageGuide.gates or {}) do
         if gate.kind=="CROSSING_WINDOW_EXIT" then crossingExit=gate end
@@ -4436,26 +4438,23 @@ test("Cooperative Passage: one-sided intervention creates Reacquisition only for
     equal(math.sqrt(dx*dx+dz*dz)>0.001,true)
 end)
 
-test("Cooperative Passage: crossing-valid theatre is rejected when required Lateral Excursion Reacquisition leaves Field World",function()
-    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+test("Cooperative Passage: required Transit lateral sidestep is rejected when it leaves Field World",function()
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,0.5,18,-5,22)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(plan,nil)
     equal(reason,"PASSAGE_CAPABLE_THEATRE_UNAVAILABLE_WITHIN_SUPPORTED_PROFILE")
-    local reacquisitionFailure=false
+    local boundaryFailure=false
     for _,conflict in ipairs(rejected or {}) do
         for _,candidate in ipairs(conflict.rejected or {}) do
-            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY"
-                and candidate.fieldEvidence and candidate.fieldEvidence.theatreComponent=="LATERAL_EXCURSION_REACQUISITION" then
-                reacquisitionFailure=true
-            end
+            if candidate.fieldReason=="LOCAL_SPATIAL_CONSTRAINT_FIELD_BOUNDARY" then boundaryFailure=true end
         end
     end
-    equal(reacquisitionFailure,true)
+    equal(boundaryFailure,true)
 end)
 
 test("Cooperative Passage: unsupported Passage-Capable Theatre retains tactical Action-Space Regulation",function()
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=buildCooperativePassageFixture(-0.5,8,18,-5,22)
+    local picture,snapshot=buildCooperativePassageFixture(-0.5,0.5,18,-5,22)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local relation=values.opposedCorridorKnowledge[1]
     relation.actionSpaceConservation={
@@ -4499,8 +4498,8 @@ test("Cooperative Passage has no arbitrary minimum entry separation and lets con
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(plan.separationM,30)
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.executionPairSweepRequired,true)
 end)
 
 test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arrangement when local field support requires it",function()
@@ -4509,10 +4508,9 @@ test("Cooperative Passage Pairwise Passage Economy may choose an asymmetric arra
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(math.abs(plan.passageArrangement.combinedLateralBurdenM-7)<0.0001,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)-math.abs(plan.passageArrangement.otherLateralOffsetM))>0.001,true)
-    equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
     local reacquisition=plan.passageCapableTheatre.lateralExcursionReacquisition
     equal(reacquisition.subject.required,true); equal(reacquisition.other.required,true)
-    equal(math.abs(reacquisition.subject.distanceM-reacquisition.other.distanceM)>0.001,true)
+    equal(reacquisition.subject.distanceM,0); equal(reacquisition.other.distanceM,0)
     equal(reacquisition.subject.fieldSupported,true); equal(reacquisition.other.fieldSupported,true)
 end)
 
@@ -4545,7 +4543,8 @@ test("Transit-base Cooperative Passage: Cooperative Passage plans against Transi
     equal(plan.pairSpecificPassageClearance.planningGeometrySource,"TRANSIT_BASE")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-2)<0.001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-3)<0.001,true)
-    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.supportBasis,"TRANSIT_ARRANGEMENT_TARGET_WITH_REALISED_EXECUTION_PAIR_SWEEP_REQUIRED")
     for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED"); equal(entry.transitPassageEnvelope~=nil,true) end
 end)
 
@@ -6063,13 +6062,13 @@ local function passageVacaturControl(runtime,commitmentId,assemblyA,assemblyB,ve
     end
     local a=participant(assemblyA,vehicleA or {})
     local b=participant(assemblyB,vehicleB or {})
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId=commitmentId,phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId=commitmentId,phase="PASSAGE_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
     local continued=0
-    control._beginAxisReturn=function(self,run,p)
+    control._beginPassageReturn=function(self,run,p)
         local valid=runtime.boundedAuthority:validateRequest(p.request,"RS-LEG-LIFECYCLE")
         equal(valid,true)
         equal(p.request.effectiveActuationCompositionId,runtime.commitments:get(commitmentId).effectiveActuationCompositionId)
-        continued=continued+1; run.activeReturnParticipant=p; return true
+        continued=continued+1; run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true
     end
     runtime:setCooperativePassageControl(control)
     return control,donor,function() return continued end
@@ -6653,6 +6652,61 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
+test("Cooperative Passage: post-Crossing SIDESTEP_OUT overlap is measured but cannot veto the crossing",function()
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local arrangement={
+        nominalInterAssemblyClearanceM=1,
+        subjectDirectionalPassageEnvelope=envelope,otherDirectionalPassageEnvelope=envelope,
+        subjectPassageDiscs={},otherPassageDiscs={}
+    }
+    local guide={
+        entryOrigins={subject={x=0,z=0},other={x=0,z=12}},
+        executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},
+        gates={
+            {index=1,kind="CROSSING_WINDOW_ENTRY",subject={x=2.5,z=0},other={x=-2.5,z=12}},
+            {index=2,kind="CROSSING_WINDOW_EXIT",subject={x=2.5,z=7},other={x=-2.5,z=5}},
+            {index=3,kind="NATIVE_REACQUISITION",subject={x=0,z=7},other={x=0,z=5}}
+        }
+    }
+    local ok,reason,evidence=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(guide,arrangement)
+    equal(ok,true); equal(reason,nil)
+    equal(evidence.postCrossingRecoveryPreVetoAuthority,false)
+    equal(type(evidence.minimumPostCrossingRecoveryWitness),"table")
+    local witness=evidence.minimumPostCrossingRecoveryWitness
+    equal(witness.segment,"SIDESTEP_OUT")
+    equal(witness.fromGateKind,"CROSSING_WINDOW_EXIT")
+    equal(witness.toGateKind,"NATIVE_REACQUISITION")
+    equal(witness.classification,"POST_CROSSING_RECOVERY")
+    equal(witness.sampleCount,20)
+    equal(witness.clearanceM<0,true)
+    equal(evidence.preCrossingOverlapToleranceM,0.001)
+    equal(evidence.negativeClearanceAuthority,false)
+end)
+
+test("Cooperative Passage: represented overlap before Crossing Clearance still vetoes execution",function()
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY"}
+    local arrangement={
+        nominalInterAssemblyClearanceM=1,
+        subjectDirectionalPassageEnvelope=envelope,otherDirectionalPassageEnvelope=envelope,
+        subjectPassageDiscs={},otherPassageDiscs={}
+    }
+    local guide={
+        entryOrigins={subject={x=0,z=0},other={x=0,z=3}},
+        executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},
+        gates={
+            {index=1,kind="CROSSING_WINDOW_ENTRY",subject={x=2.5,z=0},other={x=-2.5,z=3}},
+            {index=2,kind="CROSSING_WINDOW_EXIT",subject={x=2.5,z=4},other={x=-2.5,z=-1}},
+            {index=3,kind="NATIVE_REACQUISITION",subject={x=0,z=4},other={x=0,z=-1}}
+        }
+    }
+    local ok,reason,evidence=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(guide,arrangement)
+    equal(ok,false)
+    equal(reason,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE")
+    equal(type(evidence.minimumPreCrossingOutsideWitness),"table")
+    equal(evidence.minimumPreCrossingOutsideWitness.classification,"PRE_CROSSING_OUTSIDE_WINDOW")
+    equal(evidence.minimumPreCrossingOutsideWitness.clearanceM<0,true)
+end)
+
 test("Cooperative Passage: realised Transit configuration geometry can preserve a close captured Passage rejected by prospective Transit base",function()
     local vehicleA={rootNode=1321}; local vehicleB={rootNode=1322}
     function vehicleA:getAISteeringNode() return self.rootNode end
@@ -6741,7 +6795,7 @@ test("Cooperative Passage Leg: vacatur before execution-origin rebase preserves 
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
-test("Cooperative Passage: Alignment Runout step is capped at five metres before readiness reassessment",function()
+test("Cooperative Passage: Return Staging step is capped at five metres before readiness reassessment",function()
     local oldTranslation=getWorldTranslation
     local oldDirection=localDirectionToWorld
     local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
@@ -6765,7 +6819,7 @@ test("Cooperative Passage: Alignment Runout step is capped at five metres before
         executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,
         transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-18,maxForwardM=18}
     }
-    local ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-5M"},participant)
+    local ok,reason=control:_startReturnStagingChunk({speedKmh=8,commitmentId="CM-5M"},participant)
     equal(ok,true); equal(reason,nil)
     equal(captured.targetStation,15)
     equal(captured.forward,true)
@@ -6773,7 +6827,7 @@ test("Cooperative Passage: Alignment Runout step is capped at five metres before
 
     participant.transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2}
     captured=nil
-    ok,reason=control:_startRunoutChunk({speedKmh=8,commitmentId="CM-SHORT"},participant)
+    ok,reason=control:_startReturnStagingChunk({speedKmh=8,commitmentId="CM-SHORT"},participant)
     equal(ok,true); equal(reason,nil)
     equal(captured.targetStation,14)
 
@@ -6999,7 +7053,7 @@ test("Cooperative Passage: native blocked signal does not independently abort an
     g_time=oldTime
 end)
 
-test("Cooperative Passage: clearance telemetry retains already-computed rejected sweep evidence",function()
+test("Cooperative Passage: rejected prospective theatre retains Transit target evidence without inventing execution sweep",function()
     local picture,snapshot=buildCooperativePassageFixture(-0.2,0.2,30)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(plan,nil)
@@ -7008,8 +7062,10 @@ test("Cooperative Passage: clearance telemetry retains already-computed rejected
     for _,conflict in ipairs(rejected or {}) do
         for _,candidate in ipairs(conflict.rejected or {}) do
             if type(candidate.sweepEvidence)=="table" then
-                equal(type(candidate.sweepEvidence.minimumCrossingWindowClearanceM),"number")
+                equal(type(candidate.sweepEvidence.targetClearanceM),"number")
                 equal(type(candidate.sweepEvidence.requiredNominalClearanceM),"number")
+                equal(candidate.sweepEvidence.executionPairSweepRequired,true)
+                equal(candidate.sweepEvidence.minimumCrossingWindowClearanceM,nil)
                 equal(type(candidate.separationM),"number")
                 equal(type(candidate.currentLateralSeparationM),"number")
                 found=true
@@ -7087,31 +7143,40 @@ test("Axis Return: Axis Travel reverses on captured axis rather than pursuing a 
     AIVehicleUtil, getWorldTranslation, worldDirectionToLocal = oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
-test("Alignment Runout settles the assembly on the captured axis rather than reproducing Phase-5 articulation",function()
+test("Passage Return: reverse steering horizon is derived from Transit length while Return Region remains Control-owned",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
-    getWorldTranslation=function(node) return 0.1,0,12 end
+    getWorldTranslation=function(node) return 0.8,0,12 end
     localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
-    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism={},configurationMechanism={}})
-    local participant={vehicle=vehicle,referenceKey="vehicle-root:19011",startJobToken="JE",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1}
-    control._alignmentSnapshot=function() return {members={
-        {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
-        -- A side-offset member is allowed; unresolved articulation is not.
-        {memberReferenceKey="side-implement",lateralOffsetM=3.5,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0.8,headingX=0.2,headingZ=math.sqrt(0.96)}
-    }} end
-    local aligned,reason=control:_assemblyAxisSettled(participant)
-    equal(aligned,false); equal(string.find(reason,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED",1,true)~=nil,true)
-    control._alignmentSnapshot=function() return {members={
-        {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
-        {memberReferenceKey="side-implement",lateralOffsetM=3.5,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0.8,headingX=0.02,headingZ=math.sqrt(0.9996)}
-    }} end
-    equal(control:_assemblyAxisSettled(participant),true)
+    local call=nil
+    local drive={
+        setReposition=function(self,v,x,z,speed,radius,moveForwards)
+            call={v=v,x=x,z=z,speed=speed,radius=radius,moveForwards=moveForwards}
+            self.state={targetReached=false,repositionReferenceNodeSource="AI_REVERSER_NODE",toolReverserDirectionNodeSource="UNAVAILABLE"}
+            return true,nil
+        end,
+        getState=function(self) return self.state end
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism=drive,configurationMechanism={}})
+    local participant={
+        name="P",vehicle=vehicle,executionOriginX=0,executionOriginZ=0,
+        axisForwardX=0,axisForwardZ=1,
+        transitPassageEnvelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
+    }
+    local run={commitmentId="CM-RETURN-REGION",speedKmh=8}
+    local ok,reason=control:_beginPassageReturn(run,participant,nil,false)
+    equal(ok,true); equal(reason,nil)
+    equal(call.v,vehicle); equal(call.x,0); equal(call.z,-4); equal(call.speed,8)
+    equal(call.radius,1.0); equal(call.moveForwards,false)
+    equal(participant.returnSteeringHorizonM,4)
+    equal(participant.returnSteeringTargetX,0); equal(participant.returnSteeringTargetZ,-4)
+    equal(run.phase,"PASSAGE_RETURN"); equal(run.activeReturnParticipant,participant)
+    local region=control:_passageReturnRegionState(participant)
+    equal(region.reached,false); equal(math.abs(region.distanceM-math.sqrt(144.64))<0.001,true)
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Axis Return: Return Staging places each Transit assembly beyond the other's return occupancy",function()
+test("Passage Return: Return Staging places each Transit assembly beyond the other's return occupancy",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local positions={[19101]={0,0,14},[19102]={0,0,-4}}
     local directions={[19101]={0,1},[19102]={0,-1}}
@@ -7127,7 +7192,7 @@ test("Axis Return: Return Staging places each Transit assembly beyond the other'
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Axis Return: Return token transfers only after released current occupancy clears waiting Transit return space",function()
+test("Passage Return: Return token transfers only after released current occupancy clears waiting Transit return space",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local z=18
     getWorldTranslation=function(node) return 0,0,z end
@@ -7146,8 +7211,8 @@ test("Axis Return: Return token transfers only after released current occupancy 
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Second Axis Return aborts safely if released clearance is lost",function()
-    local waiting={name="Waiting",vehicle={},axisReturnSkipped=false}
+test("Second Passage Return aborts safely if released clearance is lost",function()
+    local waiting={name="Waiting",vehicle={},passageReturnSkipped=false}
     local released={name="Released",vehicle={},released=true}
     local donor={
         holdMechanism={},
@@ -7155,7 +7220,7 @@ test("Second Axis Return aborts safely if released clearance is lost",function()
         configurationMechanism={}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-AXIS-RETURN-CLEAR",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-PASSAGE-RETURN-CLEAR",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
     control.nextHeartbeatMs=math.huge
     control._allSameJob=function() return true,nil end
     control._thirdPartySupport=function() return true,nil end
@@ -7164,27 +7229,50 @@ test("Second Axis Return aborts safely if released clearance is lost",function()
     control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     local oldTime=g_time; g_time=1000
     control:update(16)
-    equal(waiting.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
+    equal(waiting.passageReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
     g_time=oldTime
 end)
 
-test("Axis Return alignment loss aborts reverse instead of steering into a circle",function()
-    local participant={name="S416",vehicle={}}
+test("Passage Return: Control-owned Return Region begins restoration before steering horizon target completion",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local vehicle={rootNode=19301,getAISteeringNode=function(self) return self.rootNode end}
+    getWorldTranslation=function(node) return 0.6,0,0.6 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local participant={name="S416",vehicle=vehicle,executionOriginX=0,executionOriginZ=0}
     local other={name="Other",vehicle={}}
     local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-AXIS-RETURN-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-PASSAGE-RETURN-REGION",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
-    control._assemblyAxisSettled=function() return false,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED:trailer:0.90000" end
     local restoreCalls=0; control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     local oldTime=g_time; g_time=1000; control:update(16)
-    equal(participant.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
+    equal(participant.passageReturnCompleted,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
     g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
+
+test("Passage Return: steering horizon arrival cannot substitute for Return Region entry",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local vehicle={rootNode=19311,getAISteeringNode=function(self) return self.rootNode end}
+    getWorldTranslation=function(node) return 0,0,3 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local participant={name="Articulated",vehicle=vehicle,executionOriginX=0,executionOriginZ=0}
+    local other={name="Other",vehicle={}}
+    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=true} end},configurationMechanism={}}
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-HORIZON-NOT-COMPLETION",phase="PASSAGE_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
+    control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
+    control._failHeld=function(self,reason) self.run.failureReason=reason end
+    local oldTime=g_time; g_time=1000; control:update(16)
+    equal(participant.passageReturnCompleted==true,false)
+    equal(control.run.failureReason,"PASSAGE_RETURN_STEERING_HORIZON_REACHED_BEFORE_RETURN_REGION")
+    g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
 
 
-test("Axis Return: participant release prevents the first returned worker from soft-locking the second token",function()
+test("Passage Return: participant release prevents the first returned worker from soft-locking the second token",function()
     local first={name="First",vehicle={},released=false}
     local second={name="Second",vehicle={},released=false}
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
@@ -7195,27 +7283,27 @@ test("Axis Return: participant release prevents the first returned worker from s
     control._releaseParticipant=function(self,run,p) p.released=true; return true,nil end
     control._releasedParticipantClearedReturnSpace=function() return true,nil,{rearStationM=22,requiredStationM=20,clearanceM=2} end
     local beginCalls=0
-    control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginCalls=beginCalls+1; equal(p,second); equal(other,first); equal(requiresClearance,true); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
+    control._beginPassageReturn=function(self,run,p,other,requiresClearance) beginCalls=beginCalls+1; equal(p,second); equal(other,first); equal(requiresClearance,true); run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true,nil end
     local oldTime=g_time; g_time=1000
     control:update(16)
     equal(first.released,true); equal(control.run.phase,"WAIT_NATIVE_CLEARANCE"); equal(control.run.waitingParticipant,second)
     g_time=1100; control:update(16)
-    equal(beginCalls,1); equal(control.run.phase,"AXIS_RETURN")
+    equal(beginCalls,1); equal(control.run.phase,"PASSAGE_RETURN")
     g_time=oldTime
 end)
 
-test("Cooperative Passage Leg: vacating active Axis Return participant starts survivor return without new Candidate",function()
+test("Cooperative Passage Leg: vacating active Passage Return participant starts survivor return without new Candidate",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"}}
     local donor={holdMechanism={release=function() end,isHolding=function() return false end},driveMechanism={clear=function() end,getState=function() return nil end},configurationMechanism={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
-    control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
+    control._beginPassageReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-AXIS",phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
-    control:vacateParticipant("CM-VACATE-AXIS","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-RETURN",phase="PASSAGE_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    control:vacateParticipant("CM-VACATE-RETURN","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
     equal(beginReturn,0); equal(beginRestore,0)
-    control:continueAfterParticipantVacatur("CM-VACATE-AXIS","AS-A")
+    control:continueAfterParticipantVacatur("CM-VACATE-RETURN","AS-A")
     equal(a.vacated,true)
     equal(beginReturn,1)
     equal(beginRestore,0)
@@ -7224,11 +7312,11 @@ end)
 
 test("Cooperative Passage Leg: vacating active restoring participant starts survivor return without repeating completed debt",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
-    local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"},axisReturnCompleted=true}
+    local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"},passageReturnCompleted=true}
     local donor={holdMechanism={release=function() end,isHolding=function() return false end},driveMechanism={clear=function() end,getState=function() return nil end},configurationMechanism={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
-    control._beginAxisReturn=function() beginReturn=beginReturn+1; return true,nil end
+    control._beginPassageReturn=function() beginReturn=beginReturn+1; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; equal(p,b); run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-RESTORE",phase="RESTORING_PARTICIPANT",a=a,b=b,participants={a,b},activeRestoreParticipant=a}
     control:vacateParticipant("CM-VACATE-RESTORE","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})

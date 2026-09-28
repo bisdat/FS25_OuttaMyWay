@@ -484,19 +484,39 @@ The required Passage theatre is arrangement-specific and contains distinct spati
 - the **Shared Crossing Core** required for the selected Transit-configured pair to cross with represented non-contact and accepted Passage clearance; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The **Geometric Entry Boundary** is the pairwise longitudinal boundary from which the selected Passage manoeuvre remains geometrically supportable. It is derived from the participants' facing longitudinal extents plus the actual participant-specific Development required by the selected lateral arrangement. Capture/control margin does not belong inside this geometric boundary.
+The **Geometric Entry Boundary** is the pairwise longitudinal boundary defined by the participants' supported **Transit-configured facing longitudinal extents**. Lateral excursion does not add longitudinal reserve to this boundary.
 
-The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It exists solely to absorb control acquisition and physical settling before geometry-dependent Passage execution. It is counted once and consumed once.
+> **Working Geometry Identifies Passage; Transit Geometry Executes Passage**
+
+The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It is the one explicit longitudinal safety reserve and exists solely to absorb control acquisition and physical settling before Transit-configured Passage execution. It is counted once and consumed once.
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
-Architecture does not impose a generic minimum Development distance as a substitute for Capture Reserve. Development belongs to the actual selected lateral excursion; control-acquisition uncertainty belongs to Capture Reserve.
+Once the pair is settled in Transit, required lateral excursion is a transverse sidestep. It owns no proportional forward Development/Reacquisition distance and creates no second longitudinal reserve.
+
+Prospective Candidate Support and realised execution support answer different questions. Candidate Support must establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core, but it must not require an exact pairwise sweep from a hypothetical future Entry origin. After Capture and Transit settlement, the realised execution origin becomes Reality and pairwise execution support is mandatory **through positive Crossing Clearance** before Passage movement begins.
+
+> **Prospective Transit Capability != Realised Execution-Origin Guide Support**
+
+> **Post-Crossing Recovery Cannot Retroactively Veto Crossing**
+
+A failed realised-origin pair sweep **before or within the Shared Crossing Core** invalidates autonomous Passage execution; Control must fail safe rather than move on unsupported crossing geometry. Predicted post-Crossing lateral reacquisition, runout, Axis Return or restoration belongs to participant-scoped recovery. Unsupported recovery must be handled when that downstream responsibility is reached; it must not veto an otherwise supported opposed crossing in advance.
 
 The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
-A Return Corridor required by Axis Return is not a second generic rearward reserve. It is already-created Passage space between a participant's execution origin and recovery position that must remain positively protected from conflicting occupancy while return is required.
+A **Passage Return Region** is the bounded neighbourhood of a participant's captured execution origin / original work-lane locality into which OMW returns that participant after Crossing Clearance. It is the semantic completion region for spatial restitution; it is not an exact captured-axis pose and not a second generic rearward reserve.
 
-> **Return Corridor != Rearward Reserve**
+A **Reverse Steering Horizon** is subordinate mechanical look-through used only to let GIANTS realise a stable native reverse until the Return Region is reached. It is distinct from the Return Region and may lie beyond it without extending movement authority, restitution debt or the permitted handback locality. For the current capability its first calibration is derived from the participant's already-supported Transit longitudinal geometry rather than a universal distance literal.
+
+Sequential return space is already-created Passage space that must remain positively protected from conflicting occupancy while each participant returns.
+
+> **Passage Return Region != Exact Axis Return**
+
+> **Passage Return Region != Reverse Steering Horizon**
+
+> **Movement Completion Region != Reverse Steering Target**
+
+> **Restitution Sufficiency != Geometric Restoration**
 
 For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed.
 
@@ -532,10 +552,10 @@ Depending on what OuttaMyWay actually changed for that participant, a leg may in
 
 - capture and coupled Passage movement;
 - participant-specific displacement or reorientation recovery;
-- Alignment Runout where current articulation/alignment requires supported forward settlement before a safe return mechanism;
-- Axis Settlement/Return where the selected intervention actually created spatial restitution debt that requires it;
+- bounded Return Staging where forward separation is required before sequential return;
+- native-steered reverse using a participant-specific Reverse Steering Horizon until the participant enters its Passage Return Region where the intervention created spatial restitution debt;
 - intervention-created configuration or other physical restoration debt; and
-- GIANTS handback.
+- GIANTS handback to the participant's existing FIELDWORK Job Episode.
 
 The parent Resolution Commitment persists while any legitimate Passage Leg or shared Bubble obligation remains open.
 
@@ -545,7 +565,9 @@ The parent Resolution Commitment persists while any legitimate Passage Leg or sh
 
 The two Passage Legs may progress and terminate at different times where current evidence supports it. Bubble protection and Resolution-Epoch third-party protection persist until the final original Passage Leg becomes terminal.
 
-Passage owns only the physical state changes it actually creates. It does not reconstruct pre-existing imperfections or articulation. A selected arrangement may require lateral excursion or may remain on-axis; that distinction changes guide geometry only. Both cases share the same coupled crossing, runout/return-staging, Axis Return, restoration and GIANTS-handback lifecycle where those downstream steps remain required by current Control evidence.
+Passage owns only the physical state changes it actually creates. It does not reconstruct pre-existing imperfections or articulation. A selected arrangement may require lateral excursion or may remain on-axis; that distinction changes guide geometry only. Both cases share the same coupled crossing, Return Staging, Passage Return Region, restoration and GIANTS-handback lifecycle where those downstream steps remain required by current Control evidence.
+
+Passage restores locality, not the exact productive pose. OMW returns the participant approximately to the captured execution-origin / work-lane region using native-steered reverse while maintaining a subordinate Reverse Steering Horizon beyond the semantic completion region. Control, not steering-target arrival, decides when the Passage Return Region has been reached. OMW then restores intervention-created configuration debt and releases the unchanged GIANTS FIELDWORK Job Episode. GIANTS owns residual productive-path correction. Passage MUST NOT replace/restart the FIELDWORK job merely to obtain exact restitution.
 
 ### Reality-verified execution
 
@@ -582,7 +604,7 @@ Player presence while the exact Job Episode remains active has no independent Pa
 
 Vacatur settles only the obligations and physical authority belonging to that Passage Leg. It admits no replacement participant and creates no new Candidate, Resolution Commitment, cleanup responsibility or survivor mode for the other leg.
 
-**Survivor Invariance:** the surviving Passage Leg continues the same already-committed Passage choreography it would have followed had the other leg remained executable: Passage, runout, Axis recovery/return, intervention-created restoration debt and GIANTS handback as applicable. The vacated leg is removed as a procedural dependency.
+**Survivor Invariance:** the surviving Passage Leg continues the same already-committed Passage choreography it would have followed had the other leg remained executable: Passage, Return Staging, native-steered return into its Passage Return Region, intervention-created restoration debt and GIANTS handback as applicable. The vacated leg is removed as a procedural dependency.
 
 **Choreography Vacatur != Physical Disappearance.** A former participant whose Passage Leg is vacated ceases to be a Passage-phase dependency but remains current physical Reality if still present. Current occupancy may therefore still constrain the surviving leg through fresh hard-safety evidence.
 

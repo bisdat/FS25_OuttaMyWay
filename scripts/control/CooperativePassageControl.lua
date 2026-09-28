@@ -9,10 +9,12 @@
 -- the pair and instantiates the guide from actual execution origins before
 -- forward-only point pursuit. TRANSIT_BASE participants always
 -- request Transit and wait only for positive native fold-motion settlement. Final
--- Recovery restores whole-assembly axis alignment, performs one-at-a-time Axis
--- Return, then completes participant-specific restore/handoff. The captured member
--- pose is an execution origin, not a target articulation shape. Unsupported return
--- fails safely to restore/handoff rather than reverse point-seeking.
+-- Recovery creates bounded sequential return space, then performs one-at-a-time
+-- native-steered reverse. Passage Return completion remains a Control-owned region
+-- around the captured execution origin; the subordinate reverse steering target is
+-- a geometry-derived horizon beyond that region. The captured member pose is an
+-- execution origin, not a target articulation shape. Unsupported return fails
+-- safely rather than allowing steering-target arrival to manufacture restitution.
 
 OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
@@ -35,11 +37,16 @@ local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
 local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 local COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
 local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
--- Longitudinal completion on the captured axis, not a Passage Guide target radius.
-local COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M = 1.0
--- Smallest-change runout experiment: retain existing readiness semantics but
--- cap each forward settlement command so Reality is re-evaluated after a short step.
-local COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M = 5.0
+-- Post-Crossing return staging remains bounded and Reality-reassessed.
+local COOPERATIVE_PASSAGE_RETURN_STAGING_STATION_TOLERANCE_M = 1.0
+local COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M = 5.0
+-- Passage restores locality, not the exact productive pose. Control completes
+-- restitution when the participant re-enters this captured-origin region.
+local COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M = 1.0
+-- Reverse steering needs look-through beyond the semantic completion region.
+-- This radius belongs only to the subordinate steering target; reaching that
+-- target before Return Region entry is a fail-safe contradiction, not success.
+local COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M = 1.0
 
 local publication=OuttaMyWay.LogPublication.origin("CONTROL")
 local function logInfo(publicationClass,code,formatText,...)
@@ -51,6 +58,42 @@ end
 local function diagnosticPublicationEnabled(code)
     local eligible=publication:isEligible("DIAGNOSTIC","INFO",code)
     return eligible==true
+end
+
+local function logPairSweepFailureWitness(commitmentId,source,reason,evidence,candidateIndex)
+    if not diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS") then return end
+    local witness=nil
+    if type(evidence)=="table" then
+        if reason=="PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE" then
+            witness=evidence.minimumPreCrossingOutsideWitness
+        elseif reason=="PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW" then
+            witness=evidence.minimumOutsideCrossingWitness
+        else
+            witness=evidence.minimumCrossingWindowWitness or evidence.minimumPreCrossingOutsideWitness or evidence.minimumOutsideCrossingWitness
+        end
+    end
+    if type(witness)~="table" then
+        logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS",
+            "commitment=%s source=%s candidate=%s reason=%s witness=UNAVAILABLE representation=%s subjectProfile=%s otherProfile=%s",
+            tostring(commitmentId),tostring(source),tostring(candidateIndex or "retained"),tostring(reason),
+            tostring(evidence and evidence.representationBasis or "UNRESOLVED"),
+            tostring(evidence and evidence.subjectConfigurationProfileId or "n/a"),
+            tostring(evidence and evidence.otherConfigurationProfileId or "n/a"))
+        return
+    end
+    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS",
+        "commitment=%s source=%s candidate=%s reason=%s segment=%s from=%s[%s] to=%s[%s] sample=%s/%s t=%.3f clearance=%.4fm outsideTolerance=%.4fm classification=%s subject=(%.2f,%.2f) other=(%.2f,%.2f) representation=%s subjectAuthority=%s otherAuthority=%s subjectProfile=%s otherProfile=%s negativeClearanceAuthority=%s",
+        tostring(commitmentId),tostring(source),tostring(candidateIndex or "retained"),tostring(reason),
+        tostring(witness.segment),tostring(witness.fromGateKind),tostring(witness.fromGateIndex),
+        tostring(witness.toGateKind),tostring(witness.toGateIndex),tostring(witness.sampleIndex),tostring(witness.sampleCount),
+        tonumber(witness.sampleFraction) or -1,tonumber(witness.clearanceM) or 0,
+        tonumber(evidence and (evidence.preCrossingOverlapToleranceM or evidence.outsideCrossingOverlapToleranceM)) or 0,
+        tostring(witness.classification),tonumber(witness.subjectX) or 0,tonumber(witness.subjectZ) or 0,
+        tonumber(witness.otherX) or 0,tonumber(witness.otherZ) or 0,tostring(witness.representationBasis),
+        tostring(witness.subjectEnvelopeAuthority),tostring(witness.otherEnvelopeAuthority),
+        tostring(evidence and evidence.subjectConfigurationProfileId or "n/a"),
+        tostring(evidence and evidence.otherConfigurationProfileId or "n/a"),
+        tostring(evidence and evidence.negativeClearanceAuthority==true))
 end
 
 local function safeCall(object,methodName,...)
@@ -93,6 +136,13 @@ local function pose(vehicle)
     local length=math.sqrt(dx*dx+dz*dz)
     if length<=0.0001 then return nil end
     return {node=node,x=x,y=y,z=z,dx=dx/length,dz=dz/length}
+end
+
+local function nodeWorldPosition(node)
+    if node==nil or node==0 or type(getWorldTranslation)~="function" then return nil end
+    local ok,x,_,z=pcall(getWorldTranslation,node)
+    if not ok then return nil end
+    return {x=x,z=z}
 end
 
 local function wakeNativeContinuation(vehicle)
@@ -661,10 +711,14 @@ function Control:_rebasePassageGuide(run)
         local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(
             guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
         if not retainedOk then
-            local adapted,adaptReason=planner.adaptExecutionGuide(
+            logPairSweepFailureWitness(run.commitmentId,"RETAINED",retainedReason,retainedEvidence,nil)
+            local adapted,adaptReason,adaptEvidence=planner.adaptExecutionGuide(
                 guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId,
                 subjectRepresentation,otherRepresentation)
             if adapted==nil then
+                for _,rejection in OuttaMyWay.ValueRecord.ipairs(adaptEvidence and adaptEvidence.rejected or {}) do
+                    logPairSweepFailureWitness(run.commitmentId,"ADAPTATION",rejection.reason,rejection.evidence,rejection.index)
+                end
                 return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
                     ..":ADAPTATION:"..tostring(adaptReason)
             end
@@ -802,64 +856,62 @@ function Control:_stagedBeyondOtherTransitReturn(participant,other)
     return progress+minForward>=limit,nil,{progressM=progress,rearStationM=progress+minForward,otherReturnLimitM=limit}
 end
 
-function Control:_participantRunoutReady(participant,other)
-    local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
-    if not aligned then return false,alignmentReason end
+function Control:_participantReturnStagingReady(participant,other)
     if not legLive(other) then return true,nil,{progressM=0,rearStationM=0,otherReturnLimitM=0} end
     local staged,stagingReason,evidence=self:_stagedBeyondOtherTransitReturn(participant,other)
     if not staged then return false,stagingReason end
     return true,nil,evidence
 end
 
-function Control:_startRunoutChunk(run,participant)
+function Control:_startReturnStagingChunk(run,participant)
     local pp=pose(participant.vehicle)
-    if pp==nil then return false,"ALIGNMENT_RUNOUT_POSE_UNAVAILABLE" end
+    if pp==nil then return false,"RETURN_STAGING_POSE_UNAVAILABLE" end
     local length=envelopeLength(participant.transitPassageEnvelope)
-    if length==nil or length<=0 then return false,"ALIGNMENT_RUNOUT_TRANSIT_LENGTH_UNAVAILABLE" end
-    local stepDistance=math.min(length,COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M)
+    if length==nil or length<=0 then return false,"RETURN_STAGING_TRANSIT_LENGTH_UNAVAILABLE" end
+    local stepDistance=math.min(length,COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M)
     local tx,tz=pp.x+participant.axisForwardX*stepDistance,pp.z+participant.axisForwardZ*stepDistance
     local inside,fieldReason=fieldResolvedAt(tx,tz)
-    if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
+    if not inside then return false,"RETURN_STAGING_FIELD_TARGET:"..tostring(fieldReason) end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
-    local tolerance=COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M
+    local tolerance=COOPERATIVE_PASSAGE_RETURN_STAGING_STATION_TOLERANCE_M
     local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+stepDistance,run.speedKmh,true,tolerance)
-    if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
-    participant.runoutActive=true
-    logInfo("DEBUG","COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STARTED","commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm transitLength=%.2fm derivedFrom=MAX_5M_REASSESSMENT_STEP",tostring(run.commitmentId),participant.name,stepDistance,progress+stepDistance,length)
+    if not ok then return false,"RETURN_STAGING_ACTUATION:"..tostring(reason) end
+    participant.returnStagingActive=true
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STAGING_STARTED","commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm transitLength=%.2fm purpose=CREATE_SEQUENTIAL_RETURN_SPACE",tostring(run.commitmentId),participant.name,stepDistance,progress+stepDistance,length)
     return true,nil
 end
 
-function Control:_beginAlignmentRunout(run)
+function Control:_beginReturnStaging(run)
     self:_stopLeg(run)
-    self:_setPhase(run,"ALIGNMENT_RUNOUT",g_time or 0)
+    self:_setPhase(run,"RETURN_STAGING",g_time or 0)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        participant.runoutActive=false; participant.runoutReady=false; participant.targetX=nil; participant.targetZ=nil
+        participant.returnStagingActive=false; participant.returnStagingReady=false; participant.targetX=nil; participant.targetZ=nil
     end
-    logInfo("DEBUG","COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STARTED","commitment=%s wholeAssemblyAxisSettlementRequired=true returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STAGING_STARTED","commitment=%s exactAxisAlignmentRequired=false returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
     return true,nil
 end
 
-function Control:_updateAlignmentRunout(run)
+function Control:_updateReturnStaging(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        if participant.runoutReady~=true then
-            if participant.runoutActive==true and targetReached(self.driveMechanism,participant.vehicle) then
-                self.driveMechanism:clear(participant.vehicle); participant.runoutActive=false
+        if participant.returnStagingReady~=true then
+            if participant.returnStagingActive==true and targetReached(self.driveMechanism,participant.vehicle) then
+                self.driveMechanism:clear(participant.vehicle); participant.returnStagingActive=false
             end
-            if participant.runoutActive~=true then
+            if participant.returnStagingActive~=true then
                 local other=participant==run.a and run.b or run.a
-                local ready,reason,evidence=self:_participantRunoutReady(participant,other)
+                local ready,reason,evidence=self:_participantReturnStagingReady(participant,other)
                 if ready then
-                    participant.runoutReady=true
+                    participant.returnStagingReady=true
                     self.holdMechanism:setHold(participant.vehicle,"COOPERATIVE-PASSAGE-RETURN-STAGED")
-                    logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STAGING_READY","commitment=%s participant=%s wholeAssemblyAligned=true transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
+                    logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STAGING_READY","commitment=%s participant=%s exactAxisAlignmentRequired=false transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
                 else
-                    local ok,startReason=self:_startRunoutChunk(run,participant)
+                    local ok,startReason=self:_startReturnStagingChunk(run,participant)
                     if not ok then return false,startReason..":"..tostring(reason) end
                 end
             end
         end
     end
-    for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do if participant.runoutReady~=true then return false,nil end end
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do if participant.returnStagingReady~=true then return false,nil end end
     return true,"ALL_RETURN_STAGING_READY"
 end
 
@@ -870,18 +922,107 @@ function Control:_chooseReturnOrder(run)
     return list
 end
 
-function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearance)
-    local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
-    if not aligned then return false,"AXIS_RETURN_ALIGNMENT_REQUIRED:"..tostring(alignmentReason) end
+function Control:_passageReturnRegionState(participant)
+    local pp=pose(participant and participant.vehicle)
+    if pp==nil then return nil,"PASSAGE_RETURN_POSE_UNAVAILABLE" end
+    local originX,originZ=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    if originX==nil or originZ==nil then return nil,"PASSAGE_RETURN_ORIGIN_UNAVAILABLE" end
+    local regionDistance=distance(pp.x,pp.z,originX,originZ)
+    return {
+        pose=pp,
+        distanceM=regionDistance,
+        residualM=math.max(0,regionDistance-COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M),
+        reached=regionDistance<=COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M
+    },nil
+end
+
+function Control:_publishPassageReturnSteeringState(run,participant,drive)
+    if not diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_RETURN_STEERING_STATE") then return end
+    local nowMs=g_time or 0
+    if nowMs<(participant.nextReturnSteeringDiagnosticMs or 0) then return end
+    participant.nextReturnSteeringDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
+
+    local region=self:_passageReturnRegionState(participant)
+    if region==nil then return end
+    local originX,originZ=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    local fx,fz=tonumber(participant.returnSteeringAxisForwardX),tonumber(participant.returnSteeringAxisForwardZ)
+    local horizon=tonumber(participant.returnSteeringHorizonM)
+    if originX==nil or originZ==nil or fx==nil or fz==nil or horizon==nil then return end
+
+    local reversePoint=nodeWorldPosition(drive and drive.repositionReferenceNode)
+    local toolPoint=nodeWorldPosition(drive and drive.toolReverserDirectionNode)
+    local function station(point)
+        if point==nil then return nil end
+        return (point.x-originX)*fx+(point.z-originZ)*fz
+    end
+    local function metric(value)
+        return value~=nil and string.format("%.2f",value) or "n/a"
+    end
+    local function pointText(point)
+        return point~=nil and string.format("(%.2f,%.2f)",point.x,point.z) or "n/a"
+    end
+    local steeringStation=station(region.pose)
+    local reverseStation=station(reversePoint)
+    local toolStation=station(toolPoint)
+    local reverseLookthrough=reverseStation~=nil and reverseStation+horizon or nil
+    local toolLookthrough=toolStation~=nil and toolStation+horizon or nil
+    local angleDeg=drive and tonumber(drive.nativeToolAdjustmentAngleRad)
+    if angleDeg~=nil then angleDeg=math.deg(angleDeg) end
+
+    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_STEERING_STATE",
+        "commitment=%s participant=%s regionDistance=%.2fm regionResidual=%.2fm horizon=%.2fm steeringTarget=(%.2f,%.2f) steeringNode=%s steeringStation=%sm reverseReference=%s reverseNode=%s reverseStation=%sm reverseLookthrough=%sm toolReference=%s toolNode=%s toolStation=%sm toolLookthrough=%sm toolAdjustmentApplied=%s toolAngleDeg=%s toolLongitudinal=%sm adjustedLocalZ=%s",
+        tostring(run.commitmentId),participant.name,region.distanceM,region.residualM,horizon,
+        tonumber(participant.returnSteeringTargetX) or 0,tonumber(participant.returnSteeringTargetZ) or 0,
+        pointText(region.pose),metric(steeringStation),tostring(drive and drive.repositionReferenceNodeSource or "UNAVAILABLE"),
+        pointText(reversePoint),metric(reverseStation),metric(reverseLookthrough),
+        tostring(drive and drive.toolReverserDirectionNodeSource or "UNAVAILABLE"),pointText(toolPoint),
+        metric(toolStation),metric(toolLookthrough),tostring(drive and drive.nativeToolAdjustmentApplied==true),
+        metric(angleDeg),metric(drive and tonumber(drive.nativeToolRelativeLongitudinalM)),
+        metric(drive and tonumber(drive.nativeToolAdjustedLocalZ)))
+end
+
+function Control:_beginPassageReturn(run,participant,other,requiresReleasedClearance)
     local pp=pose(participant.vehicle)
-    if pp==nil then return false,"AXIS_RETURN_POSE_UNAVAILABLE" end
-    local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
-    local tolerance=COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M
-    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,0,run.speedKmh,false,tolerance)
-    if not ok then return false,"AXIS_RETURN_ACTUATION:"..tostring(reason) end
+    if pp==nil then return false,"PASSAGE_RETURN_POSE_UNAVAILABLE" end
+    local originX,originZ=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    local fx,fz=tonumber(participant.axisForwardX),tonumber(participant.axisForwardZ)
+    if originX==nil or originZ==nil then return false,"PASSAGE_RETURN_ORIGIN_UNAVAILABLE" end
+    if fx==nil or fz==nil then return false,"PASSAGE_RETURN_AXIS_UNAVAILABLE" end
+    local axisLength=math.sqrt(fx*fx+fz*fz)
+    if axisLength<=0.0001 then return false,"PASSAGE_RETURN_AXIS_DEGENERATE" end
+    fx,fz=fx/axisLength,fz/axisLength
+
+    -- Passage Return Region owns semantic completion. Reverse Steering Horizon
+    -- owns only subordinate GIANTS steering look-through. The first calibration
+    -- derives that look-through from already-supported participant Transit length
+    -- rather than introducing a universal distance literal.
+    local horizonDistance=envelopeLength(participant.transitPassageEnvelope)
+    if horizonDistance==nil or horizonDistance<=0 then return false,"PASSAGE_RETURN_STEERING_HORIZON_UNAVAILABLE" end
+    if horizonDistance<=COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M+COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M then
+        return false,"PASSAGE_RETURN_STEERING_HORIZON_NOT_BEYOND_RETURN_REGION"
+    end
+    local steeringTargetX=originX-fx*horizonDistance
+    local steeringTargetZ=originZ-fz*horizonDistance
+
+    local ok,reason=self.driveMechanism:setReposition(
+        participant.vehicle,steeringTargetX,steeringTargetZ,run.speedKmh,COOPERATIVE_PASSAGE_STEERING_HORIZON_TARGET_RADIUS_M,false)
+    if not ok then return false,"PASSAGE_RETURN_ACTUATION:"..tostring(reason) end
+
+    participant.returnSteeringHorizonM=horizonDistance
+    participant.returnSteeringTargetX=steeringTargetX
+    participant.returnSteeringTargetZ=steeringTargetZ
+    participant.returnSteeringAxisForwardX=fx
+    participant.returnSteeringAxisForwardZ=fz
+    participant.nextReturnSteeringDiagnosticMs=0
+
     run.activeReturnParticipant=participant; run.waitingParticipant=other; run.returnRequiresReleasedClearance=requiresReleasedClearance==true
-    self:_setPhase(run,"AXIS_RETURN",g_time or 0)
-    logInfo("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_STARTED","commitment=%s participant=%s startStation=%.2fm targetStation=0.00m reverse=true steering=CAPTURED_AXIS_ONLY pointSeeking=false",tostring(run.commitmentId),participant.name,progress)
+    self:_setPhase(run,"PASSAGE_RETURN",g_time or 0)
+    local drive=self.driveMechanism:getState(participant.vehicle) or {}
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_STARTED",
+        "commitment=%s participant=%s startDistance=%.2fm returnOrigin=(%.2f,%.2f) regionRadius=%.2fm steeringHorizon=%.2fm steeringTarget=(%.2f,%.2f) horizonBasis=TRANSIT_LENGTH reverse=true steering=NATIVE_POINT_SEEKING_WITH_TRANSIT_HORIZON completionOwner=CONTROL_RETURN_REGION existingJobPreserved=true reverseReference=%s toolReference=%s",
+        tostring(run.commitmentId),participant.name,distance(pp.x,pp.z,originX,originZ),originX,originZ,
+        COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M,horizonDistance,steeringTargetX,steeringTargetZ,
+        tostring(drive.repositionReferenceNodeSource or "UNAVAILABLE"),tostring(drive.toolReverserDirectionNodeSource or "UNAVAILABLE"))
     return true,nil
 end
 
@@ -918,7 +1059,7 @@ function Control:_releaseParticipant(run,participant)
     end
     self.driveMechanism:clear(participant.vehicle); self.holdMechanism:release(participant.vehicle)
     participant.wakeMethod=wakeNativeContinuation(participant.vehicle); participant.released=true; participant.releasedAt=g_time or 0
-    logInfo("DEBUG","COOPERATIVE_PASSAGE_PARTICIPANT_WAVE_ON","commitment=%s participant=%s job=%s wake=%s axisReturn=%s restorationExhausted=%s",tostring(run.commitmentId),participant.name,tostring(participant.startJobToken),tostring(participant.wakeMethod),tostring(participant.axisReturnCompleted==true),tostring(participant.restoreSettlementExhausted==true))
+    logInfo("DEBUG","COOPERATIVE_PASSAGE_PARTICIPANT_WAVE_ON","commitment=%s participant=%s job=%s wake=%s passageReturn=%s restorationExhausted=%s sameJob=true",tostring(run.commitmentId),participant.name,tostring(participant.startJobToken),tostring(participant.wakeMethod),tostring(participant.passageReturnCompleted==true),tostring(participant.restoreSettlementExhausted==true))
     self:_notify({status="PARTICIPANT_HANDED_BACK",commitmentId=run.commitmentId,requestIds={participant.request.identity},boundedAuthorityIds={participant.request.boundedAuthorityId},assemblyId=participant.assemblyId,assemblyIds={participant.assemblyId},evidence={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",passageLegDisposition="HANDED_BACK",assemblyId=participant.assemblyId,passageGuideId=run.guide and run.guide.identity or nil,sameJob=true,restorationExhausted=participant.restoreSettlementExhausted==true,completedAt=g_time or 0}})
     return true,nil
 end
@@ -1162,14 +1303,14 @@ function Control:_continueAfterParticipantVacatur(run,vacated)
     run.releasedLeader=run.releasedLeader~=vacated and run.releasedLeader or nil
     if remaining==nil then return end
     local function continueReturnOrRestore()
-        if remaining.axisReturnCompleted==true or remaining.axisReturnSkipped==true then
+        if remaining.passageReturnCompleted==true or remaining.passageReturnSkipped==true then
             local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
             if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             return
         end
-        local ok,reason=self:_beginAxisReturn(run,remaining,vacated,false)
+        local ok,reason=self:_beginPassageReturn(run,remaining,vacated,false)
         if not ok then
-            remaining.axisReturnSkipped=true
+            remaining.passageReturnSkipped=true
             local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
             if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason or reason)) end
         end
@@ -1179,8 +1320,8 @@ function Control:_continueAfterParticipantVacatur(run,vacated)
     if phase=="SETTLING" then return end
     if phase=="CONFIGURING" then return end
     if string.sub(phase,1,6)=="GUIDE_" then return end
-    if phase=="ALIGNMENT_RUNOUT" then return end
-    if phase=="AXIS_RETURN" and run.activeReturnParticipant==nil then
+    if phase=="RETURN_STAGING" then return end
+    if phase=="PASSAGE_RETURN" and run.activeReturnParticipant==nil then
         continueReturnOrRestore()
         return
     end
@@ -1190,9 +1331,9 @@ function Control:_continueAfterParticipantVacatur(run,vacated)
         return
     end
     if phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant==nil then
-        local ok,reason=self:_beginAxisReturn(run,remaining,vacated,false)
+        local ok,reason=self:_beginPassageReturn(run,remaining,vacated,false)
         if not ok then
-            remaining.axisReturnSkipped=true
+            remaining.passageReturnSkipped=true
             local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
             if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason or reason)) end
         end
@@ -1373,13 +1514,10 @@ function Control:_phaseCompletionResidual(run)
         return {kind="GUIDE_TARGET_DISTANCE_M",value=residual,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
     end
 
-    if phase=="ALIGNMENT_RUNOUT" then
+    if phase=="RETURN_STAGING" then
         local residual=0
         for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-            if participant.runoutReady~=true then
-                local alignment,alignmentReason=self:_alignmentCompletionResidualUnits(participant)
-                if alignment==nil then return nil,"ALIGNMENT_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(alignmentReason) end
-                residual=residual+alignment
+            if participant.returnStagingReady~=true then
                 local other=participant==run.a and run.b or run.a
                 if legLive(other) then
                     local _,_,evidence=self:_stagedBeyondOtherTransitReturn(participant,other)
@@ -1391,14 +1529,15 @@ function Control:_phaseCompletionResidual(run)
                 end
             end
         end
-        return {kind="RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS",value=residual,epsilon=1}
+        return {kind="RETURN_STAGING_CLEARANCE_COMPLETION_UNITS",value=residual,epsilon=1}
     end
 
-    if phase=="AXIS_RETURN" then
+    if phase=="PASSAGE_RETURN" then
         local participant=run.activeReturnParticipant
-        local residual,reason=self:_axisTravelCompletionResidualM(participant)
-        if residual==nil then return nil,reason end
-        return {kind="AXIS_RETURN_STATION_DISTANCE_M",value=residual,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
+        if participant==nil then return nil,"PASSAGE_RETURN_PARTICIPANT_UNAVAILABLE" end
+        local region,reason=self:_passageReturnRegionState(participant)
+        if region==nil then return nil,"PASSAGE_RETURN_REGION_RESIDUAL_UNAVAILABLE:"..tostring(reason) end
+        return {kind="PASSAGE_RETURN_REGION_DISTANCE_M",value=region.residualM,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
     end
 
     if phase=="RESTORING_PARTICIPANT" then
@@ -1556,48 +1695,55 @@ function Control:update(dt)
             self:_stopLeg(run)
             logInfo("DEBUG","COOPERATIVE_PASSAGE_GUIDE_REACHED","commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
             if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
-                logInfo("DEBUG","COOPERATIVE_PASSAGE_GUIDE_COMPLETE","commitment=%s guide=%s next=ALIGNMENT_RUNOUT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
-                local ok,reason=self:_beginAlignmentRunout(run); if not ok then self:_failHeld("ALIGNMENT_RUNOUT_START:"..tostring(reason)) end
+                logInfo("DEBUG","COOPERATIVE_PASSAGE_GUIDE_COMPLETE","commitment=%s guide=%s next=RETURN_STAGING_THEN_PASSAGE_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
+                local ok,reason=self:_beginReturnStaging(run); if not ok then self:_failHeld("RETURN_STAGING_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end
             end
         end
-    elseif run.phase=="ALIGNMENT_RUNOUT" then
-        local ready,runoutReason=self:_updateAlignmentRunout(run)
-        if not ready and runoutReason~=nil then self:_failHeld(runoutReason); return end
+    elseif run.phase=="RETURN_STAGING" then
+        local ready,stagingReason=self:_updateReturnStaging(run)
+        if not ready and stagingReason~=nil then self:_failHeld(stagingReason); return end
         if ready then
             local order=self:_chooseReturnOrder(run); local first,second=order[1],order[2]
             if first==nil then self:_completePairContext(run); return end
-            local ok,reason=self:_beginAxisReturn(run,first,second,false)
+            local ok,reason=self:_beginPassageReturn(run,first,second,false)
             if not ok then
-                first.axisReturnSkipped=true
-                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),first.name,tostring(reason))
+                first.passageReturnSkipped=true
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),first.name,tostring(reason))
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,first); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
         end
-    elseif run.phase=="AXIS_RETURN" then
+    elseif run.phase=="PASSAGE_RETURN" then
         local participant=run.activeReturnParticipant
-        if participant==nil then self:_failHeld("AXIS_RETURN_PARTICIPANT_UNAVAILABLE"); return end
+        if participant==nil then self:_failHeld("PASSAGE_RETURN_PARTICIPANT_UNAVAILABLE"); return end
         if run.returnRequiresReleasedClearance==true and run.releasedLeader~=nil then
             local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(run.releasedLeader,participant)
             if not clear then
-                self.driveMechanism:clear(participant.vehicle); participant.axisReturnSkipped=true
-                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_CLEARANCE_LOST","commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
+                self.driveMechanism:clear(participant.vehicle); participant.passageReturnSkipped=true
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_LOST","commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
                 local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
                 return
             end
         end
-        if targetReached(self.driveMechanism,participant.vehicle) then
-            self.driveMechanism:clear(participant.vehicle); participant.axisReturnCompleted=true
-            logInfo("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_COMPLETE","commitment=%s participant=%s executionOriginStation=true",tostring(run.commitmentId),participant.name)
+        local drive=self.driveMechanism:getState(participant.vehicle)
+        if drive==nil or drive.invalidReason~=nil then
+            self:_failHeld("PASSAGE_RETURN_DRIVE_UNAVAILABLE:"..tostring(drive and drive.invalidReason or "NO_DRIVE_STATE"))
+            return
+        end
+        local region,regionReason=self:_passageReturnRegionState(participant)
+        if region==nil then
+            self:_failHeld("PASSAGE_RETURN_REGION_EVIDENCE_UNAVAILABLE:"..tostring(regionReason))
+            return
+        end
+        self:_publishPassageReturnSteeringState(run,participant,drive)
+        if region.reached==true then
+            self.driveMechanism:clear(participant.vehicle); participant.passageReturnCompleted=true
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_COMPLETE","commitment=%s participant=%s returnRegionReached=true finalRegionDistance=%.2fm steeringHorizonNotCompletion=true exactAxisRestoration=false existingJobPreserved=true",tostring(run.commitmentId),participant.name,region.distanceM)
             local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
-        else
-            local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
-            if not aligned then
-                self.driveMechanism:clear(participant.vehicle); participant.axisReturnSkipped=true
-                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_ALIGNMENT_LOST","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,tostring(alignmentReason))
-                local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
-            end
+        elseif drive.targetReached==true then
+            self:_failHeld("PASSAGE_RETURN_STEERING_HORIZON_REACHED_BEFORE_RETURN_REGION")
+            return
         end
     elseif run.phase=="RESTORING_PARTICIPANT" then
         local participant=run.activeRestoreParticipant
@@ -1618,10 +1764,10 @@ function Control:update(dt)
         local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(released,waiting)
         if clear then
             logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_CLEARANCE","commitment=%s released=%s waiting=%s rearStation=%.2fm requiredStation=%.2fm clearance=%.2fm authority=POSITIVE_CURRENT_PHYSICAL_OCCUPANCY",tostring(run.commitmentId),released.name,waiting.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.requiredStationM) or -1,tonumber(evidence and evidence.clearanceM) or -1)
-            local ok,reason=self:_beginAxisReturn(run,waiting,released,true)
+            local ok,reason=self:_beginPassageReturn(run,waiting,released,true)
             if not ok then
-                waiting.axisReturnSkipped=true
-                logWarning("DEBUG","COOPERATIVE_PASSAGE_AXIS_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
+                waiting.passageReturnSkipped=true
+                logWarning("DEBUG","COOPERATIVE_PASSAGE_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
         elseif diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL")
