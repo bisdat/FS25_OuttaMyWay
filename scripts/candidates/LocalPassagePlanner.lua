@@ -24,7 +24,6 @@ local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95
 -- Excursion geometry and provisional Capture calibration.
 -- Development follows actual lateral burden. Capture Reserve is pairwise
 -- longitudinal control space outside the Geometric Entry Boundary.
-local COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
 local COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M = 9.0
 
 -- Two-dimensional guide target radii, independent of Control axis station tolerance.
@@ -228,15 +227,13 @@ local function participantExcursionProfile(lateralOffsetM)
     local offset=tonumber(lateralOffsetM) or 0
     local burden=math.abs(offset)
     local required=burden>0.001
-    local development=0
-    if required then
-        development=burden*COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M
-    end
     return {
         lateralOffsetM=offset,
         lateralExcursionRequired=required,
-        developmentDistanceM=development,
-        reacquisitionDistanceM=development
+        -- Lateral excursion is a Transit sidestep. It owns no proportional
+        -- forward Development/Reacquisition distance.
+        developmentDistanceM=0,
+        reacquisitionDistanceM=0
     }
 end
 
@@ -248,7 +245,6 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
 
     local subjectProfile=participantExcursionProfile(arrangement.subjectLateralOffsetM)
     local otherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)
-    local developmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
     local captureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M
@@ -258,10 +254,9 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
     local entryReady=executionCaptured==true or currentSeparation<=entryBoundary
     local approachPerParticipant=entryReady and 0 or math.max(0,(currentSeparation-entryBoundary)*0.5)
     local plannedEntrySeparation=entryReady and currentSeparation or entryBoundary
-    local postDevelopmentSeparation=math.max(0,plannedEntrySeparation-developmentSum)
-    local crossingForward=math.max(0,(postDevelopmentSeparation+rearClear)*0.5)
-    subjectProfile.totalForwardDistanceM=subjectProfile.developmentDistanceM+crossingForward+subjectProfile.reacquisitionDistanceM
-    otherProfile.totalForwardDistanceM=otherProfile.developmentDistanceM+crossingForward+otherProfile.reacquisitionDistanceM
+    local crossingForward=math.max(0,(plannedEntrySeparation+rearClear)*0.5)
+    subjectProfile.totalForwardDistanceM=crossingForward
+    otherProfile.totalForwardDistanceM=crossingForward
 
     return {
         maximumParticipantLateralExcursionM=math.max(math.abs(subjectProfile.lateralOffsetM),math.abs(otherProfile.lateralOffsetM)),
