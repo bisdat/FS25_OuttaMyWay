@@ -165,7 +165,7 @@ local function bubbleFormationReadinessFixture(values)
         passageEntry={
             ready=values.entryReady==true,
             boundarySeparationM=values.entryBoundaryM or 18.0,
-            controlAllowanceM=values.controlAllowanceM or 3.0,
+            captureReserveM=values.captureReserveM or 9.0,
             approachDistancePerParticipantM=values.approachDistancePerParticipantM or 12.0,
             selectionLongitudinalSeparationM=values.selectionLongitudinalSeparationM or 42.0
         }
@@ -196,7 +196,7 @@ end)
 
 test("Bubble Formation readiness accepts persistent transition at the latest safe capture point", function()
     local evaluator,picture,evaluated,candidate,bridge=bubbleFormationReadinessFixture({
-        subjectSettled=true,otherSettled=false,approachDistancePerParticipantM=2.5,controlAllowanceM=3.0,closingRateMps=4.0
+        subjectSettled=true,otherSettled=false,entryBoundaryM=18.0,selectionLongitudinalSeparationM=26.0,captureReserveM=9.0,closingRateMps=4.0
     })
     local readiness=evaluator:evaluate(picture,evaluated,candidate,bridge)
     equal(readiness.status,"READY")
