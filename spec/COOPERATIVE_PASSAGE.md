@@ -112,7 +112,13 @@ A complete supported Cooperative Passage Candidate MAY exist while the pair is s
 
 Passage Approach Regulation MUST cap both prospective Passage participants at an initial maximum of **10 km/h per participant**. The ceiling is a maximum, not a target: a slower participant MUST NOT be accelerated merely to reach 10 km/h, and any independently valid more-restrictive temporal authority MUST remain effective through least-permissive composition.
 
-When current Passage Entry/Capture evidence becomes ready, Responsibility Transition MUST sharply supersede Passage Approach Regulation with the Cooperative Passage Resolution. A Passage-owned supporting speed ceiling MAY preserve the already-established maximum across that same-cycle physical handoff until Capture/Hold has positively acquired both participants. That supporting lease is handoff continuity only; it MUST NOT be treated as evidence that post-transition Passage responsibility can retroactively protect approach margin already consumed before transition.
+After Passage Approach Regulation has acquired the pairwise ceiling, Candidate Support MUST allow the normal Cooperative Passage Candidate and Bubble Formation Readiness contract to resume. Regulation remains the predecessor while Bubble Formation Readiness is false. Either the settled-native-revelation route or the latest-safe-capture route MAY justify the subsequent sharp Responsibility Transition to Cooperative Passage.
+
+> **Regulation Acquisition != Capture Readiness**
+
+A Passage-owned supporting speed ceiling MUST preserve the already-established maximum across that transition until Capture/Hold has positively acquired both participants. That supporting lease is handoff continuity; it MUST NOT be treated as evidence that post-transition Passage responsibility can retroactively protect approach margin consumed before the Regulation existed.
+
+If first complete Passage support occurs only when Capture Reserve is already due, Candidate Support MAY expose Passage directly through the existing latest-safe-capture route rather than manufacturing a zero-duration predecessor Regulation.
 
 > **Confirmed Passage != Immediate Passage Responsibility**
 
