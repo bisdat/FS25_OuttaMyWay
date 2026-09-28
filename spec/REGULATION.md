@@ -153,8 +153,16 @@ This is ordinary tactical Regulation. It MUST NOT create a hybrid Corner/Passage
 A prior tactical Regulation purpose may end while another tactical Regulation purpose becomes justified. In particular:
 
 - Positive Corner Departure terminates the Corner right-of-way purpose through the normal responsibility lifecycle;
-- if fresh A8 still predicts opposed Passage and the Shared Crossing Core plus any required participant-specific Lateral Excursion Development/Reacquisition are not yet supportable, a Passage-theatre-shaping Regulation purpose MAY be established through a sharp Responsibility Transition; and
-- when one complete Cooperative Passage Candidate becomes positively supported and mandatory-admissible, Regulation MUST yield through Responsibility Transition to Cooperative Passage.
+- if fresh A8 still predicts opposed Passage and the Shared Crossing Core plus any required participant-specific Lateral Excursion Development/Reacquisition are not yet supportable, a Passage-theatre-shaping Regulation purpose MAY be established through a sharp Responsibility Transition;
+- once one complete Cooperative Passage arrangement is positively supported but current Entry/Capture evidence is not yet ready, **Passage Approach Regulation** MAY become the current tactical responsibility;
+- Passage Approach Regulation preserves GIANTS route and steering while bounding both prospective Passage participants to the accepted initial **10 km/h maximum**; one participant may carry the Regulation's primary temporal authority while a compatible Supporting Speed Ceiling applies the same bound to the other participant; and
+- when current Entry/Capture evidence becomes ready, Regulation MUST yield through a sharp Responsibility Transition to Cooperative Passage.
+
+Passage Approach Regulation is not pre-commit Passage Control. It owns only temporal progression before Capture and creates no Passage movement, Transit-configuration or spatial-displacement authority. If the selected Passage ceases to be positively supported before Capture, Regulation cannot force that successor and must be reassessed from fresh Situation evidence.
+
+> **Confirmed Passage != Immediate Passage Responsibility**
+
+> **Passage Approach Regulation != Passage Resolution**
 
 > **Corner Regulation Completion != Passage-Theatre Shaping Completion**
 

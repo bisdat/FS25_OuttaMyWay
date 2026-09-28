@@ -108,11 +108,17 @@ The Geometric Entry Boundary MUST be derived from the selected pair's supported 
 
 Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
-Once Cooperative Passage becomes the accepted Resolution Commitment, both original Passage participants MUST be subject to a **Passage Approach Speed Ceiling** while GIANTS-native approach progression remains active. The ceiling MUST be effective before further ordinary Passage-Approach progression is allowed after responsibility establishment and MUST remain active until Capture/Hold supersedes that approach or the Passage responsibility terminates.
+A complete supported Cooperative Passage Candidate MAY exist while the pair is still outside the current Capture boundary. In that state the implementation MUST NOT establish Cooperative Passage merely to obtain pre-Capture speed control. Instead, the pair MUST remain under the Regulation Jurisdiction through a **Passage Approach Regulation** while GIANTS-native routing and steering continue.
 
-The accepted initial Passage Approach Speed Ceiling calibration is **10 km/h per participant**. It is a maximum, not a target: the implementation MUST NOT accelerate a slower participant merely to reach 10 km/h, and any independently valid more-restrictive speed ceiling MUST remain effective through least-permissive composition.
+Passage Approach Regulation MUST cap both prospective Passage participants at an initial maximum of **10 km/h per participant**. The ceiling is a maximum, not a target: a slower participant MUST NOT be accelerated merely to reach 10 km/h, and any independently valid more-restrictive temporal authority MUST remain effective through least-permissive composition.
 
-The Passage Approach Speed Ceiling MUST NOT be represented as additional Capture Reserve, a braking-distance model, a replacement for latest-safe-capture timing, or the third-party 1 km/h Bullet Time policy. After Capture and Transit settlement, the existing common **8 km/h** Cooperative Passage actuation speed remains the coupled-movement calibration.
+When current Passage Entry/Capture evidence becomes ready, Responsibility Transition MUST sharply supersede Passage Approach Regulation with the Cooperative Passage Resolution. A Passage-owned supporting speed ceiling MAY preserve the already-established maximum across that same-cycle physical handoff until Capture/Hold has positively acquired both participants. That supporting lease is handoff continuity only; it MUST NOT be treated as evidence that post-transition Passage responsibility can retroactively protect approach margin already consumed before transition.
+
+> **Confirmed Passage != Immediate Passage Responsibility**
+
+> **Passage Approach Regulation != Passage Resolution**
+
+The 10 km/h ceiling MUST NOT be represented as additional Capture Reserve, a braking-distance model, a replacement for latest-safe-capture timing, or the third-party 1 km/h Bullet Time policy. After Capture and Transit settlement, the existing common **8 km/h** Cooperative Passage actuation speed remains the coupled-movement calibration.
 
 > **Passage Approach Responsibility != Unrestricted Native Reset**
 

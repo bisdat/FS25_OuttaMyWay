@@ -492,9 +492,17 @@ The **Capture Reserve** is pairwise longitudinal space outside the Geometric Ent
 
 > **Capture Reserve Is Counted Once And Consumed Once**
 
-Once Cooperative Passage becomes the accepted Resolution Commitment, Passage owns the rate at which its two participants consume the remaining disposable approach margin. Both participants retain GIANTS-native productive routing, but each is subject to a **Passage Approach Speed Ceiling** until Capture/Hold supersedes approach progression.
+A complete supported Passage arrangement does not itself mean that Passage should become Current Responsibility immediately. While the pair remains outside Capture readiness, the system may know **what** Passage will solve without yet being at the semantic boundary where spatial displacement should begin.
 
-The initial Passage Approach Speed Ceiling calibration is **10 km/h per participant**. It is a maximum, not a target: a participant already progressing more slowly is not accelerated to the ceiling, and any independently valid more-restrictive speed authority remains more restrictive. The ceiling is Passage Control calibration validated against Reality; it is not a braking-distance model, does not enlarge Capture Reserve and does not replace latest-safe-capture boundary conformance.
+During that interval the pair is governed by **Passage Approach Regulation**: ordinary tactical Regulation whose purpose is to bound closing progression while GIANTS retains productive routing and steering. The initial calibration is a **10 km/h maximum per Passage participant**. It is a ceiling, not a target: a participant already progressing more slowly is not accelerated to 10 km/h, and any independently valid more-restrictive temporal authority remains more restrictive.
+
+> **Confirmed Passage != Immediate Passage Responsibility**
+
+> **Passage Approach Regulation != Passage Resolution**
+
+Passage Approach Regulation persists only while the complete selected Passage remains positively supported and Capture is not yet due. When the existing Passage Entry/Capture boundary becomes current, Responsibility Transition sharply replaces Regulation with the Cooperative Passage Resolution; there is no hybrid Regulation/Passage spatial mode. A subordinate supporting speed ceiling may bridge that same-cycle physical handoff until Capture/Hold has positively acquired both participants, but it is not the mechanism expected to slow an already-fast pair.
+
+The 10 km/h calibration is temporal-control policy validated against Reality. It is not a braking-distance model, does not enlarge the 9 m Capture Reserve, and does not replace latest-safe-capture boundary conformance.
 
 > **Passage Approach Responsibility != Unrestricted Native Reset**
 

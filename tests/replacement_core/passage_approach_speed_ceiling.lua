@@ -19,7 +19,7 @@ local function equal(a,b,message)
     if a~=b then error(message or (tostring(a).." ~= "..tostring(b)),2) end
 end
 
-test("Passage approach ceiling applies ten kilometre per hour supporting leases to both participants and releases at Capture",function()
+test("Passage successor handoff ceiling preserves ten kilometre per hour maximum until Capture holds acquire both participants",function()
     local commitment={identity="CM-1",state="ACTIVE",effectiveActuationCompositionId="COMP-PAIR"}
     local current={identity="RS-1"}
     local compositionSequence=0
@@ -94,5 +94,5 @@ test("Passage approach ceiling applies ten kilometre per hour supporting leases 
     equal(clears,2); equal(releases,2); equal(ceiling:getLease("CM-1"),nil)
 end)
 
-print(string.format("Passage Approach Speed Ceiling focused contract: %d passed, %d failed",passed,failed))
+print(string.format("Passage successor handoff ceiling focused contract: %d passed, %d failed",passed,failed))
 if failed>0 then os.exit(1) end
