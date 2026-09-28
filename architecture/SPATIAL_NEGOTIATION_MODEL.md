@@ -504,7 +504,11 @@ Passage Approach Regulation establishes the pairwise temporal ceiling before Coo
 
 > **Regulation Acquisition != Capture Readiness**
 
-Responsibility Transition sharply replaces Regulation with the Cooperative Passage Resolution; there is no hybrid Regulation/Passage spatial mode. A subordinate Passage-owned supporting speed ceiling bridges the same physical maximum across that transition until Capture/Hold has positively acquired both participants. If the first complete Passage support arrives with Capture Reserve already due, there is no disposable pre-Passage interval to regulate and Passage may proceed directly through the existing latest-safe-capture path.
+Responsibility Transition sharply replaces Regulation with the Cooperative Passage Resolution; there is no hybrid Regulation/Passage spatial mode. The temporary GIANTS Cruise Control values are **Passage Episode configuration debt** and therefore persist unchanged across Regulation -> Passage -> Capture -> Transit -> Crossing -> Return. They do not transfer movement authority: GIANTS still owns ordinary route/steering and Passage Control still owns only its already-authorised manoeuvre. When Passage terminates, OMW restores each participant's captured original forward/reverse Cruise Control values. If the first complete Passage support arrives with Capture Reserve already due, Passage acquires the same Cruise Ceiling directly before physical Passage dispatch rather than manufacturing a zero-duration predecessor Regulation.
+
+> **Speed Configuration != Movement Authority**
+
+> **Passage Speed Envelope Spans Responsibility Transitions**
 
 The 10 km/h calibration is temporal-control policy validated against Reality. It is not a braking-distance model, does not enlarge the 9 m Capture Reserve, and does not replace latest-safe-capture boundary conformance.
 
