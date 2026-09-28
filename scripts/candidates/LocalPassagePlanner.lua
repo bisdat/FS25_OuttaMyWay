@@ -502,9 +502,11 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local representationBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" or (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES")) or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
     local minimum=math.huge
     local minimumCrossing=math.huge
-    local minimumOutsideCrossing=math.huge
+    local minimumPreCrossingOutside=math.huge
+    local minimumPostCrossingRecovery=math.huge
     local minimumCrossingWitness=nil
-    local minimumOutsideCrossingWitness=nil
+    local minimumPreCrossingOutsideWitness=nil
+    local minimumPostCrossingRecoveryWitness=nil
     local samples=COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG
     local entryOrigins=guide.entryOrigins or {}
     local previous={
@@ -514,6 +516,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local previousGateKind="EXECUTION_ORIGIN"
     local previousGateIndex=0
     local crossingActive=false
+    local crossingComplete=false
     local function segmentKind(gate)
         if gate.kind=="CROSSING_WINDOW_ENTRY" then return "SIDESTEP_IN" end
         if gate.kind=="CROSSING_WINDOW_EXIT" then return "CROSSING" end
@@ -522,11 +525,11 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
         if gate.kind=="REACQUISITION_PROGRESS" then return "REACQUISITION" end
         return "GUIDE_SEGMENT"
     end
-    local function witness(gate,i,t,clearance,ax,az,bx,bz,inCrossing)
+    local function witness(gate,i,t,clearance,ax,az,bx,bz,classification)
         return {
             segment=segmentKind(gate),fromGateKind=previousGateKind,fromGateIndex=previousGateIndex,
             toGateKind=gate.kind,toGateIndex=tonumber(gate.index),sampleIndex=i,sampleCount=samples,sampleFraction=t,
-            clearanceM=clearance,classification=inCrossing and "CROSSING_WINDOW" or "OUTSIDE_CROSSING_WINDOW",
+            clearanceM=clearance,classification=classification,
             subjectX=ax,subjectZ=az,otherX=bx,otherZ=bz,representationBasis=representationBasis,
             subjectEnvelopeAuthority=directional and tostring(aEnvelope.authority or "UNRESOLVED") or "DISC_FALLBACK",
             otherEnvelopeAuthority=directional and tostring(bEnvelope.authority or "UNRESOLVED") or "DISC_FALLBACK"
@@ -548,16 +551,26 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
             if inCrossing then
                 if clearance<minimumCrossing then
                     minimumCrossing=clearance
-                    minimumCrossingWitness=witness(gate,i,t,clearance,ax,az,bx,bz,true)
+                    minimumCrossingWitness=witness(gate,i,t,clearance,ax,az,bx,bz,"CROSSING_WINDOW")
+                end
+            elseif crossingComplete then
+                if clearance<minimumPostCrossingRecovery then
+                    minimumPostCrossingRecovery=clearance
+                    minimumPostCrossingRecoveryWitness=witness(gate,i,t,clearance,ax,az,bx,bz,"POST_CROSSING_RECOVERY")
                 end
             else
-                if clearance<minimumOutsideCrossing then
-                    minimumOutsideCrossing=clearance
-                    minimumOutsideCrossingWitness=witness(gate,i,t,clearance,ax,az,bx,bz,false)
+                if clearance<minimumPreCrossingOutside then
+                    minimumPreCrossingOutside=clearance
+                    minimumPreCrossingOutsideWitness=witness(gate,i,t,clearance,ax,az,bx,bz,"PRE_CROSSING_OUTSIDE_WINDOW")
                 end
             end
         end
-        if gate.kind=="CROSSING_WINDOW_ENTRY" then crossingActive=true elseif gate.kind=="CROSSING_WINDOW_EXIT" then crossingActive=false end
+        if gate.kind=="CROSSING_WINDOW_ENTRY" then
+            crossingActive=true
+        elseif gate.kind=="CROSSING_WINDOW_EXIT" then
+            crossingActive=false
+            crossingComplete=true
+        end
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
         previousGateKind=tostring(gate.kind or "UNRESOLVED")
         previousGateIndex=tonumber(gate.index) or previousGateIndex
@@ -566,25 +579,33 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local acceptanceRatio=COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO
     acceptanceRatio=math.max(0,acceptanceRatio)
     local acceptedFloor=required*acceptanceRatio
-    -- Probe retains the existing 1 mm Boolean threshold unchanged. The witness
-    -- records where the represented minimum occurs so Reality can judge whether
-    -- that tolerance has meaningful authority at this representation scale.
+    -- The pre-movement hard veto owns geometry only through positive Crossing
+    -- Clearance. Post-crossing restitution is participant-scoped recovery debt:
+    -- keep measuring it, but do not let predicted SIDESTEP_OUT geometry
+    -- retroactively veto an otherwise supported opposed crossing.
     local function evidence()
+        local minimumOutside=math.min(minimumPreCrossingOutside,minimumPostCrossingRecovery)
+        local minimumOutsideWitness=minimumPreCrossingOutside<=minimumPostCrossingRecovery
+            and minimumPreCrossingOutsideWitness or minimumPostCrossingRecoveryWitness
         return {
-            minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,
-            minimumOutsideCrossingWitness=minimumOutsideCrossingWitness,minimumCrossingWindowWitness=minimumCrossingWitness,
+            minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutside,minimumCrossingWindowClearanceM=minimumCrossing,
+            minimumOutsideCrossingWitness=minimumOutsideWitness,minimumCrossingWindowWitness=minimumCrossingWitness,
+            minimumPreCrossingOutsideClearanceM=minimumPreCrossingOutside,minimumPreCrossingOutsideWitness=minimumPreCrossingOutsideWitness,
+            minimumPostCrossingRecoveryClearanceM=minimumPostCrossingRecovery,minimumPostCrossingRecoveryWitness=minimumPostCrossingRecoveryWitness,
             requiredNominalClearanceM=required,acceptedNominalClearanceFloorM=acceptedFloor,clearanceAcceptanceRatio=acceptanceRatio,
-            outsideCrossingOverlapToleranceM=0.001,representationBasis=representationBasis,negativeClearanceAuthority=false
+            preCrossingOverlapToleranceM=0.001,outsideCrossingOverlapToleranceM=0.001,
+            postCrossingRecoveryPreVetoAuthority=false,
+            representationBasis=representationBasis,negativeClearanceAuthority=false
         }
     end
-    if minimumOutsideCrossing<-0.001 then
-        return false,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",evidence()
+    if minimumPreCrossingOutside<-0.001 then
+        return false,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE",evidence()
     end
     if minimumCrossing==math.huge or minimumCrossing+0.001<acceptedFloor then
         return false,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW",evidence()
     end
     local supported=evidence()
-    supported.clearanceContract="NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW"
+    supported.clearanceContract="NON_CONTACT_BEFORE_CROSSING_CLEARANCE_NOMINAL_TARGET_WITH_POLICY_FLOOR_IN_CROSSING_WINDOW_POST_CROSSING_RECOVERY_DEFERRED"
     supported.supportBasis=representationBasis
     return true,nil,supported
 end
