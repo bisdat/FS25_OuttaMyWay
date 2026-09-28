@@ -58,9 +58,16 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     if type(readiness)~="table" or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
         return nil,"COOPERATIVE_PASSAGE_TRANSITION_NOT_READY"
     end
+    local bubbleReadiness=readiness.bubbleFormationReadiness
+    if type(bubbleReadiness)~="table" or bubbleReadiness.status~="READY" then
+        return nil,"COOPERATIVE_PASSAGE_BUBBLE_FORMATION_NOT_READY"
+    end
     local candidate=selectedCandidate(evaluated)
     if candidate==nil or candidate.identity~=readiness.candidateId then
         return nil,"COOPERATIVE_PASSAGE_TRANSITION_CANDIDATE_MISMATCH"
+    end
+    if bubbleReadiness.candidateId~=candidate.identity then
+        return nil,"COOPERATIVE_PASSAGE_BUBBLE_FORMATION_CANDIDATE_MISMATCH"
     end
     local participantIds,participantReason=passageRoles(candidate)
     if participantIds==nil then return nil,participantReason end
@@ -109,8 +116,9 @@ function Transition:transition(picture,evaluated,readiness,semantics)
             tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
             table.concat(participantIds,","),table.concat(participantIds,","),tostring(applied.application.action))
     end
-    logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM","decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true bubbleBulletTime=%s",
+    logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM","decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true bubbleFormationRoute=%s bubbleFormationReason=%s bubbleBulletTime=%s",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
-        tostring(applied.application and applied.application.action or evaluated.decision.commitmentAction),tostring(protection.status or "PREPARED"))
+        tostring(applied.application and applied.application.action or evaluated.decision.commitmentAction),
+        tostring(bubbleReadiness.route or "UNKNOWN"),tostring(bubbleReadiness.reason or "UNKNOWN"),tostring(protection.status or "PREPARED"))
     return applied,nil
 end
