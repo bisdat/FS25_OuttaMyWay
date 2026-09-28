@@ -4193,6 +4193,8 @@ test("Cooperative Passage: Geometric Entry Boundary excludes Capture Reserve and
     equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION")
     equal(plan.passageEntry.ready,false); equal(plan.passageEntry.boundarySeparationM<18,true)
     equal(plan.passageEntry.captureReserveM,9.0)
+    equal(math.abs(plan.passageEntry.boundarySeparationM-plan.passageExcursion.crossingWindowEntrySeparationM)<0.0001,true)
+    equal(plan.passageExcursion.developmentDistanceM>0,true)
     equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
     equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
     equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_ENTRY")
