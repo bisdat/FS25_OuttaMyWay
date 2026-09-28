@@ -1460,13 +1460,16 @@ def test_passage_rejection_telemetry_reports_candidate_failure_class_without_cha
     assert "theatreComponent" in support
 
 
-def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
+def test_nominal_passage_clearance_and_hard_non_contact_are_scoped_through_crossing_clearance():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     assert "minimumCrossingWindowClearanceM" in planner
-    assert "minimumOutsideCrossingClearanceM" in planner
-    assert "NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW" in planner
-    assert "PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW" in planner
+    assert "minimumPreCrossingOutsideClearanceM" in planner
+    assert "minimumPostCrossingRecoveryClearanceM" in planner
+    assert "NON_CONTACT_BEFORE_CROSSING_CLEARANCE_NOMINAL_TARGET_WITH_POLICY_FLOOR_IN_CROSSING_WINDOW_POST_CROSSING_RECOVERY_DEFERRED" in planner
+    assert "PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_BEFORE_CROSSING_CLEARANCE" in planner
     assert "PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW" in planner
+    assert "postCrossingRecoveryPreVetoAuthority=false" in planner
+    assert "minimumPostCrossingRecovery<-0.001" not in planner
     assert 'gate.kind=="CROSSING_WINDOW_ENTRY"' in planner
     assert 'gate.kind=="CROSSING_WINDOW_EXIT"' in planner
     assert 'local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0' in planner
@@ -1475,15 +1478,17 @@ def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
     assert "clearanceAcceptanceRatio" in planner
 
 
-def test_pair_sweep_failure_probe_reports_segment_sample_and_world_witness_without_changing_threshold():
+def test_pair_sweep_probe_retains_post_crossing_witness_without_giving_it_pre_veto_authority():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     for token in (
-        "minimumOutsideCrossingWitness",
+        "minimumPreCrossingOutsideWitness",
+        "minimumPostCrossingRecoveryWitness",
         "minimumCrossingWindowWitness",
         '"SIDESTEP_OUT"',
-        "outsideCrossingOverlapToleranceM=0.001",
-        'minimumOutsideCrossing<-0.001',
+        "preCrossingOverlapToleranceM=0.001",
+        'minimumPreCrossingOutside<-0.001',
+        "postCrossingRecoveryPreVetoAuthority=false",
     ):
         assert token in planner
     assert "COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS" in control
