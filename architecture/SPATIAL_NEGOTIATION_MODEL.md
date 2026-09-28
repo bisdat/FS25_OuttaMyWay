@@ -494,7 +494,7 @@ The **Capture Reserve** is pairwise longitudinal space outside the Geometric Ent
 
 A complete supported Passage arrangement does not itself mean that Passage should become Current Responsibility immediately. While the pair remains outside Capture readiness, the system may know **what** Passage will solve without yet being at the semantic boundary where spatial displacement should begin.
 
-During that interval the pair is governed by **Passage Approach Regulation**: ordinary tactical Regulation whose purpose is to bound closing progression while GIANTS retains productive routing and steering. The initial calibration is a **10 km/h maximum per Passage participant**. It is a ceiling, not a target: a participant already progressing more slowly is not accelerated to 10 km/h, and any independently valid more-restrictive temporal authority remains more restrictive.
+During that interval the pair is governed by **Passage Approach Regulation**: ordinary tactical Regulation whose purpose is to bound closing progression while GIANTS retains productive routing and steering. The physical actuator for this purpose is the workers' native **GIANTS Cruise Control** setting, not an OMW-owned drive-speed loop. The initial calibration is a **10 km/h maximum per Passage participant**, applied as `min(original cruise setting, 10 km/h)` independently to forward and reverse cruise values. A slower original setting is therefore never increased.
 
 > **Confirmed Passage != Immediate Passage Responsibility**
 
