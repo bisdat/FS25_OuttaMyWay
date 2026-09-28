@@ -412,6 +412,19 @@ local function realiseExecutionSteeringGuide(guide,arrangement,subjectPose,other
     local otherReacquisition,otherReacquisitionReason=helper.profile(otherOffset)
     if otherReacquisition==nil then return nil,otherReacquisitionReason end
 
+    if subjectDevelopment.required~=true and otherDevelopment.required~=true then
+        guide.executionSteeringHelper={
+            kind="NO_LATERAL_EXCURSION",activation="REALISED_TRANSIT_EXECUTION_ORIGIN",
+            reserveAuthority=false,subjectDevelopmentForwardM=0,otherDevelopmentForwardM=0,
+            subjectReacquisitionForwardM=0,otherReacquisitionForwardM=0,
+            crossingForwardPerParticipantM=tonumber(guide.sharedCrossingCore and guide.sharedCrossingCore.forwardPerParticipantM)
+                or tonumber(guide.crossingWindow and guide.crossingWindow.forwardPerParticipantM)
+                or 0,
+            forwardPerLateralM=helper.forwardPerLateralM()
+        }
+        return guide,nil,guide.executionSteeringHelper
+    end
+
     local subjectSpace={occupancy={x=subjectPose.x,z=subjectPose.z}}
     local otherSpace={occupancy={x=otherPose.x,z=otherPose.z}}
     local subjectTrajectory={establishedDirectionX=subjectForwardX,establishedDirectionZ=subjectForwardZ}
