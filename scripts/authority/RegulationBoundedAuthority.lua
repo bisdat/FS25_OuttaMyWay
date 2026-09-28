@@ -63,7 +63,7 @@ end
 
 function Authority:_supportingSpeedCeilingRequest(picture,evaluated,candidate,commitment,currentResponsibility,assemblyId,referenceKey,ownerTag,maxSpeedKmh)
     if currentResponsibility==nil then return nil,"CURRENT_RESPONSIBILITY_REQUIRED_FOR_SUPPORTING_SPEED_CEILING" end
-    local target={kind="REGULATION_LEASE",operation="APPLY",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
+    local target={kind="PASSAGE_CRUISE_CEILING",operation="APPLY",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
         maxSpeedKmh=maxSpeedKmh,governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
     local supportingComposition=OuttaMyWay.EffectiveActuationComposition.create({
         identity=self.runtime.identities:issue("COMPOSITION"),epoch=self.runtime.epochs:next(),
@@ -73,7 +73,7 @@ function Authority:_supportingSpeedCeilingRequest(picture,evaluated,candidate,co
     })
     local grant,grantReason=self.runtime.boundedAuthority:authorize({
         responsibilityId=currentResponsibility.identity,commitmentId=commitment.identity,assemblyId=assemblyId,capability="REGULATE_SPEED",
-        target={kind="REGULATION_LEASE",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,maxSpeedKmh=maxSpeedKmh,
+        target={kind="PASSAGE_CRUISE_CEILING",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,maxSpeedKmh=maxSpeedKmh,
             governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"},
         authorityRole=SUPPORTING_SPEED_CEILING,
         supportingSpeedCeilingComposition=supportingComposition,
@@ -89,6 +89,38 @@ function Authority:_supportingSpeedCeilingRequest(picture,evaluated,candidate,co
     })
     if request==nil then
         self.runtime.boundedAuthority:release(grant.identity,"PASSAGE_APPROACH_SUPPORTING_REQUEST_FAILED")
+        return nil,requestReason
+    end
+    self.requests[#self.requests+1]=request
+    return request,nil
+end
+
+function Authority:_passageCruisePrimaryRequest(picture,evaluated,candidate,commitment,currentResponsibility,token,bridge,maxSpeedKmh)
+    if currentResponsibility==nil then return nil,"CURRENT_RESPONSIBILITY_REQUIRED_FOR_PASSAGE_CRUISE" end
+    local target={
+        kind="PASSAGE_CRUISE_CEILING",operation="APPLY",vehicleReferenceKey=bridge.regulatedReferenceKey,
+        ownerTag=PASSAGE_APPROACH_REGULATION_OWNER_TAG,maxSpeedKmh=maxSpeedKmh,
+        governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"
+    }
+    local grant,grantReason=self.runtime.boundedAuthority:authorize({
+        responsibilityId=currentResponsibility.identity,commitmentId=commitment.identity,
+        assemblyId=bridge.regulatedAssemblyId,capability="REGULATE_SPEED",target={
+            kind="PASSAGE_CRUISE_CEILING",vehicleReferenceKey=bridge.regulatedReferenceKey,
+            ownerTag=PASSAGE_APPROACH_REGULATION_OWNER_TAG,maxSpeedKmh=maxSpeedKmh,
+            governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"
+        },
+        authorityToken=token.identity,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
+        effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
+        preconditions=candidate and candidate.preconditions or {},invalidationConditions=candidate and candidate.invalidationConditions or {},
+        provenance={source="RegulationBoundedAuthority",exemplar="PASSAGE_APPROACH_PRIMARY_CRUISE_CEILING"}
+    })
+    if grant==nil then return nil,grantReason end
+    local request,requestReason=self.runtime.boundedAuthority:materializeRequest({
+        boundedAuthorityId=grant.identity,target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
+        preconditions=candidate and candidate.preconditions or {},invalidationConditions=candidate and candidate.invalidationConditions or {}
+    })
+    if request==nil then
+        self.runtime.boundedAuthority:release(grant.identity,"PASSAGE_APPROACH_PRIMARY_CRUISE_REQUEST_FAILED")
         return nil,requestReason
     end
     self.requests[#self.requests+1]=request
@@ -1043,6 +1075,54 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
     local ownerTag=fixedForwardIntersection and FORWARD_INTERSECTION_OWNER_TAG
         or (fixedCornerRightOfWay and CORNER_RIGHT_OF_WAY_OWNER_TAG
         or (fixedPassageApproach and PASSAGE_APPROACH_REGULATION_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG))
+
+    if fixedPassageApproach then
+        local request,requestReason=self:_passageCruisePrimaryRequest(
+            picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,token,bridge,initialCap)
+        if request==nil then
+            return {status="NO_DISPATCH",reason="PASSAGE_APPROACH_PRIMARY_CRUISE_REQUEST_FAILED:"..tostring(requestReason),actionSpaceRegulation=true}
+        end
+        local supportingRequest,supportingReason=self:_supportingSpeedCeilingRequest(
+            picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,
+            bridge.protectedAssemblyId or bridge.excursionAssemblyId,
+            bridge.protectedReferenceKey or bridge.excursionReferenceKey,
+            PASSAGE_APPROACH_SUPPORTING_OWNER_TAG,initialCap)
+        if supportingRequest==nil then
+            self:_releaseRequestBoundedAuthority(request,"PASSAGE_APPROACH_SUPPORTING_CRUISE_REQUEST_FAILED")
+            return {status="REJECTED",reason="PASSAGE_APPROACH_SUPPORTING_CRUISE_REQUEST_FAILED:"..tostring(supportingReason),actionSpaceRegulation=true}
+        end
+        local started,result=self.runtime.liveControlDispatcher:dispatchPassageCruisePair(request,supportingRequest,candidate)
+        if started~=true then
+            self:_releaseRequestBoundedAuthority(request,"PASSAGE_APPROACH_CRUISE_PAIR_REJECTED")
+            self:_releaseRequestBoundedAuthority(supportingRequest,"PASSAGE_APPROACH_CRUISE_PAIR_REJECTED")
+            return {status="REJECTED",reason="PASSAGE_APPROACH_CRUISE_PAIR_REJECTED:"..tostring(result),actionSpaceRegulation=true}
+        end
+        self.actionSpaceRegulationLease={
+            commitmentId=applied.commitment.identity,conflictIdentity=bridge.conflictIdentity,operationId=bridge.operationId,
+            regulatedAssemblyId=bridge.regulatedAssemblyId,regulatedReferenceKey=bridge.regulatedReferenceKey,
+            protectedAssemblyId=bridge.protectedAssemblyId or bridge.excursionAssemblyId,protectedReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey,
+            excursionAssemblyId=bridge.excursionAssemblyId,excursionReferenceKey=bridge.excursionReferenceKey,admissionKind=bridge.admissionKind,
+            governingPurpose=bridge.governingPurpose,ownerTag=ownerTag,authorityTokenId=token.identity,
+            boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=initialCap,
+            progressionEnvelope=nil,actuationActive=true,fixedForwardIntersection=false,fixedCornerRightOfWay=false,fixedPassageApproach=true,
+            supportingReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey,
+            supportingOwnerTag=PASSAGE_APPROACH_SUPPORTING_OWNER_TAG,
+            supportingBoundedAuthorityId=supportingRequest.boundedAuthorityId,supportingRequestId=supportingRequest.identity,
+            cruiseCeiling=true,nativeClosureContributionKmh=bridge.nativeClosureContributionKmh,nativeMoveForwards=bridge.nativeMoveForwards,
+            quiescenceCount=0,reactivationCount=0
+        }
+        self.actionSpaceRegulationApplyCount=self.actionSpaceRegulationApplyCount+1
+        self.dispatchCount=self.dispatchCount+1
+        local outcome=self:_outcome(request,"ACCEPTED",{kind="PASSAGE_APPROACH_CRUISE_CEILING_ADMITTED",
+            capability="REGULATE_SPEED",effectClass="PAIRWISE_CRUISE_CEILING",maxSpeedKmh=initialCap},nil)
+        logInfo("DEBUG","PASSAGE_APPROACH_REGULATION_APPLIED",
+            "commitment=%s conflict=%s A=%s B=%s cap=%.2fkmh pairwise=true actuator=GIANTS_CRUISE_CONTROL",
+            tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),
+            tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),tonumber(initialCap) or 0)
+        return {status="ACCEPTED",request=request,supportingRequest=supportingRequest,outcome=outcome,
+            commitment=applied.commitment,candidate=candidate,result=result,actionSpaceRegulation=true,passageApproach=true}
+    end
+
     local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",ownerTag,initialCap,applied.currentResponsibility)
     if request==nil then return {status="NO_DISPATCH",reason=requestReason,actionSpaceRegulation=true} end
     local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
@@ -1053,30 +1133,6 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
         return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,actionSpaceRegulation=true}
     end
     local supportingRequest=nil
-    if fixedPassageApproach then
-        supportingRequest,requestReason=self:_supportingSpeedCeilingRequest(
-            picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,
-            bridge.protectedAssemblyId or bridge.excursionAssemblyId,bridge.protectedReferenceKey or bridge.excursionReferenceKey,
-            PASSAGE_APPROACH_SUPPORTING_OWNER_TAG,initialCap)
-        if supportingRequest==nil then
-            if type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
-                self.regulationControl:clearRegulationLeaseByReference(bridge.regulatedReferenceKey,ownerTag)
-            end
-            self:_releaseRequestBoundedAuthority(request,"PASSAGE_APPROACH_SUPPORTING_CEILING_REQUEST_FAILED")
-            return {status="REJECTED",reason="PASSAGE_APPROACH_SUPPORTING_CEILING_REQUEST_FAILED:"..tostring(requestReason),actionSpaceRegulation=true}
-        end
-        local supportingStarted,supportingResult=self.runtime.liveControlDispatcher:dispatch(supportingRequest,candidate)
-        if supportingStarted~=true then
-            if type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
-                self.regulationControl:clearRegulationLeaseByReference(bridge.regulatedReferenceKey,ownerTag)
-                self.regulationControl:clearRegulationLeaseByReference(bridge.protectedReferenceKey or bridge.excursionReferenceKey,PASSAGE_APPROACH_SUPPORTING_OWNER_TAG)
-            end
-            self:_releaseRequestBoundedAuthority(request,"PASSAGE_APPROACH_SUPPORTING_CEILING_CONTROL_REJECTED")
-            self:_releaseRequestBoundedAuthority(supportingRequest,"PASSAGE_APPROACH_SUPPORTING_CEILING_CONTROL_REJECTED")
-            return {status="REJECTED",reason="PASSAGE_APPROACH_SUPPORTING_CEILING_CONTROL_REJECTED:"..tostring(supportingResult),actionSpaceRegulation=true}
-        end
-        self.dispatchCount=self.dispatchCount+1
-    end
     self.actionSpaceRegulationLease={
         commitmentId=applied.commitment.identity,conflictIdentity=bridge.conflictIdentity,operationId=bridge.operationId,
         regulatedAssemblyId=bridge.regulatedAssemblyId,regulatedReferenceKey=bridge.regulatedReferenceKey,
