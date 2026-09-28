@@ -143,6 +143,60 @@ local function permittedFollowerCap(evidence)
     return permission and permission.permittedFollowerCapKmh or nil
 end
 
+test("Forward-Diagonal steering helper keeps 2:1 calibration mechanical",function()
+    local first=assert(OuttaMyWay.ForwardDiagonalSteeringHelper.profile(0.97))
+    local second=assert(OuttaMyWay.ForwardDiagonalSteeringHelper.profile(-2.27))
+    equal(first.kind,"FORWARD_DIAGONAL_2_TO_1")
+    if math.abs(first.forwardDistanceM-1.94)>0.0001 then error("0.97 m lateral should create 1.94 m steering development") end
+    if math.abs(second.forwardDistanceM-4.54)>0.0001 then error("2.27 m lateral should create 4.54 m steering development") end
+    equal(first.forwardPerLateralM,2.0)
+    equal(second.forwardPerLateralM,2.0)
+end)
+
+test("Forward-Diagonal helper materialises only from realised execution origin",function()
+    local guide={
+        gates={{
+            subject={assemblyId="AS-A",x=0,z=0,radiusM=1},
+            other={assemblyId="AS-B",x=0,z=18.68,radiusM=1}
+        }},
+        entryOrigins={subject={x=0,z=0},other={x=0,z=18.68}},
+        executionFrame={
+            sharedRightX=1,sharedRightZ=0,
+            subjectForwardX=0,subjectForwardZ=1,
+            otherForwardX=0,otherForwardZ=-1
+        },
+        participantDevelopment={
+            subject={distanceM=0,lateralOffsetM=2.27},
+            other={distanceM=0,lateralOffsetM=-2.27}
+        },
+        lateralExcursionReacquisition={
+            subject={required=true,distanceM=0,lateralOffsetM=2.27},
+            other={required=true,distanceM=0,lateralOffsetM=-2.27}
+        },
+        sharedCrossingCore={entrySeparationM=10.91,rearClearSeparationM=2.0,forwardPerParticipantM=10.34},
+        crossingWindow={entrySeparationM=10.91,rearClearSeparationM=2.0,forwardPerParticipantM=10.34},
+        developmentDistanceM=0,reacquisitionDistanceM=0,totalForwardDistanceM=10.34
+    }
+    local arrangement={subjectLateralOffsetM=2.27,otherLateralOffsetM=-2.27}
+    local realised,reason,evidence=OuttaMyWay.LocalPassagePlanner.realiseExecutionSteeringGuide(
+        guide,arrangement,{x=0,z=0},{x=0,z=18.68})
+    if realised==nil then error(reason) end
+    equal(evidence.kind,"FORWARD_DIAGONAL_2_TO_1")
+    if math.abs(evidence.subjectDevelopmentForwardM-4.54)>0.0001 then error("subject steering development mismatch") end
+    if math.abs(evidence.otherDevelopmentForwardM-4.54)>0.0001 then error("other steering development mismatch") end
+    if math.abs(evidence.postDevelopmentLongitudinalSeparationM-9.60)>0.0001 then error("post-development separation mismatch") end
+    if math.abs(evidence.crossingForwardPerParticipantM-5.80)>0.0001 then error("crossing forward should be recomputed from realised origin") end
+    equal(#realised.gates,5)
+    equal(realised.gates[1].kind,"DEVELOPMENT_ENTRY")
+    equal(realised.gates[2].kind,"CROSSING_WINDOW_ENTRY")
+    equal(realised.gates[3].kind,"CROSSING_WINDOW_EXIT")
+    equal(realised.gates[4].kind,"REACQUISITION_PROGRESS")
+    equal(realised.gates[5].kind,"NATIVE_REACQUISITION")
+    equal(realised.developmentDistanceM,0,"steering development must not become reserve-bearing developmentDistanceM")
+    equal(realised.reacquisitionDistanceM,0,"steering reacquisition must not revive reserve-bearing reacquisitionDistanceM")
+    equal(realised.executionSteeringHelper.reserveAuthority,false)
+end)
+
 local function bubbleFormationReadinessFixture(values)
     values=values or {}
     local relation={
