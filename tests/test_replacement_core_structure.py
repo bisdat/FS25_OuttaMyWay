@@ -1604,25 +1604,26 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' not in situation
     assert 'COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG' in planner
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
-    # Bounded Axis Return begins only after the existing guide completes.
+    # Post-Crossing restitution uses bounded staging plus native-steered
+    # reverse into a Passage Return Region. Exact captured-axis restoration is
+    # not a Passage requirement.
     assert 'COOPERATIVE_PASSAGE_GUIDE_COMPLETE' in control
-    assert 'ALIGNMENT_RUNOUT_START' in control
+    assert 'RETURN_STAGING_START' in control
     assert 'RETURN_STAGING_READY' in control
-    assert 'AXIS_RETURN_START' in control
-    assert 'steering=CAPTURED_AXIS_ONLY' in control
-    assert 'AXIS_RETURN_ALIGNMENT_LOST' in control
+    assert 'PASSAGE_RETURN_STARTED' in control
+    assert 'steering=NATIVE_POINT_SEEKING' in control
+    assert 'existingJobPreserved=true' in control
     assert 'RETURN_CLEARANCE_WAIT' in control
-    assert 'AXIS_RETURN_CLEARANCE_LOST' in control
+    assert 'PASSAGE_RETURN_CLEARANCE_LOST' in control
     assert 'PARTICIPANT_WAVE_ON' in control
     assert 'PAIR_CONTEXT_DISSOLVED' in control
-    assert 'function Mechanism:setAxisTravel' in drive
-    assert 'state.mode == "AXIS_TRAVEL"' in drive
-    assert 'function Cache:getAssemblyAlignmentSnapshot' in cache
-    assert 'function Control:_assemblyAxisSettled' in control
-    assert 'ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED' in control
-    assert 'ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED' not in control
-    assert 'alignmentBaseline' not in control
-    assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50' in control
+    assert 'function Mechanism:setReposition' in drive
+    assert 'state.mode == "REPOSITION"' in drive
+    assert 'moveForwards = forwards' in drive
+    assert 'steering=CAPTURED_AXIS_ONLY' not in control
+    assert 'AXIS_RETURN_ALIGNMENT_LOST' not in control
+    assert 'exactAxisAlignmentRequired=false' in control
+    assert 'COOPERATIVE_PASSAGE_RETURN_REGION_RADIUS_M = 1.0' in control
     assert 'local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995' in control
 
 
@@ -2072,12 +2073,12 @@ def test_issue240_feature_relative_corner_arrival_is_production_situation_meanin
     assert "workingWidthM" not in assessment[assessment.index("local function terminalEdgeCornerAssociation"):assessment.index("-- Current Corner Occupancy")]
 
 
-def test_issue227_runout_uses_five_metre_maximum_reassessment_step_from_124_lifecycle():
+def test_issue358_return_staging_uses_five_metre_maximum_reassessment_step():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
-    assert re.search(r"^local COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M = 5\.0$", control, re.M)
-    assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_ALIGNMENT_RUNOUT_STEP_MAX_M)" in control
+    assert re.search(r"^local COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M = 5\.0$", control, re.M)
+    assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M)" in control
     assert "progress+stepDistance" in control
-    assert "derivedFrom=MAX_5M_REASSESSMENT_STEP" in control
+    assert "purpose=CREATE_SEQUENTIAL_RETURN_SPACE" in control
 
 
 def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
@@ -2092,14 +2093,16 @@ def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
         "SETTLING_COMPLETION_UNITS",
         "TRANSIT_CONFIGURATION_ACTUATOR_DISTANCE",
         "GUIDE_TARGET_DISTANCE_M",
-        "RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS",
-        "AXIS_RETURN_STATION_DISTANCE_M",
+        "RETURN_STAGING_CLEARANCE_COMPLETION_UNITS",
+        "PASSAGE_RETURN_REGION_DISTANCE_M",
         "RESTORE_ACTUATOR_DISTANCE",
         "RETURN_CLEARANCE_DEFICIT_M",
     ):
         assert residual in control
     assert "RETURN_CLEARANCE_EXHAUSTED" not in control
     assert "SKIP_AXIS_RETURN_AND_RESTORE" not in control
+    assert "AXIS_RETURN_STATION_DISTANCE_M" not in control
+    assert "RETURN_STAGING_ALIGNMENT_COMPLETION_UNITS" not in control
     assert "PROGRESS_WATCHDOG_NO_COMPLETION_PROGRESS" in control
     assert "semanticTerminality=false" in control
     assert "completionResidual" in mechanism
