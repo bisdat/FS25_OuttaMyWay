@@ -108,7 +108,7 @@ The Geometric Entry Boundary MUST be derived from the selected pair's supported 
 
 Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
-Development belongs to Transit choreography for the selected lateral excursion. It MAY shape participant guide targets, but it MUST NOT pre-book longitudinal separation. Represented pair non-contact outside the Crossing Window and accepted Passage clearance within it remain mandatory execution-validity evidence.
+Lateral Development belongs to Transit choreography for the selected lateral excursion. Before Crossing Window entry it MUST be expressed as transverse sidestep rather than proportional forward progression, and post-crossing Reacquisition MUST return the lateral displacement without manufacturing forward recovery debt. Represented pair non-contact outside the Crossing Window and accepted Passage clearance within it remain mandatory execution-validity evidence.
 
 The Capture Reserve magnitude remains Control calibration validated against Reality. It MUST NOT be treated as a braking-model claim, universal stopping-distance claim or fixed time-to-contact literal.
 
