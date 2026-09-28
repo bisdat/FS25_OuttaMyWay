@@ -53,6 +53,40 @@ local function diagnosticPublicationEnabled(code)
     return eligible==true
 end
 
+local function logPairSweepFailureWitness(commitmentId,source,reason,evidence,candidateIndex)
+    if not diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS") then return end
+    local witness=nil
+    if type(evidence)=="table" then
+        if reason=="PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW" then
+            witness=evidence.minimumOutsideCrossingWitness
+        else
+            witness=evidence.minimumCrossingWindowWitness or evidence.minimumOutsideCrossingWitness
+        end
+    end
+    if type(witness)~="table" then
+        logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS",
+            "commitment=%s source=%s candidate=%s reason=%s witness=UNAVAILABLE representation=%s subjectProfile=%s otherProfile=%s",
+            tostring(commitmentId),tostring(source),tostring(candidateIndex or "retained"),tostring(reason),
+            tostring(evidence and evidence.representationBasis or "UNRESOLVED"),
+            tostring(evidence and evidence.subjectConfigurationProfileId or "n/a"),
+            tostring(evidence and evidence.otherConfigurationProfileId or "n/a"))
+        return
+    end
+    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS",
+        "commitment=%s source=%s candidate=%s reason=%s segment=%s from=%s[%s] to=%s[%s] sample=%s/%s t=%.3f clearance=%.4fm outsideTolerance=%.4fm classification=%s subject=(%.2f,%.2f) other=(%.2f,%.2f) representation=%s subjectAuthority=%s otherAuthority=%s subjectProfile=%s otherProfile=%s negativeClearanceAuthority=%s",
+        tostring(commitmentId),tostring(source),tostring(candidateIndex or "retained"),tostring(reason),
+        tostring(witness.segment),tostring(witness.fromGateKind),tostring(witness.fromGateIndex),
+        tostring(witness.toGateKind),tostring(witness.toGateIndex),tostring(witness.sampleIndex),tostring(witness.sampleCount),
+        tonumber(witness.sampleFraction) or -1,tonumber(witness.clearanceM) or 0,
+        tonumber(evidence and evidence.outsideCrossingOverlapToleranceM) or 0,
+        tostring(witness.classification),tonumber(witness.subjectX) or 0,tonumber(witness.subjectZ) or 0,
+        tonumber(witness.otherX) or 0,tonumber(witness.otherZ) or 0,tostring(witness.representationBasis),
+        tostring(witness.subjectEnvelopeAuthority),tostring(witness.otherEnvelopeAuthority),
+        tostring(evidence and evidence.subjectConfigurationProfileId or "n/a"),
+        tostring(evidence and evidence.otherConfigurationProfileId or "n/a"),
+        tostring(evidence and evidence.negativeClearanceAuthority==true))
+end
+
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
     return pcall(object[methodName],object,...)
@@ -661,10 +695,14 @@ function Control:_rebasePassageGuide(run)
         local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(
             guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
         if not retainedOk then
-            local adapted,adaptReason=planner.adaptExecutionGuide(
+            logPairSweepFailureWitness(run.commitmentId,"RETAINED",retainedReason,retainedEvidence,nil)
+            local adapted,adaptReason,adaptEvidence=planner.adaptExecutionGuide(
                 guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId,
                 subjectRepresentation,otherRepresentation)
             if adapted==nil then
+                for _,rejection in OuttaMyWay.ValueRecord.ipairs(adaptEvidence and adaptEvidence.rejected or {}) do
+                    logPairSweepFailureWitness(run.commitmentId,"ADAPTATION",rejection.reason,rejection.evidence,rejection.index)
+                end
                 return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
                     ..":ADAPTATION:"..tostring(adaptReason)
             end
