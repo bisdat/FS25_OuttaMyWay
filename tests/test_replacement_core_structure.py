@@ -1353,12 +1353,12 @@ def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_executio
     ):
         assert retired not in planner
     for token in (
-        "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M",
         "COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
         "entryBoundary=frontOverlap",
         "captureReserveM=geometry.passageCaptureReserveM",
     ):
         assert token in planner
+    assert "COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M" not in planner
     assert "margin<=captureReserve" in control
     for token in (
         "longitudinalPairSeparation",
