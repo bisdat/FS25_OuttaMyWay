@@ -350,6 +350,19 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     }
 end
 
+local function passageCaptureState(plan)
+    local entry=plan and plan.passageEntry or nil
+    local separation=tonumber(entry and (entry.selectionLongitudinalSeparationM or entry.selectionSeparationM) or (plan and plan.longitudinalSeparationM))
+    local boundary=tonumber(entry and entry.boundarySeparationM)
+    local reserve=tonumber(entry and entry.captureReserveM)
+    if separation==nil or boundary==nil or reserve==nil or separation~=separation or boundary~=boundary or reserve~=reserve
+        or separation<0 or boundary<0 or reserve<0 then
+        return nil,"PASSAGE_CAPTURE_STATE_UNAVAILABLE"
+    end
+    local margin=math.max(0,separation-boundary)
+    return {due=margin<=reserve,captureMarginM=margin,separationM=separation,boundarySeparationM=boundary,captureReserveM=reserve},nil
+end
+
 local function passageApproachRegulationItem(picture,plan)
     if type(plan)~="table" or type(plan.conflictIdentity)~="string" then return nil,"PASSAGE_APPROACH_PLAN_REQUIRED" end
     local relation=nil
@@ -849,6 +862,18 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
                     plan.progressiveSearch.conflictSelection="ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION"
                 end
                 local governingRequirementKey=cooperativePassageRequirementKey(plan)
+                local captureState,captureReason=passageCaptureState(plan)
+                if captureState==nil then return nil,captureReason end
+                local existingApproachCommitment,existingApproachReason=actionSpaceExistingCommitmentForRequirement(values,governingRequirementKey)
+                if captureState.due~=true and existingApproachCommitment==nil and existingApproachReason==nil then
+                    local approachItem,approachReason=passageApproachRegulationItem(picture,plan)
+                    if approachItem==nil then return nil,approachReason end
+                    logInfo("PASSAGE_APPROACH_REGULATION_SUPPORTED",
+                        "conflict=%s separation=%.2fm entryBoundary=%.2fm captureMargin=%.2fm captureReserve=%.2fm cap=%.2fkmh pairwise=true projection=true",
+                        tostring(plan.conflictIdentity),captureState.separationM,captureState.boundarySeparationM,
+                        captureState.captureMarginM,captureState.captureReserveM,PASSAGE_APPROACH_SPEED_CEILING_KMH)
+                    return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,approachItem)
+                end
                 local specification=makeCooperativePassageCandidate(targetPictureId,values,plan,governingRequirementKey)
                 logInfo("COOPERATIVE_PASSAGE_SUPPORTED","conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
                     tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tostring(targetPictureId))
@@ -925,31 +950,38 @@ function Support:publishDecisionPicture(picture,snapshot)
             return publishFollowerBoundaryPicture(self,picture,snapshot,follower)
         end
 
-        if not (plan.passageEntry and plan.passageEntry.ready==true) then
+        local captureState,captureReason=passageCaptureState(plan)
+        if captureState==nil then
+            self.lastStatus=captureReason
+            return self.passiveSupport:publishDecisionPicture(picture,snapshot)
+        end
+        local governingRequirementKey=cooperativePassageRequirementKey(plan)
+        local existingApproachCommitment,existingApproachReason=actionSpaceExistingCommitmentForRequirement(
+            OuttaMyWay.ValueRecord.toTable(picture),governingRequirementKey)
+        if captureState.due~=true and existingApproachCommitment==nil and existingApproachReason==nil then
             local approachItem,approachReason=passageApproachRegulationItem(picture,plan)
             if approachItem==nil then
                 self.lastStatus=approachReason or "PASSAGE_APPROACH_REGULATION_SUPPORT_UNAVAILABLE"
                 return self.passiveSupport:publishDecisionPicture(picture,snapshot)
             end
             logInfo("PASSAGE_APPROACH_REGULATION_SUPPORTED",
-                "conflict=%s separation=%.2fm entryBoundary=%.2fm captureReserve=%.2fm cap=%.2fkmh pairwise=true",
-                tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,
-                tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,
-                tonumber(plan.passageEntry and plan.passageEntry.captureReserveM) or -1,
-                PASSAGE_APPROACH_SPEED_CEILING_KMH)
+                "conflict=%s separation=%.2fm entryBoundary=%.2fm captureMargin=%.2fm captureReserve=%.2fm cap=%.2fkmh pairwise=true",
+                tostring(plan.conflictIdentity),captureState.separationM,captureState.boundarySeparationM,
+                captureState.captureMarginM,captureState.captureReserveM,PASSAGE_APPROACH_SPEED_CEILING_KMH)
             return publishActionSpaceRegulationPicture(self,picture,snapshot,approachItem)
         end
 
-        -- A confirmed Passage outside the Capture boundary remains in tactical
-        -- Passage-Approach Regulation. Once Entry/Capture is due, Candidate
-        -- Support exposes the Passage Resolution and Responsibility Transition
-        -- performs the sharp Regulation -> Passage succession.
+        -- Passage Approach Regulation acquires the pairwise cap before Passage
+        -- responsibility where opportunity exists. Once that predecessor exists,
+        -- Passage Candidate/Bubble Formation Readiness resumes normal authority:
+        -- Regulation persists until BFR permits the sharp transition. If first
+        -- support arrives already inside Capture Reserve, Passage may be exposed
+        -- immediately because no disposable approach margin remains.
 
         local values=OuttaMyWay.ValueRecord.toTable(picture)
         local pictureId=self.identities:issue("PICTURE")
         values.identity=pictureId; values.epoch=self.epochs:next()
         values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",followerBoundarySupportingLeaseRetained=follower~=nil}
-        local governingRequirementKey=cooperativePassageRequirementKey(plan)
         local traceKey=tostring(plan.conflictIdentity)
         local selectionTraceEligible=publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_SELECTED")
         local firstTrace=selectionTraceEligible==true and self.lastCooperativeTraceKey~=traceKey
