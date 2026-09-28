@@ -360,6 +360,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | --- | --- |
 | [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) | `REALISES` |
 | [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) | `REALISES` |
+| [`scripts/responsibility/BubbleFormationReadinessEvaluator.lua`](../scripts/responsibility/BubbleFormationReadinessEvaluator.lua) | `REALISES` |
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) | `REALISES` |
@@ -376,6 +377,7 @@ Current implementation routes include:
 
 - [`scripts/candidates/LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua) and [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) — current Passage-specific Candidate support, arrangement planning and reserve/guide construction within the wider Candidate Support machinery;
 - [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) and Passage-purpose products from [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) — current purpose-specific geometry/clearance evidence;
+- [`scripts/responsibility/BubbleFormationReadinessEvaluator.lua`](../scripts/responsibility/BubbleFormationReadinessEvaluator.lua) — current purpose-specific successor-readiness evaluation between selected Passage Decision and Responsibility Transition, including settled-native and latest-safe-capture routes;
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
 - [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) — current Passage-Leg obligation creation/settlement, participant-loss vacatur and parent terminal integration;
 - [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) — current formation-time independent-third supporting-ownership preparation, fixed 1 km/h Regulation activation after Passage responsibility exposure, and Resolution-Epoch/basis cleanup;
@@ -399,7 +401,7 @@ Representation-specific structural tests protect purpose-scoped geometry ownersh
 
 ### Offline behavioural/conformance validation
 
-[`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises Passage Candidate/commitment creation, participant-scoped obligations, vacatur, survivor continuation, terminal settlement and bounded Control sequencing.
+[`tests/replacement_core/run.lua`](../tests/replacement_core/run.lua) exercises Passage Candidate/commitment creation, Bubble Formation Readiness routes, participant-scoped obligations, vacatur, survivor continuation, terminal settlement and bounded Control sequencing.
 
 [`tests/replacement_core/bubble_bullet_time.lua`](../tests/replacement_core/bubble_bullet_time.lua) exercises the formation-time third-party preparation, post-transition fixed 1 km/h activation, passive Bubble decision horizon, basis release and two-worker non-interference contract.
 
