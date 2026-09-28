@@ -67,6 +67,16 @@ function Dispatcher:dispatch(request,candidate)
     end
     return false,"CONTROL_REQUEST_CAPABILITY_UNSUPPORTED"
 end
+function Dispatcher:dispatchPassageCruisePair(requestA,requestB,candidate)
+    local control=self.regulationControl
+    if control==nil or type(control.executePassageCruisePair)~="function" then
+        return false,"PASSAGE_CRUISE_CONTROL_CAPABILITY_UNAVAILABLE"
+    end
+    local started,result=control:executePassageCruisePair(requestA,requestB,candidate)
+    if started==true then self.dispatchCount=self.dispatchCount+1 end
+    return started,result
+end
+
 -- Cooperative Passage uses a joint dispatch boundary because the two authorised
 -- reposition requests form one coordinated physical actuation. Single dispatch
 -- deliberately refuses that case rather than starting one participant independently.
