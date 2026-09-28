@@ -1,5 +1,5 @@
 --- Applies and restores a temporary GIANTS Cruise Control ceiling for a Cooperative Passage pair.
--- Specification Jurisdictions: `REGULATION`, `COOPERATIVE_PASSAGE`, `CONTROL`
+-- Specification Jurisdictions: `COOPERATIVE_PASSAGE`
 
 OuttaMyWay.PassageCruiseControl={}
 local Cruise=OuttaMyWay.PassageCruiseControl
