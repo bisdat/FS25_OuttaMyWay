@@ -636,7 +636,7 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
         "localotherProfile=participantExcursionProfile(arrangement.otherLateralOffsetM)",
         "localdevelopmentSum=subjectProfile.developmentDistanceM+otherProfile.developmentDistanceM",
         "localcaptureReserve=COOPERATIVE_PASSAGE_CAPTURE_RESERVE_M",
-        "localentryBoundary=frontOverlap+developmentSum",
+        "localentryBoundary=frontOverlap",
         "localtraversalRadius=COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M",
         "localmaximumDevelopment=math.max(subjectDevelopment,otherDevelopment)",
         "localmaximumReacquisition=math.max(subjectReacquisition,otherReacquisition)",
