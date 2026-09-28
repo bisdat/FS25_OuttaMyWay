@@ -570,15 +570,19 @@ def test_passage_guide_radius_return_staging_tolerance_and_return_region_have_in
     for participant in ("subject", "other"):
         assert re.search(rf"gate\.{participant}=\{{[^\n]+radiusM=gate\.radiusM\}}", guide)
 
-    for method, station, forwards in (("_startRunoutChunk", "progress+stepDistance", "true"),
-                                      ("_beginAxisReturn", "0", "false")):
-        block = passage.split(f"function Control:{method}(", 1)[1].split("\nfunction Control:", 1)[0]
-        assert f"local tolerance={tolerance}" in block
-        assert ("self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,"
-                "participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,"
-                f"{station},run.speedKmh,{forwards},tolerance)") in block
+    staging = passage.split("function Control:_startReturnStagingChunk(", 1)[1].split("\nfunction Control:", 1)[0]
+    assert f"local tolerance={staging_tolerance}" in staging
+    assert ("self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,"
+            "participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,"
+            "progress+stepDistance,run.speedKmh,true,tolerance)") in staging
+
+    passage_return = passage.split("function Control:_beginPassageReturn(", 1)[1].split("\nfunction Control:", 1)[0]
+    assert f"participant.vehicle,originX,originZ,run.speedKmh,{return_region},false" in passage_return
+    assert "setAxisTravel" not in passage_return
+
     gate = passage.split("function Control:_startGuideGate(", 1)[1].split("\nfunction Control:", 1)[0]
-    assert tolerance not in gate
+    assert staging_tolerance not in gate
+    assert return_region not in gate
     assert "local target=self:_guideTargetFor(run,p,gate)" in gate
     assert "p.targetX,p.targetZ,p.targetRadiusM=target.x,target.z,target.radiusM" in gate
     assert "self.driveMechanism:setReposition(p.vehicle,target.x,target.z,run.speedKmh,target.radiusM)" in gate
