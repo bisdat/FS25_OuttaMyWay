@@ -25,11 +25,12 @@ A Cooperative Passage Candidate MUST be grounded in current Passage-specific evi
 Before the Candidate may be selected and committed, the implementation MUST preserve the following distinctions:
 
 - current productive/working geometry establishes whether genuine opposed corridor competition exists;
+- **Passage Evaluation Readiness** authorises Candidate evaluation after an Established Opposed Corridor Conflict but grants no Passage Candidate, commitment or actuation authority;
 - complete-assembly Transit geometry MUST support prospective Passage arrangement planning for the declared Passage purpose;
 - complete Physical Assembly membership is required for complete-assembly Passage geometry claims;
 - directional asymmetry and offsets MUST be preserved where supported by evidence;
 - generic positive physical-conflict evidence does not independently establish Passage clearance or contact; and
-- Situation foreseeability, Candidate support, mandatory Constraint evaluation and Decision remain separate upstream authorities.
+- Situation foreseeability, Candidate support, mandatory Constraint evaluation, Decision, Bubble Formation Readiness and Responsibility Transition remain distinct authorities/boundaries.
 
 A compact representation MUST NOT be used to make a currently deployed productive corridor artificially narrow for Passage recognition.
 
@@ -59,13 +60,34 @@ A Candidate MUST NOT become supported merely because the Shared Crossing Core fi
 
 The Candidate is prospective. Selection of the Candidate does not establish the Resolution; [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) owns that semantic lifecycle boundary.
 
+> **Passage Candidate Support != Bubble Formation Readiness**
+
 ### Commitment and Bubble Formation
 
 Cooperative Passage is admitted only from exactly two active GIANTS AI participants and only when the parent Pairwise Resolution Exclusivity constraint permits one coupled Resolution Commitment in the Local Operation.
 
+After Decision selects a supported, constraint-admissible Passage Candidate, the implementation MUST establish **Bubble Formation Readiness** from fresh evidence before asking Responsibility Transition to establish or replace Current Responsibility.
+
+Bubble Formation Readiness MUST remain false when the selected Candidate is stale, inadmissible, or no longer supports the complete Passage-Capable Theatre.
+
+When the selected Candidate remains current and complete, Bubble Formation Readiness MUST become positive when either of two supported timing routes is positively established:
+
+1. **settled native-revelation route** — current positive evidence establishes the participants' native continuation sufficiently settled for the selected arrangement; positive settled-continuation evidence for both participants is sufficient for this route; or
+2. **latest-safe-capture route** — current independent progression has consumed disposable native approach margin to the arrangement-specific latest safe capture point, so further waiting would begin consuming capture/control reserve or another required part of the complete Passage-Capable Theatre.
+
+A transitional native state such as GIANTS `TURNING` MUST NOT prevent Candidate evaluation or Candidate support after Passage Evaluation Readiness is positive. It also MUST NOT prevent Bubble Formation through the latest-safe-capture route when the complete selected Passage remains supported.
+
+Conversely, a selected Candidate produced while one or both participants remain transitional MUST NOT replace a still-supported Regulation predecessor merely because the Candidate exists while disposable native approach margin remains.
+
+> **Passage Evaluation Readiness != Passage Candidate Support != Bubble Formation Readiness**
+
+A pairwise Passage-entry / `entryReady` conclusion MAY contribute current capture geometry, but MUST NOT be used as the sole Bubble Formation Readiness verdict.
+
+> **Passage Entry Readiness != Bubble Formation Readiness**
+
 At commitment, the implementation MUST establish two participant-scoped **Passage Leg** obligations under one Resolution Commitment.
 
-The Bubble begins only when fresh evidence still supports the complete Passage, the Passage-Capable Theatre remains viable, and the pair accepts the jointly dependent obligations. A selected arrangement whose required Lateral Excursion Development/Reacquisition is unsupported MUST NOT establish Bubble Formation.
+The Bubble begins only when Bubble Formation Readiness is positive and the pair accepts the jointly dependent obligations. A selected arrangement whose required Lateral Excursion Development/Reacquisition is unsupported MUST NOT establish Bubble Formation.
 
 Bubble Formation begins the Resolution Epoch.
 
@@ -87,7 +109,18 @@ A Return Corridor required by Axis Return MUST be represented as protected alrea
 
 The implementation MUST also preserve **disposable native approach margin** that can be consumed before capture while retaining the complete required theatre.
 
-Current closing progression determines how quickly disposable margin is consumed. Capture MUST occur before independent approach makes the accepted Passage-Capable Theatre no longer supportable.
+Current closing progression determines how quickly disposable margin is consumed.
+
+The implementation MUST derive a current **latest safe capture point** for the selected arrangement from the remaining disposable native approach margin, current supported theatre geometry and current progression. The verdict MUST answer whether further independent progression would begin consuming capture/control reserve or another required part of the complete Passage-Capable Theatre.
+
+The latest safe capture point MUST NOT be reduced to:
+
+- the Passage Entry Boundary alone;
+- `entryReady` alone;
+- one universal separation distance; or
+- one universal time-to-contact literal.
+
+Bubble Formation through the latest-safe-capture route MUST occur before independent approach crosses that boundary. Capture after Bubble Formation MUST still occur before independent approach makes the accepted Passage-Capable Theatre no longer supportable.
 
 > **Full-Lifecycle Feasibility Is An Admission Requirement, Not An Execution Guarantee.**
 
@@ -303,13 +336,19 @@ The generic prospective-selection chain owns support composition, mandatory admi
 
 [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) establishes the Cooperative Passage Resolution Commitment as Current Responsibility and owns any later semantic replacement/termination.
 
+Cooperative Passage supplies Bubble Formation Readiness as the purpose-specific successor-readiness precondition consumed at that boundary. Responsibility Transition MUST NOT infer readiness merely from Candidate selection.
+
 ### Assessment Representation
 
 [`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) owns the claim-bearing representation products consumed by Passage. Cooperative Passage owns the purpose-specific question and what evidence is sufficient for this Resolution contract.
 
 ### Regulation
 
-Regulation owns the third-worker Bullet-Time responsibility. The Passage Resolution supplies the Situation reason and duration of the Resolution Epoch; it does not create a new Regulation type.
+Before Bubble Formation, a still-supported Regulation predecessor MAY remain current after Passage Candidate selection while disposable native approach margin remains and transitional native revelation is still materially useful. This is not a hybrid Passage mode because the Bubble does not yet exist.
+
+Candidate support ends any need for further Passage-theatre shaping of an already-supported arrangement, but it does not by itself dissolve another current Regulation purpose.
+
+After Bubble Formation, Regulation owns the third-worker Bullet-Time responsibility. The Passage Resolution supplies the Situation reason and duration of the Resolution Epoch; it does not create a new Regulation type.
 
 ### Bounded Authority and Control
 
