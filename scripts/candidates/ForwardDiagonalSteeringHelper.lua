@@ -1,5 +1,5 @@
 --- Builds mechanically steerable forward-diagonal targets for Passage lateral excursion.
--- Specification Jurisdiction: `COOPERATIVE_PASSAGE`
+-- Specification Jurisdictions: `COOPERATIVE_PASSAGE`
 
 OuttaMyWay.ForwardDiagonalSteeringHelper={}
 local Helper=OuttaMyWay.ForwardDiagonalSteeringHelper
