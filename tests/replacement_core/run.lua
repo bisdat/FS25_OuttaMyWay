@@ -4543,7 +4543,8 @@ test("Transit-base Cooperative Passage: Cooperative Passage plans against Transi
     equal(plan.pairSpecificPassageClearance.planningGeometrySource,"TRANSIT_BASE")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-2)<0.001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-3)<0.001,true)
-    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
+    equal(plan.passageGuide.pairSweepSupport,nil)
+    equal(plan.passageGuide.prospectivePairSupport.supportBasis,"TRANSIT_ARRANGEMENT_TARGET_WITH_REALISED_EXECUTION_PAIR_SWEEP_REQUIRED")
     for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED"); equal(entry.transitPassageEnvelope~=nil,true) end
 end)
 
@@ -6997,7 +6998,7 @@ test("Cooperative Passage: native blocked signal does not independently abort an
     g_time=oldTime
 end)
 
-test("Cooperative Passage: clearance telemetry retains already-computed rejected sweep evidence",function()
+test("Cooperative Passage: rejected prospective theatre retains Transit target evidence without inventing execution sweep",function()
     local picture,snapshot=buildCooperativePassageFixture(-0.2,0.2,30)
     local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(plan,nil)
@@ -7006,8 +7007,10 @@ test("Cooperative Passage: clearance telemetry retains already-computed rejected
     for _,conflict in ipairs(rejected or {}) do
         for _,candidate in ipairs(conflict.rejected or {}) do
             if type(candidate.sweepEvidence)=="table" then
-                equal(type(candidate.sweepEvidence.minimumCrossingWindowClearanceM),"number")
+                equal(type(candidate.sweepEvidence.targetClearanceM),"number")
                 equal(type(candidate.sweepEvidence.requiredNominalClearanceM),"number")
+                equal(candidate.sweepEvidence.executionPairSweepRequired,true)
+                equal(candidate.sweepEvidence.minimumCrossingWindowClearanceM,nil)
                 equal(type(candidate.separationM),"number")
                 equal(type(candidate.currentLateralSeparationM),"number")
                 found=true
