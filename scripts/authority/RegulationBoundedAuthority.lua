@@ -65,11 +65,18 @@ function Authority:_supportingSpeedCeilingRequest(picture,evaluated,candidate,co
     if currentResponsibility==nil then return nil,"CURRENT_RESPONSIBILITY_REQUIRED_FOR_SUPPORTING_SPEED_CEILING" end
     local target={kind="REGULATION_LEASE",operation="APPLY",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
         maxSpeedKmh=maxSpeedKmh,governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
+    local supportingComposition=OuttaMyWay.EffectiveActuationComposition.create({
+        identity=self.runtime.identities:issue("COMPOSITION"),epoch=self.runtime.epochs:next(),
+        entries={{assemblyId=assemblyId,commitmentId=commitment.identity,capability="REGULATE_SPEED",
+            effectClass="SPEED_LIMIT",authorityRole=SUPPORTING_SPEED_CEILING}},
+        relevantAssemblyIds={assemblyId}
+    })
     local grant,grantReason=self.runtime.boundedAuthority:authorize({
         responsibilityId=currentResponsibility.identity,commitmentId=commitment.identity,assemblyId=assemblyId,capability="REGULATE_SPEED",
         target={kind="REGULATION_LEASE",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,maxSpeedKmh=maxSpeedKmh,
             governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"},
         authorityRole=SUPPORTING_SPEED_CEILING,
+        supportingSpeedCeilingComposition=supportingComposition,
         operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
         effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
         preconditions=candidate and candidate.preconditions or {},invalidationConditions=candidate and candidate.invalidationConditions or {},
