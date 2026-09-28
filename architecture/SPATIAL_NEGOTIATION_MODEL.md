@@ -494,11 +494,13 @@ The **Capture Reserve** is pairwise longitudinal space outside the Geometric Ent
 
 Once the pair is settled in Transit, required lateral excursion is a transverse sidestep. It owns no proportional forward Development/Reacquisition distance and creates no second longitudinal reserve.
 
-Prospective Candidate Support and realised execution support answer different questions. Candidate Support must establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core, but it must not require an exact pairwise sweep from a hypothetical future Entry origin. After Capture and Transit settlement, the realised execution origin becomes Reality and the complete pair sweep from that origin is mandatory before any Passage guide movement begins.
+Prospective Candidate Support and realised execution support answer different questions. Candidate Support must establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core, but it must not require an exact pairwise sweep from a hypothetical future Entry origin. After Capture and Transit settlement, the realised execution origin becomes Reality and pairwise execution support is mandatory **through positive Crossing Clearance** before Passage movement begins.
 
 > **Prospective Transit Capability != Realised Execution-Origin Guide Support**
 
-A failed realised-origin pair sweep invalidates autonomous Passage execution; Control must fail safe rather than move on unsupported geometry.
+> **Post-Crossing Recovery Cannot Retroactively Veto Crossing**
+
+A failed realised-origin pair sweep **before or within the Shared Crossing Core** invalidates autonomous Passage execution; Control must fail safe rather than move on unsupported crossing geometry. Predicted post-Crossing lateral reacquisition, runout, Axis Return or restoration belongs to participant-scoped recovery. Unsupported recovery must be handled when that downstream responsibility is reached; it must not veto an otherwise supported opposed crossing in advance.
 
 The magnitude of Capture Reserve is implementation calibration validated against Reality. It is not a GIANTS braking model, a universal stopping-distance claim or a time-to-contact literal.
 
