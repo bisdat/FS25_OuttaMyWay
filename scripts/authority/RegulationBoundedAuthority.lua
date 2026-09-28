@@ -573,6 +573,20 @@ end
 function Authority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,reason)
     local lease=self.actionSpaceRegulationLease
     if lease==nil then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_NO_ACTIVE_LEASE"} end
+    if lease.fixedPassageApproach==true then
+        local preserveCruise=reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
+        if preserveCruise~=true and self.runtime.passageCruiseControl~=nil then
+            self.runtime.passageCruiseControl:releaseForCommitment(lease.commitmentId,reason or "PASSAGE_APPROACH_REGULATION_ENDED")
+        end
+        self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
+        self:_releaseBoundedAuthority(lease.supportingBoundedAuthorityId,reason)
+        self.actionSpaceRegulationLease=nil
+        self.actionSpaceRegulationReleaseCount=self.actionSpaceRegulationReleaseCount+1
+        logInfo("DEBUG","PASSAGE_APPROACH_REGULATION_RELEASED",
+            "commitment=%s conflict=%s preserveCruiseForPassage=%s reason=%s",
+            tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(preserveCruise),tostring(reason))
+        return {status="RELEASED",reason=reason,actionSpaceRegulation=true,passageApproach=true,cruisePreserved=preserveCruise}
+    end
     local commitment=self.runtime.commitments:get(lease.commitmentId)
     local token=nil
     for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(lease.commitmentId)) do
@@ -1221,6 +1235,9 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
     end
     local actionSpace=self.actionSpaceRegulationLease
     if actionSpace~=nil and actionSpace.commitmentId==commitmentId then
+        if actionSpace.fixedPassageApproach==true and self.runtime.passageCruiseControl~=nil then
+            self.runtime.passageCruiseControl:releaseForCommitment(commitmentId,reason or "PASSAGE_APPROACH_DEPENDENT_COMMITMENT_TERMINATED")
+        end
         clear(actionSpace.regulatedReferenceKey,actionSpace.ownerTag or ACTION_SPACE_REGULATION_OWNER_TAG)
         if type(actionSpace.supportingReferenceKey)=="string" then
             clear(actionSpace.supportingReferenceKey,actionSpace.supportingOwnerTag or PASSAGE_APPROACH_SUPPORTING_OWNER_TAG)
@@ -1252,6 +1269,9 @@ function Authority:relinquishAll(reason)
     local control=self.regulationControl
     local actionSpace=self.actionSpaceRegulationLease
     if actionSpace~=nil then
+        if actionSpace.fixedPassageApproach==true and self.runtime.passageCruiseControl~=nil then
+            self.runtime.passageCruiseControl:releaseForCommitment(actionSpace.commitmentId,why)
+        end
         if control~=nil and type(control.clearRegulationLeaseByReference)=="function"
             and type(actionSpace.regulatedReferenceKey)=="string" then
             result.actionSpacePhysical=control:clearRegulationLeaseByReference(
