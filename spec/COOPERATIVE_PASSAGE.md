@@ -104,11 +104,11 @@ The implementation MUST preserve the distinction among:
 - the **Shared Crossing Core** required by the selected Transit-configured pair; and
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement.
 
-The Geometric Entry Boundary MUST be derived from supported facing longitudinal extents plus the actual Development required by the selected participant-specific lateral excursion. A generic control-acquisition allowance MUST NOT be embedded in that boundary.
+The Geometric Entry Boundary MUST be derived from the selected pair's supported **Transit-configured facing longitudinal extents**. Participant-specific Lateral Excursion Development MUST NOT be added as longitudinal Entry reserve.
 
-Capture Reserve MUST be represented as one pairwise longitudinal margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant or duplicated elsewhere in Entry geometry.
+Capture Reserve MUST be represented as the one explicit pairwise longitudinal safety margin outside the Geometric Entry Boundary. The same reserve MUST NOT be re-applied per participant, duplicated elsewhere in Entry geometry, or recreated from lateral excursion magnitude.
 
-A generic minimum Development floor MUST NOT be used as hidden Capture Reserve. Development belongs to the selected lateral excursion; Capture Reserve owns control acquisition and settling.
+Development belongs to Transit choreography for the selected lateral excursion. It MAY shape participant guide targets, but it MUST NOT pre-book longitudinal separation. Represented pair non-contact outside the Crossing Window and accepted Passage clearance within it remain mandatory execution-validity evidence.
 
 The Capture Reserve magnitude remains Control calibration validated against Reality. It MUST NOT be treated as a braking-model claim, universal stopping-distance claim or fixed time-to-contact literal.
 
