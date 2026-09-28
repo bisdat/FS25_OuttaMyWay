@@ -500,7 +500,11 @@ During that interval the pair is governed by **Passage Approach Regulation**: or
 
 > **Passage Approach Regulation != Passage Resolution**
 
-Passage Approach Regulation persists only while the complete selected Passage remains positively supported and Capture is not yet due. When the existing Passage Entry/Capture boundary becomes current, Responsibility Transition sharply replaces Regulation with the Cooperative Passage Resolution; there is no hybrid Regulation/Passage spatial mode. A subordinate supporting speed ceiling may bridge that same-cycle physical handoff until Capture/Hold has positively acquired both participants, but it is not the mechanism expected to slow an already-fast pair.
+Passage Approach Regulation establishes the pairwise temporal ceiling before Cooperative Passage becomes Current Responsibility whenever disposable approach margin still provides that opportunity. After that Regulation has acquired the cap, the normal Cooperative Passage Candidate and **Bubble Formation Readiness** machinery resumes authority over transition timing. Regulation remains the predecessor while Bubble Formation Readiness is false; either the settled-native-revelation route or the latest-safe-capture route may then justify the sharp transition to Passage.
+
+> **Regulation Acquisition != Capture Readiness**
+
+Responsibility Transition sharply replaces Regulation with the Cooperative Passage Resolution; there is no hybrid Regulation/Passage spatial mode. A subordinate Passage-owned supporting speed ceiling bridges the same physical maximum across that transition until Capture/Hold has positively acquired both participants. If the first complete Passage support arrives with Capture Reserve already due, there is no disposable pre-Passage interval to regulate and Passage may proceed directly through the existing latest-safe-capture path.
 
 The 10 km/h calibration is temporal-control policy validated against Reality. It is not a braking-distance model, does not enlarge the 9 m Capture Reserve, and does not replace latest-safe-capture boundary conformance.
 
