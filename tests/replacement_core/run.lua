@@ -4102,6 +4102,7 @@ local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSe
         identity="OC-COOPERATIVE-PASSAGE",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
         status="SUPPORTED",classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",reason="PERSISTENT_CURRENT_MOTION_SUBSTANTIATES_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",
         trajectoryDot=-1,mutuallyFacing=true,currentOpposed=true,currentClosingPositive=true,subjectCurrentStable=true,otherCurrentStable=true,subjectCurrentExcursion=false,otherCurrentExcursion=false,
+        subjectSettledContinuation=true,otherSettledContinuation=true,
         currentClosing={separationM=longitudinalSeparationM,currentDirectionDot=-1,closingRateMps=10},
         actionSpaceConservation={admissionKind="ESTABLISHED_CONFLICT",maxSeparationM=80},
         supportedCorridorOverlap={status="SUPPORTED",positive=true,overlapM=4,sharedRightX=1,sharedRightZ=0,subjectPhysicalPrimitiveCount=2,otherPhysicalPrimitiveCount=2}
