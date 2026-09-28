@@ -13,6 +13,7 @@ Support.__index = Support
 
 -- Diagnostic Publication Window != Passage Search Horizon.
 local COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0
+local PASSAGE_APPROACH_SPEED_CEILING_KMH = 10.0
 
 local publication=OuttaMyWay.LogPublication.origin("CANDIDATE_SUPPORT")
 local function logInfo(code,formatText,...)
@@ -271,18 +272,27 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local action=item.action
     local forward=action.admissionKind=="FORWARD_INTERSECTION"
     local corner=action.admissionKind=="CORNER_RIGHT_OF_WAY"
-    local fixed=forward or corner
+    local passageApproach=action.admissionKind=="PASSAGE_APPROACH"
+    local fixed=forward or corner or passageApproach
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
     local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
+    local compositionEntries={{assemblyId=action.regulatedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
+    if passageApproach then
+        compositionEntries[#compositionEntries+1]={
+            assemblyId=protectedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",
+            capability="REGULATE_SPEED",effectClass="SPEED_LIMIT",authorityRole="SUPPORTING_SPEED_CEILING"
+        }
+    end
     local composition={
         identity="action-space-regulation-composition:"..tostring(relation.identity)..":"..pictureId,epoch=pictureValues.epoch,
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
-        entries={{assemblyId=action.regulatedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
+        entries=compositionEntries
     }
-    local referenceKey=(forward and "forward-intersection-regulation:" or "action-space-regulation:")..tostring(relation.identity)
+    local referenceKey=(forward and "forward-intersection-regulation:" or (passageApproach and "passage-approach-regulation:" or "action-space-regulation:"))..tostring(relation.identity)
     local purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
-        or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}
+        or (passageApproach and {kind="PASSAGE_APPROACH_REGULATION",result="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
+        or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"})
     if corner then
         referenceKey="corner-right-of-way-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
         purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
@@ -290,9 +300,9 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     return {
         referenceKey=referenceKey,
         purpose=purpose,
-        subject={assemblyId=action.regulatedAssemblyId,assemblyIds={action.regulatedAssemblyId}},capability="REGULATE_SPEED",
-        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,
-            elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=fixed,zeroSpeedHoldExpression=not fixed},
+        subject={assemblyId=action.regulatedAssemblyId,assemblyIds=passageApproach and {action.regulatedAssemblyId,protectedAssemblyId} or {action.regulatedAssemblyId}},capability="REGULATE_SPEED",
+        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=not passageApproach,
+            pairwisePassageApproachCeiling=passageApproach,elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=(forward or corner),fixedPassageApproachCeiling=passageApproach,zeroSpeedHoldExpression=not fixed},
         evidenceBasis={
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
@@ -316,6 +326,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
                 cornerKey=action.cornerKey,
                 nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,
                 fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh or action.regulationSpeedKmh,
+                pairwisePassageApproachCeiling=passageApproach,passageApproachSpeedCeilingKmh=passageApproach and PASSAGE_APPROACH_SPEED_CEILING_KMH or nil,
                 nativeClosureContributionKmh=action.nativeClosureContributionKmh,nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,nativeMoveForwards=action.nativeMoveForwards,
                 governingPurpose=action.governingPurpose,separationM=action.separationM,actionSpaceReason=action.reason,
                 cooperativePassageEligible=relation.cooperativePassageEligible~=false,
@@ -337,6 +348,30 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
         uncertainty={"CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY"},comparisonCost=0
     }
+end
+
+local function passageApproachRegulationItem(picture,plan)
+    if type(plan)~="table" or type(plan.conflictIdentity)~="string" then return nil,"PASSAGE_APPROACH_PLAN_REQUIRED" end
+    local relation=nil
+    for _,candidateRelation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
+        if candidateRelation.identity==plan.conflictIdentity then relation=candidateRelation break end
+    end
+    if relation==nil or relation.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
+        return nil,"PASSAGE_APPROACH_ESTABLISHED_CONFLICT_UNAVAILABLE"
+    end
+    local action={
+        status="REGULATE_SUPPORTED",supported=true,admissionKind="PASSAGE_APPROACH",
+        regulatedAssemblyId=plan.subjectAssemblyId,regulatedReferenceKey=plan.subjectReferenceKey,
+        protectedAssemblyId=plan.otherAssemblyId,protectedReferenceKey=plan.otherReferenceKey,
+        nativeUnrestrictedKmh=PASSAGE_APPROACH_SPEED_CEILING_KMH,
+        fixedRegulationSpeedKmh=PASSAGE_APPROACH_SPEED_CEILING_KMH,
+        regulationSpeedKmh=PASSAGE_APPROACH_SPEED_CEILING_KMH,
+        governingPurpose="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION",
+        reason="SUPPORTED_PASSAGE_OUTSIDE_CAPTURE_BOUNDARY_REQUIRES_BOUNDED_PAIRWISE_APPROACH",
+        roleBasis="CONFIRMED_PASSAGE_PAIRWISE_APPROACH_CEILING",
+        separationM=plan.separationM,currentCorridorOverlap=relation.supportedCorridorOverlap
+    }
+    return {relation=relation,action=action},nil
 end
 
 local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
@@ -890,10 +925,25 @@ function Support:publishDecisionPicture(picture,snapshot)
             return publishFollowerBoundaryPicture(self,picture,snapshot,follower)
         end
 
-        -- Passage Selection immediately hands authority from Action-Space Regulation
-        -- to Cooperative Passage. Physical Passage Entry may still be delayed,
-        -- but that delay is owned inside Cooperative Passage execution rather
-        -- than by retaining Action-Space Regulation.
+        if not (plan.passageEntry and plan.passageEntry.ready==true) then
+            local approachItem,approachReason=passageApproachRegulationItem(picture,plan)
+            if approachItem==nil then
+                self.lastStatus=approachReason or "PASSAGE_APPROACH_REGULATION_SUPPORT_UNAVAILABLE"
+                return self.passiveSupport:publishDecisionPicture(picture,snapshot)
+            end
+            logInfo("PASSAGE_APPROACH_REGULATION_SUPPORTED",
+                "conflict=%s separation=%.2fm entryBoundary=%.2fm captureReserve=%.2fm cap=%.2fkmh pairwise=true",
+                tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,
+                tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,
+                tonumber(plan.passageEntry and plan.passageEntry.captureReserveM) or -1,
+                PASSAGE_APPROACH_SPEED_CEILING_KMH)
+            return publishActionSpaceRegulationPicture(self,picture,snapshot,approachItem)
+        end
+
+        -- A confirmed Passage outside the Capture boundary remains in tactical
+        -- Passage-Approach Regulation. Once Entry/Capture is due, Candidate
+        -- Support exposes the Passage Resolution and Responsibility Transition
+        -- performs the sharp Regulation -> Passage succession.
 
         local values=OuttaMyWay.ValueRecord.toTable(picture)
         local pictureId=self.identities:issue("PICTURE")
