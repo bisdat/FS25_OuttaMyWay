@@ -1475,6 +1475,23 @@ def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
     assert "clearanceAcceptanceRatio" in planner
 
 
+def test_pair_sweep_failure_probe_reports_segment_sample_and_world_witness_without_changing_threshold():
+    planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    for token in (
+        "minimumOutsideCrossingWitness",
+        "minimumCrossingWindowWitness",
+        'segment="SIDESTEP_OUT"',
+        "outsideCrossingOverlapToleranceM=0.001",
+        'minimumOutsideCrossing<-0.001',
+    ):
+        assert token in planner
+    assert "COOPERATIVE_PASSAGE_PAIR_SWEEP_FAILURE_WITNESS" in control
+    assert 'source="RETAINED"' not in control  # runtime source is data, not a hard-coded special path
+    assert 'logPairSweepFailureWitness(run.commitmentId,"RETAINED"' in control
+    assert 'logPairSweepFailureWitness(run.commitmentId,"ADAPTATION"' in control
+
+
 def test_clearance_telemetry_does_not_restore_prospective_pair_sweep_authority():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
