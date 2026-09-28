@@ -435,7 +435,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) | `REALISES` |
-| [`scripts/authority/PassageApproachSpeedCeiling.lua`](../scripts/authority/PassageApproachSpeedCeiling.lua) | `REALISES` |
+| [`scripts/control/mechanisms/PassageCruiseControl.lua`](../scripts/control/mechanisms/PassageCruiseControl.lua) | `REALISES` |
 | [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) | `REALISES` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
 | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `SUPPORTS` |
@@ -453,7 +453,7 @@ Current implementation routes include:
 - [`scripts/responsibility/CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) — current specialised transition collaborator that establishes the Passage Resolution semantic product through the Responsibility Transition boundary;
 - [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua) — current Passage-Leg obligation creation/settlement, participant-loss vacatur and parent terminal integration;
 - [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) — current formation-time independent-third supporting-ownership preparation, fixed 1 km/h Regulation activation after Passage responsibility exposure, and Resolution-Epoch/basis cleanup;
-- [`scripts/authority/PassageApproachSpeedCeiling.lua`](../scripts/authority/PassageApproachSpeedCeiling.lua) — current pair-participant 10 km/h supporting speed-ceiling preparation, post-transition Bounded Authority activation and Capture/termination cleanup while GIANTS retains productive approach routing;
+- [`scripts/control/mechanisms/PassageCruiseControl.lua`](../scripts/control/mechanisms/PassageCruiseControl.lua) — captures/restores native GIANTS forward/reverse Cruise Control values and applies the pairwise 10 km/h Passage ceiling atomically while leaving route and steering with GIANTS;
 - [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) — current Passage-specific joint Bounded Authority request construction, survivor-leg authority rebind/failure handling and completion integration;
 - [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) — current semantic Resolution Commitment view over the retained implementation substrate; and
 - [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) — current physical Passage executor, configuration settlement, guide execution, recovery and handback mechanism.
