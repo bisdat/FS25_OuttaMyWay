@@ -86,11 +86,29 @@ function Dispatcher:dispatchJoint(requestA,requestB,candidate)
         bubbleState=activated
     end
 
+    local approach=self.runtime and self.runtime.passageApproachSpeedCeiling or nil
+    local approachState=nil
+    if approach~=nil and type(approach.activatePrepared)=="function" then
+        local activated,reason=approach:activatePrepared(requestA.commitmentId,requestA,candidate)
+        if activated==nil then
+            if bubble~=nil and bubbleState~=nil and type(bubble.releaseForCommitment)=="function" then
+                bubble:releaseForCommitment(requestA.commitmentId,"PASSAGE_APPROACH_SPEED_CEILING_ACTIVATION_FAILED")
+            end
+            return false,"PASSAGE_APPROACH_SPEED_CEILING_ACTIVATION_FAILED:"..tostring(reason)
+        end
+        approachState=activated
+    end
+
     local started,result=control:executeJointRequests(requestA,requestB,candidate)
     if started==true then
         self.dispatchCount=self.dispatchCount+1
-    elseif bubble~=nil and bubbleState~=nil and bubbleState.status=="ACTIVE" and type(bubble.releaseForCommitment)=="function" then
-        bubble:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+    else
+        if approach~=nil and approachState~=nil and type(approach.releaseForCommitment)=="function" then
+            approach:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+        end
+        if bubble~=nil and bubbleState~=nil and type(bubble.releaseForCommitment)=="function" then
+            bubble:releaseForCommitment(requestA.commitmentId,"COOPERATIVE_PASSAGE_JOINT_START_REJECTED")
+        end
     end
     return started,result
 end

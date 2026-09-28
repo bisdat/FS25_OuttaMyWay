@@ -51,6 +51,11 @@ function Transition.new(runtime)
     elseif runtime.bubbleBulletTime==nil and productionRuntime() then
         error("Cooperative Passage Bubble Bullet Time authority unavailable in production runtime",2)
     end
+    if runtime.passageApproachSpeedCeiling==nil and OuttaMyWay.PassageApproachSpeedCeiling~=nil and type(OuttaMyWay.PassageApproachSpeedCeiling.new)=="function" then
+        runtime.passageApproachSpeedCeiling=OuttaMyWay.PassageApproachSpeedCeiling.new(runtime)
+    elseif runtime.passageApproachSpeedCeiling==nil and productionRuntime() then
+        error("Cooperative Passage Approach Speed Ceiling authority unavailable in production runtime",2)
+    end
     return setmetatable({runtime=runtime},Transition)
 end
 
@@ -110,15 +115,34 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     end
     applied.bubbleBulletTime=protection
 
+    local approachCeiling={status="PASSAGE_APPROACH_SPEED_CEILING_NOT_COMPOSED"}
+    if self.runtime.passageApproachSpeedCeiling~=nil then
+        local approachReason=nil
+        approachCeiling,approachReason=self.runtime.passageApproachSpeedCeiling:prepareAtBubbleFormation(candidate,applied)
+        if approachCeiling==nil then
+            if self.runtime.bubbleBulletTime~=nil then
+                self.runtime.bubbleBulletTime:releaseForCommitment(applied.commitment.identity,"PASSAGE_APPROACH_SPEED_CEILING_PREPARATION_FAILED")
+            end
+            logWarning("COOPERATIVE_PASSAGE_TRANSITION_REFUSED","decision=%s candidate=%s reason=PASSAGE_APPROACH_SPEED_CEILING_PREPARATION_FAILED detail=%s",
+                tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(approachReason))
+            if type(self.runtime.onCooperativePassageCompletion)=="function" then
+                self.runtime:onCooperativePassageCompletion({status="FAILED",commitmentId=applied.commitment.identity,evidence={kind="PASSAGE_APPROACH_SPEED_CEILING_PREPARATION_FAILED",reason=approachReason}})
+            end
+            return nil,"PASSAGE_APPROACH_SPEED_CEILING_PREPARATION_FAILED:"..tostring(approachReason)
+        end
+    end
+    applied.passageApproachSpeedCeiling=approachCeiling
+
     if not (semantics and semantics.deferResponsibilityExposureLog==true) then
         local exposure=semantics and semantics.responsibilityAlreadyCurrent==true and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
         logInfo(exposure,"commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s commitmentApplicationAction=%s",
             tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
             table.concat(participantIds,","),table.concat(participantIds,","),tostring(applied.application.action))
     end
-    logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM","decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true bubbleFormationRoute=%s bubbleFormationReason=%s bubbleBulletTime=%s",
+    logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM","decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true bubbleFormationRoute=%s bubbleFormationReason=%s bubbleBulletTime=%s passageApproachSpeedCeiling=%s",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(applied.application and applied.application.action or evaluated.decision.commitmentAction),
-        tostring(bubbleReadiness.route or "UNKNOWN"),tostring(bubbleReadiness.reason or "UNKNOWN"),tostring(protection.status or "PREPARED"))
+        tostring(bubbleReadiness.route or "UNKNOWN"),tostring(bubbleReadiness.reason or "UNKNOWN"),
+        tostring(protection.status or "PREPARED"),tostring(approachCeiling.status or "PREPARED"))
     return applied,nil
 end

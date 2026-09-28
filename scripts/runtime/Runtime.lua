@@ -205,6 +205,13 @@ function Runtime:relinquishAllControl(reason)
         end
         return nil
     end)
+    attempt("passageApproachSpeedCeiling",function()
+        if self.passageApproachSpeedCeiling~=nil and type(self.passageApproachSpeedCeiling.releaseAll)=="function" then
+            self.passageApproachSpeedCeiling:releaseAll(why)
+            return true
+        end
+        return nil
+    end)
     attempt("cooperativePassage",function()
         local dispatcher=self.liveControlDispatcher
         local passage=dispatcher and dispatcher.cooperativePassageControl or nil
