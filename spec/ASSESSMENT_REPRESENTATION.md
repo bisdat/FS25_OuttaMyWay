@@ -205,8 +205,47 @@ A representation that is sufficient for one purpose MUST NOT automatically inher
 In particular:
 
 - positive current-conflict evidence may support `Conflict Supported` while having no negative-clearance authority;
-- purpose-specific Transit/Passage geometry may support Cooperative Passage planning/execution questions without becoming generic current-working collision truth; and
-- current relocation-reference evidence may support bounded obstruction-relocation planning without proving safe clearance elsewhere.
+- purpose-specific Transit/Passage geometry may support Cooperative Passage planning/execution questions without becoming generic current-working collision truth;
+- current relocation-reference evidence may support bounded obstruction-relocation planning without proving safe clearance elsewhere; and
+- purpose-specific Category-2 boundary-demand geometry may support positive Shared Category-2 locality without becoming generic whole-assembly negative-clearance authority.
+
+### Category-2 boundary-demand representation
+
+Assessment Representation owns the representation inputs required by the Category-2 Situation contract.
+
+A **Boundary Interaction Reach** representation MUST be derived from the current applicable Physical-Assembly representation as the maximum radial reach from the declared progression/reference point to the outer edge of positively participating Physical-Assembly primitives.
+
+For a DISC primitive this contribution is:
+
+`distance(reference, DISC centre) + DISC radius`
+
+The resulting reach MUST preserve:
+
+- Physical Assembly / configuration-profile identity;
+- progression/reference-point basis;
+- contributing representation provenance;
+- completeness / under-approximation limits; and
+- freshness dependencies sufficient for Situation Assessment to decide whether it is fit.
+
+Stable geometry discovery SHOULD be reused from Job-Episode / configuration representation caches. Translation/rotation alone MUST NOT trigger structural rediscovery. Where articulation or other current pose changes alter primitive positions relative to the declared reference, the realised radial reach MUST be refreshed from current transformed primitives rather than assuming one configuration scalar remains exact.
+
+> **Cached Structure + Current Pose != Repeated Geometry Discovery.**
+
+A **Boundary Demand Disc representation** combines:
+
+- the supported boundary contact supplied by bounded progression evidence;
+- the current Boundary Interaction Reach; and
+- immutable Field World geometry.
+
+For Boundary Option-Space, Assessment Representation MUST support the clipped-area question:
+
+`area(Field World ∩ Boundary Demand Disc)`
+
+and publish the corresponding normalised ratio against full disc area together with numerical/representation precision sufficient for Decision to reject immaterial differences.
+
+For Shared Category-2 locality, representation need only establish a **positive interior overlap witness** for the two Field-World-clipped Boundary Demand Discs. Failure to obtain such a witness from incomplete/under-approximating representation MUST remain unresolved for generic safe-separation purposes; it MUST NOT be promoted to negative-clearance authority.
+
+> **Positive Clipped Overlap May Establish Shared Demand; Missing Overlap Evidence Does Not Establish Safe Separation.**
 
 > **Purpose-Specific Representation Authority Takes Precedence.**
 
