@@ -367,6 +367,7 @@ Situation Assessment determines representation fitness for the current question.
 | Production source | Participation |
 | --- | --- |
 | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `REALISES` |
+| [`scripts/representation/MaximumProductiveA8Representation.lua`](../scripts/representation/MaximumProductiveA8Representation.lua) | `REALISES` |
 | [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) | `REALISES` |
 | [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua) | `REALISES` |
 | [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) | `REALISES` |
