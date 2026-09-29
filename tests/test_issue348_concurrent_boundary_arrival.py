@@ -34,6 +34,8 @@ def test_candidate_support_exposes_two_temporal_allocations_and_decision_owns_ch
     assert "CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATES_SUPPORTED" in candidates
     assert 'admissionKind="CONCURRENT_BOUNDARY_ARRIVAL"' in candidates
     assert '"concurrent-boundary-arrival-regulation:"' in candidates
+    assert 'referenceKey="concurrent-boundary-arrival-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)' in candidates
+    assert 'if boundaryArrival or action.admissionKind=="CORNER_RIGHT_OF_WAY" then' in candidates
     assert "concurrentBoundaryArrival=boundaryArrival and" in candidates
     assert "concurrentBoundaryArrivalChoice" in policy
     assert "PROTECT_EARLIER_NATIVE_BOUNDARY_ARRIVAL" in policy

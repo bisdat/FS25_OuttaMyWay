@@ -298,7 +298,7 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
     local action=item.action
     local boundaryArrival=action.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local representationId="action-space-regulation:"..tostring(relation.identity)..":"..tostring(pictureId)
-    if action.admissionKind=="CORNER_RIGHT_OF_WAY" then
+    if boundaryArrival or action.admissionKind=="CORNER_RIGHT_OF_WAY" then
         representationId=representationId..":"..tostring(action.regulatedAssemblyId)
     end
     values.representationFitness=values.representationFitness or {}
@@ -360,6 +360,9 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         or (boundaryArrival and {kind="CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION",result="PRESERVE_CATEGORY_2_BOUNDARY_INTENT_REVELATION_UNTIL_POSITIVE_DISSOLUTION"}
         or (passageApproach and {kind="PASSAGE_APPROACH_REGULATION",result="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
         or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}))
+    if boundaryArrival then
+        referenceKey="concurrent-boundary-arrival-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
+    end
     if corner then
         referenceKey="corner-right-of-way-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
         purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
