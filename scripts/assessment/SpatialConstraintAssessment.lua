@@ -1027,16 +1027,54 @@ local function assessCornerKnowledge(self,input,projections,relationships)
 end
 
 function Assessment.new()
-    return setmetatable({lastSignatures={},cornerAtlases={},structuralFieldShapeAssessment=OuttaMyWay.StructuralFieldShapeAssessment.new()},Assessment)
+    return setmetatable({
+        lastSignatures={},cornerAtlases={},
+        structuralFieldShapeAssessment=OuttaMyWay.StructuralFieldShapeAssessment.new(),
+        boundaryDemandAssessment=OuttaMyWay.BoundaryDemandAssessment.new()
+    },Assessment)
 end
 function Assessment:reset()
     self.lastSignatures={}; self.cornerAtlases={}
     if self.structuralFieldShapeAssessment~=nil then self.structuralFieldShapeAssessment:reset() end
+    if self.boundaryDemandAssessment~=nil then self.boundaryDemandAssessment:reset() end
 end
 function Assessment:assess(input)
     local futures,motions=byAssembly(input.futureSpace),byAssembly(input.motionEvidence); local projections={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do projections[#projections+1]=projection(input.fieldWorld,input.fieldWorldReferenceKey,id,futures[id],motions[id]) end
     table.sort(projections,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    if OuttaMyWay.BoundaryInteractionReachProbe~=nil then
+        OuttaMyWay.BoundaryInteractionReachProbe.observe(input.operationId,projections,input.physicalSpaceEvidence)
+    end
+    local boundaryDemandKnowledge=self.boundaryDemandAssessment:assess({
+        operationId=input.operationId,fieldWorld=input.fieldWorld,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+        projections=projections,physicalSpaceEvidence=input.physicalSpaceEvidence,motionEvidence=input.motionEvidence,
+        commitmentContext=input.commitmentContext
+    })
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(boundaryDemandKnowledge.sharedCategory2Demands or {}) do
+        local action=relation.actionSpaceConservation or {}
+        local participants=relation.participants or {}
+        local a,b=participants[1] or {},participants[2] or {}
+        local overlap=relation.sharedBoundaryDemandOverlap or {}
+        local signature=table.concat({
+            tostring(relation.classification),tostring(relation.relationshipStatus),tostring(relation.currentEvidenceState),
+            tostring(relation.incumbentRegulatedAssemblyId),tostring(relation.reason),
+            numberText(overlap.contactSeparationM),numberText(overlap.rawOverlapMarginM)
+        },"|")
+        local key="shared-category-2:"..tostring(relation.identity)
+        if self.lastSignatures[key]~=signature then
+            self.lastSignatures[key]=signature
+            logInfo("SHARED_CATEGORY_2_DEMAND_ASSESSED",
+                "relationship=%s pair=%s|%s state=%s evidence=%s intent=%s|%s optionSpace=%s|%s contactSeparationM=%s reachSumM=%s overlapMarginM=%s regulated=%s protected=%s regulation=%s reason=%s decisionAuthority=false controlAuthority=false",
+                tostring(relation.identity),tostring(a.assemblyId or relation.subjectAssemblyId),tostring(b.assemblyId or relation.otherAssemblyId),
+                tostring(relation.relationshipStatus),tostring(relation.currentEvidenceState or "UNRESOLVED"),
+                tostring(a.intentClassification or "UNRESOLVED"),tostring(b.intentClassification or "UNRESOLVED"),
+                numberText(a.boundaryOptionSpaceRatio),numberText(b.boundaryOptionSpaceRatio),
+                numberText(overlap.contactSeparationM),numberText(overlap.reachSumM),numberText(overlap.rawOverlapMarginM),
+                tostring(action.regulatedAssemblyId or relation.incumbentRegulatedAssemblyId or "UNALLOCATED"),
+                tostring(action.protectedAssemblyId or relation.incumbentProtectedAssemblyId or "UNALLOCATED"),
+                numberText(action.fixedRegulationSpeedKmh),tostring(relation.reason))
+        end
+    end
     local relationships={}
     for i=1,OuttaMyWay.ValueRecord.length(projections)-1 do for j=i+1,OuttaMyWay.ValueRecord.length(projections) do
         local r=pairRecord(input.operationId,projections[i],projections[j],input.followerBoundaryKnowledge); relationships[#relationships+1]=r
@@ -1064,6 +1102,11 @@ function Assessment:assess(input)
                 numberText(association.contactDistanceToCornerM),tostring(association.witness),tostring(association.reason))
         end
     end
-    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,cornerKnowledge=cornerKnowledge,decisionAuthority=false,controlAuthority=false,
-        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
+    return {
+        operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,
+        boundaryDemandKnowledge=boundaryDemandKnowledge,
+        sharedCategory2Demands=boundaryDemandKnowledge.sharedCategory2Demands or {},
+        cornerKnowledge=cornerKnowledge,decisionAuthority=false,controlAuthority=false,
+        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true,sharedCategory2IndependentOverlay=true}
+    }
 end

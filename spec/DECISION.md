@@ -208,6 +208,28 @@ If several Cooperative Passage groups are simultaneously supported and mandatory
 
 > **Tactical Regulation Enables Passage; It Does Not Compete With Viable Passage.**
 
+### Shared Category-2 temporary-yielder allocation
+
+For one fresh positive Shared Category-2 Demand, Decision owns the temporary allocation between the viable directional Regulation Candidates supplied by Candidate Support.
+
+Decision MUST treat the evidence cumulatively. No one scalar is a universal winner.
+
+The comparison order is semantic rather than numerical optimisation:
+
+1. **Constrained-space evacuation need.** A participant with positive current occupancy / incumbent demand that must move to free scarce space is protected over a participant that can wait outside or in less-constrained space.
+2. **Relative Boundary Option-Space.** Where both participants remain otherwise viable, protect the participant with materially lower supported Boundary Option-Space Ratio because current Field World geometry leaves it fewer local options.
+3. **Intent revelation.** Where spatial evidence does not already decide the allocation, protect the participant whose current native state requires opportunity to reveal/vacate constrained space, including `TURNING`, over a participant with settled A8 that can cheaply yield time.
+4. **Resolution Margin / cheaper waiting.** Prefer regulating the participant whose current supported timing can be changed with lower loss of useful Resolution Space while preserving the other participant's constrained manoeuvre opportunity.
+5. **Stable deterministic tie-break.** Only when the accepted semantic evidence remains genuinely equivalent MAY Decision use a stable deterministic tie-break. That tie-break is implementation stability, not traffic meaning and MUST NOT become permanent vehicle, class or pair priority.
+
+Evidence may align across several clauses. Decision SHOULD preserve that cumulative support in its selection provenance rather than reporting only the final comparator that happened to distinguish the alternatives.
+
+A Boundary Option-Space Ratio difference is only meaningful when both ratios are supported and sufficiently distinct for the representation's precision. Decision MUST NOT manufacture an ordering from numerical noise.
+
+Once Responsibility Transition establishes the selected Shared Category-2 Regulation purpose, Decision MUST NOT rerun this fresh-allocation cascade on every picture. Incumbent-purpose continuity owns the allocation until Situation Assessment supplies positive dissolution/supersession or the governing lifecycle ends.
+
+> **Cumulative Ordering Evidence Establishes the Temporary Yielder; Incumbent Purpose Continuity Preserves It.**
+
 A policy MAY intentionally choose non-selection over an admissible alternative only when the accepted Architecture or Decision contract positively defines that policy. An implementation-local ordering token or legacy precedence rule is not sufficient authority.
 
 ## Durable invariants

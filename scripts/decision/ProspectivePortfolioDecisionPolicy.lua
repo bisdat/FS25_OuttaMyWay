@@ -126,6 +126,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     -- among otherwise supportable tactical purposes.
     local failClosed=families(groups,{
         "FOLLOWER_FAIL_CLOSED",
+        "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
         "ACTION_SPACE_FAIL_CLOSED"
     })
@@ -143,6 +144,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     local tactical=families(groups,{
         "FOLLOWER_RETIRE",
         "FOLLOWER",
+        "CATEGORY_2_BOUNDARY_DEMAND",
         "FORWARD_INTERSECTION",
         "ACTION_SPACE"
     })

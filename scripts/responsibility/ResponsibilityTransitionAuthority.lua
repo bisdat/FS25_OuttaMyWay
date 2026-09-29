@@ -185,6 +185,10 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
             operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId},nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
+    if context=="ROLE_MIGRATION" and current~=nil
+        and current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND" then
+        return nil,"SHARED_CATEGORY_2_ROLE_MIGRATION_NOT_AUTHORISED"
+    end
     if current==nil or current.kind~="REGULATION" or current.provenance.conflictIdentity~=bridge.conflictIdentity
         or current.provenance.retainedCommitmentId~=readiness.commitmentId then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
@@ -284,7 +288,7 @@ function Authority:actionSpacePassagePredecessor(picture,evaluated)
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         local current=self:getCurrentRegulation(context.commitmentId)
         local kind=current and current.provenance and current.provenance.admissionKind or nil
-        local participantScoped=kind=="CORNER_RIGHT_OF_WAY" or kind=="FORWARD_INTERSECTION"
+        local participantScoped=kind=="CORNER_RIGHT_OF_WAY" or kind=="FORWARD_INTERSECTION" or kind=="SHARED_CATEGORY_2_DEMAND"
         if current~=nil and participantScoped
             and sameTwoParticipants(current,bridge)
             and (current.provenance.operationId==nil or bridge.operationId==nil or current.provenance.operationId==bridge.operationId) then
@@ -294,14 +298,16 @@ function Authority:actionSpacePassagePredecessor(picture,evaluated)
         end
     end
     if matched~=nil then
-        return matched,matchedKind=="CORNER_RIGHT_OF_WAY" and "SAME_PAIR_CORNER_RIGHT_OF_WAY" or "SAME_PAIR_FORWARD_INTERSECTION"
+        if matchedKind=="CORNER_RIGHT_OF_WAY" then return matched,"SAME_PAIR_CORNER_RIGHT_OF_WAY" end
+        if matchedKind=="SHARED_CATEGORY_2_DEMAND" then return matched,"SAME_PAIR_SHARED_CATEGORY_2_DEMAND" end
+        return matched,"SAME_PAIR_FORWARD_INTERSECTION"
     end
     return nil
 end
 
 -- A Passage may succeed either the established opposed-conflict Regulation
--- carrying the same conflict identity or a participant-scoped Corner Right-of-Way /
--- Forward Intersection Regulation over the same two current participants.
+-- carrying the same conflict identity or a participant-scoped Corner Right-of-Way,
+-- Forward Intersection, or Shared Category-2 Regulation over the same two current participants.
 -- Situation identity is evidence provenance; it is not Responsibility succession identity.
 function Authority:replaceActionSpaceRegulationWithCooperativePassage(picture,evaluated,readiness,passageTransition,regulationAuthority)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
@@ -885,11 +891,15 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
 
     local corner=current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local forwardIntersection=current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    local category2=current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     if corner and not sameTwoParticipants(current,bridge) then
         return nil,"CORNER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
     end
     if forwardIntersection and not sameTwoParticipants(current,bridge) then
         return nil,"FORWARD_INTERSECTION_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
+    end
+    if category2 and not sameTwoParticipants(current,bridge) then
+        return nil,"SHARED_CATEGORY_2_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
     end
 
     local obligationId=nil
@@ -902,7 +912,9 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
             and type(outcome)=="table" and outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
         local cornerRightOfWay=type(basis)=="table" and basis.kind=="CORNER_RIGHT_OF_WAY"
             and type(outcome)=="table" and outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
-        if (actionSpace or forwardIntersectionIntent or cornerRightOfWay) and basis.conflictIdentity==current.provenance.conflictIdentity then
+        local sharedCategory2=type(basis)=="table" and basis.kind=="SHARED_CATEGORY_2_DEMAND_REGULATION"
+            and type(outcome)=="table" and outcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION"
+        if (actionSpace or forwardIntersectionIntent or cornerRightOfWay or sharedCategory2) and basis.conflictIdentity==current.provenance.conflictIdentity then
             obligationId=obligation.identity
             break
         end
@@ -913,7 +925,7 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
         conflictIdentity=current.provenance.conflictIdentity,
         obligationId=obligationId,
         predecessorAdmissionKind=current.provenance.admissionKind,
-        rebindCommitmentPurpose=corner or forwardIntersection
+        rebindCommitmentPurpose=corner or forwardIntersection or category2
     },nil
 end
 
@@ -923,19 +935,22 @@ function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitmen
     if current==nil or bridge==nil then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
     local corner=current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local forwardIntersection=current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    local category2=current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     if corner and not sameTwoParticipants(current,bridge) then return nil,"CORNER_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
     if forwardIntersection and not sameTwoParticipants(current,bridge) then return nil,"FORWARD_INTERSECTION_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
-    if not corner and not forwardIntersection and current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
+    if category2 and not sameTwoParticipants(current,bridge) then return nil,"SHARED_CATEGORY_2_PASSAGE_PREDECESSOR_PARTICIPANTS_MISMATCH" end
+    if not corner and not forwardIntersection and not category2 and current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
 
-    local supersessionReason=corner
-        and "COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
-        or "COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
+    local supersessionReason=corner and "COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
+        or (category2 and "COOPERATIVE_PASSAGE_SUPERSEDES_SHARED_CATEGORY_2"
+        or "COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION")
     local neutralized=regulationAuthority and regulationAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,supersessionReason) or nil
     if neutralized==nil or neutralized.status~="RELEASED" then return nil,"ACTION_SPACE_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
     local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self.runtime,commitment.identity,{
         conflictIdentity=current.provenance.conflictIdentity,reason=supersessionReason
     },{
-        kind=corner and "COOPERATIVE_PASSAGE_CORNER_RIGHT_OF_WAY_SUCCESSION" or "COOPERATIVE_PASSAGE_ESTABLISHED_CONFLICT_SUCCESSION",
+        kind=category2 and "COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
+            or (corner and "COOPERATIVE_PASSAGE_CORNER_RIGHT_OF_WAY_SUCCESSION" or "COOPERATIVE_PASSAGE_ESTABLISHED_CONFLICT_SUCCESSION"),
         conflictIdentity=current.provenance.conflictIdentity,
         successorConflictIdentity=bridge.conflictIdentity
     })

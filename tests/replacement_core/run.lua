@@ -37,6 +37,7 @@ load("scripts/representation/PairSpecificPassageClearance.lua")
 load("scripts/observation/LiveInteractionObservation.lua")
 load("scripts/identity/IdentityRegistry.lua")
 load("scripts/identity/FieldWorldSnapshotRegistry.lua")
+load("scripts/representation/BoundaryDemandRepresentation.lua")
 load("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
 load("scripts/identity/FieldWorldEquivalenceAuthority.lua")
 load("scripts/observation/RuntimeObservationAdapter.lua")
@@ -60,6 +61,8 @@ load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/BlockedProgressAssessment.lua")
 load("scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua")
 load("scripts/assessment/StructuralFieldShapeAssessment.lua")
+load("scripts/assessment/BoundaryDemandAssessment.lua")
+load("scripts/diagnostics/BoundaryInteractionReachProbe.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
@@ -1177,6 +1180,91 @@ local function cornerPolicyPicture(candidates,requirement)
     end
     return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
 end
+
+local function category2PolicyCandidate(name,regulatedId,protectedId,protectedParticipant,requirement,representationId)
+    local candidate=candidateSpec(name,"REGULATE_SPEED",0,regulatedId)
+    local metadata=trafficPreference(candidate,requirement)
+    metadata.exhaustionEvidence.CONTINUE_OBSERVATION=bandExhaustion("OP-DECISION",requirement,"CONTINUE_OBSERVATION")
+    metadata.sharedCategory2Allocation={
+        sharedCategory2Identity="shared-category-2:test",
+        regulatedAssemblyId=regulatedId,protectedAssemblyId=protectedId,
+        regulatedParticipant={assemblyId=regulatedId},
+        protectedParticipant=protectedParticipant
+    }
+    candidate.representationFitness={requirements={{representationId=representationId,acceptedStates={"CURRENTLY_FIT"}}}}
+    candidate.evidenceBasis.effectiveActuationComposition={
+        identity="EC-"..name,epoch=1,relevantAssemblyIds={regulatedId,protectedId},
+        entries={{assemblyId=regulatedId,commitmentId="CM-"..name,capability="REGULATE_SPEED",progressActuation=true}}
+    }
+    return candidate
+end
+
+local function category2PolicyPicture(candidates,requirement)
+    local fitness={}
+    for _,candidate in ipairs(candidates) do
+        local representation=candidate.representationFitness.requirements[1]
+        fitness[#fitness+1]={
+            representationId=representation.representationId,assemblyId=candidate.subject.assemblyId,
+            question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},
+            coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}
+        }
+    end
+    return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
+end
+
+test("Shared Category-2 Decision protects lower Boundary Option-Space participant",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-protect-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.25,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-A")
+    local protectB=category2PolicyCandidate("c2-protect-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.50,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_LOWER_BOUNDARY_OPTION_SPACE")
+end)
+
+test("Shared Category-2 Decision protects current constrained-space occupant before option-space ratio",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-occupant-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=true,boundaryOptionSpaceRatio=0.60,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-OCC-A")
+    local protectB=category2PolicyCandidate("c2-open-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.20,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-OCC-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_CURRENT_CATEGORY_2_OCCUPANT")
+end)
+
+test("Shared Category-2 Decision protects TURNING intent revelation when spatial evidence is equivalent",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-turning-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.50,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="TURNING"
+    },requirement,"REP-C2-TURN-A")
+    local protectB=category2PolicyCandidate("c2-settled-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.50,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-TURN-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_CATEGORY_2_INTENT_REVELATION")
+end)
 
 test("Corner Right-of-Way protects incumbent over earlier non-incumbent arrival",function()
     local requirement="corner-right-of-way:shared-corner:test"
@@ -7553,6 +7641,286 @@ local function assessSpatial(futureA,futureB,motionA,motionB,followerKnowledge)
         futureSpace={futureA,futureB},motionEvidence={motionA,motionB},followerBoundaryKnowledge=followerKnowledge or {}
     })
 end
+
+local function boundaryReachProjection(assemblyId,contactX,contactZ,workingWidthM)
+    return {
+        status="SUPPORTED",assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        currentX=0,currentZ=0,contactX=contactX,contactZ=contactZ,
+        boundaryRingKind="OUTER_BOUNDARY",boundaryRingIndex=1,
+        terminatingBoundaryEdge={edgeKey="OUTER_BOUNDARY:1:EDGE:1"},
+        workingWidthM=workingWidthM
+    }
+end
+
+local function boundaryReachPhysical(assemblyId,primitives)
+    return {
+        assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        primitives=primitives,coverageComplete=false,negativeClearanceAuthority=false,
+        configurationProfileId="profile:"..assemblyId,provenance={source="BOUNDARY_REACH_TEST"}
+    }
+end
+
+test("Boundary Interaction Reach uses maximum positive Physical Assembly radial reach",function()
+    local measurement=OuttaMyWay.BoundaryInteractionReachProbe.measure(
+        boundaryReachProjection("AS-A",10,0,5),
+        boundaryReachPhysical("AS-A",{
+            {identity="disc-near",kind="DISC",x=1,z=0,radius=1,positiveConflictSupport=true},
+            {identity="disc-max",kind="DISC",x=3,z=4,radius=2,positiveConflictSupport=true},
+            {identity="disc-diagnostic",kind="DISC",x=20,z=0,radius=5,positiveConflictSupport=false}
+        }))
+    equal(measurement.status,"SUPPORTED")
+    spatialNear(measurement.boundaryInteractionReachM,7,0.0001)
+    equal(measurement.maximumPrimitiveId,"disc-max")
+    equal(measurement.contributorCount,2)
+end)
+
+test("Boundary Interaction Reach is physical rather than productive working-width scale",function()
+    local physical=boundaryReachPhysical("AS-A",{
+        {identity="disc-max",kind="DISC",x=3,z=4,radius=2,positiveConflictSupport=true}
+    })
+    local narrow=OuttaMyWay.BoundaryInteractionReachProbe.measure(boundaryReachProjection("AS-A",10,0,3),physical)
+    local wide=OuttaMyWay.BoundaryInteractionReachProbe.measure(boundaryReachProjection("AS-A",10,0,36),physical)
+    spatialNear(narrow.boundaryInteractionReachM,7,0.0001)
+    spatialNear(wide.boundaryInteractionReachM,7,0.0001)
+end)
+
+test("Boundary Interaction Reach pair probe uses contact separation against summed reach",function()
+    local a=OuttaMyWay.BoundaryInteractionReachProbe.measure(
+        boundaryReachProjection("AS-A",0,0,5),
+        boundaryReachPhysical("AS-A",{{identity="disc-A",kind="DISC",x=0,z=0,radius=7,positiveConflictSupport=true}}))
+    local b=OuttaMyWay.BoundaryInteractionReachProbe.measure(
+        boundaryReachProjection("AS-B",12,0,3),
+        boundaryReachPhysical("AS-B",{{identity="disc-B",kind="DISC",x=0,z=0,radius=6,positiveConflictSupport=true}}))
+    local overlap=OuttaMyWay.BoundaryInteractionReachProbe.compare(a,b)
+    equal(overlap.status,"SUPPORTED")
+    spatialNear(overlap.contactSeparationM,12,0.0001)
+    spatialNear(overlap.reachSumM,13,0.0001)
+    spatialNear(overlap.overlapMarginM,1,0.0001)
+    equal(overlap.rawDiscOverlap,true)
+
+    b.contactX=14
+    local separated=OuttaMyWay.BoundaryInteractionReachProbe.compare(a,b)
+    spatialNear(separated.overlapMarginM,-1,0.0001)
+    equal(separated.rawDiscOverlap,false)
+end)
+
+local function category2Projection(assemblyId,currentX,currentZ,contactX,contactZ,boundaryDistanceM)
+    return {
+        status="SUPPORTED",assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        currentX=currentX,currentZ=currentZ,contactX=contactX,contactZ=contactZ,
+        boundaryDistanceM=boundaryDistanceM or math.sqrt((contactX-currentX)^2+(contactZ-currentZ)^2),
+        boundaryRingKind="OUTER_BOUNDARY",boundaryRingIndex=1,
+        terminatingBoundaryEdge={edgeKey="OUTER_BOUNDARY:1:EDGE:1"},
+        progressRateMps=3,provisionalTimeToBoundarySec=(boundaryDistanceM or 30)/3
+    }
+end
+
+local function category2Motion(assemblyId,intent,epoch)
+    return {
+        assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        localIntentClassification=intent or "SETTLED_CONTINUATION",
+        intentEpoch=epoch or 1,intentValid=(intent or "SETTLED_CONTINUATION")=="SETTLED_CONTINUATION"
+    }
+end
+
+local function category2Physical(assemblyId,currentX,currentZ,radius)
+    return {
+        assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        primitives={{identity="disc:"..assemblyId,kind="DISC",x=currentX,z=currentZ,radius=radius,positiveConflictSupport=true}},
+        configurationProfileId="profile:"..assemblyId,coverageComplete=false,negativeClearanceAuthority=false,
+        provenance={source="CATEGORY_2_TEST_PHYSICAL"}
+    }
+end
+
+local function category2Field()
+    return {
+        fieldWorldReferenceKey="FW-CATEGORY-2",
+        boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},
+        islands={}
+    }
+end
+
+test("Boundary Option-Space Ratio is one half at a locally straight field boundary",function()
+    local result=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace(
+        category2Field(),{contactX=50,contactZ=0,radiusM=10})
+    equal(result.status,"SUPPORTED")
+    spatialNear(result.boundaryOptionSpaceRatio,0.5,0.000001)
+end)
+
+test("Boundary Option-Space Ratio decreases at an irregular convex boundary theatre",function()
+    local field={
+        fieldWorldReferenceKey="FW-IRREGULAR",
+        boundary={{x=0,z=0},{x=100,z=0},{x=100,z=60},{x=50,z=100},{x=0,z=60}},
+        islands={}
+    }
+    local result=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace(
+        field,{contactX=50,contactZ=100,radiusM=10})
+    equal(result.status,"SUPPORTED")
+    assert(result.boundaryOptionSpaceRatio<0.5)
+    assert(result.boundaryOptionSpaceRatio>0)
+end)
+
+test("Boundary Demand Disc overlap is clipped by an irregular Field World notch",function()
+    local field={
+        fieldWorldReferenceKey="FW-NOTCH",
+        boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=60,z=100},{x=60,z=20},{x=40,z=20},{x=40,z=100},{x=0,z=100}},
+        islands={}
+    }
+    local overlap=OuttaMyWay.BoundaryDemandRepresentation.sharedOverlap(
+        field,{contactX=40,contactZ=80,radiusM=15},{contactX=60,contactZ=80,radiusM=15})
+    equal(overlap.status,"SUPPORTED")
+    equal(overlap.rawDiscOverlap,true)
+    equal(overlap.positive,false)
+    equal(overlap.reason,"RAW_DISC_OVERLAP_WITHOUT_POSITIVE_FIELD_WORLD_INTERIOR_WITNESS")
+end)
+
+test("Boundary Demand Disc overlap is positive inside the same straight boundary theatre",function()
+    local overlap=OuttaMyWay.BoundaryDemandRepresentation.sharedOverlap(
+        category2Field(),{contactX=40,contactZ=0,radiusM=10},{contactX=55,contactZ=0,radiusM=10})
+    equal(overlap.status,"SUPPORTED")
+    equal(overlap.rawDiscOverlap,true)
+    equal(overlap.positive,true)
+    equal(overlap.reason,"POSITIVE_FIELD_WORLD_CLIPPED_BOUNDARY_DEMAND_DISC_OVERLAP")
+end)
+
+test("Shared Category-2 Demand admits TS004-like parallel A8 without Forward Intersection",function()
+    local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
+    local result=assessment:assess({
+        operationId="OR-C2",fieldWorld=category2Field(),fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections={
+            category2Projection("AS-A",40,30,40,0,30),
+            category2Projection("AS-B",55,30,55,0,30)
+        },
+        physicalSpaceEvidence={
+            category2Physical("AS-A",40,30,12),
+            category2Physical("AS-B",55,30,7)
+        },
+        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
+        commitmentContext={}
+    })
+    equal(#result.sharedCategory2Demands,1)
+    local relation=result.sharedCategory2Demands[1]
+    equal(relation.relationshipStatus,"POSITIVE")
+    equal(relation.competingDemand,true)
+    equal(relation.currentEvidenceState,"SUPPORTED")
+    assert(relation.sharedBoundaryDemandOverlap.rawOverlapMarginM>0)
+end)
+
+test("Boundary Option-Space uncertainty does not suppress positive Shared Category-2 admission",function()
+    local original=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace
+    OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace=function()
+        return {status="UNRESOLVED",reason="SYNTHETIC_OPTION_SPACE_UNAVAILABLE",negativeClearanceAuthority=false}
+    end
+    local ok,result=pcall(function()
+        return OuttaMyWay.BoundaryDemandAssessment.new():assess({
+            operationId="OR-C2",fieldWorld=category2Field(),fieldWorldReferenceKey="FW-CATEGORY-2",
+            projections={
+                category2Projection("AS-A",40,30,40,0,30),
+                category2Projection("AS-B",55,30,55,0,30)
+            },
+            physicalSpaceEvidence={
+                category2Physical("AS-A",40,30,12),
+                category2Physical("AS-B",55,30,7)
+            },
+            motionEvidence={
+                category2Motion("AS-A","SETTLED_CONTINUATION",1),
+                category2Motion("AS-B","SETTLED_CONTINUATION",1)
+            },
+            commitmentContext={}
+        })
+    end)
+    OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace=original
+    if not ok then error(result,2) end
+    equal(#result.sharedCategory2Demands,1)
+    equal(result.sharedCategory2Demands[1].competingDemand,true)
+    equal(result.sharedCategory2Demands[1].participants[1].boundaryOptionSpaceRatio,nil)
+    equal(result.sharedCategory2Demands[1].participants[2].boundaryOptionSpaceRatio,nil)
+end)
+
+test("Wide parallel assemblies remain independent when boundary contacts are different localities",function()
+    local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
+    local result=assessment:assess({
+        operationId="OR-C2",fieldWorld=category2Field(),fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections={
+            category2Projection("AS-A",10,30,10,0,30),
+            category2Projection("AS-B",82,30,82,0,30)
+        },
+        physicalSpaceEvidence={
+            category2Physical("AS-A",10,30,19),
+            category2Physical("AS-B",82,30,18)
+        },
+        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
+        commitmentContext={}
+    })
+    equal(#result.sharedCategory2Demands,0)
+    equal(#result.pairAssessments,1)
+    equal(result.pairAssessments[1].sharedBoundaryDemandOverlap.rawDiscOverlap,false)
+end)
+
+test("Shared Category-2 incumbent allocation survives TURNING and dissolves only after fresh settled intent",function()
+    local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
+    local field=category2Field()
+    local projections={
+        category2Projection("AS-A",40,30,40,0,30),
+        category2Projection("AS-B",55,30,55,0,30)
+    }
+    local physical={
+        category2Physical("AS-A",40,30,12),
+        category2Physical("AS-B",55,30,7)
+    }
+    local initial=assessment:assess({
+        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections=projections,physicalSpaceEvidence=physical,
+        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
+        commitmentContext={}
+    })
+    local identity=initial.sharedCategory2Demands[1].identity
+    local requirement="shared-category-2-regulation:"..identity
+    local commitmentContext={{
+        commitmentId="CM-C2",governingBasis={responsibilityKey=requirement},
+        progressActuationOwnership={{assemblyId="AS-A"}},
+        openObligations={{basis={
+            kind="SHARED_CATEGORY_2_DEMAND_REGULATION",conflictIdentity=identity,
+            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",protectedIntentEpochAtAdmission=1
+        }}}
+    }}
+
+    local turning=assessment:assess({
+        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections={projections[1]},physicalSpaceEvidence=physical,
+        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","TURNING",1)},
+        commitmentContext=commitmentContext
+    })
+    equal(#turning.sharedCategory2Demands,1)
+    equal(turning.sharedCategory2Demands[1].currentEvidenceState,"WAITING_FOR_EVIDENCE")
+    equal(turning.sharedCategory2Demands[1].incumbentRegulatedAssemblyId,"AS-A")
+    equal(turning.sharedCategory2Demands[1].actionSpaceConservation.regulatedAssemblyId,"AS-A")
+    local protectedDuringTurning=nil
+    for _,participantValue in ipairs(turning.sharedCategory2Demands[1].participants) do
+        if participantValue.assemblyId=="AS-B" then protectedDuringTurning=participantValue end
+    end
+    assert(protectedDuringTurning~=nil)
+    equal(protectedDuringTurning.intentClassification,"TURNING")
+    equal(protectedDuringTurning.intentEpoch,1)
+    equal(protectedDuringTurning.intentValid,false)
+
+    local revealed=assessment:assess({
+        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections={projections[1]},physicalSpaceEvidence=physical,
+        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",2)},
+        commitmentContext=commitmentContext
+    })
+    equal(#revealed.sharedCategory2Demands,1)
+    equal(revealed.sharedCategory2Demands[1].positiveDissolution,true)
+    equal(revealed.sharedCategory2Demands[1].reason,"PROTECTED_PARTICIPANT_REVEALED_NEW_SETTLED_CONTINUATION")
+end)
+
+test("Shared Category-2 Current Responsibility waits through temporary evidence loss",function()
+    local current={provenance={admissionKind="SHARED_CATEGORY_2_DEMAND",conflictIdentity="shared-category-2:test"}}
+    local result=OuttaMyWay.CurrentResponsibilityAssessment.new():assessActionSpaceRegulation(current,nil)
+    equal(result.disposition,"PERSIST")
+    equal(result.evidenceState,"WAITING_FOR_EVIDENCE")
+end)
 
 test("Forward Intersection is admitted by supported centrelines independent of working width and pair closing",function()
     local knowledge=assessSpatial(

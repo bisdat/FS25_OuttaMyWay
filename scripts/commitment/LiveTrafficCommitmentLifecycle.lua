@@ -266,8 +266,14 @@ local function findActionSpaceRegulationObligation(runtime,commitmentId,conflict
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         local basis=obligation.basis
         local outcome=obligation.requiredOutcome
-        local supportedBasis=type(basis)=="table" and (basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION" or basis.kind=="CORNER_RIGHT_OF_WAY")
-        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES")
+        local supportedBasis=type(basis)=="table" and (
+            basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION"
+            or basis.kind=="CORNER_RIGHT_OF_WAY" or basis.kind=="SHARED_CATEGORY_2_DEMAND_REGULATION")
+        local supportedOutcome=type(outcome)=="table" and (
+            outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
+            or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
+            or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
+            or outcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION")
         if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
@@ -302,7 +308,11 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
     if obligation==nil then
         local specification=nil
         for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
-            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES") then specification=item break end
+            if type(item.requiredOutcome)=="table" and (
+                item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
+                or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
+                or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
+                or item.requiredOutcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION") then specification=item break end
         end
         if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
@@ -339,9 +349,11 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
     local corner=hasPrefix(responsibility,"corner-right-of-way:")
+    local category2=hasPrefix(responsibility,"shared-category-2-regulation:")
     local settlementMode=nil
     if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
-        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY" then
+        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
+        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_SHARED_CATEGORY_2" then
         settlementMode="BASIS_CESSATION"
     elseif forward then
         local evidenceKind=evidence and evidence.kind or nil
@@ -351,6 +363,15 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
             settlementMode="BASIS_CESSATION"
         else
             return nil,"FORWARD_INTERSECTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION"
+        end
+    elseif category2 then
+        local evidenceKind=evidence and evidence.kind or nil
+        if evidenceKind=="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION" then
+            settlementMode="SATISFACTION"
+        elseif evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION" then
+            settlementMode="BASIS_CESSATION"
+        else
+            return nil,"SHARED_CATEGORY_2_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION"
         end
     else
         settlementMode="SATISFACTION"
@@ -365,7 +386,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner or category2
     if #remaining==0 and ownedTrafficPurpose then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
@@ -375,11 +396,15 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
             provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         local terminalEvidenceKind=crossContext and "TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
-            or (corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED" or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED")
+            or (corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
+            or (category2 and "SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVELY_DISSOLVED"
+            or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"))
         if forward and not crossContext then
             terminalEvidenceKind=(evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
                 or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
+        elseif category2 and not crossContext then
+            terminalEvidenceKind="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVELY_DISSOLVED"
         end
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
@@ -405,7 +430,9 @@ end
 
 local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:") or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:")
+        or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
+        or hasPrefix(responsibility,"shared-category-2-regulation:")
 end
 
 local function endedDependency(record,ended)
@@ -763,6 +790,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
         local successorRequirement=successorBasis and successorBasis.responsibilityKey or ""
         local predecessorSupportsRebind=hasPrefix(currentRequirement,"corner-right-of-way:")
             or hasPrefix(currentRequirement,"forward-intersection-regulation:")
+            or hasPrefix(currentRequirement,"shared-category-2-regulation:")
         if not predecessorSupportsRebind
             or not hasPrefix(successorRequirement,"cooperative-passage:") then
             return nil,"COOPERATIVE_PASSAGE_PURPOSE_REBIND_NOT_AUTHORISED"
