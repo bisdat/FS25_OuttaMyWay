@@ -243,12 +243,19 @@ local function cornerActionItem(situation,regulated,protected)
 end
 
 local function category2ActionItem(situation,regulated,protected)
-    local relation=copyValue(situation)
-    relation.subjectAssemblyId=regulated.assemblyId
-    relation.otherAssemblyId=protected.assemblyId
-    relation.subjectReferenceKey=regulated.assemblyReferenceKey
-    relation.otherReferenceKey=protected.assemblyReferenceKey
-    relation.cooperativePassageEligible=false
+    local relation={
+        identity=situation.identity,operationId=situation.operationId,
+        fieldWorldReferenceKey=situation.fieldWorldReferenceKey,
+        classification=situation.classification,relationshipStatus=situation.relationshipStatus,
+        currentEvidenceState=situation.currentEvidenceState,competingDemand=situation.competingDemand,
+        subjectAssemblyId=regulated.assemblyId,otherAssemblyId=protected.assemblyId,
+        subjectReferenceKey=regulated.assemblyReferenceKey,otherReferenceKey=protected.assemblyReferenceKey,
+        participants=situation.participants,sharedBoundaryDemandOverlap=situation.sharedBoundaryDemandOverlap,
+        incumbentCommitmentId=situation.incumbentCommitmentId,
+        incumbentRegulatedAssemblyId=situation.incumbentRegulatedAssemblyId,
+        incumbentProtectedAssemblyId=situation.incumbentProtectedAssemblyId,
+        cooperativePassageEligible=false
+    }
     local action={
         status="REGULATE_SUPPORTED",supported=true,admissionKind="SHARED_CATEGORY_2_DEMAND",
         regulatedAssemblyId=regulated.assemblyId,regulatedReferenceKey=regulated.assemblyReferenceKey,
