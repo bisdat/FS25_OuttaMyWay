@@ -8626,8 +8626,7 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     local topDown={
         rootNode=10,xmlFile=xml(3,9.2),components={{node=10}},
         spec_foldable={foldAnimTime=0,foldingParts={{animationName="folding"}}},
-        spec_animatedVehicle={animations={folding={parts={{startRot={0,0,0},endRot={0,0,1.69}}}}}},
-        getAnimationByName=function(self,name) return self.spec_animatedVehicle.animations[name] end,
+        getAINeedsLowering=function() return true end,
         getAIMarkers=function() return 20,21 end,
         getName=function() return "TopDown-like" end,
         getAttachedImplements=function() return {} end
@@ -8651,8 +8650,7 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     local vario={
         rootNode=30,xmlFile=xml(1.8,5.75),components={{node=30}},
         spec_foldable={foldAnimTime=0,foldingParts={{animationName="openBackDoor"}}},
-        spec_animatedVehicle={animations={openBackDoor={parts={{startTrans={0,1,0},endTrans={0,0,0}}}}}},
-        getAnimationByName=function(self,name) return self.spec_animatedVehicle.animations[name] end,
+        getAINeedsLowering=function() return false end,
         getAIMarkers=function() return 40,41 end,
         getName=function() return "Variofex-like" end,
         getAttachedImplements=function() return {} end
@@ -8677,12 +8675,18 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     localDirectionToWorld=oldLocalDirectionToWorld
 end)
 
-test("Maximum Productive A8 withholds exclusion authority for unresolved selected fold animation",function()
-    local evidence=OuttaMyWay.MaximumProductiveA8Representation.inspectLateralArticulation({
-        spec_foldable={foldingParts={{animationName="missingAnimation"}}}
-    })
-    equal(evidence.status,"UNRESOLVED")
-    equal(evidence.reason,"SELECTED_FOLDING_ANIMATION_LATERAL_EFFECT_UNRESOLVED")
+test("Maximum Productive A8 treats animation introspection as one evidence source rather than a gate",function()
+    local object={
+        spec_foldable={foldingParts={{animationName="missingAnimation"}}},
+        getAINeedsLowering=function() return true end
+    }
+    local animation=OuttaMyWay.MaximumProductiveA8Representation.inspectLateralArticulation(object)
+    local lowering=OuttaMyWay.MaximumProductiveA8Representation.inspectNeedsLowering(object)
+    equal(animation.status,"UNRESOLVED")
+    equal(animation.reason,"SELECTED_FOLDING_ANIMATION_LATERAL_EFFECT_UNRESOLVED")
+    equal(lowering.available,true)
+    equal(lowering.value,true)
+    equal(lowering.source,"GIANTS_GET_AI_NEEDS_LOWERING")
 end)
 
 local function maximumA8Physical(assemblyId,widthM)
