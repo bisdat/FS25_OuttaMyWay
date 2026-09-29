@@ -238,6 +238,7 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
         local overlap=item.supportedCorridorOverlap or {}
         local closing=item.currentClosing or {}
         local action=item.actionSpaceConservation or {}
+        local nativeA8=item.nativeA8ClearanceExclusion or {}
         local signature=table.concat({
             tostring(item.status),tostring(item.classification),tostring(item.reason),
             tostring(overlap.status),booleanText(overlap.positive),
@@ -246,18 +247,21 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
             booleanText(item.subjectCurrentExcursion),booleanText(item.otherCurrentExcursion),
             booleanText(item.subjectSettledContinuation),booleanText(item.otherSettledContinuation),
             tostring(item.resolutionSpaceRelationship and item.resolutionSpaceRelationship.status),tostring(item.resolutionSpaceRelationship and item.resolutionSpaceRelationship.reason),
+            tostring(nativeA8.status),booleanText(nativeA8.positiveExclusion),tostring(nativeA8.reason),
             tostring(action.status),tostring(action.reason),tostring(action.regulatedAssemblyId),tostring(action.excursionAssemblyId)
         },"|")
         if self.opposedCorridorLogSignatures[key]~=signature or due then
             self.opposedCorridorLogSignatures[key]=signature
             local actionOverlap=action.currentCorridorOverlap or {}
-            logInfo("PASSIVE_OPPOSED_CORRIDOR","OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s participation=%s/%s pending=%s/%s passageEligible=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s settled=%s/%s relationship=%s relationshipReason=%s primitives=%d+%d actionSpace=%s actionReason=%s regulated=%s protected=%s excursion=%s role=%s actionSep=%s actionOverlap=%s actionNative=%s magnitudeAuthority=BOUNDED_AUTHORITY authority=TRAJECTORY_CONFLICT_ASSESSMENT diagnosticOnly=true",
+            logInfo("PASSIVE_OPPOSED_CORRIDOR","OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s participation=%s/%s pending=%s/%s passageEligible=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s settled=%s/%s nativeA8=%s nativeA8Reason=%s nativeClearance=%s nativeNominal=%s nativeReserve=%s maxA8Widths=%s/%s relationship=%s relationshipReason=%s primitives=%d+%d actionSpace=%s actionReason=%s regulated=%s protected=%s excursion=%s role=%s actionSep=%s actionOverlap=%s actionNative=%s magnitudeAuthority=BOUNDED_AUTHORITY authority=TRAJECTORY_CONFLICT_ASSESSMENT diagnosticOnly=true",
                 key,tostring(item.operationId or "n/a"),tostring(item.classification or "UNRESOLVED"),tostring(item.status),tostring(item.reason),
                 tostring(item.subjectParticipationClass or "OPERATION_MEMBER"),tostring(item.otherParticipationClass or "OPERATION_MEMBER"),booleanText(item.subjectProductiveCommencementPending),booleanText(item.otherProductiveCommencementPending),booleanText(item.cooperativePassageEligible),numberText(item.trajectoryDot),
                 booleanText(item.mutuallyFacing),tostring(overlap.status or "UNRESOLVED"),booleanText(overlap.positive),numberText(overlap.overlapM),
                 numberText(closing.currentDirectionDot),numberText(closing.closingRateMps),booleanText(item.currentOpposed),booleanText(item.currentClosingPositive),
                 booleanText(item.subjectCurrentStable),booleanText(item.otherCurrentStable),booleanText(item.subjectCurrentExcursion),booleanText(item.otherCurrentExcursion),
                 booleanText(item.subjectSettledContinuation),booleanText(item.otherSettledContinuation),
+                tostring(nativeA8.status or "UNRESOLVED"),tostring(nativeA8.reason or "n/a"),numberText(nativeA8.currentClearanceM),numberText(nativeA8.nominalClearanceM),numberText(nativeA8.clearanceReserveM),
+                numberText(nativeA8.subjectEnvelopeWidthM),numberText(nativeA8.otherEnvelopeWidthM),
                 tostring(item.resolutionSpaceRelationship and item.resolutionSpaceRelationship.status or "UNRESOLVED"),
                 tostring(item.resolutionSpaceRelationship and item.resolutionSpaceRelationship.reason or "n/a"),
                 tonumber(overlap.subjectPhysicalPrimitiveCount) or 0,tonumber(overlap.otherPhysicalPrimitiveCount) or 0,
