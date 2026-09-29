@@ -445,8 +445,11 @@ Positive termination requires current evidence fit for the incumbent-purpose que
 
 - the participants no longer demand the same Category-2 locality;
 - the protected participant has positively vacated/discharged the constrained demand;
+- for an intent-revelation purpose, the protected participant has first positively entered native `TURNING` and then positively acquired a **new** supported `SETTLED_CONTINUATION` / A8 intent epoch relative to admission;
 - the governing purpose has been positively superseded; or
 - Job Episode / Operation / fail-safe lifecycle cessation ends the basis.
+
+A `TURNING` observation by itself MUST NOT be treated as completion. Likewise, settled continuation that merely repeats the admission intent epoch without intervening positive manoeuvring MUST NOT manufacture revelation success.
 
 Control-induced separation and temporary evidence loss MUST NOT manufacture purpose completion.
 
