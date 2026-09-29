@@ -7750,11 +7750,11 @@ end)
 test("Boundary Option-Space Ratio decreases at an irregular convex boundary theatre",function()
     local field={
         fieldWorldReferenceKey="FW-IRREGULAR",
-        boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=50,z=70},{x=0,z=100}},
+        boundary={{x=0,z=0},{x=100,z=0},{x=100,z=60},{x=50,z=100},{x=0,z=60}},
         islands={}
     }
     local result=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace(
-        field,{contactX=50,contactZ=70,radiusM=10})
+        field,{contactX=50,contactZ=100,radiusM=10})
     equal(result.status,"SUPPORTED")
     assert(result.boundaryOptionSpaceRatio<0.5)
     assert(result.boundaryOptionSpaceRatio>0)
