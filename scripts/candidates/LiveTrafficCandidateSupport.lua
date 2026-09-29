@@ -323,8 +323,9 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local action=item.action
     local forward=action.admissionKind=="FORWARD_INTERSECTION"
     local corner=action.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local category2=action.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     local passageApproach=action.admissionKind=="PASSAGE_APPROACH"
-    local fixed=forward or corner or passageApproach
+    local fixed=forward or corner or category2 or passageApproach
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
     local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
@@ -336,10 +337,10 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         }
     end
     local composition={
-        identity="action-space-regulation-composition:"..tostring(relation.identity)..":"..pictureId,epoch=pictureValues.epoch,
-        relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
-        entries=compositionEntries
+        identity="action-space-regulation-composition:"..tostring(relation.identity)..":"..pictureId..":"..tostring(action.regulatedAssemblyId),
+        epoch=pictureValues.epoch,relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},entries=compositionEntries
     }
+
     local referenceKey=(forward and "forward-intersection-regulation:" or (passageApproach and "passage-approach-regulation:" or "action-space-regulation:"))..tostring(relation.identity)
     local purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
         or (passageApproach and {kind="PASSAGE_APPROACH_REGULATION",result="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
@@ -347,57 +348,124 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     if corner then
         referenceKey="corner-right-of-way-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
         purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
+    elseif category2 then
+        referenceKey="shared-category-2-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
+        purpose={kind="SHARED_CATEGORY_2_INTENT_REVELATION",result="PRESERVE_TEMPORARY_BOUNDARY_DEMAND_ORDERING_UNTIL_PROTECTED_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION"}
     end
+
+    local observeReason=corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
+        or (category2 and "Current Shared Category-2 Demand requires one temporary yielder while the protected boundary interaction reveals intent"
+        or "The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope")
+
+    local originDecision=forward and "FORWARD_INTERSECTION"
+        or (corner and "CORNER_RIGHT_OF_WAY"
+        or (category2 and "SHARED_CATEGORY_2_DEMAND" or "ACTION_SPACE_REGULATION"))
+    local basisKind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION"
+        or (corner and "CORNER_RIGHT_OF_WAY"
+        or (category2 and "SHARED_CATEGORY_2_DEMAND_REGULATION" or "ACTION_SPACE_REGULATION"))
+    local outcomeKind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
+        or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
+        or (category2 and "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION"
+        or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"))
+    local evidenceKind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED"
+        or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION"
+        or (category2 and "FRESH_SHARED_CATEGORY_2_DEMAND_OR_INCUMBENT_WAITING_OR_POSITIVE_DISSOLUTION"
+        or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"))
+
     return {
         referenceKey=referenceKey,
         purpose=purpose,
-        subject={assemblyId=action.regulatedAssemblyId,assemblyIds=passageApproach and {action.regulatedAssemblyId,protectedAssemblyId} or {action.regulatedAssemblyId}},capability="REGULATE_SPEED",
-        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=not passageApproach,
-            pairwisePassageApproachCeiling=passageApproach,elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=(forward or corner),fixedPassageApproachCeiling=passageApproach,zeroSpeedHoldExpression=not fixed},
+        subject={assemblyId=action.regulatedAssemblyId,assemblyIds=passageApproach and {action.regulatedAssemblyId,protectedAssemblyId} or {action.regulatedAssemblyId}},
+        capability="REGULATE_SPEED",
+        expectedEffect={
+            physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,
+            protectedParticipantUnrestricted=not passageApproach,
+            pairwisePassageApproachCeiling=passageApproach,elasticProgressionEnvelope=not fixed,
+            fixedIntentRevelationCreep=(forward or corner or category2),
+            fixedPassageApproachCeiling=passageApproach,zeroSpeedHoldExpression=not fixed
+        },
         evidenceBasis={
-            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
+            governingBasis={
+                responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,
+                sourceIntentIds=pictureValues.identities.jobEpisodes.active,
+                dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds
+            },
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
             progressActuationOwnership={assemblyIds={action.regulatedAssemblyId}},effectiveActuationComposition=composition,
-            trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
-                CONTINUE_OBSERVATION={result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,capability="CONTINUE_OBSERVATION",
-                    reason=corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
-                        or "The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope",
-                    evidence={actionSpaceConservation=action},provenance={source="LiveTrafficCandidateSupport",authority="ACTION_SPACE_REGULATION_OBSERVE_EXHAUSTION"}}
-            },cornerRightOfWay=corner and {
-                sharedCornerIdentity=relation.identity,cornerKey=action.cornerKey,
-                regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
-                regulatedParticipant=item.regulatedParticipant,protectedParticipant=item.protectedParticipant
-            } or nil},
+            trafficPolicemanPreference={
+                primaryResolution=true,governingRequirementKey=governingRequirementKey,
+                exhaustionEvidence={
+                    CONTINUE_OBSERVATION={
+                        result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,
+                        capability="CONTINUE_OBSERVATION",reason=observeReason,
+                        evidence={actionSpaceConservation=action},
+                        provenance={source="LiveTrafficCandidateSupport",authority="ACTION_SPACE_REGULATION_OBSERVE_EXHAUSTION"}
+                    }
+                },
+                cornerRightOfWay=corner and {
+                    sharedCornerIdentity=relation.identity,cornerKey=action.cornerKey,
+                    regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
+                    regulatedParticipant=item.regulatedParticipant,protectedParticipant=item.protectedParticipant
+                } or nil,
+                sharedCategory2Allocation=category2 and {
+                    sharedCategory2Identity=relation.identity,
+                    regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
+                    regulatedParticipant=item.regulatedParticipant,protectedParticipant=item.protectedParticipant,
+                    evidenceState=relation.currentEvidenceState,
+                    incumbentCommitmentId=relation.incumbentCommitmentId,
+                    incumbentRegulatedAssemblyId=relation.incumbentRegulatedAssemblyId
+                } or nil
+            },
             actionSpaceRegulationBridge={
                 action="APPLY",architecture="ACTION_SPACE_REGULATION",conflictIdentity=relation.identity,operationId=relation.operationId,
                 governingRequirementKey=governingRequirementKey,existingCommitmentId=existingCommitmentId,
                 regulatedAssemblyId=action.regulatedAssemblyId,regulatedReferenceKey=action.regulatedReferenceKey,
                 protectedAssemblyId=protectedAssemblyId,protectedReferenceKey=protectedReferenceKey,
-                excursionAssemblyId=action.excursionAssemblyId,excursionReferenceKey=action.excursionReferenceKey,admissionKind=action.admissionKind,
-                cornerKey=action.cornerKey,
+                excursionAssemblyId=action.excursionAssemblyId,excursionReferenceKey=action.excursionReferenceKey,
+                admissionKind=action.admissionKind,cornerKey=action.cornerKey,
                 nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,
                 fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh or action.regulationSpeedKmh,
-                pairwisePassageApproachCeiling=passageApproach,passageApproachSpeedCeilingKmh=passageApproach and PASSAGE_APPROACH_SPEED_CEILING_KMH or nil,
-                nativeClosureContributionKmh=action.nativeClosureContributionKmh,nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,nativeMoveForwards=action.nativeMoveForwards,
+                pairwisePassageApproachCeiling=passageApproach,
+                passageApproachSpeedCeilingKmh=passageApproach and PASSAGE_APPROACH_SPEED_CEILING_KMH or nil,
+                nativeClosureContributionKmh=action.nativeClosureContributionKmh,
+                nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,
+                nativeMoveForwards=action.nativeMoveForwards,
                 governingPurpose=action.governingPurpose,separationM=action.separationM,actionSpaceReason=action.reason,
                 cooperativePassageEligible=relation.cooperativePassageEligible~=false,
-                subjectOperationMember=relation.subjectOperationMember,otherOperationMember=relation.otherOperationMember
+                subjectOperationMember=relation.subjectOperationMember,otherOperationMember=relation.otherOperationMember,
+                roleAssignmentMutable=action.roleAssignmentMutable~=false
             }
         },
         representationFitness={requirements={{representationId=representationId,acceptedStates={"USABLE_WITH_UNCERTAINTY"}}}},
-        preconditions={evidenceContracts={},relationshipClassification=relation.classification,actionSpaceConservationStatus="REGULATE_SUPPORTED",cooperativePassageEligible=relation.cooperativePassageEligible~=false},
+        preconditions={
+            evidenceContracts={},relationshipClassification=relation.classification,
+            actionSpaceConservationStatus="REGULATE_SUPPORTED",
+            cooperativePassageEligible=relation.cooperativePassageEligible~=false
+        },
         invalidationConditions={{kind="POSITIVE_RELATIONSHIP_DISSOLUTION"},{kind="COOPERATIVE_PASSAGE_SUCCESSION"},{kind="JOB_EPISODE_CHANGE"}},
         reversibility={physicalEffect=true,releaseOnPurposeExpiry=true},
         obligationsCreated={{
-            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),conflictIdentity=relation.identity},
-            basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
-            requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES" or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"),conflictIdentity=relation.identity},
+            origin={kind="TRAFFIC_INTERVENTION",decision=originDecision,conflictIdentity=relation.identity},
+            basis={
+                kind=basisKind,conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,
+                roleAssignmentMutable=not forward and not category2,
+                regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
+                protectedIntentEpochAtAdmission=category2 and tonumber(item.protectedParticipant and item.protectedParticipant.intentEpoch) or nil
+            },
+            requiredOutcome={kind=outcomeKind,conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
-            evidenceContract={kind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED" or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION" or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"),absenceDoesNotRetire=not forward and not corner},
+            evidenceContract={kind=evidenceKind,absenceDoesNotRetire=not forward and not corner},
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
-        releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
-        uncertainty={"CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY"},comparisonCost=0
+        releaseImplications={
+            releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,
+            currentRoleMayMigrateWithoutSettlingObligation=not category2
+        },
+        uncertainty=category2 and {
+            "NO_ROUTE_OR_TURN_PATH_AUTHORITY",
+            "POSITIVE_BOUNDARY_DEMAND_REPRESENTATION_HAS_NO_GENERIC_NEGATIVE_CLEARANCE_AUTHORITY"
+        } or {"CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY"},
+        comparisonCost=0
     }
 end
 
