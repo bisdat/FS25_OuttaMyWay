@@ -8586,20 +8586,6 @@ test("legacy follower shadow retirement preserves P22 capability retirement", fu
 end)
 
 
-dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
-
-dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
-
-dofile(root.."/tests/replacement_core/BlockedProgressAssessment.lua")(test,equal)
-dofile(root.."/tests/replacement_core/RealisedMotionDemandAssessment.lua")(test,equal)
-dofile(root.."/tests/replacement_core/BlockedWorkerRecovery.lua")(test,equal)
-
-
-print(string.format("RESULT %d passed, %d failed",passed,failed))
-if failed > 0 then os.exit(1) end
-
-
-
 test("Maximum Productive A8 distinguishes lateral articulation from unrelated foldability",function()
     local oldWorldTranslation=getWorldTranslation
     local oldLocalDirectionToWorld=localDirectionToWorld
@@ -8814,3 +8800,16 @@ test("Corridor band edge probe remains available and reports Maximum Productive 
     spatialNear(measurement.transitPassageWidthM,2.65,0.0001)
     spatialNear(measurement.maximumProductiveA8WidthM,3.00,0.0001)
 end)
+
+dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
+
+dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
+
+dofile(root.."/tests/replacement_core/BlockedProgressAssessment.lua")(test,equal)
+dofile(root.."/tests/replacement_core/RealisedMotionDemandAssessment.lua")(test,equal)
+dofile(root.."/tests/replacement_core/BlockedWorkerRecovery.lua")(test,equal)
+
+
+print(string.format("RESULT %d passed, %d failed",passed,failed))
+if failed > 0 then os.exit(1) end
+
