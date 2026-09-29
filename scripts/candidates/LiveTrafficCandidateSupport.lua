@@ -202,6 +202,23 @@ local function cornerParticipantByAssembly(situation,assemblyId)
     end
 end
 
+local function sharedCategory2Situation(picture,identity)
+    local matches={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(knowledge.sharedCategory2Demands or {}) do
+            if situation.identity==identity and situation.positiveDissolution~=true then matches[#matches+1]=situation end
+        end
+    end
+    if #matches>1 then return nil,"MULTIPLE_SHARED_CATEGORY_2_SITUATIONS_WITH_SAME_IDENTITY" end
+    return matches[1],nil
+end
+
+local function category2ParticipantByAssembly(situation,assemblyId)
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
+        if participant.assemblyId==assemblyId then return participant end
+    end
+end
+
 local function cornerActionItem(situation,regulated,protected)
     local relation={
         identity=situation.identity,operationId=situation.operationId,
@@ -222,6 +239,29 @@ local function cornerActionItem(situation,regulated,protected)
         cornerKey=situation.cornerKey
     }
     return {relation=relation,action=action,cornerSituation=situation,
+        regulatedParticipant=regulated,protectedParticipant=protected}
+end
+
+local function category2ActionItem(situation,regulated,protected)
+    local relation=copyValue(situation)
+    relation.subjectAssemblyId=regulated.assemblyId
+    relation.otherAssemblyId=protected.assemblyId
+    relation.subjectReferenceKey=regulated.assemblyReferenceKey
+    relation.otherReferenceKey=protected.assemblyReferenceKey
+    relation.cooperativePassageEligible=false
+    local action={
+        status="REGULATE_SUPPORTED",supported=true,admissionKind="SHARED_CATEGORY_2_DEMAND",
+        regulatedAssemblyId=regulated.assemblyId,regulatedReferenceKey=regulated.assemblyReferenceKey,
+        protectedAssemblyId=protected.assemblyId,protectedReferenceKey=protected.assemblyReferenceKey,
+        regulationSpeedKmh=tonumber(situation.regulationSpeedKmh) or 1,
+        fixedRegulationSpeedKmh=tonumber(situation.regulationSpeedKmh) or 1,
+        nativeUnrestrictedKmh=tonumber(situation.regulationSpeedKmh) or 1,
+        governingPurpose="PRESERVE_SHARED_CATEGORY_2_INTENT_REVELATION",
+        reason="SHARED_CATEGORY_2_DEMAND_REQUIRES_TEMPORARY_TEMPORAL_ALLOCATION",
+        roleBasis="DECISION_ALLOCATED_SHARED_CATEGORY_2_YIELDER",
+        roleAssignmentMutable=false
+    }
+    return {relation=relation,action=action,category2Situation=situation,
         regulatedParticipant=regulated,protectedParticipant=protected}
 end
 
