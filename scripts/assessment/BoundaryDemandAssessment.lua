@@ -53,6 +53,18 @@ local function otherParticipant(relation,assemblyId)
     end
 end
 
+-- Retained Shared Category-2 purpose geometry may outlive one participant's
+-- fresh boundary projection. Intent fields remain current Situation evidence,
+-- so refresh them independently from the retained locality/allocation record.
+local function refreshParticipantIntent(relation,motionByAssembly)
+    for _,participantValue in OuttaMyWay.ValueRecord.ipairs(relation and relation.participants or {}) do
+        local motion=motionByAssembly and motionByAssembly[participantValue.assemblyId] or nil
+        participantValue.intentClassification=motion and motion.localIntentClassification or "UNRESOLVED"
+        participantValue.intentEpoch=motion and motion.intentEpoch or nil
+        participantValue.intentValid=motion and motion.intentValid==true or false
+    end
+end
+
 local function incumbentContext(commitmentContext,identity)
     local requirement=governingRequirement(identity)
     local match=nil
@@ -323,6 +335,7 @@ function Assessment:assess(input)
                 and finite(tonumber(state.protectedIntentEpochAtAdmission))
                 and tonumber(protectedMotion.intentEpoch)>tonumber(state.protectedIntentEpochAtAdmission)
 
+            refreshParticipantIntent(base,motionByAssembly)
             base.incumbentCommitmentId=incumbent.commitmentId
             base.incumbentRegulatedAssemblyId=incumbent.regulatedAssemblyId
             base.incumbentProtectedAssemblyId=protectedId

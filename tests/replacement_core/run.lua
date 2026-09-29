@@ -7895,6 +7895,14 @@ test("Shared Category-2 incumbent allocation survives TURNING and dissolves only
     equal(turning.sharedCategory2Demands[1].currentEvidenceState,"WAITING_FOR_EVIDENCE")
     equal(turning.sharedCategory2Demands[1].incumbentRegulatedAssemblyId,"AS-A")
     equal(turning.sharedCategory2Demands[1].actionSpaceConservation.regulatedAssemblyId,"AS-A")
+    local protectedDuringTurning=nil
+    for _,participantValue in ipairs(turning.sharedCategory2Demands[1].participants) do
+        if participantValue.assemblyId=="AS-B" then protectedDuringTurning=participantValue end
+    end
+    assert(protectedDuringTurning~=nil)
+    equal(protectedDuringTurning.intentClassification,"TURNING")
+    equal(protectedDuringTurning.intentEpoch,1)
+    equal(protectedDuringTurning.intentValid,false)
 
     local revealed=assessment:assess({
         operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
