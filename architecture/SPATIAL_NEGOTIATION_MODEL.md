@@ -195,6 +195,10 @@ Boundary Option-Space Ratio is cumulative evidence, not a universal priority sco
 
 Once that Regulation is established for the same Shared Category-2 Demand purpose, the allocation remains sticky while the purpose remains live. Expected effects such as the protected participant slowing, entering or remaining `TURNING`, temporary A8 loss or the regulated participant falling behind do not themselves re-arbitrate the yielder. Temporary evidence loss may become `WAITING_FOR_EVIDENCE`; positive dissolution, supersession or lifecycle cessation is required to end the responsibility.
 
+For an intent-revelation purpose, entering `TURNING` is not completion. After the protected participant has positively entered the native manoeuvre, fresh reacquisition of a **new supported `SETTLED_CONTINUATION` / A8 intent epoch** is positive evidence that the protected native intent has been revealed. That evidence may discharge the intent-revelation purpose through the normal responsibility lifecycle; any subsequent spatial competition is assessed afresh rather than inherited as historical priority.
+
+> **TURNING Begins Intent Revelation; Fresh Settled Continuation Completes It.**
+
 Existing Forward Intersection remains an independent Situation evidence route. Its current Category-1 / Category-2 / open-field interpretation is not replaced or weakened by Boundary Demand locality. Where both routes describe the same encounter they corroborate one Situation purpose rather than create duplicate Regulation responsibilities.
 
 #### One worker inside, one outside
