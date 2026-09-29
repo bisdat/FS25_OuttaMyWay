@@ -18,7 +18,7 @@ local Planner=OuttaMyWay.LocalPassagePlanner
 
 -- Shared Owner != Shared Concept: these independent values are not settings.
 -- Fixed Passage construction policy; represented non-contact remains hard.
-local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = OuttaMyWay.CooperativePassagePolicy.NOMINAL_INTER_ASSEMBLY_CLEARANCE_M
+local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
 local COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95
 
 -- Passage reserve and prospective excursion semantics remain independent of
