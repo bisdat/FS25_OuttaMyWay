@@ -1181,6 +1181,91 @@ local function cornerPolicyPicture(candidates,requirement)
     return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
 end
 
+local function category2PolicyCandidate(name,regulatedId,protectedId,protectedParticipant,requirement,representationId)
+    local candidate=candidateSpec(name,"REGULATE_SPEED",0,regulatedId)
+    local metadata=trafficPreference(candidate,requirement)
+    metadata.exhaustionEvidence.CONTINUE_OBSERVATION=bandExhaustion("OP-DECISION",requirement,"CONTINUE_OBSERVATION")
+    metadata.sharedCategory2Allocation={
+        sharedCategory2Identity="shared-category-2:test",
+        regulatedAssemblyId=regulatedId,protectedAssemblyId=protectedId,
+        regulatedParticipant={assemblyId=regulatedId},
+        protectedParticipant=protectedParticipant
+    }
+    candidate.representationFitness={requirements={{representationId=representationId,acceptedStates={"CURRENTLY_FIT"}}}}
+    candidate.evidenceBasis.effectiveActuationComposition={
+        identity="EC-"..name,epoch=1,relevantAssemblyIds={regulatedId,protectedId},
+        entries={{assemblyId=regulatedId,commitmentId="CM-"..name,capability="REGULATE_SPEED",progressActuation=true}}
+    }
+    return candidate
+end
+
+local function category2PolicyPicture(candidates,requirement)
+    local fitness={}
+    for _,candidate in ipairs(candidates) do
+        local representation=candidate.representationFitness.requirements[1]
+        fitness[#fitness+1]={
+            representationId=representation.representationId,assemblyId=candidate.subject.assemblyId,
+            question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},
+            coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}
+        }
+    end
+    return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
+end
+
+test("Shared Category-2 Decision protects lower Boundary Option-Space participant",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-protect-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.25,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-A")
+    local protectB=category2PolicyCandidate("c2-protect-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.50,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_LOWER_BOUNDARY_OPTION_SPACE")
+end)
+
+test("Shared Category-2 Decision protects current constrained-space occupant before option-space ratio",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-occupant-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=true,boundaryOptionSpaceRatio=0.60,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-OCC-A")
+    local protectB=category2PolicyCandidate("c2-open-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.20,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-OCC-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_CURRENT_CATEGORY_2_OCCUPANT")
+end)
+
+test("Shared Category-2 Decision protects TURNING intent revelation when spatial evidence is equivalent",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-turning-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.50,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="TURNING"
+    },requirement,"REP-C2-TURN-A")
+    local protectB=category2PolicyCandidate("c2-settled-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,boundaryOptionSpaceRatio=0.50,
+        boundaryOptionSpaceRatioTolerance=0.000001,intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-TURN-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_CATEGORY_2_INTENT_REVELATION")
+end)
+
 test("Corner Right-of-Way protects incumbent over earlier non-incumbent arrival",function()
     local requirement="corner-right-of-way:shared-corner:test"
     local protectA=cornerPolicyCandidate("corner-protect-A","AS-00002","AS-00001",{
