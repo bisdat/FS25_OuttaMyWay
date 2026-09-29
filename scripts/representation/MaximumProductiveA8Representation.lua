@@ -129,6 +129,42 @@ function Representation.inspectLateralArticulation(object)
     }
 end
 
+-- Productive-configuration evidence is deliberately independent from fold
+-- animation introspection. GIANTS exposes the AI lowering requirement directly
+-- on AI implements; XML is a fallback only when the runtime accessor/spec is
+-- unavailable.
+function Representation.inspectNeedsLowering(object)
+    if type(object)~="table" then
+        return {available=false,value=nil,source="MEMBER_OBJECT_UNAVAILABLE"}
+    end
+
+    local ok,value=safeCall(object,"getAINeedsLowering")
+    if ok and type(value)=="boolean" then
+        return {available=true,value=value,source="GIANTS_GET_AI_NEEDS_LOWERING"}
+    end
+
+    local spec=object.spec_aiImplement
+    if type(spec)=="table" and type(spec.needsLowering)=="boolean" then
+        return {available=true,value=spec.needsLowering,source="GIANTS_AI_IMPLEMENT_SPEC"}
+    end
+
+    local xml=object.xmlFile
+    if type(xml)=="table" and type(xml.getValue)=="function" then
+        local xmlOk,xmlValue=pcall(xml.getValue,xml,"vehicle.ai.needsLowering#value")
+        if xmlOk and type(xmlValue)=="boolean" then
+            return {available=true,value=xmlValue,source="GIANTS_VEHICLE_XML_AI_NEEDS_LOWERING"}
+        end
+    end
+
+    return {available=false,value=nil,source="AI_NEEDS_LOWERING_UNAVAILABLE"}
+end
+
+local function foldCapabilityPresent(object,articulation)
+    if type(articulation)=="table" and tonumber(articulation.foldingPartCount or 0)>0 then return true end
+    local spec=type(object)=="table" and object.spec_foldable or nil
+    return type(spec)=="table"
+end
+
 local function include(bounds,right,forward)
     bounds.minRightM=bounds.minRightM==nil and right or math.min(bounds.minRightM,right)
     bounds.maxRightM=bounds.maxRightM==nil and right or math.max(bounds.maxRightM,right)
@@ -164,14 +200,55 @@ function Representation.build(record,frame,worker,localToWorldFn)
         end
 
         local articulation=Representation.inspectLateralArticulation(object)
-        articulationEvidence[#articulationEvidence+1]={
-            memberReferenceKey=member.referenceKey,status=articulation.status,reason=articulation.reason,
-            foldingPartCount=articulation.foldingPartCount or 0,animationNames=articulation.animationNames or {}
-        }
-        if articulation.status=="UNRESOLVED" then
-            return nil,"MAXIMUM_PRODUCTIVE_A8_LATERAL_ARTICULATION_UNRESOLVED:"..tostring(member.referenceKey)
+        local lowering=Representation.inspectNeedsLowering(object)
+        local foldable=foldCapabilityPresent(object,articulation)
+
+        -- Evidence fusion, not single-flag classification:
+        --  * explicit lateral animation evidence is strongest;
+        --  * fold/deploy capability + AI needsLowering=true is sufficient
+        --    conservative evidence that productive physical configuration may
+        --    widen, even when runtime animation internals are opaque;
+        --  * needsLowering=false is evidence against a distinct lowered
+        --    physical work configuration (TS004 Variofex control);
+        --  * unresolved fold semantics with no lowering evidence use the
+        --    productive span conservatively rather than suppressing the whole
+        --    envelope, provided that span can be observed.
+        local memberUsesProductiveSpan=false
+        local inferenceReason=nil
+        if articulation.status=="SUPPORTED" then
+            memberUsesProductiveSpan=true
+            inferenceReason="LATERAL_ANIMATION_EVIDENCE"
+        elseif foldable and lowering.available==true and lowering.value==true then
+            memberUsesProductiveSpan=true
+            inferenceReason="FOLD_CAPABILITY_AND_AI_NEEDS_LOWERING"
+        elseif lowering.available==true and lowering.value==false then
+            memberUsesProductiveSpan=false
+            inferenceReason="AI_DOES_NOT_REQUIRE_LOWERED_PRODUCTIVE_CONFIGURATION"
+        elseif articulation.status=="NOT_SUPPORTED" or articulation.status=="NOT_PRESENT" then
+            memberUsesProductiveSpan=false
+            inferenceReason="NO_SUPPORTED_LATERAL_CONFIGURATION_CHANGE"
+        elseif foldable then
+            memberUsesProductiveSpan=true
+            inferenceReason="AMBIGUOUS_FOLD_CONFIGURATION_CONSERVATIVE_WORKING_SPAN"
+        else
+            memberUsesProductiveSpan=false
+            inferenceReason="AUTHORED_PHYSICAL_SPAN_ONLY"
         end
-        if articulation.status=="SUPPORTED" then lateralArticulation=true end
+
+        articulationEvidence[#articulationEvidence+1]={
+            memberReferenceKey=member.referenceKey,
+            animationStatus=articulation.status,
+            animationReason=articulation.reason,
+            foldingPartCount=articulation.foldingPartCount or 0,
+            animationNames=articulation.animationNames or {},
+            foldCapabilityPresent=foldable,
+            needsLoweringAvailable=lowering.available==true,
+            needsLowering=lowering.value,
+            needsLoweringSource=lowering.source,
+            usesProductiveSpan=memberUsesProductiveSpan,
+            inferenceReason=inferenceReason
+        }
+        if memberUsesProductiveSpan then lateralArticulation=true end
 
         local centreRight=tonumber(metadata.widthOffsetM) or 0
         local centreForward=tonumber(metadata.lengthOffsetM) or 0
@@ -249,8 +326,8 @@ function Representation.build(record,frame,worker,localToWorldFn)
         authority="PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION",
         claimPermissions={"PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION"},
         configurationBasis=lateralArticulation
-            and "AUTHORED_BASE_SIZE_UNION_PLUS_SELECTED_LATERAL_ARTICULATION_WORKING_SPAN"
-            or "AUTHORED_BASE_SIZE_UNION_STATIC_LATERAL_SPAN",
+            and "EVIDENCE_FUSED_AUTHORED_PHYSICAL_PLUS_PRODUCTIVE_WORKING_SPAN"
+            or "EVIDENCE_FUSED_AUTHORED_PHYSICAL_SPAN",
         geometryPurpose="NATIVE_A8_CLEARANCE_EXCLUSION",
         coverageComplete=false,
         negativeClearanceAuthority=false
