@@ -143,6 +143,39 @@ The [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) Specification owns what m
 
 Follower, Forward Intersection and Action-Space Regulation support consume already-assessed relationships. Candidate Support MUST NOT reclassify those relationships or convert one purpose's support into another purpose's Situation authority.
 
+#### Shared Category-2 Demand
+
+When Situation Assessment publishes one positive **Shared Category-2 Demand**, Candidate Support MUST treat the pairwise need for temporal coordination as already established.
+
+Candidate Support MUST NOT choose the yielder.
+
+For a fresh Shared Category-2 Demand with no incumbent Regulation allocation, Candidate Support MUST publish one directional Regulation Candidate for each participant that remains semantically viable as the temporary yielder.
+
+Each directional Candidate MUST preserve enough same-picture Situation evidence for Decision to compare the alternatives without reconstructing raw Field World or Physical-Assembly meaning, including where supported:
+
+- regulated participant identity;
+- protected participant identity;
+- Shared Category-2 Demand identity;
+- each participant's current Category-2 Demand basis;
+- constrained-space occupancy / evacuation evidence;
+- current A8 / `TURNING` intent state;
+- Boundary Option-Space Ratio;
+- Resolution-Margin / cheaper-waiting evidence;
+- representation and Field World provenance; and
+- the exact incumbent-purpose identity where this is maintenance rather than establishment.
+
+Candidate Support MUST NOT:
+
+- rank the alternatives from Boundary Option-Space Ratio;
+- convert one evidence signal into a permanent vehicle priority;
+- use working width, arrival-time windows or Forward Intersection as an unowned replacement comparator;
+- manufacture a third "shared" Candidate with no controlled subject; or
+- emit duplicate Regulation purposes merely because Shared Category-2 Demand and Forward Intersection are simultaneously positive for the same governing need.
+
+Where an incumbent Shared Category-2 Regulation purpose already exists and Situation Assessment reports it supported or `WAITING_FOR_EVIDENCE`, Candidate Support MUST preserve that incumbent directional allocation rather than republish the opposite participant as an equal fresh alternative merely because transient evidence has changed.
+
+> **Fresh Shared Demand Enumerates Alternatives; Incumbent Shared Demand Preserves Allocation.**
+
 Where same-class ambiguity has no accepted comparator, support MUST remain fail-closed rather than manufacturing a preference.
 
 ### Obstruction Relocation
