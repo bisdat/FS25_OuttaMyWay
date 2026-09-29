@@ -95,6 +95,21 @@ local function forwardRelationshipCount(picture)
     return count
 end
 
+local function concurrentBoundaryArrivals(picture)
+    local result={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(knowledge.concurrentBoundaryArrivals or {}) do
+            if situation.classification=="CONCURRENT_BOUNDARY_ARRIVAL"
+                and situation.relationshipStatus=="POSITIVE"
+                and situation.candidateSupportReady==true then
+                result[#result+1]=situation
+            end
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
 local function opposedRelations(picture)
     local result={}
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
@@ -166,6 +181,22 @@ function Support:publishDecisionPicture(picture,snapshot)
         end
     elseif forwardCount>1 then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"FORWARD_INTERSECTION_FAIL_CLOSED","MULTIPLE_FORWARD_INTERSECTION_CONTEXTS",1)
+    end
+
+    local boundaryArrivals=concurrentBoundaryArrivals(picture)
+    if #boundaryArrivals==1 then
+        local boundaryArrival,boundaryArrivalReason=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{kind="CONCURRENT_BOUNDARY_ARRIVAL",situationIdentity=boundaryArrivals[1].identity},targetPictureId,targetEpoch)
+        if modeOfGroup(boundaryArrival)=="CONCURRENT_BOUNDARY_ARRIVAL" then
+            appendGroup(state,boundaryArrival,"CONCURRENT_BOUNDARY_ARRIVAL",
+                "concurrent-boundary-arrival:"..tostring(boundaryArrivals[1].identity),1)
+        elseif boundaryArrivalReason~=nil then
+            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+                "CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED",boundaryArrivalReason,1)
+        end
+    elseif #boundaryArrivals>1 then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+            "CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED","MULTIPLE_CONCURRENT_BOUNDARY_ARRIVAL_CONTEXTS",1)
     end
 
     local actionSpaceGroups=0

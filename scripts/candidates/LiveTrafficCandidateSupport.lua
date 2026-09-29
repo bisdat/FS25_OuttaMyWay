@@ -183,8 +183,14 @@ local function concurrentBoundaryArrivalSituations(picture)
     return result
 end
 
-local function concurrentBoundaryArrivalSituation(picture)
+local function concurrentBoundaryArrivalSituation(picture,identity)
     local matches=concurrentBoundaryArrivalSituations(picture)
+    if identity~=nil then
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(matches) do
+            if situation.identity==identity then return situation,nil end
+        end
+        return nil,"CONCURRENT_BOUNDARY_ARRIVAL_SITUATION_NOT_FOUND"
+    end
     if #matches==0 then return nil,nil end
     if #matches>1 then return nil,"MULTIPLE_CONCURRENT_BOUNDARY_ARRIVAL_CONTEXTS" end
     return matches[1],nil
@@ -909,6 +915,43 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
     },nil
 end
 
+local function projectedConcurrentBoundaryArrivalGroup(self,picture,snapshot,values,targetPictureId,situation)
+    local participants={situation and situation.subject,situation and situation.other}
+    if type(participants[1])~="table" or type(participants[2])~="table" then
+        return nil,"CONCURRENT_BOUNDARY_ARRIVAL_PARTICIPANTS_UNAVAILABLE"
+    end
+    local requirement="concurrent-boundary-arrival-regulation:"..tostring(situation.identity)
+    local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
+    if existingReason~=nil then return nil,existingReason end
+    local baseline=#(values.representationFitness or {})
+    local specifications={}
+    for index=1,2 do
+        local regulated=participants[index]
+        local protected=participants[index==1 and 2 or 1]
+        local item,reason=concurrentBoundaryArrivalActionItem(situation,regulated.assemblyId,protected.assemblyId)
+        if item==nil then return nil,reason end
+        local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
+        specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
+            targetPictureId,values,item,requirement,existing,representationId)
+    end
+    logInfo("CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATES_SUPPORTED",
+        "situation=%s pair=%s/%s times=%s/%s targetPicture=%s projectedPortfolio=true",
+        tostring(situation.identity),tostring(situation.subjectAssemblyId),tostring(situation.otherAssemblyId),
+        tostring(situation.subject and situation.subject.timeToBoundarySec or "UNRESOLVED"),
+        tostring(situation.other and situation.other.timeToBoundarySec or "UNRESOLVED"),tostring(targetPictureId))
+    return {
+        supportBoundary={mode="CONCURRENT_BOUNDARY_ARRIVAL",supportedCandidateClasses={"REGULATE_SPEED"},
+            physicalCapabilitiesImplemented=true,controlAuthority="FIXED_INTENT_REVELATION_CREEP",
+            boundedScope="CURRENT_LOCAL_CATEGORY_2_BOUNDARY_DEMAND_WITH_OVERLAPPING_NATIVE_ARRIVAL_WINDOWS",
+            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        candidateSpecifications=specifications,
+        representationFitness=projectedFitnessAdditions(values,baseline),
+        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,
+            targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,
+            authority="CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATE_SUPPORT"}
+    },nil
+end
+
 local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
     local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "cooperative-passage:")..tostring(item.relation.identity)
     local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
@@ -970,6 +1013,12 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         local item,reason=forwardIntersectionRecord(picture)
         if item==nil then return nil,reason or "NO_FORWARD_INTERSECTION_SUPPORT" end
         return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
+    end
+
+    if projection.kind=="CONCURRENT_BOUNDARY_ARRIVAL" then
+        local situation,reason=concurrentBoundaryArrivalSituation(picture,projection.situationIdentity)
+        if situation==nil then return nil,reason or "NO_CONCURRENT_BOUNDARY_ARRIVAL_SUPPORT" end
+        return projectedConcurrentBoundaryArrivalGroup(self,picture,snapshot,values,targetPictureId,situation)
     end
 
     if projection.kind=="OPPOSED_RELATIONSHIP" then

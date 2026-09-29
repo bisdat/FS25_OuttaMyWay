@@ -127,6 +127,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     local failClosed=families(groups,{
         "FOLLOWER_FAIL_CLOSED",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
+        "CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED",
         "ACTION_SPACE_FAIL_CLOSED"
     })
     if #failClosed==1 then
@@ -144,6 +145,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
         "FOLLOWER_RETIRE",
         "FOLLOWER",
         "FORWARD_INTERSECTION",
+        "CONCURRENT_BOUNDARY_ARRIVAL",
         "ACTION_SPACE"
     })
     if #tactical==1 then

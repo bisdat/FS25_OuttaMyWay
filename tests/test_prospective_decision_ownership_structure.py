@@ -29,6 +29,8 @@ def test_phase13_fresh_portfolio_enumerates_support_groups_without_control_autho
         'kind="OPPOSED_RELATIONSHIP"',
         "OBSTRUCTION_RELOCATION",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
+        "CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED",
+        'kind="CONCURRENT_BOUNDARY_ARRIVAL"',
         "ACTION_SPACE_FAIL_CLOSED",
         "ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION",
     ):
@@ -56,6 +58,8 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
         "RETAIN_CURRENT_TACTICAL_REGULATION",
         "MULTIPLE_RETAINED_TACTICAL_REGULATION_GROUPS",
         "MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR",
+        "CONCURRENT_BOUNDARY_ARRIVAL",
+        "CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED",
         "TACTICAL_SUPPORT_FAIL_CLOSED",
     ):
         assert token in policy

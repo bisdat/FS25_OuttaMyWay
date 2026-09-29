@@ -42,6 +42,19 @@ def test_candidate_support_exposes_two_temporal_allocations_and_decision_owns_ch
     assert "DETERMINISTIC_EQUAL_BOUNDARY_ARRIVAL_ALLOCATION" in policy
 
 
+def test_positive_boundary_arrival_is_enumerated_by_the_authoritative_prospective_portfolio():
+    live = read("scripts/candidates/LiveTrafficCandidateSupport.lua")
+    portfolio = read("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
+    policy = read("scripts/decision/ProspectivePortfolioDecisionPolicy.lua")
+    assert 'projection.kind=="CONCURRENT_BOUNDARY_ARRIVAL"' in live
+    assert "projectedConcurrentBoundaryArrivalGroup" in live
+    assert "concurrentBoundaryArrivals(picture)" in portfolio
+    assert 'kind="CONCURRENT_BOUNDARY_ARRIVAL"' in portfolio
+    assert '"CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED"' in portfolio
+    assert '"CONCURRENT_BOUNDARY_ARRIVAL"' in policy
+    assert '"CONCURRENT_BOUNDARY_ARRIVAL_FAIL_CLOSED"' in policy
+
+
 def test_boundary_arrival_reuses_fixed_intent_revelation_regulation_without_new_control_type():
     authority = read("scripts/authority/RegulationBoundedAuthority.lua")
     control = read("scripts/control/RegulationControl.lua")
