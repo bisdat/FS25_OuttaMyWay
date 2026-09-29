@@ -483,14 +483,33 @@ Cooperative Passage consumes representation but owns its own purpose-specific Re
 
 For Passage:
 
-- current working-configuration geometry and directional extents may support current occupancy, productive-corridor competition and Passage recognition;
+- current working-configuration geometry and directional extents may conservatively support opposed-corridor Passage recognition;
+- a purpose-specific **Maximum Productive A8 Envelope** may support **Native A8 Clearance Exclusion** without acquiring generic negative-clearance authority;
 - a prospective Passage Candidate may use supported complete-assembly compact/Transit geometry for its declared Passage purpose before physical configuration realisation;
 - compact/Transit geometry does not supersede current working geometry or make a deployed assembly artificially narrow for recognition;
-- current working geometry does not automatically become the compact/Transit Passage envelope;
+- current working geometry and Maximum Productive A8 Envelope do not automatically become the compact/Transit Passage envelope;
 - complete-assembly claims require complete Physical Assembly membership; and
-- directional asymmetry must remain preserved.
+- directional asymmetry must remain preserved where the evidence supports it.
 
-The [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md#candidate-and-commitment-boundary) owns the specialised Candidate/commitment lifecycle and [Reality-verified execution boundary](SPATIAL_NEGOTIATION_MODEL.md#reality-verified-execution). Physical Representation owns only the representation authority those contracts consume.
+### Maximum Productive A8 Envelope
+
+A **Maximum Productive A8 Envelope** is Job-Episode-scoped structural representation of the complete Physical Assembly's non-underestimating maximum lateral extent while performing settled productive A8 work.
+
+It is not current realised occupancy, a predicted manoeuvre sweep or Transit geometry. Its single accepted purpose is to support the question:
+
+> **Can native opposed A8 clearance be positively excluded from needing Cooperative Passage even at the widest defensible productive-A8 physical configuration?**
+
+The envelope may compose authored physical dimensions, stable complete-assembly structure and configuration/deployment evidence. Where productive configuration can materially widen lateral physical span and exact widest physical span is not otherwise defensibly available, supported productive working width may contribute as a conservative upper-bound input for this purpose only. Working width does not thereby become generic Physical Occupancy truth.
+
+For this purpose the representation must be non-underestimating. Conservative overstatement may withhold an exclusion and allow the ordinary Passage pipeline to continue; understatement could incorrectly suppress a necessary Passage and is therefore not permitted.
+
+> **Veto Geometry May Overestimate; It Must Not Underestimate.**
+
+The product belongs to the Job-Scoped Representation Catalogue and may be captured/cached from stable bootstrap evidence. Ordinary translation, rotation or narrower realised articulation does not require rediscovery of the maximum envelope. Physical Assembly membership change, relevant purchased/configuration-structure contradiction, Job Episode expiry or another dependency that can invalidate the maximum bound invalidates the claim.
+
+When supported for both participants, Situation Assessment may combine the two facing extents with fresh current A8 axes/separation and the accepted nominal Passage-clearance policy to establish **Native A8 Clearance Exclusion**. That conclusion is purpose-specific. It does not establish generic collision separation, Corner clearance, Category-2 separation, Causal Obstruction absence or any other unrelated negative-clearance claim.
+
+The [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md#candidate-and-commitment-boundary) owns the specialised Candidate/commitment lifecycle and [Native A8 Clearance Exclusion](SPATIAL_NEGOTIATION_MODEL.md#native-a8-clearance-exclusion). Physical Representation owns only the representation authority those contracts consume.
 
 ---
 

@@ -89,11 +89,24 @@ A current Operation member whose GIANTS-native continuation is transitional or u
 
 In particular, Operation membership alone MUST NOT turn a manoeuvring or otherwise transitional participant into a Passage-ready participant.
 
-**Passage Evaluation Readiness** is established when Situation Assessment positively establishes an **Established Opposed Corridor Conflict** between exactly two current Operation members. That pairwise Situation conclusion is sufficient to ask Cooperative Passage Candidate Support whether a Passage-Capable Theatre exists. It does not itself establish a Passage Candidate, commitment, geometry or actuation authority.
+**Passage Evaluation Readiness** requires an **Established Opposed Corridor Conflict** between exactly two current Operation members and no current positive **Native A8 Clearance Exclusion** for that same opposed A8 relationship. The opposed-corridor conclusion establishes conservative Passage concern; it is not sufficient to ask Cooperative Passage Candidate Support for a Passage-Capable Theatre when purpose-specific native clearance has already been positively established.
 
-Settled-continuation / native-intent evidence remains valid Situation evidence for interpreting transitional motion and selecting Regulation roles, but it MUST NOT independently veto Passage evaluation after the opposed-corridor conflict has already been positively established.
+When both participants are currently A8-valid and supported complete-assembly **Maximum Productive A8 Envelopes** are available, Situation Assessment MUST evaluate Native A8 Clearance Exclusion before publishing Passage Evaluation Readiness. Using the fresh A8 lateral relationship, the exclusion is positive only when the participants' conservative facing extents still leave at least the accepted nominal Passage-clearance margin.
+
+A positive Native A8 Clearance Exclusion:
+
+- MUST make Passage Evaluation Readiness negative for that current opposed A8 relationship;
+- MUST NOT erase the underlying conservative opposed-corridor evidence or manufacture a generic safe-separation claim;
+- MUST NOT terminate or suppress an independently supported Corner, Category-2, follower or other Regulation purpose; and
+- MUST cease to be current when its A8, Job Episode, assembly-membership/configuration or representation dependencies cease to be current.
+
+If either Maximum Productive A8 Envelope is unavailable, unresolved or not fit for the exclusion question, Situation Assessment MUST publish no exclusion from that absence. Failure to prove native clearance does not prove Passage conflict and MUST NOT strengthen the opposed-corridor witness.
+
+Settled-continuation / native-intent evidence remains valid Situation evidence for interpreting transitional motion and selecting Regulation roles, but it MUST NOT independently veto Passage evaluation after the opposed-corridor conflict has already been positively established except through the purpose-specific Native A8 Clearance Exclusion contract above.
 
 > **Passage Evaluation Readiness != Passage Candidate Support.**
+
+> **Failure To Prove Native A8 Clearance != Passage Conflict.**
 
 ## Relationship interpretation
 

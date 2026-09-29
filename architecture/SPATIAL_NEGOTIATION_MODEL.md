@@ -318,8 +318,9 @@ Cooperative Passage is foreseeable only while current evidence positively suppor
 
 1. both workers are A8-valid;
 2. their productive directions are substantially opposed;
-3. their represented productive corridors genuinely compete rather than merely being adjacent; and
-4. the prospective encounter occurs before either productive-certainty horizon expires.
+3. their represented productive corridors establish a credible opposed-corridor competition requiring Passage assessment;
+4. no current **Native A8 Clearance Exclusion** positively establishes that nominal native clearance remains available; and
+5. the prospective encounter occurs before either productive-certainty horizon expires.
 
 If either worker must first reach a headland or transition, A8 does not predict Passage through that future turn.
 
@@ -329,11 +330,11 @@ Foreseeability is a Situation Assessment conclusion, not an obligation. It disap
 
 Passage recognition geometry is not Passage Candidate geometry.
 
-Recognition uses each complete Physical Assembly's actual current productive or working configuration. Current directional working extents and represented productive corridors must establish genuine corridor competition. A compact or Transit representation must not shrink a deployed productive corridor for the recognition question.
+Recognition may deliberately begin from conservative current working-configuration geometry. Current directional working extents and represented productive corridors may establish that an opposed pair is close enough to require Passage assessment without thereby proving that the physical bodies actually need intervention. A compact or Transit representation must not shrink a deployed productive corridor for this recognition question.
 
-> **Working Geometry Recognises Passage; Transit Geometry Executes Passage.**
+> **Working Geometry Identifies Passage Concern; Native A8 Clearance May Exclude Passage; Transit Geometry Executes Passage.**
 
-Working geometry answers whether a Cooperative Passage problem exists. Transit geometry answers whether the committed Passage can be physically executed. These are different purpose-specific questions and neither representation may inherit the other's authority.
+Working geometry identifies the conservative current Passage concern. A purpose-specific Native A8 Clearance Exclusion may then prove that the same settled opposed A8 continuations retain nominal native clearance even at conservative complete-assembly maximum productive-A8 physical extents. Transit geometry answers the later and different question of whether a supported Passage can be planned and physically executed.
 
 Generic broad physical-conflict evidence or GIANTS blocked/proximity signals do not independently establish Passage contact or Passage clearance.
 
@@ -341,7 +342,28 @@ Generic broad physical-conflict evidence or GIANTS blocked/proximity signals do 
 
 Purpose-specific Passage representation remains authoritative for the Passage question within the limits granted by the Physical Representation Architecture.
 
+### Native A8 Clearance Exclusion
+
+**Native A8 Clearance Exclusion** is a purpose-specific Situation conclusion for an otherwise Passage-relevant settled opposed A8 pair.
+
+It consumes one supported **Maximum Productive A8 Envelope** for each complete Physical Assembly together with the pair's fresh A8 axes and current lateral separation. The exclusion is positive only when the conservative facing extents of both maximum envelopes still leave at least the accepted nominal Passage-clearance margin between the native A8 corridors.
+
+The maximum envelopes are deliberately one-way evidence. They may overestimate productive-A8 physical span, but they must not underestimate it for this conclusion. Therefore:
+
+- a positive exclusion proves only that Cooperative Passage is unnecessary for the current opposed A8 relationship;
+- a positive exclusion does not create generic negative-clearance authority and does not erase unrelated Corner, Category-2, follower or other Regulation purposes;
+- failure to establish the exclusion does not prove physical conflict and does not strengthen conservative Passage-recognition evidence; and
+- unavailable or unresolved exclusion evidence leaves the existing Passage evaluation path unchanged.
+
+> **Veto Geometry May Overestimate; It Must Not Underestimate.**
+
+> **Failure To Prove Native A8 Clearance != Passage Conflict.**
+
+A positive exclusion is valid only while the same A8 relationship and representation dependencies remain current. Fresh `TURNING`, Job Episode change, Physical Assembly membership/configuration contradiction or another invalidating dependency returns the pair to fresh Situation Assessment rather than preserving historical clearance.
+
 ---
+
+## 4. Regulation specialisation---
 
 ## 4. Regulation specialisation
 
@@ -461,7 +483,7 @@ Cooperative Passage is a pairwise Resolution Commitment. It is distinct from Reg
 
 ### Candidate and commitment boundary
 
-Situation Assessment establishes current Passage foreseeability and genuine corridor competition. The Candidate Support architecture owns the generic machinery by which prospective alternatives, mandatory constraints and Decision are evaluated. Cooperative Passage owns the purpose-specific requirements that make a Passage Candidate semantically meaningful.
+Situation Assessment establishes current Passage foreseeability after applying any supported Native A8 Clearance Exclusion. The Candidate Support architecture owns the generic machinery by which prospective alternatives, mandatory constraints and Decision are evaluated. Cooperative Passage owns the purpose-specific requirements that make a Passage Candidate semantically meaningful.
 
 Every Cooperative Passage Candidate uses cached directional Transit geometry for the complete Physical Assembly to construct and test the simple Passage arrangement before physical Transit realisation. This may include facing extents, Passage clearance, Development burden and crossing-window physical extents. Transit geometry is therefore mandatory for Passage planning/execution, while physical Transit realisation is deferred until after selection and capture.
 
@@ -471,9 +493,18 @@ Complete Physical Assembly membership is mandatory. Internally complete Transit 
 current working geometry
     |
     v
-Situation Assessment recognises genuine Passage competition
+conservative opposed-corridor Passage concern
     |
     v
+Situation Assessment evaluates Native A8 Clearance Exclusion
+    |-- positive ------> native GIANTS A8; no Passage Candidate
+    |
+    `-- unavailable / unresolved
+               |
+               v
+Passage Evaluation Readiness
+               |
+               v
 purpose-specific Passage Candidate
 using supported complete-assembly Transit geometry
     |
@@ -538,7 +569,7 @@ The required Passage theatre is arrangement-specific and contains distinct spati
 
 The **Geometric Entry Boundary** is the pairwise longitudinal boundary defined by the participants' supported **Transit-configured facing longitudinal extents**. Lateral excursion does not add longitudinal reserve to this boundary.
 
-> **Working Geometry Identifies Passage; Transit Geometry Executes Passage**
+> **Working Geometry Identifies Passage Concern; Native A8 Clearance May Exclude Passage; Transit Geometry Executes Passage**
 
 The **Capture Reserve** is pairwise longitudinal space outside the Geometric Entry Boundary. It is the one explicit longitudinal safety reserve and exists solely to absorb control acquisition and physical settling before Transit-configured Passage execution. It is counted once and consumed once.
 

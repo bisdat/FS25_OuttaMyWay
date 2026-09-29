@@ -209,6 +209,31 @@ In particular:
 - current relocation-reference evidence may support bounded obstruction-relocation planning without proving safe clearance elsewhere; and
 - purpose-specific Category-2 boundary-demand geometry may support positive Shared Category-2 locality without becoming generic whole-assembly negative-clearance authority.
 
+### Maximum Productive A8 Envelope
+
+Assessment Representation MUST support a purpose-specific **Maximum Productive A8 Envelope** when the evidence required for a non-underestimating complete-assembly bound is available.
+
+The product represents the complete Physical Assembly's maximum lateral extent for settled productive A8 work. It is structural/job-scoped geometry, not current realised occupancy. Its permitted conclusion is limited to supporting **Native A8 Clearance Exclusion** for Cooperative Passage.
+
+For this product:
+
+- complete Physical Assembly membership or another independently defensible complete-assembly enclosure is required;
+- stable authored physical/base dimensions and supported assembly structure SHOULD be preferred where they provide a non-underestimating productive-A8 bound;
+- where productive configuration can materially widen lateral span, supported configuration/deployment evidence MUST be considered;
+- when exact widest physical span for a width-changing productive configuration is unavailable, supported productive working width MAY contribute as a conservative upper bound for the affected lateral span, but MUST be composed with other supported physical-member extents so the complete-assembly result cannot underestimate;
+- productive working width MUST NOT thereby acquire generic Physical Occupancy, positive-conflict or negative-clearance authority;
+- 3-D sphere-derived DISC overlap MUST NOT supply the purpose-specific negative-clearance authority for this product;
+- directional/asymmetric extents MUST be preserved when the evidence supports them; otherwise any symmetric fallback MUST remain non-underestimating for both facing sides; and
+- unresolved evidence that could make the real productive-A8 span wider MUST withhold the product rather than fabricate an exclusion-capable envelope.
+
+> **Veto Geometry May Overestimate; It Must Not Underestimate.**
+
+The product MUST be established from Job-Episode-stable representation/bootstrap evidence when those inputs become available and MAY then be cached in the Job-Scoped Representation Catalogue. Ordinary translation, rotation or a currently narrower articulated pose does not require recomputing a maximum envelope. Membership change, relevant purchased/configuration-structure contradiction, Job Episode expiry or another dependency capable of widening the real maximum beyond the cached bound MUST invalidate it.
+
+When two current A8 participants each have a supported Maximum Productive A8 Envelope, Situation Assessment MAY combine their facing extents with fresh lateral A8 separation and the accepted nominal Passage-clearance policy. The representation itself does not decide the Situation conclusion.
+
+Failure to establish the product provides no positive conflict claim and no generic clearance claim.
+
 ### Category-2 boundary-demand representation
 
 Assessment Representation owns the representation inputs required by the Category-2 Situation contract.

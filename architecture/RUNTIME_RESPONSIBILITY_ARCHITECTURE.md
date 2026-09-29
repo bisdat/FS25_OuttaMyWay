@@ -212,9 +212,11 @@ Operation membership also grants no strategic readiness by itself:
 
 A member whose current GIANTS-native intent is turning, reversing, unresolved or otherwise transitional remains a member while Situation Assessment determines which traffic conclusions are supportable.
 
-For opposed-corridor traffic, **Passage Evaluation Readiness** is a pairwise Situation conclusion: once an **Established Opposed Corridor Conflict** is positively established between exactly two current Operation members, the Passage specialist may be asked to evaluate whether a Passage-Capable Theatre exists. Native `TURNING` or unsettled-continuation state may still inform Regulation and intent interpretation, but it does not independently veto that evaluation after the pairwise conflict is established.
+For opposed-corridor traffic, **Passage Evaluation Readiness** is a pairwise Situation conclusion. An **Established Opposed Corridor Conflict** between exactly two current Operation members establishes conservative Passage concern, but it is not sufficient when a current purpose-specific **Native A8 Clearance Exclusion** positively proves that the same settled opposed A8 continuations retain nominal native clearance even at their supported maximum productive-A8 physical envelopes. Where that exclusion is positive, Cooperative Passage evaluation is not ready. Where the exclusion is unavailable or unresolved, it adds no independent veto and the Passage specialist may be asked to evaluate whether a Passage-Capable Theatre exists. Native `TURNING` or unsettled-continuation state may still inform Regulation and intent interpretation, but it does not independently veto that evaluation after the pairwise conflict is established.
 
 > **Passage Evaluation Readiness != Passage Candidate Support.**
+
+> **Failure To Prove Native A8 Clearance != Passage Conflict.**
 
 Evaluation readiness grants no Passage geometry, commitment or actuation authority; Cooperative Passage Candidate Support must still positively establish the purpose-specific Passage contract.
 

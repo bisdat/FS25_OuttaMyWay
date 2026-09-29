@@ -172,13 +172,14 @@ This is ordinary tactical Regulation. It MUST NOT create a hybrid Corner/Passage
 A prior tactical Regulation purpose may end while another tactical Regulation purpose becomes justified. In particular:
 
 - Positive Corner Departure terminates the Corner right-of-way purpose through the normal responsibility lifecycle;
-- if fresh A8 still predicts opposed Passage and the Shared Crossing Core plus any required participant-specific Lateral Excursion Development/Reacquisition are not yet supportable, a Passage-theatre-shaping Regulation purpose MAY be established through a sharp Responsibility Transition;
+- a positive **Native A8 Clearance Exclusion** prevents or positively ends a Passage-specific opposed-corridor / Passage-theatre-shaping purpose for that current settled A8 relationship, while leaving independently supported Corner, Category-2, follower or other Regulation purposes untouched;
+- if fresh A8 still predicts opposed Passage, no Native A8 Clearance Exclusion is positive, and the Shared Crossing Core plus any required participant-specific Lateral Excursion Development/Reacquisition are not yet supportable, a Passage-theatre-shaping Regulation purpose MAY be established through a sharp Responsibility Transition;
 - once one complete Cooperative Passage arrangement is positively supported while disposable approach margin remains, **Passage Approach Regulation** MAY become the current tactical responsibility before Cooperative Passage;
 - Passage Approach Regulation preserves GIANTS route and steering while bounding both prospective Passage participants to the accepted initial **10 km/h maximum** through their native GIANTS Cruise Control settings; pair application is one fail-safe Control operation even though the two participants retain distinct authority provenance;
 - after that pairwise ceiling has been acquired, Cooperative Passage Candidate/Bubble Formation Readiness MAY resume and Regulation remains the predecessor until Bubble Formation Readiness is positive; and
 - either the settled-native-revelation route or latest-safe-capture route may therefore cause the sharp Regulation-to-Passage transition. If complete Passage support is first obtained only after Capture Reserve is already due, the system need not manufacture a zero-duration Passage Approach Regulation.
 
-Passage Approach Regulation is not pre-commit Passage Control. It owns only temporal progression before Capture and creates no Passage movement, Transit-configuration or spatial-displacement authority. If the selected Passage ceases to be positively supported before Capture, Regulation cannot force that successor and must be reassessed from fresh Situation evidence.
+Passage Approach Regulation is not pre-commit Passage Control. It owns only temporal progression before Capture and creates no Passage movement, Transit-configuration or spatial-displacement authority. If the selected Passage ceases to be positively supported before Capture, including because fresh Situation Assessment positively establishes Native A8 Clearance Exclusion for the current settled opposed A8 relationship, Regulation cannot force that successor and must be reassessed from fresh Situation evidence.
 
 > **Confirmed Passage != Immediate Passage Responsibility**
 
@@ -190,7 +191,7 @@ Passage Approach Regulation is not pre-commit Passage Control. It owns only temp
 
 > **Sharp Responsibility Transition — No Hybrid Spatial Modes**
 
-Theatre shaping MUST remain successor-agnostic. It may preserve the possibility of Passage, but if A8 certainty or the opposed relationship disappears, fresh Situation Assessment may instead justify ordinary GIANTS progression or another supported responsibility.
+Theatre shaping MUST remain successor-agnostic. It may preserve the possibility of Passage, but if A8 certainty or the opposed relationship disappears, or Native A8 Clearance Exclusion becomes positive, fresh Situation Assessment may instead justify ordinary GIANTS progression or another supported responsibility.
 
 ## Regulation responsibility versus supporting temporal effects
 
