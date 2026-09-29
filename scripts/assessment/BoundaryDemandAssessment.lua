@@ -100,17 +100,12 @@ local function discFor(projection,reach)
     }
 end
 
-local function participant(projection,motion,physical,fieldWorld)
+local function participant(projection,motion,physical)
     local reach=OuttaMyWay.BoundaryDemandRepresentation.measureReach(projection,physical)
     if reach.status~="SUPPORTED" then
         return nil,reach.reason,{reach=reach}
     end
     local disc=discFor(projection,reach)
-    local option=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace(fieldWorld,disc)
-    if option.status~="SUPPORTED" or not finite(option.boundaryOptionSpaceRatio) then
-        return nil,option.reason,{reach=reach,optionSpace=option,disc=disc}
-    end
-    local occupancy=OuttaMyWay.BoundaryDemandRepresentation.currentOccupancyInDisc(fieldWorld,physical,disc)
     return {
         assemblyId=projection.assemblyId,
         assemblyReferenceKey=projection.assemblyReferenceKey,
@@ -122,12 +117,6 @@ local function participant(projection,motion,physical,fieldWorld)
         boundaryDistanceM=projection.boundaryDistanceM,
         boundaryInteractionReachM=reach.boundaryInteractionReachM,
         boundaryDemandDisc=disc,
-        boundaryOptionSpaceRatio=option.boundaryOptionSpaceRatio,
-        boundaryOptionSpaceClippedAreaM2=option.clippedAreaM2,
-        boundaryOptionSpaceFullDiscAreaM2=option.fullDiscAreaM2,
-        boundaryOptionSpaceRatioTolerance=option.ratioNumericalTolerance,
-        currentBoundaryDemandOccupancy=occupancy and occupancy.positive==true or false,
-        currentBoundaryDemandOccupancyEvidence=occupancy,
         intentClassification=motion and motion.localIntentClassification or "UNRESOLVED",
         intentEpoch=motion and motion.intentEpoch or nil,
         intentValid=motion and motion.intentValid==true or false,
@@ -136,9 +125,38 @@ local function participant(projection,motion,physical,fieldWorld)
         negativeClearanceAuthority=false,
         provenance={
             source="BoundaryDemandAssessment",layer="SITUATION_ASSESSMENT",
-            reach=reach.provenance,optionSpace=option.provenance
+            reach=reach.provenance
         }
-    },nil,{reach=reach,optionSpace=option,disc=disc,occupancy=occupancy}
+    },nil,{reach=reach,disc=disc}
+end
+
+-- Boundary Option-Space and current occupancy are yielder-ordering evidence,
+-- not Shared Category-2 admission gates.  Evaluate them only after positive
+-- shared locality exists, and preserve unresolved evidence as unresolved rather
+-- than suppressing the already-positive shared demand.
+local function enrichOrderingEvidence(participantValue,physical,fieldWorld,evidence)
+    if type(participantValue)~="table" or participantValue.orderingEvidenceAssessed==true then return end
+    participantValue.orderingEvidenceAssessed=true
+    evidence=evidence or {}
+    local disc=participantValue.boundaryDemandDisc
+
+    local option=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace(fieldWorld,disc)
+    evidence.optionSpace=option
+    participantValue.boundaryOptionSpaceEvidence=option
+    if option.status=="SUPPORTED" and finite(option.boundaryOptionSpaceRatio) then
+        participantValue.boundaryOptionSpaceRatio=option.boundaryOptionSpaceRatio
+        participantValue.boundaryOptionSpaceClippedAreaM2=option.clippedAreaM2
+        participantValue.boundaryOptionSpaceFullDiscAreaM2=option.fullDiscAreaM2
+        participantValue.boundaryOptionSpaceRatioTolerance=option.ratioNumericalTolerance
+        participantValue.provenance.optionSpace=option.provenance
+    end
+
+    local occupancy=OuttaMyWay.BoundaryDemandRepresentation.currentOccupancyInDisc(fieldWorld,physical,disc)
+    evidence.occupancy=occupancy
+    participantValue.currentBoundaryDemandOccupancyEvidence=occupancy
+    if occupancy and occupancy.positive==true then
+        participantValue.currentBoundaryDemandOccupancy=true
+    end
 end
 
 local function freshRelation(operationId,fieldWorldReferenceKey,a,b,fieldWorld)
@@ -213,7 +231,7 @@ function Assessment:assess(input)
         if projection.status=="SUPPORTED" then
             local current,reason,evidence=participant(
                 projection,motionByAssembly[projection.assemblyId],
-                physicalByAssembly[projection.assemblyId],input.fieldWorld)
+                physicalByAssembly[projection.assemblyId])
             participantEvidence[projection.assemblyId]=evidence
             if current~=nil then participants[#participants+1]=current
             else
@@ -231,7 +249,15 @@ function Assessment:assess(input)
                 input.operationId,input.fieldWorldReferenceKey,
                 participants[i],participants[j],input.fieldWorld)
             pairAssessments[#pairAssessments+1]=relation
-            if relation.competingDemand==true then freshByIdentity[relation.identity]=relation end
+            if relation.competingDemand==true then
+                enrichOrderingEvidence(
+                    participants[i],physicalByAssembly[participants[i].assemblyId],input.fieldWorld,
+                    participantEvidence[participants[i].assemblyId])
+                enrichOrderingEvidence(
+                    participants[j],physicalByAssembly[participants[j].assemblyId],input.fieldWorld,
+                    participantEvidence[participants[j].assemblyId])
+                freshByIdentity[relation.identity]=relation
+            end
         end
     end
 
