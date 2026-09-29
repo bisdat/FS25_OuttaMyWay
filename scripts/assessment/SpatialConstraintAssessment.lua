@@ -10,6 +10,7 @@ local Assessment=OuttaMyWay.SpatialConstraintAssessment
 Assessment.__index=Assessment
 local EPSILON_M=0.00001
 local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1
+local CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION_CREEP_KMH = 1
 local CORNER_INTENT_REVELATION_CREEP_KMH = 1
 
 local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
@@ -1048,6 +1049,68 @@ function Assessment:assess(input)
                 tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason)) end
     end end
     local cornerKnowledge=assessCornerKnowledge(self,input,projections,relationships)
+    local concurrentBoundaryArrivals={}
+    local physicalByAssembly=byAssembly(input.physicalSpaceEvidence)
+
+    local function sharedCornerSuperseder(aAssemblyId,bAssemblyId)
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(cornerKnowledge.sharedCornerSituations or {}) do
+            local participants={}
+            for _,participant in OuttaMyWay.ValueRecord.ipairs(situation.participants or {}) do
+                participants[participant.assemblyId]=true
+            end
+            if participants[aAssemblyId] and participants[bAssemblyId] then
+                return {kind="CORNER_RIGHT_OF_WAY",identity=situation.identity,cornerKey=situation.cornerKey}
+            end
+        end
+        return nil
+    end
+
+    for i=1,OuttaMyWay.ValueRecord.length(projections)-1 do
+        for j=i+1,OuttaMyWay.ValueRecord.length(projections) do
+            local a,b=projections[i],projections[j]
+            local superseder=sharedCornerSuperseder(a.assemblyId,b.assemblyId)
+            local incumbentRelationship=incumbent(a,b,input.followerBoundaryKnowledge)
+            if superseder==nil and incumbentRelationship~=nil then
+                superseder={kind="FOLLOWER_BOUNDARY",identity=incumbentRelationship.pairKey,commitmentId=incumbentRelationship.commitmentId}
+            end
+            local relation,reason=OuttaMyWay.ConcurrentBoundaryArrivalAssessment.assessPair({
+                operationId=input.operationId,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
+                subjectProjection=a,otherProjection=b,
+                subjectPhysicalSpace=physicalByAssembly[a.assemblyId],
+                otherPhysicalSpace=physicalByAssembly[b.assemblyId],
+                regulationSpeedKmh=CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION_CREEP_KMH,
+                supersedingRelationship=superseder
+            })
+            if relation~=nil then
+                concurrentBoundaryArrivals[#concurrentBoundaryArrivals+1]=relation
+                local key="concurrent-boundary-arrival:"..tostring(relation.identity)
+                local signature=table.concat({
+                    tostring(relation.classification),tostring(relation.relationshipStatus),
+                    tostring(relation.candidateSupportReady),tostring(relation.reason)
+                },"|")
+                if self.lastSignatures[key]~=signature then
+                    self.lastSignatures[key]=signature
+                    logInfo("CONCURRENT_BOUNDARY_ARRIVAL_ASSESSED",
+                        "relationship=%s pair=%s|%s state=%s boundaryDomain=%s:%s contacts=%.2fm localDemandReach=%.2fm times=%s|%s arrivalDifference=%s overlapWindow=%s candidateSupport=%s superseder=%s reason=%s",
+                        tostring(relation.identity),tostring(relation.subjectAssemblyId),tostring(relation.otherAssemblyId),
+                        tostring(relation.relationshipStatus),
+                        tostring(relation.boundaryDomain and relation.boundaryDomain.ringKind or "UNRESOLVED"),
+                        tostring(relation.boundaryDomain and relation.boundaryDomain.ringIndex or "UNRESOLVED"),
+                        tonumber(relation.boundaryContactDistanceM) or -1,tonumber(relation.localDemandReachM) or -1,
+                        numberText(relation.subject and relation.subject.timeToBoundarySec),
+                        numberText(relation.other and relation.other.timeToBoundarySec),
+                        numberText(relation.arrivalDifferenceSec),numberText(relation.arrivalOverlapWindowSec),
+                        tostring(relation.candidateSupportReady==true),
+                        tostring(relation.supersedingRelationship and relation.supersedingRelationship.kind or "none"),
+                        tostring(relation.reason))
+                end
+            elseif reason~=nil then
+                logInfo("CONCURRENT_BOUNDARY_ARRIVAL_ASSESSMENT_UNRESOLVED",
+                    "operation=%s pair=%s|%s reason=%s",tostring(input.operationId),tostring(a.assemblyId),tostring(b.assemblyId),tostring(reason))
+            end
+        end
+    end
+
     for _,association in OuttaMyWay.ValueRecord.ipairs(cornerKnowledge.headlandAssociations or {}) do
         local key="headland-association:"..tostring(input.operationId)..":"..tostring(association.assemblyId)
         local signature=table.concat({
@@ -1064,6 +1127,8 @@ function Assessment:assess(input)
                 numberText(association.contactDistanceToCornerM),tostring(association.witness),tostring(association.reason))
         end
     end
-    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,cornerKnowledge=cornerKnowledge,decisionAuthority=false,controlAuthority=false,
-        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
+    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,
+        concurrentBoundaryArrivals=concurrentBoundaryArrivals,cornerKnowledge=cornerKnowledge,
+        decisionAuthority=false,controlAuthority=false,
+        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true,concurrentBoundaryArrival=true}}
 end

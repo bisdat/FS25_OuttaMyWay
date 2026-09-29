@@ -98,6 +98,8 @@ Regulation requires explicit current justification for temporal coordination. Sh
 
 Different Situation reasons do not create different architectural Regulation Jurisdictions. Follower coordination, action-space conservation, intent revelation and other accepted reasons specialise the governing basis while using the same Regulation responsibility contract.
 
+Where Spatial Negotiation positively supports intent revelation for Forward Intersection, Category-1 temporary right-of-way or Category-2 Concurrent Boundary Arrival, Regulation MAY use the accepted fixed **1 km/h Intent-Revelation Creep**. The shared magnitude does not merge their Situation meanings or lifecycle evidence. Concurrent Boundary Arrival remains a Category-2 Situation basis; it does not become a Forward Intersection merely because both use the same bounded Regulation expression.
+
 ### Maintenance
 
 If fresh Situation Assessment continues to support the same Regulation purpose, the same responsibility identity persists.

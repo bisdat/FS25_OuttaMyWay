@@ -238,6 +238,7 @@ end
 local FOLLOWER_BOUNDARY_OWNER_TAG="FOLLOWER_BOUNDARY"
 local ACTION_SPACE_REGULATION_OWNER_TAG="ACTION_SPACE_REGULATION"
 local FORWARD_INTERSECTION_OWNER_TAG="FORWARD_INTERSECTION_INTENT_REVELATION"
+local CONCURRENT_BOUNDARY_ARRIVAL_OWNER_TAG="CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION"
 local CORNER_RIGHT_OF_WAY_OWNER_TAG="CORNER_RIGHT_OF_WAY"
 
 function Authority:_regulationRequest(picture,evaluated,candidate,commitment,token,bridge,operation,ownerTag,maxSpeedKmh,currentResponsibility,existingBoundedAuthorityId)
@@ -299,7 +300,8 @@ local function actionSpaceRegulationBridge(candidate)
     local basis=candidate and candidate.evidenceBasis or nil
     local bridge=basis and basis.actionSpaceRegulationBridge or nil
     if type(bridge)=="table" and type(bridge.conflictIdentity)=="string" and type(bridge.regulatedAssemblyId)=="string" then
-        if bridge.admissionKind=="FORWARD_INTERSECTION" or bridge.admissionKind=="CORNER_RIGHT_OF_WAY" then
+        if bridge.admissionKind=="FORWARD_INTERSECTION" or bridge.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
+            or bridge.admissionKind=="CORNER_RIGHT_OF_WAY" then
             local magnitude=bridge.fixedRegulationSpeedKmh
             if type(magnitude)~="number" or magnitude~=magnitude or magnitude<=0 or magnitude==math.huge then return nil end
         end
@@ -752,8 +754,9 @@ function Authority:_continueActionSpaceRegulationReactivation(picture,evaluated,
     local token=applied.authorityToken
     if token==nil or self.runtime.authorities:validate(token)~=true then return {status="QUIESCENT",reason="ACTION_SPACE_REGULATION_ACTUATION_REACTIVATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE",actionSpaceRegulation=true,commitmentId=lease.commitmentId} end
     local fixedForward=bridge.admissionKind=="FORWARD_INTERSECTION"
+    local fixedBoundaryArrival=bridge.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local fixedCorner=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"
-    local fixed=fixedForward or fixedCorner
+    local fixed=fixedForward or fixedBoundaryArrival or fixedCorner
     local envelope,envelopeReason=nil,nil
     if not fixed then envelope,envelopeReason=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh) end
     if not fixed and envelope==nil then
@@ -762,7 +765,8 @@ function Authority:_continueActionSpaceRegulationReactivation(picture,evaluated,
     end
     local cap=fixed and tonumber(bridge.fixedRegulationSpeedKmh) or (tonumber(envelope.capKmh) or 0)
     local reactivationOwnerTag=fixedForward and FORWARD_INTERSECTION_OWNER_TAG
-        or (fixedCorner and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG)
+        or (fixedBoundaryArrival and CONCURRENT_BOUNDARY_ARRIVAL_OWNER_TAG
+        or (fixedCorner and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG))
     local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",reactivationOwnerTag,cap,applied.currentResponsibility)
     if request==nil then return {status="QUIESCENT",reason=requestReason,actionSpaceRegulation=true,commitmentId=lease.commitmentId} end
     local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
@@ -776,7 +780,9 @@ function Authority:_continueActionSpaceRegulationReactivation(picture,evaluated,
     lease.protectedAssemblyId=bridge.protectedAssemblyId or bridge.excursionAssemblyId; lease.protectedReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey
     lease.excursionAssemblyId=bridge.excursionAssemblyId; lease.excursionReferenceKey=bridge.excursionReferenceKey; lease.admissionKind=bridge.admissionKind
     lease.governingPurpose=bridge.governingPurpose; lease.authorityTokenId=token.identity; lease.boundedAuthorityId=request.boundedAuthorityId; lease.requestId=request.identity
-    lease.currentCapKmh=cap; lease.progressionEnvelope=envelope; lease.ownerTag=reactivationOwnerTag; lease.fixedForwardIntersection=fixedForward; lease.fixedCornerRightOfWay=fixedCorner; lease.actuationActive=true; lease.quiescenceReason=nil
+    lease.currentCapKmh=cap; lease.progressionEnvelope=envelope; lease.ownerTag=reactivationOwnerTag
+    lease.fixedForwardIntersection=fixedForward; lease.fixedConcurrentBoundaryArrival=fixedBoundaryArrival
+    lease.fixedCornerRightOfWay=fixedCorner; lease.actuationActive=true; lease.quiescenceReason=nil
     lease.nativeClosureContributionKmh=bridge.nativeClosureContributionKmh; lease.nativeMoveForwards=bridge.nativeMoveForwards
     lease.reactivationCount=(tonumber(lease.reactivationCount) or 0)+1
     self.actionSpaceRegulationReactivationCount=(self.actionSpaceRegulationReactivationCount or 0)+1
@@ -790,6 +796,9 @@ end
 function Authority:_updateActionSpaceRegulationEnvelope(picture,evaluated,candidate,lease,relation,relationshipReason)
     if lease.admissionKind=="FORWARD_INTERSECTION" then
         return {status="MAINTAINED",reason=relationshipReason or "FORWARD_INTERSECTION_FIXED_CREEP_REMAINS_ACTIVE",actionSpaceRegulation=true,forwardIntersection=true,commitmentId=lease.commitmentId}
+    end
+    if lease.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL" then
+        return {status="MAINTAINED",reason=relationshipReason or "CONCURRENT_BOUNDARY_ARRIVAL_FIXED_CREEP_REMAINS_ACTIVE",actionSpaceRegulation=true,concurrentBoundaryArrival=true,commitmentId=lease.commitmentId}
     end
     if lease.admissionKind=="CORNER_RIGHT_OF_WAY" then
         return {status="MAINTAINED",reason=relationshipReason or "CORNER_RIGHT_OF_WAY_FIXED_CREEP_REMAINS_ACTIVE",actionSpaceRegulation=true,cornerRightOfWay=true,commitmentId=lease.commitmentId}
@@ -860,8 +869,9 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     end
 
     local fixedForward=bridge.admissionKind=="FORWARD_INTERSECTION"
+    local fixedBoundaryArrival=bridge.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local fixedCorner=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"
-    local fixed=fixedForward or fixedCorner
+    local fixed=fixedForward or fixedBoundaryArrival or fixedCorner
     local rebased,rebaseReason=nil,nil
     local newCap=nil
     if fixed then
@@ -869,7 +879,8 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
         if newCap==nil or newCap<=0 then
             return {status="MAINTAINED",
                 reason=fixedForward and "FORWARD_INTERSECTION_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE"
-                    or "CORNER_RIGHT_OF_WAY_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE",
+                    or (fixedBoundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE"
+                    or "CORNER_RIGHT_OF_WAY_ROLE_MIGRATION_FIXED_CREEP_UNAVAILABLE"),
                 actionSpaceRegulation=true,commitmentId=lease.commitmentId}
         end
     else
@@ -888,7 +899,8 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     end
 
     local newOwnerTag=fixedForward and FORWARD_INTERSECTION_OWNER_TAG
-        or (fixedCorner and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG)
+        or (fixedBoundaryArrival and CONCURRENT_BOUNDARY_ARRIVAL_OWNER_TAG
+        or (fixedCorner and CORNER_RIGHT_OF_WAY_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG))
     local newRequest,newRequestReason=self:_regulationRequest(
         picture,evaluated,candidate,applied.commitment,newToken,bridge,"APPLY",
         newOwnerTag,newCap,applied.currentResponsibility)
@@ -933,7 +945,8 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(
         self.runtime,lease.commitmentId,lease.regulatedAssemblyId,
         {reason=fixedForward and "FORWARD_INTERSECTION_ROLE_MIGRATED"
-            or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ROLE_MIGRATED"),
+            or (fixedBoundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_ROLE_MIGRATED"
+            or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ROLE_MIGRATED")),
          preserveAuthority=preserveOld})
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,"ACTION_SPACE_REGULATION_ROLE_MIGRATED")
 
@@ -954,6 +967,7 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     lease.currentCapKmh=newCap
     lease.progressionEnvelope=rebased
     lease.fixedForwardIntersection=fixedForward
+    lease.fixedConcurrentBoundaryArrival=fixedBoundaryArrival
     lease.fixedCornerRightOfWay=fixedCorner
     lease.nativeClosureContributionKmh=bridge.nativeClosureContributionKmh
     lease.nativeMoveForwards=bridge.nativeMoveForwards
@@ -961,7 +975,8 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
     self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(newRequest,"ACCEPTED",{
         kind=fixedForward and "FORWARD_INTERSECTION_ROLE_MIGRATED"
-            or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_ROLE_MIGRATED_AND_ENVELOPE_REBASED"),
+            or (fixedBoundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_ROLE_MIGRATED"
+            or (fixedCorner and "CORNER_RIGHT_OF_WAY_ROLE_MIGRATED" or "ACTION_SPACE_REGULATION_ROLE_MIGRATED_AND_ENVELOPE_REBASED")),
         capability="REGULATE_SPEED",effectClass=fixed and "INTENT_REVELATION_CREEP" or rebased.effectClass,maxSpeedKmh=newCap},nil)
     if fixedForward then
         logInfo("DEBUG","FORWARD_INTERSECTION_ROLE_MIGRATED","commitment=%s relationship=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
@@ -969,6 +984,13 @@ function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated
             tostring(lease.regulatedAssemblyId),tostring(oldProtectedAssemblyId),tostring(lease.protectedAssemblyId),newCap)
         return {status="ROLE_MIGRATED",reason="FORWARD_INTERSECTION_CURRENT_SITUATION_REASSIGNED_TEMPORAL_YIELDER",
             request=newRequest,releaseRequest=oldRequest,outcome=outcome,actionSpaceRegulation=true,forwardIntersection=true,commitmentId=lease.commitmentId}
+    end
+    if fixedBoundaryArrival then
+        logInfo("DEBUG","CONCURRENT_BOUNDARY_ARRIVAL_ROLE_MIGRATED","commitment=%s relationship=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
+            tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(oldRegulatedAssemblyId),
+            tostring(lease.regulatedAssemblyId),tostring(oldProtectedAssemblyId),tostring(lease.protectedAssemblyId),newCap)
+        return {status="ROLE_MIGRATED",reason="CONCURRENT_BOUNDARY_ARRIVAL_CURRENT_SITUATION_REASSIGNED_TEMPORAL_YIELDER",
+            request=newRequest,releaseRequest=oldRequest,outcome=outcome,actionSpaceRegulation=true,concurrentBoundaryArrival=true,commitmentId=lease.commitmentId}
     end
     if fixedCorner then
         logInfo("DEBUG","CORNER_RIGHT_OF_WAY_ROLE_MIGRATED","commitment=%s situation=%s oldRegulated=%s newRegulated=%s oldProtected=%s newProtected=%s cap=%dkmh",
@@ -1069,9 +1091,10 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
     if token==nil or self.runtime.authorities:validate(token)~=true then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE",actionSpaceRegulation=true} end
 
     local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"
+    local fixedConcurrentBoundaryArrival=bridge.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"
     local fixedPassageApproach=bridge.admissionKind=="PASSAGE_APPROACH"
-    local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedPassageApproach
+    local fixed=fixedForwardIntersection or fixedConcurrentBoundaryArrival or fixedCornerRightOfWay or fixedPassageApproach
     local envelope,envelopeReason=nil,nil
     if not fixed then
         envelope,envelopeReason=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh)
@@ -1087,8 +1110,9 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
         initialCap=tonumber(envelope.capKmh) or 0
     end
     local ownerTag=fixedForwardIntersection and FORWARD_INTERSECTION_OWNER_TAG
+        or (fixedConcurrentBoundaryArrival and CONCURRENT_BOUNDARY_ARRIVAL_OWNER_TAG
         or (fixedCornerRightOfWay and CORNER_RIGHT_OF_WAY_OWNER_TAG
-        or (fixedPassageApproach and PASSAGE_APPROACH_REGULATION_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG))
+        or (fixedPassageApproach and PASSAGE_APPROACH_REGULATION_OWNER_TAG or ACTION_SPACE_REGULATION_OWNER_TAG)))
 
     if fixedPassageApproach then
         local request,requestReason=self:_passageCruisePrimaryRequest(
@@ -1118,7 +1142,7 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
             excursionAssemblyId=bridge.excursionAssemblyId,excursionReferenceKey=bridge.excursionReferenceKey,admissionKind=bridge.admissionKind,
             governingPurpose=bridge.governingPurpose,ownerTag=ownerTag,authorityTokenId=token.identity,
             boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=initialCap,
-            progressionEnvelope=nil,actuationActive=true,fixedForwardIntersection=false,fixedCornerRightOfWay=false,fixedPassageApproach=true,
+            progressionEnvelope=nil,actuationActive=true,fixedForwardIntersection=false,fixedConcurrentBoundaryArrival=false,fixedCornerRightOfWay=false,fixedPassageApproach=true,
             supportingReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey,
             supportingOwnerTag=PASSAGE_APPROACH_SUPPORTING_OWNER_TAG,
             supportingBoundedAuthorityId=supportingRequest.boundedAuthorityId,supportingRequestId=supportingRequest.identity,
@@ -1152,7 +1176,9 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
         regulatedAssemblyId=bridge.regulatedAssemblyId,regulatedReferenceKey=bridge.regulatedReferenceKey,
         protectedAssemblyId=bridge.protectedAssemblyId or bridge.excursionAssemblyId,protectedReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey,
         excursionAssemblyId=bridge.excursionAssemblyId,excursionReferenceKey=bridge.excursionReferenceKey,admissionKind=bridge.admissionKind,
-        governingPurpose=bridge.governingPurpose,ownerTag=ownerTag,authorityTokenId=token.identity,boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=initialCap,progressionEnvelope=envelope,actuationActive=true,fixedForwardIntersection=fixedForwardIntersection,fixedCornerRightOfWay=fixedCornerRightOfWay,fixedPassageApproach=fixedPassageApproach,
+        governingPurpose=bridge.governingPurpose,ownerTag=ownerTag,authorityTokenId=token.identity,boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=initialCap,progressionEnvelope=envelope,actuationActive=true,
+        fixedForwardIntersection=fixedForwardIntersection,fixedConcurrentBoundaryArrival=fixedConcurrentBoundaryArrival,
+        fixedCornerRightOfWay=fixedCornerRightOfWay,fixedPassageApproach=fixedPassageApproach,
         supportingReferenceKey=fixedPassageApproach and (bridge.protectedReferenceKey or bridge.excursionReferenceKey) or nil,
         supportingOwnerTag=fixedPassageApproach and PASSAGE_APPROACH_SUPPORTING_OWNER_TAG or nil,
         supportingBoundedAuthorityId=supportingRequest and supportingRequest.boundedAuthorityId or nil,
@@ -1161,9 +1187,10 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
     }
     self.actionSpaceRegulationApplyCount=self.actionSpaceRegulationApplyCount+1; self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(request,"ACCEPTED",{kind=fixedForwardIntersection and "FORWARD_INTERSECTION_REGULATION_ADMITTED"
+        or (fixedConcurrentBoundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_REGULATION_ADMITTED"
         or (fixedCornerRightOfWay and "CORNER_RIGHT_OF_WAY_REGULATION_ADMITTED"
-        or (fixedPassageApproach and "PASSAGE_APPROACH_REGULATION_ADMITTED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ENVELOPE_ADMITTED")),
-        capability="REGULATE_SPEED",effectClass=(fixedForwardIntersection or fixedCornerRightOfWay) and "INTENT_REVELATION_CREEP"
+        or (fixedPassageApproach and "PASSAGE_APPROACH_REGULATION_ADMITTED" or "ACTION_SPACE_REGULATION_RESOLUTION_SPACE_ENVELOPE_ADMITTED"))),
+        capability="REGULATE_SPEED",effectClass=(fixedForwardIntersection or fixedConcurrentBoundaryArrival or fixedCornerRightOfWay) and "INTENT_REVELATION_CREEP"
             or (fixedPassageApproach and "PAIRWISE_SPEED_CEILING" or envelope.effectClass),maxSpeedKmh=initialCap},nil)
     if fixedPassageApproach then
         logInfo("DEBUG","PASSAGE_APPROACH_REGULATION_APPLIED","commitment=%s conflict=%s A=%s B=%s cap=%.2fkmh pairwise=true captureSuccession=true",
@@ -1175,6 +1202,14 @@ function Authority:_continueActionSpaceRegulationInitial(picture,evaluated,candi
         logInfo("DEBUG","FORWARD_INTERSECTION_REGULATION_APPLIED","commitment=%s relationship=%s yielder=%s continuing=%s cap=1kmh purpose=%s",
             tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId),tostring(bridge.governingPurpose))
         return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,actionSpaceRegulation=true,forwardIntersection=true}
+    end
+    if fixedConcurrentBoundaryArrival then
+        logInfo("DEBUG","CONCURRENT_BOUNDARY_ARRIVAL_REGULATION_APPLIED",
+            "commitment=%s relationship=%s regulated=%s protected=%s cap=1kmh purpose=%s",
+            tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),
+            tostring(bridge.protectedAssemblyId),tostring(bridge.governingPurpose))
+        return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,
+            actionSpaceRegulation=true,concurrentBoundaryArrival=true}
     end
     if fixedCornerRightOfWay then
         logInfo("DEBUG","CORNER_RIGHT_OF_WAY_REGULATION_APPLIED","commitment=%s situation=%s corner=%s regulated=%s protected=%s cap=1kmh purpose=%s",

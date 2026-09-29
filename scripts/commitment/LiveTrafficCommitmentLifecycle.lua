@@ -266,8 +266,8 @@ local function findActionSpaceRegulationObligation(runtime,commitmentId,conflict
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         local basis=obligation.basis
         local outcome=obligation.requiredOutcome
-        local supportedBasis=type(basis)=="table" and (basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION" or basis.kind=="CORNER_RIGHT_OF_WAY")
-        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES")
+        local supportedBasis=type(basis)=="table" and (basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION" or basis.kind=="CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION" or basis.kind=="CORNER_RIGHT_OF_WAY")
+        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or outcome.kind=="CONCURRENT_BOUNDARY_ARRIVAL_DISSOLVED_OR_SUCCEEDED" or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES")
         if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
@@ -302,7 +302,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
     if obligation==nil then
         local specification=nil
         for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
-            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES") then specification=item break end
+            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or item.requiredOutcome.kind=="CONCURRENT_BOUNDARY_ARRIVAL_DISSOLVED_OR_SUCCEEDED" or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES") then specification=item break end
         end
         if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
@@ -338,6 +338,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_LIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
+    local boundaryArrival=hasPrefix(responsibility,"concurrent-boundary-arrival-regulation:")
     local corner=hasPrefix(responsibility,"corner-right-of-way:")
     local settlementMode=nil
     if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
@@ -352,6 +353,15 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         else
             return nil,"FORWARD_INTERSECTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION"
         end
+    elseif boundaryArrival then
+        local evidenceKind=evidence and evidence.kind or nil
+        if evidenceKind=="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_DISSOLUTION" then
+            settlementMode="SATISFACTION"
+        elseif evidenceKind=="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_SUPERSESSION" then
+            settlementMode="BASIS_CESSATION"
+        else
+            return nil,"CONCURRENT_BOUNDARY_ARRIVAL_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION"
+        end
     else
         settlementMode="SATISFACTION"
     end
@@ -365,7 +375,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or boundaryArrival or corner
     if #remaining==0 and ownedTrafficPurpose then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
@@ -380,6 +390,10 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
             terminalEvidenceKind=(evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
                 or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
+        elseif boundaryArrival and not crossContext then
+            terminalEvidenceKind=(evidenceKind=="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_SUPERSESSION")
+                and "CONCURRENT_BOUNDARY_ARRIVAL_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
+                or "CONCURRENT_BOUNDARY_ARRIVAL_POSITIVELY_DISSOLVED"
         end
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
@@ -405,7 +419,10 @@ end
 
 local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:") or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:")
+        or hasPrefix(responsibility,"forward-intersection-regulation:")
+        or hasPrefix(responsibility,"concurrent-boundary-arrival-regulation:")
+        or hasPrefix(responsibility,"corner-right-of-way:")
 end
 
 local function endedDependency(record,ended)

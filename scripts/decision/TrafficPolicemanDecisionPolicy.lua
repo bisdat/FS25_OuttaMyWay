@@ -135,6 +135,44 @@ local function cornerRightOfWayChoice(entries)
     return nil,true,"SHARED_CORNER_ARRIVAL_PRIORITY_UNRESOLVED"
 end
 
+local function concurrentBoundaryArrivalChoice(entries)
+    if #entries==0 then return nil,false,nil end
+    local count=0
+    local identity=nil
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(entries) do
+        local evidence=entry.metadata and entry.metadata.concurrentBoundaryArrival or nil
+        if type(evidence)=="table" then
+            count=count+1
+            if identity==nil then identity=evidence.situationIdentity
+            elseif identity~=evidence.situationIdentity then
+                return nil,true,"MULTIPLE_CONCURRENT_BOUNDARY_ARRIVAL_IDENTITIES_IN_ONE_DECISION_SCOPE"
+            end
+        end
+    end
+    if count==0 then return nil,false,nil end
+    if count~=#entries or #entries~=2 then
+        return nil,true,"CONCURRENT_BOUNDARY_ARRIVAL_ALLOCATION_REQUIRES_EXACTLY_TWO_ALTERNATIVES"
+    end
+    local a,b=entries[1],entries[2]
+    local ap=a.metadata.concurrentBoundaryArrival.protectedParticipant
+    local bp=b.metadata.concurrentBoundaryArrival.protectedParticipant
+    if type(ap)~="table" or type(bp)~="table" then
+        return nil,true,"CONCURRENT_BOUNDARY_ARRIVAL_PARTICIPANT_EVIDENCE_UNAVAILABLE"
+    end
+    local at,bt=tonumber(ap.timeToBoundarySec),tonumber(bp.timeToBoundarySec)
+    if finiteNumber(at) and finiteNumber(bt) then
+        if math.abs(at-bt)>0.000001 then
+            return at<bt and a or b,true,"PROTECT_EARLIER_NATIVE_BOUNDARY_ARRIVAL"
+        end
+        return tostring(ap.assemblyId)<tostring(bp.assemblyId) and a or b,true,
+            "DETERMINISTIC_EQUAL_BOUNDARY_ARRIVAL_ALLOCATION"
+    end
+    if finiteNumber(at)~=(finiteNumber(bt)) then
+        return finiteNumber(at) and a or b,true,"PROTECT_ONLY_SUPPORTED_NATIVE_BOUNDARY_ARRIVAL"
+    end
+    return nil,true,"CONCURRENT_BOUNDARY_ARRIVAL_TIMING_UNRESOLVED"
+end
+
 local function compareCandidates(a, b)
     if a.rank ~= b.rank then return a.rank < b.rank end
     if a.candidate.comparisonCost ~= b.candidate.comparisonCost then
@@ -206,6 +244,11 @@ function Policy:select(picture, candidateInventory, viableCandidates)
     local cornerScoped=false
     local cornerRule=nil
     selectedEntry,cornerScoped,cornerRule=cornerRightOfWayChoice(selectable)
+    local boundaryArrivalScoped=false
+    local boundaryArrivalRule=nil
+    if not cornerScoped then
+        selectedEntry,boundaryArrivalScoped,boundaryArrivalRule=concurrentBoundaryArrivalChoice(selectable)
+    end
     local selected=nil
     if cornerScoped then
         selected=selectedEntry and selectedEntry.candidate or nil
@@ -214,6 +257,15 @@ function Policy:select(picture, candidateInventory, viableCandidates)
                 candidateId="SHARED_CORNER_ALLOCATION",
                 capability="REGULATE_SPEED",
                 missing={{capability="TEMPORARY_RIGHT_OF_WAY_ALLOCATION",reason=cornerRule}}
+            }
+        end
+    elseif boundaryArrivalScoped then
+        selected=selectedEntry and selectedEntry.candidate or nil
+        if selected==nil then
+            blocked[#blocked+1]={
+                candidateId="CONCURRENT_BOUNDARY_ARRIVAL_ALLOCATION",
+                capability="REGULATE_SPEED",
+                missing={{capability="TEMPORAL_BOUNDARY_ALLOCATION",reason=boundaryArrivalRule}}
             }
         end
     else
@@ -233,7 +285,8 @@ function Policy:select(picture, candidateInventory, viableCandidates)
         selected=selected,
         waitForPreferenceEvidence=selected==nil and #blocked>0,
         governingRequirementKey=governingRequirementKey,
-        rule=cornerScoped and ("CORNER_RIGHT_OF_WAY:"..tostring(cornerRule)) or Policy.KIND,
+        rule=cornerScoped and ("CORNER_RIGHT_OF_WAY:"..tostring(cornerRule))
+            or (boundaryArrivalScoped and ("CONCURRENT_BOUNDARY_ARRIVAL:"..tostring(boundaryArrivalRule)) or Policy.KIND),
         ranked=rankedSummary,
         blocked=blocked
     }

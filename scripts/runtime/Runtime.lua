@@ -57,6 +57,9 @@ local function actionSpaceRelation(picture,current)
         for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
             if relation.identity==conflictIdentity then return relation end
         end
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.concurrentBoundaryArrivals or {}) do
+            if relation.identity==conflictIdentity then return relation end
+        end
         local corner=knowledge.cornerKnowledge or {}
         for _,situation in OuttaMyWay.ValueRecord.ipairs(corner.sharedCornerSituations or {}) do
             if situation.identity==conflictIdentity then return situation end
@@ -465,6 +468,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local conflictIdentity=current and current.provenance and current.provenance.conflictIdentity or nil
     if type(commitmentId)~="string" or type(conflictIdentity)~="string" then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",actionSpaceRegulation=true} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    local boundaryArrival=current.provenance and current.provenance.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     if forward
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
@@ -475,6 +479,18 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             detail=assessment.reason,
             actionSpaceRegulation=true,
             forwardIntersection=true,
+            commitmentId=commitmentId
+        }
+    end
+    if boundaryArrival
+        and assessment.terminationEvidenceKind~="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_DISSOLUTION"
+        and assessment.terminationEvidenceKind~="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_SUPERSESSION" then
+        return {
+            status="NO_DISPATCH",
+            reason="CONCURRENT_BOUNDARY_ARRIVAL_TERMINATION_EVIDENCE_REQUIRED",
+            detail=assessment.reason,
+            actionSpaceRegulation=true,
+            concurrentBoundaryArrival=true,
             commitmentId=commitmentId
         }
     end
@@ -494,13 +510,17 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
         local settlementKind=forward and assessment.terminationEvidenceKind
-            or (corner and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY")
+            or (boundaryArrival and assessment.terminationEvidenceKind
+            or (corner and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY"))
         OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,
             conflictIdentity=conflictIdentity,
-            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION" or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION",
+            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
+                or settlementKind=="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_DISSOLUTION"
+                or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
+                or settlementKind=="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_SUPERSESSION"
         })
     end
     self.responsibilityTransitionAuthority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)

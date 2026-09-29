@@ -60,6 +60,7 @@ load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/BlockedProgressAssessment.lua")
 load("scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua")
 load("scripts/assessment/StructuralFieldShapeAssessment.lua")
+load("scripts/assessment/ConcurrentBoundaryArrivalAssessment.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
@@ -8209,6 +8210,7 @@ end)
 
 
 dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
+dofile(root.."/tests/replacement_core/ConcurrentBoundaryArrival.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
 

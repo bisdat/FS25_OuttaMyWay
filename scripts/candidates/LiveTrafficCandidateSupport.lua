@@ -168,6 +168,60 @@ local function forwardIntersectionRecord(picture)
     return actionable[1],nil
 end
 
+local function concurrentBoundaryArrivalSituations(picture)
+    local result={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(knowledge.concurrentBoundaryArrivals or {}) do
+            if situation.classification=="CONCURRENT_BOUNDARY_ARRIVAL"
+                and situation.relationshipStatus=="POSITIVE"
+                and situation.candidateSupportReady==true then
+                result[#result+1]=situation
+            end
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
+local function concurrentBoundaryArrivalSituation(picture)
+    local matches=concurrentBoundaryArrivalSituations(picture)
+    if #matches==0 then return nil,nil end
+    if #matches>1 then return nil,"MULTIPLE_CONCURRENT_BOUNDARY_ARRIVAL_CONTEXTS" end
+    return matches[1],nil
+end
+
+local function boundaryArrivalParticipantByAssembly(situation,assemblyId)
+    if situation.subject and situation.subject.assemblyId==assemblyId then return situation.subject end
+    if situation.other and situation.other.assemblyId==assemblyId then return situation.other end
+end
+
+local function concurrentBoundaryArrivalActionItem(situation,regulatedAssemblyId,protectedAssemblyId)
+    local regulated=boundaryArrivalParticipantByAssembly(situation,regulatedAssemblyId)
+    local protected=boundaryArrivalParticipantByAssembly(situation,protectedAssemblyId)
+    if regulated==nil or protected==nil then return nil,"CONCURRENT_BOUNDARY_ARRIVAL_PARTICIPANT_EVIDENCE_UNAVAILABLE" end
+    local relation={
+        identity=situation.identity,operationId=situation.operationId,
+        classification=situation.classification,relationshipStatus=situation.relationshipStatus,
+        subjectAssemblyId=situation.subjectAssemblyId,otherAssemblyId=situation.otherAssemblyId,
+        subjectReferenceKey=situation.subjectReferenceKey,otherReferenceKey=situation.otherReferenceKey,
+        fieldWorldReferenceKey=situation.fieldWorldReferenceKey,
+        spatialOverlay="CATEGORY_2_HEADLAND_BOUNDARY"
+    }
+    local action={
+        status="REGULATE_SUPPORTED",supported=true,admissionKind="CONCURRENT_BOUNDARY_ARRIVAL",
+        regulatedAssemblyId=regulated.assemblyId,regulatedReferenceKey=regulated.assemblyReferenceKey,
+        protectedAssemblyId=protected.assemblyId,protectedReferenceKey=protected.assemblyReferenceKey,
+        regulationSpeedKmh=situation.regulationSpeedKmh,nativeUnrestrictedKmh=situation.regulationSpeedKmh,
+        fixedRegulationSpeedKmh=situation.regulationSpeedKmh,
+        governingPurpose="MAXIMISE_CATEGORY_2_BOUNDARY_INTENT_REVELATION_TIME",
+        reason="CONCURRENT_BOUNDARY_ARRIVAL_REQUIRES_TEMPORAL_SEPARATION",
+        roleBasis="DECISION_ALLOCATED_CONCURRENT_BOUNDARY_ARRIVAL",
+        separationM=situation.boundaryContactDistanceM
+    }
+    return {relation=relation,action=action,boundaryArrivalSituation=situation,
+        regulatedParticipant=regulated,protectedParticipant=protected},nil
+end
+
 local function sharedCornerSituations(picture)
     local result={}
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
@@ -242,6 +296,7 @@ end
 local function actionSpaceRegulationRepresentation(values,pictureId,item)
     local relation=item.relation
     local action=item.action
+    local boundaryArrival=action.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local representationId="action-space-regulation:"..tostring(relation.identity)..":"..tostring(pictureId)
     if action.admissionKind=="CORNER_RIGHT_OF_WAY" then
         representationId=representationId..":"..tostring(action.regulatedAssemblyId)
@@ -251,18 +306,26 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
         representationId=representationId,
         assemblyId=action.regulatedAssemblyId,
         question=action.admissionKind=="FORWARD_INTERSECTION" and "FORWARD_INTERSECTION_TEMPORAL_REGULATION"
-            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),
+            or (boundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_TEMPORAL_REGULATION"
+            or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION")),
         assessmentHorizon=action.admissionKind=="FORWARD_INTERSECTION" and "CURRENT_POSITIVELY_SUPPORTED_FIELD_BOUNDED_FORWARD_CONTINUATIONS"
+            or (boundaryArrival and "CURRENT_LOCAL_CATEGORY_2_BOUNDARY_DEMAND_AND_NATIVE_ARRIVAL_TIMING"
             or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "CURRENT_SHARED_CORNER_INCUMBENCY_OR_PROSPECTIVE_ARRIVAL_EVIDENCE"
-            or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE")),
+            or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE"))),
         state="USABLE_WITH_UNCERTAINTY",
-        claimPermissions={"REGULATE_SPEED_TO_PRESERVE_LOCAL_PASSAGE_ACTION_SPACE","ESCALATE_REALIZED_INSUFFICIENT_REGULATION_TO_ZERO_SPEED_HOLD"},
+        claimPermissions=boundaryArrival and {"REGULATE_SPEED_FOR_CATEGORY_2_INTENT_REVELATION"}
+            or {"REGULATE_SPEED_TO_PRESERVE_LOCAL_PASSAGE_ACTION_SPACE","ESCALATE_REALIZED_INSUFFICIENT_REGULATION_TO_ZERO_SPEED_HOLD"},
         coverage={complete=false,conservative=false},
-        uncertainty={"RELATIONSHIP_MAY_CHANGE_BEFORE_PASSAGE_SUPPORT","NO_EVENTUAL_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","REGULATION_RATE_IS_IMPLEMENTATION_CALIBRATION"},
+        uncertainty=boundaryArrival
+            and {"NO_TURN_PATH_AUTHORITY","NO_NEGATIVE_CLEARANCE_AUTHORITY","ARRIVAL_OVERLAP_IS_CURRENT_SITUATION_EVIDENCE_ONLY"}
+            or {"RELATIONSHIP_MAY_CHANGE_BEFORE_PASSAGE_SUPPORT","NO_EVENTUAL_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","REGULATION_RATE_IS_IMPLEMENTATION_CALIBRATION"},
         validityDependencies=action.admissionKind=="FORWARD_INTERSECTION" and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","POSITIVE_FORWARD_INTERSECTION","POSITIVE_PROGRESS_RATES"}
+            or (boundaryArrival and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","CURRENT_CATEGORY_2_BOUNDARY_DOMAIN","CURRENT_PHYSICAL_REACH","OVERLAPPING_NATIVE_BOUNDARY_ARRIVAL_WINDOWS"}
             or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and {"POSITIVE_STRUCTURAL_CORNER_FEATURE","CURRENT_CORNER_INCUMBENCY_OR_SUPPORTED_ARRIVAL_EVIDENCE","SHARED_CORNER_COMPETING_DEMAND"}
-            or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"}),
-        provenance={source=(action.admissionKind=="FORWARD_INTERSECTION" or action.admissionKind=="CORNER_RIGHT_OF_WAY") and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
+            or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"})),
+        provenance={source=boundaryArrival and "ConcurrentBoundaryArrivalAssessment"
+            or ((action.admissionKind=="FORWARD_INTERSECTION" or action.admissionKind=="CORNER_RIGHT_OF_WAY") and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment"),
+            layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
     }
     return representationId
 end
@@ -271,9 +334,10 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local relation=item.relation
     local action=item.action
     local forward=action.admissionKind=="FORWARD_INTERSECTION"
+    local boundaryArrival=action.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local corner=action.admissionKind=="CORNER_RIGHT_OF_WAY"
     local passageApproach=action.admissionKind=="PASSAGE_APPROACH"
-    local fixed=forward or corner or passageApproach
+    local fixed=forward or boundaryArrival or corner or passageApproach
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
     local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
@@ -289,10 +353,13 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
         entries=compositionEntries
     }
-    local referenceKey=(forward and "forward-intersection-regulation:" or (passageApproach and "passage-approach-regulation:" or "action-space-regulation:"))..tostring(relation.identity)
+    local referenceKey=(forward and "forward-intersection-regulation:"
+        or (boundaryArrival and "concurrent-boundary-arrival-regulation:"
+        or (passageApproach and "passage-approach-regulation:" or "action-space-regulation:")))..tostring(relation.identity)
     local purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
+        or (boundaryArrival and {kind="CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION",result="PRESERVE_CATEGORY_2_BOUNDARY_INTENT_REVELATION_UNTIL_POSITIVE_DISSOLUTION"}
         or (passageApproach and {kind="PASSAGE_APPROACH_REGULATION",result="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
-        or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"})
+        or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}))
     if corner then
         referenceKey="corner-right-of-way-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
         purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
@@ -302,7 +369,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         purpose=purpose,
         subject={assemblyId=action.regulatedAssemblyId,assemblyIds=passageApproach and {action.regulatedAssemblyId,protectedAssemblyId} or {action.regulatedAssemblyId}},capability="REGULATE_SPEED",
         expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=not passageApproach,
-            pairwisePassageApproachCeiling=passageApproach,elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=(forward or corner),fixedPassageApproachCeiling=passageApproach,zeroSpeedHoldExpression=not fixed},
+            pairwisePassageApproachCeiling=passageApproach,elasticProgressionEnvelope=not fixed,fixedIntentRevelationCreep=(forward or boundaryArrival or corner),fixedPassageApproachCeiling=passageApproach,zeroSpeedHoldExpression=not fixed},
         evidenceBasis={
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
@@ -310,10 +377,16 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
                 CONTINUE_OBSERVATION={result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,capability="CONTINUE_OBSERVATION",
                     reason=corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
-                        or "The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope",
+                        or (boundaryArrival and "Current Category-2 Concurrent Boundary Arrival requires temporal separation rather than observation-only progression"
+                        or "The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope"),
                     evidence={actionSpaceConservation=action},provenance={source="LiveTrafficCandidateSupport",authority="ACTION_SPACE_REGULATION_OBSERVE_EXHAUSTION"}}
             },cornerRightOfWay=corner and {
                 sharedCornerIdentity=relation.identity,cornerKey=action.cornerKey,
+                regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
+                regulatedParticipant=item.regulatedParticipant,protectedParticipant=item.protectedParticipant
+            } or nil,
+            concurrentBoundaryArrival=boundaryArrival and {
+                situationIdentity=relation.identity,
                 regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
                 regulatedParticipant=item.regulatedParticipant,protectedParticipant=item.protectedParticipant
             } or nil},
@@ -338,11 +411,17 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         invalidationConditions={{kind="POSITIVE_RELATIONSHIP_DISSOLUTION"},{kind="COOPERATIVE_PASSAGE_SUCCESSION"},{kind="JOB_EPISODE_CHANGE"}},
         reversibility={physicalEffect=true,releaseOnPurposeExpiry=true},
         obligationsCreated={{
-            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),conflictIdentity=relation.identity},
-            basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION"),conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
-            requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES" or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"),conflictIdentity=relation.identity},
+            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION"
+                or (boundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION")),conflictIdentity=relation.identity},
+            basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION"
+                or (boundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_INTENT_REVELATION" or (corner and "CORNER_RIGHT_OF_WAY" or "ACTION_SPACE_REGULATION")),conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
+            requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
+                or (boundaryArrival and "CONCURRENT_BOUNDARY_ARRIVAL_DISSOLVED_OR_SUCCEEDED"
+                or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES" or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES")),conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
-            evidenceContract={kind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED" or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION" or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"),absenceDoesNotRetire=not forward and not corner},
+            evidenceContract={kind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED"
+                or (boundaryArrival and "FRESH_CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_OR_DISSOLVED"
+                or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION" or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION")),absenceDoesNotRetire=not forward and not boundaryArrival and not corner},
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
@@ -385,6 +464,51 @@ local function passageApproachRegulationItem(picture,plan)
         separationM=plan.separationM,currentCorridorOverlap=relation.supportedCorridorOverlap
     }
     return {relation=relation,action=action},nil
+end
+
+local function publishConcurrentBoundaryArrivalPicture(self,picture,snapshot,situation)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local pictureId=self.identities:issue("PICTURE")
+    values.identity=pictureId; values.epoch=self.epochs:next()
+    local requirement="concurrent-boundary-arrival-regulation:"..tostring(situation.identity)
+    local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
+    if existingReason~=nil then self.lastStatus=existingReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
+    local participants={situation.subject,situation.other}
+    if type(participants[1])~="table" or type(participants[2])~="table" then
+        self.lastStatus="CONCURRENT_BOUNDARY_ARRIVAL_PARTICIPANTS_UNAVAILABLE"
+        return self.passiveSupport:publishDecisionPicture(picture,snapshot)
+    end
+    local specifications={}
+    for index=1,2 do
+        local regulated=participants[index]
+        local protected=participants[index==1 and 2 or 1]
+        local item,reason=concurrentBoundaryArrivalActionItem(situation,regulated.assemblyId,protected.assemblyId)
+        if item==nil then self.lastStatus=reason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
+        local representationId=actionSpaceRegulationRepresentation(values,pictureId,item)
+        specifications[#specifications+1]=makeActionSpaceRegulationCandidate(pictureId,values,item,requirement,existing,representationId)
+    end
+    values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,
+        observationSnapshotId=snapshot.identity,authority="CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATE_SUPPORT"}
+    values.candidateSupportEvidence={
+        complete=true,
+        supportBoundary={mode="CONCURRENT_BOUNDARY_ARRIVAL",supportedCandidateClasses={"REGULATE_SPEED"},
+            physicalCapabilitiesImplemented=true,controlAuthority="FIXED_INTENT_REVELATION_CREEP",
+            boundedScope="CURRENT_LOCAL_CATEGORY_2_BOUNDARY_DEMAND_WITH_OVERLAPPING_NATIVE_ARRIVAL_WINDOWS",
+            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        candidateSpecifications=specifications,
+        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,
+            authority="CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATE_SUPPORT"}
+    }
+    logInfo("CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATES_SUPPORTED",
+        "situation=%s pair=%s/%s times=%s/%s contactDistance=%.2fm localDemandReach=%.2fm overlapWindow=%ss decisionAllocation=true",
+        tostring(situation.identity),tostring(situation.subjectAssemblyId),tostring(situation.otherAssemblyId),
+        tostring(situation.subject and situation.subject.timeToBoundarySec or "UNRESOLVED"),
+        tostring(situation.other and situation.other.timeToBoundarySec or "UNRESOLVED"),
+        tonumber(situation.boundaryContactDistanceM) or -1,tonumber(situation.localDemandReachM) or -1,
+        tostring(situation.arrivalOverlapWindowSec or "UNRESOLVED"))
+    self.publishedCount=self.publishedCount+1
+    self.lastStatus="CONCURRENT_BOUNDARY_ARRIVAL_CANDIDATES_PUBLISHED"
+    return OuttaMyWay.OperationalPicture.new(values)
 end
 
 local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
@@ -909,12 +1033,17 @@ function Support:publishDecisionPicture(picture,snapshot)
     if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return publishFollowerBoundaryPicture(self,picture,snapshot,follower) end
     if followerReason~=nil then self.lastStatus=followerReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
 
-    -- An established follower purpose has precedence. Otherwise the earliest
-    -- supported Forward Intersection is considered before Passage planning.
+    -- An established follower purpose has precedence. Otherwise a supported
+    -- Forward Intersection remains the stronger existing prospective relationship.
+    -- Independent Category-2 Concurrent Boundary Arrival is considered next,
+    -- before Passage planning consumes the same boundary option space.
     if follower==nil then
         local forward,forwardReason=forwardIntersectionRecord(picture)
         if forward~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,forward) end
         if forwardReason~=nil then self.lastStatus=forwardReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
+        local boundaryArrival,boundaryArrivalReason=concurrentBoundaryArrivalSituation(picture)
+        if boundaryArrival~=nil then return publishConcurrentBoundaryArrivalPicture(self,picture,snapshot,boundaryArrival) end
+        if boundaryArrivalReason~=nil then self.lastStatus=boundaryArrivalReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
     end
 
     -- Cooperative Passage has a single production Candidate path.

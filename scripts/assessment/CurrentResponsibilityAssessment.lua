@@ -91,6 +91,7 @@ end
 function Assessment:assessActionSpaceRegulation(current,relation)
     if current==nil then return {disposition="TERMINATE",reason="ACTION_SPACE_REGULATION_NOT_CURRENT"} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    local boundaryArrival=current.provenance and current.provenance.admissionKind=="CONCURRENT_BOUNDARY_ARRIVAL"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     if relation==nil then
         if forward then
@@ -98,6 +99,13 @@ function Assessment:assessActionSpaceRegulation(current,relation)
                 disposition="PERSIST",
                 evidenceState="WAITING_FOR_EVIDENCE",
                 reason="FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
+            }
+        end
+        if boundaryArrival then
+            return {
+                disposition="PERSIST",
+                evidenceState="WAITING_FOR_EVIDENCE",
+                reason="CONCURRENT_BOUNDARY_ARRIVAL_EVIDENCE_TEMPORARILY_UNRESOLVED"
             }
         end
         if corner then
@@ -128,6 +136,36 @@ function Assessment:assessActionSpaceRegulation(current,relation)
             disposition="PERSIST",
             evidenceState="WAITING_FOR_EVIDENCE",
             reason=relation.reason or "SHARED_CORNER_COMPETING_DEMAND_EVIDENCE_TEMPORARILY_UNRESOLVED"
+        }
+    end
+    if boundaryArrival then
+        if relation.positiveSupersession==true then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_SUPERSESSION",
+                reason=relation.reason or "CONCURRENT_BOUNDARY_ARRIVAL_POSITIVELY_SUPERSEDED"
+            }
+        end
+        if relation.relationshipStatus=="NEGATIVE" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_DISSOLUTION",
+                reason=relation.reason or "CONCURRENT_BOUNDARY_ARRIVAL_POSITIVELY_DISSOLVED"
+            }
+        end
+        if relation.relationshipStatus=="POSITIVE"
+            and relation.classification=="CONCURRENT_BOUNDARY_ARRIVAL"
+            and relation.candidateSupportReady==true then
+            return {
+                disposition="PERSIST",
+                evidenceState="SUPPORTED",
+                reason="CONCURRENT_BOUNDARY_ARRIVAL_REMAINS_POSITIVELY_SUPPORTED"
+            }
+        end
+        return {
+            disposition="PERSIST",
+            evidenceState="WAITING_FOR_EVIDENCE",
+            reason=relation.reason or "CONCURRENT_BOUNDARY_ARRIVAL_EVIDENCE_TEMPORARILY_UNRESOLVED"
         }
     end
     if forward then

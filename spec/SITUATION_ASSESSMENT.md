@@ -250,10 +250,40 @@ Spatial Negotiation Architecture specialises Situation Assessment for:
 - Structural Field Shape, Headland Regime and Corner Feature interpretation;
 - Corner Atlas, Headland Association, Corner Arrival Evidence, Corner Approach Demand, current Corner Occupancy, Corner Incumbency, Corner Admission, Corner Engagement and Positive Corner Departure;
 - Passage foreseeability;
-- follower/Forward Intersection relationships; and
+- follower/Forward Intersection relationships;
+- Concurrent Boundary Arrival relationships for Category-2 headland/boundary competition; and
 - current option-space / Resolution-Margin meaning.
 
 This Specification does not duplicate those spatial policies. The implementation MUST route those conclusions through Situation Assessment semantics rather than Candidate Support or Control.
+
+### Concurrent Boundary Arrival
+
+**Concurrent Boundary Arrival** is the implementation-facing Category-2 Situation product for the bounded question:
+
+> Are two current Operation participants independently consuming the same local headland/boundary transition opportunity at materially overlapping native arrival timing even though their supported forward lines do not require a Forward Intersection?
+
+The product MUST remain grounded in current positive evidence. A positive record requires, as applicable:
+
+- exact current Local Operation / participant identity;
+- current supported Field-World-bounded productive continuations for both participants;
+- current terminating boundary identity/contact evidence within the same Field World boundary domain;
+- positive current Physical Assembly representation sufficient to establish that the two boundary contacts belong to one local demand opportunity rather than unrelated distant points on the same boundary;
+- positive native/unrestricted progress opportunity sufficient to derive current time-to-boundary for both participants; and
+- a current evidence basis showing that those native arrival intervals materially overlap.
+
+No universal headland-distance or time-to-boundary literal is authorised by this contract. Implementation MAY derive locality and temporal overlap from current represented Physical Assembly reach and current native progress so long as those measurements remain evidence for this Situation question only and do not become negative-clearance, braking-distance or turn-route authority.
+
+Concurrent Boundary Arrival MUST NOT require a mathematical Forward Intersection. Conversely, an already-supported stronger relationship MAY make a separate Concurrent Boundary Arrival Candidate unnecessary without erasing the underlying boundary evidence.
+
+> **Forward Intersection != Shared Boundary Demand.**
+
+Situation Assessment MUST publish the participants and their current arrival evidence without choosing which participant is regulated. Candidate Support and Decision own the prospective temporal allocation. For the accepted policy, Decision protects the earlier current native boundary arrival and regulates the later arrival; materially equal timing may use a stable deterministic allocation because the purpose is reversible temporal separation rather than permanent right-of-way.
+
+The accepted physical expression is the existing **1 km/h Intent-Revelation Creep** under Regulation. That magnitude is Regulation policy, not Situation authority.
+
+Once a Concurrent Boundary Arrival Regulation exists, loss of one participant's current A8 because GIANTS begins the boundary manoeuvre MUST NOT by itself manufacture positive dissolution. If the same purpose remains materially live but fresh continuation evidence is temporarily unavailable, Situation Assessment MUST publish `UNRESOLVED` / `WAITING_FOR_EVIDENCE` semantics for the current responsibility. Fresh supported negative boundary-demand evidence, lifecycle cessation or positive supersession is required to end or replace the purpose.
+
+> **Boundary-Manoeuvre Evidence Loss != Boundary-Demand Dissolution.**
 
 ### Resolution-Margin Demand Evidence
 
@@ -315,6 +345,8 @@ Where Architecture permits `WAITING_FOR_EVIDENCE`, that is an evidence-state int
 
 For an established Forward-Intersection Regulation, a current geometric negative is not by itself positive incumbent-purpose dissolution evidence. Situation Assessment MUST assess whether the evidence basis that produced the negative is fit for the dissolution question. Positive contradiction may make that evidence unfit; absence of such contradiction does not by itself establish that the temporal purpose has discharged.
 
+For an established Concurrent Boundary Arrival Regulation, temporary loss of a participant's bounded productive continuation during the protected GIANTS boundary manoeuvre MUST preserve the same responsibility as `WAITING_FOR_EVIDENCE`. A fresh positive Concurrent Boundary Arrival negative may establish dissolution only when the current supported boundary-domain/locality/timing evidence is fit for that question; an independently positive successor may establish supersession.
+
 For **Category-1 Corner space**, Situation Assessment MUST distinguish persistent Field World knowledge from prospective arrival evidence, current/local demand, arrival/incumbency, engagement and responsibility state:
 
 1. **Corner Feature interpretation is Field-scoped.** The exact Field World polygon remains authoritative for containment, identity and boundary evidence, while Situation Assessment MAY derive Structural Field Shape / Headland Regime meaning so literal sampled vertices are not automatically treated as semantic Corners. A Corner Feature is a bounded structural transition between persistent Headland Regimes. Pairwise Forward Intersection MAY contribute positive evidence but MUST NOT be the sole admission path or the definition of Corner existence.
@@ -333,7 +365,7 @@ For **Category-1 Corner space**, Situation Assessment MUST distinguish persisten
 
 Corner Atlas knowledge is not persistent generic pair history and does not preserve a past yielder or right-of-way. Corner Engagement does not create a new Regulation type or Control permission. Situation Assessment owns current Corner meaning; Candidate Support, Decision, Responsibility Transition and Bounded Authority retain their existing jurisdictions.
 
-This contract is Category-1-specific. It makes no equivalent claim for Category 2 or open-field Forward Intersection and does not predict GIANTS turn paths.
+The numbered Corner contract is Category-1-specific. Category-2 Concurrent Boundary Arrival is governed by its separate contract above; open-field Forward Intersection remains separate. Neither contract predicts GIANTS turn paths.
 
 ## Operational Picture semantic contract
 
@@ -466,6 +498,7 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | [`scripts/assessment/RealisedMotionDemandAssessment.lua`](../scripts/assessment/RealisedMotionDemandAssessment.lua) | `REALISES` |
 | [`scripts/assessment/FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) | `REALISES` |
 | [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) | `REALISES` |
+| [`scripts/assessment/ConcurrentBoundaryArrivalAssessment.lua`](../scripts/assessment/ConcurrentBoundaryArrivalAssessment.lua) | `REALISES` |
 | [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) | `REALISES` |
 | [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) | `REALISES` |
@@ -488,7 +521,7 @@ Current implementation routes include:
 - [`scripts/assessment/ResolutionMarginSituationAssessment.lua`](../scripts/assessment/ResolutionMarginSituationAssessment.lua) — Situation-layer composition that enriches the baseline picture with `resolutionMarginDemandKnowledge` while preserving the same picture identity/epoch;
 - [`scripts/assessment/CurrentPairAssessmentScope.lua`](../scripts/assessment/CurrentPairAssessmentScope.lua) — current ephemeral exact-member pair scope;
 - [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) — conservative Field-scoped Structural Field Shape / positive Corner Feature interpretation from immutable canonical Field World geometry;
-- [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua), [`FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) and [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) — current spatial relationship/constraint interpretation;
+- [`scripts/assessment/TrajectoryConflictAssessment.lua`](../scripts/assessment/TrajectoryConflictAssessment.lua), [`FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua), [`ConcurrentBoundaryArrivalAssessment.lua`](../scripts/assessment/ConcurrentBoundaryArrivalAssessment.lua) and [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) — current spatial relationship/constraint interpretation, including Forward Intersection and independent Category-2 Concurrent Boundary Arrival;
 - [`scripts/assessment/RealisedMotionDemandAssessment.lua`](../scripts/assessment/RealisedMotionDemandAssessment.lua) — fresh active-Operation realised progression interpreted into bounded local positive demand from Established Trajectory + current physical representation, without promoting `TURNING` or granting future-route authority;
 - [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) — current positive obstruction-cause interpretation, preserving evidence precedence across current physical occupancy, supported future-space continuation and bounded Realised Motion Demand;
 - [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) — bounded Recovery Approach Trail retention, Blocked Progress Stall interpretation and Recovery Anchor selection from current Operation/lifecycle/motion/ownership evidence;

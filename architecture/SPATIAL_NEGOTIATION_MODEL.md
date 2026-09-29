@@ -171,6 +171,20 @@ For Category-1 Corner competition, positive current Corner Occupancy is **arriva
 
 For Category-1 Corner competition, use **Corner Arrival Priority**: compare the participants' current supported time-to-Corner under unrestricted/native progression opportunity, protect the earlier arrival and regulate the later arrival. This is temporal ordering, not geometric nearest-to-corner distance. Corner Engagement age, agronomy and leader/follower identity are not priority evidence.
 
+For Category-2 headland/boundary competition, **Concurrent Boundary Arrival** is positive Situation meaning that two independently supported productive continuations terminate in the same local constrained boundary opportunity while their current native/unrestricted arrival intervals materially overlap. It is distinct from Forward Intersection: parallel or otherwise non-intersecting A8 continuations may still consume the same scarce boundary transition opportunity.
+
+The locality and timing conclusion must be grounded in current positive Field World, Physical Assembly and native-progression evidence. It must not predict either participant's later GIANTS turn, extend A8 beyond its current bounded continuation, or convert a universal distance/time literal into boundary authority. Situation Assessment publishes the current participants and their supported arrival evidence; it does not choose the yielder.
+
+Downstream temporal allocation protects the earlier supported native boundary arrival and regulates the later arrival where Regulation is justified, preserving time for the protected participant to reveal its GIANTS-native manoeuvre. When current arrival timing is materially equal, a stable deterministic allocation is sufficient because the purpose is temporal separation rather than discovery of one uniquely correct permanent yielder.
+
+Once Concurrent Boundary Arrival Regulation is established, temporary loss of the protected participant's A8 as GIANTS begins the boundary manoeuvre is evidence uncertainty, not proof that the constrained relationship dissolved. The admitted allocation may remain in `WAITING_FOR_EVIDENCE` until fresh positive Reality establishes dissolution, lifecycle cessation or another authoritative successor.
+
+> **Forward Intersection != Shared Boundary Demand**
+
+> **Category-2 Demand Does Not Require Forward Intersection**
+
+> **Boundary-Arrival Timing != Turn-Path Prediction**
+
 #### Both workers inside Category 1
 
 This is a degraded-entry condition the normal architecture must try to prevent. Preserve a worker positively creating space and regulate the other. If no clearly safe space-creating action exists, fail safe and allow player escalation rather than inventing heroic choreography.
