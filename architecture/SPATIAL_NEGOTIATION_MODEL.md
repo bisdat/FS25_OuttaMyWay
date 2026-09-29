@@ -363,8 +363,6 @@ A positive exclusion is valid only while the same A8 relationship and representa
 
 ---
 
-## 4. Regulation specialisation---
-
 ## 4. Regulation specialisation
 
 **Parent Jurisdiction:** Regulation.
