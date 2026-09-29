@@ -2155,6 +2155,9 @@ def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conse
     assert "PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION" in maximum
     assert "Foldability != Lateral Articulation" in maximum
     assert "inspectLateralArticulation" in maximum
+    assert "inspectNeedsLowering" in maximum
+    assert "FOLD_CAPABILITY_AND_AI_NEEDS_LOWERING" in maximum
+    assert "AMBIGUOUS_FOLD_CONFIGURATION_CONSERVATIVE_WORKING_SPAN" in maximum
     assert "maximumProductiveA8Envelope" in observation
     assert "maximumProductiveA8Envelope" in situation
     assert "NativeA8ClearanceAssessment.apply" in situation
