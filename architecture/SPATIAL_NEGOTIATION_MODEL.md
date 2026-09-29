@@ -181,7 +181,17 @@ An assembly has **Category-2 Demand** when current positive Situation evidence e
 
 Two assemblies have **Shared Category-2 Demand** when both have current Category-2 Demand and their Field-World-clipped Boundary Demand Discs have positive overlap. Positive overlap establishes that the two current boundary interactions address the same local constrained theatre. No arrival-time window or minimum overlap magnitude is required. Missing overlap evidence does not independently establish generic safe clearance where representation lacks that authority.
 
-Shared Category-2 Demand justifies temporal Regulation of one participant. Which participant yields is a separate Decision question based on cumulative current evidence: constrained-space occupancy/evacuation need, relative spatial constraint, A8 versus `TURNING` intent certainty, Resolution Margin / cost of waiting and any other accepted ordering evidence. Aligned evidence reinforces one temporary allocation; materially unresolved semantic ordering remains unresolved except where Architecture permits a stable deterministic tie-break.
+Shared Category-2 Demand justifies temporal Regulation of one participant. Which participant yields is a separate Decision question based on cumulative current evidence: constrained-space occupancy/evacuation need, relative spatial constraint, A8 versus `TURNING` intent certainty, Resolution Margin / cost of waiting and any other accepted ordering evidence.
+
+For Category-2 relative spatial constraint, the preferred scale-independent evidence is the **Boundary Option-Space Ratio**:
+
+`area(Field World ∩ Boundary Demand Disc) / area(Boundary Demand Disc)`
+
+A lower ratio means the current Field World removes a greater proportion of that assembly's local radial option space. Normalisation is essential: raw clipped area would systematically favour larger assemblies and therefore is not the comparison meaning.
+
+Boundary Option-Space Ratio is cumulative evidence, not a universal priority score. Positive constrained occupancy/evacuation need may dominate it; `TURNING` versus A8 and Resolution-Margin / cheaper-waiting evidence may reinforce or distinguish an otherwise similar allocation. Aligned evidence reinforces one temporary allocation; materially unresolved semantic ordering remains unresolved except where Architecture permits a stable deterministic tie-break.
+
+> **Shared Boundary Demand Determines Whether Regulation Is Needed; Boundary Option-Space Helps Determine Who Can More Cheaply Give Time.**
 
 Once that Regulation is established for the same Shared Category-2 Demand purpose, the allocation remains sticky while the purpose remains live. Expected effects such as the protected participant slowing, entering or remaining `TURNING`, temporary A8 loss or the regulated participant falling behind do not themselves re-arbitrate the yielder. Temporary evidence loss may become `WAITING_FOR_EVIDENCE`; positive dissolution, supersession or lifecycle cessation is required to end the responsibility.
 
