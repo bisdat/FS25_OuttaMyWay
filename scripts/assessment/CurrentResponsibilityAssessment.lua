@@ -92,6 +92,7 @@ function Assessment:assessActionSpaceRegulation(current,relation)
     if current==nil then return {disposition="TERMINATE",reason="ACTION_SPACE_REGULATION_NOT_CURRENT"} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     if relation==nil then
         if forward then
             return {
@@ -105,6 +106,13 @@ function Assessment:assessActionSpaceRegulation(current,relation)
                 disposition="PERSIST",
                 evidenceState="WAITING_FOR_EVIDENCE",
                 reason="SHARED_CORNER_COMPETING_DEMAND_TEMPORARILY_UNRESOLVED"
+            }
+        end
+        if category2 then
+            return {
+                disposition="PERSIST",
+                evidenceState="WAITING_FOR_EVIDENCE",
+                reason="SHARED_CATEGORY_2_DEMAND_TEMPORARILY_UNRESOLVED"
             }
         end
         return {disposition="PERSIST",reason="ACTION_SPACE_RELATIONSHIP_TEMPORARILY_UNRESOLVED"}
@@ -130,6 +138,31 @@ function Assessment:assessActionSpaceRegulation(current,relation)
             reason=relation.reason or "SHARED_CORNER_COMPETING_DEMAND_EVIDENCE_TEMPORARILY_UNRESOLVED"
         }
     end
+    if category2 then
+        if relation.positiveDissolution==true
+            or relation.classification=="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_INTENT_REVELATION" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION",
+                reason=relation.reason or "SHARED_CATEGORY_2_DEMAND_POSITIVELY_DISSOLVED"
+            }
+        end
+        if relation.identity==current.provenance.conflictIdentity
+            and relation.competingDemand==true
+            and relation.currentEvidenceState=="SUPPORTED" then
+            return {
+                disposition="PERSIST",
+                evidenceState="SUPPORTED",
+                reason="SHARED_CATEGORY_2_DEMAND_REMAINS_POSITIVELY_SUPPORTED"
+            }
+        end
+        return {
+            disposition="PERSIST",
+            evidenceState="WAITING_FOR_EVIDENCE",
+            reason=relation.reason or "SHARED_CATEGORY_2_DEMAND_WAITING_FOR_EVIDENCE"
+        }
+    end
+
     if forward then
         local cornerProtection=self:cornerEngagementProtection(current,relation)
         if cornerProtection~=nil then
