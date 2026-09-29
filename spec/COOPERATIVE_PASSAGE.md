@@ -454,6 +454,7 @@ Bounded Authority determines participant-scoped physical permission. Control exe
 | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua) | `SUPPORTS` |
 | [`scripts/representation/MaximumProductiveA8Representation.lua`](../scripts/representation/MaximumProductiveA8Representation.lua) | `SUPPORTS` |
 | [`scripts/assessment/NativeA8ClearanceAssessment.lua`](../scripts/assessment/NativeA8ClearanceAssessment.lua) | `SUPPORTS` |
+| [`scripts/contracts/CooperativePassagePolicy.lua`](../scripts/contracts/CooperativePassagePolicy.lua) | `SUPPORTS` |
 | [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) | `SUPPORTS` |
 
 ## Implementation traceability
