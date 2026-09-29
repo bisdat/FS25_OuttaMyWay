@@ -113,6 +113,25 @@ Maintenance MAY include:
 
 None of those events is automatically a Responsibility Transition.
 
+#### Shared Category-2 purpose continuity
+
+A Regulation admitted for one Shared Category-2 Demand has a fixed temporary yielder for that purpose.
+
+Ordinary maintenance MUST NOT migrate the regulated/protected roles merely because:
+
+- the protected participant slows;
+- the protected participant enters `TURNING`;
+- fresh A8 / boundary-contact projection temporarily disappears;
+- arrival-time estimates change;
+- the regulated participant falls behind because the Regulation is effective; or
+- another transient comparator would now choose differently.
+
+Role migration for a Shared Category-2 purpose is permitted only when an explicit accepted supersession contract establishes that the governing purpose itself has changed. Otherwise temporary evidence loss is handled through `WAITING_FOR_EVIDENCE`, not re-arbitration.
+
+The accepted bounded physical effect for Category-2 intent revelation uses the existing exact **1 km/h Intent-Revelation Creep** where Bounded Authority confirms that effect is currently permitted. The fixed creep is a purpose-bound temporal effect, not a universal speed policy and not route authority.
+
+> **Shared Demand Admission Chooses Once; Regulation Maintenance Does Not Re-run the Election.**
+
 ### Waiting for evidence
 
 Temporary evidence loss MUST NOT be converted into positive Regulation success, dissolution or supersession.
