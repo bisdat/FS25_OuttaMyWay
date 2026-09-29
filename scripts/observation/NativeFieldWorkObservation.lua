@@ -32,7 +32,7 @@ local function markerWidth(leftNode,rightNode)
     local dx,dz=right.x-left.x,right.z-left.z
     local width=math.sqrt(dx*dx+dz*dz)
     if not finite(width) or width<0.5 or width>100 then return nil end
-    return width
+    return width,left,right
 end
 
 local function collectAttached(root)
@@ -56,20 +56,26 @@ end
 -- Raw working-width observation used only as an evidence seed.  It is not the
 -- physical Assembly footprint and does not qualify boundary demand by itself.
 function Observation.workingWidth(vehicle)
-    local bestWidth,bestSource=nil,nil
-    local function consider(width,source)
-        if width~=nil and (bestWidth==nil or width>bestWidth) then bestWidth=width; bestSource=source end
+    local bestWidth,bestSource,bestLeft,bestRight=nil,nil,nil,nil
+    local function consider(width,source,left,right)
+        if width~=nil and (bestWidth==nil or width>bestWidth) then
+            bestWidth=width; bestSource=source; bestLeft=left; bestRight=right
+        end
     end
     for _,object in ipairs(collectAttached(vehicle)) do
         if type(object.getAIMarkers)=="function" then
             local ok,left,right=pcall(object.getAIMarkers,object)
-            if ok then consider(markerWidth(left,right),"GIANTS_AI_MARKERS") end
+            if ok then
+                local width,leftPoint,rightPoint=markerWidth(left,right)
+                consider(width,"GIANTS_AI_MARKERS",leftPoint,rightPoint)
+            end
         end
         local spec=object.spec_workArea
         if type(spec)=="table" and type(spec.workAreas)=="table" then
             for _,area in pairs(spec.workAreas) do
                 if type(area)=="table" then
-                    consider(markerWidth(area.start or area.startNode,area.width or area.widthNode),"GIANTS_WORK_AREA_MARKERS")
+                    local width,leftPoint,rightPoint=markerWidth(area.start or area.startNode,area.width or area.widthNode)
+                    consider(width,"GIANTS_WORK_AREA_MARKERS",leftPoint,rightPoint)
                 end
             end
         end
@@ -79,7 +85,7 @@ function Observation.workingWidth(vehicle)
             if finite(width) and width>=0.5 and width<=100 then consider(width,"GIANTS_WORKING_WIDTH_ACCESSOR") end
         end
     end
-    return {available=bestWidth~=nil,widthMetres=bestWidth,source=bestSource or "UNAVAILABLE",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"}
+    return {available=bestWidth~=nil,widthMetres=bestWidth,source=bestSource or "UNAVAILABLE",leftPoint=bestLeft,rightPoint=bestRight,markerBacked=bestLeft~=nil and bestRight~=nil,authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"}
 end
 
 -- Exact SDK and live native-command evidence identify aiDriveParams as the immediate
