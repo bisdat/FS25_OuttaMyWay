@@ -57,6 +57,9 @@ local function actionSpaceRelation(picture,current)
         for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
             if relation.identity==conflictIdentity then return relation end
         end
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(knowledge.sharedCategory2Demands or {}) do
+            if situation.identity==conflictIdentity then return situation end
+        end
         local corner=knowledge.cornerKnowledge or {}
         for _,situation in OuttaMyWay.ValueRecord.ipairs(corner.sharedCornerSituations or {}) do
             if situation.identity==conflictIdentity then return situation end
@@ -466,6 +469,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     if type(commitmentId)~="string" or type(conflictIdentity)~="string" then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",actionSpaceRegulation=true} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
+    local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     if forward
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION" then
@@ -488,18 +492,31 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             commitmentId=commitmentId
         }
     end
+    if category2 and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION" then
+        return {
+            status="NO_DISPATCH",
+            reason="SHARED_CATEGORY_2_POSITIVE_DISSOLUTION_EVIDENCE_REQUIRED",
+            detail=assessment.reason,
+            actionSpaceRegulation=true,
+            sharedCategory2=true,
+            commitmentId=commitmentId
+        }
+    end
     local status=self.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,assessment.reason)
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
         local settlementKind=forward and assessment.terminationEvidenceKind
-            or (corner and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY")
+            or (corner and assessment.terminationEvidenceKind
+            or (category2 and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY"))
         OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,
             conflictIdentity=conflictIdentity,
-            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION" or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION",
+            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
+                or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION"
+                or settlementKind=="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
         })
     end
