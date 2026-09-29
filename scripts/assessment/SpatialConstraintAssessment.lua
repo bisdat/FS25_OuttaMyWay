@@ -1037,6 +1037,9 @@ function Assessment:assess(input)
     local futures,motions=byAssembly(input.futureSpace),byAssembly(input.motionEvidence); local projections={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do projections[#projections+1]=projection(input.fieldWorld,input.fieldWorldReferenceKey,id,futures[id],motions[id]) end
     table.sort(projections,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    if OuttaMyWay.BoundaryInteractionReachProbe~=nil then
+        OuttaMyWay.BoundaryInteractionReachProbe.observe(input.operationId,projections,input.physicalSpaceEvidence)
+    end
     local relationships={}
     for i=1,OuttaMyWay.ValueRecord.length(projections)-1 do for j=i+1,OuttaMyWay.ValueRecord.length(projections) do
         local r=pairRecord(input.operationId,projections[i],projections[j],input.followerBoundaryKnowledge); relationships[#relationships+1]=r
