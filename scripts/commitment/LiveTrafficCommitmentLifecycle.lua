@@ -352,7 +352,8 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local category2=hasPrefix(responsibility,"shared-category-2-regulation:")
     local settlementMode=nil
     if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
-        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY" then
+        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
+        or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_SHARED_CATEGORY_2" then
         settlementMode="BASIS_CESSATION"
     elseif forward then
         local evidenceKind=evidence and evidence.kind or nil
@@ -429,7 +430,9 @@ end
 
 local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:") or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"follower-boundary:")
+        or hasPrefix(responsibility,"forward-intersection-regulation:") or hasPrefix(responsibility,"corner-right-of-way:")
+        or hasPrefix(responsibility,"shared-category-2-regulation:")
 end
 
 local function endedDependency(record,ended)
@@ -787,6 +790,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated,sem
         local successorRequirement=successorBasis and successorBasis.responsibilityKey or ""
         local predecessorSupportsRebind=hasPrefix(currentRequirement,"corner-right-of-way:")
             or hasPrefix(currentRequirement,"forward-intersection-regulation:")
+            or hasPrefix(currentRequirement,"shared-category-2-regulation:")
         if not predecessorSupportsRebind
             or not hasPrefix(successorRequirement,"cooperative-passage:") then
             return nil,"COOPERATIVE_PASSAGE_PURPOSE_REBIND_NOT_AUTHORISED"
