@@ -185,6 +185,10 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
             operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId},nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
+    if context=="ROLE_MIGRATION" and current~=nil
+        and current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND" then
+        return nil,"SHARED_CATEGORY_2_ROLE_MIGRATION_NOT_AUTHORISED"
+    end
     if current==nil or current.kind~="REGULATION" or current.provenance.conflictIdentity~=bridge.conflictIdentity
         or current.provenance.retainedCommitmentId~=readiness.commitmentId then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
