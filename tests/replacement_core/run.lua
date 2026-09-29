@@ -7806,6 +7806,37 @@ test("Shared Category-2 Demand admits TS004-like parallel A8 without Forward Int
     assert(relation.sharedBoundaryDemandOverlap.rawOverlapMarginM>0)
 end)
 
+test("Boundary Option-Space uncertainty does not suppress positive Shared Category-2 admission",function()
+    local original=OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace
+    OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace=function()
+        return {status="UNRESOLVED",reason="SYNTHETIC_OPTION_SPACE_UNAVAILABLE",negativeClearanceAuthority=false}
+    end
+    local ok,result=pcall(function()
+        return OuttaMyWay.BoundaryDemandAssessment.new():assess({
+            operationId="OR-C2",fieldWorld=category2Field(),fieldWorldReferenceKey="FW-CATEGORY-2",
+            projections={
+                category2Projection("AS-A",40,30,40,0,30),
+                category2Projection("AS-B",55,30,55,0,30)
+            },
+            physicalSpaceEvidence={
+                category2Physical("AS-A",40,30,12),
+                category2Physical("AS-B",55,30,7)
+            },
+            motionEvidence={
+                category2Motion("AS-A","SETTLED_CONTINUATION",1),
+                category2Motion("AS-B","SETTLED_CONTINUATION",1)
+            },
+            commitmentContext={}
+        })
+    end)
+    OuttaMyWay.BoundaryDemandRepresentation.measureOptionSpace=original
+    if not ok then error(result,2) end
+    equal(#result.sharedCategory2Demands,1)
+    equal(result.sharedCategory2Demands[1].competingDemand,true)
+    equal(result.sharedCategory2Demands[1].participants[1].boundaryOptionSpaceRatio,nil)
+    equal(result.sharedCategory2Demands[1].participants[2].boundaryOptionSpaceRatio,nil)
+end)
+
 test("Wide parallel assemblies remain independent when boundary contacts are different localities",function()
     local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
     local result=assessment:assess({
