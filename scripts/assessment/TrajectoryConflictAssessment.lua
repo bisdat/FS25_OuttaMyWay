@@ -873,17 +873,21 @@ function Assessment.classifyPairs(context)
                         end
                     end
                 end
-                    -- Passage Evaluation Readiness is a pairwise Situation conclusion,
-                    -- not a lifecycle-membership or native work-state shortcut.
-                    -- Once the opposed-corridor conflict itself is positively
-                    -- established for two current Operation members, Candidate Support
-                    -- may evaluate Passage. The Passage planner still owns whether a
-                    -- Passage-Capable Theatre is actually supported.
-                    record.passageEvaluationReady=aParticipation.operationMember==true
+                    -- This module establishes conservative opposed-corridor
+                    -- concern only. Final Passage Evaluation Readiness belongs to
+                    -- Situation composition after Native A8 Clearance Exclusion.
+                    record.passageConcernEstablished=aParticipation.operationMember==true
                         and bParticipation.operationMember==true
                         and record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
-                    record.cooperativePassageEligible=record.passageEvaluationReady
+                    record.passageEvaluationReady=false
+                    record.cooperativePassageEligible=false
                     record.resolutionSpaceRelationship=resolutionSpaceRelationship(record)
+                    if OuttaMyWay.CorridorBandEdgeProbe~=nil then
+                        OuttaMyWay.CorridorBandEdgeProbe.observe(
+                            context.observationSnapshotId,record,
+                            physicalByAssembly[aId],physicalByAssembly[bId],
+                            spaceByAssembly[aId],spaceByAssembly[bId])
+                    end
                     result[#result+1]=record
                 end
             end
