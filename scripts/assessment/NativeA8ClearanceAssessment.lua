@@ -4,6 +4,10 @@
 OuttaMyWay.NativeA8ClearanceAssessment={}
 local Assessment=OuttaMyWay.NativeA8ClearanceAssessment
 
+-- Situation-scoped exclusion calibration. This deliberately does not relocate
+-- LocalPassagePlanner's independently owned Candidate construction policy.
+local NATIVE_A8_CLEARANCE_EXCLUSION_NOMINAL_M=1.0
+
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -145,12 +149,7 @@ local function evaluate(record,currentByAssembly,physicalByAssembly)
         clearanceM=math.max(aMin,bMin)-math.min(aMax,bMax)
     end
 
-    local nominal=OuttaMyWay.CooperativePassagePolicy
-        and tonumber(OuttaMyWay.CooperativePassagePolicy.NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or nil
-    if not finite(nominal) or nominal<=0 then
-        result.reason="NOMINAL_PASSAGE_CLEARANCE_POLICY_UNAVAILABLE"
-        return result
-    end
+    local nominal=NATIVE_A8_CLEARANCE_EXCLUSION_NOMINAL_M
 
     result.currentClearanceM=clearanceM
     result.nominalClearanceM=nominal
