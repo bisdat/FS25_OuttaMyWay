@@ -146,6 +146,82 @@ local function compareCandidates(a, b)
     return a.candidate.identity < b.candidate.identity
 end
 
+local function sharedCategory2Choice(entries)
+    if #entries==0 then return nil,false,nil end
+    local categoryCount=0
+    local identity=nil
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(entries) do
+        local evidence=entry.metadata and entry.metadata.sharedCategory2Allocation or nil
+        if type(evidence)=="table" then
+            categoryCount=categoryCount+1
+            if identity==nil then identity=evidence.sharedCategory2Identity
+            elseif identity~=evidence.sharedCategory2Identity then
+                return nil,true,"MULTIPLE_SHARED_CATEGORY_2_IDENTITIES_IN_ONE_DECISION_SCOPE"
+            end
+        end
+    end
+    if categoryCount==0 then return nil,false,nil end
+    if categoryCount~=#entries then return nil,true,"MIXED_SHARED_CATEGORY_2_AND_OTHER_ALTERNATIVES" end
+
+    -- An incumbent purpose is already allocated. Candidate Support deliberately
+    -- projects only that fixed direction; Decision does not re-arbitrate it.
+    if #entries==1 then
+        return entries[1],true,"PRESERVE_INCUMBENT_SHARED_CATEGORY_2_ALLOCATION"
+    end
+    if #entries~=2 then return nil,true,"SHARED_CATEGORY_2_ALLOCATION_REQUIRES_TWO_FRESH_ALTERNATIVES" end
+
+    local function protected(entry)
+        local evidence=entry.metadata.sharedCategory2Allocation
+        return evidence and evidence.protectedParticipant or nil
+    end
+
+    local a,b=entries[1],entries[2]
+    local ap,bp=protected(a),protected(b)
+    if type(ap)~="table" or type(bp)~="table" then
+        return nil,true,"SHARED_CATEGORY_2_PARTICIPANT_EVIDENCE_UNAVAILABLE"
+    end
+
+    -- 1. A participant already consuming the constrained locality must be able
+    -- to create/vacate space rather than being immobilised by the other party.
+    local ao=ap.currentBoundaryDemandOccupancy==true
+    local bo=bp.currentBoundaryDemandOccupancy==true
+    if ao~=bo then
+        return ao and a or b,true,"PROTECT_CURRENT_CATEGORY_2_OCCUPANT"
+    end
+
+    -- 2. Normalised Field-World option space is scale-independent across
+    -- differently-sized assemblies. Numerical noise is not traffic meaning.
+    local ar,br=tonumber(ap.boundaryOptionSpaceRatio),tonumber(bp.boundaryOptionSpaceRatio)
+    if finiteNumber(ar) and finiteNumber(br) then
+        local at=tonumber(ap.boundaryOptionSpaceRatioTolerance) or 0
+        local bt=tonumber(bp.boundaryOptionSpaceRatioTolerance) or 0
+        local tolerance=math.max(at,bt,0.000001)
+        if math.abs(ar-br)>tolerance then
+            return ar<br and a or b,true,"PROTECT_LOWER_BOUNDARY_OPTION_SPACE"
+        end
+    end
+
+    -- 3. When spatial scarcity does not decide the pair, preserve the native
+    -- party currently revealing constrained intent over settled A8 that can wait.
+    local ai=ap.intentClassification
+    local bi=bp.intentClassification
+    local aTurning=ai=="TURNING"
+    local bTurning=bi=="TURNING"
+    if aTurning~=bTurning then
+        return aTurning and a or b,true,"PROTECT_CATEGORY_2_INTENT_REVELATION"
+    end
+
+    -- Resolution-Margin / cheaper-waiting evidence is intentionally not
+    -- reconstructed here. Until Situation publishes a directly comparable pair
+    -- signal, Decision must not invent one from speed or distance proxies.
+
+    -- 5. Architecture permits a stable tie-break only after semantic evidence
+    -- remains genuinely equivalent. Candidate identity is stability, not priority.
+    table.sort(entries,compareCandidates)
+    return entries[1],true,"STABLE_NON_SEMANTIC_CATEGORY_2_TIE_BREAK"
+end
+
+
 function Policy:select(picture, candidateInventory, viableCandidates)
     OuttaMyWay.ValueRecord.assertType(picture, "OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(candidateInventory, "CandidateInventory")
@@ -206,6 +282,13 @@ function Policy:select(picture, candidateInventory, viableCandidates)
     local cornerScoped=false
     local cornerRule=nil
     selectedEntry,cornerScoped,cornerRule=cornerRightOfWayChoice(selectable)
+
+    local category2Scoped=false
+    local category2Rule=nil
+    if not cornerScoped then
+        selectedEntry,category2Scoped,category2Rule=sharedCategory2Choice(selectable)
+    end
+
     local selected=nil
     if cornerScoped then
         selected=selectedEntry and selectedEntry.candidate or nil
@@ -214,6 +297,15 @@ function Policy:select(picture, candidateInventory, viableCandidates)
                 candidateId="SHARED_CORNER_ALLOCATION",
                 capability="REGULATE_SPEED",
                 missing={{capability="TEMPORARY_RIGHT_OF_WAY_ALLOCATION",reason=cornerRule}}
+            }
+        end
+    elseif category2Scoped then
+        selected=selectedEntry and selectedEntry.candidate or nil
+        if selected==nil then
+            blocked[#blocked+1]={
+                candidateId="SHARED_CATEGORY_2_ALLOCATION",
+                capability="REGULATE_SPEED",
+                missing={{capability="TEMPORARY_BOUNDARY_DEMAND_ALLOCATION",reason=category2Rule}}
             }
         end
     else
@@ -233,7 +325,8 @@ function Policy:select(picture, candidateInventory, viableCandidates)
         selected=selected,
         waitForPreferenceEvidence=selected==nil and #blocked>0,
         governingRequirementKey=governingRequirementKey,
-        rule=cornerScoped and ("CORNER_RIGHT_OF_WAY:"..tostring(cornerRule)) or Policy.KIND,
+        rule=cornerScoped and ("CORNER_RIGHT_OF_WAY:"..tostring(cornerRule))
+            or (category2Scoped and ("SHARED_CATEGORY_2:"..tostring(category2Rule)) or Policy.KIND),
         ranked=rankedSummary,
         blocked=blocked
     }
