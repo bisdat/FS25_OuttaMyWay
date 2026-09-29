@@ -559,7 +559,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
                 fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
                 futureSpace=futureSpace,motionEvidence=motionEvidence,followerBoundaryKnowledge=followerBoundaryKnowledge,
                 observationSnapshotId=snapshot.identity,observationEpoch=snapshot.epoch,productiveContinuationKnowledge=productiveKnowledge,
-                physicalSpaceEvidence=physicalSpaceEvidence
+                physicalSpaceEvidence=physicalSpaceEvidence,commitmentContext=commitmentContext
             })
             situation.spatialConstraintKnowledge=knowledge
             spatialConstraintKnowledge[#spatialConstraintKnowledge+1]=knowledge
