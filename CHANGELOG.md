@@ -1,3 +1,29 @@
+# v0.4.7.0 PATCH CHECKPOINT — Boundary Coordination and Native A8 Clearance Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #376 (`f7546af232b1e6c000692e7642e49c21e5cd3090`), carrying field-validated TEST `0.4.6.10`.
+
+**Version rationale:** owner-selected PATCH checkpoint under the current pre-1.0 policy. The accepted delta since `0.4.6.0` refines the existing 0.4 responsibility-oriented architecture with bounded Category-2 temporal coordination and a purpose-specific native-clearance veto for Cooperative Passage. These are corrections and refinements within the current architectural/capability epoch rather than a materially new MINOR capability epoch.
+
+**PATCH checkpoint boundary:** this increment changes product version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted and field-validated `0.4.6.10` baseline.
+
+**Validated plateau summary:**
+- PR #370 / Issue #348 introduced **Boundary Interaction Reach** and **Shared Category-2 Demand**, allowing same-Operation workers to coordinate constrained boundary demand even when Forward Intersection remains negative;
+- Shared Category-2 Regulation reuses the exact 1 km/h **Intent-Revelation Creep**, preserves GIANTS steering/route ownership, keeps incumbent allocation sticky while purpose remains current, and waits for fresh settled continuation before positive dissolution;
+- the #371 correction established **Retained Purpose Geometry != Retained Participant State**, refreshing participant intent independently while retained Shared Category-2 purpose geometry remains `WAITING_FOR_EVIDENCE`;
+- PR #375 established **Maximum Productive A8 Envelope** and **Native A8 Clearance Exclusion** as a one-way Passage exclusion path: conservative DISC/opposed-corridor concern remains intact, while positively proven native A8 clearance suppresses only Passage-specific readiness/regulation;
+- PR #376 / TEST `0.4.6.10` implemented Maximum Productive A8 as an evidence-fusion product using authored complete-assembly physical dimensions, member transforms, fold/deploy capability, GIANTS AI `needsLowering`, usable animation/configuration evidence and productive working-span observations;
+- Reality established **Foldability != Lateral Articulation** and **Maximum Productive A8 Envelope Is an Evidence-Fusion Product, Not a Single-Flag Classification**;
+- TS004 validated the false-Passage exclusion with conservative DISC overlap still positive while Maximum Productive A8 widths resolved to 6.000 m / 2.828 m, native clearance resolved to 1.635 m against the 1.000 m nominal margin, and Passage-specific Action-Space dissolved before Cooperative Passage admission;
+- TS019 validated the negative control: a genuine Cooperative Passage remained supported, Bubble Formation reached READY, Passage started, and terminal outcome was SUCCEEDED;
+- draft diagnostic PR #373 was closed unmerged after its corridor-band evidence informed the accepted representation correction;
+- Issues #348, #371, #372 and #374 are closed as completed.
+
+**Validation basis:** blocking Offline Validation run #1107 passed Structural contracts, Lua offline behavioural contracts and Generated source reference on the accepted TEST `0.4.6.10` head. GIANTS Reality validation then passed both TS004 as the target false-Passage witness and TS019 as the genuine-Passage regression control before PR #376 was squash merged to `main`.
+
+**Known separable work:** current open Issues remain independent of this checkpoint, including #336 Blocked Worker Recovery reverse divergence, #352 Obstruction Relocation centroid objective safety, #228 adversarial stress validation, #89 Operational Player Messages/HUD, and #86 performance/frame-pacing evidence.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. A future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.6.0 PATCH CHECKPOINT — Spatial Negotiation and Cooperative Passage Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #367 (`964b6efa41128dd46f49cd04158fc05c20fba2c3`), carrying field-validated TEST `0.4.5.17`.
