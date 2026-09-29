@@ -60,6 +60,7 @@ load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/BlockedProgressAssessment.lua")
 load("scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua")
 load("scripts/assessment/StructuralFieldShapeAssessment.lua")
+load("scripts/diagnostics/BoundaryInteractionReachProbe.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
@@ -7553,6 +7554,68 @@ local function assessSpatial(futureA,futureB,motionA,motionB,followerKnowledge)
         futureSpace={futureA,futureB},motionEvidence={motionA,motionB},followerBoundaryKnowledge=followerKnowledge or {}
     })
 end
+
+local function boundaryReachProjection(assemblyId,contactX,contactZ,workingWidthM)
+    return {
+        status="SUPPORTED",assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        currentX=0,currentZ=0,contactX=contactX,contactZ=contactZ,
+        boundaryRingKind="OUTER_BOUNDARY",boundaryRingIndex=1,
+        terminatingBoundaryEdge={edgeKey="OUTER_BOUNDARY:1:EDGE:1"},
+        workingWidthM=workingWidthM
+    }
+end
+
+local function boundaryReachPhysical(assemblyId,primitives)
+    return {
+        assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+        primitives=primitives,coverageComplete=false,negativeClearanceAuthority=false,
+        configurationProfileId="profile:"..assemblyId,provenance={source="BOUNDARY_REACH_TEST"}
+    }
+end
+
+test("Boundary Interaction Reach uses maximum positive Physical Assembly radial reach",function()
+    local measurement=OuttaMyWay.BoundaryInteractionReachProbe.measure(
+        boundaryReachProjection("AS-A",10,0,5),
+        boundaryReachPhysical("AS-A",{
+            {identity="disc-near",kind="DISC",x=1,z=0,radius=1,positiveConflictSupport=true},
+            {identity="disc-max",kind="DISC",x=3,z=4,radius=2,positiveConflictSupport=true},
+            {identity="disc-diagnostic",kind="DISC",x=20,z=0,radius=5,positiveConflictSupport=false}
+        }))
+    equal(measurement.status,"SUPPORTED")
+    spatialNear(measurement.boundaryInteractionReachM,7,0.0001)
+    equal(measurement.maximumPrimitiveId,"disc-max")
+    equal(measurement.contributorCount,2)
+end)
+
+test("Boundary Interaction Reach is physical rather than productive working-width scale",function()
+    local physical=boundaryReachPhysical("AS-A",{
+        {identity="disc-max",kind="DISC",x=3,z=4,radius=2,positiveConflictSupport=true}
+    })
+    local narrow=OuttaMyWay.BoundaryInteractionReachProbe.measure(boundaryReachProjection("AS-A",10,0,3),physical)
+    local wide=OuttaMyWay.BoundaryInteractionReachProbe.measure(boundaryReachProjection("AS-A",10,0,36),physical)
+    spatialNear(narrow.boundaryInteractionReachM,7,0.0001)
+    spatialNear(wide.boundaryInteractionReachM,7,0.0001)
+end)
+
+test("Boundary Interaction Reach pair probe uses contact separation against summed reach",function()
+    local a=OuttaMyWay.BoundaryInteractionReachProbe.measure(
+        boundaryReachProjection("AS-A",0,0,5),
+        boundaryReachPhysical("AS-A",{{identity="disc-A",kind="DISC",x=0,z=0,radius=7,positiveConflictSupport=true}}))
+    local b=OuttaMyWay.BoundaryInteractionReachProbe.measure(
+        boundaryReachProjection("AS-B",12,0,3),
+        boundaryReachPhysical("AS-B",{{identity="disc-B",kind="DISC",x=0,z=0,radius=6,positiveConflictSupport=true}}))
+    local overlap=OuttaMyWay.BoundaryInteractionReachProbe.compare(a,b)
+    equal(overlap.status,"SUPPORTED")
+    spatialNear(overlap.contactSeparationM,12,0.0001)
+    spatialNear(overlap.reachSumM,13,0.0001)
+    spatialNear(overlap.overlapMarginM,1,0.0001)
+    equal(overlap.rawDiscOverlap,true)
+
+    b.contactX=14
+    local separated=OuttaMyWay.BoundaryInteractionReachProbe.compare(a,b)
+    spatialNear(separated.overlapMarginM,-1,0.0001)
+    equal(separated.rawDiscOverlap,false)
+end)
 
 test("Forward Intersection is admitted by supported centrelines independent of working width and pair closing",function()
     local knowledge=assessSpatial(
