@@ -333,7 +333,126 @@ For **Category-1 Corner space**, Situation Assessment MUST distinguish persisten
 
 Corner Atlas knowledge is not persistent generic pair history and does not preserve a past yielder or right-of-way. Corner Engagement does not create a new Regulation type or Control permission. Situation Assessment owns current Corner meaning; Candidate Support, Decision, Responsibility Transition and Bounded Authority retain their existing jurisdictions.
 
-This contract is Category-1-specific. It makes no equivalent claim for Category 2 or open-field Forward Intersection and does not predict GIANTS turn paths.
+The Corner contract above remains Category-1-specific and does not predict GIANTS turn paths. Category 2 has a separate boundary-interaction contract:
+
+### Category-2 Boundary Demand
+
+A **Boundary Interaction Reach** is the maximum radial reach of the current represented Physical Assembly from the current supported progression/reference point for the applicable Physical-Assembly configuration.
+
+Situation Assessment MUST consume this value as representation-derived evidence. It MUST NOT substitute:
+
+- productive working width;
+- a working-width multiplier;
+- a universal metre literal;
+- a guessed turning radius;
+- a predicted GIANTS manoeuvre path; or
+- Forward Intersection geometry.
+
+Where Assessment Representation publishes configuration-scoped Physical-Assembly primitives, Boundary Interaction Reach SHOULD be derived once per supported configuration profile and reused while that profile remains valid. Situation Assessment MUST NOT require repeated structural geometry discovery merely to restate the same reach.
+
+A **Boundary Demand Disc** for one assembly is defined by:
+
+- centre = the assembly's current supported Field World boundary intersection/contact from its bounded current continuation;
+- radius = that assembly's current Boundary Interaction Reach; and
+- usable domain = the portion of that disc lying inside the authoritative Field World.
+
+The raw Euclidean disc is not itself Category-2 demand. Field-World clipping is required for semantic locality so overlap through a concavity, island or other non-field void cannot manufacture shared constrained space.
+
+> **Boundary Contact Anchors Category-2 Locality.**
+
+> **Category-2 Locality Scales With Assembly Reach, Not Productive Width.**
+
+A **Category-2 Demand** is positive when current Situation evidence establishes that an active Operation member currently consumes or currently requires access to its Boundary Demand Disc through one of these supported routes:
+
+1. a current bounded A8 / `SETTLED_CONTINUATION` progressing to the disc's boundary contact; or
+2. current positive Physical-Assembly occupancy inside the already-relevant Boundary Demand locality; or
+3. retained incumbent-purpose evidence explicitly permitted by the Regulation lifecycle while the native manoeuvre is revealing intent.
+
+`TURNING` alone MUST NOT manufacture new prospective Category-2 Demand or a future route. A previously admitted Category-2 purpose may, however, persist through `TURNING` under the incumbent-purpose continuity rules below.
+
+Two participants have **Shared Category-2 Demand** when:
+
+- both have current Category-2 Demand;
+- both belong to the same active Local Operation scope;
+- their Field-World-clipped Boundary Demand Discs have positive interior overlap; and
+- the representation evidence is fit for the positive-overlap conclusion.
+
+Positive overlap requires no arrival-time window and no minimum overlap magnitude beyond the geometric positive-overlap tolerance used by the representation contract.
+
+The following are insufficient on their own:
+
+- same Field World;
+- same boundary ring;
+- same sampled boundary edge;
+- parallel A8;
+- proximity;
+- simultaneous boundary approach;
+- Forward Intersection;
+- working-width overlap; or
+- eventual Passage.
+
+> **Parallel A8 + Same Boundary Ring != Shared Category-2 Demand.**
+
+> **Shared Category-2 Demand != Forward Intersection.**
+
+A positive Shared Category-2 Demand record MUST identify, where supported:
+
+- the pair and Local Operation scope;
+- each participant's boundary contact and boundary-ring/edge provenance;
+- each participant's Boundary Interaction Reach and representation/profile provenance;
+- the positive Field-World-clipped overlap evidence;
+- each participant's current Category-2 Demand basis;
+- current Physical-Assembly occupancy evidence where available;
+- current native intent classification such as A8 / `TURNING`;
+- each participant's **Boundary Option-Space Ratio** where supported;
+- current Resolution-Margin / cheaper-waiting evidence where supported;
+- the evidence identity/validity dependencies needed for reassessment; and
+- explicit claim limits preventing downstream consumers from treating the relationship as route authority or generic safe-clearance proof.
+
+### Boundary Option-Space Ratio
+
+For one Boundary Demand Disc:
+
+`Boundary Option-Space Ratio = area(Field World ∩ Boundary Demand Disc) / area(Boundary Demand Disc)`
+
+This is current spatial-scarcity evidence. Lower ratio means the current Field World removes a greater proportion of that assembly's local radial option space.
+
+The ratio MUST be normalised by that assembly's own full-disc area. It MUST NOT be replaced by raw clipped area when comparing differently sized assemblies.
+
+Boundary Option-Space Ratio is one cumulative ordering signal. It MUST NOT itself choose the yielder, become a permanent priority score or erase stronger current evidence such as positive constrained-space occupancy / evacuation need.
+
+### Shared Category-2 Regulation continuity
+
+Shared Category-2 Demand establishes that temporal Regulation of one participant is justified; it does not choose which participant yields.
+
+Candidate Support and Decision own prospective directional alternatives and temporary allocation.
+
+Once Responsibility Transition admits one Shared Category-2 Regulation purpose, Situation Assessment MUST interpret later evidence against the **incumbent purpose**, not rerun admission semantics as though no allocation existed.
+
+Expected consequence/evolution does not itself dissolve or reverse that purpose, including:
+
+- the protected participant slowing;
+- the protected participant entering or remaining `TURNING`;
+- temporary loss of fresh A8 / boundary-contact projection;
+- the regulated participant falling behind because Regulation is working;
+- changing native arrival estimates;
+- temporary loss of one prospective witness; or
+- Forward Intersection becoming negative/unresolved.
+
+Where the same purpose remains materially live but fresh proof is temporarily unavailable, Situation Assessment MUST publish the purpose as unresolved / `WAITING_FOR_EVIDENCE` rather than positive dissolution.
+
+Positive termination requires current evidence fit for the incumbent-purpose question that establishes one of:
+
+- the participants no longer demand the same Category-2 locality;
+- the protected participant has positively vacated/discharged the constrained demand;
+- the governing purpose has been positively superseded; or
+- Job Episode / Operation / fail-safe lifecycle cessation ends the basis.
+
+Control-induced separation and temporary evidence loss MUST NOT manufacture purpose completion.
+
+> **Shared Demand Admission Chooses Once; Incumbent Purpose Continuity Preserves the Allocation.**
+
+Existing Category-1 Corner and existing Category-2/open-field Forward Intersection contracts remain independent. Shared Category-2 Demand neither replaces nor weakens them. Where more than one Situation evidence route describes the same physical encounter, downstream Candidate/Decision contracts MUST avoid manufacturing duplicate simultaneous Regulation purposes for the same governing need.
 
 ## Operational Picture semantic contract
 
