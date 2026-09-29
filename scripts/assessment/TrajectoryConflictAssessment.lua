@@ -884,6 +884,12 @@ function Assessment.classifyPairs(context)
                         and record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
                     record.cooperativePassageEligible=record.passageEvaluationReady
                     record.resolutionSpaceRelationship=resolutionSpaceRelationship(record)
+                    if OuttaMyWay.CorridorBandEdgeProbe~=nil then
+                        OuttaMyWay.CorridorBandEdgeProbe.observe(
+                            context.observationSnapshotId,record,
+                            physicalByAssembly[aId],physicalByAssembly[bId],
+                            spaceByAssembly[aId],spaceByAssembly[bId])
+                    end
                     result[#result+1]=record
                 end
             end

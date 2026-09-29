@@ -54,6 +54,7 @@ load("scripts/assessment/RepresentationFitness.lua")
 load("scripts/assessment/CurrentPairAssessmentScope.lua")
 load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
+load("scripts/diagnostics/CorridorBandEdgeProbe.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/RealisedMotionDemandAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
@@ -7659,6 +7660,38 @@ local function boundaryReachPhysical(assemblyId,primitives)
         configurationProfileId="profile:"..assemblyId,provenance={source="BOUNDARY_REACH_TEST"}
     }
 end
+
+test("Corridor band edge probe identifies exact positive DISC edge contributors",function()
+    local measurement=OuttaMyWay.CorridorBandEdgeProbe.measureBand(
+        {
+            configurationProfileId="profile:AS-A",
+            coverageComplete=false,negativeClearanceAuthority=false,
+            directionalPassageEnvelope={widthM=2.65},
+            transitPassageEnvelope={widthM=2.65},
+            primitives={
+                {identity="left-disc",kind="DISC",x=-2,z=0,radius=1,positiveConflictSupport=true,
+                    nodeName="leftCollision",memberReferenceKey="member:left",source="GENERIC_COLLISION_NAME_SCAN",
+                    class="DISCOVERED_COLLISION_COMPONENT",participationStatus="RUNTIME_COMPOUND_CHILD_CONFIRMED"},
+                {identity="right-disc",kind="DISC",x=3,z=0,radius=0.5,positiveConflictSupport=true,
+                    nodeName="MEMBER_ROOT",memberReferenceKey="member:right",source="MEMBER_ROOT_GEOMETRY",
+                    class="MEMBER_ROOT_PARTIAL",participationStatus="MEMBER_ROOT_PARTIAL"},
+                {identity="diagnostic-only",kind="DISC",x=20,z=0,radius=10,positiveConflictSupport=false}
+            }
+        },
+        {occupancy={x=0,z=0}},
+        1,0)
+    equal(measurement.status,"SUPPORTED")
+    equal(measurement.contributorCount,2)
+    spatialNear(measurement.minOffsetM,-3,0.0001)
+    spatialNear(measurement.maxOffsetM,3.5,0.0001)
+    spatialNear(measurement.widthM,6.5,0.0001)
+    equal(measurement.minContributor.identity,"left-disc")
+    equal(measurement.minContributor.nodeName,"leftCollision")
+    equal(measurement.maxContributor.identity,"right-disc")
+    equal(measurement.maxContributor.source,"MEMBER_ROOT_GEOMETRY")
+    spatialNear(measurement.directionalPassageWidthM,2.65,0.0001)
+    spatialNear(measurement.transitPassageWidthM,2.65,0.0001)
+end)
 
 test("Boundary Interaction Reach uses maximum positive Physical Assembly radial reach",function()
     local measurement=OuttaMyWay.BoundaryInteractionReachProbe.measure(
