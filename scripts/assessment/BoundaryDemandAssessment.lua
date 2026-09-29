@@ -135,8 +135,9 @@ end
 -- shared locality exists, and preserve unresolved evidence as unresolved rather
 -- than suppressing the already-positive shared demand.
 local function enrichOrderingEvidence(participantValue,physical,fieldWorld,evidence)
-    if type(participantValue)~="table" or participantValue.orderingEvidenceAssessed==true then return end
-    participantValue.orderingEvidenceAssessed=true
+    if type(participantValue)~="table"
+        or participantValue.boundaryOptionSpaceEvidence~=nil
+        or participantValue.currentBoundaryDemandOccupancyEvidence~=nil then return end
     evidence=evidence or {}
     local disc=participantValue.boundaryDemandDisc
 
