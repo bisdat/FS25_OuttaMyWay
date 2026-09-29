@@ -55,7 +55,7 @@ end
 
 -- Raw working-width observation used only as an evidence seed.  It is not the
 -- physical Assembly footprint and does not qualify boundary demand by itself.
-local function workingWidthObservation(vehicle)
+function Observation.workingWidth(vehicle)
     local bestWidth,bestSource=nil,nil
     local function consider(width,source)
         if width~=nil and (bestWidth==nil or width>bestWidth) then bestWidth=width; bestSource=source end
@@ -175,7 +175,7 @@ function Observation.observe(vehicle)
     local segment=activeSegmentEvidence(strategy)
     local line=implementLineEvidence(strategy)
     local settings=strategy and strategy.fieldCourseSettings or nil
-    local workingWidth=workingWidthObservation(vehicle)
+    local workingWidth=Observation.workingWidth(vehicle)
     local nativeDriveCommand=nativeDriveCommandObservation(vehicle)
     return {
         strategyAvailable=strategy~=nil,
