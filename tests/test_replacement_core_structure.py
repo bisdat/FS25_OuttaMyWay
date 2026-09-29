@@ -1025,9 +1025,7 @@ def test_v0104_pair_specific_clearance_is_transit_only_and_has_no_configuration_
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     fitness=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
     assert "scripts/representation/PairSpecificPassageClearance.lua" in main
-    policy=(ROOT/"scripts"/"contracts"/"CooperativePassagePolicy.lua").read_text(encoding="utf-8")
-    assert "Policy.NOMINAL_INTER_ASSEMBLY_CLEARANCE_M=1.0" in policy
-    assert "OuttaMyWay.CooperativePassagePolicy.NOMINAL_INTER_ASSEMBLY_CLEARANCE_M" in planner
+    assert "local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in planner
     for token in ("subjectFacingExtentM","otherFacingExtentM","physicalContactThresholdM","policyRequiredSeparationM"):
         assert token in helper
     assert "PairSpecificPassageClearance.currentPair" in planner
@@ -1415,9 +1413,7 @@ def test_v0133_directional_passage_envelope_uses_bootstrap_giants_size_with_disc
     ):
         assert token in planner
     assert "minimumTranslatedDiscClearance" in planner  # explicit fallback retained
-    policy=(ROOT/"scripts"/"contracts"/"CooperativePassagePolicy.lua").read_text(encoding="utf-8")
-    assert "Policy.NOMINAL_INTER_ASSEMBLY_CLEARANCE_M=1.0" in policy
-    assert "OuttaMyWay.CooperativePassagePolicy.NOMINAL_INTER_ASSEMBLY_CLEARANCE_M" in planner
+    assert "local COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in planner
     assert "local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in control
 
 
@@ -2151,7 +2147,6 @@ def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conse
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"CorridorBandEdgeProbe.lua").read_text(encoding="utf-8")
 
-    assert "scripts/contracts/CooperativePassagePolicy.lua" in main
     assert "scripts/representation/MaximumProductiveA8Representation.lua" in main
     assert "scripts/diagnostics/CorridorBandEdgeProbe.lua" in main
     assert "scripts/assessment/NativeA8ClearanceAssessment.lua" in main
@@ -2167,6 +2162,7 @@ def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conse
     assert "record.passageConcernEstablished" in trajectory
     assert "record.passageEvaluationReady=aParticipation" not in trajectory
     assert "MAXIMUM_PRODUCTIVE_A8_ENVELOPES_RETAIN_NOMINAL_NATIVE_CLEARANCE" in native
+    assert "local NATIVE_A8_CLEARANCE_EXCLUSION_NOMINAL_M=1.0" in native
     assert 'action.status="NOT_REQUIRED"' in native
     assert 'positiveDissolution=true' in native
     assert "cooperativePassageEligible~=false" in support
