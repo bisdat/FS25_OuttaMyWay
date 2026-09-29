@@ -1094,7 +1094,7 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     assert 'local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"' in initial
     assert 'local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"' in initial
     assert 'local fixedPassageApproach=bridge.admissionKind=="PASSAGE_APPROACH"' in initial
-    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedPassageApproach" in initial
+    assert "local fixed=fixedForwardIntersection or fixedConcurrentBoundaryArrival or fixedCornerRightOfWay or fixedPassageApproach" in initial
     assert f"if not fixed then\n        envelope,envelopeReason={establish_call}\n    end" in initial
     assert "if fixed then" in initial
     assert "initialCap=bridge.fixedRegulationSpeedKmh" in initial

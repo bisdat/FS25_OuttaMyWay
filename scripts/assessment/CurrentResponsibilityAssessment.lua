@@ -146,7 +146,7 @@ function Assessment:assessActionSpaceRegulation(current,relation)
                 reason=relation.reason or "CONCURRENT_BOUNDARY_ARRIVAL_POSITIVELY_SUPERSEDED"
             }
         end
-        if relation.relationshipStatus=="NEGATIVE" then
+        if relation.positiveDissolution==true then
             return {
                 disposition="TERMINATE",
                 terminationEvidenceKind="CONCURRENT_BOUNDARY_ARRIVAL_POSITIVE_DISSOLUTION",
