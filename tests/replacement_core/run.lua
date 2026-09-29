@@ -10,7 +10,6 @@ OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function()
     return OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"
 end)
 load("scripts/contracts/ValueRecord.lua")
-load("scripts/contracts/CooperativePassagePolicy.lua")
 load("scripts/contracts/ObservationSnapshot.lua")
 load("scripts/contracts/OperationalPicture.lua")
 load("scripts/contracts/CandidateAction.lua")
