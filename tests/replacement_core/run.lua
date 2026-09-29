@@ -31,6 +31,7 @@ load("scripts/contracts/CommitmentApplicationRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/representation/PlanViewFootprint.lua")
 load("scripts/representation/EntityLocalShapeEvidence.lua")
+load("scripts/representation/MaximumProductiveA8Representation.lua")
 load("scripts/representation/AssemblyRepresentationCache.lua")
 load("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
 load("scripts/representation/PairSpecificPassageClearance.lua")
@@ -54,7 +55,9 @@ load("scripts/assessment/RepresentationFitness.lua")
 load("scripts/assessment/CurrentPairAssessmentScope.lua")
 load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
+load("scripts/diagnostics/CorridorBandEdgeProbe.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
+load("scripts/assessment/NativeA8ClearanceAssessment.lua")
 load("scripts/assessment/RealisedMotionDemandAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
@@ -3930,6 +3933,9 @@ test("Trajectory Conflict: established opposed pair is Passage-evaluation-ready 
         situations=situation,
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={relation},currentSpace=spaces,physicalSpaceEvidence=physical
+    })
     equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
     equal(relation.subjectOperationMember,true); equal(relation.otherOperationMember,true)
     equal(relation.subjectSettledContinuation,true); equal(relation.otherSettledContinuation,false)
@@ -3953,6 +3959,9 @@ test("Trajectory Conflict: established opposed pair is Passage-evaluation-ready 
         situations=situation,
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={settledRelation},currentSpace=spaces,physicalSpaceEvidence=physical
+    })
     equal(settledRelation.identity,relation.identity)
     equal(settledRelation.subjectSettledContinuation,true); equal(settledRelation.otherSettledContinuation,true)
     equal(settledRelation.passageEvaluationReady,true)
@@ -8576,6 +8585,225 @@ test("legacy follower shadow retirement preserves P22 capability retirement", fu
 end)
 
 
+test("Maximum Productive A8 distinguishes lateral articulation from unrelated foldability",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={
+        [1]={0,0,0},[10]={0,0,-5},[20]={-3,0,-5},[21]={3,0,-5},
+        [30]={0,0,-5},[40]={-4,0,-5},[41]={4,0,-5}
+    }
+    getWorldTranslation=function(node)
+        local p=positions[node] or {0,0,0}
+        return p[1],p[2],p[3]
+    end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+
+    local function xml(width,length)
+        return {getValue=function(_,key)
+            local values={["vehicle.base.size#width"]=width,["vehicle.base.size#length"]=length}
+            return values[key]
+        end}
+    end
+    local function api()
+        return {
+            getNumOfChildren=function() return 0 end,
+            getChildAt=function() return nil end,
+            getName=function(node) return "root"..tostring(node) end,
+            localToWorld=function(node,x,y,z)
+                local p=positions[node] or {0,0,0}
+                return p[1]+x,p[2]+y,p[3]+z
+            end,
+            getShapeGeometryBoundingSphere=function() return 0,0,0,2,true end,
+            getShapeBoundingSphere=function() return 0,0,0,2,true end,
+            getShapeWorldBoundingSphere=function(node)
+                local p=positions[node] or {0,0,0}
+                return p[1],p[2],p[3],2
+            end,
+            getIsCompoundChild=function() return false end
+        }
+    end
+
+    local topDown={
+        rootNode=10,xmlFile=xml(3,9.2),components={{node=10}},
+        spec_foldable={foldAnimTime=0,foldingParts={{animationName="folding"}}},
+        getAINeedsLowering=function() return true end,
+        getAIMarkers=function() return 20,21 end,
+        getName=function() return "TopDown-like" end,
+        getAttachedImplements=function() return {} end
+    }
+    local topAttached={{object=topDown}}
+    local topTractor={
+        rootNode=1,xmlFile=xml(3.15,6.4),components={{node=1}},
+        getName=function() return "8RX-like" end,
+        getAttachedImplements=function() return topAttached end,
+        getAISteeringNode=function() return 1 end
+    }
+    local topCache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    topCache:beginObservationCycle()
+    local top=topCache:observe(topTractor,"vehicle-root:top","job-top",0)
+    topCache:endObservationCycle()
+    equal(top.maximumProductiveA8Envelope~=nil,true)
+    equal(top.maximumProductiveA8Envelope.lateralArticulation,true)
+    equal(top.maximumProductiveA8Envelope.workingWidthSource,"GIANTS_AI_MARKERS")
+    spatialNear(top.maximumProductiveA8Envelope.widthM,6.0,0.001)
+
+    local vario={
+        rootNode=30,xmlFile=xml(1.8,5.75),components={{node=30}},
+        spec_foldable={foldAnimTime=0,foldingParts={{animationName="openBackDoor"}}},
+        getAINeedsLowering=function() return false end,
+        getAIMarkers=function() return 40,41 end,
+        getName=function() return "Variofex-like" end,
+        getAttachedImplements=function() return {} end
+    }
+    local varioAttached={{object=vario}}
+    local varioTractor={
+        rootNode=1,xmlFile=xml(2.65,5.5),components={{node=1}},
+        getName=function() return "MT-like" end,
+        getAttachedImplements=function() return varioAttached end,
+        getAISteeringNode=function() return 1 end
+    }
+    local varioCache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    varioCache:beginObservationCycle()
+    local varioEvidence=varioCache:observe(varioTractor,"vehicle-root:vario","job-vario",0)
+    varioCache:endObservationCycle()
+    equal(varioEvidence.maximumProductiveA8Envelope~=nil,true)
+    equal(varioEvidence.maximumProductiveA8Envelope.lateralArticulation,false)
+    spatialNear(varioEvidence.maximumProductiveA8Envelope.widthM,2.65,0.001)
+    equal(varioEvidence.maximumProductiveA8Envelope.workingWidthM,nil)
+
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("Maximum Productive A8 treats animation introspection as one evidence source rather than a gate",function()
+    local object={
+        spec_foldable={foldingParts={{animationName="missingAnimation"}}},
+        getAINeedsLowering=function() return true end
+    }
+    local animation=OuttaMyWay.MaximumProductiveA8Representation.inspectLateralArticulation(object)
+    local lowering=OuttaMyWay.MaximumProductiveA8Representation.inspectNeedsLowering(object)
+    equal(animation.status,"UNRESOLVED")
+    equal(animation.reason,"SELECTED_FOLDING_ANIMATION_LATERAL_EFFECT_UNRESOLVED")
+    equal(lowering.available,true)
+    equal(lowering.value,true)
+    equal(lowering.source,"GIANTS_GET_AI_NEEDS_LOWERING")
+end)
+
+local function maximumA8Physical(assemblyId,widthM)
+    return {
+        assemblyId=assemblyId,
+        maximumProductiveA8Envelope={
+            minRightM=-widthM*0.5,maxRightM=widthM*0.5,
+            minForwardM=-4,maxForwardM=4,widthM=widthM,
+            authority="PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION",
+            configurationBasis="TEST_MAXIMUM_PRODUCTIVE_A8"
+        }
+    }
+end
+
+local function nativeA8Relation()
+    return {
+        identity="opposed-corridor:OR-TEST:AS-A:AS-B",operationId="OR-TEST",
+        subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
+        subjectOperationMember=true,otherOperationMember=true,
+        subjectSettledContinuation=true,otherSettledContinuation=true,
+        classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",
+        supportedCorridorOverlap={positive=true,sharedRightX=1,sharedRightZ=0},
+        actionSpaceConservation={
+            status="REGULATE_SUPPORTED",supported=true,
+            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B"
+        },
+        resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false}
+    }
+end
+
+test("Native A8 Clearance Exclusion vetoes TS004-like false Passage",function()
+    local relation=nativeA8Relation()
+    local spaces={
+        {assemblyId="AS-A",occupancy={x=0,z=0,headingX=0,headingZ=1}},
+        {assemblyId="AS-B",occupancy={x=6.12,z=0,headingX=0,headingZ=-1}}
+    }
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={relation},currentSpace=spaces,
+        physicalSpaceEvidence={maximumA8Physical("AS-A",6.0),maximumA8Physical("AS-B",2.8)}
+    })
+    equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(relation.nativeA8ClearanceExclusion.status,"SUPPORTED")
+    equal(relation.nativeA8ClearanceExclusion.positiveExclusion,true)
+    spatialNear(relation.nativeA8ClearanceExclusion.currentClearanceM,1.72,0.001)
+    spatialNear(relation.nativeA8ClearanceExclusion.clearanceReserveM,0.72,0.001)
+    equal(relation.passageEvaluationReady,false)
+    equal(relation.cooperativePassageEligible,false)
+    equal(relation.actionSpaceConservation.status,"NOT_REQUIRED")
+    equal(relation.actionSpaceConservation.supported,false)
+    equal(relation.resolutionSpaceRelationship.positiveDissolution,true)
+end)
+
+test("Native A8 Clearance Exclusion falls through for a true Passage relationship",function()
+    local relation=nativeA8Relation()
+    local spaces={
+        {assemblyId="AS-A",occupancy={x=0,z=0,headingX=0,headingZ=1}},
+        {assemblyId="AS-B",occupancy={x=4.0,z=0,headingX=0,headingZ=-1}}
+    }
+    local originalAction=relation.actionSpaceConservation
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={relation},currentSpace=spaces,
+        physicalSpaceEvidence={maximumA8Physical("AS-A",6.0),maximumA8Physical("AS-B",2.8)}
+    })
+    equal(relation.nativeA8ClearanceExclusion.status,"NOT_EXCLUDED")
+    equal(relation.nativeA8ClearanceExclusion.positiveExclusion,false)
+    equal(relation.passageEvaluationReady,true)
+    equal(relation.cooperativePassageEligible,true)
+    equal(relation.actionSpaceConservation,originalAction)
+    equal(relation.resolutionSpaceRelationship.positiveDissolution,false)
+end)
+
+test("Native A8 Clearance Exclusion does not veto when envelope evidence is unavailable",function()
+    local relation=nativeA8Relation()
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={relation},
+        currentSpace={
+            {assemblyId="AS-A",occupancy={x=0,z=0,headingX=0,headingZ=1}},
+            {assemblyId="AS-B",occupancy={x=6.12,z=0,headingX=0,headingZ=-1}}
+        },
+        physicalSpaceEvidence={maximumA8Physical("AS-A",6.0),{assemblyId="AS-B"}}
+    })
+    equal(relation.nativeA8ClearanceExclusion.status,"UNRESOLVED")
+    equal(relation.passageEvaluationReady,true)
+    equal(relation.cooperativePassageEligible,true)
+    equal(relation.actionSpaceConservation.status,"REGULATE_SUPPORTED")
+end)
+
+test("Corridor band edge probe remains available and reports Maximum Productive A8 width",function()
+    local measurement=OuttaMyWay.CorridorBandEdgeProbe.measureBand(
+        {
+            configurationProfileId="profile:AS-A",
+            coverageComplete=false,negativeClearanceAuthority=false,
+            directionalPassageEnvelope={widthM=2.65},
+            transitPassageEnvelope={widthM=2.65},
+            maximumProductiveA8Envelope={widthM=3.00},
+            primitives={
+                {identity="left-disc",kind="DISC",x=-2,z=0,radius=1,positiveConflictSupport=true,
+                    nodeName="leftCollision",memberReferenceKey="member:left",source="GENERIC_COLLISION_NAME_SCAN",
+                    class="DISCOVERED_COLLISION_COMPONENT",participationStatus="RUNTIME_COMPOUND_CHILD_CONFIRMED"},
+                {identity="right-disc",kind="DISC",x=3,z=0,radius=0.5,positiveConflictSupport=true,
+                    nodeName="MEMBER_ROOT",memberReferenceKey="member:right",source="MEMBER_ROOT_GEOMETRY",
+                    class="MEMBER_ROOT_PARTIAL",participationStatus="MEMBER_ROOT_PARTIAL"},
+                {identity="diagnostic-only",kind="DISC",x=20,z=0,radius=10,positiveConflictSupport=false}
+            }
+        },
+        {occupancy={x=0,z=0}},1,0)
+    equal(measurement.status,"SUPPORTED")
+    equal(measurement.contributorCount,2)
+    spatialNear(measurement.minOffsetM,-3,0.0001)
+    spatialNear(measurement.maxOffsetM,3.5,0.0001)
+    equal(measurement.minContributor.identity,"left-disc")
+    equal(measurement.maxContributor.identity,"right-disc")
+    spatialNear(measurement.directionalPassageWidthM,2.65,0.0001)
+    spatialNear(measurement.transitPassageWidthM,2.65,0.0001)
+    spatialNear(measurement.maximumProductiveA8WidthM,3.00,0.0001)
+end)
+
 dofile(root.."/tests/replacement_core/StructuralFieldShape.lua")(test,equal)
 
 dofile(root.."/tests/replacement_core/CornerSituationKnowledge.lua")(test,equal)
@@ -8587,3 +8815,4 @@ dofile(root.."/tests/replacement_core/BlockedWorkerRecovery.lua")(test,equal)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end
+

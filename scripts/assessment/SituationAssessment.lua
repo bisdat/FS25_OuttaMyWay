@@ -127,7 +127,7 @@ local function normalizePhysicalSpace(values,map)
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         result[#result+1]={
             assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,episodeKey=item.episodeKey,
-            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),configurationAlternatives=copyValue(item.configurationAlternatives or {}),directionalPassageEnvelope=copyValue(item.directionalPassageEnvelope),transitPassageEnvelope=copyValue(item.transitPassageEnvelope),transitPassageReason=item.transitPassageReason,transitFoldCapability=copyValue(item.transitFoldCapability),primitives=item.primitives or {},summary=item.summary,
+            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),configurationAlternatives=copyValue(item.configurationAlternatives or {}),directionalPassageEnvelope=copyValue(item.directionalPassageEnvelope),transitPassageEnvelope=copyValue(item.transitPassageEnvelope),transitPassageReason=item.transitPassageReason,maximumProductiveA8Envelope=copyValue(item.maximumProductiveA8Envelope),maximumProductiveA8Reason=item.maximumProductiveA8Reason,transitFoldCapability=copyValue(item.transitFoldCapability),primitives=item.primitives or {},summary=item.summary,
             coverageComplete=item.coverageComplete==true,negativeClearanceAuthority=item.negativeClearanceAuthority==true,
             provenance=item.provenance
         }
@@ -530,7 +530,13 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
 
     local opposedCorridorKnowledge=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
         situations=situations,trajectoryKnowledge=trajectoryKnowledge,motionEvidence=motionEvidence,currentSpace=currentSpace,
-        physicalSpaceEvidence=physicalSpaceEvidence
+        physicalSpaceEvidence=physicalSpaceEvidence,observationSnapshotId=snapshot.identity
+    })
+    -- Trajectory Conflict owns the conservative opposed-corridor concern.
+    -- Situation then applies the one-way Native A8 Clearance Exclusion before
+    -- Passage readiness or Passage-specific Regulation is consumed downstream.
+    opposedCorridorKnowledge=OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships=opposedCorridorKnowledge,currentSpace=currentSpace,physicalSpaceEvidence=physicalSpaceEvidence
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do
         local situation=situationByOperation[relation.operationId]

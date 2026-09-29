@@ -425,6 +425,9 @@ function Cache:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     record.transitPassageBootstrapAttempted=false
     record.cachedTransitPassageEnvelope=nil
     record.cachedTransitPassageReason=nil
+    record.maximumProductiveA8BootstrapAttempted=false
+    record.cachedMaximumProductiveA8Envelope=nil
+    record.cachedMaximumProductiveA8Reason=nil
     record.structurallyValid=#record.localPrimitives>0
     return record
 end
@@ -754,7 +757,16 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         record.transitPassageBootstrapAttempted=true
         record.cachedTransitPassageEnvelope,record.cachedTransitPassageReason=self:_transitPassageEnvelope(record,frame)
     end
+    if record.maximumProductiveA8BootstrapAttempted~=true then
+        record.maximumProductiveA8BootstrapAttempted=true
+        record.cachedMaximumProductiveA8Envelope,record.cachedMaximumProductiveA8Reason=
+            OuttaMyWay.MaximumProductiveA8Representation.build(record,frame,worker,self:_api("localToWorld"))
+    end
     local transitPassageEnvelope,transitPassageReason=record.cachedTransitPassageEnvelope,record.cachedTransitPassageReason
+    local maximumProductiveA8Envelope=record.membershipChanged==true and nil or record.cachedMaximumProductiveA8Envelope
+    local maximumProductiveA8Reason=record.membershipChanged==true
+        and "MAXIMUM_PRODUCTIVE_A8_ASSEMBLY_MEMBERSHIP_CHANGED"
+        or record.cachedMaximumProductiveA8Reason
     local relativeDiscs=relativeDiscSnapshot(worldPrimitives,frame)
     if relativeDiscs~=nil then profile.relativeDiscs=relativeDiscs end
     local directionalEnvelope=relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
@@ -774,7 +786,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
-        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,transitPassageEnvelope=transitPassageEnvelope,transitPassageReason=transitPassageReason,transitFoldCapability={isFoldable=record.transitFoldCapability and record.transitFoldCapability.isFoldable==true or false,actuatorCount=record.transitFoldCapability and record.transitFoldCapability.actuatorCount or 0,expectedFoldDurationMs=record.transitFoldCapability and record.transitFoldCapability.expectedFoldDurationMs or 0,settlementTimeoutMs=record.transitFoldCapability and record.transitFoldCapability.settlementTimeoutMs or 0,source=record.transitFoldCapability and record.transitFoldCapability.source or "UNAVAILABLE"},outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
+        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,transitPassageEnvelope=transitPassageEnvelope,transitPassageReason=transitPassageReason,maximumProductiveA8Envelope=maximumProductiveA8Envelope,maximumProductiveA8Reason=maximumProductiveA8Reason,transitFoldCapability={isFoldable=record.transitFoldCapability and record.transitFoldCapability.isFoldable==true or false,actuatorCount=record.transitFoldCapability and record.transitFoldCapability.actuatorCount or 0,expectedFoldDurationMs=record.transitFoldCapability and record.transitFoldCapability.expectedFoldDurationMs or 0,settlementTimeoutMs=record.transitFoldCapability and record.transitFoldCapability.settlementTimeoutMs or 0,source=record.transitFoldCapability and record.transitFoldCapability.source or "UNAVAILABLE"},outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
         structurallyValid=record.structurallyValid and profile.participatingPrimitiveCount>0,coverageComplete=false,conservativeForRepresentedComponents=record.conservativeForRepresentedComponents,
         negativeClearanceAuthority=false,claimPermissions={"POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS"},
         worldPrimitives=worldPrimitives,planViewSummary=summary,geometryStats=record.geometryStats,transformFailureCount=#transformFailures,

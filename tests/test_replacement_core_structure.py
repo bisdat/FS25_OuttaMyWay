@@ -2134,3 +2134,41 @@ def test_issue345_bubble_formation_readiness_is_explicit_pretransition_boundary(
     assert 'route="LATEST_SAFE_CAPTURE_POINT"' in evaluator
     assert 'result.captureMarginM<=captureReserve' in evaluator
     assert 'closingRate<=0' in evaluator
+
+
+def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conservative_broad_phase():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
+    maximum=(ROOT/"scripts"/"representation"/"MaximumProductiveA8Representation.lua").read_text(encoding="utf-8")
+    observation=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    native=(ROOT/"scripts"/"assessment"/"NativeA8ClearanceAssessment.lua").read_text(encoding="utf-8")
+    trajectory=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    probe=(ROOT/"scripts"/"diagnostics"/"CorridorBandEdgeProbe.lua").read_text(encoding="utf-8")
+
+    assert "scripts/representation/MaximumProductiveA8Representation.lua" in main
+    assert "scripts/diagnostics/CorridorBandEdgeProbe.lua" in main
+    assert "scripts/assessment/NativeA8ClearanceAssessment.lua" in main
+    assert main.index("scripts/assessment/TrajectoryConflictAssessment.lua") < main.index("scripts/assessment/NativeA8ClearanceAssessment.lua") < main.index("scripts/assessment/SituationAssessment.lua")
+    assert "maximumProductiveA8Envelope" in cache
+    assert "PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION" in maximum
+    assert "Foldability != Lateral Articulation" in maximum
+    assert "inspectLateralArticulation" in maximum
+    assert "inspectNeedsLowering" in maximum
+    assert "FOLD_CAPABILITY_AND_AI_NEEDS_LOWERING" in maximum
+    assert "AMBIGUOUS_FOLD_CONFIGURATION_CONSERVATIVE_WORKING_SPAN" in maximum
+    assert "maximumProductiveA8Envelope" in observation
+    assert "maximumProductiveA8Envelope" in situation
+    assert "NativeA8ClearanceAssessment.apply" in situation
+    assert situation.index("TrajectoryConflictAssessment.classifyPairs") < situation.index("NativeA8ClearanceAssessment.apply") < situation.index("FollowerBoundaryDemandAssessment.buildKnowledge")
+    assert "record.passageConcernEstablished" in trajectory
+    assert "record.passageEvaluationReady=aParticipation" not in trajectory
+    assert "MAXIMUM_PRODUCTIVE_A8_ENVELOPES_RETAIN_NOMINAL_NATIVE_CLEARANCE" in native
+    assert "local NATIVE_A8_CLEARANCE_EXCLUSION_NOMINAL_M=1.0" in native
+    assert 'action.status="NOT_REQUIRED"' in native
+    assert 'positiveDissolution=true' in native
+    assert "cooperativePassageEligible~=false" in support
+    assert "subjectMaximumA8Width" in probe
+    for forbidden in ("driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
+        assert forbidden not in native
