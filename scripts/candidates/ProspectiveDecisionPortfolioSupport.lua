@@ -85,11 +85,43 @@ local function sharedCornerSituations(picture)
     return result
 end
 
-local function forwardRelationshipCount(picture)
+local function pairKey(a,b)
+    local first,second=tostring(a),tostring(b)
+    if second<first then first,second=second,first end
+    return first.."|"..second
+end
+
+local function sharedCategory2Situations(picture)
+    local result={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        for _,situation in OuttaMyWay.ValueRecord.ipairs(knowledge.sharedCategory2Demands or {}) do
+            if type(situation.identity)=="string"
+                and situation.positiveDissolution~=true
+                and (situation.competingDemand==true or situation.currentEvidenceState=="WAITING_FOR_EVIDENCE") then
+                result[#result+1]=situation
+            end
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
+local function sharedCategory2PairSet(situations)
+    local result={}
+    for _,situation in OuttaMyWay.ValueRecord.ipairs(situations or {}) do
+        result[pairKey(situation.subjectAssemblyId,situation.otherAssemblyId)]=true
+    end
+    return result
+end
+
+local function forwardRelationshipCount(picture,excludedPairKeys)
     local count=0
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
         for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
-            if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true and relation.incumbentRelationship==nil and type(relation.actionSpaceConservation)=="table" then count=count+1 end
+            local key=pairKey(relation.subjectAssemblyId,relation.otherAssemblyId)
+            if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true
+                and relation.incumbentRelationship==nil and type(relation.actionSpaceConservation)=="table"
+                and not (type(excludedPairKeys)=="table" and excludedPairKeys[key]==true) then count=count+1 end
         end
     end
     return count
@@ -158,9 +190,28 @@ function Support:publishDecisionPicture(picture,snapshot)
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"CORNER_FAIL_CLOSED","MULTIPLE_SHARED_CORNER_SITUATIONS",1)
     end
 
-    local forwardCount=forwardRelationshipCount(picture)
+    local sharedCategory2=sharedCategory2Situations(picture)
+    local category2Pairs=sharedCategory2PairSet(sharedCategory2)
+    if #sharedCategory2==1 then
+        local category2,category2Reason=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=sharedCategory2[1].identity},
+            targetPictureId,targetEpoch)
+        if modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" then
+            appendGroup(state,category2,"CATEGORY_2_BOUNDARY_DEMAND",
+                "category-2-boundary-demand:"..tostring(sharedCategory2[1].identity),1)
+        elseif category2Reason~=nil then
+            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+                "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",category2Reason,1)
+        end
+    elseif #sharedCategory2>1 then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+            "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED","MULTIPLE_SHARED_CATEGORY_2_SITUATIONS",1)
+    end
+
+    local forwardCount=forwardRelationshipCount(picture,category2Pairs)
     if forwardCount==1 then
-        local forward=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FORWARD_INTERSECTION"},targetPictureId,targetEpoch)
+        local forward=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{kind="FORWARD_INTERSECTION",excludedPairKeys=category2Pairs},targetPictureId,targetEpoch)
         if modeOfGroup(forward)=="ACTION_SPACE_REGULATION" then
             appendGroup(state,forward,"FORWARD_INTERSECTION","forward-intersection",1)
         end
