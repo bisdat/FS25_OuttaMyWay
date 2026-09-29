@@ -861,6 +861,10 @@ end
 
 function Authority:_continueActionSpaceRegulationRoleMigration(picture,evaluated,candidate,lease,bridge,applied)
     if lease==nil or bridge==nil or bridge.conflictIdentity~=lease.conflictIdentity or bridge.regulatedAssemblyId==lease.regulatedAssemblyId then return nil end
+    if lease.admissionKind=="SHARED_CATEGORY_2_DEMAND" then
+        return {status="MAINTAINED",reason="SHARED_CATEGORY_2_ROLE_MIGRATION_NOT_AUTHORISED",
+            actionSpaceRegulation=true,sharedCategory2=true,commitmentId=lease.commitmentId}
+    end
     if applied.commitment.identity~=lease.commitmentId then
         return {status="MAINTAINED",reason="ACTION_SPACE_REGULATION_ROLE_MIGRATION_COMMITMENT_ID_CHANGED",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
     end
