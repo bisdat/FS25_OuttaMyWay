@@ -152,12 +152,20 @@ end
 
 -- Forward Intersection geometry and temporal allocation are owned by Situation.
 -- Candidate support only publishes the already-assessed bounded Regulation.
-local function forwardIntersectionRecord(picture)
+local function pairKey(a,b)
+    local first,second=tostring(a),tostring(b)
+    if second<first then first,second=second,first end
+    return first.."|"..second
+end
+
+local function forwardIntersectionRecord(picture,excludedPairKeys)
     local actionable={}
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
         for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
+            local key=pairKey(relation.subjectAssemblyId,relation.otherAssemblyId)
             if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true
-                and relation.incumbentRelationship==nil and type(relation.actionSpaceConservation)=="table" then
+                and relation.incumbentRelationship==nil and type(relation.actionSpaceConservation)=="table"
+                and not (type(excludedPairKeys)=="table" and excludedPairKeys[key]==true) then
                 actionable[#actionable+1]={relation=relation,action=relation.actionSpaceConservation}
             end
         end
@@ -901,6 +909,64 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
     },nil
 end
 
+local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation)
+    local participants={}
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
+        if type(participant.assemblyId)=="string" and type(participant.assemblyReferenceKey)=="string" then
+            participants[#participants+1]=participant
+        end
+    end
+    table.sort(participants,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    if #participants~=2 then return nil,"SHARED_CATEGORY_2_REQUIRES_EXACTLY_TWO_CURRENT_PARTICIPANTS" end
+
+    local requirement="shared-category-2-regulation:"..tostring(situation.identity)
+    local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
+    if existingReason~=nil then return nil,existingReason end
+
+    local baseline=#(values.representationFitness or {})
+    local specifications={}
+    local incumbentId=situation.incumbentRegulatedAssemblyId
+    if type(incumbentId)=="string" then
+        local regulated=category2ParticipantByAssembly(situation,incumbentId)
+        local protected=regulated and category2ParticipantByAssembly(
+            situation,participants[1].assemblyId==incumbentId and participants[2].assemblyId or participants[1].assemblyId) or nil
+        if regulated==nil or protected==nil then return nil,"SHARED_CATEGORY_2_INCUMBENT_PARTICIPANT_UNAVAILABLE" end
+        local item=category2ActionItem(situation,regulated,protected)
+        local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
+        specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
+            targetPictureId,values,item,requirement,existing,representationId)
+    else
+        for index=1,2 do
+            local regulated=participants[index]
+            local protected=participants[index==1 and 2 or 1]
+            local item=category2ActionItem(situation,regulated,protected)
+            local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
+            specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
+                targetPictureId,values,item,requirement,existing,representationId)
+        end
+    end
+
+    logInfo("SHARED_CATEGORY_2_CANDIDATES_SUPPORTED",
+        "situation=%s participants=%s/%s candidates=%d incumbentRegulated=%s targetPicture=%s",
+        tostring(situation.identity),tostring(participants[1].assemblyId),tostring(participants[2].assemblyId),
+        #specifications,tostring(incumbentId or "NONE"),tostring(targetPictureId))
+    return {
+        supportBoundary={
+            mode="SHARED_CATEGORY_2_DEMAND",supportedCandidateClasses={"REGULATE_SPEED"},
+            physicalCapabilitiesImplemented=true,controlAuthority="FIXED_INTENT_REVELATION_CREEP",
+            boundedScope="CURRENT_SHARED_CATEGORY_2_BOUNDARY_DEMAND_OR_INCUMBENT_WAITING_FOR_EVIDENCE",
+            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}
+        },
+        candidateSpecifications=specifications,
+        representationFitness=projectedFitnessAdditions(values,baseline),
+        provenance={
+            source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,
+            targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,
+            authority="SHARED_CATEGORY_2_CANDIDATE_SUPPORT"
+        }
+    },nil
+end
+
 local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
     local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "cooperative-passage:")..tostring(item.relation.identity)
     local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
@@ -958,8 +1024,15 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         return projectedCornerRightOfWayGroup(self,picture,snapshot,values,targetPictureId,situation)
     end
 
+    if projection.kind=="SHARED_CATEGORY_2_DEMAND" then
+        if type(projection.sharedCategory2Identity)~="string" then return nil,"SHARED_CATEGORY_2_ID_REQUIRED" end
+        local situation,reason=sharedCategory2Situation(picture,projection.sharedCategory2Identity)
+        if situation==nil then return nil,reason or "NO_SHARED_CATEGORY_2_DEMAND" end
+        return projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation)
+    end
+
     if projection.kind=="FORWARD_INTERSECTION" then
-        local item,reason=forwardIntersectionRecord(picture)
+        local item,reason=forwardIntersectionRecord(picture,projection.excludedPairKeys)
         if item==nil then return nil,reason or "NO_FORWARD_INTERSECTION_SUPPORT" end
         return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
     end
