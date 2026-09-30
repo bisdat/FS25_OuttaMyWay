@@ -1070,13 +1070,15 @@ function Assessment:assess(input)
         local key="shared-category-2:"..tostring(relation.identity)
         if self.lastSignatures[key]~=signature then
             self.lastSignatures[key]=signature
-            if relation.failSafeAbandonment==true then
-                publication:warning("NORMAL","SHARED_CATEGORY_2_WATCHDOG_FAIL_SAFE",
-                    "relationship=%s regulated=%s protected=%s deadline=%s observed=%s reason=%s",
+            if relation.responsibilityLeaseExpired==true then
+                publication:warning("NORMAL","SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED",
+                    "relationship=%s regulated=%s protected=%s leaseSeconds=%s deadline=%s observed=%s reason=%s",
                     tostring(relation.identity),
                     tostring(action.regulatedAssemblyId or relation.incumbentRegulatedAssemblyId or "UNRESOLVED"),
                     tostring(action.protectedAssemblyId or relation.incumbentProtectedAssemblyId or "UNRESOLVED"),
-                    numberText(relation.watchdogDeadlineTimestamp),numberText(relation.watchdogObservedTimestamp),
+                    numberText(relation.responsibilityLeaseSeconds),
+                    numberText(relation.responsibilityLeaseDeadlineTimestamp),
+                    numberText(relation.responsibilityLeaseObservedTimestamp),
                     tostring(relation.reason))
             end
             logInfo("SHARED_CATEGORY_2_DEMAND_ASSESSED",
