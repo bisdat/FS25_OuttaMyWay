@@ -8079,7 +8079,7 @@ test("Category-2 boundary demands on different terminating domains do not manufa
     equal(result.pairAssessments[1].reason,"BOUNDARY_DEMANDS_DO_NOT_SHARE_SUPPORTED_TERMINATING_DOMAIN")
 end)
 
-test("Shared Category-2 unrelated TURNING outside boundary reach remains waiting",function()
+test("Shared Category-2 admitted protected A8 to TURNING dissolves without radial reach gate",function()
     local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
     local field=category2Field()
     local projections={
@@ -8103,53 +8103,14 @@ test("Shared Category-2 unrelated TURNING outside boundary reach remains waiting
         progressActuationOwnership={{assemblyId="AS-A"}},
         openObligations={{basis={
             kind="SHARED_CATEGORY_2_DEMAND_REGULATION",conflictIdentity=identity,
-            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",protectedIntentEpochAtAdmission=1,
-            protectedNativeTimeToBoundarySecAtAdmission=10,regulationAdmissionTimestamp=100
+            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",
+            regulationAdmissionTimestamp=100
         }}}
     }}
 
-    local turning=assessment:assess({
-        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections={projections[1]},physicalSpaceEvidence=physical,
-        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","TURNING",1)},
-        commitmentContext=commitmentContext,observationTimestamp=101
-    })
-    equal(#turning.sharedCategory2Demands,1)
-    equal(turning.sharedCategory2Demands[1].currentEvidenceState,"WAITING_FOR_EVIDENCE")
-    equal(turning.sharedCategory2Demands[1].positiveDissolution,nil)
-    equal(turning.sharedCategory2Demands[1].failSafeAbandonment,nil)
-    equal(turning.sharedCategory2Demands[1].reason,"INCUMBENT_SHARED_CATEGORY_2_PURPOSE_WAITING_FOR_BOUNDARY_TURN")
-end)
-
-test("Shared Category-2 protected boundary TURNING immediately dissolves incumbent Regulation",function()
-    local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
-    local field=category2Field()
-    local projections={
-        category2Projection("AS-A",40,30,40,0,30),
-        category2Projection("AS-B",55,5,55,0,5)
-    }
-    local physical={
-        category2Physical("AS-A",40,30,12),
-        category2Physical("AS-B",55,5,7)
-    }
-    local initial=assessment:assess({
-        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,
-        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
-        commitmentContext={},observationTimestamp=100
-    })
-    local identity=initial.sharedCategory2Demands[1].identity
-    local requirement="shared-category-2-regulation:"..identity
-    local commitmentContext={{
-        commitmentId="CM-C2",governingBasis={responsibilityKey=requirement},
-        progressActuationOwnership={{assemblyId="AS-A"}},
-        openObligations={{basis={
-            kind="SHARED_CATEGORY_2_DEMAND_REGULATION",conflictIdentity=identity,
-            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",protectedIntentEpochAtAdmission=1,
-            protectedNativeTimeToBoundarySecAtAdmission=5/3,regulationAdmissionTimestamp=100
-        }}}
-    }}
-
+    -- Reality witness from TS001: GIANTS publishes TURNING before the retained
+    -- settled A8 enters radial Boundary Interaction Reach, and the A8 projection
+    -- disappears at the same transition.
     local turning=assessment:assess({
         operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
         projections={projections[1]},physicalSpaceEvidence=physical,
@@ -8163,7 +8124,8 @@ test("Shared Category-2 protected boundary TURNING immediately dissolves incumbe
     equal(relation.boundaryTurnCompletion,true)
     equal(relation.classification,"SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN")
     equal(relation.reason,"PROTECTED_PARTICIPANT_BEGAN_NATIVE_BOUNDARY_TURN")
-    equal(relation.boundaryTurnEvidence.boundaryDistanceM,5)
+    equal(relation.boundaryTurnEvidence.predecessorIntentClassification,"SETTLED_CONTINUATION")
+    equal(relation.boundaryTurnEvidence.boundaryDistanceM,30)
     equal(relation.boundaryTurnEvidence.boundaryInteractionReachM,7)
 
     local current={provenance={admissionKind="SHARED_CATEGORY_2_DEMAND",conflictIdentity=identity}}
@@ -8172,7 +8134,7 @@ test("Shared Category-2 protected boundary TURNING immediately dissolves incumbe
     equal(retirement.terminationEvidenceKind,"SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION")
 end)
 
-test("Shared Category-2 watchdog abandons Regulation without manufacturing positive dissolution",function()
+test("Shared Category-2 Responsibility lease forces fresh assessment after ten seconds",function()
     local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
     local field=category2Field()
     local projections={
@@ -8183,10 +8145,13 @@ test("Shared Category-2 watchdog abandons Regulation without manufacturing posit
         category2Physical("AS-A",40,30,12),
         category2Physical("AS-B",55,30,7)
     }
+    local motion={
+        category2Motion("AS-A","SETTLED_CONTINUATION",1),
+        category2Motion("AS-B","SETTLED_CONTINUATION",1)
+    }
     local initial=assessment:assess({
         operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,
-        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
+        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
         commitmentContext={},observationTimestamp=100
     })
     local identity=initial.sharedCategory2Demands[1].identity
@@ -8196,31 +8161,54 @@ test("Shared Category-2 watchdog abandons Regulation without manufacturing posit
         progressActuationOwnership={{assemblyId="AS-A"}},
         openObligations={{basis={
             kind="SHARED_CATEGORY_2_DEMAND_REGULATION",conflictIdentity=identity,
-            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",protectedIntentEpochAtAdmission=1,
-            protectedNativeTimeToBoundarySecAtAdmission=10,regulationAdmissionTimestamp=100
+            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",
+            regulationAdmissionTimestamp=100
         }}}
     }}
 
+    local beforeExpiry=assessment:assess({
+        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
+        commitmentContext=commitmentContext,observationTimestamp=109.9
+    })
+    equal(beforeExpiry.sharedCategory2Demands[1].currentEvidenceState,"SUPPORTED")
+    equal(beforeExpiry.sharedCategory2Demands[1].responsibilityLeaseExpired,nil)
+
     local expired=assessment:assess({
         operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,
-        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
-        commitmentContext=commitmentContext,observationTimestamp=121
+        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
+        commitmentContext=commitmentContext,observationTimestamp=110
     })
     equal(#expired.sharedCategory2Demands,1)
     local relation=expired.sharedCategory2Demands[1]
     equal(relation.currentEvidenceState,"FAIL_SAFE_ABANDONMENT")
     equal(relation.failSafeAbandonment,true)
+    equal(relation.responsibilityLeaseExpired,true)
     equal(relation.positiveDissolution,false)
-    equal(relation.classification,"SHARED_CATEGORY_2_REGULATION_ABANDONED_BY_WATCHDOG")
-    equal(relation.reason,"SHARED_CATEGORY_2_WATCHDOG_EXPIRED_WITHOUT_BOUNDARY_TURN")
-    equal(relation.watchdogDeadlineTimestamp,120)
-    equal(relation.watchdogObservedTimestamp,121)
+    equal(relation.classification,"SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED")
+    equal(relation.reason,"SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED")
+    equal(relation.responsibilityLeaseSeconds,10)
+    equal(relation.responsibilityLeaseDeadlineTimestamp,110)
+    equal(relation.responsibilityLeaseObservedTimestamp,110)
 
     local current={provenance={admissionKind="SHARED_CATEGORY_2_DEMAND",conflictIdentity=identity}}
     local retirement=OuttaMyWay.CurrentResponsibilityAssessment.new():assessActionSpaceRegulation(current,relation)
     equal(retirement.disposition,"TERMINATE")
-    equal(retirement.terminationEvidenceKind,"SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT")
+    equal(retirement.terminationEvidenceKind,"SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRY")
+
+    -- Once the incumbent Commitment/Responsibility has terminated, the next
+    -- Observation has no incumbent authority and therefore assesses the same
+    -- still-positive relationship under normal fresh-admission semantics.
+    local fresh=assessment:assess({
+        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
+        commitmentContext={},observationTimestamp=110.25
+    })
+    equal(#fresh.sharedCategory2Demands,1)
+    equal(fresh.sharedCategory2Demands[1].relationshipStatus,"POSITIVE")
+    equal(fresh.sharedCategory2Demands[1].currentEvidenceState,"SUPPORTED")
+    equal(fresh.sharedCategory2Demands[1].reason,"CURRENT_A8_BOUNDARY_DEMANDS_SHARE_TERMINATING_CATEGORY_2_DOMAIN")
+    equal(fresh.sharedCategory2Demands[1].incumbentCommitmentId,nil)
 end)
 
 test("Shared Category-2 Current Responsibility waits through temporary evidence loss",function()
