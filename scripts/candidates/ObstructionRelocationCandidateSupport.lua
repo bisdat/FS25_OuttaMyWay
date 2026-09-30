@@ -9,9 +9,23 @@ Support.__index=Support
 -- Architecture requires a per-actuation maximum; Reality remains the authority
 -- for whether fresh positive obstruction justifies any later actuation.
 local BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M=60.0
+local OFFSET_RELOCATION_CENTRE_DISTANCE_M=40.0
+local OFFSET_RELOCATION_ALIGNMENT_MIN_DOT=0.8660254037844386 -- 30 degrees from collinear
 
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
+end
+
+local function normalize(x,z)
+    if not finite(x) or not finite(z) then return nil,nil end
+    local length=math.sqrt(x*x+z*z)
+    if length<=0.000001 then return nil,nil end
+    return x/length,z/length
+end
+
+local function dot(ax,az,bx,bz)
+    if not finite(ax) or not finite(az) or not finite(bx) or not finite(bz) then return nil end
+    return ax*bx+az*bz
 end
 
 local function genericContext(picture)
@@ -79,24 +93,107 @@ local function relocationSerializationBeneficiaries(group,references)
     return result
 end
 
-local function boundedInwardObjective(snapshot,pose)
+local function realisedDemandForBeneficiary(picture,beneficiaryAssemblyId)
+    for _,item in OuttaMyWay.ValueRecord.ipairs(picture.realisedMotionDemandKnowledge or {}) do
+        if item.positive==true and item.beneficiaryAssemblyId==beneficiaryAssemblyId then return item end
+    end
+    return nil
+end
+
+local function motionForAssembly(picture,assemblyId)
+    for _,item in OuttaMyWay.ValueRecord.ipairs(picture.motionEvidence or {}) do
+        if item.assemblyId==assemblyId then return item end
+    end
+    return nil
+end
+
+local function supportedApproach(picture,group)
+    if OuttaMyWay.ValueRecord.length(group.beneficiaryIds or {})~=1 then return nil end
+    local beneficiaryAssemblyId=group.beneficiaryIds[1]
+    local demand=realisedDemandForBeneficiary(picture,beneficiaryAssemblyId)
+    if demand==nil then return nil end
+    local directionX,directionZ=normalize(tonumber(demand.directionX),tonumber(demand.directionZ))
+    if directionX==nil then return nil end
+    local motion=motionForAssembly(picture,beneficiaryAssemblyId)
+    local originX,originZ=motion and tonumber(motion.poseX),motion and tonumber(motion.poseZ)
+    if not finite(originX) or not finite(originZ) then
+        local sweep=(demand.physicalDemandSweeps or {})[1]
+        originX,originZ=sweep and tonumber(sweep.startX),sweep and tonumber(sweep.startZ)
+    end
+    return {
+        beneficiaryAssemblyId=beneficiaryAssemblyId,
+        directionX=directionX,directionZ=directionZ,
+        originX=finite(originX) and originX or nil,
+        originZ=finite(originZ) and originZ or nil
+    }
+end
+
+local function offsetRelocationCentre(cx,cz,pose,approach,existing)
+    if approach==nil then return nil end
+    if type(existing)=="table"
+        and existing.kind=="OFFSET_RELOCATION_CENTRE"
+        and existing.beneficiaryAssemblyId==approach.beneficiaryAssemblyId then
+        local previousX,previousZ=normalize(existing.approachDirectionX,existing.approachDirectionZ)
+        local continuity=previousX~=nil and dot(previousX,previousZ,approach.directionX,approach.directionZ) or nil
+        if finite(continuity) and continuity>=OFFSET_RELOCATION_ALIGNMENT_MIN_DOT
+            and finite(existing.x) and finite(existing.z) then
+            return existing
+        end
+    end
+
+    local centroidDirectionX,centroidDirectionZ=normalize(cx-pose.x,cz-pose.z)
+    if centroidDirectionX==nil then return nil end
+    local alignment=dot(centroidDirectionX,centroidDirectionZ,approach.directionX,approach.directionZ)
+    if not finite(alignment) or math.abs(alignment)<OFFSET_RELOCATION_ALIGNMENT_MIN_DOT then return nil end
+
+    local perpendicularX,perpendicularZ=-approach.directionZ,approach.directionX
+    local side=1
+    if finite(approach.originX) and finite(approach.originZ) then
+        local blockerSide=(pose.x-approach.originX)*perpendicularX+(pose.z-approach.originZ)*perpendicularZ
+        local centroidSide=(cx-approach.originX)*perpendicularX+(cz-approach.originZ)*perpendicularZ
+        if math.abs(blockerSide)>0.05 then side=blockerSide>=0 and 1 or -1
+        elseif math.abs(centroidSide)>0.05 then side=centroidSide>=0 and 1 or -1 end
+    end
+    return {
+        kind="OFFSET_RELOCATION_CENTRE",
+        x=cx+perpendicularX*side*OFFSET_RELOCATION_CENTRE_DISTANCE_M,
+        z=cz+perpendicularZ*side*OFFSET_RELOCATION_CENTRE_DISTANCE_M,
+        sourceCentroidX=cx,sourceCentroidZ=cz,
+        offsetDistanceM=OFFSET_RELOCATION_CENTRE_DISTANCE_M,
+        beneficiaryAssemblyId=approach.beneficiaryAssemblyId,
+        approachDirectionX=approach.directionX,approachDirectionZ=approach.directionZ,
+        centroidApproachAlignment=alignment
+    }
+end
+
+local function boundedInwardObjective(picture,snapshot,group,context,pose)
     local metrics=snapshot and snapshot.fieldWorld and snapshot.fieldWorld.geometryMetrics or nil
     local cx,cz=metrics and tonumber(metrics.centroidX),metrics and tonumber(metrics.centroidZ)
     if not finite(cx) or not finite(cz) then return nil,"FIELD_WORLD_CENTROID_UNAVAILABLE" end
     if pose==nil or not finite(pose.x) or not finite(pose.z) then return nil,"CURRENT_BLOCKER_REFERENCE_POSE_UNAVAILABLE" end
-    local dx,dz=cx-pose.x,cz-pose.z
+
+    local existing=context and context.governingBasis and context.governingBasis.relocationCentre or nil
+    local relocationCentre=offsetRelocationCentre(cx,cz,pose,supportedApproach(picture,group),existing)
+        or {kind="FIELD_WORLD_CENTROID",x=cx,z=cz,sourceCentroidX=cx,sourceCentroidZ=cz}
+    local dx,dz=relocationCentre.x-pose.x,relocationCentre.z-pose.z
     local distance=math.sqrt(dx*dx+dz*dz)
     if distance<=0.05 then return nil,"CENTROID_BEARING_DEGENERATE" end
     local directionX,directionZ=dx/distance,dz/distance
     local cap=BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M
     local progress=math.min(distance,cap)
     if progress<=0.05 then return nil,"BOUNDED_RELOCATION_PROGRESS_UNAVAILABLE" end
+    local offset=relocationCentre.kind=="OFFSET_RELOCATION_CENTRE"
     return {
         objectiveKind="CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION",
         boundedInwardRelocation=true,
-        destinationKind=progress+0.000001<distance and "CENTROID_BEARING_DISTANCE_CAP" or "FIELD_CENTROID",
+        destinationKind=progress+0.000001<distance
+            and (offset and "OFFSET_RELOCATION_CENTRE_DISTANCE_CAP" or "CENTROID_BEARING_DISTANCE_CAP")
+            or (offset and "OFFSET_RELOCATION_CENTRE" or "FIELD_CENTROID"),
         alignmentMode="FIXED_INITIAL_CENTRE_BEARING",
         fieldCentreX=cx,fieldCentreZ=cz,
+        relocationCentre=relocationCentre,
+        relocationCentreX=relocationCentre.x,relocationCentreZ=relocationCentre.z,
+        relocationCentreKind=relocationCentre.kind,
         initialDistanceToCentreM=distance,
         infieldDirectionX=directionX,infieldDirectionZ=directionZ,
         targetProgressM=progress,
@@ -109,7 +206,7 @@ local function boundedInwardObjective(snapshot,pose)
 end
 
 local function physicalSpec(picture,snapshot,group,context,references,pose)
-    local objective,objectiveReason=boundedInwardObjective(snapshot,pose)
+    local objective,objectiveReason=boundedInwardObjective(picture,snapshot,group,context,pose)
     if objective==nil then return nil,objectiveReason end
     local protected=relocationSerializationBeneficiaries(group,references)
     for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do if type(item.referenceKey)~="string" then return nil,"BENEFICIARY_REFERENCE_UNAVAILABLE" end end
@@ -131,7 +228,7 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
         subject={assemblyId=group.blockerAssemblyId},capability="REPOSITION",
         expectedEffect={physicalChange=true,phase="INFIELD",boundedInwardRelocation=true,oneFixedAlignment=true,parking=false},
         evidenceBasis={
-            governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey=group.relocationKey,operationIds={group.operationId},sourceIntentIds={},authorizingDemandAssemblyIds=protectedIds,blockerAssemblyId=group.blockerAssemblyId},
+            governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey=group.relocationKey,operationIds={group.operationId},sourceIntentIds={},authorizingDemandAssemblyIds=protectedIds,blockerAssemblyId=group.blockerAssemblyId,relocationCentre=objective.relocationCentre},
             progressActuationOwnership={assemblyIds=protectedIds},
             obstructionRelocationActuationOwnership={assemblyIds={group.blockerAssemblyId}},
             effectiveActuationComposition={identity="obstruction-relocation-composition:"..group.relocationKey..":"..picture.identity,epoch=picture.epoch,relevantAssemblyIds=relevantIds,entries=compositionEntries},
