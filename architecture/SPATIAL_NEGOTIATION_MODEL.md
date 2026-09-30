@@ -615,6 +615,26 @@ A **Reverse Steering Horizon** is subordinate mechanical look-through used only 
 
 Sequential return space is already-created Passage space that must remain positively protected from conflicting occupancy while each participant returns.
 
+A **Mutual Return Region** is the bounded approximate shared interaction region within that already-created sequential return space that must be vacated by the first-return participant before the second participant begins its Passage Return. It is derived from the accepted Passage crossing/return geometry and current represented Physical Assembly occupancy. It is not an exact swept-path reconstruction, not a retained-axis corridor, not future-route prediction and not a new universal distance literal.
+
+The Mutual Return Region applies only to the transition between the first participant's completed handback and the second participant's return. The first participant's existing Return Staging, Passage Return Region, restoration and same-Job handback remain unchanged.
+
+After the first Passage Leg is terminal `HANDED_BACK`, that participant is no longer a Passage-return procedural actor, but it remains current physical Reality. **Return-Space Clearance** is positive current evidence that the handed-back participant's represented occupancy no longer intersects the Mutual Return Region required by the waiting participant's remaining return.
+
+Return-Space Clearance does not require the handed-back participant to cross a scalar station, continue monotonically along its former Passage axis or reveal a future route. GIANTS-native continuation after handback may legitimately turn, reverse or reposition away from the historical Passage axis.
+
+> **Released-Participant Forward Progress != Return-Space Clearance**
+
+> **Native Continuation After Handback Need Not Continue Along The Passage Axis**
+
+Once Return-Space Clearance is positive, the second participant may begin its already-authorised Passage Return. Fresh current occupancy and hard-safety evidence remain authoritative during that return; unexpected re-entry or conflict may stop/reassess movement without restoring a future-route dependency.
+
+A **Return Clearance Wait** is therefore an evidence wait inside the still-live Passage Resolution, not a movement-progress phase. It may remain open only for a bounded evidence-wait budget. Expiry of that budget does not establish Return-Space Clearance. It requires fresh post-Crossing safe-native-continuation reassessment: where restoration plus native handback of the waiting participant is positively safe, degraded native settlement may discharge the remaining leg and permit normal Last-Leg Dissolution; otherwise fail-safe escalation remains legitimate.
+
+> **Clearance Wait Is Evidence Wait, Not Progress Phase**
+
+> **Evidence-Wait Expiry != Return-Space Clearance**
+
 > **Passage Return Region != Exact Axis Return**
 
 > **Passage Return Region != Reverse Steering Horizon**

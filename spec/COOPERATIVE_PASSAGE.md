@@ -52,7 +52,7 @@ As applicable, the semantic product includes:
 - the **Shared Crossing Core** with required Passage clearance and represented non-contact support;
 - capture/control reserve and disposable native approach margin;
 - any participant-specific **Lateral Excursion Development/Reacquisition** required by the selected arrangement;
-- any sequential return space that must remain protected while a participant returns toward its Passage Return Region;
+- the sequential-return-space basis required to establish the **Mutual Return Region** used between first-participant handback and second-participant return;
 - entry/capture boundary evidence;
 - the required Transit configuration plan for both participants;
 - Passage guide semantics sufficient to express the intended physical choreography; and
@@ -264,12 +264,47 @@ For the current capability, Reverse Steering Horizon look-through MUST be derive
 The return mechanism MUST:
 - keep the participant in Transit while spatial restitution is active;
 - return participants sequentially rather than simultaneously;
-- preserve positive released-participant clearance before the waiting participant begins return;
+- preserve the existing first-participant Return Staging, Passage Return Region, restoration and same-Job handback path;
+- require positive **Return-Space Clearance** before the waiting second participant begins return;
 - retain the existing GIANTS FIELDWORK Job Episode;
 - determine Return Region entry independently from the reverse steering mechanism's point-target completion;
 - stop/fail safe if the subordinate steering horizon is reached before Return Region entry;
 - restore intervention-created configuration debt after the Return Region is reached; and
 - hand control back to GIANTS for residual productive-route correction.
+
+### Sequential Return-Space Clearance
+
+The **Mutual Return Region** is the bounded approximate shared interaction region within already-created sequential return space that remains relevant after the first participant has completed Passage Return, restoration and same-Job handback but before the second participant begins its own Passage Return.
+
+Its implementation MAY approximate that region from the accepted Passage crossing/return geometry plus purpose-fit current Physical Assembly representation. It MUST NOT require exact swept-path reconstruction, preserve an unbounded historical Passage-axis corridor, predict the handed-back participant's future GIANTS route or introduce a new universal distance literal.
+
+This contract applies only to the second return. The first participant's Return Staging, Passage Return Region, restoration and handback semantics are unchanged.
+
+After first-leg `HANDED_BACK`, the released participant remains current physical Reality. **Return-Space Clearance** MUST be established from positive current evidence that its represented physical occupancy no longer intersects the Mutual Return Region required by the waiting participant's remaining return.
+
+Return-Space Clearance MUST NOT require the released participant to:
+
+- cross a fixed scalar station on the retained Passage axis;
+- continue monotonically along that historical axis; or
+- reveal/preserve a future native route.
+
+Normal GIANTS continuation after handback MAY turn, reverse or reposition away from the historical Passage axis without invalidating the first leg's terminal state.
+
+> **Released-Participant Forward Progress != Return-Space Clearance**
+
+> **Native Continuation After Handback Need Not Continue Along The Passage Axis**
+
+Once Return-Space Clearance is positive, the waiting participant MAY begin its already-authorised Passage Return. During that return, fresh current occupancy and hard-safety evidence remain authoritative; later conflict MAY stop or narrow actuation, but absence of future-route prediction MUST NOT recreate the historical-axis progression dependency.
+
+A **Return Clearance Wait** is an evidence wait, not a completion-progress phase. The waiting participant remains stationary because required external current evidence is not yet positive; its lack of movement is therefore not itself evidence of Passage failure.
+
+Return Clearance Wait MUST be bounded by a separate evidence-wait budget. The exact duration is Control calibration validated against Reality and is not specified here.
+
+Expiry of that evidence-wait budget MUST NOT establish Return-Space Clearance, Passage success, recovery completion or safe handback. On expiry the implementation MUST perform fresh post-Crossing safe-native-continuation reassessment. Where restoration plus GIANTS handback of the waiting participant is positively safe, the existing degraded native-settlement contract MAY discharge that remaining leg without completing the planned second Passage Return. Where safe autonomous handback is not positively supported, fail-safe escalation remains required.
+
+> **Clearance Wait Is Evidence Wait, Not Progress Phase**
+
+> **Evidence-Wait Expiry != Return-Space Clearance**
 
 Passage MUST NOT restart or replace the FIELDWORK job merely to perturb GIANTS routing. That behaviour belongs to Blocked Worker Recovery, where blockage invalidates the useful native route; Cooperative Passage does not invalidate the participant's productive route.
 
@@ -366,6 +401,8 @@ After dissolution, fresh Situation Assessment determines any new responsibility 
 A phase watchdog, target radius, actuation speed, alignment tolerance or other Control calibration MUST NOT become semantic Passage failure evidence merely because a source timer or threshold expires.
 
 The accepted Passage progress watchdog calibration is **10 seconds with no meaningful progress toward the current phase completion condition**. Progress MUST be measured against the phase's completion residual rather than generic vehicle movement. Expiry requires fresh assessment / fail-safe handling; it does not manufacture Passage success, recovery-debt discharge, safe handback or failure.
+
+**Return Clearance Wait is excluded from the progress-watchdog model.** Its completion depends on fresh external occupancy evidence from the already-handed-back participant, which need not improve monotonically and is not movement progress by the waiting participant. The separate bounded evidence-wait budget defined above owns that uncertainty interval.
 
 The common Cooperative Passage actuation speed remains **8 km/h** for both participants. This is Control calibration for coupled crossing coherence, not a claim that equal commanded speed guarantees equal realised motion.
 
