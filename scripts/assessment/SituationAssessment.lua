@@ -564,7 +564,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
                 operationId=operationId,assemblyIds=situation.memberAssemblyIds,
                 fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
                 futureSpace=futureSpace,motionEvidence=motionEvidence,followerBoundaryKnowledge=followerBoundaryKnowledge,
-                observationSnapshotId=snapshot.identity,observationEpoch=snapshot.epoch,productiveContinuationKnowledge=productiveKnowledge,
+                observationSnapshotId=snapshot.identity,observationEpoch=snapshot.epoch,observationTimestamp=snapshot.timestamp,productiveContinuationKnowledge=productiveKnowledge,
                 physicalSpaceEvidence=physicalSpaceEvidence,commitmentContext=commitmentContext
             })
             situation.spatialConstraintKnowledge=knowledge
