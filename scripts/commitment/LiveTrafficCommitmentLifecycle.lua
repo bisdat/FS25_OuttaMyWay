@@ -240,8 +240,9 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     if #remaining==0 and hasPrefix(responsibility,"follower-boundary:") then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
+        local failSafeAbandonment=category2 and evidenceKind=="SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT"
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{
-            kind=crossContext and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_SATISFIED",
+            kind=crossContext and "NEW_AUTHORITATIVE_INTENT" or (failSafeAbandonment and "OBJECTIVE_FAILED" or "OBJECTIVE_SATISFIED"),
             evidence=evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT"},
             provenance={source="LiveTrafficCommitmentLifecycle"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
@@ -273,7 +274,7 @@ local function findActionSpaceRegulationObligation(runtime,commitmentId,conflict
             outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
             or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
             or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
-            or outcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION")
+            or outcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN_OR_FAIL_SAFE_RELEASE")
         if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
@@ -312,7 +313,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
                 item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
                 or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
                 or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
-                or item.requiredOutcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_INTENT_REVELATION_OR_POSITIVE_DISSOLUTION") then specification=item break end
+                or item.requiredOutcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN_OR_FAIL_SAFE_RELEASE") then specification=item break end
         end
         if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
@@ -366,12 +367,13 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         end
     elseif category2 then
         local evidenceKind=evidence and evidence.kind or nil
-        if evidenceKind=="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION" then
+        if evidenceKind=="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION" then
             settlementMode="SATISFACTION"
-        elseif evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION" then
+        elseif evidenceKind=="SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT"
+            or evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION" then
             settlementMode="BASIS_CESSATION"
         else
-            return nil,"SHARED_CATEGORY_2_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION"
+            return nil,"SHARED_CATEGORY_2_SETTLEMENT_REQUIRES_BOUNDARY_TURN_DISSOLUTION_FAIL_SAFE_OR_SUPERSESSION"
         end
     else
         settlementMode="SATISFACTION"
@@ -397,14 +399,16 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         local terminalEvidenceKind=crossContext and "TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
             or (corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
-            or (category2 and "SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVELY_DISSOLVED"
+            or (category2 and (failSafeAbandonment and "SHARED_CATEGORY_2_REGULATION_FAIL_SAFE_ABANDONED" or "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED")
             or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"))
         if forward and not crossContext then
             terminalEvidenceKind=(evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
                 or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
         elseif category2 and not crossContext then
-            terminalEvidenceKind="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVELY_DISSOLVED"
+            terminalEvidenceKind=failSafeAbandonment
+                and "SHARED_CATEGORY_2_REGULATION_FAIL_SAFE_ABANDONED"
+                or "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED"
         end
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
