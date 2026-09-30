@@ -326,7 +326,7 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
     return representationId
 end
 
-local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,governingRequirementKey,existingCommitmentId,representationId,observationTimestamp)
+local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,governingRequirementKey,existingCommitmentId,representationId)
     local relation=item.relation
     local action=item.action
     local forward=action.admissionKind=="FORWARD_INTERSECTION"
@@ -358,7 +358,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
     elseif category2 then
         referenceKey="shared-category-2-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
-        purpose={kind="SHARED_CATEGORY_2_INTENT_REVELATION",result="PRESERVE_TEMPORARY_BOUNDARY_DEMAND_ORDERING_UNTIL_PROTECTED_BOUNDARY_TURN_OR_RESPONSIBILITY_LEASE_EXPIRY"}
+        purpose={kind="SHARED_CATEGORY_2_INTENT_REVELATION",result="PRESERVE_TEMPORARY_BOUNDARY_DEMAND_ORDERING_UNTIL_PROTECTED_BOUNDARY_TURN"}
     end
 
     local observeReason=corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
@@ -373,11 +373,11 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         or (category2 and "SHARED_CATEGORY_2_DEMAND_REGULATION" or "ACTION_SPACE_REGULATION"))
     local outcomeKind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
         or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
-        or (category2 and "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN_OR_RESPONSIBILITY_LEASE_EXPIRY"
+        or (category2 and "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN"
         or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"))
     local evidenceKind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED"
         or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION"
-        or (category2 and "FRESH_SHARED_CATEGORY_2_DEMAND_OR_BOUNDARY_TURN_DISSOLUTION_OR_RESPONSIBILITY_LEASE_EXPIRY"
+        or (category2 and "FRESH_SHARED_CATEGORY_2_DEMAND_OR_BOUNDARY_TURN_DISSOLUTION"
         or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"))
 
     return {
@@ -457,8 +457,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             basis={
                 kind=basisKind,conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,
                 roleAssignmentMutable=not forward and not category2,
-                regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
-                regulationAdmissionTimestamp=category2 and tonumber(observationTimestamp) or nil
+                regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId
             },
             requiredOutcome={kind=outcomeKind,conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
@@ -523,7 +522,7 @@ local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
     if existingReason~=nil then self.lastStatus=existingReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
     values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
     local representationId=actionSpaceRegulationRepresentation(values,pictureId,item)
-    local specification=makeActionSpaceRegulationCandidate(pictureId,values,item,requirement,existing,representationId,snapshot.timestamp)
+    local specification=makeActionSpaceRegulationCandidate(pictureId,values,item,requirement,existing,representationId)
     values.candidateSupportEvidence={
         complete=true,
         supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
@@ -934,7 +933,7 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
         local item=category2ActionItem(situation,regulated,protected)
         local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
         specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
-            targetPictureId,values,item,requirement,existing,representationId,snapshot.timestamp)
+            targetPictureId,values,item,requirement,existing,representationId)
     else
         for index=1,2 do
             local regulated=participants[index]
@@ -942,7 +941,7 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
             local item=category2ActionItem(situation,regulated,protected)
             local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
             specifications[#specifications+1]=makeActionSpaceRegulationCandidate(
-            targetPictureId,values,item,requirement,existing,representationId,snapshot.timestamp)
+            targetPictureId,values,item,requirement,existing,representationId)
         end
     end
 
