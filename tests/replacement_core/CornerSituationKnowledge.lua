@@ -171,7 +171,7 @@ return function(test,equal)
         equal(count(result.engagements),0)
     end)
 
-    test("Shared Corner Situation: independent feature-relative terminal-edge arrivals compose without pairwise FI",function()
+    test("Corner Arrival Evidence: independent feature-relative arrivals remain awareness without shared competition",function()
         local values=oneWorkerInput()
         values.assemblyIds={"AS-A","AS-B"}
         values.futureSpace={
@@ -189,15 +189,11 @@ return function(test,equal)
         equal(count(result.arrivalEvidence),2)
         equal(count(result.approachDemands),0)
         equal(count(result.engagements),0)
-        equal(count(result.sharedCornerSituations),1)
-        local shared=result.sharedCornerSituations[1]
-        equal(count(shared.participants),2)
-        local byId={}
-        for _,participant in Value.ipairs(shared.participants) do byId[participant.assemblyId]=participant end
-        equal(byId["AS-A"].cornerArrivalEvidence,true)
-        equal(byId["AS-B"].cornerArrivalEvidence,true)
-        equal(byId["AS-A"].timeToCornerSec,10)
-        equal(math.floor(byId["AS-B"].timeToCornerSec*100+0.5)/100,7.2)
+        equal(count(result.sharedCornerSituations),0)
+        local arrivals={}
+        for _,arrival in Value.ipairs(result.arrivalEvidence) do arrivals[arrival.assemblyId]=arrival end
+        equal(arrivals["AS-A"].timeToCornerSec,10)
+        equal(math.floor(arrivals["AS-B"].timeToCornerSec*100+0.5)/100,7.2)
     end)
 
     test("Corner Approach Demand: local arrival within physical reach admits without representative-point sweep",function()
@@ -308,7 +304,7 @@ return function(test,equal)
         equal(count(result.positiveDepartures),0)
     end)
 
-    test("Shared Corner Situation: incumbent survives manoeuvring while remote arrival remains prospective",function()
+    test("Corner Engagement: incumbent survives manoeuvring while remote arrival remains awareness only",function()
         local assessment=OuttaMyWay.SpatialConstraintAssessment.new()
         local values=oneWorkerInput()
         assess(assessment,values)
@@ -330,16 +326,12 @@ return function(test,equal)
         equal(count(result.approachDemands),0)
         equal(count(result.arrivalEvidence),1)
         equal(count(result.engagements),1)
-        equal(count(result.sharedCornerSituations),1)
-        local shared=result.sharedCornerSituations[1]
-        local byId={}
-        for _,participant in Value.ipairs(shared.participants) do byId[participant.assemblyId]=participant end
-        equal(byId["AS-A"].cornerIncumbent,true)
-        equal(byId["AS-A"].timeToCornerSec,nil)
-        equal(byId["AS-B"].cornerIncumbent,false)
-        equal(byId["AS-B"].cornerArrivalEvidence,true)
-        equal(byId["AS-B"].approachDemand,false)
-        assert(type(byId["AS-B"].timeToCornerSec)=="number")
+        equal(count(result.sharedCornerSituations),0)
+        equal(result.engagements[1].assemblyId,"AS-A")
+        equal(result.engagements[1].cornerIncumbent,true)
+        local arrival=result.arrivalEvidence[1]
+        equal(arrival.assemblyId,"AS-B")
+        assert(type(arrival.timeToCornerSec)=="number")
     end)
 
     test("Corner Departure: continuous productive A8 crossing positively discharges no-reversal traversal",function()
