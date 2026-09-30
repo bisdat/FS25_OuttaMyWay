@@ -2108,9 +2108,10 @@ def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
         "RETURN_STAGING_CLEARANCE_COMPLETION_UNITS",
         "PASSAGE_RETURN_REGION_DISTANCE_M",
         "RESTORE_ACTUATOR_DISTANCE",
-        "RETURN_CLEARANCE_DEFICIT_M",
     ):
         assert residual in control
+    assert "RETURN_CLEARANCE_DEFICIT_M" not in control
+    assert 'if run.phase~="WAIT_RETURN_CLEARANCE" then' in control
     assert "RETURN_CLEARANCE_EXHAUSTED" not in control
     assert "SKIP_AXIS_RETURN_AND_RESTORE" not in control
     assert "AXIS_RETURN_STATION_DISTANCE_M" not in control
@@ -2118,6 +2119,28 @@ def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
     assert "PROGRESS_WATCHDOG_NO_COMPLETION_PROGRESS" in control
     assert "semanticTerminality=false" in control
     assert "completionResidual" in mechanism
+
+
+def test_sequential_return_clearance_is_mutual_region_evidence_wait():
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    clearance=(ROOT/"scripts"/"representation"/"PairSpecificPassageClearance.lua").read_text(encoding="utf-8")
+
+    assert re.search(r"^local COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_MS = 30000$", control, re.M)
+    assert "WAIT_RETURN_CLEARANCE" in control
+    assert "WAIT_NATIVE_CLEARANCE" not in control
+    assert "function Control:_releasedParticipantReturnSpaceClearance(run,released,waiting)" in control
+    assert "COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_EXPIRED" in control
+    assert "clearanceManufactured=false" in control
+    assert "RELEASED_PARTICIPANT_OCCUPIES_MUTUAL_RETURN_REGION" in control
+    assert "RETURN_CLEARANCE_DEFICIT_M" not in control
+    assert "RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE" not in control
+
+    assert "function Clearance.mutualReturnRegion" in clearance
+    assert "function Clearance.representedReturnSpaceClearance" in clearance
+    assert "REALISED_SHARED_CROSSING_CORE_PLUS_WAITING_TRANSIT_RESERVE" in clearance
+    assert "CURRENT_REPRESENTED_RADIAL_OCCUPANCY_VS_MUTUAL_RETURN_REGION" in clearance
+    assert 'gate.kind=="CROSSING_WINDOW_ENTRY"' in clearance
+    assert 'gate.kind=="CROSSING_WINDOW_EXIT"' in clearance
 
 
 def test_issue345_bubble_formation_readiness_is_explicit_pretransition_boundary():

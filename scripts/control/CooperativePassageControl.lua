@@ -29,6 +29,10 @@ local COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0
 -- Control halts only after 10 s without meaningful improvement of the current
 -- phase completion residual measured from fresh Reality.
 local COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS = 10000
+-- Return Clearance Wait is bounded uncertainty, not a movement-progress phase.
+-- Expiry never manufactures Return-Space Clearance; it invokes degraded
+-- post-Crossing native settlement for the still-waiting Passage Leg.
+local COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_MS = 30000
 local COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M = 0.10
 local COOPERATIVE_PASSAGE_PROGRESS_SPEED_EPSILON_KMH = 0.10
 local COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON = 0.005
@@ -1086,27 +1090,33 @@ function Control:_releaseParticipant(run,participant)
     return true,nil
 end
 
-function Control:_releasedParticipantClearedReturnSpace(released,waiting)
+function Control:_releasedParticipantReturnSpaceClearance(run,released,waiting)
+    local geometry=OuttaMyWay.PairSpecificPassageClearance
+    if type(geometry)~="table" or type(geometry.mutualReturnRegion)~="function"
+        or type(geometry.representedReturnSpaceClearance)~="function" then
+        return false,"RETURN_CLEARANCE_GEOMETRY_SUPPORT_UNAVAILABLE",nil
+    end
+
+    local region=run and run.mutualReturnRegion or nil
+    if region==nil then
+        local regionReason=nil
+        region,regionReason=geometry.mutualReturnRegion(run and run.guide,waiting.assemblyId,waiting.transitPassageEnvelope)
+        if region==nil then return false,"RETURN_CLEARANCE_REGION_UNAVAILABLE:"..tostring(regionReason),nil end
+        run.mutualReturnRegion=region
+    end
+
     local source=self.runtime and self.runtime.liveObservationSource or nil
     local representation=source and type(source.getTrackedRepresentation)=="function" and source:getTrackedRepresentation(released.referenceKey) or nil
     if representation==nil then return false,"RETURN_CLEARANCE_REPRESENTATION_UNAVAILABLE",nil end
-    local waitingProjection=maximumEnvelopeProjectionAlongAxis(waiting.transitPassageEnvelope,waiting.axisForwardX,waiting.axisForwardZ,released.axisForwardX,released.axisForwardZ)
-    if waitingProjection==nil then return false,"RETURN_CLEARANCE_WAITING_TRANSIT_ENVELOPE_UNAVAILABLE",nil end
-    local waitingOriginStation=(waiting.executionOriginX-released.executionOriginX)*released.axisForwardX+(waiting.executionOriginZ-released.executionOriginZ)*released.axisForwardZ
-    local requiredStation=waitingOriginStation+waitingProjection
-    local rearStation=nil; local count=0
-    for _,primitive in OuttaMyWay.ValueRecord.ipairs(representation.worldPrimitives or {}) do
-        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then
-            local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
-            if x~=nil and z~=nil and radius~=nil and radius>0 then
-                local station=(x-released.executionOriginX)*released.axisForwardX+(z-released.executionOriginZ)*released.axisForwardZ-radius
-                rearStation=rearStation==nil and station or math.min(rearStation,station); count=count+1
-            end
-        end
+    local releasedPose=pose(released.vehicle)
+    if releasedPose==nil then return false,"RETURN_CLEARANCE_RELEASED_REFERENCE_UNAVAILABLE",nil end
+
+    local evidence,evidenceReason=geometry.representedReturnSpaceClearance(
+        region,representation,releasedPose.x,releasedPose.z)
+    if evidence==nil then return false,"RETURN_CLEARANCE_EVIDENCE_UNAVAILABLE:"..tostring(evidenceReason),nil end
+    if evidence.clear~=true then
+        return false,"RELEASED_PARTICIPANT_OCCUPIES_MUTUAL_RETURN_REGION",evidence
     end
-    if rearStation==nil then return false,"RETURN_CLEARANCE_CURRENT_PHYSICAL_PRIMITIVES_UNAVAILABLE",{physicalPrimitiveCount=count,requiredStationM=requiredStation} end
-    local evidence={physicalPrimitiveCount=count,rearStationM=rearStation,requiredStationM=requiredStation,clearanceM=rearStation-requiredStation}
-    if rearStation<requiredStation then return false,"RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE",evidence end
     return true,nil,evidence
 end
 
@@ -1352,7 +1362,7 @@ function Control:_continueAfterParticipantVacatur(run,vacated)
         continueReturnOrRestore()
         return
     end
-    if phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant==nil then
+    if phase=="WAIT_RETURN_CLEARANCE" and run.waitingParticipant==nil then
         local ok,reason=self:_beginPassageReturn(run,remaining,vacated,false)
         if not ok then
             remaining.passageReturnSkipped=true
@@ -1576,17 +1586,6 @@ function Control:_phaseCompletionResidual(run)
         return {kind="RESTORE_ACTUATOR_DISTANCE",value=tonumber(settlement.completionResidual) or 0,epsilon=COOPERATIVE_PASSAGE_PROGRESS_FOLD_EPSILON}
     end
 
-    if phase=="WAIT_NATIVE_CLEARANCE" then
-        local released,waiting=run.releasedLeader,run.waitingParticipant
-        if released==nil or waiting==nil then return nil,"RETURN_CLEARANCE_COMPLETION_CONTEXT_UNAVAILABLE" end
-        local clear,reason,evidence=self:_releasedParticipantClearedReturnSpace(released,waiting)
-        if clear then return {kind="RETURN_CLEARANCE_DEFICIT_M",value=0,epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M} end
-        if type(evidence)~="table" or not finiteNumber(evidence.rearStationM) or not finiteNumber(evidence.requiredStationM) then
-            return nil,"RETURN_CLEARANCE_COMPLETION_RESIDUAL_UNAVAILABLE:"..tostring(reason)
-        end
-        return {kind="RETURN_CLEARANCE_DEFICIT_M",value=math.max(0,evidence.requiredStationM-evidence.rearStationM),epsilon=COOPERATIVE_PASSAGE_PROGRESS_DISTANCE_EPSILON_M}
-    end
-
     return nil,"PROGRESS_WATCHDOG_PHASE_NOT_GOVERNED:"..phase
 end
 
@@ -1666,7 +1665,10 @@ function Control:update(dt)
     local thirdOk,thirdReason=self:_thirdPartySupport(run,nil)
     if not thirdOk then self:_failHeld(thirdReason); return end
 
-    local stalled,watchdog=self:_progressWatchdogStatus(run,nowMs)
+    local stalled,watchdog=false,nil
+    if run.phase~="WAIT_RETURN_CLEARANCE" then
+        stalled,watchdog=self:_progressWatchdogStatus(run,nowMs)
+    end
     if stalled then
         logWarning("DEBUG","COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG","commitment=%s phase=%s residualKind=%s residual=%.3f bestResidual=%.3f stalledMs=%d thresholdMs=%d action=FAIL_SAFE_HOLD_REASSESSMENT semanticTerminality=false",
             tostring(run.commitmentId),tostring(run.phase),tostring(watchdog and watchdog.kind or "n/a"),
@@ -1740,7 +1742,7 @@ function Control:update(dt)
         local participant=run.activeReturnParticipant
         if participant==nil then self:_failHeld("PASSAGE_RETURN_PARTICIPANT_UNAVAILABLE"); return end
         if run.returnRequiresReleasedClearance==true and run.releasedLeader~=nil then
-            local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(run.releasedLeader,participant)
+            local clear,clearReason,evidence=self:_releasedParticipantReturnSpaceClearance(run,run.releasedLeader,participant)
             if not clear then
                 self.driveMechanism:clear(participant.vehicle); participant.passageReturnSkipped=true
                 logWarning("DEBUG","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_LOST","commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
@@ -1777,25 +1779,51 @@ function Control:update(dt)
             local waiting=liveParticipants(run)[1]
             if waiting==nil then self:_completePairContext(run); return end
             run.releasedLeader=participant; run.waitingParticipant=waiting; run.activeRestoreParticipant=nil; run.activeReturnParticipant=nil; run.returnRequiresReleasedClearance=false
-            self:_setPhase(run,"WAIT_NATIVE_CLEARANCE",g_time or 0)
-            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT","commitment=%s released=%s waiting=%s positiveCurrentOccupancyRequired=true",tostring(run.commitmentId),participant.name,waiting.name)
+            run.mutualReturnRegion=nil
+            run.returnClearanceWaitStartedAt=g_time or 0
+            self:_setPhase(run,"WAIT_RETURN_CLEARANCE",g_time or 0)
+            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT","commitment=%s released=%s waiting=%s evidence=POSITIVE_CURRENT_OCCUPANCY_REQUIRED evidenceWaitBudgetMs=%d progressWatchdogExcluded=true",
+                tostring(run.commitmentId),participant.name,waiting.name,COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_MS)
         end
-    elseif run.phase=="WAIT_NATIVE_CLEARANCE" then
+    elseif run.phase=="WAIT_RETURN_CLEARANCE" then
         local released,waiting=run.releasedLeader,run.waitingParticipant
         if released==nil or waiting==nil then self:_failHeld("RETURN_CLEARANCE_CONTEXT_UNAVAILABLE"); return end
-        local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(released,waiting)
+        local clear,clearReason,evidence=self:_releasedParticipantReturnSpaceClearance(run,released,waiting)
         if clear then
-            logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_CLEARANCE","commitment=%s released=%s waiting=%s rearStation=%.2fm requiredStation=%.2fm clearance=%.2fm authority=POSITIVE_CURRENT_PHYSICAL_OCCUPANCY",tostring(run.commitmentId),released.name,waiting.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.requiredStationM) or -1,tonumber(evidence and evidence.clearanceM) or -1)
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_RETURN_CLEARANCE","commitment=%s released=%s waiting=%s clearance=%.2fm regionRadius=%.2fm releasedReach=%.2fm authority=POSITIVE_CURRENT_REPRESENTED_OCCUPANCY",
+                tostring(run.commitmentId),released.name,waiting.name,
+                tonumber(evidence and evidence.clearanceM) or -1,
+                tonumber(evidence and evidence.mutualReturnRegionRadiusM) or -1,
+                tonumber(evidence and evidence.releasedRepresentedReachM) or -1)
             local ok,reason=self:_beginPassageReturn(run,waiting,released,true)
             if not ok then
                 waiting.passageReturnSkipped=true
                 logWarning("DEBUG","COOPERATIVE_PASSAGE_RETURN_SKIPPED","commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
                 local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
             end
-        elseif diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL")
-            and nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
-            run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
-            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL","commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
+        else
+            local waitStartedAt=tonumber(run.returnClearanceWaitStartedAt) or tonumber(run.phaseStartedAt) or nowMs
+            local waitedMs=math.max(0,nowMs-waitStartedAt)
+            if waitedMs>=COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_MS then
+                waiting.passageReturnSkipped=true
+                logWarning("NORMAL","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_EXPIRED",
+                    "commitment=%s released=%s waiting=%s waitedMs=%d budgetMs=%d reason=%s action=DEGRADED_NATIVE_SETTLEMENT clearanceManufactured=false",
+                    tostring(run.commitmentId),released.name,waiting.name,waitedMs,COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_MS,tostring(clearReason))
+                local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting)
+                if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
+                return
+            end
+            if diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL")
+                and nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
+                run.nextReturnClearDiagnosticMs=nowMs+COOPERATIVE_PASSAGE_HEARTBEAT_MS
+                logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_DETAIL",
+                    "commitment=%s released=%s waiting=%s reason=%s clearance=%s regionRadius=%s releasedReach=%s waitedMs=%d budgetMs=%d",
+                    tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),
+                    evidence and evidence.clearanceM and string.format("%.2f",evidence.clearanceM) or "n/a",
+                    evidence and evidence.mutualReturnRegionRadiusM and string.format("%.2f",evidence.mutualReturnRegionRadiusM) or "n/a",
+                    evidence and evidence.releasedRepresentedReachM and string.format("%.2f",evidence.releasedRepresentedReachM) or "n/a",
+                    waitedMs,COOPERATIVE_PASSAGE_RETURN_CLEARANCE_WAIT_BUDGET_MS)
+            end
         end
     end
 
