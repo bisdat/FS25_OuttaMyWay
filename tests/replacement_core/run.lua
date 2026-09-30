@@ -7709,6 +7709,117 @@ local function assessSpatial(futureA,futureB,motionA,motionB,followerKnowledge)
     })
 end
 
+local function cornerCompetitionAssessment(values)
+    values=values or {}
+    local assessment=OuttaMyWay.SpatialConstraintAssessment.new()
+    assessment.structuralFieldShapeAssessment={
+        assess=function()
+            return {
+                status="POSITIVE_STRUCTURAL_FIELD_SHAPE_SUPPORTED",
+                cornerFeatures={{
+                    cornerKey="corner:test",ringKind="OUTER_BOUNDARY",ringIndex=1,
+                    representativePoint={x=0,z=0}
+                }}
+            }
+        end,
+        reset=function() end
+    }
+    assessment.boundaryDemandAssessment={
+        assess=function() return {sharedCategory2Demands={}} end,
+        reset=function() end
+    }
+
+    local function cornerMotion(assemblyId,x,z)
+        return {
+            assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+            sourceJobToken="job:"..assemblyId,poseX=x,poseZ=z,
+            localIntentClassification="SETTLED_CONTINUATION",intentEpoch=1,
+            nativeFieldWork={
+                workingWidth={available=true,widthMetres=4,source="TEST",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"},
+                nativeDriveCommand={available=true,valid=true,moveForwards=true,maxSpeedKmh=25,authority="IMMEDIATE_NATIVE_FIELD_WORKER_DRIVE_COMMAND_ONLY"}
+            }
+        }
+    end
+    local function productive(assemblyId)
+        return {
+            assemblyId=assemblyId,jobToken="job:"..assemblyId,
+            productivePositive=true,isTurn=false
+        }
+    end
+    local function physical(assemblyId,x,z,primitiveX,primitiveZ,radius)
+        return {
+            assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
+            primitives={{
+                identity="disc:"..assemblyId,kind="DISC",
+                x=primitiveX or x,z=primitiveZ or z,radius=radius or 5,
+                positiveConflictSupport=true
+            }},
+            coverageComplete=false,negativeClearanceAuthority=false
+        }
+    end
+
+    local ax,az=values.ax or 30,values.az or 80
+    local bx,bz=values.bx or 60,values.bz or 80
+    local aPrimitiveX=values.aPrimitiveX or ax
+    local aPrimitiveZ=values.aPrimitiveZ or az
+    local bPrimitiveX=values.bPrimitiveX or bx
+    local bPrimitiveZ=values.bPrimitiveZ or bz
+    local aRadius=values.aRadius or 5
+    local bRadius=values.bRadius or 5
+
+    return assessment:assess({
+        operationId="OR-CORNER-CLAIM",
+        observationSnapshotId="OS-CORNER-CLAIM",
+        observationEpoch=10,
+        assemblyIds={"AS-A","AS-B"},
+        fieldWorldReferenceKey="FW-CORNER-CLAIM",
+        fieldWorld={
+            fieldWorldReferenceKey="FW-CORNER-CLAIM",
+            quantizationMetres=0.01,
+            boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},
+            islands={}
+        },
+        futureSpace={
+            spatialFuture("AS-A",ax,az,ax,0,0,-1,az),
+            spatialFuture("AS-B",bx,bz,bx,0,0,-1,bz)
+        },
+        motionEvidence={cornerMotion("AS-A",ax,az),cornerMotion("AS-B",bx,bz)},
+        productiveContinuationKnowledge={productive("AS-A"),productive("AS-B")},
+        physicalSpaceEvidence={
+            physical("AS-A",ax,az,aPrimitiveX,aPrimitiveZ,aRadius),
+            physical("AS-B",bx,bz,bPrimitiveX,bPrimitiveZ,bRadius)
+        },
+        followerBoundaryKnowledge={}
+    })
+end
+
+test("arrival-only Corner awareness does not manufacture Shared Corner competing demand",function()
+    local assessed=cornerCompetitionAssessment()
+    local corner=assessed.cornerKnowledge
+    equal(OuttaMyWay.ValueRecord.length(corner.headlandAssociations),2)
+    equal(OuttaMyWay.ValueRecord.length(corner.arrivalEvidence),2)
+    equal(OuttaMyWay.ValueRecord.length(corner.approachDemands),0)
+    equal(OuttaMyWay.ValueRecord.length(corner.engagements),0)
+    equal(OuttaMyWay.ValueRecord.length(corner.sharedCornerSituations),0)
+end)
+
+test("two current Corner Approach Demands establish Shared Corner competing demand",function()
+    local assessed=cornerCompetitionAssessment({
+        ax=20,az=5,bx=30,bz=6,
+        aPrimitiveX=25,aPrimitiveZ=5,aRadius=2,
+        bPrimitiveX=36,bPrimitiveZ=6,bRadius=2
+    })
+    local corner=assessed.cornerKnowledge
+    equal(OuttaMyWay.ValueRecord.length(corner.arrivalEvidence),2)
+    equal(OuttaMyWay.ValueRecord.length(corner.approachDemands),2)
+    equal(OuttaMyWay.ValueRecord.length(corner.sharedCornerSituations),1)
+    local shared=corner.sharedCornerSituations[1]
+    equal(shared.competingDemand,true)
+    equal(OuttaMyWay.ValueRecord.length(shared.participants),2)
+    equal(shared.participants[1].approachDemand,true)
+    equal(shared.participants[2].approachDemand,true)
+end)
+
 local function boundaryReachProjection(assemblyId,contactX,contactZ,workingWidthM)
     return {
         status="SUPPORTED",assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,

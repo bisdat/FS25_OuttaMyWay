@@ -1007,15 +1007,22 @@ local function assessCornerKnowledge(self,input,projections,relationships)
                 item.localDemandHorizonM=demand.localDemandHorizonM
             end
         end
-        local participantList={}
-        for _,item in OuttaMyWay.ValueRecord.pairs(participants) do participantList[#participantList+1]=item end
-        table.sort(participantList,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
-        if #participantList>=2 then
+        local competitorList={}
+        for _,item in OuttaMyWay.ValueRecord.pairs(participants) do
+            -- Shared awareness is not Shared Corner competing demand.  Only a
+            -- current Corner Approach Demand or retained Corner Incumbency
+            -- establishes the Current Corner Claim required by the contract.
+            if item.approachDemand==true or item.cornerIncumbent==true then
+                competitorList[#competitorList+1]=item
+            end
+        end
+        table.sort(competitorList,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+        if OuttaMyWay.ValueRecord.length(competitorList)>=2 then
             result.sharedCornerSituations[#result.sharedCornerSituations+1]={
                 identity="shared-corner:"..tostring(input.operationId)..":"..tostring(feature.cornerKey),
                 operationId=input.operationId,cornerKey=feature.cornerKey,
                 fieldWorldReferenceKey=input.fieldWorldReferenceKey,
-                participants=participantList,competingDemand=true,
+                participants=competitorList,competingDemand=true,
                 regulationSpeedKmh=CORNER_INTENT_REVELATION_CREEP_KMH,
                 allocationStatus="UNALLOCATED_SITUATION_MEANING",
                 decisionAuthority=false,controlAuthority=false,
