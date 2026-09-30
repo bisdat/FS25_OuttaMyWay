@@ -139,12 +139,12 @@ function Assessment:assessActionSpaceRegulation(current,relation)
         }
     end
     if category2 then
-        if relation.failSafeAbandonment==true
-            or relation.classification=="SHARED_CATEGORY_2_REGULATION_ABANDONED_BY_WATCHDOG" then
+        if relation.responsibilityLeaseExpired==true
+            or relation.classification=="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED" then
             return {
                 disposition="TERMINATE",
-                terminationEvidenceKind="SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT",
-                reason=relation.reason or "SHARED_CATEGORY_2_REGULATION_FAIL_SAFE_ABANDONED"
+                terminationEvidenceKind="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRY",
+                reason=relation.reason or "SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED"
             }
         end
         if relation.positiveDissolution==true
