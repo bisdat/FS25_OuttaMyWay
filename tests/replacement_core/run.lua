@@ -8094,7 +8094,7 @@ test("Shared Category-2 admitted protected A8 to TURNING dissolves without radia
         operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
         projections=projections,physicalSpaceEvidence=physical,
         motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
-        commitmentContext={},observationTimestamp=100
+        commitmentContext={}
     })
     local identity=initial.sharedCategory2Demands[1].identity
     local requirement="shared-category-2-regulation:"..identity
@@ -8103,8 +8103,7 @@ test("Shared Category-2 admitted protected A8 to TURNING dissolves without radia
         progressActuationOwnership={{assemblyId="AS-A"}},
         openObligations={{basis={
             kind="SHARED_CATEGORY_2_DEMAND_REGULATION",conflictIdentity=identity,
-            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",
-            regulationAdmissionTimestamp=100
+            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B"
         }}}
     }}
 
@@ -8115,7 +8114,7 @@ test("Shared Category-2 admitted protected A8 to TURNING dissolves without radia
         operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
         projections={projections[1]},physicalSpaceEvidence=physical,
         motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","TURNING",1)},
-        commitmentContext=commitmentContext,observationTimestamp=101
+        commitmentContext=commitmentContext
     })
     equal(#turning.sharedCategory2Demands,1)
     local relation=turning.sharedCategory2Demands[1]
@@ -8132,83 +8131,6 @@ test("Shared Category-2 admitted protected A8 to TURNING dissolves without radia
     local retirement=OuttaMyWay.CurrentResponsibilityAssessment.new():assessActionSpaceRegulation(current,relation)
     equal(retirement.disposition,"TERMINATE")
     equal(retirement.terminationEvidenceKind,"SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION")
-end)
-
-test("Shared Category-2 Responsibility lease forces fresh assessment after ten seconds",function()
-    local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
-    local field=category2Field()
-    local projections={
-        category2Projection("AS-A",40,30,40,0,30),
-        category2Projection("AS-B",55,30,55,0,30)
-    }
-    local physical={
-        category2Physical("AS-A",40,30,12),
-        category2Physical("AS-B",55,30,7)
-    }
-    local motion={
-        category2Motion("AS-A","SETTLED_CONTINUATION",1),
-        category2Motion("AS-B","SETTLED_CONTINUATION",1)
-    }
-    local initial=assessment:assess({
-        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
-        commitmentContext={},observationTimestamp=100
-    })
-    local identity=initial.sharedCategory2Demands[1].identity
-    local requirement="shared-category-2-regulation:"..identity
-    local commitmentContext={{
-        commitmentId="CM-C2",governingBasis={responsibilityKey=requirement},
-        progressActuationOwnership={{assemblyId="AS-A"}},
-        openObligations={{basis={
-            kind="SHARED_CATEGORY_2_DEMAND_REGULATION",conflictIdentity=identity,
-            regulatedAssemblyId="AS-A",protectedAssemblyId="AS-B",
-            regulationAdmissionTimestamp=100
-        }}}
-    }}
-
-    local beforeExpiry=assessment:assess({
-        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
-        commitmentContext=commitmentContext,observationTimestamp=109.9
-    })
-    equal(beforeExpiry.sharedCategory2Demands[1].currentEvidenceState,"SUPPORTED")
-    equal(beforeExpiry.sharedCategory2Demands[1].responsibilityLeaseExpired,nil)
-
-    local expired=assessment:assess({
-        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
-        commitmentContext=commitmentContext,observationTimestamp=110
-    })
-    equal(#expired.sharedCategory2Demands,1)
-    local relation=expired.sharedCategory2Demands[1]
-    equal(relation.currentEvidenceState,"FAIL_SAFE_ABANDONMENT")
-    equal(relation.failSafeAbandonment,true)
-    equal(relation.responsibilityLeaseExpired,true)
-    equal(relation.positiveDissolution,false)
-    equal(relation.classification,"SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED")
-    equal(relation.reason,"SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED")
-    equal(relation.responsibilityLeaseSeconds,10)
-    equal(relation.responsibilityLeaseDeadlineTimestamp,110)
-    equal(relation.responsibilityLeaseObservedTimestamp,110)
-
-    local current={provenance={admissionKind="SHARED_CATEGORY_2_DEMAND",conflictIdentity=identity}}
-    local retirement=OuttaMyWay.CurrentResponsibilityAssessment.new():assessActionSpaceRegulation(current,relation)
-    equal(retirement.disposition,"TERMINATE")
-    equal(retirement.terminationEvidenceKind,"SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRY")
-
-    -- Once the incumbent Commitment/Responsibility has terminated, the next
-    -- Observation has no incumbent authority and therefore assesses the same
-    -- still-positive relationship under normal fresh-admission semantics.
-    local fresh=assessment:assess({
-        operationId="OR-C2",fieldWorld=field,fieldWorldReferenceKey="FW-CATEGORY-2",
-        projections=projections,physicalSpaceEvidence=physical,motionEvidence=motion,
-        commitmentContext={},observationTimestamp=110.25
-    })
-    equal(#fresh.sharedCategory2Demands,1)
-    equal(fresh.sharedCategory2Demands[1].relationshipStatus,"POSITIVE")
-    equal(fresh.sharedCategory2Demands[1].currentEvidenceState,"SUPPORTED")
-    equal(fresh.sharedCategory2Demands[1].reason,"CURRENT_A8_BOUNDARY_DEMANDS_SHARE_TERMINATING_CATEGORY_2_DOMAIN")
-    equal(fresh.sharedCategory2Demands[1].incumbentCommitmentId,nil)
 end)
 
 test("Shared Category-2 Current Responsibility waits through temporary evidence loss",function()
