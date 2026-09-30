@@ -221,23 +221,6 @@ The witness is purpose-relative rather than a generic TURNING classifier: the pr
 
 > **Admission Reach != Continuation Reach.**
 
-Shared Category-2 Regulation also has a **Responsibility Lease**. A Category-2 Regulation Responsibility may remain incumbent for at most **10 seconds** without being destroyed and reconstructed from fresh Reality.
-
-Lease expiry is a fail-safe lifecycle event:
-
-1. release all Bounded Authority derived solely from that Category-2 Responsibility;
-2. terminate the incumbent Responsibility and its Commitment without claiming positive Situation dissolution;
-3. discard the incumbent allocation as authority for the next cycle; and
-4. allow the next Observation → Situation Assessment cycle to evaluate Shared Category-2 Demand using normal fresh-admission semantics.
-
-If fresh Reality still establishes Shared Category-2 Demand, Candidate/Decision may immediately establish a new Regulation Responsibility, including the same regulated/protected allocation where current evidence supports it. This controlled release/re-admission oscillation is preferable to allowing one stale incumbent Responsibility to preserve physical Regulation indefinitely.
-
-Lease expiry is not evidence that the Shared Category-2 Situation succeeded, dissolved or became safe. It is bounded abandonment of one Responsibility so that fresh Situation truth must earn any successor.
-
-> **Responsibility Lease Expiry Forces Fresh Situation Assessment.**
-
-> **Fail-Safe Release != Positive Situation Dissolution.**
-
 Existing Forward Intersection remains an independent Situation evidence route. A positive Forward Intersection may corroborate Category-2 meaning, but it is neither necessary nor the definition of Shared Category-2 Demand.
 
 > **Forward Intersection != Shared Boundary Demand.**
