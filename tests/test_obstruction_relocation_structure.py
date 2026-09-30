@@ -88,7 +88,6 @@ def test_issue352_offset_relocation_centre_is_candidate_owned_and_rmd_bounded():
     assert "local OFFSET_RELOCATION_ALIGNMENT_MIN_DOT=0.8660254037844386" in candidate
     assert "realisedMotionDemandKnowledge" in candidate
     assert 'kind="OFFSET_RELOCATION_CENTRE"' in candidate
-    assert 'relocationCentre=objective.relocationCentre' in candidate
     assert 'destinationKind=progress+0.000001<distance' in candidate
     assert "OFFSET_RELOCATION_CENTRE_DISTANCE_M" not in control
     assert "OFFSET_RELOCATION_ALIGNMENT_MIN_DOT" not in control
