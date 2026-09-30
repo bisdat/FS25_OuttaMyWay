@@ -358,7 +358,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         purpose={kind="CORNER_RIGHT_OF_WAY",result="PRESERVE_TEMPORARY_RIGHT_OF_WAY_UNTIL_SHARED_CORNER_COMPETING_DEMAND_DISSOLVES"}
     elseif category2 then
         referenceKey="shared-category-2-regulation:"..tostring(relation.identity)..":"..tostring(action.regulatedAssemblyId)
-        purpose={kind="SHARED_CATEGORY_2_INTENT_REVELATION",result="PRESERVE_TEMPORARY_BOUNDARY_DEMAND_ORDERING_UNTIL_PROTECTED_BOUNDARY_TURN_OR_FAIL_SAFE_RELEASE"}
+        purpose={kind="SHARED_CATEGORY_2_INTENT_REVELATION",result="PRESERVE_TEMPORARY_BOUNDARY_DEMAND_ORDERING_UNTIL_PROTECTED_BOUNDARY_TURN_OR_RESPONSIBILITY_LEASE_EXPIRY"}
     end
 
     local observeReason=corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
@@ -373,11 +373,11 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         or (category2 and "SHARED_CATEGORY_2_DEMAND_REGULATION" or "ACTION_SPACE_REGULATION"))
     local outcomeKind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
         or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
-        or (category2 and "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN_OR_FAIL_SAFE_RELEASE"
+        or (category2 and "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN_OR_RESPONSIBILITY_LEASE_EXPIRY"
         or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"))
     local evidenceKind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED"
         or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION"
-        or (category2 and "FRESH_SHARED_CATEGORY_2_DEMAND_OR_BOUNDARY_TURN_DISSOLUTION_OR_FAIL_SAFE_RELEASE"
+        or (category2 and "FRESH_SHARED_CATEGORY_2_DEMAND_OR_BOUNDARY_TURN_DISSOLUTION_OR_RESPONSIBILITY_LEASE_EXPIRY"
         or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"))
 
     return {
@@ -459,7 +459,6 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
                 roleAssignmentMutable=not forward and not category2,
                 regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
                 protectedIntentEpochAtAdmission=category2 and tonumber(item.protectedParticipant and item.protectedParticipant.intentEpoch) or nil,
-                protectedNativeTimeToBoundarySecAtAdmission=category2 and tonumber(item.protectedParticipant and item.protectedParticipant.nativeTimeToBoundarySec) or nil,
                 regulationAdmissionTimestamp=category2 and tonumber(observationTimestamp) or nil
             },
             requiredOutcome={kind=outcomeKind,conflictIdentity=relation.identity},
