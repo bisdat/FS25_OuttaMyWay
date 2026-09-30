@@ -271,7 +271,15 @@ Distinct Corner Features remain distinct even when their operational demand regi
 
 > **No Pairwise Quorum for Corner Admission**
 
-A second assembly may later join the same **Shared Corner Situation** from its own positive demand into the already-known Corner Feature. Shared Corner Situation does not require shared Corner discovery.
+A second assembly may later become aware of the same Corner Feature through its own Headland Association or Corner Arrival Evidence, but shared awareness does not establish shared competition. An assembly is **Corner Competition Eligible** only when current Situation meaning establishes a **Current Corner Claim**: positive Corner Approach Demand or positive/retained Corner Incumbency for that Corner Feature. Current Corner Occupancy remains one positive route to admission and Incumbency. A retained Corner Engagement without current Approach Demand or retained Incumbency does not independently establish a Current Corner Claim.
+
+A **Shared Corner Competing Demand** exists only when at least two Corner Competition Eligible assemblies currently claim the same Corner Feature. Shared Corner competition does not require shared Corner discovery; it requires shared current constrained-space demand.
+
+> **Shared Corner Awareness != Shared Corner Competing Demand**
+
+> **Corner Arrival Evidence != Corner Competition Eligibility**
+
+> **Topological Corner Co-Association != Physical Corner Competition**
 
 #### Corner Engagement and assembly-specific Corner demand
 
@@ -291,7 +299,7 @@ Working width, physical dimensions and assembly length MUST NOT be collapsed int
 
 > **Working Width != Corner Manoeuvring Demand**
 
-When multiple assemblies become relevant to the same Corner Feature, Situation Assessment publishes current competing-demand evidence for downstream Decision, including Corner Incumbency, current positive Corner Occupancy where available, and current supported native/unrestricted time-to-Corner where available. Decision applies Corner Arrival Priority: an incumbent is protected over a non-incumbent; when neither participant is incumbent, the earlier supported arrival is protected and the later arrival is made cautious. Current Occupancy is one positive route to establish arrival/incumbency; loss of a fresh occupancy witness after arrival MUST NOT demote an incumbent before Positive Corner Departure. Engagement establishment time is lifecycle provenance only and MUST NOT be used as right-of-way priority. The allocation remains current Situation ordering rather than permanent vehicle or pair priority.
+When at least two assemblies are Corner Competition Eligible for the same Corner Feature, Situation Assessment publishes **Shared Corner Competing Demand** for downstream Decision, including Corner Incumbency, current positive Corner Occupancy where available, and current supported native/unrestricted time-to-Corner where available. Arrival-only or Headland-Association-only assemblies may remain useful contextual awareness, but they are not competitors and MUST NOT create Corner right-of-way by themselves. Decision applies Corner Arrival Priority among the current competitors: an incumbent is protected over a non-incumbent; when neither participant is incumbent, the earlier supported arrival is protected and the later arrival is made cautious. Current Occupancy is one positive route to establish arrival/incumbency; loss of a fresh occupancy witness after arrival MUST NOT demote an incumbent before Positive Corner Departure. Engagement establishment time is lifecycle provenance only and MUST NOT be used as right-of-way priority. The allocation remains current Situation ordering rather than permanent vehicle or pair priority.
 
 #### Positive Corner Departure
 
