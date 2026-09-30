@@ -4372,6 +4372,30 @@ test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing 
     equal(clearance.negativeClearanceAuthority,false)
 end)
 
+test("Cooperative Passage: Mutual Return Region uses realised Shared Crossing Core and current represented radial occupancy",function()
+    local guide={gates={
+        {kind="CROSSING_WINDOW_ENTRY",subject={assemblyId="AS-A",x=0,z=0},other={assemblyId="AS-B",x=10,z=0}},
+        {kind="CROSSING_WINDOW_EXIT",subject={assemblyId="AS-A",x=10,z=0},other={assemblyId="AS-B",x=0,z=0}}
+    }}
+    local transit={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2}
+    local region,reason=OuttaMyWay.PairSpecificPassageClearance.mutualReturnRegion(guide,"AS-B",transit)
+    equal(reason,nil)
+    equal(math.abs(region.centreX-5)<0.0001,true); equal(math.abs(region.centreZ)<0.0001,true)
+    equal(math.abs(region.coreRadiusM-5)<0.0001,true)
+    equal(math.abs(region.waitingTransitReserveM-math.sqrt(5))<0.0001,true)
+    equal(region.basis,"REALISED_SHARED_CROSSING_CORE_PLUS_WAITING_TRANSIT_RESERVE")
+
+    local occupied={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=13,z=0,radius=1}}}
+    local evidence,occupiedReason=OuttaMyWay.PairSpecificPassageClearance.representedReturnSpaceClearance(region,occupied,13,0)
+    equal(occupiedReason,nil); equal(evidence.clear,false); equal(evidence.clearanceM<0,true)
+
+    local clear={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=15,z=0,radius=1}}}
+    evidence,occupiedReason=OuttaMyWay.PairSpecificPassageClearance.representedReturnSpaceClearance(region,clear,15,0)
+    equal(occupiedReason,nil); equal(evidence.clear,true); equal(evidence.clearanceM>0,true)
+    equal(evidence.basis,"CURRENT_REPRESENTED_RADIAL_OCCUPANCY_VS_MUTUAL_RETURN_REGION")
+    equal(evidence.negativeClearanceAuthority,false)
+end)
+
 test("Cooperative Passage: prospective Transit support defers exact pair sweep to realised execution origin",function()
     local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
@@ -7380,22 +7404,32 @@ test("Passage Return: Return Staging places each Transit assembly beyond the oth
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
-test("Passage Return: Return token transfers only after released current occupancy clears waiting Transit return space",function()
+test("Passage Return: Return token transfers only after released current occupancy clears Mutual Return Region",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
-    local z=18
+    local z=4
     getWorldTranslation=function(node) return 0,0,z end
     localDirectionToWorld=function(node,x,y,dz) return 0,0,1 end
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
     local runtime={liveObservationSource={getTrackedRepresentation=function(self,key)
-        return {worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=z,radius=2,identity="released"}}}
+        return {worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=z,radius=1,identity="released"}}}
     end}}
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
-    local released={vehicle={rootNode=19201,getAISteeringNode=function(self) return self.rootNode end},referenceKey="REF-A",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,transitPassageEnvelope=envelope}
-    local waiting={executionOriginX=0,executionOriginZ=15,axisForwardX=0,axisForwardZ=-1,transitPassageEnvelope=envelope}
-    local clear,reason,evidence=control:_releasedParticipantClearedReturnSpace(released,waiting)
-    equal(clear,false); equal(reason,"RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE"); equal(math.abs(evidence.requiredStationM-17)<0.001,true)
-    z=20; clear,reason,evidence=control:_releasedParticipantClearedReturnSpace(released,waiting)
-    equal(clear,true); equal(reason,nil); equal(math.abs(evidence.rearStationM-18)<0.001,true)
+    local released={vehicle={rootNode=19201,getAISteeringNode=function(self) return self.rootNode end},referenceKey="REF-A"}
+    local waiting={assemblyId="AS-B",transitPassageEnvelope=envelope}
+    local run={guide={gates={
+        {kind="CROSSING_WINDOW_ENTRY",subject={assemblyId="AS-A",x=0,z=0},other={assemblyId="AS-B",x=4,z=0}},
+        {kind="CROSSING_WINDOW_EXIT",subject={assemblyId="AS-A",x=4,z=0},other={assemblyId="AS-B",x=0,z=0}}
+    }}}
+
+    local clear,reason,evidence=control:_releasedParticipantReturnSpaceClearance(run,released,waiting)
+    equal(clear,false); equal(reason,"RELEASED_PARTICIPANT_OCCUPIES_MUTUAL_RETURN_REGION")
+    equal(evidence.clearanceM<0,true)
+    equal(run.mutualReturnRegion~=nil,true)
+
+    z=8
+    clear,reason,evidence=control:_releasedParticipantReturnSpaceClearance(run,released,waiting)
+    equal(clear,true); equal(reason,nil); equal(evidence.clearanceM>0,true)
+    equal(evidence.basis,"CURRENT_REPRESENTED_RADIAL_OCCUPANCY_VS_MUTUAL_RETURN_REGION")
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
@@ -7412,7 +7446,9 @@ test("Second Passage Return aborts safely if released clearance is lost",functio
     control.nextHeartbeatMs=math.huge
     control._allSameJob=function() return true,nil end
     control._thirdPartySupport=function() return true,nil end
-    control._releasedParticipantClearedReturnSpace=function() return false,"RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE",{} end
+    control._releasedParticipantReturnSpaceClearance=function(self,run,releasedParticipant,waitingParticipant)
+        return false,"RELEASED_PARTICIPANT_OCCUPIES_MUTUAL_RETURN_REGION",{clearanceM=-1,mutualReturnRegionRadiusM=5,releasedRepresentedReachM=2}
+    end
     local restoreCalls=0
     control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     local oldTime=g_time; g_time=1000
@@ -7460,23 +7496,45 @@ end)
 
 
 
-test("Passage Return: participant release prevents the first returned worker from soft-locking the second token",function()
+test("Passage Return: participant handback waits for positive Return-Space Clearance before second return",function()
     local first={name="First",vehicle={},released=false}
     local second={name="Second",vehicle={},released=false}
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-AXIS-RETURN-TOKEN",phase="RESTORING_PARTICIPANT",phaseStartedAt=0,startedAt=0,a=first,b=second,participants={first,second},activeRestoreParticipant=first,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-RETURN-CLEARANCE",phase="RESTORING_PARTICIPANT",phaseStartedAt=0,startedAt=0,a=first,b=second,participants={first,second},activeRestoreParticipant=first,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
     control._participantRestoreReady=function() return true end
     control._releaseParticipant=function(self,run,p) p.released=true; return true,nil end
-    control._releasedParticipantClearedReturnSpace=function() return true,nil,{rearStationM=22,requiredStationM=20,clearanceM=2} end
+    control._releasedParticipantReturnSpaceClearance=function() return true,nil,{clearanceM=2,mutualReturnRegionRadiusM=10,releasedRepresentedReachM=4} end
     local beginCalls=0
     control._beginPassageReturn=function(self,run,p,other,requiresClearance) beginCalls=beginCalls+1; equal(p,second); equal(other,first); equal(requiresClearance,true); run.activeReturnParticipant=p; run.phase="PASSAGE_RETURN"; return true,nil end
     local oldTime=g_time; g_time=1000
     control:update(16)
-    equal(first.released,true); equal(control.run.phase,"WAIT_NATIVE_CLEARANCE"); equal(control.run.waitingParticipant,second)
+    equal(first.released,true); equal(control.run.phase,"WAIT_RETURN_CLEARANCE"); equal(control.run.waitingParticipant,second)
     g_time=1100; control:update(16)
     equal(beginCalls,1); equal(control.run.phase,"PASSAGE_RETURN")
+    g_time=oldTime
+end)
+
+test("Passage Return: Return Clearance Wait uses its own bounded evidence budget instead of progress watchdog",function()
+    local first={name="First",vehicle={},released=true}
+    local second={name="Second",vehicle={},released=false}
+    local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-RETURN-CLEARANCE-BUDGET",
+        phase="WAIT_RETURN_CLEARANCE",phaseStartedAt=0,returnClearanceWaitStartedAt=0,
+        startedAt=0,a=first,b=second,participants={first,second},
+        releasedLeader=first,waitingParticipant=second,failureReason=nil
+    }
+    control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
+    control._progressWatchdogStatus=function() error("Return Clearance Wait must not use progress watchdog") end
+    control._releasedParticipantReturnSpaceClearance=function() return false,"RELEASED_PARTICIPANT_OCCUPIES_MUTUAL_RETURN_REGION",{clearanceM=-1,mutualReturnRegionRadiusM=10,releasedRepresentedReachM=4} end
+    local restoreCalls=0
+    control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; equal(p,second); run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
+    local oldTime=g_time; g_time=30001
+    control:update(16)
+    equal(restoreCalls,1); equal(second.passageReturnSkipped,true); equal(control.run.phase,"RESTORING_PARTICIPANT")
     g_time=oldTime
 end)
 

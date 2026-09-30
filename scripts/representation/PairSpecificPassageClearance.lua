@@ -242,3 +242,111 @@ function Clearance.representedRadialReserve(physical,space)
     end
     return reserve,#discs
 end
+
+
+-- Purpose-scoped sequential Return-Space Clearance support.
+--
+-- Mutual Return Region is deliberately approximate: it bounds the realised
+-- Shared Crossing Core and inflates that core by the waiting participant's
+-- Transit-configured radial reserve. It does not reconstruct a swept path,
+-- retain a historical Passage axis corridor or predict GIANTS-native motion.
+function Clearance.mutualReturnRegion(guide,waitingAssemblyId,waitingTransitEnvelope)
+    if type(guide)~="table" or type(guide.gates)~="table" then return nil,"MUTUAL_RETURN_GUIDE_UNAVAILABLE" end
+    if type(waitingTransitEnvelope)~="table" then return nil,"MUTUAL_RETURN_WAITING_TRANSIT_ENVELOPE_UNAVAILABLE" end
+
+    local entry,exit=nil,nil
+    for _,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates or {}) do
+        if gate.kind=="CROSSING_WINDOW_ENTRY" then entry=gate
+        elseif gate.kind=="CROSSING_WINDOW_EXIT" then exit=gate end
+    end
+    if entry==nil or exit==nil then return nil,"MUTUAL_RETURN_SHARED_CROSSING_CORE_UNAVAILABLE" end
+
+    local points={}
+    local function appendTarget(target)
+        local x,z=tonumber(target and target.x),tonumber(target and target.z)
+        if not finite(x) or not finite(z) then return false end
+        points[#points+1]={x=x,z=z,assemblyId=target.assemblyId}
+        return true
+    end
+    if not appendTarget(entry.subject) or not appendTarget(entry.other)
+        or not appendTarget(exit.subject) or not appendTarget(exit.other) then
+        return nil,"MUTUAL_RETURN_SHARED_CROSSING_TARGET_UNAVAILABLE"
+    end
+
+    local centreX,centreZ=0,0
+    for _,point in OuttaMyWay.ValueRecord.ipairs(points) do
+        centreX=centreX+point.x
+        centreZ=centreZ+point.z
+    end
+    centreX=centreX/#points
+    centreZ=centreZ/#points
+
+    local coreRadius=0
+    for _,point in OuttaMyWay.ValueRecord.ipairs(points) do
+        coreRadius=math.max(coreRadius,distance(centreX,centreZ,point.x,point.z))
+    end
+
+    local minRight,maxRight=tonumber(waitingTransitEnvelope.minRightM),tonumber(waitingTransitEnvelope.maxRightM)
+    local minForward,maxForward=tonumber(waitingTransitEnvelope.minForwardM),tonumber(waitingTransitEnvelope.maxForwardM)
+    if not finite(minRight) or not finite(maxRight) or not finite(minForward) or not finite(maxForward) then
+        return nil,"MUTUAL_RETURN_WAITING_TRANSIT_EXTENTS_UNAVAILABLE"
+    end
+    local maxRightAbs=math.max(math.abs(minRight),math.abs(maxRight))
+    local maxForwardAbs=math.max(math.abs(minForward),math.abs(maxForward))
+    local waitingReserve=math.sqrt(maxRightAbs*maxRightAbs+maxForwardAbs*maxForwardAbs)
+    if not finite(waitingReserve) or waitingReserve<=0 then
+        return nil,"MUTUAL_RETURN_WAITING_TRANSIT_RESERVE_INVALID"
+    end
+
+    return {
+        centreX=centreX,centreZ=centreZ,
+        coreRadiusM=coreRadius,
+        waitingTransitReserveM=waitingReserve,
+        radiusM=coreRadius+waitingReserve,
+        waitingAssemblyId=waitingAssemblyId,
+        pointCount=#points,
+        basis="REALISED_SHARED_CROSSING_CORE_PLUS_WAITING_TRANSIT_RESERVE",
+        negativeClearanceAuthority=false
+    },nil
+end
+
+function Clearance.representedReturnSpaceClearance(region,physical,referenceX,referenceZ)
+    if type(region)~="table" then return nil,"MUTUAL_RETURN_REGION_UNAVAILABLE" end
+    local centreX,centreZ,radius=tonumber(region.centreX),tonumber(region.centreZ),tonumber(region.radiusM)
+    local refX,refZ=tonumber(referenceX),tonumber(referenceZ)
+    if not finite(centreX) or not finite(centreZ) or not finite(radius) or radius<=0 then
+        return nil,"MUTUAL_RETURN_REGION_INVALID"
+    end
+    if not finite(refX) or not finite(refZ) then return nil,"RELEASED_PARTICIPANT_REFERENCE_UNAVAILABLE" end
+    if type(physical)~="table" then return nil,"RELEASED_PARTICIPANT_PHYSICAL_REPRESENTATION_UNAVAILABLE" end
+
+    local maximumReach=nil
+    local count=0
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.worldPrimitives or physical.primitives or {}) do
+        local x,z,primitiveRadius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(x) and finite(z) and finite(primitiveRadius) and primitiveRadius>0 then
+            local reach=distance(refX,refZ,x,z)+primitiveRadius
+            maximumReach=maximumReach==nil and reach or math.max(maximumReach,reach)
+            count=count+1
+        end
+    end
+    if maximumReach==nil then
+        return nil,"RELEASED_PARTICIPANT_CURRENT_PHYSICAL_PRIMITIVES_UNAVAILABLE"
+    end
+
+    local referenceDistance=distance(refX,refZ,centreX,centreZ)
+    local clearance=referenceDistance-(maximumReach+radius)
+    return {
+        clear=clearance>=0,
+        clearanceM=clearance,
+        releasedReferenceDistanceM=referenceDistance,
+        releasedRepresentedReachM=maximumReach,
+        mutualReturnRegionRadiusM=radius,
+        mutualReturnCoreRadiusM=tonumber(region.coreRadiusM),
+        waitingTransitReserveM=tonumber(region.waitingTransitReserveM),
+        physicalPrimitiveCount=count,
+        basis="CURRENT_REPRESENTED_RADIAL_OCCUPANCY_VS_MUTUAL_RETURN_REGION",
+        negativeClearanceAuthority=false
+    },nil
+end
