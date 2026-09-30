@@ -494,7 +494,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     end
     if category2
         and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION"
-        and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT" then
+        and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRY" then
         return {
             status="NO_DISPATCH",
             reason="SHARED_CATEGORY_2_TERMINATION_EVIDENCE_REQUIRED",
