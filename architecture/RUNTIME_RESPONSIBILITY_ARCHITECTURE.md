@@ -616,13 +616,23 @@ OuttaMyWay is not looking after, parking or tidying the blocker. Intervention ex
 
 ### Geometry-bounded relocation
 
-**Relocation Is Geometry-Bounded, Not Count-Bounded.** While the Causal Obstruction remains positively established, one bounded inward actuation may be authorised toward the Field World centroid, limited to the nearer of the centroid or the current per-actuation maximum. Control then releases physical authority and Reality is reassessed.
+**Relocation Is Geometry-Bounded, Not Count-Bounded.** While the Causal Obstruction remains positively established, one bounded inward actuation may be authorised toward a supported **Relocation Centre**, limited to the nearer of that centre or the current per-actuation maximum. Control then releases physical authority and Reality is reassessed.
 
-A fresh positive obstruction may justify another bounded inward actuation under the same unresolved Resolution while meaningful centroid-directed space remains. The architecture does not count first/second courtesies, create a completed-worker movement budget or prescribe a later boundary-away settlement.
+The Field World centroid is the preferred Relocation Centre. If the centroid bearing is materially aligned with the positively supported approach of the beneficiary whose demand authorises relocation, an **Offset Relocation Centre** may instead be established by laterally displacing the Field World centroid away from that approach. The purpose of the offset is not route planning or parking; it prevents repeated bounded relocation from remaining collinear with the oncoming beneficiary while preserving the inward relocation objective.
 
-If the blocker remains positively causal but no meaningful inward relocation space remains, this autonomous relocation strategy has no further supported actuation.
+For the same unresolved Causal Obstruction and materially unchanged beneficiary approach, repeated bounded acts should retain the established Offset Relocation Centre rather than reverting each fresh actuation to the unmodified centroid. A materially changed obstruction relationship or beneficiary approach returns the choice of Relocation Centre to fresh evidence.
 
-Generic positive-conflict representation does not gain negative-clearance authority from this rule. Absence of positive obstruction stops further movement but does not by itself prove semantic clearance where the Resolution contract requires a positive settlement witness.
+A fresh positive obstruction may justify another bounded inward actuation under the same unresolved Resolution while meaningful relocation space toward the supported Relocation Centre remains. The architecture does not count first/second courtesies, create a completed-worker movement budget or prescribe a later boundary-away settlement.
+
+The exact lateral offset distance and the calibration used to decide when centroid alignment is material are implementation values unless Architecture later promotes them to contract authority.
+
+If the blocker remains positively causal but no meaningful supported inward relocation space remains, this autonomous relocation strategy has no further supported actuation.
+
+Generic positive-conflict representation does not gain negative-clearance authority from this rule. The Offset Relocation Centre is a bounded directional objective, not proof that an unobserved route is clear. Absence of positive obstruction stops further movement but does not by itself prove semantic clearance where the Resolution contract requires a positive settlement witness.
+
+> **Relocation Objective != Safe Egress.**
+
+> **Field Centroid != Mandatory Relocation Centre.**
 
 > **Actuation Recurrence != Resolution Settlement Evidence.**
 
