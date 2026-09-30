@@ -451,45 +451,37 @@ Shared Category-2 Demand establishes that temporal Regulation of one participant
 
 Candidate Support and Decision own prospective directional alternatives and temporary allocation.
 
-Once Responsibility Transition admits one Shared Category-2 Regulation purpose, Situation Assessment MUST interpret later evidence against the **incumbent purpose**, not rerun admission semantics as though no allocation existed.
+Once Responsibility Transition admits one Shared Category-2 Regulation purpose, Situation Assessment MUST interpret later evidence against that incumbent purpose until positive dissolution, positive supersession or ordinary lifecycle cessation.
 
 Expected consequence/evolution does not itself dissolve or reverse that purpose, including:
 
-- the protected participant slowing before the boundary transition;
-- temporary loss of fresh A8 / boundary-contact projection before completion;
+- the protected participant slowing before its boundary transition;
+- temporary loss of fresh A8 / boundary-contact projection before terminal evidence is available;
 - the regulated participant falling behind because Regulation is working;
 - changing native arrival estimates;
 - temporary loss of one prospective witness; or
 - Forward Intersection becoming negative/unresolved.
 
-Where the same purpose remains materially live but fresh proof is temporarily unavailable, Situation Assessment MUST publish the purpose as unresolved / `WAITING_FOR_EVIDENCE` rather than positive dissolution.
+Where the same incumbent purpose remains materially live but fresh proof is temporarily unavailable, Situation Assessment MUST publish the purpose as unresolved / `WAITING_FOR_EVIDENCE` rather than positive dissolution.
 
-The normal positive termination witness is the protected participant **beginning its native boundary manoeuvre at the same terminating Category-2 domain that authorised the incumbent purpose**. Situation Assessment MUST publish positive dissolution when current evidence establishes that the protected participant has transitioned from its admitted settled A8 into `TURNING` at that boundary transition.
+The normal positive termination witness is the protected participant transitioning from the **settled A8 that admitted the incumbent same-domain Category-2 purpose** into GIANTS `TURNING`.
 
-A later `SETTLED_CONTINUATION` / A8 epoch is NOT required to discharge Shared Category-2 Regulation. The temporal purpose has already completed when the protected participant reaches the constrained transition first and GIANTS begins the native boundary manoeuvre.
+A later `SETTLED_CONTINUATION` / A8 epoch is NOT required. Boundary Demand Disc overlap and Boundary Interaction Reach are NOT terminal prerequisites. Reality demonstrates that GIANTS may publish TURNING before radial Boundary Interaction Reach is entered and may withdraw the supported A8 boundary projection at the same transition.
 
-A generic `TURNING` observation that is not positively attributable to the admitted terminating boundary MUST NOT manufacture Category-2 completion.
+Situation Assessment MUST therefore publish positive dissolution when all of the following are true:
 
-Positive termination may therefore be established by:
+- one Shared Category-2 Regulation Responsibility is current;
+- its protected participant is known from that incumbent Responsibility;
+- retained predecessor evidence for that same protected participant is the settled A8 / terminating Category-2 domain that admitted the incumbent purpose; and
+- current GIANTS intent for that protected participant is `TURNING`.
 
-- the protected participant beginning its native boundary manoeuvre at the admitted terminating Category-2 domain;
-- another current positive witness that the Shared Category-2 governing purpose has ceased;
-- positive supersession; or
-- Job Episode / Operation lifecycle cessation.
+A generic TURNING observation without such incumbent predecessor provenance MUST NOT manufacture Category-2 completion.
 
 Control-induced separation and temporary evidence loss MUST NOT manufacture positive purpose completion.
 
-The incumbent purpose also has a fail-safe authority limit. Its watchdog SHOULD be derived from the supported native/unrestricted time-to-boundary captured for the protected participant at admission plus a bounded grace period. Exact grace calibration belongs to implementation/policy unless promoted by Architecture.
-
-If that watchdog expires without the expected boundary-turn witness, Situation Assessment / lifecycle collaboration MUST expose a fail-safe terminal outcome that causes Category-2 Regulation authority to be relinquished. That outcome MUST be distinguished from positive Situation dissolution and MUST NOT be published as evidence that the Category-2 purpose succeeded.
-
-> **Protected Boundary Turn Ends Shared Category-2 Regulation.**
+> **Protected A8 → TURNING Ends Shared Category-2 Regulation.**
 
 > **Admission Reach != Continuation Reach.**
-
-> **Fail-Safe Release != Positive Situation Dissolution.**
-
-> **Shared Demand Admission Chooses Once; Incumbent Purpose Continuity Preserves the Allocation Until Boundary-Turn Completion Or Fail-Safe Abandonment.**
 
 Existing Category-1 Corner and existing Category-2/open-field Forward Intersection contracts remain independent. Shared Category-2 Demand neither replaces nor weakens them. Where more than one Situation evidence route describes the same physical encounter, downstream Candidate/Decision contracts MUST avoid manufacturing duplicate simultaneous Regulation purposes for the same governing need.
 

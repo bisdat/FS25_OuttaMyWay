@@ -140,3 +140,27 @@ def test_category_1_corner_incumbency_is_generic_regulation_ineligibility():
     assert 'currentConstrainedCornerOccupancy==true' in policy
     assert '"REGULATE_ONLY_NON_CORNER_OCCUPANT"' in policy
     assert '"BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION"' in policy
+
+def test_issue388_category2_turn_completion_contract():
+    boundary = (ROOT / "scripts" / "assessment" / "BoundaryDemandAssessment.lua").read_text(encoding="utf-8")
+    candidate = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    current = (ROOT / "scripts" / "assessment" / "CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    spatial = (ROOT / "scripts" / "assessment" / "SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
+
+    assert "protectedBoundaryTurnCompletion" in boundary
+    assert 'protectedMotion.localIntentClassification~="TURNING"' in boundary
+    assert 'previous.intentClassification~="SETTLED_CONTINUATION"' in boundary
+    assert "distanceM>reachM" not in boundary
+    assert 'classification="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN"' in boundary
+    assert 'reason="PROTECTED_PARTICIPANT_BEGAN_NATIVE_BOUNDARY_TURN"' in boundary
+
+    assert "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN" in candidate
+    assert "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION" in current
+    assert "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION" in runtime
+    assert "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED" in lifecycle
+
+    assert "PROTECTED_PARTICIPANT_REVEALED_NEW_SETTLED_CONTINUATION" not in boundary
+    assert "SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION" not in current
+

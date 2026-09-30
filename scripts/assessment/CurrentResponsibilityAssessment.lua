@@ -140,10 +140,10 @@ function Assessment:assessActionSpaceRegulation(current,relation)
     end
     if category2 then
         if relation.positiveDissolution==true
-            or relation.classification=="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_INTENT_REVELATION" then
+            or relation.classification=="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN" then
             return {
                 disposition="TERMINATE",
-                terminationEvidenceKind="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION",
+                terminationEvidenceKind="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION",
                 reason=relation.reason or "SHARED_CATEGORY_2_DEMAND_POSITIVELY_DISSOLVED"
             }
         end
