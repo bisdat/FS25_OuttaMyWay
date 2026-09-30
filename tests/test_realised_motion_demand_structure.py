@@ -32,6 +32,9 @@ def test_realised_motion_demand_remains_situation_evidence_only():
         assert forbidden not in source
 
     assert "LOOKAHEAD_MAX_M=100.0" in source
+    assert "math.min(alignedDistanceM,LOOKAHEAD_MAX_M)" in source
+    assert "realisedMotionReachM=reachM" in source
+    assert 'reachBasis="CURRENT_ALIGNED_DISTANCE_M"' in source
     assert "turningPromoted=false" in source
     assert "futureRouteAuthority=false" in source
     assert "negativeClearanceAuthority=false" in source
