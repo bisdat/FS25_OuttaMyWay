@@ -8,7 +8,6 @@ local Assessment=OuttaMyWay.BoundaryDemandAssessment
 Assessment.__index=Assessment
 
 local INTENT_REVELATION_CREEP_KMH=1
-local SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_SECONDS=10
 
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
@@ -95,7 +94,6 @@ local function incumbentContext(commitmentContext,identity)
                 commitmentId=context.commitmentId,
                 regulatedAssemblyId=regulated,
                 protectedAssemblyId=obligationBasis and obligationBasis.protectedAssemblyId or nil,
-                regulationAdmissionTimestamp=obligationBasis and obligationBasis.regulationAdmissionTimestamp or nil,
                 requirement=requirement
             }
         end
@@ -236,19 +234,6 @@ local function protectedBoundaryTurnCompletion(state,protectedId,protectedMotion
     }
 end
 
-local function responsibilityLeaseState(input,incumbent)
-    local admission=tonumber(incumbent and incumbent.regulationAdmissionTimestamp)
-    local observed=tonumber(input and input.observationTimestamp)
-    if not finite(admission) or not finite(observed) then return false,nil end
-    local deadline=admission+SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_SECONDS
-    return observed>=deadline,{
-        admissionTimestamp=admission,
-        leaseSeconds=SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_SECONDS,
-        deadlineTimestamp=deadline,
-        observedTimestamp=observed
-    }
-end
-
 local function incumbentAction(relation,incumbent)
     if relation==nil or incumbent==nil or type(incumbent.regulatedAssemblyId)~="string" then return nil end
     local regulated=participantById(relation,incumbent.regulatedAssemblyId)
@@ -360,13 +345,11 @@ function Assessment:assess(input)
             end
             local protectedMotion=protectedId and motionByAssembly[protectedId] or nil
             local boundaryTurn,boundaryTurnEvidence=protectedBoundaryTurnCompletion(state,protectedId,protectedMotion)
-            local leaseExpired,leaseEvidence=responsibilityLeaseState(input,incumbent)
 
             refreshParticipantIntent(base,motionByAssembly)
             base.incumbentCommitmentId=incumbent.commitmentId
             base.incumbentRegulatedAssemblyId=incumbent.regulatedAssemblyId
             base.incumbentProtectedAssemblyId=protectedId
-            base.regulationAdmissionTimestamp=incumbent.regulationAdmissionTimestamp
 
             if boundaryTurn then
                 base.classification="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN"
@@ -379,24 +362,6 @@ function Assessment:assess(input)
                 base.reason="PROTECTED_PARTICIPANT_BEGAN_NATIVE_BOUNDARY_TURN"
                 base.actionSpaceConservation={
                     status="NOT_REQUIRED",supported=false,admissionKind="SHARED_CATEGORY_2_DEMAND",
-                    reason=base.reason,roleAssignmentMutable=false
-                }
-                self.retained[identity]=nil
-            elseif leaseExpired then
-                base.classification="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED"
-                base.relationshipStatus="UNRESOLVED"
-                base.currentEvidenceState="FAIL_SAFE_ABANDONMENT"
-                base.competingDemand=false
-                base.positiveDissolution=false
-                base.failSafeAbandonment=true
-                base.responsibilityLeaseExpired=true
-                base.responsibilityLeaseAdmissionTimestamp=leaseEvidence.admissionTimestamp
-                base.responsibilityLeaseSeconds=leaseEvidence.leaseSeconds
-                base.responsibilityLeaseDeadlineTimestamp=leaseEvidence.deadlineTimestamp
-                base.responsibilityLeaseObservedTimestamp=leaseEvidence.observedTimestamp
-                base.reason="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED"
-                base.actionSpaceConservation={
-                    status="FAIL_SAFE_RELEASE_REQUIRED",supported=false,admissionKind="SHARED_CATEGORY_2_DEMAND",
                     reason=base.reason,roleAssignmentMutable=false
                 }
                 self.retained[identity]=nil
