@@ -492,10 +492,12 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             commitmentId=commitmentId
         }
     end
-    if category2 and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION" then
+    if category2
+        and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION"
+        and assessment.terminationEvidenceKind~="SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT" then
         return {
             status="NO_DISPATCH",
-            reason="SHARED_CATEGORY_2_POSITIVE_DISSOLUTION_EVIDENCE_REQUIRED",
+            reason="SHARED_CATEGORY_2_TERMINATION_EVIDENCE_REQUIRED",
             detail=assessment.reason,
             actionSpaceRegulation=true,
             sharedCategory2=true,
@@ -516,7 +518,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             conflictIdentity=conflictIdentity,
             positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
                 or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION"
-                or settlementKind=="SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION",
+                or settlementKind=="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
         })
     end
