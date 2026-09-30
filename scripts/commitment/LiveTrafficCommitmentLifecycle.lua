@@ -392,8 +392,9 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     if #remaining==0 and ownedTrafficPurpose then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
+        local failSafeAbandonment=category2 and evidenceKind=="SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT"
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{
-            kind=crossContext and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_SATISFIED",
+            kind=crossContext and "NEW_AUTHORITATIVE_INTENT" or (failSafeAbandonment and "OBJECTIVE_FAILED" or "OBJECTIVE_SATISFIED"),
             evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},
             provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
