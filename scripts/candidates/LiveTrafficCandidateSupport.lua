@@ -458,7 +458,6 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
                 kind=basisKind,conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,
                 roleAssignmentMutable=not forward and not category2,
                 regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId,
-                protectedIntentEpochAtAdmission=category2 and tonumber(item.protectedParticipant and item.protectedParticipant.intentEpoch) or nil,
                 regulationAdmissionTimestamp=category2 and tonumber(observationTimestamp) or nil
             },
             requiredOutcome={kind=outcomeKind,conflictIdentity=relation.identity},
