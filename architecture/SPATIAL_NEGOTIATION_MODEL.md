@@ -207,19 +207,34 @@ For relative spatial constraint, the **Boundary Option-Space Ratio** remains:
 
 A lower ratio means the current Field World removes a greater proportion of that assembly's local radial option space. It is cumulative allocation evidence, not the admission predicate.
 
-Once Regulation is established for the Shared Category-2 purpose, the selected allocation remains sticky while the purpose remains live. The regulated participant falling behind because Regulation is working, changing arrival estimates or temporary loss of fresh A8 / boundary-contact projection do not re-arbitrate the allocation. Temporary evidence loss before completion becomes `WAITING_FOR_EVIDENCE`.
+Once Regulation is established for the Shared Category-2 purpose, the selected allocation remains sticky only for the lifetime of that **Category-2 Regulation Responsibility**. The regulated participant falling behind because Regulation is working, changing arrival estimates or temporary loss of fresh A8 / boundary-contact projection do not re-arbitrate the allocation while that Responsibility remains current.
 
-The normal Shared Category-2 completion boundary is the protected participant **beginning its native boundary manoeuvre at the admitted terminating Category-2 domain**. Positive current evidence that the protected participant has transitioned from its admitted settled A8 into `TURNING` at that boundary is sufficient to discharge the temporal-ordering purpose. OuttaMyWay has already achieved its job: the earlier arrival has reached the constrained transition first and GIANTS has begun revealing the native manoeuvre. Regulation of the later participant MUST then end; it does not wait for the protected participant to acquire a later settled A8.
+The normal Shared Category-2 completion boundary is the protected participant transitioning from the **settled A8 that admitted the incumbent same-domain purpose** into GIANTS `TURNING`. That transition is positive evidence that GIANTS has begun the native boundary manoeuvre for which temporal ordering was established. Regulation of the later participant MUST therefore end immediately; it does not wait for a later settled A8 and it does not require Boundary Demand Disc overlap or entry into Boundary Interaction Reach.
 
-A generic `TURNING` observation unrelated to the admitted terminating boundary does not manufacture completion. The terminal witness is the protected participant's native boundary-turn transition for the same Shared Category-2 purpose.
+Reality has shown that GIANTS may publish `TURNING` before the protected assembly enters its radial Boundary Interaction Reach, and that the settled A8 boundary projection can disappear as soon as TURNING begins. Boundary Interaction Reach therefore MUST NOT gate this terminal witness.
 
-> **Protected Boundary Turn Ends Shared Category-2 Regulation.**
+The witness is purpose-relative rather than a generic TURNING classifier: the protected participant must be the protected participant of the incumbent Shared Category-2 Responsibility, and the retained predecessor evidence must be the settled A8 / terminating Category-2 domain that admitted that Responsibility.
+
+> **Protected A8 → TURNING Ends Shared Category-2 Regulation.**
+
+> **Boundary Turn Intent May Precede Boundary Interaction Reach.**
 
 > **Admission Reach != Continuation Reach.**
 
-Shared Category-2 Regulation also has a fail-safe authority limit. Admission already carries the protected participant's supported native/unrestricted time-to-boundary; the watchdog SHOULD therefore be derived from that expected arrival plus a bounded implementation-owned grace period rather than from one universal admission timeout. If the expected boundary-turn witness has still not arrived when that watchdog expires, OuttaMyWay MUST relinquish the Category-2 Regulation, publish a warning/fail-safe outcome and return temporal authority to GIANTS.
+Shared Category-2 Regulation also has a **Responsibility Lease**. A Category-2 Regulation Responsibility may remain incumbent for at most **10 seconds** without being destroyed and reconstructed from fresh Reality.
 
-Watchdog expiry is not evidence that the Shared Category-2 Situation was successfully resolved. It is bounded abandonment of Regulation when the expected semantic completion evidence failed to arrive.
+Lease expiry is a fail-safe lifecycle event:
+
+1. release all Bounded Authority derived solely from that Category-2 Responsibility;
+2. terminate the incumbent Responsibility and its Commitment without claiming positive Situation dissolution;
+3. discard the incumbent allocation as authority for the next cycle; and
+4. allow the next Observation → Situation Assessment cycle to evaluate Shared Category-2 Demand using normal fresh-admission semantics.
+
+If fresh Reality still establishes Shared Category-2 Demand, Candidate/Decision may immediately establish a new Regulation Responsibility, including the same regulated/protected allocation where current evidence supports it. This controlled release/re-admission oscillation is preferable to allowing one stale incumbent Responsibility to preserve physical Regulation indefinitely.
+
+Lease expiry is not evidence that the Shared Category-2 Situation succeeded, dissolved or became safe. It is bounded abandonment of one Responsibility so that fresh Situation truth must earn any successor.
+
+> **Responsibility Lease Expiry Forces Fresh Situation Assessment.**
 
 > **Fail-Safe Release != Positive Situation Dissolution.**
 
