@@ -1055,7 +1055,7 @@ function Assessment:assess(input)
     local boundaryDemandKnowledge=self.boundaryDemandAssessment:assess({
         operationId=input.operationId,fieldWorld=input.fieldWorld,fieldWorldReferenceKey=input.fieldWorldReferenceKey,
         projections=projections,physicalSpaceEvidence=input.physicalSpaceEvidence,motionEvidence=input.motionEvidence,
-        commitmentContext=input.commitmentContext,observationTimestamp=input.observationTimestamp
+        commitmentContext=input.commitmentContext
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(boundaryDemandKnowledge.sharedCategory2Demands or {}) do
         local action=relation.actionSpaceConservation or {}
@@ -1070,17 +1070,6 @@ function Assessment:assess(input)
         local key="shared-category-2:"..tostring(relation.identity)
         if self.lastSignatures[key]~=signature then
             self.lastSignatures[key]=signature
-            if relation.responsibilityLeaseExpired==true then
-                publication:warning("NORMAL","SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED",
-                    "relationship=%s regulated=%s protected=%s leaseSeconds=%s deadline=%s observed=%s reason=%s",
-                    tostring(relation.identity),
-                    tostring(action.regulatedAssemblyId or relation.incumbentRegulatedAssemblyId or "UNRESOLVED"),
-                    tostring(action.protectedAssemblyId or relation.incumbentProtectedAssemblyId or "UNRESOLVED"),
-                    numberText(relation.responsibilityLeaseSeconds),
-                    numberText(relation.responsibilityLeaseDeadlineTimestamp),
-                    numberText(relation.responsibilityLeaseObservedTimestamp),
-                    tostring(relation.reason))
-            end
             logInfo("SHARED_CATEGORY_2_DEMAND_ASSESSED",
                 "relationship=%s pair=%s|%s state=%s evidence=%s intent=%s|%s optionSpace=%s|%s contactSeparationM=%s reachSumM=%s overlapMarginM=%s regulated=%s protected=%s regulation=%s reason=%s decisionAuthority=false controlAuthority=false",
                 tostring(relation.identity),tostring(a.assemblyId or relation.subjectAssemblyId),tostring(b.assemblyId or relation.otherAssemblyId),
