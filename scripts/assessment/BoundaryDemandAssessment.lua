@@ -142,10 +142,10 @@ local function participant(projection,motion,physical)
     },nil,{reach=reach,disc=disc}
 end
 
--- Boundary Option-Space and current occupancy are yielder-ordering evidence,
--- not Shared Category-2 admission gates.  Evaluate them only after positive
--- shared locality exists, and preserve unresolved evidence as unresolved rather
--- than suppressing the already-positive shared demand.
+-- Boundary Option-Space, current occupancy and Boundary Demand Disc overlap are
+-- yielder/physical-context evidence, not Shared Category-2 admission gates.
+-- Evaluate them after positive shared terminating-boundary-domain support and
+-- never let absent local disc overlap erase that boundary demand.
 local function enrichOrderingEvidence(participantValue,physical,fieldWorld,evidence)
     if type(participantValue)~="table"
         or participantValue.boundaryOptionSpaceEvidence~=nil
@@ -172,6 +172,15 @@ local function enrichOrderingEvidence(participantValue,physical,fieldWorld,evide
     end
 end
 
+local function sameBoundaryDomain(a,b)
+    local aEdge=a and a.terminatingBoundaryEdgeKey or nil
+    local bEdge=b and b.terminatingBoundaryEdgeKey or nil
+    return type(aEdge)=="string" and type(bEdge)=="string"
+        and a.boundaryRingKind==b.boundaryRingKind
+        and tonumber(a.boundaryRingIndex)==tonumber(b.boundaryRingIndex)
+        and aEdge==bEdge
+end
+
 local function freshRelation(operationId,fieldWorldReferenceKey,a,b,fieldWorld)
     local identity=pairIdentity(operationId,a.assemblyId,b.assemblyId)
     local overlap=OuttaMyWay.BoundaryDemandRepresentation.sharedOverlap(fieldWorld,a.boundaryDemandDisc,b.boundaryDemandDisc)
@@ -182,25 +191,24 @@ local function freshRelation(operationId,fieldWorldReferenceKey,a,b,fieldWorld)
         subjectReferenceKey=a.assemblyReferenceKey,otherReferenceKey=b.assemblyReferenceKey,
         participants={a,b},
         sharedBoundaryDemandOverlap=overlap,
+        sharedBoundaryDomain={
+            ringKind=a.boundaryRingKind,ringIndex=a.boundaryRingIndex,
+            terminatingBoundaryEdgeKey=a.terminatingBoundaryEdgeKey
+        },
         competingDemand=false,
         positiveOnly=true,decisionAuthority=false,controlAuthority=false,negativeClearanceAuthority=false,
         regulationSpeedKmh=INTENT_REVELATION_CREEP_KMH,
         governingRequirementKey=governingRequirement(identity),
         provenance={source="BoundaryDemandAssessment",layer="SITUATION_ASSESSMENT",independentOfForwardIntersection=true}
     }
-    if overlap.status~="SUPPORTED" then
-        relation.reason=overlap.reason
+    if not sameBoundaryDomain(a,b) then
+        relation.reason="BOUNDARY_DEMANDS_DO_NOT_SHARE_SUPPORTED_TERMINATING_DOMAIN"
         return relation
     end
-    if overlap.positive==true then
-        relation.relationshipStatus="POSITIVE"
-        relation.competingDemand=true
-        relation.currentEvidenceState="SUPPORTED"
-        relation.reason="CURRENT_BOUNDARY_DEMAND_DISCS_POSITIVELY_OVERLAP_INSIDE_FIELD_WORLD"
-    else
-        relation.relationshipStatus="UNRESOLVED"
-        relation.reason=overlap.reason
-    end
+    relation.relationshipStatus="POSITIVE"
+    relation.competingDemand=true
+    relation.currentEvidenceState="SUPPORTED"
+    relation.reason="CURRENT_A8_BOUNDARY_DEMANDS_SHARE_TERMINATING_CATEGORY_2_DOMAIN"
     return relation
 end
 

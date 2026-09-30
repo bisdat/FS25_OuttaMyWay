@@ -161,45 +161,61 @@ Entering a zone does not itself trigger Regulation.
 
 The overlay may influence whether temporal coordination is justified, which party can most cheaply give time, and when constrained-space occupancy should be allowed to reveal or vacate. These categories are not Regulation types and do not create another Current Responsibility kind.
 
-#### Category-2 Boundary Demand locality
+#### Category-2 Boundary Demand
 
-Category 2 is anchored by each assembly's **supported Field World boundary intersection/contact**, not by a synthetic universal headland strip and not by Forward Intersection.
+Category 2 is the **headland / Field World boundary transition domain** in which a current productive run cannot continue indefinitely and GIANTS must reveal a native manoeuvre before productive continuation can resume. Category 2 is therefore temporal constrained-space meaning, not a requirement that two current straight lines intersect and not a requirement that two local boundary-contact discs overlap.
 
-For Category-2 locality, a **Boundary Interaction Reach** is the maximum radial reach of the current represented Physical Assembly from the current progression/reference point. It is a purpose-specific assembly scale derived from positive current Physical-Assembly representation. Productive working width is not the governing scale merely because it is cheaply available.
+For each settled productive assembly, its supported Field World bounded A8 already establishes:
 
-A **Boundary Demand Disc** is centred on the supported boundary contact and has radius equal to the assembly's Boundary Interaction Reach. Only the portion inside the authoritative Field World belongs to the constrained locality. Clipping to Field World prevents Euclidean overlap through a concavity, island or other non-field void from manufacturing shared usable space.
+- the current terminating boundary ring and edge/domain;
+- the exact current boundary contact;
+- native/unrestricted distance and time to that boundary transition; and
+- the current Physical Assembly representation.
 
-> **Boundary Contact Anchors Category-2 Locality.**
+That is sufficient positive evidence that the assembly currently has **Category-2 Demand** on its terminating boundary domain. No future GIANTS turn is predicted.
 
-> **Category-2 Locality Scales With Assembly Reach, Not Productive Width.**
+> **Parallel A8 Does Not Remove Boundary Demand.**
 
-> **Boundary Demand Disc != Predicted Turn Sweep.**
+> **Field-Bounded Productive Progress Must Eventually Transition At The Boundary.**
 
-The circular locality is deliberately rotation-invariant. It does not predict GIANTS steering, turning centre, articulation or future productive route. Detailed Manoeuvre Sweep remains unnecessary for this question.
+For Category-2 physical evidence, **Boundary Interaction Reach** remains the maximum radial reach of the current represented Physical Assembly from the current progression/reference point. A **Boundary Demand Disc** remains centred on the supported boundary contact with that radius and clipped to the authoritative Field World. The disc remains useful for current occupancy, physical scale, Boundary Option-Space and diagnostic locality evidence.
 
-An assembly has **Category-2 Demand** when current positive Situation evidence establishes that its present occupancy or current bounded progression consumes or requires access to its Boundary Demand Disc. A8 may support bounded prospective demand to the boundary contact. Current Physical-Assembly occupancy and retained admitted purpose may support demand while GIANTS is `TURNING`; no turn path is extrapolated.
+The disc does **not** decide whether two workers approaching the same supported Category-2 boundary domain require temporal separation.
 
-Two assemblies have **Shared Category-2 Demand** when both have current Category-2 Demand and their Field-World-clipped Boundary Demand Discs have positive overlap. Positive overlap establishes that the two current boundary interactions address the same local constrained theatre. No arrival-time window or minimum overlap magnitude is required. Missing overlap evidence does not independently establish generic safe clearance where representation lacks that authority.
+> **Boundary Demand Disc Overlap != Shared Category-2 Admission.**
 
-Shared Category-2 Demand justifies temporal Regulation of one participant. Which participant yields is a separate Decision question based on cumulative current evidence: constrained-space occupancy/evacuation need, relative spatial constraint, A8 versus `TURNING` intent certainty, Resolution Margin / cost of waiting and any other accepted ordering evidence.
+> **Physical Locality Evidence Supports Category-2; It Does Not Replace The Boundary Domain.**
 
-For Category-2 relative spatial constraint, the preferred scale-independent evidence is the **Boundary Option-Space Ratio**:
+Two assemblies have **Shared Category-2 Demand** when both have current Category-2 Demand in the same Local Operation and their supported productive continuations terminate in the same current Category-2 boundary domain. In the current executable representation, the exact supported terminating Field World boundary-edge identity is the conservative positive domain witness. This is a bounded current-topology statement only; it does not infer either later turn path.
+
+Shared Category-2 Demand justifies one temporary Regulation so both workers are not allowed to arrive at a constrained boundary transition without temporal ordering. For a fresh A8/A8 allocation:
+
+1. positive current constrained-space occupancy is protected first so scarce space can be vacated;
+2. otherwise the **earlier native/unrestricted boundary arrival is protected** and the later/farther arrival is regulated;
+3. Boundary Option-Space and current intent evidence remain supporting ordering evidence when arrival evidence does not distinguish the pair; and
+4. a stable deterministic tie-break is permitted only after semantic evidence remains genuinely equivalent.
+
+This is the original temporal purpose of Category 2:
+
+> **GIANTS Navigates; OuttaMyWay Negotiates Time.**
+
+> **The Participant With More Time / Space To Wait Yields To The Participant Reaching The Boundary Constraint First.**
+
+For relative spatial constraint, the **Boundary Option-Space Ratio** remains:
 
 `area(Field World ∩ Boundary Demand Disc) / area(Boundary Demand Disc)`
 
-A lower ratio means the current Field World removes a greater proportion of that assembly's local radial option space. Normalisation is essential: raw clipped area would systematically favour larger assemblies and therefore is not the comparison meaning.
+A lower ratio means the current Field World removes a greater proportion of that assembly's local radial option space. It is cumulative allocation evidence, not the admission predicate.
 
-Boundary Option-Space Ratio is cumulative evidence, not a universal priority score. Positive constrained occupancy/evacuation need may dominate it; `TURNING` versus A8 and Resolution-Margin / cheaper-waiting evidence may reinforce or distinguish an otherwise similar allocation. Aligned evidence reinforces one temporary allocation; materially unresolved semantic ordering remains unresolved except where Architecture permits a stable deterministic tie-break.
+Once Regulation is established for the Shared Category-2 purpose, the selected allocation remains sticky while the purpose remains live. The protected participant entering or remaining `TURNING`, temporary loss of fresh A8 / boundary-contact projection, or the regulated participant falling behind because Regulation is working do not re-arbitrate or dissolve the purpose. Temporary evidence loss becomes `WAITING_FOR_EVIDENCE`.
 
-> **Shared Boundary Demand Determines Whether Regulation Is Needed; Boundary Option-Space Helps Determine Who Can More Cheaply Give Time.**
-
-Once that Regulation is established for the same Shared Category-2 Demand purpose, the allocation remains sticky while the purpose remains live. Expected effects such as the protected participant slowing, entering or remaining `TURNING`, temporary A8 loss or the regulated participant falling behind do not themselves re-arbitrate the yielder. Temporary evidence loss may become `WAITING_FOR_EVIDENCE`; positive dissolution, supersession or lifecycle cessation is required to end the responsibility.
-
-For an intent-revelation purpose, entering `TURNING` is not completion. After the protected participant has positively entered the native manoeuvre, fresh reacquisition of a **new supported `SETTLED_CONTINUATION` / A8 intent epoch** is positive evidence that the protected native intent has been revealed. That evidence may discharge the intent-revelation purpose through the normal responsibility lifecycle; any subsequent spatial competition is assessed afresh rather than inherited as historical priority.
+For an intent-revelation purpose, entering `TURNING` is not completion. Fresh acquisition of a **new supported `SETTLED_CONTINUATION` / A8 intent epoch** after the protected participant has positively entered native manoeuvring is positive evidence that its boundary intent has been revealed and may discharge the purpose.
 
 > **TURNING Begins Intent Revelation; Fresh Settled Continuation Completes It.**
 
-Existing Forward Intersection remains an independent Situation evidence route. Its current Category-1 / Category-2 / open-field interpretation is not replaced or weakened by Boundary Demand locality. Where both routes describe the same encounter they corroborate one Situation purpose rather than create duplicate Regulation responsibilities.
+Existing Forward Intersection remains an independent Situation evidence route. A positive Forward Intersection may corroborate Category-2 meaning, but it is neither necessary nor the definition of Shared Category-2 Demand.
+
+> **Forward Intersection != Shared Boundary Demand.**
 
 #### One worker inside, one outside
 
