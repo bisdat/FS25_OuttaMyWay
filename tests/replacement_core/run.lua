@@ -1215,6 +1215,26 @@ local function category2PolicyPicture(candidates,requirement)
     return decisionPicture(candidates,{decisionPolicy=trafficPolicy(requirement),representationFitness=fitness})
 end
 
+test("Shared Category-2 Decision protects earlier native boundary arrival",function()
+    local requirement="shared-category-2-regulation:shared-category-2:test"
+    local protectA=category2PolicyCandidate("c2-arrival-A","AS-00002","AS-00001",{
+        assemblyId="AS-00001",currentBoundaryDemandOccupancy=false,nativeTimeToBoundarySec=5,
+        boundaryOptionSpaceRatio=0.50,boundaryOptionSpaceRatioTolerance=0.000001,
+        intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-ARRIVAL-A")
+    local protectB=category2PolicyCandidate("c2-arrival-B","AS-00001","AS-00002",{
+        assemblyId="AS-00002",currentBoundaryDemandOccupancy=false,nativeTimeToBoundarySec=9,
+        boundaryOptionSpaceRatio=0.25,boundaryOptionSpaceRatioTolerance=0.000001,
+        intentClassification="SETTLED_CONTINUATION"
+    },requirement,"REP-C2-ARRIVAL-B")
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(category2PolicyPicture({protectA,protectB},requirement))
+    local selected=nil
+    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    assert(selected~=nil)
+    equal(selected.subject.assemblyId,"AS-00002")
+    equal(result.decision.comparisonBasis.rule,"SHARED_CATEGORY_2:PROTECT_EARLIER_NATIVE_BOUNDARY_ARRIVAL")
+end)
+
 test("Shared Category-2 Decision protects lower Boundary Option-Space participant",function()
     local requirement="shared-category-2-regulation:shared-category-2:test"
     local protectA=category2PolicyCandidate("c2-protect-A","AS-00002","AS-00001",{
@@ -7882,13 +7902,13 @@ test("Boundary Interaction Reach pair probe uses contact separation against summ
     equal(separated.rawDiscOverlap,false)
 end)
 
-local function category2Projection(assemblyId,currentX,currentZ,contactX,contactZ,boundaryDistanceM)
+local function category2Projection(assemblyId,currentX,currentZ,contactX,contactZ,boundaryDistanceM,edgeKey)
     return {
         status="SUPPORTED",assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,
         currentX=currentX,currentZ=currentZ,contactX=contactX,contactZ=contactZ,
         boundaryDistanceM=boundaryDistanceM or math.sqrt((contactX-currentX)^2+(contactZ-currentZ)^2),
         boundaryRingKind="OUTER_BOUNDARY",boundaryRingIndex=1,
-        terminatingBoundaryEdge={edgeKey="OUTER_BOUNDARY:1:EDGE:1"},
+        terminatingBoundaryEdge={edgeKey=edgeKey or "OUTER_BOUNDARY:1:EDGE:1"},
         progressRateMps=3,provisionalTimeToBoundarySec=(boundaryDistanceM or 30)/3
     }
 end
@@ -8015,7 +8035,7 @@ test("Boundary Option-Space uncertainty does not suppress positive Shared Catego
     equal(result.sharedCategory2Demands[1].participants[2].boundaryOptionSpaceRatio,nil)
 end)
 
-test("Wide parallel assemblies remain independent when boundary contacts are different localities",function()
+test("Wide parallel assemblies sharing one terminating Category-2 domain regulate despite non-overlapping discs",function()
     local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
     local result=assessment:assess({
         operationId="OR-C2",fieldWorld=category2Field(),fieldWorldReferenceKey="FW-CATEGORY-2",
@@ -8030,9 +8050,33 @@ test("Wide parallel assemblies remain independent when boundary contacts are dif
         motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
         commitmentContext={}
     })
+    equal(#result.sharedCategory2Demands,1)
+    equal(#result.pairAssessments,1)
+    local relation=result.sharedCategory2Demands[1]
+    equal(relation.relationshipStatus,"POSITIVE")
+    equal(relation.competingDemand,true)
+    equal(relation.reason,"CURRENT_A8_BOUNDARY_DEMANDS_SHARE_TERMINATING_CATEGORY_2_DOMAIN")
+    equal(relation.sharedBoundaryDemandOverlap.rawDiscOverlap,false)
+end)
+
+test("Category-2 boundary demands on different terminating domains do not manufacture shared demand",function()
+    local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
+    local result=assessment:assess({
+        operationId="OR-C2",fieldWorld=category2Field(),fieldWorldReferenceKey="FW-CATEGORY-2",
+        projections={
+            category2Projection("AS-A",10,30,10,0,30,"OUTER_BOUNDARY:1:EDGE:1"),
+            category2Projection("AS-B",70,50,100,50,30,"OUTER_BOUNDARY:1:EDGE:2")
+        },
+        physicalSpaceEvidence={
+            category2Physical("AS-A",10,30,19),
+            category2Physical("AS-B",70,50,18)
+        },
+        motionEvidence={category2Motion("AS-A","SETTLED_CONTINUATION",1),category2Motion("AS-B","SETTLED_CONTINUATION",1)},
+        commitmentContext={}
+    })
     equal(#result.sharedCategory2Demands,0)
     equal(#result.pairAssessments,1)
-    equal(result.pairAssessments[1].sharedBoundaryDemandOverlap.rawDiscOverlap,false)
+    equal(result.pairAssessments[1].reason,"BOUNDARY_DEMANDS_DO_NOT_SHARE_SUPPORTED_TERMINATING_DOMAIN")
 end)
 
 test("Shared Category-2 incumbent allocation survives TURNING and dissolves only after fresh settled intent",function()

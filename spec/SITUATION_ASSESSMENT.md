@@ -356,77 +356,77 @@ The Corner contract above remains Category-1-specific and does not predict GIANT
 
 ### Category-2 Boundary Demand
 
-A **Boundary Interaction Reach** is the maximum radial reach of the current represented Physical Assembly from the current supported progression/reference point for the applicable Physical-Assembly configuration.
+Category 2 represents the constrained **headland / Field World boundary transition domain** reached when a current productive run can no longer continue along its present bounded A8 and GIANTS must reveal native boundary manoeuvring.
 
-Situation Assessment MUST consume this value as representation-derived evidence. It MUST NOT substitute:
+A current settled productive assembly has **Category-2 Demand** when positive Situation evidence establishes:
 
-- productive working width;
-- a working-width multiplier;
-- a universal metre literal;
-- a guessed turning radius;
-- a predicted GIANTS manoeuvre path; or
-- Forward Intersection geometry.
+- active membership in the current Local Operation;
+- a supported current bounded A8 / `SETTLED_CONTINUATION`;
+- its exact supported terminating Field World boundary ring and edge/domain;
+- its current boundary contact and boundary distance; and
+- native/unrestricted progress opportunity to that boundary transition.
 
-Where Assessment Representation publishes configuration-scoped Physical-Assembly primitives, Boundary Interaction Reach SHOULD be derived once per supported configuration profile and reused while that profile remains valid. Situation Assessment MUST NOT require repeated structural geometry discovery merely to restate the same reach.
+This claim stops at the Field World boundary. It predicts no turn, headland route, turning centre or later productive path.
 
-A **Boundary Demand Disc** for one assembly is defined by:
+`TURNING` alone MUST NOT manufacture a new prospective Category-2 Demand. A previously admitted Shared Category-2 purpose MAY persist through `TURNING` under the continuity contract below.
 
-- centre = the assembly's current supported Field World boundary intersection/contact from its bounded current continuation;
-- radius = that assembly's current Boundary Interaction Reach; and
-- usable domain = the portion of that disc lying inside the authoritative Field World.
+A **Boundary Interaction Reach** remains the maximum radial reach of the current represented Physical Assembly from its supported progression/reference point. A **Boundary Demand Disc** remains centred on the current boundary contact, uses that reach as radius and is clipped to the authoritative Field World.
 
-The raw Euclidean disc is not itself Category-2 demand. Field-World clipping is required for semantic locality so overlap through a concavity, island or other non-field void cannot manufacture shared constrained space.
+Boundary Interaction Reach and Boundary Demand Disc evidence MAY support:
 
-> **Boundary Contact Anchors Category-2 Locality.**
+- current constrained-space occupancy;
+- Boundary Option-Space;
+- physical scale and representation provenance;
+- diagnostic local overlap; and
+- downstream allocation evidence.
 
-> **Category-2 Locality Scales With Assembly Reach, Not Productive Width.**
+They MUST NOT be used as a prerequisite that suppresses Shared Category-2 Demand merely because two boundary-contact discs do not overlap.
 
-A **Category-2 Demand** is positive when current Situation evidence establishes that an active Operation member currently consumes or currently requires access to its Boundary Demand Disc through one of these supported routes:
-
-1. a current bounded A8 / `SETTLED_CONTINUATION` progressing to the disc's boundary contact; or
-2. current positive Physical-Assembly occupancy inside the already-relevant Boundary Demand locality; or
-3. retained incumbent-purpose evidence explicitly permitted by the Regulation lifecycle while the native manoeuvre is revealing intent.
-
-`TURNING` alone MUST NOT manufacture new prospective Category-2 Demand or a future route. A previously admitted Category-2 purpose may, however, persist through `TURNING` under the incumbent-purpose continuity rules below.
+> **Boundary Demand Disc Overlap != Shared Category-2 Admission.**
 
 Two participants have **Shared Category-2 Demand** when:
 
 - both have current Category-2 Demand;
-- both belong to the same active Local Operation scope;
-- their Field-World-clipped Boundary Demand Discs have positive interior overlap; and
-- the representation evidence is fit for the positive-overlap conclusion.
+- both belong to the same active Local Operation; and
+- both supported productive continuations terminate in the same current Category-2 boundary domain.
 
-Positive overlap requires no arrival-time window and no minimum overlap magnitude beyond the geometric positive-overlap tolerance used by the representation contract.
+For the current executable representation, equality of supported boundary ring kind/index plus exact terminating Field World boundary-edge identity is the conservative positive domain witness.
 
-The following are insufficient on their own:
+The following do **not** negate Shared Category-2 Demand when that positive boundary-domain evidence exists:
 
-- same Field World;
-- same boundary ring;
-- same sampled boundary edge;
-- parallel A8;
-- proximity;
-- simultaneous boundary approach;
-- Forward Intersection;
-- working-width overlap; or
-- eventual Passage.
+- parallel / collinear A8;
+- absence of Forward Intersection;
+- non-overlapping Boundary Demand Discs;
+- material separation between the two boundary contacts along the same terminating domain; or
+- different Physical Assembly sizes.
 
-> **Parallel A8 + Same Boundary Ring != Shared Category-2 Demand.**
+> **Parallel A8 Does Not Remove Boundary Demand.**
 
-> **Shared Category-2 Demand != Forward Intersection.**
+> **Forward Intersection != Shared Boundary Demand.**
 
 A positive Shared Category-2 Demand record MUST identify, where supported:
 
-- the pair and Local Operation scope;
-- each participant's boundary contact and boundary-ring/edge provenance;
-- each participant's Boundary Interaction Reach and representation/profile provenance;
-- the positive Field-World-clipped overlap evidence;
-- each participant's current Category-2 Demand basis;
+- pair and Local Operation identity;
+- shared terminating boundary-domain identity;
+- each participant's boundary contact, distance and ring/edge provenance;
+- each participant's native/unrestricted time-to-boundary;
+- Boundary Interaction Reach / Boundary Demand Disc evidence where supported;
 - current Physical-Assembly occupancy evidence where available;
-- current native intent classification such as A8 / `TURNING`;
-- each participant's **Boundary Option-Space Ratio** where supported;
-- current Resolution-Margin / cheaper-waiting evidence where supported;
-- the evidence identity/validity dependencies needed for reassessment; and
-- explicit claim limits preventing downstream consumers from treating the relationship as route authority or generic safe-clearance proof.
+- current native intent classification;
+- Boundary Option-Space Ratio where supported;
+- representation/evidence validity dependencies; and
+- explicit limits preventing route prediction or generic safe-clearance claims.
+
+Shared Category-2 Demand establishes the need for one temporary temporal allocation; Situation Assessment MUST NOT choose the yielder.
+
+For downstream Decision, accepted ordering evidence is:
+
+1. protect a participant positively occupying constrained Category-2 space so it may vacate;
+2. otherwise protect the participant with the **earlier native/unrestricted boundary arrival** and regulate the later arrival;
+3. use Boundary Option-Space / intent evidence as further semantic ordering where arrival evidence does not distinguish the pair; and
+4. use a stable deterministic tie-break only if accepted semantic evidence remains equivalent.
+
+The resulting Regulation uses the existing Intent-Revelation responsibility. GIANTS retains steering and native manoeuvre ownership.
 
 ### Boundary Option-Space Ratio
 

@@ -2094,6 +2094,19 @@ def test_shared_corner_competing_demand_requires_two_current_corner_claims():
     assert "if #participantList>=2 then" not in assessment
 
 
+def test_category2_shared_boundary_domain_not_disc_overlap_owns_admission():
+    assessment=(ROOT/"scripts"/"assessment"/"BoundaryDemandAssessment.lua").read_text(encoding="utf-8")
+    decision=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+
+    assert "local function sameBoundaryDomain(a,b)" in assessment
+    assert 'relation.reason="CURRENT_A8_BOUNDARY_DEMANDS_SHARE_TERMINATING_CATEGORY_2_DOMAIN"' in assessment
+    assert 'relation.reason="BOUNDARY_DEMANDS_DO_NOT_SHARE_SUPPORTED_TERMINATING_DOMAIN"' in assessment
+    assert 'if overlap.positive==true then' not in assessment
+    assert "sharedBoundaryDemandOverlap=overlap" in assessment
+    assert '"PROTECT_EARLIER_NATIVE_BOUNDARY_ARRIVAL"' in decision
+    assert "nativeTimeToBoundarySec" in decision
+
+
 def test_issue358_return_staging_uses_five_metre_maximum_reassessment_step():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     assert re.search(r"^local COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M = 5\.0$", control, re.M)

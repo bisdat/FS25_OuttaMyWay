@@ -189,7 +189,15 @@ local function sharedCategory2Choice(entries)
         return ao and a or b,true,"PROTECT_CURRENT_CATEGORY_2_OCCUPANT"
     end
 
-    -- 2. Normalised Field-World option space is scale-independent across
+    -- 2. Category-2 exists because productive progress must terminate at the
+    -- constrained boundary. Protect the participant that reaches that boundary
+    -- first; the later/farther participant has more native time in which to wait.
+    local atime,btime=tonumber(ap.nativeTimeToBoundarySec),tonumber(bp.nativeTimeToBoundarySec)
+    if finiteNumber(atime) and finiteNumber(btime) and math.abs(atime-btime)>0.000001 then
+        return atime<btime and a or b,true,"PROTECT_EARLIER_NATIVE_BOUNDARY_ARRIVAL"
+    end
+
+    -- 3. Normalised Field-World option space is scale-independent across
     -- differently-sized assemblies. Numerical noise is not traffic meaning.
     local ar,br=tonumber(ap.boundaryOptionSpaceRatio),tonumber(bp.boundaryOptionSpaceRatio)
     if finiteNumber(ar) and finiteNumber(br) then
@@ -201,7 +209,7 @@ local function sharedCategory2Choice(entries)
         end
     end
 
-    -- 3. When spatial scarcity does not decide the pair, preserve the native
+    -- 4. When spatial scarcity does not decide the pair, preserve the native
     -- party currently revealing constrained intent over settled A8 that can wait.
     local ai=ap.intentClassification
     local bi=bp.intentClassification
