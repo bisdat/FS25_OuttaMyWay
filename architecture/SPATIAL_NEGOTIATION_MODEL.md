@@ -207,11 +207,21 @@ For relative spatial constraint, the **Boundary Option-Space Ratio** remains:
 
 A lower ratio means the current Field World removes a greater proportion of that assembly's local radial option space. It is cumulative allocation evidence, not the admission predicate.
 
-Once Regulation is established for the Shared Category-2 purpose, the selected allocation remains sticky while the purpose remains live. The protected participant entering or remaining `TURNING`, temporary loss of fresh A8 / boundary-contact projection, or the regulated participant falling behind because Regulation is working do not re-arbitrate or dissolve the purpose. Temporary evidence loss becomes `WAITING_FOR_EVIDENCE`.
+Once Regulation is established for the Shared Category-2 purpose, the selected allocation remains sticky while the purpose remains live. The regulated participant falling behind because Regulation is working, changing arrival estimates or temporary loss of fresh A8 / boundary-contact projection do not re-arbitrate the allocation. Temporary evidence loss before completion becomes `WAITING_FOR_EVIDENCE`.
 
-For an intent-revelation purpose, entering `TURNING` is not completion. Fresh acquisition of a **new supported `SETTLED_CONTINUATION` / A8 intent epoch** after the protected participant has positively entered native manoeuvring is positive evidence that its boundary intent has been revealed and may discharge the purpose.
+The normal Shared Category-2 completion boundary is the protected participant **beginning its native boundary manoeuvre at the admitted terminating Category-2 domain**. Positive current evidence that the protected participant has transitioned from its admitted settled A8 into `TURNING` at that boundary is sufficient to discharge the temporal-ordering purpose. OuttaMyWay has already achieved its job: the earlier arrival has reached the constrained transition first and GIANTS has begun revealing the native manoeuvre. Regulation of the later participant MUST then end; it does not wait for the protected participant to acquire a later settled A8.
 
-> **TURNING Begins Intent Revelation; Fresh Settled Continuation Completes It.**
+A generic `TURNING` observation unrelated to the admitted terminating boundary does not manufacture completion. The terminal witness is the protected participant's native boundary-turn transition for the same Shared Category-2 purpose.
+
+> **Protected Boundary Turn Ends Shared Category-2 Regulation.**
+
+> **Admission Reach != Continuation Reach.**
+
+Shared Category-2 Regulation also has a fail-safe authority limit. Admission already carries the protected participant's supported native/unrestricted time-to-boundary; the watchdog SHOULD therefore be derived from that expected arrival plus a bounded implementation-owned grace period rather than from one universal admission timeout. If the expected boundary-turn witness has still not arrived when that watchdog expires, OuttaMyWay MUST relinquish the Category-2 Regulation, publish a warning/fail-safe outcome and return temporal authority to GIANTS.
+
+Watchdog expiry is not evidence that the Shared Category-2 Situation was successfully resolved. It is bounded abandonment of Regulation when the expected semantic completion evidence failed to arrive.
+
+> **Fail-Safe Release != Positive Situation Dissolution.**
 
 Existing Forward Intersection remains an independent Situation evidence route. A positive Forward Intersection may corroborate Category-2 meaning, but it is neither necessary nor the definition of Shared Category-2 Demand.
 
