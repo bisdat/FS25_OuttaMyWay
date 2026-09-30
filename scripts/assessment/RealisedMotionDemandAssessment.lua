@@ -131,7 +131,13 @@ function Assessment.build(context)
             if finite(speed) and speed>=MIN_REALISED_SPEED_MPS
                 and movingClass
                 and finite(alignment) and alignment>=TRAJECTORY_ALIGNMENT_MIN_DOT then
-                local sweeps=demandSweeps(physicalItem,establishedX,establishedZ,LOOKAHEAD_MAX_M)
+                local alignedDistanceM=tonumber(trajectory.currentAlignedDistanceM)
+                local reachM=finite(alignedDistanceM) and alignedDistanceM>0
+                    and math.min(alignedDistanceM,LOOKAHEAD_MAX_M)
+                    or nil
+                local sweeps=reachM~=nil
+                    and demandSweeps(physicalItem,establishedX,establishedZ,reachM)
+                    or {}
                 if OuttaMyWay.ValueRecord.length(sweeps)>0 then
                     records[#records+1]={
                         identity="realised-motion-demand:"..operationId..":"..assemblyId,
@@ -141,11 +147,12 @@ function Assessment.build(context)
                         jobEpisodeId=activeEpisode.identity,
                         sourceJobToken=motionItem.sourceJobToken,
                         positive=true,
-                        horizonM=LOOKAHEAD_MAX_M,
+                        realisedMotionReachM=reachM,
+                        horizonM=reachM,
                         progressionRateMps=speed,
                         directionX=establishedX,directionZ=establishedZ,
                         alignment=alignment,
-                        currentAlignedDistanceM=trajectory.currentAlignedDistanceM,
+                        currentAlignedDistanceM=alignedDistanceM,
                         currentMotionClassification=motionItem.motionClassification,
                         localIntentClassification=motionItem.localIntentClassification,
                         productiveContextPositive=trajectory.contextProductivePositive==true,
@@ -161,8 +168,9 @@ function Assessment.build(context)
                             source="RealisedMotionDemandAssessment",
                             observationSnapshotId=context.observationSnapshotId,
                             trajectorySource=trajectory.provenance and trajectory.provenance.source or nil,
-                            basis="FRESH_ALIGNED_REALISED_PROGRESS_ON_ESTABLISHED_TRAJECTORY",
-                            lookaheadCalibration="TEST_0_4_5_1_100M",
+                            basis="FRESH_ALIGNED_REALISED_PROGRESS_WITH_PERSISTENCE_BOUNDED_REACH",
+                            reachBasis="CURRENT_ALIGNED_DISTANCE_M",
+                            lookaheadCalibration="ISSUE_385_PERSISTENCE_BOUNDED_MAX_100M",
                             turningPromoted=false
                         }
                     }
@@ -177,8 +185,9 @@ function Assessment.build(context)
         local entries={}
         for _,record in OuttaMyWay.ValueRecord.ipairs(records) do
             entries[#entries+1]=string.format(
-                "%s|operation=%s|horizon=%.3f|speed=%.3f|alignment=%.3f|motion=%s|intent=%s|productive=%s",
+                "%s|operation=%s|reach=%.3f|aligned=%.3f|horizon=%.3f|speed=%.3f|alignment=%.3f|motion=%s|intent=%s|productive=%s",
                 tostring(record.beneficiaryAssemblyId),tostring(record.operationId),
+                tonumber(record.realisedMotionReachM) or 0,tonumber(record.currentAlignedDistanceM) or 0,
                 tonumber(record.horizonM) or 0,tonumber(record.progressionRateMps) or 0,
                 tonumber(record.alignment) or 0,tostring(record.currentMotionClassification),
                 tostring(record.localIntentClassification),tostring(record.productiveContextPositive))
