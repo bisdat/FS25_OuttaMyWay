@@ -128,19 +128,8 @@ local function supportedApproach(picture,group)
     }
 end
 
-local function offsetRelocationCentre(cx,cz,pose,approach,existing)
+local function offsetRelocationCentre(cx,cz,pose,approach)
     if approach==nil then return nil end
-    if type(existing)=="table"
-        and existing.kind=="OFFSET_RELOCATION_CENTRE"
-        and existing.beneficiaryAssemblyId==approach.beneficiaryAssemblyId then
-        local previousX,previousZ=normalize(existing.approachDirectionX,existing.approachDirectionZ)
-        local continuity=previousX~=nil and dot(previousX,previousZ,approach.directionX,approach.directionZ) or nil
-        if finite(continuity) and continuity>=OFFSET_RELOCATION_ALIGNMENT_MIN_DOT
-            and finite(existing.x) and finite(existing.z) then
-            return existing
-        end
-    end
-
     local centroidDirectionX,centroidDirectionZ=normalize(cx-pose.x,cz-pose.z)
     if centroidDirectionX==nil then return nil end
     local alignment=dot(centroidDirectionX,centroidDirectionZ,approach.directionX,approach.directionZ)
@@ -166,14 +155,13 @@ local function offsetRelocationCentre(cx,cz,pose,approach,existing)
     }
 end
 
-local function boundedInwardObjective(picture,snapshot,group,context,pose)
+local function boundedInwardObjective(picture,snapshot,group,pose)
     local metrics=snapshot and snapshot.fieldWorld and snapshot.fieldWorld.geometryMetrics or nil
     local cx,cz=metrics and tonumber(metrics.centroidX),metrics and tonumber(metrics.centroidZ)
     if not finite(cx) or not finite(cz) then return nil,"FIELD_WORLD_CENTROID_UNAVAILABLE" end
     if pose==nil or not finite(pose.x) or not finite(pose.z) then return nil,"CURRENT_BLOCKER_REFERENCE_POSE_UNAVAILABLE" end
 
-    local existing=context and context.governingBasis and context.governingBasis.relocationCentre or nil
-    local relocationCentre=offsetRelocationCentre(cx,cz,pose,supportedApproach(picture,group),existing)
+    local relocationCentre=offsetRelocationCentre(cx,cz,pose,supportedApproach(picture,group))
         or {kind="FIELD_WORLD_CENTROID",x=cx,z=cz,sourceCentroidX=cx,sourceCentroidZ=cz}
     local dx,dz=relocationCentre.x-pose.x,relocationCentre.z-pose.z
     local distance=math.sqrt(dx*dx+dz*dz)
@@ -206,7 +194,7 @@ local function boundedInwardObjective(picture,snapshot,group,context,pose)
 end
 
 local function physicalSpec(picture,snapshot,group,context,references,pose)
-    local objective,objectiveReason=boundedInwardObjective(picture,snapshot,group,context,pose)
+    local objective,objectiveReason=boundedInwardObjective(picture,snapshot,group,pose)
     if objective==nil then return nil,objectiveReason end
     local protected=relocationSerializationBeneficiaries(group,references)
     for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do if type(item.referenceKey)~="string" then return nil,"BENEFICIARY_REFERENCE_UNAVAILABLE" end end
@@ -228,7 +216,7 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
         subject={assemblyId=group.blockerAssemblyId},capability="REPOSITION",
         expectedEffect={physicalChange=true,phase="INFIELD",boundedInwardRelocation=true,oneFixedAlignment=true,parking=false},
         evidenceBasis={
-            governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey=group.relocationKey,operationIds={group.operationId},sourceIntentIds={},authorizingDemandAssemblyIds=protectedIds,blockerAssemblyId=group.blockerAssemblyId,relocationCentre=objective.relocationCentre},
+            governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey=group.relocationKey,operationIds={group.operationId},sourceIntentIds={},authorizingDemandAssemblyIds=protectedIds,blockerAssemblyId=group.blockerAssemblyId},
             progressActuationOwnership={assemblyIds=protectedIds},
             obstructionRelocationActuationOwnership={assemblyIds={group.blockerAssemblyId}},
             effectiveActuationComposition={identity="obstruction-relocation-composition:"..group.relocationKey..":"..picture.identity,epoch=picture.epoch,relevantAssemblyIds=relevantIds,entries=compositionEntries},
