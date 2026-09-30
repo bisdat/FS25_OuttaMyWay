@@ -54,6 +54,7 @@ local function picture(ids, epochs, values)
         candidateSupportEvidence={},
         commitmentContext=values.commitmentContext or {},
         motionEvidence=values.motionEvidence or {},
+        realisedMotionDemandKnowledge=values.realisedMotionDemandKnowledge or {},
         productiveContinuationKnowledge=values.productiveContinuationKnowledge or {},
         causalObstructionKnowledge=values.causalObstructionKnowledge or {}
     })
@@ -84,6 +85,17 @@ local function relation(beneficiaryId, beneficiaryReferenceKey)
         beneficiaryAssemblyReferenceKey=beneficiaryReferenceKey,
         blockerClassification="NON_ACTIVE_UNCLAIMED",
         relocationEligible=true
+    }
+end
+
+local function realisedDemand(beneficiaryId,directionX,directionZ)
+    return {
+        identity="realised-motion-demand:OR-1:"..beneficiaryId,
+        operationId="OR-1",
+        beneficiaryAssemblyId=beneficiaryId,
+        positive=true,
+        directionX=directionX,directionZ=directionZ,
+        physicalDemandSweeps={{kind="DISC_SWEEP",startX=0,startZ=10,radius=1}}
     }
 end
 
@@ -165,6 +177,74 @@ test("pairwise causal relations aggregate to one geometry-bounded blocker reloca
     equal(specification.evidenceBasis.obstructionRelocationBridge.objective.maximumRelocationDistanceM,60)
     equal(specification.releaseImplications.repeatedActuationRequiresFreshPositiveObstruction,true)
     equal(supported.candidateSupportEvidence.supportBoundary.moveCountBudget,false)
+end)
+
+test("ordinary obstruction relocation retains the Field World centroid", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local base=picture(ids,epochs,{
+        causalObstructionKnowledge={relation("AS-A","REF-A")},
+        motionEvidence={{assemblyId="AS-A",poseX=0,poseZ=10}},
+        realisedMotionDemandKnowledge={realisedDemand("AS-A",0,1)}
+    })
+    local supported=support:publishDecisionPicture(base,snapshot())
+    if supported==nil then error("expected centroid relocation support") end
+    local objective=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.obstructionRelocationBridge.objective
+    equal(objective.relocationCentreKind,"FIELD_WORLD_CENTROID")
+    equal(objective.relocationCentreX,100)
+    equal(objective.relocationCentreZ,10)
+end)
+
+test("collinear realised demand selects the calibrated Offset Relocation Centre", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local base=picture(ids,epochs,{
+        causalObstructionKnowledge={relation("AS-A","REF-A")},
+        motionEvidence={{assemblyId="AS-A",poseX=0,poseZ=10}},
+        realisedMotionDemandKnowledge={realisedDemand("AS-A",1,0)}
+    })
+    local supported=support:publishDecisionPicture(base,snapshot())
+    if supported==nil then error("expected offset relocation support") end
+    local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
+    local objective=specification.evidenceBasis.obstructionRelocationBridge.objective
+    equal(objective.relocationCentreKind,"OFFSET_RELOCATION_CENTRE")
+    equal(objective.relocationCentreX,100)
+    equal(objective.relocationCentreZ,50)
+    equal(objective.relocationCentre.offsetDistanceM,40)
+    equal(specification.evidenceBasis.governingBasis.relocationCentre.kind,"OFFSET_RELOCATION_CENTRE")
+    if not (objective.targetZ>10) then error("offset relocation must diverge laterally from the approach axis") end
+end)
+
+test("retained relocation reuses its Offset Relocation Centre while approach remains materially unchanged", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local retainedCentre={
+        kind="OFFSET_RELOCATION_CENTRE",x=100,z=50,
+        sourceCentroidX=100,sourceCentroidZ=10,offsetDistanceM=40,
+        beneficiaryAssemblyId="AS-A",approachDirectionX=1,approachDirectionZ=0
+    }
+    local base=picture(ids,epochs,{
+        commitmentContext={{commitmentId="CM-1",governingBasis={
+            kind="CAUSAL_OBSTRUCTION_RELOCATION",
+            responsibilityKey="obstruction-relocation:OR-1:AS-BLOCKER",
+            operationIds={"OR-1"},blockerAssemblyId="AS-BLOCKER",
+            authorizingDemandAssemblyIds={"AS-A"},relocationCentre=retainedCentre
+        }}},
+        controlOutcomeEvidence={outcomes={{kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION",commitmentId="CM-1",status="MANOEUVRE_COMPLETE",completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey="obstruction-relocation:OR-1:AS-BLOCKER"}}}},
+        causalObstructionKnowledge={relation("AS-A","REF-A")},
+        motionEvidence={{assemblyId="AS-A",poseX=0,poseZ=10}},
+        productiveContinuationKnowledge={{assemblyId="AS-A",productivePositive=true,representationFitness="FIT_FOR_LIMITED_HORIZON"}},
+        realisedMotionDemandKnowledge={realisedDemand("AS-A",0.99,0.05)}
+    })
+    local supported=support:publishDecisionPicture(base,snapshot(30))
+    if supported==nil then error("expected retained offset relocation support") end
+    local objective=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.obstructionRelocationBridge.objective
+    equal(objective.relocationCentreKind,"OFFSET_RELOCATION_CENTRE")
+    equal(objective.relocationCentreX,100)
+    equal(objective.relocationCentreZ,50)
 end)
 
 test("generic Causal Obstruction relocation requires no historical Job provenance field", function()
