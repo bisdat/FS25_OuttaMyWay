@@ -451,7 +451,7 @@ Shared Category-2 Demand establishes that temporal Regulation of one participant
 
 Candidate Support and Decision own prospective directional alternatives and temporary allocation.
 
-Once Responsibility Transition admits one Shared Category-2 Regulation purpose, Situation Assessment MAY interpret later evidence against that incumbent purpose only while the incumbent **Category-2 Responsibility Lease** remains current.
+Once Responsibility Transition admits one Shared Category-2 Regulation purpose, Situation Assessment MUST interpret later evidence against that incumbent purpose until positive dissolution, positive supersession or ordinary lifecycle cessation.
 
 Expected consequence/evolution does not itself dissolve or reverse that purpose, including:
 
@@ -479,24 +479,9 @@ A generic TURNING observation without such incumbent predecessor provenance MUST
 
 Control-induced separation and temporary evidence loss MUST NOT manufacture positive purpose completion.
 
-The incumbent Category-2 Responsibility also has a fixed **10-second Responsibility Lease**. Lease expiry is not Situation dissolution. Instead, lifecycle collaboration MUST:
-
-- relinquish Bounded Authority derived from the incumbent Category-2 Responsibility;
-- terminate that incumbent Responsibility / Commitment as fail-safe abandonment;
-- remove incumbent allocation state from authority over subsequent assessment; and
-- require the next Observation cycle to evaluate Shared Category-2 Demand under normal fresh-admission semantics.
-
-After lease expiry, fresh Situation Assessment may again establish Shared Category-2 Demand immediately. If it does, Candidate/Decision may create a new Regulation Responsibility. The new Responsibility is not continuation of the expired incumbent merely because it concerns the same pair or selects the same yielder.
-
 > **Protected A8 → TURNING Ends Shared Category-2 Regulation.**
 
-> **Responsibility Lease Expiry Forces Fresh Situation Assessment.**
-
 > **Admission Reach != Continuation Reach.**
-
-> **Fail-Safe Release != Positive Situation Dissolution.**
-
-> **Incumbent Continuity Is Bounded; Fresh Situation Must Re-earn Successor Responsibility.**
 
 Existing Category-1 Corner and existing Category-2/open-field Forward Intersection contracts remain independent. Shared Category-2 Demand neither replaces nor weakens them. Where more than one Situation evidence route describes the same physical encounter, downstream Candidate/Decision contracts MUST avoid manufacturing duplicate simultaneous Regulation purposes for the same governing need.
 
