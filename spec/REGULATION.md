@@ -133,26 +133,7 @@ Boundary Demand Disc overlap, Boundary Interaction Reach entry and a later settl
 
 The accepted bounded physical effect before completion remains the existing exact **1 km/h Intent-Revelation Creep** where Bounded Authority confirms that effect is currently permitted. The fixed creep is a purpose-bound temporal effect, not a universal speed policy and not route authority.
 
-Every Shared Category-2 Regulation Responsibility has a **10-second Responsibility Lease** measured from that Responsibility's admission.
-
-On lease expiry, the incumbent Regulation Responsibility MUST be destroyed rather than merely quiescing or renewing its Bounded Authority:
-
-- all Bounded Authority derived solely from it MUST be released;
-- the incumbent Commitment MUST enter terminal fail-safe settlement without being represented as successful Situation dissolution;
-- its regulated/protected allocation MUST NOT remain incumbent authority for the next cycle; and
-- the next Observation cycle MUST return to fresh Shared Category-2 Situation Assessment.
-
-If fresh Situation Assessment again supports Shared Category-2 Demand, a new Decision / Responsibility may be established immediately. The same yielder may be selected again, but that is a fresh allocation from fresh Reality, not maintenance of the expired Responsibility.
-
-This means long legitimate Category-2 interactions may exhibit bounded **release → fresh assessment → re-admission** cycles. That oscillation is an accepted fail-safe tradeoff; indefinite preservation of stale physical Regulation is not.
-
 > **Protected A8 → TURNING Ends Shared Category-2 Regulation.**
-
-> **Responsibility Lease Expiry Forces Fresh Situation Assessment.**
-
-> **Fail-Safe Release != Positive Situation Dissolution.**
-
-> **Shared Demand Admission Chooses Once Per Responsibility Lease.**
 
 ### Waiting for evidence
 
