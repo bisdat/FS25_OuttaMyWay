@@ -8,7 +8,7 @@ local Assessment=OuttaMyWay.BoundaryDemandAssessment
 Assessment.__index=Assessment
 
 local INTENT_REVELATION_CREEP_KMH=1
-local SHARED_CATEGORY_2_WATCHDOG_GRACE_SECONDS=10
+local SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_SECONDS=10
 
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
@@ -96,7 +96,6 @@ local function incumbentContext(commitmentContext,identity)
                 regulatedAssemblyId=regulated,
                 protectedAssemblyId=obligationBasis and obligationBasis.protectedAssemblyId or nil,
                 protectedIntentEpochAtAdmission=obligationBasis and obligationBasis.protectedIntentEpochAtAdmission or nil,
-                protectedNativeTimeToBoundarySecAtAdmission=obligationBasis and obligationBasis.protectedNativeTimeToBoundarySecAtAdmission or nil,
                 regulationAdmissionTimestamp=obligationBasis and obligationBasis.regulationAdmissionTimestamp or nil,
                 requirement=requirement
             }
@@ -221,32 +220,31 @@ local function protectedBoundaryTurnCompletion(state,protectedId,protectedMotion
         return false,nil
     end
     local previous=participantById(state.relation,protectedId)
-    local distanceM=tonumber(previous and previous.boundaryDistanceM)
-    local reachM=tonumber(previous and previous.boundaryInteractionReachM)
     local edgeKey=previous and previous.terminatingBoundaryEdgeKey or nil
-    if not finite(distanceM) or not finite(reachM) or reachM<0 or type(edgeKey)~="string" then
+    if type(previous)~="table"
+        or previous.intentClassification~="SETTLED_CONTINUATION"
+        or type(edgeKey)~="string" then
         return false,nil
     end
-    if distanceM>reachM then
-        return false,{boundaryDistanceM=distanceM,boundaryInteractionReachM=reachM,terminatingBoundaryEdgeKey=edgeKey}
-    end
     return true,{
-        boundaryDistanceM=distanceM,boundaryInteractionReachM=reachM,
-        terminatingBoundaryEdgeKey=edgeKey,boundaryRingKind=previous.boundaryRingKind,
-        boundaryRingIndex=previous.boundaryRingIndex
+        predecessorIntentClassification=previous.intentClassification,
+        predecessorIntentEpoch=previous.intentEpoch,
+        terminatingBoundaryEdgeKey=edgeKey,
+        boundaryRingKind=previous.boundaryRingKind,
+        boundaryRingIndex=previous.boundaryRingIndex,
+        boundaryDistanceM=previous.boundaryDistanceM,
+        boundaryInteractionReachM=previous.boundaryInteractionReachM
     }
 end
 
-local function watchdogState(input,incumbent)
+local function responsibilityLeaseState(input,incumbent)
     local admission=tonumber(incumbent and incumbent.regulationAdmissionTimestamp)
-    local arrival=tonumber(incumbent and incumbent.protectedNativeTimeToBoundarySecAtAdmission)
     local observed=tonumber(input and input.observationTimestamp)
-    if not finite(admission) or not finite(arrival) or arrival<0 or not finite(observed) then return false,nil end
-    local deadline=admission+arrival+SHARED_CATEGORY_2_WATCHDOG_GRACE_SECONDS
-    return observed>deadline,{
+    if not finite(admission) or not finite(observed) then return false,nil end
+    local deadline=admission+SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_SECONDS
+    return observed>=deadline,{
         admissionTimestamp=admission,
-        protectedNativeTimeToBoundarySecAtAdmission=arrival,
-        graceSeconds=SHARED_CATEGORY_2_WATCHDOG_GRACE_SECONDS,
+        leaseSeconds=SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_SECONDS,
         deadlineTimestamp=deadline,
         observedTimestamp=observed
     }
@@ -331,10 +329,7 @@ function Assessment:assess(input)
         local incumbent=incumbentContext(input.commitmentContext,identity)
         if incumbent~=nil then incumbentByIdentity[identity]=incumbent end
         if self.retained[identity]==nil then
-            self.retained[identity]={
-                relation=copyValue(relation),observedProtectedTurning=false,
-                protectedIntentEpochAtAdmission=nil
-            }
+            self.retained[identity]={relation=copyValue(relation)}
         else
             self.retained[identity].relation=copyValue(relation)
         end
@@ -366,14 +361,13 @@ function Assessment:assess(input)
             end
             local protectedMotion=protectedId and motionByAssembly[protectedId] or nil
             local boundaryTurn,boundaryTurnEvidence=protectedBoundaryTurnCompletion(state,protectedId,protectedMotion)
-            local watchdogExpired,watchdogEvidence=watchdogState(input,incumbent)
+            local leaseExpired,leaseEvidence=responsibilityLeaseState(input,incumbent)
 
             refreshParticipantIntent(base,motionByAssembly)
             base.incumbentCommitmentId=incumbent.commitmentId
             base.incumbentRegulatedAssemblyId=incumbent.regulatedAssemblyId
             base.incumbentProtectedAssemblyId=protectedId
             base.protectedIntentEpochAtAdmission=incumbent.protectedIntentEpochAtAdmission
-            base.protectedNativeTimeToBoundarySecAtAdmission=incumbent.protectedNativeTimeToBoundarySecAtAdmission
             base.regulationAdmissionTimestamp=incumbent.regulationAdmissionTimestamp
 
             if boundaryTurn then
@@ -390,19 +384,19 @@ function Assessment:assess(input)
                     reason=base.reason,roleAssignmentMutable=false
                 }
                 self.retained[identity]=nil
-            elseif watchdogExpired then
-                base.classification="SHARED_CATEGORY_2_REGULATION_ABANDONED_BY_WATCHDOG"
+            elseif leaseExpired then
+                base.classification="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED"
                 base.relationshipStatus="UNRESOLVED"
                 base.currentEvidenceState="FAIL_SAFE_ABANDONMENT"
                 base.competingDemand=false
                 base.positiveDissolution=false
                 base.failSafeAbandonment=true
-                base.watchdogAdmissionTimestamp=watchdogEvidence.admissionTimestamp
-                base.watchdogProtectedNativeTimeToBoundarySecAtAdmission=watchdogEvidence.protectedNativeTimeToBoundarySecAtAdmission
-                base.watchdogGraceSeconds=watchdogEvidence.graceSeconds
-                base.watchdogDeadlineTimestamp=watchdogEvidence.deadlineTimestamp
-                base.watchdogObservedTimestamp=watchdogEvidence.observedTimestamp
-                base.reason="SHARED_CATEGORY_2_WATCHDOG_EXPIRED_WITHOUT_BOUNDARY_TURN"
+                base.responsibilityLeaseExpired=true
+                base.responsibilityLeaseAdmissionTimestamp=leaseEvidence.admissionTimestamp
+                base.responsibilityLeaseSeconds=leaseEvidence.leaseSeconds
+                base.responsibilityLeaseDeadlineTimestamp=leaseEvidence.deadlineTimestamp
+                base.responsibilityLeaseObservedTimestamp=leaseEvidence.observedTimestamp
+                base.reason="SHARED_CATEGORY_2_RESPONSIBILITY_LEASE_EXPIRED"
                 base.actionSpaceConservation={
                     status="FAIL_SAFE_RELEASE_REQUIRED",supported=false,admissionKind="SHARED_CATEGORY_2_DEMAND",
                     reason=base.reason,roleAssignmentMutable=false
