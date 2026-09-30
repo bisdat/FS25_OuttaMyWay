@@ -354,7 +354,15 @@ A bounded future continuation such as `SETTLED_CONTINUATION` answers where GIANT
 
 It may be supported by current active Operation/Job identity, fresh realised movement, an Established Trajectory, current alignment with that trajectory, sufficient current physical representation and no incompatible OuttaMyWay progress-actuation owner.
 
-Its horizon MUST remain fresh, local and bounded. Calibration may consider spatial lookahead and current progression/closing rate, but Architecture does not prescribe a universal distance. Long historical travel does not grant equally long future demand.
+An **Established Trajectory** establishes the currently supported axis of realised physical progression. It does not by itself establish how far that axis remains positive spatial-demand evidence.
+
+**Realised Motion Reach** is the fresh, local spatial validity limit of that realised-motion evidence along the currently supported axis. Reach belongs to Situation Assessment and MUST be derived from current realised evidence rather than assigned merely because an Established Trajectory exists.
+
+> **Trajectory Direction != Demand Reach.**
+
+Reach MAY consider realised-motion persistence, directional stability, current progression/closing rate, current physical scale and other current positive evidence. Architecture does not prescribe a universal distance or implementation formula. A newly established or superseded trajectory MUST re-establish Reach from its fresh evidence; it MUST NOT inherit the mature spatial authority of the trajectory it replaced. Long historical travel alone likewise does not grant equally long future demand.
+
+The resulting Realised Motion Demand horizon MUST remain within the current positively supported Realised Motion Reach and remain fresh, local and bounded.
 
 > **Established Trajectory != Future Route Authority.**
 

@@ -202,9 +202,14 @@ A Realised Motion Demand record MUST identify, where supported:
 - Established Trajectory identity/direction supporting the local progression claim;
 - current alignment between realised movement and that Established Trajectory;
 - current physical representation used to express the beneficiary's local demand width;
-- the bounded local horizon used for the current question;
+- **Realised Motion Reach**: the current positive spatial validity limit supported by the fresh realised-motion evidence;
+- the bounded local horizon used for the current question, which MUST NOT exceed that supported Reach;
 - evidence/provenance required to invalidate or refresh the witness; and
 - explicit claim limits stating that the witness provides positive local demand only, not future-route or negative-clearance authority.
+
+> **Trajectory Direction != Demand Reach.**
+
+An Established Trajectory MAY support the current demand axis without supporting a mature demand Reach. Newly established or superseded trajectory evidence MUST re-establish Reach from fresh current evidence; it MUST NOT inherit a fixed or previously mature spatial horizon merely because the new direction has crossed the trajectory-establishment threshold.
 
 It MUST NOT be established merely because GIANTS reports `TURNING`, the subject is near another assembly, the subject has a long historical travel span, or an old trajectory/witness once existed.
 
@@ -214,7 +219,7 @@ The current witness MUST fail closed to unresolved when its basis is unavailable
 
 `TURNING` remains insufficient for prospective future-space authority. Realised Motion Demand MAY exist while `TURNING` only because it is grounded in separate fresh physical progression evidence. It MUST NOT establish or imply A8 / `SETTLED_CONTINUATION`, Passage readiness, Forward Intersection, follower ordering, Corner Arrival or Headland Association.
 
-The local horizon MUST be bounded and calibrated from Reality. An implementation MAY combine a spatial cap with current progression/closing-rate evidence, but MUST NOT infer an unbounded route from accumulated trajectory history. No universal distance literal is specified by this contract.
+The local horizon MUST be bounded and calibrated from Reality and MUST NOT exceed current positively supported Realised Motion Reach. Reach MAY be derived from fresh realised persistence, directional stability, current progression/closing-rate evidence, current physical scale or other current positive evidence. Instantaneous motion labels such as `TURNING` or `STABLE_FORWARD` MUST NOT alone assign horizon magnitude. Trajectory supersession, excursion or other positive directional discontinuity invalidates the previous Reach and requires fresh re-establishment. No universal distance literal or fixed route proxy is specified by this contract.
 
 Realised Motion Demand is Situation evidence only. It MUST NOT itself establish Causal Obstruction, Candidate Support, Current Responsibility, Bounded Authority or Control.
 
