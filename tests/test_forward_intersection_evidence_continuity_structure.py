@@ -140,3 +140,40 @@ def test_category_1_corner_incumbency_is_generic_regulation_ineligibility():
     assert 'currentConstrainedCornerOccupancy==true' in policy
     assert '"REGULATE_ONLY_NON_CORNER_OCCUPANT"' in policy
     assert '"BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION"' in policy
+
+def test_issue388_category2_boundary_turn_completion_and_fail_safe_are_separate():
+    boundary = (ROOT / "scripts" / "assessment" / "BoundaryDemandAssessment.lua").read_text(encoding="utf-8")
+    candidate = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    current = (ROOT / "scripts" / "assessment" / "CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    spatial = (ROOT / "scripts" / "assessment" / "SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
+
+    assert "local SHARED_CATEGORY_2_WATCHDOG_GRACE_SECONDS=10" in boundary
+    assert "protectedBoundaryTurnCompletion" in boundary
+    assert 'protectedMotion.localIntentClassification~="TURNING"' in boundary
+    assert "distanceM>reachM" in boundary
+    assert 'classification="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN"' in boundary
+    assert 'reason="PROTECTED_PARTICIPANT_BEGAN_NATIVE_BOUNDARY_TURN"' in boundary
+
+    assert "protectedNativeTimeToBoundarySecAtAdmission" in candidate
+    assert "regulationAdmissionTimestamp" in candidate
+    assert "snapshot.timestamp" in candidate
+    assert "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN_OR_FAIL_SAFE_RELEASE" in candidate
+
+    assert 'classification="SHARED_CATEGORY_2_REGULATION_ABANDONED_BY_WATCHDOG"' in boundary
+    assert 'currentEvidenceState="FAIL_SAFE_ABANDONMENT"' in boundary
+    assert "positiveDissolution=false" in boundary
+    assert "SHARED_CATEGORY_2_WATCHDOG_FAIL_SAFE" in spatial
+
+    assert "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION" in current
+    assert "SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT" in current
+    assert "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION" in runtime
+    assert "SHARED_CATEGORY_2_FAIL_SAFE_ABANDONMENT" in runtime
+    assert 'failSafeAbandonment and "OBJECTIVE_FAILED"' in lifecycle
+    assert 'settlementMode="BASIS_CESSATION"' in lifecycle
+    assert "SHARED_CATEGORY_2_REGULATION_FAIL_SAFE_ABANDONED" in lifecycle
+
+    assert "PROTECTED_PARTICIPANT_REVEALED_NEW_SETTLED_CONTINUATION" not in boundary
+    assert "SHARED_CATEGORY_2_INTENT_REVELATION_POSITIVE_DISSOLUTION" not in current
+
