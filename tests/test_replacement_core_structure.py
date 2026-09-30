@@ -1569,7 +1569,7 @@ def test_v0181_cooperative_passage_restore_uses_cached_actuator_symmetry_only():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"TransitConfigurationMechanism.lua").read_text(encoding="utf-8")
     start=control.index('function Control:_beginParticipantRestore(run,participant)')
-    end=control.index('function Control:_releasedParticipantClearedReturnSpace',start)
+    end=control.index('function Control:_releasedParticipantReturnSpaceClearance',start)
     restore=control[start:end]
     assert 'function Control:_beginRestore(run)' not in control
     assert 'function Control:_beginD0146Restore(run)' not in control
