@@ -7406,7 +7406,7 @@ end)
 
 test("Passage Return: Return token transfers only after released current occupancy clears Mutual Return Region",function()
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
-    local z=8
+    local z=4
     getWorldTranslation=function(node) return 0,0,z end
     localDirectionToWorld=function(node,x,y,dz) return 0,0,1 end
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
@@ -7426,7 +7426,7 @@ test("Passage Return: Return token transfers only after released current occupan
     equal(evidence.clearanceM<0,true)
     equal(run.mutualReturnRegion~=nil,true)
 
-    z=10
+    z=8
     clear,reason,evidence=control:_releasedParticipantReturnSpaceClearance(run,released,waiting)
     equal(clear,true); equal(reason,nil); equal(evidence.clearanceM>0,true)
     equal(evidence.basis,"CURRENT_REPRESENTED_RADIAL_OCCUPANCY_VS_MUTUAL_RETURN_REGION")
