@@ -119,16 +119,27 @@ A Regulation admitted for one Shared Category-2 Demand has a fixed temporary yie
 
 Ordinary maintenance MUST NOT migrate the regulated/protected roles merely because:
 
-- the protected participant slows;
-- the protected participant enters `TURNING`;
-- fresh A8 / boundary-contact projection temporarily disappears;
+- the protected participant slows before its boundary transition;
+- fresh A8 / boundary-contact projection temporarily disappears before terminal evidence is available;
 - arrival-time estimates change;
 - the regulated participant falls behind because the Regulation is effective; or
 - another transient comparator would now choose differently.
 
-Role migration for a Shared Category-2 purpose is permitted only when an explicit accepted supersession contract establishes that the governing purpose itself has changed. Otherwise temporary evidence loss is handled through `WAITING_FOR_EVIDENCE`, not re-arbitration.
+Role migration for a Shared Category-2 purpose is permitted only when an explicit accepted supersession contract establishes that the governing purpose itself has changed. Otherwise temporary evidence loss before completion is handled through `WAITING_FOR_EVIDENCE`, not re-arbitration.
 
-The accepted bounded physical effect for Category-2 intent revelation uses the existing exact **1 km/h Intent-Revelation Creep** where Bounded Authority confirms that effect is currently permitted. The fixed creep is a purpose-bound temporal effect, not a universal speed policy and not route authority.
+The **normal completion event** is positive Situation evidence that the protected participant has begun its native boundary manoeuvre at the admitted terminating Category-2 domain. When that boundary-turn transition is established, Responsibility Transition MUST terminate the Shared Category-2 Regulation and Bounded Authority MUST release the regulated participant without waiting for a later settled A8.
+
+A generic `TURNING` observation unrelated to the admitted boundary transition is not sufficient terminal evidence.
+
+The accepted bounded physical effect before completion remains the existing exact **1 km/h Intent-Revelation Creep** where Bounded Authority confirms that effect is currently permitted. The fixed creep is a purpose-bound temporal effect, not a universal speed policy and not route authority.
+
+Shared Category-2 Regulation also owns a fail-safe authority limit. The watchdog SHOULD be derived from the protected participant's native/unrestricted time-to-boundary captured at admission plus a bounded grace period. If that watchdog expires before positive boundary-turn completion is observed, the Regulation MUST be terminated as **fail-safe abandonment**, its Bounded Authority released, and a warning outcome published.
+
+Watchdog expiry MUST NOT be represented as successful intent revelation, positive Situation dissolution or proof that current Category-2 demand is absent.
+
+> **Protected Boundary Turn Ends Shared Category-2 Regulation.**
+
+> **Fail-Safe Release != Positive Situation Dissolution.**
 
 > **Shared Demand Admission Chooses Once; Regulation Maintenance Does Not Re-run the Election.**
 
