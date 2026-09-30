@@ -115,7 +115,7 @@ None of those events is automatically a Responsibility Transition.
 
 #### Shared Category-2 purpose continuity
 
-A Regulation admitted for one Shared Category-2 Demand has a fixed temporary yielder for that purpose.
+A Regulation admitted for one Shared Category-2 Demand has a fixed temporary yielder for the lifetime of that **Category-2 Regulation Responsibility**.
 
 Ordinary maintenance MUST NOT migrate the regulated/protected roles merely because:
 
@@ -125,23 +125,34 @@ Ordinary maintenance MUST NOT migrate the regulated/protected roles merely becau
 - the regulated participant falls behind because the Regulation is effective; or
 - another transient comparator would now choose differently.
 
-Role migration for a Shared Category-2 purpose is permitted only when an explicit accepted supersession contract establishes that the governing purpose itself has changed. Otherwise temporary evidence loss before completion is handled through `WAITING_FOR_EVIDENCE`, not re-arbitration.
+While the same Responsibility remains current, temporary evidence loss before completion is handled through `WAITING_FOR_EVIDENCE`, not re-arbitration.
 
-The **normal completion event** is positive Situation evidence that the protected participant has begun its native boundary manoeuvre at the admitted terminating Category-2 domain. When that boundary-turn transition is established, Responsibility Transition MUST terminate the Shared Category-2 Regulation and Bounded Authority MUST release the regulated participant without waiting for a later settled A8.
+The **normal completion event** is the protected participant transitioning from the settled A8 that admitted the incumbent same-domain purpose into GIANTS `TURNING`. When that transition is established, Responsibility Transition MUST terminate the Shared Category-2 Regulation and Bounded Authority MUST release the regulated participant immediately.
 
-A generic `TURNING` observation unrelated to the admitted boundary transition is not sufficient terminal evidence.
+Boundary Demand Disc overlap, Boundary Interaction Reach entry and a later settled A8 are NOT required terminal evidence. Reality demonstrates that GIANTS can reveal TURNING before radial Boundary Interaction Reach and withdraw the A8 boundary projection at the same transition.
 
 The accepted bounded physical effect before completion remains the existing exact **1 km/h Intent-Revelation Creep** where Bounded Authority confirms that effect is currently permitted. The fixed creep is a purpose-bound temporal effect, not a universal speed policy and not route authority.
 
-Shared Category-2 Regulation also owns a fail-safe authority limit. The watchdog SHOULD be derived from the protected participant's native/unrestricted time-to-boundary captured at admission plus a bounded grace period. If that watchdog expires before positive boundary-turn completion is observed, the Regulation MUST be terminated as **fail-safe abandonment**, its Bounded Authority released, and a warning outcome published.
+Every Shared Category-2 Regulation Responsibility has a **10-second Responsibility Lease** measured from that Responsibility's admission.
 
-Watchdog expiry MUST NOT be represented as successful intent revelation, positive Situation dissolution or proof that current Category-2 demand is absent.
+On lease expiry, the incumbent Regulation Responsibility MUST be destroyed rather than merely quiescing or renewing its Bounded Authority:
 
-> **Protected Boundary Turn Ends Shared Category-2 Regulation.**
+- all Bounded Authority derived solely from it MUST be released;
+- the incumbent Commitment MUST enter terminal fail-safe settlement without being represented as successful Situation dissolution;
+- its regulated/protected allocation MUST NOT remain incumbent authority for the next cycle; and
+- the next Observation cycle MUST return to fresh Shared Category-2 Situation Assessment.
+
+If fresh Situation Assessment again supports Shared Category-2 Demand, a new Decision / Responsibility may be established immediately. The same yielder may be selected again, but that is a fresh allocation from fresh Reality, not maintenance of the expired Responsibility.
+
+This means long legitimate Category-2 interactions may exhibit bounded **release → fresh assessment → re-admission** cycles. That oscillation is an accepted fail-safe tradeoff; indefinite preservation of stale physical Regulation is not.
+
+> **Protected A8 → TURNING Ends Shared Category-2 Regulation.**
+
+> **Responsibility Lease Expiry Forces Fresh Situation Assessment.**
 
 > **Fail-Safe Release != Positive Situation Dissolution.**
 
-> **Shared Demand Admission Chooses Once; Regulation Maintenance Does Not Re-run the Election.**
+> **Shared Demand Admission Chooses Once Per Responsibility Lease.**
 
 ### Waiting for evidence
 
