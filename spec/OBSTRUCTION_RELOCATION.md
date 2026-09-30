@@ -76,14 +76,20 @@ Obligation representation MAY be one aggregate obligation or several scoped obli
 
 ### One bounded inward actuation
 
-When current evidence supports physical relocation, one actuation MAY be authorised from the blocker's current physical reference toward the current Field World centroid.
+When current evidence supports physical relocation, one actuation MAY be authorised from the blocker's current physical reference toward a supported **Relocation Centre**.
+
+The current Field World centroid is the preferred Relocation Centre.
+
+If the centroid bearing is materially aligned with the positively supported beneficiary approach that authorises relocation, Candidate Support MAY establish an **Offset Relocation Centre** by laterally displacing the Field World centroid away from that approach. The Offset Relocation Centre remains an inward obstruction-removal objective; it MUST NOT become a route-planning, parking or generic obstacle-avoidance objective.
+
+For the same unresolved Causal Obstruction and materially unchanged beneficiary approach, repeated bounded actuation SHOULD continue toward the established Offset Relocation Centre. A materially changed obstruction relationship or beneficiary approach requires the Relocation Centre choice to be established again from fresh evidence.
 
 The actuation MUST be bounded by the nearer of:
 
-- the meaningful remaining centroid-directed displacement; and
+- the meaningful remaining displacement toward the supported Relocation Centre; and
 - the current per-actuation maximum owned by the implementation/policy boundary responsible for that calibration.
 
-The exact current distance cap is an implementation value unless Architecture later promotes it to contract authority.
+The exact current distance cap, lateral offset magnitude and material-alignment threshold are implementation values unless Architecture later promotes them to contract authority.
 
 The relocation objective MUST remain an **inward obstruction-removal manoeuvre**. It MUST NOT become:
 
@@ -95,6 +101,10 @@ The relocation objective MUST remain an **inward obstruction-removal manoeuvre**
 - an inference that unobserved future space is clear.
 
 > **Relocation Is Geometry-Bounded, Not Count-Bounded.**
+
+> **Relocation Objective != Safe Egress.**
+
+> **Field Centroid != Mandatory Relocation Centre.**
 
 The contract defines no first/second courtesy budget, fixed number of moves or terminal movement quota.
 
