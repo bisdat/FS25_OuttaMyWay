@@ -80,6 +80,19 @@ def test_phase13_relocation_is_geometry_bounded_not_count_bounded():
         assert retired not in candidate
 
 
+def test_issue352_offset_relocation_centre_is_candidate_owned_and_rmd_bounded():
+    candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+    control = read("scripts/control/ObstructionRelocationControl.lua")
+
+    assert "local OFFSET_RELOCATION_CENTRE_DISTANCE_M=40.0" in candidate
+    assert "local OFFSET_RELOCATION_ALIGNMENT_MIN_DOT=0.8660254037844386" in candidate
+    assert "realisedMotionDemandKnowledge" in candidate
+    assert 'kind="OFFSET_RELOCATION_CENTRE"' in candidate
+    assert 'destinationKind=progress+0.000001<distance' in candidate
+    assert "OFFSET_RELOCATION_CENTRE_DISTANCE_M" not in control
+    assert "OFFSET_RELOCATION_ALIGNMENT_MIN_DOT" not in control
+
+
 def test_phase13_manoeuvre_completion_does_not_semantically_resolve_without_supported_continuation():
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     runtime = read("scripts/runtime/Runtime.lua")
