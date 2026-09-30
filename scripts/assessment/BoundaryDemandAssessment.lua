@@ -95,7 +95,6 @@ local function incumbentContext(commitmentContext,identity)
                 commitmentId=context.commitmentId,
                 regulatedAssemblyId=regulated,
                 protectedAssemblyId=obligationBasis and obligationBasis.protectedAssemblyId or nil,
-                protectedIntentEpochAtAdmission=obligationBasis and obligationBasis.protectedIntentEpochAtAdmission or nil,
                 regulationAdmissionTimestamp=obligationBasis and obligationBasis.regulationAdmissionTimestamp or nil,
                 requirement=requirement
             }
@@ -367,7 +366,6 @@ function Assessment:assess(input)
             base.incumbentCommitmentId=incumbent.commitmentId
             base.incumbentRegulatedAssemblyId=incumbent.regulatedAssemblyId
             base.incumbentProtectedAssemblyId=protectedId
-            base.protectedIntentEpochAtAdmission=incumbent.protectedIntentEpochAtAdmission
             base.regulationAdmissionTimestamp=incumbent.regulationAdmissionTimestamp
 
             if boundaryTurn then
