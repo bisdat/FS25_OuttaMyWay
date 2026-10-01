@@ -399,7 +399,7 @@ When Recovery Strategy Exhausted is established:
 - no automatic Recovery retry/replacement loop may be started;
 - passive recurrence state MUST NOT acquire Current Responsibility, Bounded Authority or Control authority;
 - independently supported traffic or other Resolution responsibilities remain independently assessable;
-- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence, but Recovery Strategy Exhausted alone MUST NOT establish its blocker, theatre, side or movement authority; and
+- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence; Recovery Strategy Exhausted is its strategy-succession gate but MUST NOT establish the current local continuation frame, Transit support, Dogleg side or movement authority; and
 - if no supported autonomous continuation remains, normal escalation may require Player Intervention.
 
 Outside the 5 m / 60 s bounds, or without exact intended-successor lineage, the later Stall is not a Correlated Recovery Recurrence and may independently support a new Recovery cycle if all ordinary admission requirements are satisfied.
@@ -503,7 +503,7 @@ After BWR establishment, its Recovery Bubble temporarily owns the Local Operatio
 
 [`BOUNDED_BYPASS.md`](BOUNDED_BYPASS.md) is a separate Resolution Jurisdiction. It is not a third phase of Blocked Worker Recovery and does not weaken the recurrence veto against replaying BWR.
 
-Only after the Recovery Bubble has terminated may the fresh correlated successor Stall participate in ordinary prospective Candidate selection. Bounded Bypass then requires its own positive Causal Obstruction, Bypass Blocker Stability, current local continuation frame, Transit support and supported Fixed Bypass Dogleg. BWR recurrence memory contributes only the `Recovery Strategy Exhausted` fact and no movement authority.
+Only after the Recovery Bubble has terminated may the fresh correlated successor Stall participate in ordinary prospective Candidate selection. Recovery Strategy Exhausted is the separate Bounded Bypass strategy-succession gate; Bypass still requires its current local continuation frame, Transit support, supported Fixed Bypass Dogleg and ordinary authority path. It does not require a positive Causal Obstruction or a non-active blocker-stability model. Current Causal Obstruction may instead contribute only the identity of an active same-Operation GIANTS participant that requires temporary Bubble protection. BWR recurrence memory contributes the `Recovery Strategy Exhausted` fact and no movement authority.
 
 ### Responsibility Transition
 

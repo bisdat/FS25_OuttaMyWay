@@ -8,13 +8,15 @@
 **Primary Architecture Authority:** [`architecture/SPATIAL_NEGOTIATION_MODEL.md`](../architecture/SPATIAL_NEGOTIATION_MODEL.md#specification-jurisdiction--bounded-bypass)  
 **Implementation Status:** `NOT_IMPLEMENTED`
 
-This Specification owns the implementation-facing contract for the single-subject **Bounded Bypass Resolution**: after the simple Blocked Worker Recovery strategy has been positively exhausted at a fresh correlated successor Stall, OuttaMyWay may perform one fixed Transit-first dogleg around one positively established stable Causal Obstruction and then hand the still-current GIANTS Job back.
+This Specification owns the implementation-facing contract for the single-subject **Bounded Bypass Resolution**: after the simple Blocked Worker Recovery strategy has been positively exhausted at a fresh correlated successor Stall, OuttaMyWay may perform one fixed Transit-first dogleg in the local **Blockage Theatre** and then hand the still-current GIANTS Job back.
 
-Bounded Bypass does not own raw blockage observation, Blocked Progress Stall or recurrence interpretation, Causal Obstruction recognition, blocker object classification, productive route generation, arbitrary world navigation, detailed articulated manoeuvre prediction, generic obstacle avoidance, generic Bounded Authority or generic Control mechanics.
+Bounded Bypass does not own raw blockage observation, Blocked Progress Stall or recurrence interpretation, complete obstacle discovery, blocker-object modelling, blocker classification, productive route generation, arbitrary world navigation, detailed articulated manoeuvre prediction, generic obstacle avoidance, generic Bounded Authority or generic Control mechanics.
 
 It inherits generic persistence, obligation and terminal semantics from [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md).
 
 > **Strategy Exhaustion Removes Replay; It Does Not Remove Fresh Choice.**
+
+> **Bypass Acts On The Blockage Theatre, Not The Blocker Object.**
 
 > **Fixed Dogleg != General Route Planning.**
 
@@ -27,34 +29,45 @@ A Bounded Bypass Candidate MUST be grounded in one coherent current evidence con
 - one exact active supported Physical Assembly and current qualifying GIANTS Job Episode;
 - a fresh current positive **Blocked Progress Stall** under that Job Episode;
 - a current **Correlated Recovery Recurrence** against the immediately preceding successful Recovery for the same Physical Assembly, with **Recovery Strategy Exhausted** established by the Blocked Worker Recovery contract;
-- one current positive **Causal Obstruction** relation whose beneficiary is the stalled assembly and whose blocker identity is current;
-- a positive **Bypass Blocker Stability** conclusion for that exact blocker and proposed Bypass horizon;
 - a fresh positively supported current local continuation frame for the stalled worker's current Job Episode;
 - support for requesting and settling the worker into Transit;
 - at least one supported **Fixed Bypass Dogleg** side under the reference-guide Field World contract;
-- no higher-authority Player Claim or lifecycle state that prevents the proposed autonomous movement;
+- no higher-authority Player Claim over the bypassing worker or lifecycle state that prevents the proposed autonomous movement;
 - no incompatible current movement objective over the bypassing worker; and
 - the current responsibility / commitment context required for ordinary Candidate, Constraint, Decision and Responsibility Transition processing.
 
-Recovery Strategy Exhausted is only one admission input. It MUST NOT create Causal Obstruction, blocker stability, a local continuation frame, a Bypass side or movement authority.
+Recovery Strategy Exhausted is the strategy-succession gate. It MUST NOT create the local continuation frame, Bypass side, Transit capability or movement authority.
+
+A positive Causal Obstruction relation, blocker identity, blocker pose, blocker stationarity conclusion or Player-Claim state for a non-active obstruction is **not** an admission prerequisite.
 
 A Bounded Bypass Candidate MUST NOT be created while the preceding Blocked Worker Recovery Bubble remains current. BWR terminates first; fresh prospective selection resumes afterwards.
 
-### Bypass Blocker Stability
+### Blockage Theatre and obstacle-model boundary
 
-Bypass Blocker Stability is purpose-specific positive evidence that the represented blocker can be treated as stationary for the bounded Bypass excursion.
+The Blockage Theatre is the local repeated-stall circumstance established by the successful BWR/native retry followed by the fresh correlated successor Stall. It is not a required runtime object and does not claim complete knowledge of the physical causes of the Stall.
 
-The implementation MUST NOT use blocker object class as a substitute for stability.
+A current positive Causal Obstruction MAY contribute active-participant coordination evidence, but Bounded Bypass MUST NOT require it to enumerate every physical obstacle in the theatre.
 
-For a current active GIANTS blocker in the same Local Operation, Bypass Blocker Stability MAY be established only when the proposed Bypass Bubble can positively acquire and retain a **0 km/h Supporting Speed Ceiling** over that blocker before Bypass movement begins.
+A non-active physical obstruction MUST NOT be required to provide:
 
-For a current non-active blocker, stability requires positive current evidence sufficient for the bounded Bypass purpose and MUST be invalidated by positive movement, Player Claim or contradictory lifecycle evidence.
+- a Bypass-specific pose;
+- Player Claim / entered-state evidence;
+- worker-style motion classification;
+- a stationarity classification;
+- a recognised object class; or
+- mission-vehicle identity
 
-A blocker whose activity/stationarity remains unresolved MUST NOT support Bounded Bypass.
+in order for the fixed Dogleg to be attempted.
 
-> **Blocker Classification != Bypass Stability.**
+> **Blockage Trigger != Obstacle Model.**
 
-> **Current Occupancy != Stationarity Authority.**
+> **Obstacle Representation Completeness != Bypass Admission.**
+
+A parked implement, bale, placeable, scenery object or other unmodelled physical contributor may therefore exist in the theatre without gaining Bypass semantic identity.
+
+If current Causal Obstruction positively identifies a current active same-Operation GIANTS participant as blocking the Bypass principal, that identity is used only to establish the required Bubble hold.
+
+> **Active Blocker Identity Is Coordination Evidence, Not Bypass Geometry Evidence.**
 
 ### Current local continuation frame
 
@@ -100,11 +113,11 @@ Bounded Bypass MUST NOT command a rearward leg merely to recreate the pre-blocka
 
 ### Reference-guide Field World support
 
-This first contract deliberately does not require articulated pose prediction, complete-assembly manoeuvre enclosure or detailed swept-route proof.
+This first contract deliberately does not require articulated pose prediction, complete-assembly manoeuvre enclosure, obstacle-map construction or detailed swept-route proof.
 
 Candidate Support MUST establish that the fixed Dogleg's commanded targets and bounded reference-guide progression are positively inside the authoritative Field World. Immediate field-margin encroachment is not permitted by this initial contract.
 
-Reference-guide support is purpose-limited. It MUST NOT be described as complete-assembly Field World containment, generic negative clearance, terrain traversability or proof that no unrepresented obstacle exists.
+Reference-guide support is purpose-limited. It MUST NOT be described as complete-assembly Field World containment, generic negative clearance, terrain traversability, obstacle clearance or proof that no unrepresented obstacle exists.
 
 > **Reference-Guide Support != Articulated Sweep Proof.**
 
@@ -119,6 +132,8 @@ Each lateral side MUST be considered against the same fixed Dogleg support contr
 - If that preference is materially unresolved, a deterministic tie-break MAY be used.
 - A preferred side that fails the fixed-guide Field World contract MUST NOT remain a Candidate.
 
+The side decision MUST NOT depend on discovering, classifying or reconstructing the complete physical obstacle set.
+
 This is bounded side selection, not global path optimisation.
 
 > **Field-Interior Preference != Bypass-Side Support.**
@@ -130,23 +145,39 @@ Once Bounded Bypass becomes Current Responsibility, it creates one temporary pur
 The Bubble participant policy is:
 
 - bypassing worker — sole Bounded Bypass movement principal;
-- positively identified active GIANTS blocker whose hold establishes Bypass Blocker Stability — **0 km/h** Supporting Speed Ceiling;
-- any remaining uninvolved active Operation participant — exact **1 km/h Bubble Bullet Time** Supporting Speed Ceiling; and
-- non-active blocker — no invented speed authority.
+- each positively identified current active same-Operation GIANTS participant that current Causal Obstruction identifies as blocking the Bypass principal — **0 km/h Supporting Speed Ceiling**;
+- every remaining uninvolved active Operation participant — exact **1 km/h Bubble Bullet Time Supporting Speed Ceiling**; and
+- non-active physical obstacles — no invented speed authority and no object-level stability / Player-Claim gate.
 
-The blocker and uninvolved participant do not join the Bounded Bypass movement responsibility.
+A positive Causal Obstruction is therefore optional Bypass coordination evidence, not Bypass admission evidence.
+
+If no active GIANTS blocker is positively identified, Bounded Bypass MUST NOT invent a 0 km/h blocker hold. Other active Operation participants still receive the required 1 km/h Bubble Bullet Time ceiling.
+
+The held blocker and uninvolved active participants do not join the Bounded Bypass movement responsibility.
 
 Supporting Speed Ceilings MUST NOT acquire route, steering, target or movement-objective authority.
 
-Required Bubble protection MUST be positively established before Bypass movement starts. Failure to establish a required blocker hold or third-party ceiling fails closed.
+Every required active-participant ceiling MUST be positively established before Bypass movement starts. Failure to establish a required active-blocker hold or third-party ceiling fails closed.
 
 The Bubble dissolves sharply when the Bounded Bypass Resolution reaches a terminal state.
+
+### Execution progress and unmodelled obstruction
+
+The fixed reference guide is not negative-clearance proof. A physical object that was not represented during admission may block a commanded Dogleg leg.
+
+Control MUST observe whether the authorised movement is making progress toward its current target. Positive non-progress under the current command MUST terminate the bounded attempt through its failure/escalation path.
+
+Elapsed time alone MUST NOT establish the semantic failure. A watchdog MAY bound observation of non-improving commanded movement, but it MUST be tied to current target-progress evidence.
+
+On such failure Control MUST NOT search around the new object, switch sides, enlarge the Dogleg or start another Bypass attempt.
+
+> **Unmodelled Obstacle Is An Execution Failure, Not An Admission Problem.**
 
 ### Completion and handback
 
 Reaching the final **Post-Blockage Axis Rejoin** target completes the bounded Bypass movement obligation.
 
-Completion means the selected fixed Dogleg was executed. It is not a represented proof that the obstruction has been physically cleared for every possible assembly pose or that GIANTS' next native route will succeed.
+Completion means the selected fixed Dogleg was executed. It is not a represented proof that every obstruction in the theatre has been physically cleared or that GIANTS' next native route will succeed.
 
 > **Bypass Excursion Completion != Proven Obstruction Clearance.**
 
@@ -154,7 +185,7 @@ After completion, OuttaMyWay MUST relinquish the Bypass movement/configuration a
 
 Bounded Bypass MUST NOT perform the Blocked Worker Recovery FIELDWORK Job replacement choreography as part of normal success.
 
-Agronomy debt created by the obstruction and Dogleg is accepted. Bounded Bypass MUST NOT extend its authority to repair missed productive coverage.
+Agronomy debt created by the blockage and Dogleg is accepted. Bounded Bypass MUST NOT extend its authority to repair missed productive coverage.
 
 Subsequent GIANTS motion, turn choice, course reacquisition or later blockage is fresh Reality.
 
@@ -162,38 +193,42 @@ Subsequent GIANTS motion, turn choice, course reacquisition or later blockage is
 
 ### Bounded Bypass is not Blocked Worker Recovery replay
 
-Correlated Recovery Recurrence vetoes replay of the same BWR strategy for that correlated Stall. Bounded Bypass is a different Candidate family and Resolution Jurisdiction with additional independent evidence requirements.
+Correlated Recovery Recurrence vetoes replay of the same BWR strategy for that correlated Stall. Bounded Bypass is a different Candidate family and Resolution Jurisdiction with additional independent movement-support requirements.
 
 ### Productive routing remains GIANTS-owned
 
 The current local continuation axis is a bounded frame for the fixed intervention, not a retained productive route. Bounded Bypass MUST NOT extend it into a field course or predict the next GIANTS turn.
 
-### One blocker, one fixed excursion
+### One recurrent theatre, one fixed excursion
 
-One Bounded Bypass Resolution addresses one current positive Causal Obstruction with one selected side and one fixed Dogleg.
+One correlated Recovery Strategy Exhausted condition may support at most one Bounded Bypass attempt for that Stall evidence identity.
 
-A later Stall or different blocker requires fresh Situation Assessment and fresh prospective selection. There is no automatic Bypass retry loop.
+The attempt is not keyed to one blocker object and does not require a complete obstacle inventory.
 
-### No articulated route-model prerequisite
+A later Stall requires fresh Situation Assessment and fresh prospective selection. There is no automatic Bypass retry loop.
 
-Bounded Bypass MUST NOT make detailed articulated pose prediction, a trailer trajectory, universal turning-centre construction or general manoeuvre-sweep planning a prerequisite for this fixed Dogleg.
+### No obstacle-model prerequisite
+
+Bounded Bypass MUST NOT make complete obstacle enumeration, per-object non-active stability, Player Claim over non-active obstructions, detailed articulated pose prediction, a trailer trajectory, universal turning-centre construction or general manoeuvre-sweep planning a prerequisite for this fixed Dogleg.
 
 This does not promote the fixed reference guide into generic clearance authority.
 
 ### Fresh Reality remains authoritative
 
-Positive contradiction of blocker stability, supported Field World guide, current Job continuity, Player Claim, required Bubble protection or Bounded Authority must stop/refuse further Bypass movement.
+Positive contradiction of the supported Field World guide, current Job continuity, Player Claim over the bypassing worker, required active-participant Bubble protection, Bounded Authority or current Dogleg progress must stop/refuse further Bypass movement.
 
 ## Failure and uncertainty semantics
 
-- **Recovery Strategy Exhausted without positive Causal Obstruction** — no Bounded Bypass Candidate.
-- **Causal Obstruction without Bypass Blocker Stability** — no Bounded Bypass Candidate.
+- **Recovery Strategy Exhausted with no positive Causal Obstruction** — Bounded Bypass may still be supported when the remaining admission contract is satisfied.
+- **Non-active obstruction lacks pose / Player Claim / worker-motion evidence** — not a Bypass veto.
 - **Current local continuation frame unresolved** — no Bounded Bypass Candidate.
 - **Transit unavailable or unsettled** — fail closed before movement.
 - **Neither fixed Dogleg side has supported Field World targets / reference progression** — no autonomous Bypass; Player Intervention remains legitimate.
-- **Required blocker hold / Bullet Time cannot be established** — fail closed before movement.
-- **Blocker moves or stability becomes unresolved during execution** — stop/refuse further Bypass movement and return to authoritative reassessment/escalation.
+- **A positively identified active same-Operation causal blocker cannot be held at 0 km/h** — fail closed before movement.
+- **Required third-party Bubble Bullet Time cannot be established** — fail closed before movement.
+- **Unrepresented obstruction prevents progress toward the current Dogleg target** — fail the bounded attempt and escalate; do not invent another route.
 - **Current Field World guide support is contradicted** — stop/refuse further movement; do not improvise another route inside Control.
+- **Player takes control of the bypassing worker** — relinquish Bypass authority through the normal higher-authority path.
 - **Final Axis Rejoin target reached** — complete the bounded excursion and hand back; do not return to the original start.
 - **Later GIANTS Stall after handback** — fresh Situation Assessment; no automatic Bypass loop.
 
@@ -205,11 +240,13 @@ Positive contradiction of blocker stability, supported Field World guide, curren
 
 ### Situation Assessment
 
-Situation Assessment owns current Blocked Progress, Causal Obstruction and any current semantic evidence from which Bypass Blocker Stability is established. Bounded Bypass consumes those products; it does not reinterpret raw native signals.
+Situation Assessment owns Blocked Progress and any current Causal Obstruction meaning. Bounded Bypass consumes Recovery Strategy Exhausted as its strategy-succession gate.
+
+Current Causal Obstruction may additionally identify an active same-Operation GIANTS participant that requires a Bypass Bubble hold. It is not required to provide a complete obstacle model and is not itself a Bypass admission prerequisite.
 
 ### Assessment Representation / Physical Representation
 
-Assessment Representation supplies the current Physical Assembly identity/configuration evidence and Field World relationship used by the bounded fixed-guide question. Bounded Bypass deliberately does not require detailed articulated Manoeuvre Sweep construction.
+Assessment Representation supplies the current bypassing Physical Assembly identity/configuration evidence and Field World relationship used by the bounded fixed-guide question. Bounded Bypass deliberately does not require a representation of every obstruction in the Blockage Theatre or detailed articulated Manoeuvre Sweep construction.
 
 Reference-guide support MUST retain its claim limits and MUST NOT be promoted into complete-assembly clearance or generic negative-clearance authority.
 
@@ -225,11 +262,11 @@ Responsibility Transition establishes the selected Bounded Bypass Current Respon
 
 ### Bounded Authority
 
-Every positive Transit/configuration or movement effect requires current purpose-specific Bounded Authority. Supporting blocker/Bullet-Time ceilings may narrow other participants without acquiring their movement objectives.
+Every positive Transit/configuration or movement effect requires current purpose-specific Bounded Authority. Supporting active-participant ceilings may narrow other participants without acquiring their movement objectives.
 
 ### Control
 
-Control realises only the authorised fixed Dogleg side and three movement legs. It may discover infeasibility and fail closed; it MUST NOT invent a different route, enlarge the Dogleg, move rearward toward the starting station or begin another strategy.
+Control realises only the authorised fixed Dogleg side and three movement legs. It monitors current progress and may discover execution infeasibility. It MUST NOT invent a different route, enlarge the Dogleg, switch sides, move rearward toward the starting station or begin another strategy.
 
 ## Contract participants
 
@@ -239,7 +276,7 @@ No production source currently participates in this Jurisdiction.
 
 Bounded Bypass is intentionally not implemented.
 
-Existing Blocked Worker Recovery, Cooperative Passage forward-diagonal movement, Bubble Bullet Time and Field World reference-guide mechanisms are relevant engineering evidence and possible implementation substrates, but they are not Bounded Bypass production participants merely because future implementation may reuse part of their mechanics.
+Existing Blocked Worker Recovery, Cooperative Passage forward-diagonal movement, Bubble Bullet Time, Field World reference-guide and movement-progress mechanisms are relevant engineering evidence and possible implementation substrates, but they are not Bounded Bypass production participants merely because future implementation may reuse part of their mechanics.
 
 The first implementation should realise the fixed Dogleg with the smallest necessary new Candidate / lifecycle / Control surface and reuse only purpose-neutral existing mechanisms where their current contract is genuinely shared.
 
@@ -263,11 +300,10 @@ Structural validation must prove:
 
 Before production acceptance, deterministic validation should challenge at least:
 
-- Strategy Exhausted alone does not create Bypass support;
-- no positive Causal Obstruction means no Bypass Candidate;
-- unresolved blocker stability fails closed;
-- an active same-Operation blocker can support Bypass only when the required 0 km/h hold is establishable;
-- a non-active blocker requires positive bounded stationarity evidence and no contradictory Player Claim;
+- Recovery Strategy Exhausted remains necessary for Bypass;
+- Recovery Strategy Exhausted can support Bypass without any positive Causal Obstruction when the current Job/frame/Transit/Field World contract is otherwise satisfied;
+- missing blocker pose, entered-state, worker-motion or stationarity evidence for a non-active obstruction does not veto Bypass;
+- an unrepresented physical obstruction is not required to acquire Bypass semantic identity;
 - historical Recovery Trail geometry is not used as the Bypass axis;
 - both lateral sides are considered;
 - unsupported Field World guide targets reject that side;
@@ -275,9 +311,13 @@ Before production acceptance, deterministic validation should challenge at least
 - Bypass Advance produces the calibrated ~10 m forward progression;
 - Post-Blockage Axis Rejoin produces the calibrated ~10 m return lateral outcome with positive forward progression;
 - final Rejoin returns to the original lateral axis at a later forward station, not the original start;
-- no articulated sweep / route-search prerequisite is introduced;
+- no obstacle-map / articulated-sweep / route-search prerequisite is introduced;
 - Control cannot switch sides, enlarge the fixed Dogleg or add a rearward restoration leg after authority is granted;
-- active blocker hold and third-party 1 km/h Bubble Bullet Time are established before movement and released at terminal settlement; and
+- a positively identified active same-Operation causal blocker receives 0 km/h and failure to establish that hold prevents movement;
+- every remaining uninvolved active participant receives 1 km/h Bubble Bullet Time;
+- absence of an identified active blocker does not invent a 0 km/h hold;
+- positive non-progress toward a commanded Dogleg target terminates/escalates rather than causing route search or an autonomous retry;
+- Bubble protection releases at terminal settlement; and
 - later blockage after handback is fresh Reality, not an automatic Bypass retry.
 
 ### Targeted in-game Reality validation
@@ -286,16 +326,17 @@ The first implementation must be challenged in live GIANTS Reality before the su
 
 Initial scenarios should include:
 
-1. the motivating correlated-recurrence obstruction theatre, proving the simple BWR replay remains vetoed while a supported Fixed Bypass Dogleg can be independently selected;
-2. a near-boundary blocker where one Dogleg side is rejected and the field-interior side is selected;
-3. a case where neither side's fixed guide is in-field, proving early fail-closed Player Intervention;
-4. an active GIANTS blocker held at 0 km/h plus a third active worker under 1 km/h Bubble Bullet Time;
-5. a non-active blocker with positive bounded stationarity evidence;
-6. contradictory blocker movement or Player Claim during the protected excursion, proving safe invalidation;
-7. articulated and non-articulated mover assemblies, observing whether the deliberately simple forward-diagonal Dogleg remains practically stable without adding route modelling;
-8. successful final Post-Blockage Axis Rejoin followed by immediate GIANTS handback; and
-9. ordinary BWR, Cooperative Passage and Obstruction Relocation controls proving their existing responsibilities remain unchanged outside Bounded Bypass.
+1. the motivating correlated-recurrence theatre with a parked physical obstruction and an additional unmodelled physical object, proving the Dogleg can be admitted without complete obstacle identity;
+2. the same theatre proving the fixed Dogleg is actually attempted after Recovery Strategy Exhausted;
+3. a near-boundary theatre where one Dogleg side is rejected and the field-interior side is selected;
+4. a case where neither side's fixed guide is in-field, proving early fail-closed Player Intervention;
+5. an active GIANTS causal blocker held at 0 km/h plus a third active worker under 1 km/h Bubble Bullet Time;
+6. no identified active blocker, proving other active participants receive Bubble Bullet Time without an invented blocker hold;
+7. a Dogleg leg physically blocked by an unrepresented object, proving positive non-progress terminates/escalates without route invention;
+8. articulated and non-articulated mover assemblies, observing whether the deliberately simple forward-diagonal Dogleg remains practically stable without adding route modelling;
+9. successful final Post-Blockage Axis Rejoin followed by immediate GIANTS handback; and
+10. ordinary BWR, Cooperative Passage and Obstruction Relocation controls proving their existing responsibilities remain unchanged outside Bounded Bypass.
 
 ### Outside this Specification's validation claim
 
-Bounded Bypass does not claim arbitrary obstacle navigation, generic free-space planning, complete articulated swept-volume containment, terrain traversability, pathfinding around multiple blockers, field-margin excursion, productive-course repair or universal success of GIANTS after handback.
+Bounded Bypass does not claim arbitrary obstacle discovery, object classification, obstacle navigation, generic free-space planning, complete articulated swept-volume containment, terrain traversability, pathfinding around multiple blockers, field-margin excursion, productive-course repair or universal success of GIANTS after handback.
