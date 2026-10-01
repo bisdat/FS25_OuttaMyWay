@@ -73,6 +73,15 @@ return function(test,equal)
     test("Bypass exhaustion may support a Dogleg without causal-obstruction identity",function()
         local f=fixture();f.p.causalObstructionKnowledge={};assert(f.group())
     end)
+    test("Bypass without active causal blocker bullet-times every uninvolved active participant",function()
+        local f=fixture(true);f.p.causalObstructionKnowledge={}
+        local result=f.dispatch();equal(result.status,"ACCEPTED")
+        local protection=f.runtime.bubbleBulletTime:getProtection(result.commitment.identity)
+        equal(#protection.leases,2)
+        equal(f.drive:getRegulationLease(f.vehicles.b,"BYPASS_BUBBLE_BULLET_TIME").speedKmh,1)
+        equal(f.drive:getRegulationLease(f.vehicles.c,"BYPASS_BUBBLE_BULLET_TIME").speedKmh,1)
+        equal(f.drive:getRegulationLease(f.vehicles.b,"BYPASS_BLOCKER_HOLD"),nil)
+    end)
     test("Bypass requires exact fresh Stall and successor recurrence",function()
         for _,field in ipairs({"blockedProgressKnowledge","blockedWorkerRecoveryRecurrenceKnowledge"}) do local f=fixture();f.p[field]={};equal(f.group(),nil) end
         local f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successorSourceJobToken="old";equal(f.group(),nil)
@@ -194,11 +203,15 @@ return function(test,equal)
         f.publish();f.control:update();equal(f.control:isActive(),true);equal(#f.drive.moves,1)
     end)
 
-    test("Bypass positive target non-progress fails one bounded attempt",function()
+    test("Bypass progress resets the watchdog and later positive non-progress fails the bounded attempt",function()
         local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
         f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
         f.publish();f.control:update()
-        g_time=g_time+10001;f.s.timestamp=g_time/1000;f.publish();f.control:update()
+        g_time=g_time+10001;f.s.timestamp=g_time/1000
+        f.s.geometry.currentPhysicalPoseEvidence[1].z=0.3
+        f.publish();f.control:update();equal(f.control:isActive(),true)
+        g_time=g_time+10001;f.s.timestamp=g_time/1000
+        f.publish();f.control:update()
         equal(f.control:isActive(),false)
         equal(f.runtime.commitments:get(result.commitment.identity).state,"FAILED")
         equal(f.runtime.bubbleBulletTime:getProtection(result.commitment.identity),nil)
