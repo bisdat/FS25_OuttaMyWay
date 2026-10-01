@@ -839,9 +839,9 @@ Bounded Bypass is a successor strategy, not another phase of Blocked Worker Reco
 
 > **Strategy Exhaustion Removes Replay; It Does Not Remove Fresh Choice.**
 
-Recovery Strategy Exhausted is the Bypass strategy-succession gate, but not movement authority. A Bounded Bypass Candidate additionally requires the current successor Job, a fresh local continuation frame, support for Transit configuration, one supported **Fixed Bypass Dogleg** side and ordinary prospective-selection / Responsibility-Transition authority.
+Recovery Strategy Exhausted is the Bypass strategy-succession gate, but not movement authority. A Bounded Bypass Candidate additionally requires the current successor Job, a fresh local continuation frame, one supported **Fixed Bypass Dogleg** side and ordinary prospective-selection / Responsibility-Transition authority. Transit is requested once at execution start; Transit capability is not Candidate support.
 
-A recurrence conclusion therefore cannot manufacture a Bypass side, a movement guide, Transit capability or actuation authority.
+A recurrence conclusion therefore cannot manufacture a Bypass side, a movement guide or actuation authority.
 
 ### Blockage Theatre
 
@@ -863,6 +863,34 @@ An active same-Operation GIANTS participant is different only because OMW may al
 
 > **Active Blocker Identity Is Coordination Evidence, Not Bypass Geometry Evidence.**
 
+### Bypass Launch Separation
+
+A Fixed Bypass Dogleg cannot safely begin its forward-diagonal Lateral Departure at the recurrent Stall merely because the side guide is Field-World supportable. The diagonal consumes longitudinal space before it can realise its lateral outcome; beginning at the Stall can therefore consume the Blockage Theatre before meaningful lateral clearance exists.
+
+**Bypass Launch Separation** is the purpose-specific rearward pre-position that creates that longitudinal room before Lateral Departure.
+
+Its required magnitude is not an independent distance literal. It is derived from the positive forward component required by the selected forward-diagonal calibration to realise the configured lateral outcome. The current 10 m lateral outcome under the 2:1 mechanical calibration therefore requires 20 m of Launch Separation.
+
+Candidate Support may admit that rearward pre-position only when the immediately preceding successful Recovery retained positive **Successful Recovery Excursion Evidence** demonstrating at least the required retreat magnitude for the same Physical Assembly. That completed Recovery outcome supplies a magnitude bound only.
+
+The fresh successor-Job continuation frame remains authoritative for Bypass direction. The historical Recovery Approach Trail and Recovery Anchor are not reused as the Bypass axis or current traversability proof.
+
+The 20 m Launch Separation is a **movement-completion distance**, not the subordinate reverse steering target. Bypass reuses the existing **Reverse Steering Horizon** principle: GIANTS receives a point target farther rearward on the fresh current Bypass axis, while Control ends reverse movement when longitudinal retreat from the recurrent Stall reaches the authorised Launch Separation.
+
+The steering-horizon magnitude is taken from the immediately preceding successful Recovery's retained maximum supported retreat magnitude. That scalar originated from its positively demonstrated Recovery Approach, but its historical direction is discarded; the magnitude is projected only on the fresh current Bypass frame. The steering horizon MUST be farther than the Launch Separation. It supplies look-through only and MUST NOT extend reverse movement authority beyond the 20 m Launch completion distance.
+
+> **Recovery Outcome Magnitude != Recovery Axis Reuse.**
+
+> **Bypass Launch Completion != Reverse Steering Target.**
+
+> **Movement Completion Region != Reverse Steering Target.**
+
+> **Demonstrated Retreat Magnitude != Current Reverse Clearance.**
+
+> **Transit Request != Transit State Contract.**
+
+The Launch Separation segment remains subject to the same current Field World reference-guide support, current Bounded Authority and execution-progress observation as the rest of the Dogleg. At Bypass start, Control requests Transit once before movement; Transit availability, settlement and later persistence are not Bypass admission or execution predicates. If the prior successful Recovery did not demonstrate enough retreat or does not retain a longer supported retreat magnitude for steering look-through, Bounded Bypass is unsupported rather than shortening the required launch or collapsing its steering horizon onto the completion station.
+
 ### Fixed Bypass Dogleg
 
 The **Fixed Bypass Dogleg** is intentionally a simple bounded control pattern rather than a planned route or articulated Manoeuvre Sweep.
@@ -877,19 +905,20 @@ If a defensible current continuation frame is unavailable, Bounded Bypass remain
 
 > **Recovery Approach Trail != Bypass Axis.**
 
-The Dogleg has three movement legs after Transit settlement:
+The Dogleg has four movement legs after the one-shot Transit request:
 
-1. **Lateral Departure** — move toward the selected side to the calibrated lateral offset using forward-diagonal motion; pure sideways translation is not required or assumed.
-2. **Bypass Advance** — move a fixed calibrated distance forward while laterally displaced.
-3. **Post-Blockage Axis Rejoin** — move forward-diagonally back to the original local continuation axis at a new forward station beyond the excursion start.
+1. **Bypass Launch Separation** — reverse along `-F` until longitudinal retreat reaches the forward distance required by the selected Lateral Departure calibration. A farther Reverse Steering Horizon supplies subordinate GIANTS steering look-through but does not extend this movement-completion distance.
+2. **Lateral Departure** — from that launch station, move toward the selected side to the calibrated lateral offset using forward-diagonal motion. With matched Launch Separation, this returns approximately to the recurrent-Stall longitudinal station already laterally displaced.
+3. **Bypass Advance** — from the displaced line, progress approximately **10 m** along `F`.
+4. **Post-Blockage Axis Rejoin** — move forward-diagonally back to the original local continuation axis at a later forward station.
 
-The first implementation contract uses a **10 m lateral outcome**, a **10 m forward Bypass Advance**, and a **10 m lateral outcome back to the original axis**. The diagonal legs must contain a positive forward component; the exact forward component needed to realise their lateral outcome is a subordinate Control calibration rather than productive-route planning.
+The first implementation contract uses a **10 m lateral outcome**, a **10 m forward Bypass Advance**, and a **10 m lateral outcome back to the original axis**. The diagonal legs must contain a positive forward component; the exact forward component needed to realise their lateral outcome is a subordinate Control calibration rather than productive-route planning. Launch Separation is derived from that same component, so changing the diagonal calibration changes the required launch coherently rather than introducing a second unrelated literal.
 
 > **Axis Rejoin != Axis Restoration.**
 
 > **Return To Axis != Return To Start.**
 
-The final Rejoin is therefore intentionally on-axis but not a return to the pre-blockage pose or station. Bounded Bypass never commands rearward restoration through the Blockage Theatre.
+The final Rejoin is therefore intentionally on-axis but not a return to the pre-blockage pose or station. The only rearward Bypass movement is the bounded Launch Separation before Lateral Departure; Bounded Bypass never commands rearward restoration after the excursion.
 
 ### Fixed Dogleg support and field boundary
 
@@ -913,7 +942,7 @@ The Bypass side is not selected by trying to reconstruct the outline or position
 
 The Fixed Dogleg is a bounded attempt, not a promise that the selected guide is physically unobstructed.
 
-An unrepresented object may therefore block one of the three commanded legs. Control must treat positive lack of progress toward the current authorised target as execution failure and terminate/escalate rather than searching for another route, switching sides or extending the Dogleg.
+An unrepresented object may therefore block one of the four commanded legs. Control must treat positive lack of progress toward the current authorised target as execution failure and terminate/escalate rather than searching for another route, switching sides or extending the Dogleg.
 
 Elapsed time alone does not establish this failure. A watchdog may bound observation of non-improving movement, but the semantic failure is lack of commanded progress under fresh Reality.
 
@@ -954,11 +983,11 @@ The Bubble persists only while the Bounded Bypass Resolution remains current and
 
 Fresh Reality remains authoritative throughout execution.
 
-Loss of Transit settlement, current Job continuity, current Bounded Authority, required active-participant Bubble protection, supported Field World reference-guide relationship, Player Claim over the **bypassing worker**, or positive failure to make progress toward the current Dogleg target must stop or refuse further Bypass movement.
+Loss of current Job continuity, current Bounded Authority, required active-participant Bubble protection, supported Field World reference-guide relationship, Player Claim over the **bypassing worker**, or positive failure to make progress toward the current Dogleg target must stop or refuse further Bypass movement.
 
 A Player Claim, pose change, movement or lifecycle change concerning a non-active obstruction is not itself a Bypass invalidation condition because Bounded Bypass owns no semantic or physical authority over that obstruction.
 
-Control may fail closed; it may not improvise a new route, extend the fixed Dogleg, switch sides, cross the Field World boundary, reverse toward the original start or begin another recovery/bypass strategy without fresh upstream authority.
+Control may fail closed; it may not improvise a new route, extend the fixed Dogleg, switch sides, cross the Field World boundary, add rearward movement beyond the authorised Launch Separation or begin another recovery/bypass strategy without fresh upstream authority.
 
 If neither fixed Dogleg side is supportable, or the one bounded attempt cannot make progress, Player Intervention remains a legitimate outcome.
 

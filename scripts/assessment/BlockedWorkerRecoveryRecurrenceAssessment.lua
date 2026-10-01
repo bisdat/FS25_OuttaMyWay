@@ -20,6 +20,22 @@ local function planarDistance(ax,az,bx,bz)
     return math.sqrt(dx*dx+dz*dz)
 end
 
+local function successfulExcursionEvidence(value)
+    if type(value)~="table" then return nil end
+    local demonstrated=tonumber(value.demonstratedRetreatM or value.retreatProgressM)
+    if not finite(demonstrated) or demonstrated<=0 then return nil end
+    local result={
+        kind="SUCCESSFUL_RECOVERY_EXCURSION",
+        demonstratedRetreatM=demonstrated,
+        completionBasis=value.completionBasis
+    }
+    for _,name in ipairs({"returnOriginX","returnOriginZ","returnX","returnZ","requiredRetreatM","maximumSupportedRetreatM","lateralOffsetM"}) do
+        local number=tonumber(value[name])
+        if finite(number) then result[name]=number end
+    end
+    return result
+end
+
 function Assessment.new()
     return setmetatable({
         successfulRecoveryByAssembly={},
@@ -53,7 +69,8 @@ function Assessment:recordSuccessfulRecovery(values)
         stallX=values.stallX,
         stallZ=values.stallZ,
         successorJobEpisodeId=values.successorJobEpisodeId,
-        successorSourceJobToken=values.successorSourceJobToken
+        successorSourceJobToken=values.successorSourceJobToken,
+        successfulRecoveryExcursion=successfulExcursionEvidence(values.successfulRecoveryExcursion)
     }
     return true,nil
 end
@@ -110,6 +127,7 @@ function Assessment:assess(knowledge)
         assemblyId=assemblyId,recoveryKey=prior.recoveryKey,
         priorStallTimestamp=prior.stallTimestamp,priorStallX=prior.stallX,priorStallZ=prior.stallZ,
         successorJobEpisodeId=prior.successorJobEpisodeId,successorSourceJobToken=prior.successorSourceJobToken,
+        successfulRecoveryExcursion=prior.successfulRecoveryExcursion,
         currentStallTimestamp=timestamp,currentStallX=x,currentStallZ=z,
         separationM=separation,radiusM=RECOVERY_RECURRENCE_RADIUS_M,
         elapsedSeconds=elapsed,horizonSeconds=RECOVERY_RECURRENCE_HORIZON_S,

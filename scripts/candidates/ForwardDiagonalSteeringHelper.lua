@@ -1,10 +1,11 @@
---- Builds mechanically steerable forward-diagonal targets for Passage lateral excursion.
+--- Supplies forward-diagonal steering calibration beneath purpose-owned excursion guides.
 -- Specification Jurisdictions: `COOPERATIVE_PASSAGE`
 
 OuttaMyWay.ForwardDiagonalSteeringHelper={}
 local Helper=OuttaMyWay.ForwardDiagonalSteeringHelper
 
--- Mechanical calibration only. This value MUST NOT contribute to Passage Entry
+-- Shared mechanical calibration only; callers own their excursion policy.
+-- This value MUST NOT contribute to Passage Entry
 -- Boundary or Capture Reserve. It defines the steering target shape used after
 -- the realised Transit execution origin is captured.
 local FORWARD_PER_LATERAL_M=2.0

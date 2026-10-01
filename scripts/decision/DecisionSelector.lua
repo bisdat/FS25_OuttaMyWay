@@ -1,5 +1,5 @@
 --- Selects among mandatory-admissible Candidates and publishes the explicit Decision outcome without establishing Current Responsibility.
--- Specification Jurisdictions: `DECISION`
+-- Specification Jurisdictions: `DECISION`, `BOUNDED_BYPASS`
 
 OuttaMyWay.DecisionSelector={}
 local Selector=OuttaMyWay.DecisionSelector
@@ -131,6 +131,18 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     local trafficPolicy=nil
     if not portfolioSelectionMissing and not portfolioHasNoAdmissible then
         trafficPolicy=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(operationalPicture,inventoryForLocalPolicy,selectable)
+    end
+    -- Bypass alternatives are already mandatory-admissible. Interior reserve
+    -- ranks the two fixed sides only; it does not rank Bypass above other purposes.
+    if inventoryForLocalPolicy.supportBoundary.mode=="BOUNDED_BYPASS" then
+        table.sort(selectable,function(a,b)
+            local aa=a.evidenceBasis.boundedBypassBridge
+            local bb=b.evidenceBasis.boundedBypassBridge
+            if math.abs(aa.fieldInteriorReserveM-bb.fieldInteriorReserveM)>0.1 then
+                return aa.fieldInteriorReserveM>bb.fieldInteriorReserveM
+            end
+            return aa.guide.side>bb.guide.side
+        end)
     end
     local selected=trafficPolicy and trafficPolicy.selected or selectable[1]
     local commitmentAction

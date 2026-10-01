@@ -5784,3 +5784,93 @@ Runtime/coordinator failures remain owned and counted by `LiveRuntimeCoordinator
 **Validation intent:** the Lua harness now proves diagnostic projection and publication do not advance Runtime epoch or issued-identity authority while preserving the current projected content. Structural contracts explicitly prohibit reintroduction of retained passive history.
 
 **Non-scope:** this tranche does not introduce the central Log Publication Policy, change supported Configuration, classify Normal/Debug/Diagnostic output, redesign player HUD messaging, or otherwise retune existing diagnostic verbosity/severity. Those remain #152 Stage 2B / #139 / #89.
+
+
+## 2026-10-01 — Bounded Bypass Fixed Dogleg implementation (#400)
+
+**Baseline and correction sequence:** the first implementation branch was created from accepted main after #408. TEST `0.4.8.5` introduced the Fixed Dogleg and TEST `0.4.8.6` corrected OMW-created Transit representation provenance. The first 0.4.8.6 Reality run then disproved the blocker-centric admission model before a Dogleg was attempted: the blockage theatre contained both a parked HALFPIPE represented as a physical assembly and a cotton bale outside the mission-vehicle assembly census. Per-blocker pose, Player Claim, worker-motion and stationarity therefore could not be a general Bypass prerequisite. PR #410 was accepted on main and established **Bypass Acts On The Blockage Theatre, Not The Blocker Object** and **Unmodelled Obstacle Is An Execution Failure, Not An Admission Problem**.
+
+**Implementation repair — TEST `0.4.8.7`:** the implementation now follows the accepted #410 contract. Recovery Strategy Exhausted plus the current successor Job/frame, Transit support and a Field-World-supported Fixed Dogleg are the admission path. Positive Causal Obstruction is optional coordination evidence only: a positively identified active same-Operation GIANTS blocker receives the shared Bubble's 0 km/h hold, while every other uninvolved active participant receives 1 km/h Bubble Bullet Time. Non-active physical obstructions receive no OMW speed authority and no pose, Player-Claim, motion or stationarity gate. The Dogleg remains the fixed three-leg guide with stations `(±10,20)`, `(±10,30)`, `(0,50)` metres under the existing 2:1 forward-diagonal calibration.
+
+**Execution-progress boundary:** because the reference guide is deliberately not negative-clearance proof, Control now measures fresh distance residual to the current Dogleg target. A 10 s implementation-owned watchdog fires only after no improvement of at least 0.10 m toward that target; elapsed time by itself is not failure evidence. Positive non-progress fails and escalates the one bounded attempt. Control does not search, switch sides, enlarge the route or retry.
+
+**Representation provenance retained:** Bypass still opens the existing Assembly Representation OuttaMyWay configuration-authority window before Transit actuation and closes it on every relinquishment path. This prevents passive representation sampling from teaching the cache that OMW-created Transit is native configuration evidence.
+
+**Authority Triad:** Architecture is validated against merged #410 and requires no further edit. The Bounded Bypass Specification is changed from `NOT_IMPLEMENTED` to truthful production participants / traceability while preserving the #410 blockage-theatre contract. Source is changed to realise that contract. Neighbouring Candidate Support, Responsibility Transition and Control participant declarations remain the implementation traceability required by their existing contracts.
+
+**Validation status:** the earlier 0.4.8.5/0.4.8.6 local offline results remain historical evidence for the retained Fixed Dogleg plumbing, but they do not validate the corrected 0.4.8.7 admission/progress semantics. Independent GitHub Actions is the execution authority for the new pushed TEST revision. No in-game success is claimed by this implementation repair.
+
+**Reality still required:** the motivating parked-HALFPIPE/cotton-bale theatre must demonstrate that the Dogleg is admitted without complete obstacle identity; active blocker 0 km/h plus third-worker 1 km/h protection must be observed; an unrepresented obstruction on a selected Dogleg leg must demonstrate progress-based fail-safe escalation; field-edge/island side rejection, rigid/articulated steering, strict Transit settlement, final on-axis GIANTS handback and ordinary BWR/Passage regression controls remain required.
+
+
+
+## 2026-10-01 — TS016 disproves Stall-origin Bypass launch; Launch Separation added (#400)
+
+**Observe — TEST `0.4.8.7`:** the first BWR Stall was approximately `(-10.731, -406.144)`. BWR then positively achieved its 20 m Recovery Return Region before GIANTS Job replacement. The successor Job drove back into the same theatre and established a correlated Stall at approximately `(-10.707, -405.872)`, only about 0.27 m from the first Stall. Bounded Bypass then launched its existing 20 m-forward / 10 m-lateral Lateral Departure directly from that recurrent Stall. Video evidence shows S416 physically pushing through the HALFPIPE/bale theatre before sufficient lateral displacement developed. The first diagonal never received a clean calibration attempt; the captured motion reached only about 14.9 m forward / 7.5 m lateral before the separate Transit-settlement terminal condition appeared.
+
+**Discovery:** **Bypass Lateral Departure Requires Launch Separation.** A forward-diagonal escape consumes longitudinal space while creating lateral separation. The recurrent Stall is therefore not a defensible launch station merely because the future side guide lies inside Field World.
+
+**Architectural correction:** introduce **Bypass Launch Separation** before Lateral Departure. Its magnitude is derived from the same forward component required by the selected diagonal rather than from a new independent literal. Under the current 10 m lateral / 2:1 mechanical calibration that is 20 m. The immediately preceding successful BWR may retain **Successful Recovery Excursion Evidence** recording the retreat magnitude actually achieved. That positive completed-outcome magnitude bounds Launch Separation, but the historical Recovery Trail/Anchor does not become the Bypass axis, current traversability evidence or retained Recovery authority. The fresh successor continuation frame supplies Bypass direction.
+
+**Hypothesis disposition:** insufficient initial longitudinal separation is strongly supported by Reality. The claim that the first diagonal itself is intrinsically too short remains unproven because 0.4.8.7 collided before the nominal diagonal target could be reached. The 20 m-forward / 10 m-lateral diagonal is therefore intentionally unchanged in this tranche.
+
+**Implementation — TEST `0.4.8.8`:** the fixed guide becomes four legs relative to the recurrent Stall/current successor frame: reverse Launch Separation `(0,-20)`, forward-diagonal Lateral Departure `(±10,0)`, 10 m Bypass Advance `(±10,10)`, then Post-Blockage Axis Rejoin `(0,30)`. The exact launch distance remains derived from `ForwardDiagonalSteeringHelper`. Candidate Support refuses Bypass when the immediately preceding successful Recovery did not demonstrate enough retreat. The same Field World reference-guide check and target-progress watchdog cover the reverse launch; no current reverse-clearance or obstacle-clearance claim is added.
+
+**Authority Triad:** Architecture changes because Reality exposed a missing Bypass concept and a legitimate completed-Recovery evidence product. Specifications change to define Successful Recovery Excursion Evidence, Launch Separation and the four-leg guide. Source changes only to retain bounded positive BWR outcome provenance, require it for Bypass admission and realise the authorised reverse launch before the existing three forward legs.
+
+**Validation boundary:** offline validation can prove provenance flow, launch admission bounds, guide geometry, movement polarity and fail-closed contracts. GIANTS Reality must still prove that the new launch creates enough longitudinal room for S416 to execute the unchanged first diagonal without brute-force contact. The later `BYPASS_TRANSIT_SETTLEMENT_LOST` observation remains separate until a clean geometric attempt shows whether it reproduces.
+
+
+## 2026-10-01 — Owner correction: Transit is a request, not a Bypass state contract (#400)
+
+**Reality — TEST `0.4.8.8`:** Bypass correctly admitted at the second correlated Stall and correctly began the new reverse Launch Separation, but moved only about 2.5 m before Control terminated on `BYPASS_TRANSIT_SETTLEMENT_LOST`.
+
+**Owner clarification:** the intended sequence was always simple: **at the second Stall request Transit (even if there is none), reverse, then Dogleg**. Transit was never intended to become a capability gate, settlement wait or continuously revalidated Bypass state.
+
+**Correction:** the earlier interpretation **Transit Settlement != Transit Persistence** was itself over-engineered. The architectural rule is instead:
+
+> **Transit Request != Transit State Contract.**
+
+For Bounded Bypass, Control issues one best-effort Transit request immediately before movement. Candidate Support does not require cached Transit capability. Control does not inspect request success, wait for settlement or later fail because GIANTS reasserts work/lower/fold state. Existing Job continuity, Player Claim, Bubble protection, Field World guide support, Bounded Authority and target-progress failure remain authoritative.
+
+**Implementation — TEST `0.4.8.9`:** after Bypass dispatch, the one-shot Transit request is issued and the reverse Launch Separation starts immediately. The 20 m Launch geometry and subsequent Dogleg are otherwise unchanged.
+
+**Authority Triad:** Architecture and Bounded Bypass Specification are corrected to remove the invented persistent Transit-state requirement. Source removes the Transit capability admission gate and all Bypass settlement/persistence checks. The shared Transit mechanism is not changed because other callers retain their own configuration contracts.
+
+**Validation boundary:** offline validation must prove Transit is requested even when capability is unavailable and that request failure or later settlement drift does not stop the Bypass. GIANTS Reality must then finally test the intended sequence: second Stall -> Transit request -> approximately 20 m reverse -> unchanged Dogleg.
+
+
+## 2026-10-01 — TS016 0.4.8.9 confirms Bypass Launch Reverse Steering Horizon (#400 / #336)
+
+**Observe:** the initial S416 BWR and later Bypass Launch in the same run both require approximately 20 m reverse, but only Bypass jackknifes. BWR steers toward a Recovery Anchor about 46 m behind the Stall and completes after 20 m, leaving substantial reverse look-through. Bypass used its 20 m Launch completion point itself as the reverse REPOSITION target. Near the intended station S416 was about 20.05 m rearward but ~1.22 m laterally displaced, just outside the 1 m point-target radius, so Control continued point pursuit and the articulated assembly diverged.
+
+**Discovery:** **Bypass Launch Completion != Reverse Steering Target.** This is the existing #336 principle **Movement Completion Region != Reverse Steering Target** in Bypass form. The reverse distance itself is not disproved; the same run demonstrates a clean 20 m reverse when steering look-through remains available.
+
+**Architectural correction:** Bypass Launch now reuses the accepted **Reverse Steering Horizon** concept. The immediately preceding successful BWR already retains two scalar magnitudes: achieved retreat and maximum supported retreat from its demonstrated Recovery Approach. The first continues to bound Launch admission; the second supplies steering look-through magnitude. Historical Recovery direction is discarded. The farther horizon is projected on the fresh successor-Job Bypass frame and is steering geometry only.
+
+**Implementation — TEST `0.4.8.10`:** the semantic Launch target remains 20 m rearward and remains part of Field World guide support. Reverse REPOSITION is instead aimed at the farther steering horizon. Control measures fresh longitudinal retreat from the recurrent Stall and advances to Lateral Departure once 20 m is reached, regardless of small lateral point miss. The Launch watchdog likewise measures remaining longitudinal retreat, not distance to the steering target. Reaching the steering horizon before Launch completion is a fail-safe contradiction, not success.
+
+**Non-scope:** no articulation threshold, jackknife predictor, S416 special case, longer reverse authority, route search or diagonal recalibration is introduced.
+
+**Reality boundary:** the next TS016 run must show approximately 20 m longitudinal reverse completing before point-pursuit instability, followed by the unchanged first diagonal.
+
+
+## 2026-10-01 — TS016 Reality PASS for Bounded Bypass TEST 0.4.8.10 (#400)
+
+**Validation evidence:** owner supplied `0.4.8.10_TS016` containing video and GIANTS log.
+
+**Observed chronology:**
+- runtime identifies FS25_OuttaMyWay **0.4.8.10**;
+- 19:15:47.542 — first S416 Blocked Progress Stall established;
+- 19:15:47.563 — BWR begins reverse toward Recovery Anchor, target retreat 20.00 m, maximum supported retreat 46.79 m;
+- 19:16:13.835 — correlated successor Stall established, anchor span 9.90 m;
+- 19:16:13.835 — Recovery Strategy Exhausted, Stall separation 0.08 m, elapsed 26.25 s;
+- 19:16:13.864 — Bounded Bypass starts;
+- 19:17:05.169 — Bounded Bypass ends `outcome=SUCCEEDED`;
+- no Bypass terminal-failure or Player Intervention event is present in the supplied run.
+
+**Reality result:** **PASS.** Video evidence is acceptable for the intended behaviour: the Bypass reverse proceeds into the Dogleg without the prior short-target jackknife becoming terminal, the obstruction theatre is negotiated, and the Resolution reaches its normal success boundary.
+
+**Validated architecture:** this run supports the current separation between **Bypass Launch Completion** and **Reverse Steering Target**. The 20 m Launch remains movement-completion authority while the farther Reverse Steering Horizon supplies GIANTS look-through. It also validates the deliberately simple one-shot Transit request contract used by Bypass in this theatre.
+
+**Scope of claim:** this PASS validates the current TS016 Bounded Bypass tranche. It does not establish complete obstacle clearance in all theatres, universal articulated reverse stability, or a Validated Plateau/canonical release by itself.

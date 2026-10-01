@@ -1,5 +1,5 @@
 --- Chooses the governing support scope for one prospective portfolio using Decision-owned compatibility and precedence policy over mandatory-admissible alternatives.
--- Specification Jurisdictions: `DECISION`
+-- Specification Jurisdictions: `DECISION`, `BOUNDED_BYPASS`
 
 OuttaMyWay.ProspectivePortfolioDecisionPolicy={}
 local Policy=OuttaMyWay.ProspectivePortfolioDecisionPolicy
@@ -66,6 +66,12 @@ end
 function Policy:selectGroup(inventory,admissibleCandidates)
     local groups=groupsFor(inventory,admissibleCandidates)
     if #groups==0 then return nil,"NO_MANDATORY_ADMISSIBLE_SUPPORT_GROUP" end
+
+    local bypasses=family(groups,"BOUNDED_BYPASS")
+    if #bypasses>0 then
+        if #groups==1 then return choose(bypasses[1],"BOUNDED_BYPASS_SINGLE_PURPOSE","ONLY_SUPPORTED_ADMISSIBLE_PURPOSE") end
+        return nil,"BYPASS_WITH_CROSS_PURPOSE_REQUIRES_COMPARATOR"
+    end
 
     local recoveries=family(groups,"RECOVERY")
     if #recoveries>1 then return nil,"MULTIPLE_SUPPORTED_RECOVERIES_REQUIRE_COMPARATOR" end

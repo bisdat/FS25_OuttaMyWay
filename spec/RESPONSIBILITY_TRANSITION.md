@@ -245,6 +245,8 @@ Control realises already-authorised action. It does not establish or replace sem
 | [`scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua`](../scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) | `SUPPORTS` |
+| [`scripts/responsibility/BoundedBypassResponsibilityTransition.lua`](../scripts/responsibility/BoundedBypassResponsibilityTransition.lua) | `REALISES` |
+
 
 ## Implementation traceability
 

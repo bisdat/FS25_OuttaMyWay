@@ -1,5 +1,5 @@
 --- Composes complete fresh Candidate-support groups into one Candidate-support-enriched Decision picture.
--- Specification Jurisdictions: `CANDIDATE_SUPPORT`
+-- Specification Jurisdictions: `CANDIDATE_SUPPORT`, `BOUNDED_BYPASS`
 
 OuttaMyWay.ProspectiveDecisionPortfolioSupport={}
 local Support=OuttaMyWay.ProspectiveDecisionPortfolioSupport
@@ -137,8 +137,8 @@ local function opposedRelations(picture)
     return result
 end
 
-function Support.new(identityRegistry,epochSequence,obstructionSupport,recoverySupport,liveSupport,passiveSupport)
-    return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,recoverySupport=recoverySupport,liveSupport=liveSupport,passiveSupport=passiveSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
+function Support.new(identityRegistry,epochSequence,obstructionSupport,recoverySupport,liveSupport,passiveSupport,bypassSupport)
+    return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,recoverySupport=recoverySupport,liveSupport=liveSupport,passiveSupport=passiveSupport,bypassSupport=bypassSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
 end
 
 function Support:publishDecisionPicture(picture,snapshot)
@@ -165,6 +165,9 @@ function Support:publishDecisionPicture(picture,snapshot)
     elseif recoveryReason=="MULTIPLE_RECOVERY_STALLS_REQUIRE_COMPARATOR" then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"RECOVERY_FAIL_CLOSED",recoveryReason,1)
     end
+
+    local bypass=self.bypassSupport and self.bypassSupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
+    if bypass~=nil then appendGroup(state,bypass,"BOUNDED_BYPASS","bounded-bypass",1) end
 
     local follower,followerReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FOLLOWER_BOUNDARY"},targetPictureId,targetEpoch)
     if modeOfGroup(follower)=="FOLLOWER_BOUNDARY" then

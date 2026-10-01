@@ -375,6 +375,8 @@ The previous Trail and Anchor MUST NOT be reused as permission for the new cycle
 
 Before admitting another Blocked Worker Recovery cycle, the implementation MUST correlate that fresh Stall against passive outcome/lineage memory from the immediately preceding successful Recovery for the same Physical Assembly.
 
+That passive memory MAY include **Successful Recovery Excursion Evidence** recorded with the positively completed physical Recovery, including the actually achieved retreat magnitude and the maximum supported retreat magnitude derived from the Recovery Approach that bounded the completed excursion. These are scalar provenance only. They MUST NOT preserve the previous Recovery Trail, Anchor or movement direction as current permission, and they MUST NOT claim current reverse clearance.
+
 A **Correlated Recovery Recurrence** exists only when all of the following are true:
 
 - the current Stall was independently established by the normal Blocked Progress contract;
@@ -399,7 +401,7 @@ When Recovery Strategy Exhausted is established:
 - no automatic Recovery retry/replacement loop may be started;
 - passive recurrence state MUST NOT acquire Current Responsibility, Bounded Authority or Control authority;
 - independently supported traffic or other Resolution responsibilities remain independently assessable;
-- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence; Recovery Strategy Exhausted is its strategy-succession gate but MUST NOT establish the current local continuation frame, Transit support, Dogleg side or movement authority; and
+- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence; Recovery Strategy Exhausted is its strategy-succession gate and MAY expose retained Successful Recovery Excursion Evidence scalar magnitudes, but MUST NOT establish the current local continuation frame, reverse axis, Transit support, Dogleg side or movement authority; and
 - if no supported autonomous continuation remains, normal escalation may require Player Intervention.
 
 Outside the 5 m / 60 s bounds, or without exact intended-successor lineage, the later Stall is not a Correlated Recovery Recurrence and may independently support a new Recovery cycle if all ordinary admission requirements are satisfied.
@@ -549,13 +551,13 @@ Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHo
 Production implements one bounded Recovery cycle plus passive correlated-recurrence exhaustion:
 
 - [`BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) remains `SITUATION_ASSESSMENT` authority for fresh Stall, Recovery Approach Trail and Recovery Anchor meaning;
-- [`BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) retains only the immediately preceding successful Recovery's prior-Stall + intended-successor lineage provenance and correlates a later independently established Stall without acquiring Recovery authority;
+- [`BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) retains the immediately preceding successful Recovery's prior-Stall + intended-successor lineage provenance and, when positively available, bounded Successful Recovery Excursion outcome evidence such as achieved retreat magnitude; it correlates a later independently established Stall without acquiring Recovery authority;
 - [`BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) projects one current Stall+Anchor into one Recovery Candidate only when Correlated Recovery Recurrence has not established Recovery Strategy Exhausted;
 - [`BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) owns specialised Recovery commitment settlement;
 - [`BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) establishes the single-subject Current Responsibility;
-- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, retreats into the Recovery Return Region using the selected Anchor as subordinate steering reference, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission;
+- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, retreats into the Recovery Return Region using the selected Anchor as subordinate steering reference, reports the positively achieved physical excursion as completed-outcome evidence, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission;
 - [`BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) provides shared Resolution-Bubble supporting-speed mechanics; for BWR it applies the 0 km/h active-blocker hold and 1 km/h uninvolved-participant Bullet Time without acquiring either participant's movement objective; and
-- Runtime defers new prospective responsibility selection while BWR is current, releases the Recovery Bubble at terminal settlement, and records passive recurrence provenance only after semantic Recovery success.
+- Runtime defers new prospective responsibility selection while BWR is current, releases the Recovery Bubble at terminal settlement, and records passive recurrence/outcome provenance only after semantic Recovery success.
 
 A correlated successor Stall does not become a failed prior Recovery and does not start another Control lifecycle. Candidate replay is vetoed and the runtime remains fail-closed with existing player authority available for intervention.
 
