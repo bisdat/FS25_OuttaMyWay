@@ -53,39 +53,125 @@ local function collectAttached(root)
     return out
 end
 
--- Raw working-width observation used only as an evidence seed.  It is not the
--- physical Assembly footprint and does not qualify boundary demand by itself.
+local function validWidth(value)
+    value=tonumber(value)
+    if not finite(value) or value<0.5 or value>100 then return nil end
+    return value
+end
+
+local function variableWorkWidthSpan(object)
+    local spec=type(object)=="table" and object.spec_variableWorkWidth or nil
+    local nodes=type(spec)=="table" and spec.sectionNodes or nil
+    if type(nodes)~="table" then return nil end
+    local leftMax,rightMax=nil,nil
+    for _,entry in pairs(nodes) do
+        if type(entry)=="table" then
+            local startX=tonumber(entry.startTransX)
+                or (type(entry.startTrans)=="table" and tonumber(entry.startTrans[1]) or nil)
+            local endX=tonumber(entry.endTransX)
+                or (type(entry.endTrans)=="table" and tonumber(entry.endTrans[1]) or nil)
+            local extent=nil
+            if finite(startX) then extent=math.abs(startX) end
+            if finite(endX) then extent=extent==nil and math.abs(endX) or math.max(extent,math.abs(endX)) end
+            if finite(extent) then
+                if entry.isLeft==true then leftMax=leftMax==nil and extent or math.max(leftMax,extent)
+                else rightMax=rightMax==nil and extent or math.max(rightMax,extent) end
+            end
+        end
+    end
+    if not finite(leftMax) or not finite(rightMax) then return nil end
+    return validWidth(leftMax+rightMax)
+end
+
+local function memberWorkingWidthEvidence(object)
+    local leftPoint,rightPoint,currentMarkerSpanM=nil,nil,nil
+    local intrinsicAIMarkerWidthM=nil
+    if type(object.getAIMarkers)=="function" then
+        -- GIANTS' automatic-width path refreshes this cached semantic width
+        -- before reading the fifth getAIMarkers() return. This differs from
+        -- current world-space marker separation while an implement is folded.
+        if type(object.updateAIMarkerWidth)=="function" then
+            pcall(object.updateAIMarkerWidth,object)
+        end
+        local ok,left,right,_back,_inverted,aiMarkerWidth=pcall(object.getAIMarkers,object)
+        if ok then
+            currentMarkerSpanM,leftPoint,rightPoint=markerWidth(left,right)
+            intrinsicAIMarkerWidthM=validWidth(aiMarkerWidth)
+        end
+    end
+
+    local aiWorkAreaWidthM=nil
+    if type(object.getAIWorkAreaWidth)=="function" then
+        local ok,width=pcall(object.getAIWorkAreaWidth,object)
+        if ok then aiWorkAreaWidthM=validWidth(width) end
+    end
+
+    local variableWorkWidthSpanM=variableWorkWidthSpan(object)
+
+    local aiCollisionWidthM=nil
+    if type(object.getAIImplementCollisionTrigger)=="function" then
+        local ok,trigger=pcall(object.getAIImplementCollisionTrigger,object)
+        if ok and type(trigger)=="table" then aiCollisionWidthM=validWidth(trigger.width) end
+    elseif type(object.spec_aiImplement)=="table" and type(object.spec_aiImplement.collisionTrigger)=="table" then
+        aiCollisionWidthM=validWidth(object.spec_aiImplement.collisionTrigger.width)
+    end
+
+    local widthMetres,source=nil,nil
+    local function consider(width,candidateSource)
+        if width~=nil and (widthMetres==nil or width>widthMetres) then
+            widthMetres=width
+            source=candidateSource
+        end
+    end
+    consider(intrinsicAIMarkerWidthM,"GIANTS_AI_MARKER_WIDTH")
+    consider(aiWorkAreaWidthM,"GIANTS_AI_WORK_AREA_WIDTH")
+    consider(variableWorkWidthSpanM,"GIANTS_VARIABLE_WORK_WIDTH_RANGE")
+
+    return {
+        rootNode=object.rootNode,
+        available=widthMetres~=nil,
+        widthMetres=widthMetres,
+        source=source or "UNAVAILABLE",
+        leftPoint=leftPoint,
+        rightPoint=rightPoint,
+        markerBacked=leftPoint~=nil and rightPoint~=nil,
+        currentMarkerSpanM=currentMarkerSpanM,
+        intrinsicAIMarkerWidthM=intrinsicAIMarkerWidthM,
+        aiWorkAreaWidthM=aiWorkAreaWidthM,
+        variableWorkWidthSpanM=variableWorkWidthSpanM,
+        aiCollisionWidthM=aiCollisionWidthM
+    }
+end
+
+-- Raw productive-width Knowledge seed. It deliberately excludes the player's
+-- FieldCourseSettings width override: that is a lane-planning choice and can be
+-- smaller than the real implement. Intrinsic GIANTS AI-marker/work-area width,
+-- current marker pose and AI collision width remain separate evidence classes.
 function Observation.workingWidth(vehicle)
-    local bestWidth,bestSource,bestLeft,bestRight=nil,nil,nil,nil
-    local function consider(width,source,left,right)
-        if width~=nil and (bestWidth==nil or width>bestWidth) then
-            bestWidth=width; bestSource=source; bestLeft=left; bestRight=right
-        end
-    end
+    local members={}
+    local best=nil
     for _,object in ipairs(collectAttached(vehicle)) do
-        if type(object.getAIMarkers)=="function" then
-            local ok,left,right=pcall(object.getAIMarkers,object)
-            if ok then
-                local width,leftPoint,rightPoint=markerWidth(left,right)
-                consider(width,"GIANTS_AI_MARKERS",leftPoint,rightPoint)
-            end
-        end
-        local spec=object.spec_workArea
-        if type(spec)=="table" and type(spec.workAreas)=="table" then
-            for _,area in pairs(spec.workAreas) do
-                if type(area)=="table" then
-                    local width,leftPoint,rightPoint=markerWidth(area.start or area.startNode,area.width or area.widthNode)
-                    consider(width,"GIANTS_WORK_AREA_MARKERS",leftPoint,rightPoint)
-                end
-            end
-        end
-        if type(object.getWorkingWidth)=="function" then
-            local ok,width=pcall(object.getWorkingWidth,object)
-            width=ok and tonumber(width) or nil
-            if finite(width) and width>=0.5 and width<=100 then consider(width,"GIANTS_WORKING_WIDTH_ACCESSOR") end
+        local evidence=memberWorkingWidthEvidence(object)
+        members[#members+1]=evidence
+        if evidence.available and (best==nil or evidence.widthMetres>best.widthMetres) then
+            best=evidence
         end
     end
-    return {available=bestWidth~=nil,widthMetres=bestWidth,source=bestSource or "UNAVAILABLE",leftPoint=bestLeft,rightPoint=bestRight,markerBacked=bestLeft~=nil and bestRight~=nil,authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"}
+    return {
+        available=best~=nil,
+        widthMetres=best and best.widthMetres or nil,
+        source=best and best.source or "UNAVAILABLE",
+        leftPoint=best and best.leftPoint or nil,
+        rightPoint=best and best.rightPoint or nil,
+        markerBacked=best~=nil and best.markerBacked==true or false,
+        currentMarkerSpanM=best and best.currentMarkerSpanM or nil,
+        intrinsicAIMarkerWidthM=best and best.intrinsicAIMarkerWidthM or nil,
+        aiWorkAreaWidthM=best and best.aiWorkAreaWidthM or nil,
+        variableWorkWidthSpanM=best and best.variableWorkWidthSpanM or nil,
+        aiCollisionWidthM=best and best.aiCollisionWidthM or nil,
+        members=members,
+        authority="PRODUCTIVE_WIDTH_EVIDENCE_ONLY"
+    }
 end
 
 -- Exact SDK and live native-command evidence identify aiDriveParams as the immediate

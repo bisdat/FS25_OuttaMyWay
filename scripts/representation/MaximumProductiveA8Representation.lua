@@ -28,19 +28,46 @@ local function vectorChanged(startValue,endValue,indexes)
     return false,inspected
 end
 
+local function animationValueLateralPotential(value)
+    if type(value)~="table" then return false,false end
+    local name=value.name
+    if name=="translation" then
+        -- GIANTS vehicle-local X is lateral. Y/Z-only translation does not
+        -- establish a wider lateral envelope.
+        return vectorChanged(value.startValue,value.endValue,{1})
+    elseif name=="rotation" then
+        -- Rotation about local Y or Z can change plan-view lateral projection.
+        -- X-only pitch (for example a rear door) is not lateral-width evidence.
+        return vectorChanged(value.startValue,value.endValue,{2,3})
+    elseif name=="scale" then
+        return vectorChanged(value.startValue,value.endValue,{1})
+    end
+    return false,false
+end
+
 local function animationPartLateralPotential(part)
     if type(part)~="table" then return false,false end
-    local changed,inspected=vectorChanged(part.startTrans,part.endTrans,{1,3})
+
+    -- Dynamic AnimatedVehicle parts store loaded start/end values in
+    -- part.animationValues rather than as raw XML-shaped fields on the part.
+    local values=part.animationValues
+    if type(values)=="table" then
+        local inspected=false
+        for _,value in pairs(values) do
+            local changed,valueInspected=animationValueLateralPotential(value)
+            if changed then return true,true end
+            inspected=inspected or valueInspected
+        end
+        if inspected then return false,true end
+    end
+
+    -- Defensive fallback for any source retaining XML-shaped values.
+    local changed,inspected=vectorChanged(part.startTrans,part.endTrans,{1})
     if changed then return true,true end
-
-    local _,verticalInspected=vectorChanged(part.startTrans,part.endTrans,{2})
-    inspected=inspected or verticalInspected
-
-    local rotationChanged,rotationInspected=vectorChanged(part.startRot,part.endRot,{1,2,3})
+    local rotationChanged,rotationInspected=vectorChanged(part.startRot,part.endRot,{2,3})
     if rotationChanged then return true,true end
     inspected=inspected or rotationInspected
-
-    local scaleChanged,scaleInspected=vectorChanged(part.startScale,part.endScale,{1,2,3})
+    local scaleChanged,scaleInspected=vectorChanged(part.startScale,part.endScale,{1})
     if scaleChanged then return true,true end
     inspected=inspected or scaleInspected
     return false,inspected
@@ -85,7 +112,7 @@ function Representation.inspectLateralArticulation(object)
                         table.sort(animationNames)
                         return {
                             status="SUPPORTED",
-                            reason="SELECTED_FOLDING_ANIMATION_CAN_CHANGE_LATERAL_SPAN",
+                            reason="SELECTED_FOLDING_ANIMATION_CAN_CHANGE_PLAN_VIEW_LATERAL_SPAN",
                             foldingPartCount=foldingPartCount,
                             inspectedAnimationCount=inspectedAnimationCount+1,
                             unresolvedAnimationCount=unresolvedAnimationCount,
@@ -129,10 +156,9 @@ function Representation.inspectLateralArticulation(object)
     }
 end
 
--- Productive-configuration evidence is deliberately independent from fold
--- animation introspection. GIANTS exposes the AI lowering requirement directly
--- on AI implements; XML is a fallback only when the runtime accessor/spec is
--- unavailable.
+-- AI lowering requirement is retained as one orthogonal configuration fact.
+-- It neither proves nor disproves lateral physical widening. XML is a fallback
+-- only when the runtime accessor/spec is unavailable.
 function Representation.inspectNeedsLowering(object)
     if type(object)~="table" then
         return {available=false,value=nil,source="MEMBER_OBJECT_UNAVAILABLE"}
@@ -172,7 +198,29 @@ local function include(bounds,right,forward)
     bounds.maxForwardM=bounds.maxForwardM==nil and forward or math.max(bounds.maxForwardM,forward)
 end
 
-function Representation.build(record,frame,worker,localToWorldFn)
+-- Conservative DISC evidence is used here only to challenge an authored-only
+-- maximum. It never becomes Maximum Productive A8 geometry or negative-clearance
+-- authority. A DISC span wider than the authored members' own diagonal bounds
+-- proves only that authored base dimensions have not explained all current
+-- physical possibility.
+local function positiveDiscLateralSpan(worldPrimitives,frame)
+    local minimum,maximum=nil,nil
+    if type(frame)~="table" then return nil end
+    for _,primitive in ipairs(worldPrimitives or {}) do
+        local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(x) and finite(z) and finite(radius) and radius>0 then
+            local dx,dz=x-frame.x,z-frame.z
+            local right=dx*frame.rightX+dz*frame.rightZ
+            minimum=minimum==nil and right-radius or math.min(minimum,right-radius)
+            maximum=maximum==nil and right+radius or math.max(maximum,right+radius)
+        end
+    end
+    if minimum==nil or maximum==nil or maximum<=minimum then return nil end
+    return maximum-minimum
+end
+
+function Representation.build(record,frame,worker,localToWorldFn,worldPrimitives)
     if type(record)~="table" or type(frame)~="table" then
         return nil,"MAXIMUM_PRODUCTIVE_A8_REFERENCE_FRAME_UNAVAILABLE"
     end
@@ -185,10 +233,25 @@ function Representation.build(record,frame,worker,localToWorldFn)
     local members=record.members or {}
     if #members<1 then return nil,"MAXIMUM_PRODUCTIVE_A8_ASSEMBLY_MEMBERS_UNAVAILABLE" end
 
+    local observation=OuttaMyWay.NativeFieldWorkObservation
+    local workingWidthObservation=nil
+    if observation~=nil and type(observation.workingWidth)=="function" then
+        workingWidthObservation=observation.workingWidth(worker)
+    end
+    local widthEvidenceByRootNode={}
+    for _,memberEvidence in ipairs(workingWidthObservation and workingWidthObservation.members or {}) do
+        if type(memberEvidence)=="table" and memberEvidence.rootNode~=nil then
+            widthEvidenceByRootNode[memberEvidence.rootNode]=memberEvidence
+        end
+    end
+
     local bounds={}
-    local lateralArticulation=false
+    local authoredRadialBounds={}
+    local productiveLateralWidening=false
+    local unresolvedProductiveLateralRisk=false
     local articulationEvidence={}
     local metadataSources={}
+
     for _,member in ipairs(members) do
         local metadata=member.directionalSizeMetadata
         local object=member.object
@@ -202,37 +265,35 @@ function Representation.build(record,frame,worker,localToWorldFn)
         local articulation=Representation.inspectLateralArticulation(object)
         local lowering=Representation.inspectNeedsLowering(object)
         local foldable=foldCapabilityPresent(object,articulation)
+        local widthEvidence=widthEvidenceByRootNode[object.rootNode]
+        local intrinsicWidthM=widthEvidence and tonumber(widthEvidence.widthMetres) or nil
+        local collisionWidthM=widthEvidence and tonumber(widthEvidence.aiCollisionWidthM) or nil
 
-        -- Evidence fusion, not single-flag classification:
-        --  * explicit lateral animation evidence is strongest;
-        --  * fold/deploy capability + AI needsLowering=true is sufficient
-        --    conservative evidence that productive physical configuration may
-        --    widen, even when runtime animation internals are opaque;
-        --  * needsLowering=false is evidence against a distinct lowered
-        --    physical work configuration (TS004 Variofex control);
-        --  * unresolved fold semantics with no lowering evidence use the
-        --    productive span conservatively rather than suppressing the whole
-        --    envelope, provided that span can be observed.
+        -- AI collision width is corroboration, not Maximum Productive A8 geometry.
+        -- A configured collision envelope on the same scale as intrinsic productive
+        -- width can establish that the latter is not merely agronomic effect reach.
+        -- Allow one authored body-width of difference because the GIANTS trigger may
+        -- deliberately omit or overhang the central body while still describing the
+        -- same configured lateral scale.
+        local collisionCorroboratesProductiveSpan=
+            finite(intrinsicWidthM) and finite(collisionWidthM)
+            and collisionWidthM>width+EPSILON
+            and intrinsicWidthM<=collisionWidthM+width+EPSILON
+
         local memberUsesProductiveSpan=false
-        local inferenceReason=nil
+        local inferenceReason="AUTHORED_PHYSICAL_SPAN_ONLY"
         if articulation.status=="SUPPORTED" then
             memberUsesProductiveSpan=true
-            inferenceReason="LATERAL_ANIMATION_EVIDENCE"
-        elseif foldable and lowering.available==true and lowering.value==true then
+            inferenceReason=collisionCorroboratesProductiveSpan
+                and "LATERAL_ANIMATION_AND_AI_COLLISION_CORROBORATION"
+                or "LATERAL_ANIMATION_EVIDENCE"
+        elseif collisionCorroboratesProductiveSpan then
             memberUsesProductiveSpan=true
-            inferenceReason="FOLD_CAPABILITY_AND_AI_NEEDS_LOWERING"
-        elseif lowering.available==true and lowering.value==false then
-            memberUsesProductiveSpan=false
-            inferenceReason="AI_DOES_NOT_REQUIRE_LOWERED_PRODUCTIVE_CONFIGURATION"
-        elseif articulation.status=="NOT_SUPPORTED" or articulation.status=="NOT_PRESENT" then
-            memberUsesProductiveSpan=false
-            inferenceReason="NO_SUPPORTED_LATERAL_CONFIGURATION_CHANGE"
-        elseif foldable then
-            memberUsesProductiveSpan=true
-            inferenceReason="AMBIGUOUS_FOLD_CONFIGURATION_CONSERVATIVE_WORKING_SPAN"
-        else
-            memberUsesProductiveSpan=false
-            inferenceReason="AUTHORED_PHYSICAL_SPAN_ONLY"
+            inferenceReason="AI_COLLISION_WIDTH_CORROBORATES_PRODUCTIVE_SPAN"
+        elseif articulation.status=="UNRESOLVED" and foldable
+            and (not finite(intrinsicWidthM) or intrinsicWidthM>width+EPSILON) then
+            unresolvedProductiveLateralRisk=true
+            inferenceReason="PRODUCTIVE_LATERAL_EXTENT_UNRESOLVED"
         end
 
         articulationEvidence[#articulationEvidence+1]={
@@ -245,13 +306,35 @@ function Representation.build(record,frame,worker,localToWorldFn)
             needsLoweringAvailable=lowering.available==true,
             needsLowering=lowering.value,
             needsLoweringSource=lowering.source,
+            intrinsicProductiveWidthM=intrinsicWidthM,
+            intrinsicProductiveWidthSource=widthEvidence and widthEvidence.source or nil,
+            currentMarkerSpanM=widthEvidence and widthEvidence.currentMarkerSpanM or nil,
+            aiMarkerWidthM=widthEvidence and widthEvidence.intrinsicAIMarkerWidthM or nil,
+            aiWorkAreaWidthM=widthEvidence and widthEvidence.aiWorkAreaWidthM or nil,
+            variableWorkWidthSpanM=widthEvidence and widthEvidence.variableWorkWidthSpanM or nil,
+            aiCollisionWidthM=collisionWidthM,
+            collisionCorroboratesProductiveSpan=collisionCorroboratesProductiveSpan,
             usesProductiveSpan=memberUsesProductiveSpan,
             inferenceReason=inferenceReason
         }
-        if memberUsesProductiveSpan then lateralArticulation=true end
+        if memberUsesProductiveSpan then productiveLateralWidening=true end
 
         local centreRight=tonumber(metadata.widthOffsetM) or 0
         local centreForward=tonumber(metadata.lengthOffsetM) or 0
+        local centreOk,centreX,_,centreZ=pcall(localToWorldFn,object.rootNode,centreRight,0,centreForward)
+        if not centreOk or not finite(centreX) or not finite(centreZ) then
+            return nil,"MAXIMUM_PRODUCTIVE_A8_MEMBER_CENTRE_TRANSFORM_FAILED:"..tostring(member.referenceKey)
+        end
+        local centreDx,centreDz=centreX-frame.x,centreZ-frame.z
+        local centreLateral=centreDx*frame.rightX+centreDz*frame.rightZ
+        local authoredRadius=math.sqrt(width*width+length*length)*0.5
+        authoredRadialBounds.minRightM=authoredRadialBounds.minRightM==nil
+            and centreLateral-authoredRadius
+            or math.min(authoredRadialBounds.minRightM,centreLateral-authoredRadius)
+        authoredRadialBounds.maxRightM=authoredRadialBounds.maxRightM==nil
+            and centreLateral+authoredRadius
+            or math.max(authoredRadialBounds.maxRightM,centreLateral+authoredRadius)
+
         for _,offset in ipairs({
             {-width*0.5,-length*0.5},{width*0.5,-length*0.5},
             {width*0.5,length*0.5},{-width*0.5,length*0.5}
@@ -266,19 +349,47 @@ function Representation.build(record,frame,worker,localToWorldFn)
         metadataSources[tostring(metadata.source or "UNRESOLVED")]=true
     end
 
+    local authoredBaseRadialSpanM=nil
+    if authoredRadialBounds.minRightM~=nil and authoredRadialBounds.maxRightM~=nil then
+        authoredBaseRadialSpanM=authoredRadialBounds.maxRightM-authoredRadialBounds.minRightM
+    end
+    local currentDiscLateralSpanM=positiveDiscLateralSpan(worldPrimitives,frame)
+    local physicalSpanContradiction=finite(currentDiscLateralSpanM)
+        and finite(authoredBaseRadialSpanM)
+        and currentDiscLateralSpanM>authoredBaseRadialSpanM+EPSILON
+
+    local observedWorkingWidthM=workingWidthObservation and tonumber(workingWidthObservation.widthMetres) or nil
+    local useWorkingSpan=productiveLateralWidening or physicalSpanContradiction
+
+    if unresolvedProductiveLateralRisk and not useWorkingSpan then
+        return nil,"MAXIMUM_PRODUCTIVE_A8_PRODUCTIVE_LATERAL_EXTENT_UNRESOLVED"
+    end
+
+    local workingSpanAdmissionReason=productiveLateralWidening
+        and "CONFIGURATION_EVIDENCE_REQUIRES_PRODUCTIVE_WORKING_SPAN"
+        or (physicalSpanContradiction
+            and "CURRENT_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_MAXIMUM"
+            or "AUTHORED_PHYSICAL_SPAN_SUFFICIENT")
+
     local workingWidth=nil
-    if lateralArticulation then
-        local observation=OuttaMyWay.NativeFieldWorkObservation
+    if useWorkingSpan then
         if observation==nil or type(observation.workingWidth)~="function" then
             return nil,"MAXIMUM_PRODUCTIVE_A8_WORKING_SPAN_OBSERVATION_UNAVAILABLE"
         end
-        workingWidth=observation.workingWidth(worker)
-        local width=workingWidth and tonumber(workingWidth.widthMetres) or nil
-        local left=workingWidth and workingWidth.leftPoint or nil
-        local right=workingWidth and workingWidth.rightPoint or nil
-        if workingWidth==nil or workingWidth.available~=true or not finite(width) or width<=0 then
+        if workingWidthObservation==nil or workingWidthObservation.available~=true
+            or not finite(observedWorkingWidthM) or observedWorkingWidthM<=0 then
+            if physicalSpanContradiction then
+                return nil,"MAXIMUM_PRODUCTIVE_A8_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_WITHOUT_WORKING_SPAN"
+            end
             return nil,"MAXIMUM_PRODUCTIVE_A8_WORKING_SPAN_UNAVAILABLE"
         end
+        if physicalSpanContradiction and finite(authoredBaseRadialSpanM)
+            and observedWorkingWidthM<=authoredBaseRadialSpanM+EPSILON then
+            return nil,"MAXIMUM_PRODUCTIVE_A8_WORKING_SPAN_DOES_NOT_RESOLVE_PHYSICAL_CONTRADICTION"
+        end
+
+        local left=workingWidthObservation.leftPoint
+        local right=workingWidthObservation.rightPoint
         if type(left)~="table" or type(right)~="table"
             or not finite(tonumber(left.x)) or not finite(tonumber(left.z))
             or not finite(tonumber(right.x)) or not finite(tonumber(right.z)) then
@@ -292,11 +403,12 @@ function Representation.build(record,frame,worker,localToWorldFn)
         local leftRight,leftForward=project(left)
         local rightRight,rightForward=project(right)
         local midpoint=(leftRight+rightRight)*0.5
-        local halfWidth=width*0.5
+        local halfWidth=observedWorkingWidthM*0.5
         include(bounds,midpoint-halfWidth,leftForward)
         include(bounds,midpoint-halfWidth,rightForward)
         include(bounds,midpoint+halfWidth,leftForward)
         include(bounds,midpoint+halfWidth,rightForward)
+        workingWidth=workingWidthObservation
     end
 
     local width=bounds.maxRightM-bounds.minRightM
@@ -318,14 +430,26 @@ function Representation.build(record,frame,worker,localToWorldFn)
         memberCount=#members,
         metadataSources=table.concat(sources,"|"),
         memberBaseSizeComplete=true,
-        lateralArticulation=lateralArticulation,
+        lateralArticulation=productiveLateralWidening,
+        productiveLateralWidening=productiveLateralWidening,
         lateralArticulationEvidence=articulationEvidence,
+        observedWorkingWidthM=observedWorkingWidthM,
+        observedWorkingWidthSource=workingWidthObservation and workingWidthObservation.source or nil,
+        observedCurrentMarkerSpanM=workingWidthObservation and workingWidthObservation.currentMarkerSpanM or nil,
+        observedAIMarkerWidthM=workingWidthObservation and workingWidthObservation.intrinsicAIMarkerWidthM or nil,
+        observedAIWorkAreaWidthM=workingWidthObservation and workingWidthObservation.aiWorkAreaWidthM or nil,
+        observedVariableWorkWidthSpanM=workingWidthObservation and workingWidthObservation.variableWorkWidthSpanM or nil,
+        observedAICollisionWidthM=workingWidthObservation and workingWidthObservation.aiCollisionWidthM or nil,
         workingWidthM=workingWidth and workingWidth.widthMetres or nil,
         workingWidthSource=workingWidth and workingWidth.source or nil,
         workingSpanMarkerBacked=workingWidth and workingWidth.markerBacked==true or false,
+        currentDiscLateralSpanM=currentDiscLateralSpanM,
+        authoredBaseRadialSpanM=authoredBaseRadialSpanM,
+        physicalSpanContradiction=physicalSpanContradiction,
+        workingSpanAdmissionReason=workingSpanAdmissionReason,
         authority="PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION",
         claimPermissions={"PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION"},
-        configurationBasis=lateralArticulation
+        configurationBasis=workingWidth~=nil
             and "EVIDENCE_FUSED_AUTHORED_PHYSICAL_PLUS_PRODUCTIVE_WORKING_SPAN"
             or "EVIDENCE_FUSED_AUTHORED_PHYSICAL_SPAN",
         geometryPurpose="NATIVE_A8_CLEARANCE_EXCLUSION",

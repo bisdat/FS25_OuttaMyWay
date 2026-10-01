@@ -2186,6 +2186,7 @@ def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conse
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     maximum=(ROOT/"scripts"/"representation"/"MaximumProductiveA8Representation.lua").read_text(encoding="utf-8")
     observation=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    native_observation=(ROOT/"scripts"/"observation"/"NativeFieldWorkObservation.lua").read_text(encoding="utf-8")
     native=(ROOT/"scripts"/"assessment"/"NativeA8ClearanceAssessment.lua").read_text(encoding="utf-8")
     trajectory=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
@@ -2201,8 +2202,18 @@ def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conse
     assert "Foldability != Lateral Articulation" in maximum
     assert "inspectLateralArticulation" in maximum
     assert "inspectNeedsLowering" in maximum
-    assert "FOLD_CAPABILITY_AND_AI_NEEDS_LOWERING" in maximum
-    assert "AMBIGUOUS_FOLD_CONFIGURATION_CONSERVATIVE_WORKING_SPAN" in maximum
+    assert "animationValues" in maximum
+    assert "LATERAL_ANIMATION_AND_AI_COLLISION_CORROBORATION" in maximum
+    assert "AI_COLLISION_WIDTH_CORROBORATES_PRODUCTIVE_SPAN" in maximum
+    assert "MAXIMUM_PRODUCTIVE_A8_PRODUCTIVE_LATERAL_EXTENT_UNRESOLVED" in maximum
+    assert "CURRENT_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_MAXIMUM" in maximum
+    assert "MAXIMUM_PRODUCTIVE_A8_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_WITHOUT_WORKING_SPAN" in maximum
+    assert "updateAIMarkerWidth" in native_observation
+    assert "GIANTS_AI_MARKER_WIDTH" in native_observation
+    assert "getAIWorkAreaWidth" in native_observation
+    assert "getAIImplementCollisionTrigger" in native_observation
+    assert "FieldCourseSettings" in native_observation
+    assert 'MaximumProductiveA8Representation.build(record,frame,worker,self:_api("localToWorld"),worldPrimitives)' in cache
     assert "maximumProductiveA8Envelope" in observation
     assert "maximumProductiveA8Envelope" in situation
     assert "NativeA8ClearanceAssessment.apply" in situation

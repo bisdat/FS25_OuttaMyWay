@@ -335,6 +335,50 @@ instantiated.
 **Evidence:** asset inspection, runtime configuration inspection, and validated
 implementation use.
 
+### Intrinsic AI working width differs from current marker pose and player course width
+
+**Finding:** current FS25 `AIImplement:getAIMarkers()` returns the selected
+setup's cached `aiMarkerWidth` as its fifth value. GIANTS'
+`AIAutomaticSteering:getAttacherToolWorkingWidth()` calls
+`updateAIMarkerWidth()`, reads that semantic width, and also considers
+`getAIWorkAreaWidth()` across the root assembly. An explicit authored AI-marker
+width therefore remains available while the corresponding marker nodes are
+physically folded. Separately, the player-facing field-course width can be
+changed below the implement's intrinsic width.
+
+**Safe use:** preserve intrinsic AI-marker/work-area width, current marker
+separation, and player field-course width as different evidence. Intrinsic width
+may contribute to a purpose-specific productive-width bound when independent
+physical/configuration evidence supports that use.
+
+**Do not infer:** current marker separation equals productive maximum, a
+player-selected course width can shrink physical occupancy, or intrinsic
+productive width alone is physical collision geometry.
+
+**Evidence:** current FS25 `AIImplement` /
+`AIAutomaticSteering` source; pre-job Patriot AI Settings observations; supplied
+Patriot and Condor assets.
+
+### Runtime dynamic animation values differ from source XML shape
+
+**Finding:** `AnimatedVehicle` registers rotation, translation and scale
+animation values from XML `start*/end*` attributes, but runtime dynamic parts
+store those loaded values under `part.animationValues`. Each animation-value
+object preserves its semantic `name` plus `startValue` / `endValue`.
+Selected `Foldable` parts point to those named runtime animations.
+
+**Safe use:** inspect `part.animationValues` when reasoning about instantiated
+fold/deployment transform capability. For vehicle-local plan-view lateral
+potential, X translation/scale and Y/Z rotation are relevant evidence; X-only
+pitch is not by itself lateral-width evidence.
+
+**Do not infer:** the presence of any animation, foldability, or
+`needsLowering` proves lateral widening. Lowering and lateral deployment are
+orthogonal configuration facts.
+
+**Evidence:** current FS25 `AnimatedVehicle`, `AnimationValueFloat` and
+`Foldable` source; supplied Patriot/Condor fold animations.
+
 ## Assembly and physical structure
 
 ### One worker may own multiple runtime assets

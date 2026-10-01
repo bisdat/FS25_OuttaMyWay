@@ -8836,8 +8836,17 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     local topDown={
         rootNode=10,xmlFile=xml(3,9.2),components={{node=10}},
         spec_foldable={foldAnimTime=0,foldingParts={{animationName="folding"}}},
+        spec_animatedVehicle={animations={
+            folding={parts={{
+                animationValues={{
+                    name="rotation",startValue={0,0,0},endValue={0,0,1.57}
+                }}
+            }}}
+        }},
         getAINeedsLowering=function() return true end,
-        getAIMarkers=function() return 20,21 end,
+        updateAIMarkerWidth=function() end,
+        getAIMarkers=function() return 20,21,nil,false,6.0 end,
+        getAIImplementCollisionTrigger=function() return {width=6.0} end,
         getName=function() return "TopDown-like" end,
         getAttachedImplements=function() return {} end
     }
@@ -8854,14 +8863,24 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     topCache:endObservationCycle()
     equal(top.maximumProductiveA8Envelope~=nil,true)
     equal(top.maximumProductiveA8Envelope.lateralArticulation,true)
-    equal(top.maximumProductiveA8Envelope.workingWidthSource,"GIANTS_AI_MARKERS")
+    equal(top.maximumProductiveA8Envelope.workingWidthSource,"GIANTS_AI_MARKER_WIDTH")
+    equal(top.maximumProductiveA8Envelope.lateralArticulationEvidence[2].needsLowering,true)
     spatialNear(top.maximumProductiveA8Envelope.widthM,6.0,0.001)
 
     local vario={
         rootNode=30,xmlFile=xml(1.8,5.75),components={{node=30}},
         spec_foldable={foldAnimTime=0,foldingParts={{animationName="openBackDoor"}}},
-        getAINeedsLowering=function() return false end,
-        getAIMarkers=function() return 40,41 end,
+        spec_animatedVehicle={animations={
+            openBackDoor={parts={{
+                animationValues={{
+                    name="rotation",startValue={0,0,0},endValue={1.20,0,0}
+                }}
+            }}}
+        }},
+        getAINeedsLowering=function() return true end,
+        updateAIMarkerWidth=function() end,
+        getAIMarkers=function() return 40,41,nil,false,8.0 end,
+        getAIImplementCollisionTrigger=function() return {width=3.0} end,
         getName=function() return "Variofex-like" end,
         getAttachedImplements=function() return {} end
     }
@@ -8879,21 +8898,254 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     equal(varioEvidence.maximumProductiveA8Envelope~=nil,true)
     equal(varioEvidence.maximumProductiveA8Envelope.lateralArticulation,false)
     spatialNear(varioEvidence.maximumProductiveA8Envelope.widthM,2.65,0.001)
+    spatialNear(varioEvidence.maximumProductiveA8Envelope.observedWorkingWidthM,8.0,0.001)
     equal(varioEvidence.maximumProductiveA8Envelope.workingWidthM,nil)
+    equal(varioEvidence.maximumProductiveA8Envelope.lateralArticulationEvidence[2].needsLowering,true)
+    equal(varioEvidence.maximumProductiveA8Envelope.lateralArticulationEvidence[2].animationStatus,"NOT_SUPPORTED")
+    equal(varioEvidence.maximumProductiveA8Envelope.lateralArticulationEvidence[2].collisionCorroboratesProductiveSpan,false)
+    equal(varioEvidence.maximumProductiveA8Envelope.physicalSpanContradiction,false)
+    equal(varioEvidence.maximumProductiveA8Envelope.workingSpanAdmissionReason,"AUTHORED_PHYSICAL_SPAN_SUFFICIENT")
 
     getWorldTranslation=oldWorldTranslation
     localDirectionToWorld=oldLocalDirectionToWorld
 end)
 
-test("Maximum Productive A8 treats animation introspection as one evidence source rather than a gate",function()
-    local object={
-        spec_foldable={foldingParts={{animationName="missingAnimation"}}},
+test("Maximum Productive A8 uses intrinsic GIANTS width while a laterally articulated sprayer is still folded",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={[60]={0,0,0},[61]={-1.5,0,0},[62]={1.5,0,0}}
+    getWorldTranslation=function(node)
+        local p=positions[node] or {0,0,0}
+        return p[1],p[2],p[3]
+    end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local function xml(width,length)
+        return {getValue=function(_,key)
+            local values={["vehicle.base.size#width"]=width,["vehicle.base.size#length"]=length}
+            return values[key]
+        end}
+    end
+    local function api()
+        return {
+            getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,
+            getName=function(node) return "root"..tostring(node) end,
+            localToWorld=function(node,x,y,z)
+                local p=positions[node] or {0,0,0}
+                return p[1]+x,p[2]+y,p[3]+z
+            end,
+            getShapeGeometryBoundingSphere=function() return 0,0,0,4,true end,
+            getShapeBoundingSphere=function() return 0,0,0,4,true end,
+            getShapeWorldBoundingSphere=function(node)
+                local p=positions[node] or {0,0,0}
+                return p[1],p[2],p[3],4
+            end,
+            getIsCompoundChild=function() return false end
+        }
+    end
+    local sprayer={
+        rootNode=60,xmlFile=xml(3.9,8.0),components={},
+        spec_foldable={foldingParts={{animationName="folding"}}},
+        spec_animatedVehicle={animations={
+            folding={parts={{
+                animationValues={{
+                    name="rotation",startValue={0,0,0},endValue={0,3.16,0}
+                }}
+            }}}
+        }},
+        getAINeedsLowering=function() return false end,
+        updateAIMarkerWidth=function() end,
+        getAIMarkers=function() return 61,62,nil,false,36.0 end,
+        getAIWorkAreaWidth=function() return 36.0 end,
+        getAIImplementCollisionTrigger=function() return {width=35.65} end,
+        getWorkingWidth=function() return 0.5 end,
+        getName=function() return "Patriot-like folded sprayer" end,
+        getAttachedImplements=function() return {} end,
+        getAISteeringNode=function() return 60 end
+    }
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    cache:beginObservationCycle()
+    local evidence=cache:observe(sprayer,"vehicle-root:folded-sprayer","job-folded-sprayer",0)
+    cache:endObservationCycle()
+
+    equal(evidence.maximumProductiveA8Envelope~=nil,true)
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulation,true)
+    equal(evidence.maximumProductiveA8Envelope.physicalSpanContradiction,false)
+    spatialNear(evidence.maximumProductiveA8Envelope.observedCurrentMarkerSpanM,3.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.observedAIMarkerWidthM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.observedAICollisionWidthM,35.65,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.workingWidthM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.widthM,36.0,0.001)
+    equal(evidence.maximumProductiveA8Envelope.workingWidthSource,"GIANTS_AI_MARKER_WIDTH")
+    equal(evidence.maximumProductiveA8Envelope.workingSpanAdmissionReason,"CONFIGURATION_EVIDENCE_REQUIRES_PRODUCTIVE_WORKING_SPAN")
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulationEvidence[1].needsLowering,false)
+
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("Maximum Productive A8 uses AI collision width as fallback corroboration when fold introspection is unresolved",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={[70]={0,0,0},[71]={-1.5,0,0},[72]={1.5,0,0}}
+    getWorldTranslation=function(node)
+        local p=positions[node] or {0,0,0}
+        return p[1],p[2],p[3]
+    end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local xml={getValue=function(_,key)
+        local values={["vehicle.base.size#width"]=3.9,["vehicle.base.size#length"]=8.0}
+        return values[key]
+    end}
+    local api={
+        getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,
+        getName=function(node) return "root"..tostring(node) end,
+        localToWorld=function(node,x,y,z)
+            local p=positions[node] or {0,0,0}
+            return p[1]+x,p[2]+y,p[3]+z
+        end,
+        getShapeGeometryBoundingSphere=function() return 0,0,0,4,true end,
+        getShapeBoundingSphere=function() return 0,0,0,4,true end,
+        getShapeWorldBoundingSphere=function(node)
+            local p=positions[node] or {0,0,0}
+            return p[1],p[2],p[3],4
+        end,
+        getIsCompoundChild=function() return false end
+    }
+    local sprayer={
+        rootNode=70,xmlFile=xml,components={},
+        spec_foldable={foldingParts={{animationName="runtimeUnavailable"}}},
+        getAINeedsLowering=function() return false end,
+        updateAIMarkerWidth=function() end,
+        getAIMarkers=function() return 71,72,nil,false,36.0 end,
+        getAIImplementCollisionTrigger=function() return {width=35.65} end,
+        getName=function() return "Sprayer collision corroboration" end,
+        getAttachedImplements=function() return {} end,
+        getAISteeringNode=function() return 70 end
+    }
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api=api})
+    cache:beginObservationCycle()
+    local evidence=cache:observe(sprayer,"vehicle-root:collision-corroborated","job-collision-corroborated",0)
+    cache:endObservationCycle()
+
+    equal(evidence.maximumProductiveA8Envelope~=nil,true)
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulation,true)
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulationEvidence[1].animationStatus,"UNRESOLVED")
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulationEvidence[1].collisionCorroboratesProductiveSpan,true)
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulationEvidence[1].inferenceReason,"AI_COLLISION_WIDTH_CORROBORATES_PRODUCTIVE_SPAN")
+    spatialNear(evidence.maximumProductiveA8Envelope.widthM,36.0,0.001)
+
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("Maximum Productive A8 uses current physical contradiction to challenge an authored-only maximum",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={
+        [50]={0,0,0},[51]={-18,0,0},[52]={18,0,0}
+    }
+    getWorldTranslation=function(node)
+        local p=positions[node] or {0,0,0}
+        return p[1],p[2],p[3]
+    end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+
+    local function xml(width,length)
+        return {getValue=function(_,key)
+            local values={["vehicle.base.size#width"]=width,["vehicle.base.size#length"]=length}
+            return values[key]
+        end}
+    end
+    local function api()
+        return {
+            getNumOfChildren=function() return 0 end,
+            getChildAt=function() return nil end,
+            getName=function(node) return "root"..tostring(node) end,
+            localToWorld=function(node,x,y,z)
+                local p=positions[node] or {0,0,0}
+                return p[1]+x,p[2]+y,p[3]+z
+            end,
+            getShapeGeometryBoundingSphere=function() return 0,0,0,18,true end,
+            getShapeBoundingSphere=function() return 0,0,0,18,true end,
+            getShapeWorldBoundingSphere=function(node)
+                local p=positions[node] or {0,0,0}
+                return p[1],p[2],p[3],18
+            end,
+            getIsCompoundChild=function() return false end
+        }
+    end
+
+    local sprayer={
+        rootNode=50,xmlFile=xml(3.9,8.0),components={},
+        getAINeedsLowering=function() return false end,
+        updateAIMarkerWidth=function() end,
+        getAIMarkers=function() return 51,52,nil,false,36.0 end,
+        getName=function() return "Sprayer-like" end,
+        getAttachedImplements=function() return {} end,
+        getAISteeringNode=function() return 50 end
+    }
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    cache:beginObservationCycle()
+    local evidence=cache:observe(sprayer,"vehicle-root:sprayer","job-sprayer",0)
+    cache:endObservationCycle()
+
+    equal(evidence.maximumProductiveA8Envelope~=nil,true)
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulation,false)
+    equal(evidence.maximumProductiveA8Envelope.physicalSpanContradiction,true)
+    spatialNear(evidence.maximumProductiveA8Envelope.currentDiscLateralSpanM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.observedWorkingWidthM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.workingWidthM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.widthM,36.0,0.001)
+    equal(evidence.maximumProductiveA8Envelope.workingSpanAdmissionReason,"CURRENT_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_MAXIMUM")
+
+    local unresolvedSprayer={
+        rootNode=50,xmlFile=xml(3.9,8.0),components={},
+        getAINeedsLowering=function() return false end,
+        getName=function() return "Sprayer-without-width" end,
+        getAttachedImplements=function() return {} end,
+        getAISteeringNode=function() return 50 end
+    }
+    local unresolvedCache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    unresolvedCache:beginObservationCycle()
+    local unresolved=unresolvedCache:observe(unresolvedSprayer,"vehicle-root:sprayer-no-width","job-sprayer-no-width",0)
+    unresolvedCache:endObservationCycle()
+
+    equal(unresolved.maximumProductiveA8Envelope,nil)
+    equal(unresolved.maximumProductiveA8Reason,"MAXIMUM_PRODUCTIVE_A8_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_WITHOUT_WORKING_SPAN")
+
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("Maximum Productive A8 reads GIANTS runtime animationValues and keeps lowering orthogonal",function()
+    local lateral={
+        spec_foldable={foldingParts={{animationName="folding"}}},
+        spec_animatedVehicle={animations={
+            folding={parts={{
+                animationValues={{
+                    name="rotation",startValue={0,0,0},endValue={0,1.0,0}
+                }}
+            }}}
+        }},
+        getAINeedsLowering=function() return false end
+    }
+    local verticalDoor={
+        spec_foldable={foldingParts={{animationName="door"}}},
+        spec_animatedVehicle={animations={
+            door={parts={{
+                animationValues={{
+                    name="rotation",startValue={0,0,0},endValue={1.0,0,0}
+                }}
+            }}}
+        }},
         getAINeedsLowering=function() return true end
     }
-    local animation=OuttaMyWay.MaximumProductiveA8Representation.inspectLateralArticulation(object)
-    local lowering=OuttaMyWay.MaximumProductiveA8Representation.inspectNeedsLowering(object)
-    equal(animation.status,"UNRESOLVED")
-    equal(animation.reason,"SELECTED_FOLDING_ANIMATION_LATERAL_EFFECT_UNRESOLVED")
+    local lateralEvidence=OuttaMyWay.MaximumProductiveA8Representation.inspectLateralArticulation(lateral)
+    local doorEvidence=OuttaMyWay.MaximumProductiveA8Representation.inspectLateralArticulation(verticalDoor)
+    local lowering=OuttaMyWay.MaximumProductiveA8Representation.inspectNeedsLowering(verticalDoor)
+    equal(lateralEvidence.status,"SUPPORTED")
+    equal(lateralEvidence.reason,"SELECTED_FOLDING_ANIMATION_CAN_CHANGE_PLAN_VIEW_LATERAL_SPAN")
+    equal(doorEvidence.status,"NOT_SUPPORTED")
     equal(lowering.available,true)
     equal(lowering.value,true)
     equal(lowering.source,"GIANTS_GET_AI_NEEDS_LOWERING")
