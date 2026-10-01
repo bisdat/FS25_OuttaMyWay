@@ -503,7 +503,7 @@ After BWR establishment, its Recovery Bubble temporarily owns the Local Operatio
 
 [`BOUNDED_BYPASS.md`](BOUNDED_BYPASS.md) is a separate Resolution Jurisdiction. It is not a third phase of Blocked Worker Recovery and does not weaken the recurrence veto against replaying BWR.
 
-Only after the Recovery Bubble has terminated may the fresh correlated successor Stall participate in ordinary prospective Candidate selection. Bounded Bypass then requires its own positive Causal Obstruction, Bypass Blocker Stability, current local continuation frame, complete Transit geometry and complete Bypass-Capable Theatre. BWR recurrence memory contributes only the `Recovery Strategy Exhausted` fact and no movement authority.
+Only after the Recovery Bubble has terminated may the fresh correlated successor Stall participate in ordinary prospective Candidate selection. Bounded Bypass then requires its own positive Causal Obstruction, Bypass Blocker Stability, current local continuation frame, Transit support and supported Fixed Bypass Dogleg. BWR recurrence memory contributes only the `Recovery Strategy Exhausted` fact and no movement authority.
 
 ### Responsibility Transition
 
