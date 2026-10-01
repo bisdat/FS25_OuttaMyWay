@@ -42,6 +42,7 @@ The currently migrated primary Specifications are:
 | **Resolution Lifecycle** | [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md) |
 | **Obstruction Relocation** | [`OBSTRUCTION_RELOCATION.md`](OBSTRUCTION_RELOCATION.md) |
 | **Blocked Worker Recovery** | [`BLOCKED_WORKER_RECOVERY.md`](BLOCKED_WORKER_RECOVERY.md) |
+| **Bounded Bypass** | [`BOUNDED_BYPASS.md`](BOUNDED_BYPASS.md) |
 | **Cooperative Passage** | [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) |
 | **Physical Identity Resolution** | [`PHYSICAL_IDENTITY_RESOLUTION.md`](PHYSICAL_IDENTITY_RESOLUTION.md) |
 | **Assessment Representation** | [`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) |
@@ -53,7 +54,7 @@ The currently migrated primary Specifications are:
 | **Log Publication** | [`LOG_PUBLICATION.md`](LOG_PUBLICATION.md) |
 | **Configuration** | [`CONFIGURATION.md`](CONFIGURATION.md) |
 
-All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Blocked Worker Recovery** and **Configuration** both have mature primary Specifications and production implementation participants.
+All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Blocked Worker Recovery** and **Configuration** both have mature primary Specifications and production implementation participants. **Bounded Bypass** has a mature primary Specification but is deliberately `NOT_IMPLEMENTED`; it has no production participants until a later implementation increment is separately accepted.
 
 A genuine Jurisdiction whose implementation-facing contract is mature before production source exists may have a primary Specification carrying the exact declaration `**Implementation Status:** \`NOT_IMPLEMENTED\``. That state is distinct from a Deferred Responsibility: the contract is already normative, but no production mechanism yet realises it. Such a Specification has no production participant rows until implementation is accepted.
 

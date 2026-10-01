@@ -398,7 +398,8 @@ When Recovery Strategy Exhausted is established:
 - another Blocked Worker Recovery Candidate MUST NOT be admitted for that correlated Stall;
 - no automatic Recovery retry/replacement loop may be started;
 - passive recurrence state MUST NOT acquire Current Responsibility, Bounded Authority or Control authority;
-- independently supported traffic or other Resolution responsibilities remain independently assessable; and
+- independently supported traffic or other Resolution responsibilities remain independently assessable;
+- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence, but Recovery Strategy Exhausted alone MUST NOT establish its blocker, theatre, side or movement authority; and
 - if no supported autonomous continuation remains, normal escalation may require Player Intervention.
 
 Outside the 5 m / 60 s bounds, or without exact intended-successor lineage, the later Stall is not a Correlated Recovery Recurrence and may independently support a new Recovery cycle if all ordinary admission requirements are satisfied.
@@ -497,6 +498,12 @@ Assessment Representation supplies purpose-fit current Physical Assembly evidenc
 Before BWR establishment, prospective support and mandatory constraints remain upstream of Responsibility Transition. A Blocked Progress Stall does not automatically outrank an independently supported active-traffic, Causal Obstruction or other purpose-specific Candidate. Decision selects among current supported alternatives before Responsibility Transition. This Specification does not make `isBlocked`, Stall classification or Control availability equivalent to Candidate selection.
 
 After BWR establishment, its Recovery Bubble temporarily owns the Local Operation's prospective decision horizon. Fresh Observation and Situation knowledge continue, but new independent Candidate / Decision creation is deferred until BWR terminates and the Bubble releases. This is bounded serialization for Recovery, not persistent pair history or future-route ownership.
+
+### Bounded Bypass
+
+[`BOUNDED_BYPASS.md`](BOUNDED_BYPASS.md) is a separate Resolution Jurisdiction. It is not a third phase of Blocked Worker Recovery and does not weaken the recurrence veto against replaying BWR.
+
+Only after the Recovery Bubble has terminated may the fresh correlated successor Stall participate in ordinary prospective Candidate selection. Bounded Bypass then requires its own positive Causal Obstruction, Bypass Blocker Stability, current local continuation frame, complete Transit geometry and complete Bypass-Capable Theatre. BWR recurrence memory contributes only the `Recovery Strategy Exhausted` fact and no movement authority.
 
 ### Responsibility Transition
 
@@ -603,4 +610,4 @@ Initial Reality validation should include:
 
 ### Outside this Specification's validation claim
 
-A successful Recovery cycle does not prove that arbitrary scenery is navigable, that every future GIANTS route will succeed, that every player FIELDWORK setting has already been validated as preserved, that every environmental obstacle can be identified, or that a broader obstacle-bypass/repositioning capability exists.
+A successful Recovery cycle does not prove that arbitrary scenery is navigable, that every future GIANTS route will succeed, that every player FIELDWORK setting has already been validated as preserved, that every environmental obstacle can be identified, or that the separate Bounded Bypass contract is supportable in any particular situation.
