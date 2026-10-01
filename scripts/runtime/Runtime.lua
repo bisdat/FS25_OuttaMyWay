@@ -674,7 +674,8 @@ function Runtime:onBlockedWorkerRecoveryControlCompletion(result)
             assemblyId=result.assemblyId,recoveryKey=result.recoveryKey,
             stallTimestamp=tonumber(recurrence.stallTimestamp),stallX=tonumber(recurrence.stallX),stallZ=tonumber(recurrence.stallZ),
             successorJobEpisodeId=evidence.successorJobEpisodeId,
-            successorSourceJobToken=evidence.observedSuccessorSourceJobToken
+            successorSourceJobToken=evidence.observedSuccessorSourceJobToken,
+            successfulRecoveryExcursion=result.successfulRecoveryExcursion
         })
         if recorded~=true then
             logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_RECURRENCE_PROVENANCE_UNAVAILABLE",

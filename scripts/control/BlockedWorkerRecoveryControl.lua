@@ -118,6 +118,7 @@ function Control:_finish(status,evidence)
         status=status,commitmentId=state.commitmentId,assemblyId=state.assemblyId,
         requestId=state.requestId,boundedAuthorityId=state.boundedAuthorityId,
         recoveryKey=state.recoveryKey,recoveryRecurrenceContext=state.recoveryRecurrenceContext,
+        successfulRecoveryExcursion=state.successfulRecoveryExcursion,
         evidence=evidence or {}
     })
 end
@@ -329,11 +330,15 @@ function Control:_beginNativeReplanning(state,returnEvidence)
         maximumSupportedRetreatM=state.maximumSupportedRetreatM,
         cappedByAnchor=state.cappedByAnchor==true,
         retreatProgressM=returnEvidence and returnEvidence.retreatProgressM or nil,
+        demonstratedRetreatM=returnEvidence and returnEvidence.retreatProgressM or nil,
+        returnX=returnEvidence and returnEvidence.x or nil,
+        returnZ=returnEvidence and returnEvidence.z or nil,
         lateralOffsetM=returnEvidence and returnEvidence.lateralOffsetM or nil,
         completionBasis=returnEvidence and returnEvidence.completionBasis or "RECOVERY_RETURN_REGION_PROGRESS",
         transitRequested=state.transitRequested==true,
         transitChanged=state.transitChanged==true
     }
+    state.successfulRecoveryExcursion=phaseEvidence
     self:_notifyPhase(state,"PHYSICAL_RECOVERY_SATISFIED",phaseEvidence)
 
     local replaced,replacementEvidence=self:_replaceNativeFieldWorkJob(state)

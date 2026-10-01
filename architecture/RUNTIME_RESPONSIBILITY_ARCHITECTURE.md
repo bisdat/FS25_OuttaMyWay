@@ -784,9 +784,15 @@ The Recovery Resolution may remain semantically current for the short evidence i
 
 Positive admission of that intended successor satisfies Native Replanning and therefore the final Recovery obligation. **RC-1 SUCCESS is a sharp boundary:** all remaining Recovery-owned authority, actuation bookkeeping and Current Responsibility stickiness are released immediately. No recurrence hold, grace period or post-success actuation authority remains.
 
-Passive outcome/lineage memory MAY persist after success only to correlate a later independently established Stall against the completed Recovery. That memory is not Current Responsibility, Bounded Authority, Control state or a reason to delay release.
+Passive outcome/lineage memory MAY persist after success to correlate a later independently established Stall against the completed Recovery. It MAY also retain **Successful Recovery Excursion Evidence**: positive outcome facts actually demonstrated by the completed physical Recovery, such as the achieved retreat magnitude. That evidence describes what Reality proved during the completed excursion; it does not retain the Recovery Trail, Recovery Anchor, movement objective or direction as future permission.
+
+A later independently defined successor strategy MAY consume such a demonstrated magnitude only through its own current-evidence contract. Historical Recovery geometry cannot thereby become current route or negative-clearance authority.
+
+That passive memory is not Current Responsibility, Bounded Authority, Control state or a reason to delay release.
 
 > **Resolution Completion = Immediate Recovery Release.**
+
+> **Successful Recovery Excursion Evidence != Retained Recovery Authority.**
 
 > **Correlation Memory != Retained Recovery Authority.**
 
@@ -813,6 +819,8 @@ A **Correlated Recovery Recurrence** exists only when all of the following are t
 > **Spatial Proximity Correlates Stalls; It Does Not Identify the Obstacle.**
 
 The first such correlated successor Stall is sufficient to establish **Recovery Strategy Exhausted** for the simple one-cycle Recovery strategy at that local condition. Recovery success is not retroactively revoked: the preceding Recovery truthfully succeeded when its intended successor Job Episode was admitted. The later recurrence instead proves that replaying the same bounded Recovery strategy is no longer a justified autonomous continuation.
+
+Where the immediately preceding successful Recovery retained Successful Recovery Excursion Evidence, the correlated recurrence MAY expose that positive completed-outcome provenance to a separate successor Jurisdiction. Only the demonstrated outcome magnitude is transferable in that way; the previous Recovery direction, Trail and Anchor remain historical and confer no movement permission.
 
 A Correlated Recovery Recurrence therefore vetoes another Blocked Worker Recovery cycle for that correlated Stall. It does not veto independently supported Regulation, Passage, Obstruction Relocation or the separate [Bounded Bypass](SPATIAL_NEGOTIATION_MODEL.md#specification-jurisdiction--bounded-bypass) Resolution where that Jurisdiction's additional current-evidence contract is independently satisfied. Recovery Strategy Exhausted alone does not establish Bypass support. If no supported autonomous continuation remains after the Recovery strategy is exhausted, normal escalation may require Player Intervention.
 

@@ -56,7 +56,9 @@ return function(test,equal)
         local recorded,recordReason=recurrence:recordSuccessfulRecovery({
             assemblyId="AS-RECOVERY",recoveryKey="blocked-worker-recovery:OR-RECOVERY:AS-RECOVERY:JE-RECOVERY",
             stallTimestamp=10,stallX=10,stallZ=20,
-            successorJobEpisodeId="JE-SUCCESSOR",successorSourceJobToken="JOB-SUCCESSOR"
+            successorJobEpisodeId="JE-SUCCESSOR",successorSourceJobToken="JOB-SUCCESSOR",
+            successfulRecoveryExcursion={demonstratedRetreatM=20.25,returnOriginX=30,returnOriginZ=0,returnX=9.75,returnZ=0,
+                completionBasis="RECOVERY_RETURN_REGION_PROGRESS"}
         })
         equal(recorded,true,recordReason)
 
@@ -82,6 +84,8 @@ return function(test,equal)
         equal(result.successorJobEpisodeId,"JE-SUCCESSOR")
         equal(result.separationM<5,true)
         equal(result.elapsedSeconds,26)
+        equal(result.successfulRecoveryExcursion.demonstratedRetreatM,20.25)
+        equal(result.successfulRecoveryExcursion.kind,"SUCCESSFUL_RECOVERY_EXCURSION")
 
         local picture=OuttaMyWay.OperationalPicture.new({
             identity="PI-RECOVERY-RECURRENCE",epoch=101,observationSnapshotId="OS-RECOVERY-RECURRENCE",
@@ -409,6 +413,9 @@ return function(test,equal)
         equal(phaseEvent.evidence.kind,"RECOVERY_RETURN_REGION_REACHED_IN_TRANSIT")
         equal(phaseEvent.evidence.requiredRetreatM,20)
         equal(phaseEvent.evidence.retreatProgressM,20)
+        equal(phaseEvent.evidence.demonstratedRetreatM,20)
+        equal(phaseEvent.evidence.returnX,10)
+        equal(phaseEvent.evidence.returnZ,0)
         equal(phaseEvent.evidence.completionBasis,"RECOVERY_RETURN_REGION_PROGRESS")
         equal(control:getStatus().phase,"WAITING_FOR_REPLACEMENT_JOB_EPISODE")
         equal(control:getStatus().expectedSuccessorSourceJobToken,"giants-ai-job-id:42")
@@ -428,6 +435,8 @@ return function(test,equal)
         equal(completion.evidence.successorJobEpisodeId,"JE-SUCCESSOR")
         equal(completion.recoveryRecurrenceContext.stallTimestamp,10)
         equal(completion.recoveryRecurrenceContext.stallX,30)
+        equal(completion.successfulRecoveryExcursion.demonstratedRetreatM,20)
+        equal(completion.successfulRecoveryExcursion.returnX,10)
         equal(control:isActive(),false)
         g_currentMission,getWorldTranslation=oldMission,oldTranslation
     end)

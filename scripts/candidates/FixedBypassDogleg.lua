@@ -1,4 +1,4 @@
---- Builds and checks the three-leg Bypass reference guide; makes no assembly sweep or clearance claim.
+--- Builds and checks the four-leg Bypass reference guide; makes no assembly sweep or clearance claim.
 -- Specification Jurisdictions: `BOUNDED_BYPASS`
 OuttaMyWay.FixedBypassDogleg={}
 local Guide=OuttaMyWay.FixedBypassDogleg
@@ -78,16 +78,22 @@ function Guide.support(field,guide)
     end
     return true,reserveSum/count
 end
+function Guide.requiredLaunchSeparationM()
+    local profile=OuttaMyWay.ForwardDiagonalSteeringHelper.profile(LATERAL_OUTCOME_M)
+    return profile and profile.forwardDistanceM or nil
+end
 function Guide.build(frame,side)
     if side~=1 and side~=-1 then return nil end
     local profile=OuttaMyWay.ForwardDiagonalSteeringHelper.profile(side*LATERAL_OUTCOME_M)
     local diagonal=profile.forwardDistanceM
-    local function target(kind,forward,lateral)
+    local function target(kind,forward,lateral,moveForwards)
         return {kind=kind,x=frame.x+frame.forwardX*forward+frame.rightX*lateral,
-            z=frame.z+frame.forwardZ*forward+frame.rightZ*lateral,forwardM=forward,lateralM=lateral}
+            z=frame.z+frame.forwardZ*forward+frame.rightZ*lateral,forwardM=forward,lateralM=lateral,
+            moveForwards=moveForwards}
     end
-    return {origin={x=frame.x,z=frame.z},frame=frame,side=side,targets={
-        target("LATERAL_DEPARTURE",diagonal,side*LATERAL_OUTCOME_M),
-        target("BYPASS_ADVANCE",diagonal+ADVANCE_M,side*LATERAL_OUTCOME_M),
-        target("POST_BLOCKAGE_AXIS_REJOIN",2*diagonal+ADVANCE_M,0)}}
+    return {origin={x=frame.x,z=frame.z},frame=frame,side=side,launchSeparationM=diagonal,targets={
+        target("BYPASS_LAUNCH_SEPARATION",-diagonal,0,false),
+        target("LATERAL_DEPARTURE",0,side*LATERAL_OUTCOME_M,true),
+        target("BYPASS_ADVANCE",ADVANCE_M,side*LATERAL_OUTCOME_M,true),
+        target("POST_BLOCKAGE_AXIS_REJOIN",diagonal+ADVANCE_M,0,true)}}
 end

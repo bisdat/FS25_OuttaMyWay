@@ -1,4 +1,4 @@
---- Executes exactly one authorised forward Dogleg and relinquishes to the unchanged GIANTS Job.
+--- Executes exactly one authorised bounded Dogleg and relinquishes to the unchanged GIANTS Job.
 -- Specification Jurisdictions: `CONTROL`, `BOUNDED_BYPASS`
 OuttaMyWay.BoundedBypassControl={}
 local Control=OuttaMyWay.BoundedBypassControl
@@ -109,7 +109,7 @@ function Control:_validate(state)
 end
 function Control:_beginLeg(state,index)
     local target=state.request.target.bridge.guide.targets[index]
-    local ok,reason=self.driveMechanism:setReposition(state.vehicle,target.x,target.z,SPEED_KMH,TARGET_RADIUS_M,true)
+    local ok,reason=self.driveMechanism:setReposition(state.vehicle,target.x,target.z,SPEED_KMH,TARGET_RADIUS_M,target.moveForwards~=false)
     if not ok then self:_finish("FAILED",reason); return false end
     state.legIndex=index; state.phase=target.kind
     state.progressBestResidualM=nil
@@ -177,7 +177,7 @@ function Control:update()
     if drive==nil or drive.invalidReason~=nil then self:_finish("FAILED","BYPASS_MOVEMENT_UNAVAILABLE"); return end
     if self:_targetProgressStalled(state) then self:_finish("FAILED","BYPASS_TARGET_PROGRESS_STALLED"); return end
     if drive.targetReached==true then
-        if state.legIndex==3 then self:_finish("SUCCEEDED","POST_BLOCKAGE_AXIS_REJOIN_REACHED")
+        if state.legIndex==4 then self:_finish("SUCCEEDED","POST_BLOCKAGE_AXIS_REJOIN_REACHED")
         else self:_beginLeg(state,state.legIndex+1) end
     end
 end

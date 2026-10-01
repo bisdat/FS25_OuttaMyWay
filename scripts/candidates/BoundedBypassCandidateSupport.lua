@@ -5,14 +5,14 @@ local Support=OuttaMyWay.BoundedBypassCandidateSupport
 Support.__index=Support
 local V=OuttaMyWay.ValueRecord
 local E=OuttaMyWay.BoundedBypassEvidence
+local function finite(v) return type(v)=="number" and v==v and math.abs(v)<math.huge end
 function Support.new(runtime) return setmetatable({runtime=runtime,lastStatus="INACTIVE",publishedCount=0},Support) end
-local function exhausted(picture,k)
+local function exhaustedRecurrence(picture,k)
     for _,r in V.ipairs(picture.blockedWorkerRecoveryRecurrenceKnowledge or {}) do
         if r.correlated==true and r.status=="RECOVERY_STRATEGY_EXHAUSTED" and r.assemblyId==k.assemblyId
             and r.successorJobEpisodeId==k.jobEpisodeId and r.successorSourceJobToken==k.sourceJobToken
-            and k.stallEvidence~=nil and r.currentStallObservationSnapshotId==k.stallEvidence.establishedAtObservationSnapshotId then return true end
+            and k.stallEvidence~=nil and r.currentStallObservationSnapshotId==k.stallEvidence.establishedAtObservationSnapshotId then return r end
     end
-    return false
 end
 local function specification(bridge,epoch)
     local key=bridge.bypassKey
@@ -27,7 +27,7 @@ local function specification(bridge,epoch)
                 entries={{assemblyId=bridge.assemblyId,commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="BOUNDED_BYPASS",progressActuation=true}}}},
         representationFitness={requirements={{representationId=bridge.guideRepresentationId,acceptedStates={"FIT_FOR_LIMITED_HORIZON"}}}},preconditions={evidenceContracts={{kind="SUPPORTED_FIXED_BYPASS_DOGLEG"}}},
         invalidationConditions={{kind="PLAYER_CLAIM"},{kind="JOB_CONTINUITY_LOST"},{kind="BYPASS_SUPPORT_CONTRADICTED"}},
-        reversibility={kind="ONE_FORWARD_EXCURSION"},
+        reversibility={kind="ONE_BOUNDED_DOGLEG_EXCURSION"},
         obligationsCreated={{origin={kind="CORRELATED_RECOVERY_RECURRENCE"},basis={kind="BOUNDED_BYPASS",bypassKey=key},
             requiredOutcome={kind="BYPASS_AXIS_REJOIN_OR_PLAYER_ESCALATION"},requiredAuthority={classes={"PROGRESS_ACTUATION"}},
             evidenceContract={kind="FINAL_REJOIN_REACHED_OR_UNSUPPORTED_EXECUTION_ESCALATED"},ownershipClass="ORIGIN_BOUND",
@@ -42,10 +42,13 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     end
     local available={}
     for _,k in V.ipairs(picture.blockedProgressKnowledge or {}) do
-        if k.blockedProgressStall==true and exhausted(picture,k) then available[#available+1]=k end
+        if k.blockedProgressStall==true then
+            local recurrence=exhaustedRecurrence(picture,k)
+            if recurrence~=nil then available[#available+1]={knowledge=k,recurrence=recurrence} end
+        end
     end
     if #available~=1 then return refuse("ONE_EXHAUSTED_SUCCESSOR_STALL_REQUIRED") end
-    local k=available[1]
+    local k,recurrence=available[1].knowledge,available[1].recurrence
     if not E.isMember(picture,k.operationId,k.assemblyId) then return refuse("BYPASS_OPERATION_MEMBERSHIP_UNAVAILABLE") end
     local key="bounded-bypass:"..k.operationId..":"..k.assemblyId..":"..k.jobEpisodeId..":"..tostring(k.stallEvidence.establishedAtObservationSnapshotId)
     for _,commitment in V.ipairs(self.runtime.commitments:list()) do
@@ -58,6 +61,13 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     local activeCausalBlockerAssemblyIds=E.activeCausalBlockerIds(self.runtime,picture,k.operationId,k.assemblyId)
     local frame=E.frame(picture,snapshot,k)
     if frame==nil then return refuse("CURRENT_SUCCESSOR_CONTINUATION_FRAME_UNSUPPORTED") end
+    local requiredLaunchSeparationM=OuttaMyWay.FixedBypassDogleg.requiredLaunchSeparationM()
+    local excursion=recurrence.successfulRecoveryExcursion
+    local demonstratedRetreatM=type(excursion)=="table" and tonumber(excursion.demonstratedRetreatM) or nil
+    if not finite(requiredLaunchSeparationM) or requiredLaunchSeparationM<=0
+        or not finite(demonstratedRetreatM) or demonstratedRetreatM+0.001<requiredLaunchSeparationM then
+        return refuse("BYPASS_LAUNCH_SEPARATION_UNSUPPORTED")
+    end
     local capability=self.runtime.assemblyRepresentationCache:getTransitFoldCapability(k.assemblyReferenceKey,k.sourceJobToken)
     if type(capability)~="table" or type(capability.members)~="table" then return refuse("BYPASS_TRANSIT_UNSUPPORTED") end
     local candidates,fitness={},{}
@@ -68,6 +78,8 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
             local bridge={architecture="BOUNDED_BYPASS",bypassKey=key,operationId=k.operationId,
                 assemblyId=k.assemblyId,assemblyReferenceKey=k.assemblyReferenceKey,jobEpisodeId=k.jobEpisodeId,sourceJobToken=k.sourceJobToken,
                 observationSnapshotId=snapshot.identity,activeCausalBlockerAssemblyIds=activeCausalBlockerAssemblyIds,
+                launchSupport={recoveryKey=recurrence.recoveryKey,requiredSeparationM=requiredLaunchSeparationM,
+                    demonstratedRetreatM=demonstratedRetreatM},
                 guide=guide,fieldInteriorReserveM=reserve,
                 guideRepresentationId=key..":"..side..":"..targetPictureId}
             fitness[#fitness+1]={representationId=bridge.guideRepresentationId,assemblyId=k.assemblyId,

@@ -37,13 +37,14 @@ return function(test,equal)
             responsibilityRelations={},uncertainty={},representationFitness={},provenance={},controlOutcomeEvidence={},candidateSupportEvidence={},commitmentContext={},
             blockedProgressKnowledge={{assemblyId="AS-M",assemblyReferenceKey="m",operationId="OP",jobEpisodeId="JM",sourceJobToken="successor",blockedProgressStall=true,
                 stallEvidence={establishedAtObservationSnapshotId="STALL",poseX=0,poseZ=0},recoveryAnchor={poseX=-99,poseZ=0}}},
-            blockedWorkerRecoveryRecurrenceKnowledge={{assemblyId="AS-M",correlated=true,status="RECOVERY_STRATEGY_EXHAUSTED",successorJobEpisodeId="JM",successorSourceJobToken="successor",currentStallObservationSnapshotId="STALL"}},
+            blockedWorkerRecoveryRecurrenceKnowledge={{assemblyId="AS-M",correlated=true,status="RECOVERY_STRATEGY_EXHAUSTED",successorJobEpisodeId="JM",successorSourceJobToken="successor",currentStallObservationSnapshotId="STALL",
+                recoveryKey="blocked-worker-recovery:OP:AS-M:OLD",successfulRecoveryExcursion={kind="SUCCESSFUL_RECOVERY_EXCURSION",demonstratedRetreatM=20}}},
             causalObstructionKnowledge={{identity="R",operationId="OP",beneficiaryAssemblyId="AS-M",blockerAssemblyId="AS-B",blockerAssemblyReferenceKey="b",provenance={authority="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION"}}},
             motionEvidence={{assemblyId="AS-M",assemblyReferenceKey="m",sourceJobToken="successor",headingX=0,headingZ=1,motionClassification="STATIONARY"},
                 {assemblyId="AS-B",assemblyReferenceKey="b",motionClassification="STATIONARY",positionDerivedSpeedMps=0,reportedSpeedMps=0},
                 {assemblyId="AS-C",assemblyReferenceKey="c"}},
             productiveContinuationKnowledge={{assemblyId="AS-M",jobToken="successor",productivePositive=true,isTurn=false}}}
-        local s={identity="S",epoch=19,timestamp=10,provenance={},fieldWorld={boundary={{x=-15,z=-5},{x=100,z=-5},{x=100,z=100},{x=-15,z=100}},islands={}},
+        local s={identity="S",epoch=19,timestamp=10,provenance={},fieldWorld={boundary={{x=-15,z=-30},{x=100,z=-30},{x=100,z=100},{x=-15,z=100}},islands={}},
             assemblies={},geometry={currentPhysicalPoseEvidence={{assemblyReferenceKey="m",x=0,z=0},{assemblyReferenceKey="b",x=0,z=3}}},motion={},
             aiStates={b={aiActiveObserved=true,aiActive=active==true,observedActive=active==true}},
             playerControl={m={playerEnteredObserved=true,playerEntered=false},b={playerEnteredObserved=true,playerEntered=false}},
@@ -104,17 +105,26 @@ return function(test,equal)
         f.s.fieldWorld.boundary[1].x=-5;f.s.fieldWorld.boundary[4].x=-5
         local group=assert(f.group());equal(#group.candidateSpecifications,1);equal(group.candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide.side,1)
     end)
-    test("Bypass fixed guide has three forward legs and later on-axis Rejoin",function()
+    test("Bypass fixed guide launches rearward before three forward legs and later on-axis Rejoin",function()
         local f=fixture();local guide=assert(f.group()).candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide
-        equal(#guide.targets,3);equal(guide.targets[1].x,10);equal(guide.targets[1].z,20)
-        equal(guide.targets[2].x,10);equal(guide.targets[2].z,30)
-        equal(guide.targets[3].x,0);equal(guide.targets[3].z,50)
+        equal(guide.launchSeparationM,20);equal(#guide.targets,4)
+        equal(guide.targets[1].x,0);equal(guide.targets[1].z,-20);equal(guide.targets[1].moveForwards,false)
+        equal(guide.targets[2].x,10);equal(guide.targets[2].z,0);equal(guide.targets[2].moveForwards,true)
+        equal(guide.targets[3].x,10);equal(guide.targets[3].z,10);equal(guide.targets[3].moveForwards,true)
+        equal(guide.targets[4].x,0);equal(guide.targets[4].z,30);equal(guide.targets[4].moveForwards,true)
+    end)
+
+    test("Bypass Launch Separation requires enough demonstrated successful Recovery retreat",function()
+        local f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successfulRecoveryExcursion.demonstratedRetreatM=19.9
+        local group,reason=f.group();equal(group,nil);equal(reason,"BYPASS_LAUNCH_SEPARATION_UNSUPPORTED")
+        f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successfulRecoveryExcursion.demonstratedRetreatM=20
+        assert(f.group())
     end)
     test("Bypass rejects a narrow island between reference samples",function()
-        local f=fixture();f.s.fieldWorld.islands={{{x=4.9,z=9.7},{x=5.1,z=9.7},{x=5.1,z=10.3},{x=4.9,z=10.3}}}
+        local f=fixture();f.s.fieldWorld.islands={{{x=4.9,z=-10.3},{x=5.1,z=-10.3},{x=5.1,z=-9.7},{x=4.9,z=-9.7}}}
         local group=assert(f.group());equal(#group.candidateSpecifications,1);equal(group.candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide.side,-1)
     end)
-    test("Bypass Decision prefers field interior and settles Transit before three forward targets",function()
+    test("Bypass Decision prefers field interior and settles Transit before reverse launch plus three forward targets",function()
         local f=fixture(true);local result,candidate=f.dispatch();equal(result.status,"ACCEPTED")
         equal(candidate.evidenceBasis.boundedBypassBridge.guide.side,1)
         equal(f.configuration.requested,true);equal(#f.drive.moves,0)
@@ -124,9 +134,11 @@ return function(test,equal)
         equal(f.drive:getRegulationLease(f.vehicles.c,"BYPASS_BUBBLE_BULLET_TIME").speedKmh,1)
         f.control:update();equal(#f.drive.moves,0)
         f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
-        for i=1,3 do f.drive.states[f.vehicles.m].targetReached=true;f.control:update() end
-        equal(#f.drive.moves,3)
-        for _,move in ipairs(f.drive.moves) do equal(move.forward,true) end
+        equal(f.drive.moves[1].forward,false)
+        for i=1,4 do f.drive.states[f.vehicles.m].targetReached=true;f.control:update() end
+        equal(#f.drive.moves,4)
+        equal(f.drive.moves[1].forward,false)
+        for i=2,4 do equal(f.drive.moves[i].forward,true) end
         equal(f.control:isActive(),false);equal(f.configuration.cleared,true)
         equal(f.runtime.assemblyRepresentationCache:isOuttaMyWayConfigurationAuthorityActive("m","successor"),false)
         equal(f.runtime.commitments:get(result.commitment.identity).state,"SUCCEEDED")
@@ -208,7 +220,7 @@ return function(test,equal)
         f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
         f.publish();f.control:update()
         g_time=g_time+10001;f.s.timestamp=g_time/1000
-        f.s.geometry.currentPhysicalPoseEvidence[1].z=0.3
+        f.s.geometry.currentPhysicalPoseEvidence[1].z=-0.3
         f.publish();f.control:update();equal(f.control:isActive(),true)
         g_time=g_time+10001;f.s.timestamp=g_time/1000
         f.publish();f.control:update()
