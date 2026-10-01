@@ -1,10 +1,11 @@
 return function(test,equal)
-    local function pictureWithRecovery(contexts,physicalSpaceEvidence)
+    local function pictureWithRecovery(contexts,physicalSpaceEvidence,causalObstructionKnowledge,situations,motionEvidence)
         return OuttaMyWay.OperationalPicture.new({
             identity="PI-RECOVERY",epoch=101,observationSnapshotId="OS-RECOVERY",
-            situations={},currentPairAssessmentScope={},identities={},currentSpace={},futureSpace={},
+            situations=situations or {},currentPairAssessmentScope={},identities={},currentSpace={},futureSpace={},
             demand={committedDemand={},potentialDemand={},temporarySlack={}},
             responsibilityRelations={},uncertainty={},representationFitness={},provenance={source="BlockedWorkerRecoveryTest"},
+            motionEvidence=motionEvidence or {},
             physicalSpaceEvidence=physicalSpaceEvidence or {{
                 assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 configurationProfileId="CFG-WORKING",
@@ -14,6 +15,7 @@ return function(test,equal)
                 provenance={source="BlockedWorkerRecoveryTest"}
             }},
             controlOutcomeEvidence={},candidateSupportEvidence={},commitmentContext=contexts or {},
+            causalObstructionKnowledge=causalObstructionKnowledge or {},
             blockedProgressKnowledge={{
                 assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
                 jobEpisodeId="JE-RECOVERY",sourceJobToken="JOB-RECOVERY",operationId="OR-RECOVERY",
@@ -536,7 +538,35 @@ return function(test,equal)
         AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal=
             oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal
     end)
-    test("Recovery Bubble applies one kilometre per hour to every other active Operation participant",function()
+    test("Recovery Candidate consumes one positive Situation-owned blocker relation without making it admission-required",function()
+        local relation={
+            identity="causal-obstruction:OR-RECOVERY:AS-B->AS-RECOVERY",
+            operationId="OR-RECOVERY",
+            blockerAssemblyId="AS-B",blockerAssemblyReferenceKey="vehicle-root:b",
+            beneficiaryAssemblyId="AS-RECOVERY",beneficiaryAssemblyReferenceKey="vehicle-root:recovery",
+            blockerClassification="ACTIVE_GIANTS_AI",
+            obstructionEvidence={kind="CURRENT_PHYSICAL_OCCUPANCY"},
+            provenance={authority="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION"}
+        }
+        local support=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
+        local group,reason=support:buildFreshProjectedGroup(
+            pictureWithRecovery(nil,nil,{relation}),snapshot(),"PI-RECOVERY-TARGET",102)
+        if group==nil then error(reason or "Recovery group missing") end
+        local bridge=group.candidateSpecifications[1].evidenceBasis.blockedWorkerRecoveryBridge
+        equal(bridge.recoveryBlocker.assemblyId,"AS-B")
+        equal(bridge.recoveryBlocker.assemblyReferenceKey,"vehicle-root:b")
+        equal(bridge.recoveryBlocker.classification,"ACTIVE_GIANTS_AI")
+        equal(bridge.recoveryBlockerStatus,"SUPPORTED")
+
+        local noBlockerGroup,noBlockerReason=support:buildFreshProjectedGroup(
+            pictureWithRecovery(),snapshot(),"PI-RECOVERY-NO-BLOCKER",103)
+        if noBlockerGroup==nil then error(noBlockerReason or "Recovery without blocker should remain supportable") end
+        local noBlockerBridge=noBlockerGroup.candidateSpecifications[1].evidenceBasis.blockedWorkerRecoveryBridge
+        equal(noBlockerBridge.recoveryBlocker,nil)
+        equal(noBlockerBridge.recoveryBlockerStatus,"NO_POSITIVE_CAUSAL_BLOCKER")
+    end)
+
+    test("Recovery Bubble holds active blocker and applies shared Bullet Time to uninvolved participant",function()
         local commitment={identity="CM-RECOVERY-BUBBLE",state="ACTIVE",effectiveActuationCompositionId="COMP-RECOVERY"}
         local currentResponsibility={identity="RS-RECOVERY-BUBBLE"}
         local grants,requests,dispatches,clears,releases={},{},{},{},{}
@@ -559,8 +589,6 @@ return function(test,equal)
                     equal(values.commitmentId,commitment.identity)
                     equal(values.capability,"REGULATE_SPEED")
                     equal(values.authorityRole,"SUPPORTING_SPEED_CEILING")
-                    equal(values.target.ownerTag,"RECOVERY_BUBBLE_BULLET_TIME")
-                    equal(values.target.maxSpeedKmh,1.0)
                     return {identity="BA-"..tostring(#grants),preconditions={},invalidationConditions={},authorityRole="SUPPORTING_SPEED_CEILING"},nil
                 end,
                 materializeRequest=function(_,values)
@@ -573,21 +601,14 @@ return function(test,equal)
                         effectiveActuationCompositionId=commitment.effectiveActuationCompositionId
                     },nil
                 end,
-                release=function(_,id)
-                    releases[#releases+1]=id
-                    return true
-                end
+                release=function(_,id) releases[#releases+1]=id; return true end
             },
             liveControlDispatcher={
-                dispatch=function(_,request)
-                    dispatches[#dispatches+1]=request
-                    return true,"REGULATION_LEASE_APPLIED"
-                end,
+                dispatch=function(_,request) dispatches[#dispatches+1]=request; return true,"REGULATION_LEASE_APPLIED" end,
                 notifyAccepted=function() return {identity="OUTCOME"} end,
                 regulationControl={
                     clearRegulationLeaseByReference=function(_,referenceKey,ownerTag)
-                        clears[#clears+1]=referenceKey
-                        equal(ownerTag,"RECOVERY_BUBBLE_BULLET_TIME")
+                        clears[#clears+1]={referenceKey=referenceKey,ownerTag=ownerTag}
                         return true
                     end
                 }
@@ -612,11 +633,28 @@ return function(test,equal)
             preconditions={},invalidationConditions={},
             evidenceBasis={blockedWorkerRecoveryBridge={
                 architecture="BLOCKED_WORKER_RECOVERY",operationId="OP-RECOVERY",
-                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery"
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery",
+                recoveryBlocker={assemblyId="AS-B",assemblyReferenceKey="vehicle-root:b",classification="ACTIVE_GIANTS_AI"}
             }}
         }
-        local bubble=OuttaMyWay.RecoveryBubbleBulletTime.new(runtime)
-        local prepared,prepareReason=bubble:prepareAtRecoveryBubbleFormation(picture,candidate,{commitment=commitment})
+        local plan={
+            operationId="OP-RECOVERY",
+            releaseWhenAssemblyLeaves={"AS-RECOVERY"},
+            logCodePrefix="RECOVERY_BUBBLE_PROTECTION",
+            provenanceSource="BlockedWorkerRecoveryRuntimeIntegration",
+            leaseSpecs={
+                {
+                    assemblyId="AS-A",maxSpeedKmh=1.0,ownerTag="BWR_BUBBLE_BULLET_TIME",
+                    governingPurpose="BLOCKED_WORKER_RECOVERY_BUBBLE_BULLET_TIME",role="BULLET_TIME"
+                },
+                {
+                    assemblyId="AS-B",maxSpeedKmh=0.0,ownerTag="BWR_BLOCKER_HOLD",
+                    governingPurpose="PRESERVE_CAUSAL_BLOCKER_POSITION_DURING_BLOCKED_WORKER_RECOVERY",role="BLOCKER_HOLD"
+                }
+            }
+        }
+        local bubble=OuttaMyWay.BubbleBulletTime.new(runtime)
+        local prepared,prepareReason=bubble:prepareProtection(picture,{commitment=commitment},plan)
         equal(prepareReason,nil)
         equal(prepared.status,"PREPARED")
         equal(#prepared.leases,2)
@@ -633,20 +671,51 @@ return function(test,equal)
         equal(#dispatches,2)
         equal(grants[1].supportingSpeedCeilingComposition.identity,"COMP-RECOVERY-SUPPORT-1")
         equal(grants[2].supportingSpeedCeilingComposition.identity,"COMP-RECOVERY-SUPPORT-1")
-
-        local reconciliation=bubble:releaseUnsupportedProtection({picture={
-            situations={{operationId="OP-RECOVERY",memberAssemblyIds={"AS-RECOVERY","AS-B"}}}
-        }})
-        equal(#reconciliation,1)
-        equal(reconciliation[1].assemblyId,"AS-A")
-        equal(reconciliation[1].status,"QUIESCENT_BASIS_ENDED")
-        equal(#clears,1)
+        equal(grants[1].assemblyId,"AS-A")
+        equal(grants[1].target.ownerTag,"BWR_BUBBLE_BULLET_TIME")
+        equal(grants[1].target.maxSpeedKmh,1.0)
+        equal(grants[2].assemblyId,"AS-B")
+        equal(grants[2].target.ownerTag,"BWR_BLOCKER_HOLD")
+        equal(grants[2].target.maxSpeedKmh,0.0)
 
         commitment.state="SUCCEEDED"
         bubble:update()
         equal(bubble:getProtection(commitment.identity),nil)
         equal(#clears,2)
         equal(#releases,2)
+    end)
+
+    test("Recovery Bubble without positive active blocker invents no hold",function()
+        local runtime={
+            identities={issue=function() return "COMP-NO-BLOCKER" end},
+            epochs={next=function() return 1 end}
+        }
+        local picture={
+            situations={{operationId="OP-RECOVERY",memberAssemblyIds={"AS-RECOVERY","AS-A","AS-B"}}},
+            motionEvidence={
+                {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:a"},
+                {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:b"}
+            }
+        }
+        local bridge={operationId="OP-RECOVERY",assemblyId="AS-RECOVERY",recoveryBlocker=nil}
+        -- Mirror Runtime's BWR plan policy: with no supported blocker, every other active peer is Bullet Time.
+        local leaseSpecs={}
+        for _,assemblyId in ipairs({"AS-A","AS-B"}) do
+            leaseSpecs[#leaseSpecs+1]={
+                assemblyId=assemblyId,maxSpeedKmh=1.0,ownerTag="BWR_BUBBLE_BULLET_TIME",
+                governingPurpose="BLOCKED_WORKER_RECOVERY_BUBBLE_BULLET_TIME",role="BULLET_TIME"
+            }
+        end
+        local bubble=OuttaMyWay.BubbleBulletTime.new(runtime)
+        local protection,reason=bubble:prepareProtection(picture,{commitment={
+            identity="CM-NO-BLOCKER",effectiveActuationCompositionId="COMP-RECOVERY"
+        }},{operationId=bridge.operationId,leaseSpecs=leaseSpecs,releaseWhenAssemblyLeaves={bridge.assemblyId}})
+        equal(reason,nil)
+        equal(#protection.leases,2)
+        equal(protection.leases[1].maxSpeedKmh,1.0)
+        equal(protection.leases[2].maxSpeedKmh,1.0)
+        equal(protection.leases[1].role,"BULLET_TIME")
+        equal(protection.leases[2].role,"BULLET_TIME")
     end)
 
 end

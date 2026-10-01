@@ -14,7 +14,7 @@ def test_recovery_jurisdiction_is_implemented_by_truthful_vertical_slice():
         "scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua",
         "scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua",
         "scripts/control/BlockedWorkerRecoveryControl.lua",
-        "scripts/authority/RecoveryBubbleBulletTime.lua",
+        "scripts/authority/BubbleBulletTime.lua",
     ):
         source=read(path)
         assert "`BLOCKED_WORKER_RECOVERY`" in source
@@ -96,23 +96,30 @@ def test_recovery_responsibility_semantics_are_preflighted_before_commitment_adm
 def test_recovery_bubble_defers_new_decisions_and_applies_bullet_time_before_recovery_control():
     runtime=read("scripts/runtime/Runtime.lua")
     main=read("scripts/main.lua")
-    bubble=read("scripts/authority/RecoveryBubbleBulletTime.lua")
+    bubble=read("scripts/authority/BubbleBulletTime.lua")
+    candidate=read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")
     spec=read("spec/BLOCKED_WORKER_RECOVERY.md")
 
-    assert '"scripts/authority/RecoveryBubbleBulletTime.lua"' in main
+    assert '"scripts/authority/BubbleBulletTime.lua"' in main
+    assert "RecoveryBubbleBulletTime" not in main
     assert "local recoveryBubbleResolution=false" in runtime
     assert 'kind=="BLOCKED_WORKER_RECOVERY"' in runtime
     assert "supported=self.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in runtime
-    assert "prepareAtRecoveryBubbleFormation" in runtime
-    assert "activatePrepared(applied.commitment.identity,request,candidate)" in runtime
-    activate_pos=runtime.index("activatePrepared(applied.commitment.identity,request,candidate)")
+    assert "_blockedWorkerRecoveryBubbleProtectionPlan" in runtime
+    assert "self.bubbleBulletTime:prepareProtection" in runtime
+    assert "self.bubbleBulletTime:activatePrepared(applied.commitment.identity,request,candidate)" in runtime
+    activate_pos=runtime.index("self.bubbleBulletTime:activatePrepared(applied.commitment.identity,request,candidate)")
     dispatch_pos=runtime.index("self.liveControlDispatcher:dispatch(request,candidate)",activate_pos)
     assert activate_pos < dispatch_pos
-    assert "local INTENT_REVELATION_CREEP_KMH = 1.0" in bubble
-    assert 'local OWNER_TAG = "RECOVERY_BUBBLE_BULLET_TIME"' in bubble
+    assert 'local BWR_BLOCKER_HOLD_OWNER_TAG="BWR_BLOCKER_HOLD"' in runtime
+    assert 'local BWR_BULLET_TIME_OWNER_TAG="BWR_BUBBLE_BULLET_TIME"' in runtime
+    assert "maxSpeedKmh=0.0" in runtime
+    assert "maxSpeedKmh=1.0" in runtime
+    assert "recoveryBlocker(picture,knowledge)" in candidate
+    assert "causalObstructionKnowledge" in candidate
+    assert "function Bubble:prepareProtection" in bubble
     assert "SUPPORTING_SPEED_CEILING" in bubble
-    assert "Recovery Bubble" in spec
-    assert "every other current active Operation participant" in spec
+    assert "Recovering Worker Moves; Blocker Holds; Uninvolved Participant Creeps." in spec
 
 def test_concurrent_recovery_create_is_explicit_and_still_uses_generic_admission_exclusivity():
     recovery=read("scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua")

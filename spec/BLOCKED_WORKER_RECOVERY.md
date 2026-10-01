@@ -40,9 +40,15 @@ Raw `spec_aiFieldWorker.isBlocked` MUST NOT independently satisfy admission.
 
 Blocked Worker Recovery is a single-subject Resolution for movement ownership, but once it becomes current it creates one temporary **Recovery Bubble** over the Local Operation's prospective decision horizon.
 
-The Bubble MUST protect the recovering assembly without predicting which other worker is likely to enter its path. At Bubble formation, every other current active Operation participant MUST receive the purpose-bound **1 km/h Bullet Time** Supporting Speed Ceiling. The recovering assembly remains the only BWR movement subject.
+The Bubble MUST protect the recovering assembly without predicting another worker's future route. The recovering assembly remains the only BWR movement subject.
 
-The Bullet-Time effects are supporting temporal effects under the current BWR Resolution. They MUST NOT create separate Regulation responsibilities, Candidates or Decisions; MUST NOT acquire another participant's movement objective, route, steering or target; and MAY compose with an already-current compatible speed ceiling by least-permissive magnitude.
+Where the current Operational Picture contains exactly one positive Causal Obstruction relation whose beneficiary is the recovering assembly, and that blocker is also a current active member of the same Local Operation, Bubble formation MUST apply a purpose-bound **0 km/h blocker hold** to that blocker.
+
+Any remaining active Operation participant that is neither the recovering assembly nor the positively identified held blocker MUST receive the purpose-bound **1 km/h Bubble Bullet Time** Supporting Speed Ceiling.
+
+If no active blocker identity is positively supported, BWR MUST NOT invent one. Non-active/static blockers require no active-worker hold, and all other active Operation participants receive Bubble Bullet Time.
+
+The blocker hold and Bullet-Time effects are supporting temporal effects under the current BWR Resolution. They MUST NOT create separate Regulation responsibilities, Candidates or Decisions; MUST NOT acquire another participant's movement objective, route, steering or target; and MAY compose with an already-current compatible speed ceiling by least-permissive magnitude.
 
 While the Recovery Bubble is current, Observation and Situation Assessment continue to publish fresh Reality, but prospective creation of new independent traffic or Resolution responsibilities for the same Local Operation is deferred. An already-current compatible responsibility is not implicitly terminated merely because BWR starts.
 
@@ -191,15 +197,27 @@ The result may involve fold/raise/compact actuation, retention of an already sui
 
 A requested or settled Transit state MUST NOT itself be treated as proof of movement clearance. Movement uses fresh realised representation and current Bounded Authority.
 
-### Recovery Bubble Bullet Time
+### Recovery Bubble temporal protection
 
 Recovery Bubble formation is part of BWR establishment, not a separate strategic traffic decision.
 
-For each other current active Operation participant at Bubble formation, BWR MUST establish an exact **1 km/h Supporting Speed Ceiling** before the Recovery Excursion begins. No Forward Intersection, follower relation, opposed-corridor relation, theatre-overlap prediction or other participant-intent predicate is required.
+BWR consumes blocker identity only from a positive Situation-owned Causal Obstruction relation for the recovering assembly. It does not infer blocker intent inside Bounded Authority or Control.
 
-If no other active participant exists, Bubble formation requires no physical speed lease. Under the supported three-worker Operation envelope, one recovering assembly therefore produces zero, one or two Recovery-Bubble Bullet-Time leases.
+For a positively identified blocker that is a current active member of the same Local Operation, BWR MUST establish a **0 km/h Supporting Speed Ceiling** before the Recovery Excursion begins.
 
-Each lease:
+For every other active Operation participant that is neither the recovering assembly nor the held blocker, BWR MUST establish exact **1 km/h Bubble Bullet Time** before the Recovery Excursion begins. No Forward Intersection, follower relation, opposed-corridor relation, theatre-overlap prediction or other participant-intent predicate is required for this uninvolved-participant protection.
+
+Under the supported three-worker Operation envelope the intended three-participant case is therefore:
+
+```text
+recovering C -> BWR movement objective
+blocker B   -> 0 km/h blocker hold
+remaining A -> 1 km/h Bubble Bullet Time
+```
+
+If no active blocker is positively identified, no blocker hold is manufactured; remaining active peers receive Bubble Bullet Time.
+
+Each supporting lease:
 
 - owns magnitude only and MUST NOT acquire movement direction, target, steering or productive routing;
 - is subordinate to the current BWR Resolution and carries no independent Regulation lifecycle;
@@ -207,11 +225,15 @@ Each lease:
 - MUST release promptly if that participant leaves the Local Operation; and
 - MUST release no later than authoritative BWR termination.
 
-The required leases are fail-closed protection for autonomous Recovery. If the runtime cannot establish all required Recovery-Bubble ceilings, Recovery Control MUST NOT begin the bounded retreat.
+The required leases are fail-closed protection for autonomous Recovery. If the runtime cannot establish all required Recovery-Bubble supporting ceilings, Recovery Control MUST NOT begin the bounded retreat.
 
-Existing compatible supporting ceilings may compose through the normal least-permissive magnitude rule. Recovery Bubble Bullet Time does not rewrite their semantic ownership.
+Existing compatible supporting ceilings compose through the normal least-permissive magnitude rule.
 
-> **Recovery Bubble Bullet Time Protects Time; BWR Owns The Retreat.**
+The 1 km/h mechanism is the same shared **Bubble Bullet Time** authority used by Cooperative Passage. BWR does not own a parallel Bullet-Time implementation.
+
+> **Bubble Bullet Time Is Resolution-Bubble Infrastructure, Not Passage-Specific Control.**
+
+> **Recovery Bubble Temporal Protection Protects Time; BWR Owns The Retreat.**
 
 ### Direct Anchor-referenced retreat
 
@@ -496,7 +518,7 @@ Control executes the granted Transit/configuration and Recovery movement, then t
 
 Production `Runtime:processLiveObservation()` treats a current Blocked Worker Recovery as a protected Recovery Bubble. While that Resolution is current, prospective support for new independent responsibilities is replaced by passive decision support; fresh Observation and Situation knowledge still update for reassessment after release.
 
-Production `RecoveryBubbleBulletTime` prepares one supporting-speed composition from the other active Operation participants at BWR formation and applies an exact 1 km/h Regulation lease to each of them before Recovery Control begins. These leases carry `SUPPORTING_SPEED_CEILING` authority only and are released when BWR terminates or the protected participant leaves the Local Operation.
+Production `BubbleBulletTime` is the shared Resolution-Bubble supporting-speed mechanism. For BWR, Runtime supplies a purpose-specific participant plan: a positively identified active causal blocker receives a 0 km/h hold, while any remaining uninvolved active participant receives the shared 1 km/h Bubble Bullet Time. If no active blocker is positively identified, no hold is invented. All leases carry `SUPPORTING_SPEED_CEILING` authority only and are released when BWR terminates or their protected participant leaves the Local Operation.
 
 Fresh independent Commitment creation may still occur beside unrelated retained responsibilities **before** BWR establishment where ordinary admission allows it. Once the Recovery Bubble is current, no new competing responsibility is selected until Recovery ends.
 
@@ -511,7 +533,7 @@ Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHo
 | [`scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/control/BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) | `REALISES` |
-| [`scripts/authority/RecoveryBubbleBulletTime.lua`](../scripts/authority/RecoveryBubbleBulletTime.lua) | `REALISES` |
+| [`scripts/authority/BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) | `REALISES` |
 | [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) | `SUPPORTS` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
 
@@ -525,7 +547,7 @@ Production implements one bounded Recovery cycle plus passive correlated-recurre
 - [`BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) owns specialised Recovery commitment settlement;
 - [`BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) establishes the single-subject Current Responsibility;
 - [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, retreats into the Recovery Return Region using the selected Anchor as subordinate steering reference, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission;
-- [`RecoveryBubbleBulletTime.lua`](../scripts/authority/RecoveryBubbleBulletTime.lua) applies the Recovery-Bubble 1 km/h Supporting Speed Ceiling to every other active Operation participant at Bubble formation without acquiring their movement objectives; and
+- [`BubbleBulletTime.lua`](../scripts/authority/BubbleBulletTime.lua) provides shared Resolution-Bubble supporting-speed mechanics; for BWR it applies the 0 km/h active-blocker hold and 1 km/h uninvolved-participant Bullet Time without acquiring either participant's movement objective; and
 - Runtime defers new prospective responsibility selection while BWR is current, releases the Recovery Bubble at terminal settlement, and records passive recurrence provenance only after semantic Recovery success.
 
 A correlated successor Stall does not become a failed prior Recovery and does not start another Control lifecycle. Candidate replay is vetoed and the runtime remains fail-closed with existing player authority available for intervention.
@@ -554,7 +576,7 @@ Current offline validation should challenge at least:
 - successful replacement start immediately relinquishes OMW movement and Transit-configuration bookkeeping without restoring the former working posture;
 - API start success alone does not settle Native Replanning;
 - only positive admission of the intended successor Job Episode for the same Physical Assembly completes Recovery;
-- Recovery Bubble formation applies 1 km/h Supporting Speed Ceilings to every other active Operation participant without requiring a traffic-intent predicate;
+- Recovery Bubble formation holds a positively identified active causal blocker at 0 km/h and applies 1 km/h Bubble Bullet Time to any remaining active participant without requiring a future-route predicate;
 - Recovery movement does not start unless all required Bubble ceilings are established;
 - no new prospective traffic/Resolution responsibility is selected while the Recovery Bubble remains current;
 - Bubble ceilings release on participant departure or authoritative BWR termination, after which fresh assessment resumes;
@@ -576,7 +598,7 @@ Initial Reality validation should include:
 6. absence or presence of a player-visible manual-stop notification when Recovery uses the supported nil-message stop lifecycle;
 7. preservation of deliberately distinctive player-selected FIELDWORK parameters across replacement in a dedicated scenario;
 8. the demonstrated S416 successor recurrence, proving that the fresh correlated Stall is classified Recovery Strategy Exhausted and Recovery #2 is not admitted; plus a non-correlated successor Stall proving independent fresh Recovery remains supportable outside the accepted correlation bounds;
-9. TS015-style live-worker blockage with one or two other active participants, proving that every non-recovering participant is held to 1 km/h for the Recovery Bubble and that fresh traffic assessment resumes only after BWR release; and
+9. TS015-style live-worker blockage with a positively identified active blocker and a third participant, proving that the blocker is held at 0 km/h, the uninvolved participant receives 1 km/h Bubble Bullet Time, and fresh traffic assessment resumes only after BWR release; and
 10. existing Cooperative Passage / Regulation cases, proving that ordinary Bubble and Regulation behavior remains unchanged outside BWR.
 
 ### Outside this Specification's validation claim

@@ -678,7 +678,13 @@ Once Blocked Worker Recovery becomes Current Responsibility, one temporary **Rec
 
 The Recovery Bubble exists so the recovering assembly can execute its bounded Recovery Excursion and native-replanning choreography without another active Operation participant consuming the local timing opportunity needed to get clear. Bubble protection does not require prediction of another worker's route, intended turn, future intersection or likely entry into the recovering worker's path.
 
-At Recovery Bubble formation, every other current active AI worker assembly in the same Local Operation is constrained to the exact **1 km/h Bullet Time** policy for the duration of the Bubble. The effect is a supporting speed ceiling only: it does not acquire another participant's movement objective, route, steering, target or productive work.
+At Recovery Bubble formation, BWR consumes any already-positive Situation-owned Causal Obstruction relation for the recovering assembly. If that relation identifies a current active blocker in the same Local Operation, that blocker is held at **0 km/h** so the condition that caused Recovery does not continue to advance while the recovering worker retreats. Any remaining active Operation participant that is neither the recovering assembly nor that held blocker receives the exact **1 km/h Bubble Bullet Time** policy.
+
+If no active blocker identity is positively supported, BWR does not infer one. Non-active/static blockers require no active-worker hold; other active Operation participants remain protected by Bubble Bullet Time.
+
+Both effects are supporting speed ceilings under the BWR Resolution. They own timing only and do not acquire another participant's movement objective, route, steering, target or productive work.
+
+> **Recovering Worker Moves; Blocker Holds; Uninvolved Participant Creeps.**
 
 > **Recovery Bubble Protection != Traffic Prediction.**
 
