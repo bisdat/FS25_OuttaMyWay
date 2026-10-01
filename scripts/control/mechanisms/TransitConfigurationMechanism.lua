@@ -1,5 +1,5 @@
 --- Provides subordinate work/raise/fold configuration actuation and restoration below Control without semantic configuration authority.
--- Specification Jurisdictions: `CONTROL`
+-- Specification Jurisdictions: `CONTROL`, `BOUNDED_BYPASS`
 
 -- Physical configuration mechanism below Control.
 -- Reuses the proven GIANTS work/raise/fold integration. It owns no traffic
@@ -152,15 +152,17 @@ end
 
 -- TRANSIT_BASE Passage consumes the Job-Episode bootstrap capability
 -- record directly.  No assembly/capability discovery is performed here.
-function Mechanism:prepareCachedTransit(vehicle,capability)
+function Mechanism:prepareCachedTransit(vehicle,capability,requireTransitSettlement)
     if vehicle==nil then return false,"vehicle-unavailable" end
     if self.states[vehicle]~=nil then return false,"configuration-authority-already-owned" end
     if type(capability)~="table" then return false,"transit-capability-unavailable" end
-    if capability.isFoldable~=true or type(capability.actuators)~="table" or #capability.actuators<1 then return false,"bootstrap-non-foldable" end
+    if not requireTransitSettlement and (capability.isFoldable~=true or type(capability.actuators)~="table" or #capability.actuators<1) then return false,"bootstrap-non-foldable" end
+    if requireTransitSettlement and (type(capability.members)~="table" or type(capability.actuators)~="table") then return false,"transit-capability-incomplete" end
 
     local state={
         vehicle=vehicle,objects=capability.members or {},workStates={},loweredStates={},foldRequested=false,restoreFoldRequested=false,
         compactRequestedAt=g_time or 0,restoreRequestedAt=nil,workMutations=0,raisedMutations=0,foldMutations=0,
+        requireTransitSettlement=requireTransitSettlement==true,expectedActuatorCount=#capability.actuators,
         bootstrapTransitCapability=true,transitActuatorStates={},settlementTimeoutMs=tonumber(capability.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     }
     for _,object in ipairs(state.objects) do
@@ -187,7 +189,7 @@ function Mechanism:prepareCachedTransit(vehicle,capability)
         end
     end
     state.foldRequested=state.foldMutations>0
-    if not state.foldRequested then
+    if not state.foldRequested and not requireTransitSettlement then
         for object,lowered in pairs(state.loweredStates) do setLoweredState(object,lowered) end
         for object,enabled in pairs(state.workStates) do setWorkState(object,enabled) end
         return false,"cached-fold-command-unavailable"
@@ -214,6 +216,19 @@ function Mechanism:getCachedTransitSettlement(vehicle)
     local elapsed=math.max(0,(g_time or 0)-(state.compactRequestedAt or (g_time or 0)))
     local timeout=tonumber(state.settlementTimeoutMs) or CACHED_TRANSIT_SETTLEMENT_DEFENSIVE_FALLBACK_MS
     local normal=actuatorCount>0 and settledCount==actuatorCount
+    -- Strict callers require all cached actuators and current work/raise state.
+    -- Non-foldable assemblies still request and settle work-off/raised Transit.
+    if state.requireTransitSettlement then
+        normal=actuatorCount==state.expectedActuatorCount and settledCount==actuatorCount
+        for object,_ in pairs(state.workStates) do
+            local ok,value=safeCall(object,"getIsTurnedOn")
+            if not ok or value~=false then normal=false end
+        end
+        for object,_ in pairs(state.loweredStates) do
+            local ok,value=safeCall(object,"getIsLowered")
+            if not ok or value~=false then normal=false end
+        end
+    end
     local exhausted=not normal and elapsed>=timeout
     return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,completionResidual=residualAvailable and completionResidual or nil,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
 end

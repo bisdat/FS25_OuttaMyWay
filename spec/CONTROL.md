@@ -339,6 +339,8 @@ Control may be required to neutralise predecessor physical effects around a tran
 | [`scripts/control/mechanisms/NativeDriveMechanism.lua`](../scripts/control/mechanisms/NativeDriveMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NonJobActuationMechanism.lua`](../scripts/control/mechanisms/NonJobActuationMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/TransitConfigurationMechanism.lua`](../scripts/control/mechanisms/TransitConfigurationMechanism.lua) | `SUPPORTS` |
+| [`scripts/control/BoundedBypassControl.lua`](../scripts/control/BoundedBypassControl.lua) | `REALISES` |
+
 
 ## Implementation traceability
 

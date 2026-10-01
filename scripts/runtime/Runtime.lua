@@ -1,5 +1,5 @@
 --- Composes the runtime pipeline and directly implements purpose-specific Bounded Authority, Cooperative Passage and Obstruction Relocation integration rules.
--- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `CONFIGURATION`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`, `BLOCKED_WORKER_RECOVERY`
+-- Specification Jurisdictions: `BOUNDED_AUTHORITY`, `CONFIGURATION`, `COOPERATIVE_PASSAGE`, `OBSTRUCTION_RELOCATION`, `BLOCKED_WORKER_RECOVERY`, `BOUNDED_BYPASS`
 
 OuttaMyWay.Runtime = {}
 local Runtime = OuttaMyWay.Runtime
@@ -152,6 +152,9 @@ function Runtime.new()
     runtime.liveObservationSource.currentPhysicalPoseSource=runtime.currentPhysicalPoseSource
     runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new(runtime.identities,runtime.epochs)
     runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new(runtime)
+    runtime.boundedBypassCandidateSupport=OuttaMyWay.BoundedBypassCandidateSupport.new(runtime)
+    runtime.boundedBypassResponsibilityTransition=OuttaMyWay.BoundedBypassResponsibilityTransition.new(runtime)
+    runtime.boundedBypassRuntime=OuttaMyWay.BoundedBypassRuntime.new(runtime)
     runtime.blockedWorkerRecoveryCandidateSupport=OuttaMyWay.BlockedWorkerRecoveryCandidateSupport.new()
     runtime.blockedWorkerRecoveryResponsibilityTransition=OuttaMyWay.BlockedWorkerRecoveryResponsibilityTransition.new(runtime)
     runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new(
@@ -159,7 +162,7 @@ function Runtime.new()
         runtime.obstructionRelocationCandidateSupport,
         runtime.blockedWorkerRecoveryCandidateSupport,
         runtime.liveTrafficCandidateSupport,
-        runtime.passiveCandidateSupport)
+        runtime.passiveCandidateSupport,runtime.boundedBypassCandidateSupport)
     return runtime
 end
 function Runtime:initialize()
@@ -239,6 +242,10 @@ function Runtime:relinquishAllControl(reason)
             return recovery:relinquishAll(why)
         end
         return nil
+    end)
+    attempt("boundedBypass",function()
+        local control=self.liveControlDispatcher and self.liveControlDispatcher.boundedBypassControl
+        if control~=nil then return control:relinquishAll(why) end
     end)
     attempt("residualBoundedAuthority",function()
         if self.boundedAuthority~=nil and type(self.boundedAuthority.releaseAll)=="function" then
@@ -907,6 +914,8 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
 
     local candidate=selectedCandidate(evaluated)
+    local bypassBridge=candidate and candidate.evidenceBasis and candidate.evidenceBasis.boundedBypassBridge
+    if bypassBridge~=nil then return self.boundedBypassRuntime:dispatch(picture,evaluated,candidate,bypassBridge) end
     local recoveryBridge=blockedWorkerRecoveryBridge(candidate)
     if recoveryBridge~=nil then
         return self:_dispatchBlockedWorkerRecovery(picture,evaluated,candidate,recoveryBridge)
@@ -1017,8 +1026,9 @@ end
 
 function Runtime:processLiveObservation(raw)
     local processed=self:processSealedObservation(raw)
-    -- A current BWR owns a Recovery Bubble decision horizon: observe continuously,
-    -- but defer new prospective responsibilities until Recovery reaches terminality.
+    self.boundedBypassRuntime:observe(processed)
+    -- Current Recovery and Bypass Bubbles protect their decision horizon: keep
+    -- observing, but defer new prospective responsibilities until terminality.
     -- Other Resolution types retain their existing fail-closed decision-horizon behavior.
     local contexts=processed.picture.commitmentContext or {}
     local recoveryBubbleResolution=false
@@ -1027,7 +1037,7 @@ function Runtime:processLiveObservation(raw)
         if type(context.commitmentId)=="string" then
             local current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(context.commitmentId)
             local kind=current and current.purpose and current.purpose.kind or nil
-            if kind=="BLOCKED_WORKER_RECOVERY" then
+            if kind=="BLOCKED_WORKER_RECOVERY" or kind=="BOUNDED_BYPASS" then
                 recoveryBubbleResolution=true
             elseif kind~=nil then
                 exclusiveResolution=true

@@ -256,6 +256,8 @@ Situation Assessment owns the current semantic relationships and Operational Pic
 | [`scripts/candidates/CandidateSpace.lua`](../scripts/candidates/CandidateSpace.lua) | `REALISES` |
 | [`scripts/contracts/CandidateAction.lua`](../scripts/contracts/CandidateAction.lua) | `REALISES` |
 | [`scripts/contracts/CandidateInventory.lua`](../scripts/contracts/CandidateInventory.lua) | `REALISES` |
+| [`scripts/candidates/BoundedBypassCandidateSupport.lua`](../scripts/candidates/BoundedBypassCandidateSupport.lua) | `REALISES` |
+
 
 ## Implementation traceability
 

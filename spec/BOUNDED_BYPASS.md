@@ -5,8 +5,7 @@
 **Specification Jurisdiction:** Bounded Bypass  
 **Jurisdiction ID:** `BOUNDED_BYPASS`  
 **Parent Jurisdiction:** [`Resolution Lifecycle`](RESOLUTION_LIFECYCLE.md)  
-**Primary Architecture Authority:** [`architecture/SPATIAL_NEGOTIATION_MODEL.md`](../architecture/SPATIAL_NEGOTIATION_MODEL.md#specification-jurisdiction--bounded-bypass)  
-**Implementation Status:** `NOT_IMPLEMENTED`
+**Primary Architecture Authority:** [`architecture/SPATIAL_NEGOTIATION_MODEL.md`](../architecture/SPATIAL_NEGOTIATION_MODEL.md#specification-jurisdiction--bounded-bypass)
 
 This Specification owns the implementation-facing contract for the single-subject **Bounded Bypass Resolution**: after the simple Blocked Worker Recovery strategy has been positively exhausted at a fresh correlated successor Stall, OuttaMyWay may perform one fixed Transit-first dogleg around one positively established stable Causal Obstruction and then hand the still-current GIANTS Job back.
 
@@ -233,19 +232,38 @@ Control realises only the authorised fixed Dogleg side and three movement legs. 
 
 ## Contract participants
 
-No production source currently participates in this Jurisdiction.
+| Production source | Participation |
+| --- | --- |
+| [`scripts/assessment/BoundedBypassEvidence.lua`](../scripts/assessment/BoundedBypassEvidence.lua) | `REALISES` |
+| [`scripts/candidates/FixedBypassDogleg.lua`](../scripts/candidates/FixedBypassDogleg.lua) | `REALISES` |
+| [`scripts/candidates/BoundedBypassCandidateSupport.lua`](../scripts/candidates/BoundedBypassCandidateSupport.lua) | `REALISES` |
+| [`scripts/decision/DecisionSelector.lua`](../scripts/decision/DecisionSelector.lua) | `REALISES` |
+| [`scripts/decision/ProspectivePortfolioDecisionPolicy.lua`](../scripts/decision/ProspectivePortfolioDecisionPolicy.lua) | `REALISES` |
+| [`scripts/responsibility/BoundedBypassResponsibilityTransition.lua`](../scripts/responsibility/BoundedBypassResponsibilityTransition.lua) | `REALISES` |
+| [`scripts/commitment/BoundedBypassCommitmentLifecycle.lua`](../scripts/commitment/BoundedBypassCommitmentLifecycle.lua) | `REALISES` |
+| [`scripts/control/BoundedBypassControl.lua`](../scripts/control/BoundedBypassControl.lua) | `REALISES` |
+| [`scripts/runtime/BoundedBypassRuntime.lua`](../scripts/runtime/BoundedBypassRuntime.lua) | `REALISES` |
+| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `REALISES` |
+| [`scripts/candidates/ProspectiveDecisionPortfolioSupport.lua`](../scripts/candidates/ProspectiveDecisionPortfolioSupport.lua) | `SUPPORTS` |
+| [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) | `SUPPORTS` |
+| [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) | `SUPPORTS` |
+| [`scripts/control/mechanisms/TransitConfigurationMechanism.lua`](../scripts/control/mechanisms/TransitConfigurationMechanism.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
-Bounded Bypass is intentionally not implemented.
+The production path is explicit:
 
-Existing Blocked Worker Recovery, Cooperative Passage forward-diagonal movement, Bubble Bullet Time and Field World reference-guide mechanisms are relevant engineering evidence and possible implementation substrates, but they are not Bounded Bypass production participants merely because future implementation may reuse part of their mechanics.
+- `BoundedBypassEvidence` consumes current successor continuation, motion, activity and Player evidence; it does not reuse the Recovery Trail.
+- `FixedBypassDogleg` constructs both fixed guides using `ForwardDiagonalSteeringHelper` calibration and checks their reference progression against Field World, including islands.
+- `BoundedBypassCandidateSupport` requires the exact correlated Stall, positive Causal Obstruction, stability and Transit support, and publishes purpose-limited guide Representation Fitness. The existing recurrence evaluator and BWR veto remain unchanged.
+- `ProspectiveDecisionPortfolioSupport` enumerates Bypass independently. `ProspectivePortfolioDecisionPolicy` refuses unresolved cross-purpose competition; `DecisionSelector` prefers field-interior support among mandatory-admissible Bypass sides, then a deterministic side tie-break.
+- `BoundedBypassResponsibilityTransition` preflights the successor semantic product before commitment admission. `BoundedBypassCommitmentLifecycle` owns the excursion-or-escalation obligation and terminal settlement. A terminal attempt cannot be replayed for the same Stall evidence identity.
+- `BoundedBypassRuntime`, reached explicitly from `Runtime`, prepares the purpose-specific participant plan through the existing `BubbleBulletTime`, obtains Bounded Authority and dispatches only after required Bubble leases are active.
+- `BoundedBypassControl` holds the principal while strict Transit settles, dispatches exactly the selected three forward targets, and checks current evidence and physical protection throughout execution. `TransitConfigurationMechanism` provides opt-in strict work-off/raise/fold settlement, including non-foldable assemblies; existing callers retain their calibration and behavior.
 
-The first implementation should realise the fixed Dogleg with the smallest necessary new Candidate / lifecycle / Control surface and reuse only purpose-neutral existing mechanisms where their current contract is genuinely shared.
+The terminal-dependent obligation admits either observed final Rejoin or explicit Player escalation when the fixed attempt cannot continue. Escalation settles that branch as failure, never as excursion completion or obstruction clearance. Job termination and Player Claim settle through authoritative basis cessation. All terminal paths relinquish physical control and Bubble protection.
 
-> **Reusable Geometry Primitive != Reusable Planner.**
-
-> **Shared Mechanism != Shared Responsibility.**
+`ForwardDiagonalSteeringHelper`, `BubbleBulletTime`, `NativeDriveMechanism` and generic Bounded Authority remain shared mechanism dependencies. Calling them does not by itself create additional Jurisdiction participation.
 
 ## Validation route
 
@@ -255,8 +273,8 @@ Structural validation must prove:
 
 - Architecture declares exactly one `BOUNDED_BYPASS` Jurisdiction and routes it to this primary Specification;
 - this Specification reciprocally names the Spatial Negotiation Architecture;
-- `NOT_IMPLEMENTED` remains present while there are no production participants;
-- no production source prematurely acknowledges `BOUNDED_BYPASS`; and
+- declared production participants reciprocally acknowledge `BOUNDED_BYPASS`;
+- the fixed guide contains exactly three forward legs with no Job replacement or articulated sweep prerequisite; and
 - Blocked Worker Recovery still vetoes BWR replay independently of this new Candidate family.
 
 ### Offline behavioural validation for the first implementation increment

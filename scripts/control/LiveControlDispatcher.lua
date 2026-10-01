@@ -1,5 +1,5 @@
 --- Routes already-authorised Control requests to compatible executors and publishes physical dispatch outcomes without strategic choice.
--- Specification Jurisdictions: `CONTROL`
+-- Specification Jurisdictions: `CONTROL`, `BOUNDED_BYPASS`
 
 OuttaMyWay.LiveControlDispatcher = {}
 local Dispatcher = OuttaMyWay.LiveControlDispatcher
@@ -52,6 +52,13 @@ function Dispatcher:dispatch(request,candidate)
         if target.kind=="OBSTRUCTION_RELOCATION" then
             local control=self.obstructionRelocationControl
             if control==nil or type(control.executeControlRequest)~="function" then return false,"OBSTRUCTION_RELOCATION_CONTROL_UNAVAILABLE" end
+            local started,result=control:executeControlRequest(request,candidate)
+            if started==true then self.dispatchCount=self.dispatchCount+1 end
+            return started,result
+        end
+        if target.kind=="BOUNDED_BYPASS" then
+            local control=self.boundedBypassControl
+            if control==nil then return false,"BOUNDED_BYPASS_CONTROL_UNAVAILABLE" end
             local started,result=control:executeControlRequest(request,candidate)
             if started==true then self.dispatchCount=self.dispatchCount+1 end
             return started,result
