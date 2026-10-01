@@ -5819,3 +5819,22 @@ Runtime/coordinator failures remain owned and counted by `LiveRuntimeCoordinator
 **Authority Triad:** Architecture changes because Reality exposed a missing Bypass concept and a legitimate completed-Recovery evidence product. Specifications change to define Successful Recovery Excursion Evidence, Launch Separation and the four-leg guide. Source changes only to retain bounded positive BWR outcome provenance, require it for Bypass admission and realise the authorised reverse launch before the existing three forward legs.
 
 **Validation boundary:** offline validation can prove provenance flow, launch admission bounds, guide geometry, movement polarity and fail-closed contracts. GIANTS Reality must still prove that the new launch creates enough longitudinal room for S416 to execute the unchanged first diagonal without brute-force contact. The later `BYPASS_TRANSIT_SETTLEMENT_LOST` observation remains separate until a clean geometric attempt shows whether it reproduces.
+
+
+## 2026-10-01 — Owner correction: Transit is a request, not a Bypass state contract (#400)
+
+**Reality — TEST `0.4.8.8`:** Bypass correctly admitted at the second correlated Stall and correctly began the new reverse Launch Separation, but moved only about 2.5 m before Control terminated on `BYPASS_TRANSIT_SETTLEMENT_LOST`.
+
+**Owner clarification:** the intended sequence was always simple: **at the second Stall request Transit (even if there is none), reverse, then Dogleg**. Transit was never intended to become a capability gate, settlement wait or continuously revalidated Bypass state.
+
+**Correction:** the earlier interpretation **Transit Settlement != Transit Persistence** was itself over-engineered. The architectural rule is instead:
+
+> **Transit Request != Transit State Contract.**
+
+For Bounded Bypass, Control issues one best-effort Transit request immediately before movement. Candidate Support does not require cached Transit capability. Control does not inspect request success, wait for settlement or later fail because GIANTS reasserts work/lower/fold state. Existing Job continuity, Player Claim, Bubble protection, Field World guide support, Bounded Authority and target-progress failure remain authoritative.
+
+**Implementation — TEST `0.4.8.9`:** after Bypass dispatch, the one-shot Transit request is issued and the reverse Launch Separation starts immediately. The 20 m Launch geometry and subsequent Dogleg are otherwise unchanged.
+
+**Authority Triad:** Architecture and Bounded Bypass Specification are corrected to remove the invented persistent Transit-state requirement. Source removes the Transit capability admission gate and all Bypass settlement/persistence checks. The shared Transit mechanism is not changed because other callers retain their own configuration contracts.
+
+**Validation boundary:** offline validation must prove Transit is requested even when capability is unavailable and that request failure or later settlement drift does not stop the Bypass. GIANTS Reality must then finally test the intended sequence: second Stall -> Transit request -> approximately 20 m reverse -> unchanged Dogleg.

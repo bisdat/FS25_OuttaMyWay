@@ -120,20 +120,41 @@ return function(test,equal)
         f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successfulRecoveryExcursion.demonstratedRetreatM=20
         assert(f.group())
     end)
+    test("Bypass requests Transit even when capability is absent and does not wait for settlement",function()
+        local f=fixture()
+        f.runtime.assemblyRepresentationCache.getTransitFoldCapability=function() return nil end
+        function f.configuration:prepareCachedTransit(_,capability,strict)
+            self.requested=strict
+            self.requestedCapability=capability
+            return false,"transit-capability-unavailable"
+        end
+        assert(f.group())
+        local result=f.dispatch();equal(result.status,"ACCEPTED")
+        equal(f.configuration.requested,true);equal(f.configuration.requestedCapability,nil)
+        equal(#f.drive.moves,1);equal(f.drive.moves[1].forward,false)
+        f.configuration.settled=false
+        f.publish();f.control:update()
+        equal(f.control:isActive(),true);equal(#f.drive.moves,1)
+    end)
+    test("Bypass ignores Transit state drift after the one-shot request",function()
+        local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
+        equal(#f.drive.moves,1)
+        f.configuration.settled=false
+        f.publish();f.control:update()
+        equal(f.control:isActive(),true);equal(#f.drive.moves,1)
+    end)
     test("Bypass rejects a narrow island between reference samples",function()
         local f=fixture();f.s.fieldWorld.islands={{{x=4.9,z=-10.3},{x=5.1,z=-10.3},{x=5.1,z=-9.7},{x=4.9,z=-9.7}}}
         local group=assert(f.group());equal(#group.candidateSpecifications,1);equal(group.candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide.side,-1)
     end)
-    test("Bypass Decision prefers field interior and settles Transit before reverse launch plus three forward targets",function()
+    test("Bypass Decision requests Transit then immediately launches reverse before three forward targets",function()
         local f=fixture(true);local result,candidate=f.dispatch();equal(result.status,"ACCEPTED")
         equal(candidate.evidenceBasis.boundedBypassBridge.guide.side,1)
-        equal(f.configuration.requested,true);equal(#f.drive.moves,0)
+        equal(f.configuration.requested,true);equal(#f.drive.moves,1)
         equal(f.runtime.assemblyRepresentationCache:isOuttaMyWayConfigurationAuthorityActive("m","successor"),true)
         local protection=f.runtime.bubbleBulletTime:getProtection(result.commitment.identity)
         equal(#protection.leases,2);equal(f.drive:getRegulationLease(f.vehicles.b,"BYPASS_BLOCKER_HOLD").speedKmh,0)
         equal(f.drive:getRegulationLease(f.vehicles.c,"BYPASS_BUBBLE_BULLET_TIME").speedKmh,1)
-        f.control:update();equal(#f.drive.moves,0)
-        f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
         equal(f.drive.moves[1].forward,false)
         for i=1,4 do f.drive.states[f.vehicles.m].targetReached=true;f.control:update() end
         equal(#f.drive.moves,4)
@@ -147,14 +168,13 @@ return function(test,equal)
         equal(f.episodes["AS-M"].identity,"JM");equal(f.group(),nil)
     end)
     test("Bypass fails closed when protection, blocker movement, Job or Field guide contradicts",function()
-        for _,contradiction in ipairs({"lease","newBlocker","job","field","transit","authority","player"}) do
-            local f=fixture(true);local result=f.dispatch();equal(result.status,"ACCEPTED");f.configuration.settled=true;f.control:update()
+        for _,contradiction in ipairs({"lease","newBlocker","job","field","authority","player"}) do
+            local f=fixture(true);local result=f.dispatch();equal(result.status,"ACCEPTED")
             if contradiction=="lease" then f.drive:clearRegulationLease(f.vehicles.b,"BYPASS_BLOCKER_HOLD")
             elseif contradiction=="newBlocker" then
                 f.p.causalObstructionKnowledge[2]={identity="R2",operationId="OP",beneficiaryAssemblyId="AS-M",blockerAssemblyId="AS-C",blockerAssemblyReferenceKey="c",provenance={authority="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION"}}
             elseif contradiction=="job" then f.episodes["AS-M"]=nil
             elseif contradiction=="field" then f.s.fieldWorld.boundary[2].x=5;f.s.fieldWorld.boundary[3].x=5
-            elseif contradiction=="transit" then f.configuration.settled=false
             elseif contradiction=="authority" then f.runtime.boundedAuthority:release(result.request.boundedAuthorityId,"TEST")
             else f.s.playerControl.m.playerControlled=true end
             f.publish();f.control:update();equal(f.control:isActive(),false);equal(#f.drive.moves,1)
@@ -183,7 +203,7 @@ return function(test,equal)
         equal(f.runtime.commitments:get(result.commitment.identity).state,"FAILED")
         equal(f.runtime.bubbleBulletTime:getProtection(result.commitment.identity),nil)
     end)
-    test("Bypass strict Transit handles non-foldable work-off and raise settlement",function()
+    test("Transit mechanism can request non-foldable work-off and raise",function()
         local mechanism=O.TransitConfigurationMechanism.new()
         local v={enabled=true,lowered=true}
         function v:getIsTurnedOn() return self.enabled end
@@ -197,7 +217,7 @@ return function(test,equal)
         v.lowered=true;equal(mechanism:getCachedTransitSettlement(v).settled,false)
         mechanism:clear(v);equal(v.lowered,true)
     end)
-    test("Bypass strict Transit cannot accept a missing fold actuator",function()
+    test("Transit mechanism still reports unresolved fold settlement to callers that care",function()
         local mechanism=O.TransitConfigurationMechanism.new()
         local v={}
         equal(mechanism:prepareCachedTransit(v,{isFoldable=true,members={v},actuators={{object=v}},settlementTimeoutMs=10},true),true)
@@ -209,7 +229,7 @@ return function(test,equal)
     test("Bypass gives non-active obstruction no speed authority or execution veto",function()
         local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
         equal(f.runtime.bubbleBulletTime:getProtection(result.commitment.identity).status,"NOT_REQUIRED")
-        f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
+        equal(#f.drive.moves,1)
         f.episodes["AS-B"]={identity="NEW",sourceJobToken="new"};f.s.aiStates.b={aiActiveObserved=true,aiActive=true,observedActive=true}
         f.s.playerControl.b={playerControlled=true,playerEnteredObserved=true,playerEntered=true}
         f.publish();f.control:update();equal(f.control:isActive(),true);equal(#f.drive.moves,1)
@@ -217,7 +237,7 @@ return function(test,equal)
 
     test("Bypass progress resets the watchdog and later positive non-progress fails the bounded attempt",function()
         local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
-        f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
+        equal(#f.drive.moves,1)
         f.publish();f.control:update()
         g_time=g_time+10001;f.s.timestamp=g_time/1000
         f.s.geometry.currentPhysicalPoseEvidence[1].z=-0.3

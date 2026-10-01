@@ -143,36 +143,29 @@ function Control:executeControlRequest(request)
     local bridge=request.target.bridge
     local vehicle=self.runtime.liveObservationSource:getCurrentPhysicalObject(bridge.assemblyReferenceKey)
     if vehicle==nil then return false,"BYPASS_VEHICLE_UNAVAILABLE" end
-    local state={request=request,vehicle=vehicle,phase="WAITING_FOR_TRANSIT",startedAtMs=tonumber(g_time) or 0}
+    local state={request=request,vehicle=vehicle,phase="REQUESTING_TRANSIT",startedAtMs=tonumber(g_time) or 0}
     local valid,reason=self:_validate(state)
     if not valid then return false,reason end
     local f=bridge.guide.frame
     local held,holdReason=self.driveMechanism:setAxisTravel(vehicle,f.x,f.z,f.forwardX,f.forwardZ,0,0,true,1)
     if not held then return false,holdReason end
     self.active=state
-    local marked,markReason=self:_beginRepresentationConfigurationAuthority(state)
-    if not marked then self:_finish("FAILED",markReason); return false,markReason end
+
+    -- Bypass requests Transit once, then proceeds. Transit availability,
+    -- settlement and later persistence are deliberately not Bypass gates.
+    local marked=self:_beginRepresentationConfigurationAuthority(state)
     local capability=self.runtime.assemblyRepresentationCache:getTransitFoldCapability(bridge.assemblyReferenceKey,bridge.sourceJobToken)
-    local ok,transitReason=self.configurationMechanism:prepareCachedTransit(vehicle,capability,true)
-    if not ok then self:_finish("FAILED",transitReason); return false,transitReason end
-    return true,{phase=state.phase}
+    local transitRequested=self.configurationMechanism:prepareCachedTransit(vehicle,capability,true)
+    if transitRequested~=true and marked==true then self:_endRepresentationConfigurationAuthority(state) end
+
+    if not self:_beginLeg(state,1) then return false,"BYPASS_LAUNCH_START_FAILED" end
+    return true,{phase=state.phase,transitRequested=transitRequested==true}
 end
 function Control:update()
     local state=self.active
     if state==nil then return end
     local valid,reason=self:_validate(state)
     if not valid then self:_finish("FAILED",reason); return end
-    if self.configurationMechanism:getState(state.vehicle)==nil then self:_finish("FAILED","BYPASS_TRANSIT_AUTHORITY_LOST"); return end
-    local settlement=self.configurationMechanism:getCachedTransitSettlement(state.vehicle)
-    if settlement.exhausted==true then self:_finish("FAILED","BYPASS_TRANSIT_FAILED"); return end
-    if settlement.settled~=true then
-        if state.legIndex~=nil then self:_finish("FAILED","BYPASS_TRANSIT_SETTLEMENT_LOST") end
-        return
-    end
-    if state.legIndex==nil then
-        self:_beginLeg(state,1)
-        return
-    end
     local drive=self.driveMechanism:getState(state.vehicle)
     if drive==nil or drive.invalidReason~=nil then self:_finish("FAILED","BYPASS_MOVEMENT_UNAVAILABLE"); return end
     if self:_targetProgressStalled(state) then self:_finish("FAILED","BYPASS_TARGET_PROGRESS_STALLED"); return end

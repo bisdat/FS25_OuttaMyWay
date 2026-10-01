@@ -68,8 +68,6 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
         or not finite(demonstratedRetreatM) or demonstratedRetreatM+0.001<requiredLaunchSeparationM then
         return refuse("BYPASS_LAUNCH_SEPARATION_UNSUPPORTED")
     end
-    local capability=self.runtime.assemblyRepresentationCache:getTransitFoldCapability(k.assemblyReferenceKey,k.sourceJobToken)
-    if type(capability)~="table" or type(capability.members)~="table" then return refuse("BYPASS_TRANSIT_UNSUPPORTED") end
     local candidates,fitness={},{}
     for _,side in ipairs({1,-1}) do
         local guide=OuttaMyWay.FixedBypassDogleg.build(frame,side)

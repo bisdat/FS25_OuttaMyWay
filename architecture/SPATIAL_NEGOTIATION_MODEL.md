@@ -839,9 +839,9 @@ Bounded Bypass is a successor strategy, not another phase of Blocked Worker Reco
 
 > **Strategy Exhaustion Removes Replay; It Does Not Remove Fresh Choice.**
 
-Recovery Strategy Exhausted is the Bypass strategy-succession gate, but not movement authority. A Bounded Bypass Candidate additionally requires the current successor Job, a fresh local continuation frame, support for Transit configuration, one supported **Fixed Bypass Dogleg** side and ordinary prospective-selection / Responsibility-Transition authority.
+Recovery Strategy Exhausted is the Bypass strategy-succession gate, but not movement authority. A Bounded Bypass Candidate additionally requires the current successor Job, a fresh local continuation frame, one supported **Fixed Bypass Dogleg** side and ordinary prospective-selection / Responsibility-Transition authority. Transit is requested once at execution start; Transit capability is not Candidate support.
 
-A recurrence conclusion therefore cannot manufacture a Bypass side, a movement guide, Transit capability or actuation authority.
+A recurrence conclusion therefore cannot manufacture a Bypass side, a movement guide or actuation authority.
 
 ### Blockage Theatre
 
@@ -879,7 +879,9 @@ The fresh successor-Job continuation frame remains authoritative for Bypass dire
 
 > **Demonstrated Retreat Magnitude != Current Reverse Clearance.**
 
-The Launch Separation segment remains subject to the same current Field World reference-guide support, current Bounded Authority, Transit prerequisite and execution-progress observation as the rest of the Dogleg. If the prior successful excursion did not demonstrate enough retreat, Bounded Bypass is unsupported rather than shortening the required launch or inventing another route.
+> **Transit Request != Transit State Contract.**
+
+The Launch Separation segment remains subject to the same current Field World reference-guide support, current Bounded Authority and execution-progress observation as the rest of the Dogleg. At Bypass start, Control requests Transit once before movement; Transit availability, settlement and later persistence are not Bypass admission or execution predicates. If the prior successful excursion did not demonstrate enough retreat, Bounded Bypass is unsupported rather than shortening the required launch or inventing another route.
 
 ### Fixed Bypass Dogleg
 
@@ -895,7 +897,7 @@ If a defensible current continuation frame is unavailable, Bounded Bypass remain
 
 > **Recovery Approach Trail != Bypass Axis.**
 
-The Dogleg has four movement legs after Transit settlement:
+The Dogleg has four movement legs after the one-shot Transit request:
 
 1. **Bypass Launch Separation** — reverse along `-F` by the forward distance required by the selected Lateral Departure calibration, bounded by Successful Recovery Excursion Evidence.
 2. **Lateral Departure** — from that launch station, move toward the selected side to the calibrated lateral offset using forward-diagonal motion. With matched Launch Separation, this returns approximately to the recurrent-Stall longitudinal station already laterally displaced.
@@ -973,7 +975,7 @@ The Bubble persists only while the Bounded Bypass Resolution remains current and
 
 Fresh Reality remains authoritative throughout execution.
 
-Loss of Transit settlement, current Job continuity, current Bounded Authority, required active-participant Bubble protection, supported Field World reference-guide relationship, Player Claim over the **bypassing worker**, or positive failure to make progress toward the current Dogleg target must stop or refuse further Bypass movement.
+Loss of current Job continuity, current Bounded Authority, required active-participant Bubble protection, supported Field World reference-guide relationship, Player Claim over the **bypassing worker**, or positive failure to make progress toward the current Dogleg target must stop or refuse further Bypass movement.
 
 A Player Claim, pose change, movement or lifecycle change concerning a non-active obstruction is not itself a Bypass invalidation condition because Bounded Bypass owns no semantic or physical authority over that obstruction.
 
