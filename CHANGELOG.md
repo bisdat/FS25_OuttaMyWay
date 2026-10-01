@@ -1,3 +1,28 @@
+# v0.4.8.0 PATCH CHECKPOINT — Recovery Bubble and Spatial Coordination Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #397 (`be65ba3b72092111a27e4482e401d153b4e4ec8c`), carrying field-validated TEST `0.4.7.10`.
+
+**Version rationale:** owner-selected PATCH checkpoint under the current pre-1.0 policy. The accepted delta since `0.4.7.0` refines the existing 0.4 responsibility-oriented architecture across Passage handback, constrained-boundary coordination, realised-motion evidence, obstruction relocation and Blocked Worker Recovery protection. These are corrections and refinements within the current architectural/capability epoch rather than a materially new MINOR capability epoch.
+
+**PATCH checkpoint boundary:** this increment changes product version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted and field-validated `0.4.7.10` baseline.
+
+**Validated plateau summary:**
+- PRs #380/#381 / Issue #379 replaced stranded sequential Passage return with **Mutual Return Region** occupancy and bounded Return Clearance Wait semantics, allowing a surviving participant to complete handback after the other returns to GIANTS;
+- PRs #383/#384 / Issue #382 restored **Shared Category-2 boundary coordination** and current Corner admission, preserving sticky intent-revelation Regulation through TURNING while preventing arrival-only Corner awareness from manufacturing Corner competition;
+- PRs #386/#387 / Issue #385 established **persistence-bounded Realised Motion Reach**, so realised movement demand remains evidence-supported rather than indefinitely extending from stale motion;
+- PRs #389/#390 / Issue #352 introduced the fresh-derived **Offset Relocation Centre**, preventing obstruction relocation objectives from collapsing onto the beneficiary's current demand;
+- PRs #391/#392 / Issue #388 refined Shared Category-2 dissolution around protected A8 transition to TURNING. A proposed Category-2 Responsibility Lease was tested, disproved and removed; the accepted path retains turn-complete dissolution and fresh reassessment without a synthetic lease lifecycle;
+- PR #397 / Issue #395 established the **Recovery Bubble** for Blocked Worker Recovery: a positively identified active causal blocker is held at 0 km/h, any uninvolved third participant receives shared 1 km/h Bubble Bullet Time, the recovering worker retains the sole BWR movement objective, and fresh competing traffic/Resolution selection waits until BWR terminates;
+- PR #397 also consolidated Passage and BWR temporal protection through shared **Bubble Bullet Time** infrastructure while preserving purpose-specific ownership/provenance and existing Cooperative Passage third-party behaviour;
+- TS003 Reality validation positively demonstrated the accepted BWR participant policy and successful protected recovery handback;
+- Issues #379, #382, #385, #352, #388 and #395 are closed as completed.
+
+**Validation basis:** the accepted TEST lineage includes targeted GIANTS Reality validation for the Mutual Return Region correction and restored Category-2 boundary coordination, plus TS003 live validation of the final Recovery Bubble participant policy. The final accepted behavioural head `0.4.7.10` completed Offline Validation run **#1164 PASS** across Structural contracts, changed-Lua syntax / Lua offline behavioural contracts and Generated source reference before PR #397 merged to `main`.
+
+**Known separable work:** current open Issues remain independent of this checkpoint, including #336 Blocked Worker Recovery reverse divergence, #393 Cooperative Passage executable in-field clearance, #398 Native A8 clearance underestimation, #399 bootstrap representation-cache refresh cost, #400 additional BWR Recovery Excursion options, #89 Operational Player Messages/HUD, and #86 performance/frame-pacing evidence.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. A future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.7.0 PATCH CHECKPOINT — Boundary Coordination and Native A8 Clearance Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #376 (`f7546af232b1e6c000692e7642e49c21e5cd3090`), carrying field-validated TEST `0.4.6.10`.
