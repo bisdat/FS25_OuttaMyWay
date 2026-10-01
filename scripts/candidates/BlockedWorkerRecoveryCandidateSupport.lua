@@ -129,6 +129,28 @@ local function correlatedRecurrence(picture,knowledge)
     return nil
 end
 
+local function recoveryBlocker(picture,knowledge)
+    local matches={}
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.causalObstructionKnowledge or {}) do
+        if relation.operationId==knowledge.operationId
+            and relation.beneficiaryAssemblyId==knowledge.assemblyId
+            and type(relation.blockerAssemblyId)=="string" then
+            matches[#matches+1]=relation
+        end
+    end
+    if #matches==0 then return nil,"NO_POSITIVE_CAUSAL_BLOCKER" end
+    if #matches>1 then return nil,"MULTIPLE_POSITIVE_CAUSAL_BLOCKERS" end
+    local relation=matches[1]
+    return {
+        relationId=relation.identity,
+        assemblyId=relation.blockerAssemblyId,
+        assemblyReferenceKey=relation.blockerAssemblyReferenceKey,
+        classification=relation.blockerClassification,
+        obstructionKind=relation.obstructionEvidence and relation.obstructionEvidence.kind or nil,
+        authority=relation.provenance and relation.provenance.authority or nil
+    },"SUPPORTED"
+end
+
 function Support.new()
     return setmetatable({publishedCount=0,lastStatus="INACTIVE",lastRecurrence=nil},Support)
 end
@@ -152,6 +174,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
         return nil,"RECOVERY_STRATEGY_EXHAUSTED"
     end
     local fitness=recoveryRepresentationFitness(picture,knowledge,anchor,recoveryKey,targetPictureId)
+    local blocker,blockerStatus=recoveryBlocker(picture,knowledge)
     local specification={
         referenceKey=recoveryKey..":to-return-region",
         purpose={kind="BLOCKED_WORKER_RECOVERY",result="RETREAT_TO_RECOVERY_RETURN_REGION_AND_REPLAN_NATIVE_JOB"},
@@ -182,6 +205,8 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
                     configurationProfileId=anchor.configurationProfileId
                 },
                 recoveryReturnRegion=returnRegion,
+                recoveryBlocker=blocker,
+                recoveryBlockerStatus=blockerStatus,
                 recoveryRecurrenceContext={
                     stallTimestamp=stall.establishedAtTimestamp,
                     stallX=stall.poseX,stallZ=stall.poseZ

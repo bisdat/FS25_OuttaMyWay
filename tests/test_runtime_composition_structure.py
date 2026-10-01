@@ -51,14 +51,17 @@ def test_dispatch_order_is_portfolio_then_cold_then_existing():
     assert "evaluated=normalized" in dispatch
     assert "self:_dispatchObstructionRelocation" in dispatch
 
-def test_tactical_regulation_uses_fresh_portfolio_while_active_resolution_keeps_its_decision_horizon():
+def test_tactical_regulation_uses_fresh_portfolio_outside_recovery_and_other_resolution_horizons():
     runtime=read("scripts/runtime/Runtime.lua")
     process=runtime[runtime.index("function Runtime:processLiveObservation(raw)"):runtime.index("function Runtime:getStatus()")]
+    assert "recoveryBubbleResolution" in process
     assert "exclusiveResolution" in process
-    assert 'kind~="BLOCKED_WORKER_RECOVERY"' in process
+    assert 'kind=="BLOCKED_WORKER_RECOVERY"' in process
     assert "getCurrentResolutionCommitment" in process
+    assert "supported=self.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
     assert "self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
-    assert process.index("if exclusiveResolution then") < process.index("self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)")
+    assert process.index("if recoveryBubbleResolution then") < process.index("elseif exclusiveResolution then")
+    assert process.index("elseif exclusiveResolution then") < process.index("self.prospectiveDecisionPortfolioSupport:publishDecisionPicture(processed.picture,processed.snapshot)")
     assert "self.obstructionRelocationCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process
     assert "self.terminalEgressCandidateSupport" not in process
     assert "self.liveTrafficCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)" in process

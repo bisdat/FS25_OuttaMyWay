@@ -85,13 +85,15 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
     assert "TrafficPolicemanDecisionPolicy:select" in selector
 
 
-def test_phase13_runtime_uses_one_portfolio_across_fresh_and_tactical_regulation_scope_but_preserves_active_resolution_horizon():
+def test_phase13_runtime_uses_one_portfolio_outside_protected_resolution_horizons():
     runtime=read("scripts/runtime/Runtime.lua")
     for token in (
         "prospectiveDecisionPortfolioSupport",
+        "recoveryBubbleResolution",
         "exclusiveResolution",
-        'kind~="BLOCKED_WORKER_RECOVERY"',
+        'kind=="BLOCKED_WORKER_RECOVERY"',
         "getCurrentResolutionCommitment",
+        "supported=self.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)",
         'boundary.mode=="PROSPECTIVE_DECISION_PORTFOLIO"',
         "selectedGroupBoundary",
         "values.supportBoundary=localBoundary",
