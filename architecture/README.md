@@ -23,8 +23,8 @@ for the end-to-end lifecycle, authority and Control model.
 Follow its responsibility routes to:
 
 - [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md) — active
-  spatial-coordination policy, Regulation, Cooperative Passage, Passage Legs,
-  Bubble lifecycle and third-worker protection;
+  spatial-coordination policy, Regulation, Cooperative Passage, Bounded Bypass,
+  Passage Legs, Bubble lifecycle and third-worker protection;
 - [Physical Representation Architecture](PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
   — physical identity resolution, assessment representation, scoped geometry
   authority, coverage and evidence quality;

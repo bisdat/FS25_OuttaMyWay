@@ -565,7 +565,7 @@ A Resolution may contain more than one subject-scoped obligation or bounded phys
 
 Generic terminal reasons are completion, failure, supersession, governing-basis cessation and escalation. Concrete Resolution Jurisdictions specialise these semantics without independently redefining them.
 
-The [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) owns Cooperative Passage admission, Bubble, Passage Leg and dissolution policy. The Obstruction Relocation and Blocked Worker Recovery specialisations are defined below.
+The [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) owns Cooperative Passage and Bounded Bypass admission, their purpose-specific Bubble protection and spatial-resolution policy. The Obstruction Relocation and Blocked Worker Recovery specialisations are defined below.
 
 ### Pre-Semantic Contradiction != Resolution Failure
 
@@ -814,7 +814,7 @@ A **Correlated Recovery Recurrence** exists only when all of the following are t
 
 The first such correlated successor Stall is sufficient to establish **Recovery Strategy Exhausted** for the simple one-cycle Recovery strategy at that local condition. Recovery success is not retroactively revoked: the preceding Recovery truthfully succeeded when its intended successor Job Episode was admitted. The later recurrence instead proves that replaying the same bounded Recovery strategy is no longer a justified autonomous continuation.
 
-A Correlated Recovery Recurrence therefore vetoes another Blocked Worker Recovery cycle for that correlated Stall. It does not veto independently supported Regulation, Passage, Obstruction Relocation or another future capability. If no supported autonomous continuation remains after the Recovery strategy is exhausted, normal escalation may require Player Intervention.
+A Correlated Recovery Recurrence therefore vetoes another Blocked Worker Recovery cycle for that correlated Stall. It does not veto independently supported Regulation, Passage, Obstruction Relocation or the separate [Bounded Bypass](SPATIAL_NEGOTIATION_MODEL.md#specification-jurisdiction--bounded-bypass) Resolution where that Jurisdiction's additional current-evidence contract is independently satisfied. Recovery Strategy Exhausted alone does not establish Bypass support. If no supported autonomous continuation remains after the Recovery strategy is exhausted, normal escalation may require Player Intervention.
 
 Outside the correlation bounds, or without the exact successor lineage, a later Stall remains fresh independent Reality and may support a new Recovery cycle from its own fresh Trail/Anchor evidence.
 
