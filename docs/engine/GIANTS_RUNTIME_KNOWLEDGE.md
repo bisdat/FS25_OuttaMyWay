@@ -153,8 +153,8 @@ context.
 
 ### Native reverse targets use a distinct steering frame
 
-**Finding:** current FS25 field-worker code transforms a forward world target through
-`getAISteeringNode()`, but transforms a reverse world target through
+**Finding:** FS25 1.24 field-worker code transforms a forward world target
+through `getAISteeringNode()`, but transforms a reverse world target through
 `getAIReverserNode()` before calling `AIVehicleUtil.driveToPoint()`.
 `AIDriveStrategyFieldCourse` separately records an attached-tool reverser
 direction node where one is exposed.
@@ -167,8 +167,30 @@ tool-reverser direction surface is present.
 GIANTS native reverse semantics, or the presence of a tool-reverser node grants
 OuttaMyWay authority to reconstruct GIANTS turn/path geometry.
 
-**Evidence:** current FS25 `AIFieldWorker`, `AIDriveStrategyFieldCourse` and
-`AIVehicleUtil` source.
+**Evidence:** supplied FS25 1.24 `AIFieldWorker`,
+`AIDriveStrategyFieldCourse` and `AIVehicleUtil` source; public Community
+LUADOC source snapshot from December 2025 / January 2026.
+
+### driveToPoint steering suppression is an explicit optional input
+
+**Finding:** FS25 1.24
+`AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive,
+moveForwards, tX, tZ, maxSpeed, doNotSteer)` retains an optional ninth
+`doNotSteer` input. Nil/false permits the normal steering update; true
+suppresses that steering branch while the helper still owns the remaining
+drive mechanics. Current built-in field-worker use omits the argument, while
+another built-in AI-driving path may pass false explicitly.
+
+**Safe use:** wrappers/interceptors around `driveToPoint()` should preserve
+the optional input even when current known call sites make nil and false
+behaviourally equivalent.
+
+**Do not infer:** the currently observed nil/false call population makes the
+ninth argument universally irrelevant or safe to discard.
+
+**Evidence:** supplied FS25 1.24 `AIVehicleUtil`, `AIFieldWorker` and
+`AIDrivable` source; public Community LUADOC source snapshot from January
+2026.
 
 ### Native field-course reverse applies tool-relative target geometry
 
@@ -332,40 +354,80 @@ instantiated.
 
 **Do not infer:** every asset-declared configuration or actuator is active.
 
-**Evidence:** asset inspection, runtime configuration inspection, and validated
-implementation use.
+**Evidence:** supplied FS25 1.24 source-package inspection, asset inspection,
+runtime configuration inspection, and validated implementation use.
+
+### Foldable configured working width is shop-display metadata
+
+**Finding:** FS25 1.24 registers
+`foldingConfiguration#workingWidth` as the working width displayed in the
+shop. The selected runtime folding configuration separately materialises the
+active `spec_foldable.foldingParts`.
+
+**Safe use:** use the selected folding configuration and its instantiated
+actuation/animation structure as capability evidence. Treat the configured
+`workingWidth` value itself as presentation metadata unless another
+independent engine surface supplies stronger productive-width meaning.
+
+**Do not infer:** a Foldable shop-display width is physical occupancy,
+productive-envelope authority, or negative-clearance geometry.
+
+**Evidence:** supplied FS25 1.24 `Foldable` source.
 
 ### Intrinsic AI working width differs from current marker pose and player course width
 
-**Finding:** current FS25 `AIImplement:getAIMarkers()` returns the selected
-setup's cached `aiMarkerWidth` as its fifth value. GIANTS'
-`AIAutomaticSteering:getAttacherToolWorkingWidth()` calls
-`updateAIMarkerWidth()`, reads that semantic width, and also considers
-`getAIWorkAreaWidth()` across the root assembly. An explicit authored AI-marker
-width therefore remains available while the corresponding marker nodes are
-physically folded. Separately, the player-facing field-course width can be
-changed below the implement's intrinsic width.
+**Finding:** FS25 1.24 `AIImplement:getAIMarkers()` returns the selected
+setup's cached `aiMarkerWidth` as its fifth value.
+`updateAIMarkerWidth()` only derives and stores that width when the cached
+value is absent; it does not continuously recompute an existing authored width
+from current marker-node pose. GIANTS'
+`AIAutomaticSteering:getAttacherToolWorkingWidth()` ensures that cache before
+reading it and also considers `getAIWorkAreaWidth()` across the root assembly.
+An explicitly authored AI-marker width therefore remains available while the
+corresponding marker nodes are physically folded. Separately, the
+player-facing field-course width can be changed below the implement's intrinsic
+width.
 
 **Safe use:** preserve intrinsic AI-marker/work-area width, current marker
 separation, and player field-course width as different evidence. Intrinsic width
 may contribute to a purpose-specific productive-width bound when independent
 physical/configuration evidence supports that use.
 
-**Do not infer:** current marker separation equals productive maximum, a
-player-selected course width can shrink physical occupancy, or intrinsic
-productive width alone is physical collision geometry.
+**Do not infer:** current marker separation equals productive maximum, calling
+`updateAIMarkerWidth()` measures current pose, a player-selected course width
+can shrink physical occupancy, or intrinsic productive width alone is physical
+collision geometry.
 
-**Evidence:** current FS25 `AIImplement` /
-`AIAutomaticSteering` source; pre-job Patriot AI Settings observations; supplied
-Patriot and Condor assets.
+**Evidence:** supplied FS25 1.24 `AIImplement` /
+`AIAutomaticSteering` source; FS25 1.24.0.0 Reality observations; pre-job
+Patriot AI Settings observations; supplied Patriot and Condor assets; public
+Community LUADOC source snapshot from December 2025 / January 2026.
+
+### AI collision-trigger width is configured corroboration, not physical-width authority
+
+**Finding:** FS25 1.24 `AIImplement` exposes the selected AI collision-trigger
+record, but its numeric width may be explicitly authored, default to 4 m, derive
+from base vehicle size when `useSize` is selected, or be absent.
+
+**Safe use:** retain AI collision-trigger width as independent corroborating
+evidence about the selected AI setup. Agreement with another supported
+productive-width surface can strengthen an inference about configured lateral
+scale.
+
+**Do not infer:** collision-trigger width is generic physical occupancy,
+Coverage Closure, an authored physical-envelope guarantee, or Native-A8
+negative-clearance geometry.
+
+**Evidence:** supplied FS25 1.24 `AIImplement` source and Patriot/Condor asset
+inspection.
 
 ### Runtime dynamic animation values differ from source XML shape
 
-**Finding:** `AnimatedVehicle` registers rotation, translation and scale
-animation values from XML `start*/end*` attributes, but runtime dynamic parts
-store those loaded values under `part.animationValues`. Each animation-value
-object preserves its semantic `name` plus `startValue` / `endValue`.
-Selected `Foldable` parts point to those named runtime animations.
+**Finding:** FS25 1.24 `AnimatedVehicle` registers rotation, translation and
+scale animation values from XML `start*/end*` attributes, but runtime dynamic
+parts store those loaded values under `part.animationValues`. Each
+animation-value object preserves its semantic `name` plus `startValue` /
+`endValue`. Selected `Foldable` parts point to those named runtime animations.
 
 **Safe use:** inspect `part.animationValues` when reasoning about instantiated
 fold/deployment transform capability. For vehicle-local plan-view lateral
@@ -376,8 +438,10 @@ pitch is not by itself lateral-width evidence.
 `needsLowering` proves lateral widening. Lowering and lateral deployment are
 orthogonal configuration facts.
 
-**Evidence:** current FS25 `AnimatedVehicle`, `AnimationValueFloat` and
-`Foldable` source; supplied Patriot/Condor fold animations.
+**Evidence:** supplied FS25 1.24 `AnimatedVehicle`,
+`AnimationValueFloat` and `Foldable` source; supplied Patriot/Condor fold
+animations; public Community LUADOC source snapshot from December 2025 /
+January 2026.
 
 ## Assembly and physical structure
 
