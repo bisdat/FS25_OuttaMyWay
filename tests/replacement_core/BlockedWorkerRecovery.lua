@@ -536,4 +536,117 @@ return function(test,equal)
         AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,worldToLocal=
             oldAIVehicleUtil,oldTranslation,oldWorldDirection,oldWorldToLocal
     end)
+    test("Recovery Bubble applies one kilometre per hour to every other active Operation participant",function()
+        local commitment={identity="CM-RECOVERY-BUBBLE",state="ACTIVE",effectiveActuationCompositionId="COMP-RECOVERY"}
+        local currentResponsibility={identity="RS-RECOVERY-BUBBLE"}
+        local grants,requests,dispatches,clears,releases={},{},{},{},{}
+        local compositionSequence=0
+        OuttaMyWay.CommitmentStateMachine={
+            isTerminal=function(record) return record.state=="SUCCEEDED" or record.state=="FAILED" end
+        }
+        local runtime={
+            identities={issue=function(_,kind)
+                equal(kind,"COMPOSITION")
+                compositionSequence=compositionSequence+1
+                return "COMP-RECOVERY-SUPPORT-"..tostring(compositionSequence)
+            end},
+            epochs={next=function() return 22 end},
+            commitments={get=function(_,id) if id==commitment.identity then return commitment end end},
+            boundedAuthority={
+                authorize=function(_,values)
+                    grants[#grants+1]=values
+                    equal(values.responsibilityId,currentResponsibility.identity)
+                    equal(values.commitmentId,commitment.identity)
+                    equal(values.capability,"REGULATE_SPEED")
+                    equal(values.authorityRole,"SUPPORTING_SPEED_CEILING")
+                    equal(values.target.ownerTag,"RECOVERY_BUBBLE_BULLET_TIME")
+                    equal(values.target.maxSpeedKmh,1.0)
+                    return {identity="BA-"..tostring(#grants),preconditions={},invalidationConditions={},authorityRole="SUPPORTING_SPEED_CEILING"},nil
+                end,
+                materializeRequest=function(_,values)
+                    requests[#requests+1]=values
+                    local grant=grants[#requests]
+                    return {
+                        identity="CR-"..tostring(#requests),boundedAuthorityId=values.boundedAuthorityId,
+                        commitmentId=commitment.identity,assemblyId=grant.assemblyId,capability="REGULATE_SPEED",
+                        target=values.target,authorityRole="SUPPORTING_SPEED_CEILING",
+                        effectiveActuationCompositionId=commitment.effectiveActuationCompositionId
+                    },nil
+                end,
+                release=function(_,id)
+                    releases[#releases+1]=id
+                    return true
+                end
+            },
+            liveControlDispatcher={
+                dispatch=function(_,request)
+                    dispatches[#dispatches+1]=request
+                    return true,"REGULATION_LEASE_APPLIED"
+                end,
+                notifyAccepted=function() return {identity="OUTCOME"} end,
+                regulationControl={
+                    clearRegulationLeaseByReference=function(_,referenceKey,ownerTag)
+                        clears[#clears+1]=referenceKey
+                        equal(ownerTag,"RECOVERY_BUBBLE_BULLET_TIME")
+                        return true
+                    end
+                }
+            },
+            responsibilityTransitionAuthority={
+                getCurrentResolutionCommitment=function(_,id)
+                    if id==commitment.identity and commitment.state=="ACTIVE" then return currentResponsibility end
+                end
+            }
+        }
+        local picture={
+            epoch=20,
+            situations={{operationId="OP-RECOVERY",memberAssemblyIds={"AS-RECOVERY","AS-A","AS-B"}}},
+            motionEvidence={
+                {assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery"},
+                {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:a"},
+                {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:b"}
+            },
+            physicalSpaceEvidence={},productiveContinuationKnowledge={}
+        }
+        local candidate={
+            preconditions={},invalidationConditions={},
+            evidenceBasis={blockedWorkerRecoveryBridge={
+                architecture="BLOCKED_WORKER_RECOVERY",operationId="OP-RECOVERY",
+                assemblyId="AS-RECOVERY",assemblyReferenceKey="vehicle-root:recovery"
+            }}
+        }
+        local bubble=OuttaMyWay.RecoveryBubbleBulletTime.new(runtime)
+        local prepared,prepareReason=bubble:prepareAtRecoveryBubbleFormation(picture,candidate,{commitment=commitment})
+        equal(prepareReason,nil)
+        equal(prepared.status,"PREPARED")
+        equal(#prepared.leases,2)
+        equal(#dispatches,0)
+
+        local active,activateReason=bubble:activatePrepared(commitment.identity,{
+            effectiveActuationCompositionId="COMP-RECOVERY",operationalPictureEpoch=20,evidenceEpoch=21,
+            preconditions={},invalidationConditions={}
+        },candidate)
+        equal(activateReason,nil)
+        equal(active.status,"ACTIVE")
+        equal(#grants,2)
+        equal(#requests,2)
+        equal(#dispatches,2)
+        equal(grants[1].supportingSpeedCeilingComposition.identity,"COMP-RECOVERY-SUPPORT-1")
+        equal(grants[2].supportingSpeedCeilingComposition.identity,"COMP-RECOVERY-SUPPORT-1")
+
+        local reconciliation=bubble:releaseUnsupportedProtection({picture={
+            situations={{operationId="OP-RECOVERY",memberAssemblyIds={"AS-RECOVERY","AS-B"}}}
+        }})
+        equal(#reconciliation,1)
+        equal(reconciliation[1].assemblyId,"AS-A")
+        equal(reconciliation[1].status,"QUIESCENT_BASIS_ENDED")
+        equal(#clears,1)
+
+        commitment.state="SUCCEEDED"
+        bubble:update()
+        equal(bubble:getProtection(commitment.identity),nil)
+        equal(#clears,2)
+        equal(#releases,2)
+    end)
+
 end

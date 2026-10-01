@@ -672,19 +672,23 @@ Pairwise or Resolution-owned blocked signals remain within their governing respo
 
 A positive Blocked Progress Stall does not pre-empt another current supported resolution of the same Reality. The normal Candidate / Constraint / Decision boundary still selects among independently supported purposes.
 
-### Purpose-specific Resolution decision horizon
+### Recovery Bubble and protected decision horizon
 
-A current Resolution Commitment does not, merely by existing, own the whole Local Operation's prospective Decision horizon.
+Once Blocked Worker Recovery becomes Current Responsibility, one temporary **Recovery Bubble** protects that Recovery Resolution until it reaches an authoritative terminal state.
 
-> **Resolution Commitment != Exclusive Traffic Decision Horizon.**
+The Recovery Bubble exists so the recovering assembly can execute its bounded Recovery Excursion and native-replanning choreography without another active Operation participant consuming the local timing opportunity needed to get clear. Bubble protection does not require prediction of another worker's route, intended turn, future intersection or likely entry into the recovering worker's path.
 
-Blocked Worker Recovery owns only the recovering assembly's Recovery cycle and associated obligations. Independent surrounding traffic assessment remains live. Therefore, while C is under Recovery, ordinary Regulation involving another subject may remain supportable, and an independent A/B Cooperative Passage may become current with Passage Bullet Time constraining C only through its Supporting Speed Ceiling.
+At Recovery Bubble formation, every other current active AI worker assembly in the same Local Operation is constrained to the exact **1 km/h Bullet Time** policy for the duration of the Bubble. The effect is a supporting speed ceiling only: it does not acquire another participant's movement objective, route, steering, target or productive work.
 
-Recovery does not create a new traffic mode and does not globally suppress Candidate support for other assemblies.
+> **Recovery Bubble Protection != Traffic Prediction.**
 
-> **Responsibility Persistence != Decision-Horizon Exclusivity.**
+While the Recovery Bubble is current, fresh Observation and Situation knowledge remain live, but new independent traffic or Resolution selection for that Local Operation is deferred. Existing compatible responsibilities may remain semantically current and compatible speed ceilings compose by least-permissive magnitude, but no new Passage Bubble or competing traffic responsibility is established until Blocked Worker Recovery ends.
 
-> **Job Replacement Does Not Cancel Independent Traffic Constraints.**
+When the Recovery Resolution terminates, the Recovery Bubble dissolves sharply, its supporting ceilings are released, and fresh Situation Assessment owns whatever follows.
+
+> **Recovery First; Reassess After Release.**
+
+> **Job Replacement Does Not Cancel Recovery Bubble Protection.**
 
 ### Recovery Approach, Recovery Approach Trail, Recovery Anchor and Recovery Return Region
 

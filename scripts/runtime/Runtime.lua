@@ -139,6 +139,7 @@ function Runtime.new()
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.passageCruiseControl=OuttaMyWay.PassageCruiseControl.new()
     runtime.regulationBoundedAuthority=OuttaMyWay.RegulationBoundedAuthority.new(runtime)
+    runtime.recoveryBubbleBulletTime=OuttaMyWay.RecoveryBubbleBulletTime.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.responsibilityTransitionAuthority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
     terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority
@@ -205,6 +206,13 @@ function Runtime:relinquishAllControl(reason)
     attempt("bubbleBulletTime",function()
         if self.bubbleBulletTime~=nil and type(self.bubbleBulletTime.releaseAll)=="function" then
             self.bubbleBulletTime:releaseAll(why)
+            return true
+        end
+        return nil
+    end)
+    attempt("recoveryBubbleBulletTime",function()
+        if self.recoveryBubbleBulletTime~=nil and type(self.recoveryBubbleBulletTime.releaseAll)=="function" then
+            self.recoveryBubbleBulletTime:releaseAll(why)
             return true
         end
         return nil
@@ -656,6 +664,9 @@ function Runtime:onBlockedWorkerRecoveryControlCompletion(result)
             tostring(result.commitmentId),tostring(eventKind),tostring(reason))
         return
     end
+    if self.recoveryBubbleBulletTime~=nil and type(self.recoveryBubbleBulletTime.releaseForCommitment)=="function" then
+        self.recoveryBubbleBulletTime:releaseForCommitment(result.commitmentId,"BLOCKED_WORKER_RECOVERY_TERMINAL")
+    end
     if eventKind=="OBJECTIVE_SATISFIED" and self.blockedWorkerRecoveryRecurrenceAssessment~=nil then
         local recurrence=result.recoveryRecurrenceContext or {}
         local evidence=result.evidence or {}
@@ -707,22 +718,50 @@ function Runtime:_dispatchBlockedWorkerRecovery(picture,evaluated,candidate,brid
     if applied==nil then
         return {status="NO_DISPATCH",reason="BLOCKED_WORKER_RECOVERY_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,candidateId=candidate.identity}
     end
+
+    local protection={status="NOT_AVAILABLE"}
+    if self.recoveryBubbleBulletTime~=nil then
+        local protectionReason=nil
+        protection,protectionReason=self.recoveryBubbleBulletTime:prepareAtRecoveryBubbleFormation(picture,candidate,applied)
+        if protection==nil then
+            logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_BUBBLE_PREPARATION_FAILED",
+                "commitment=%s reason=%s",tostring(applied.commitment.identity),tostring(protectionReason))
+            return {status="NO_DISPATCH",reason="BLOCKED_WORKER_RECOVERY_BUBBLE_PREPARATION_FAILED:"..tostring(protectionReason),commitment=applied.commitment,blockedWorkerRecovery=true}
+        end
+    end
+
     local request,requestReason=self:_blockedWorkerRecoveryRequest(picture,evaluated,candidate,applied,bridge)
     if request==nil then
+        if self.recoveryBubbleBulletTime~=nil then
+            self.recoveryBubbleBulletTime:releaseForCommitment(applied.commitment.identity,"BLOCKED_WORKER_RECOVERY_REQUEST_UNAVAILABLE")
+        end
         logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_REQUEST_REQUIRES_REASSESSMENT",
             "commitment=%s reason=%s semanticSettlement=false",tostring(applied.commitment.identity),tostring(requestReason))
         return {status="NO_DISPATCH",reason=requestReason,commitment=applied.commitment,blockedWorkerRecovery=true}
     end
+
+    if self.recoveryBubbleBulletTime~=nil then
+        local activated,activationReason=self.recoveryBubbleBulletTime:activatePrepared(applied.commitment.identity,request,candidate)
+        if activated==nil then
+            self.boundedAuthority:release(request.boundedAuthorityId,"BLOCKED_WORKER_RECOVERY_BUBBLE_ACTIVATION_FAILED")
+            self.recoveryBubbleBulletTime:releaseForCommitment(applied.commitment.identity,"BLOCKED_WORKER_RECOVERY_BUBBLE_ACTIVATION_FAILED")
+            logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_BUBBLE_ACTIVATION_FAILED",
+                "commitment=%s reason=%s",tostring(applied.commitment.identity),tostring(activationReason))
+            return {status="REJECTED",reason="BLOCKED_WORKER_RECOVERY_BUBBLE_ACTIVATION_FAILED:"..tostring(activationReason),request=request,commitment=applied.commitment,blockedWorkerRecovery=true}
+        end
+        protection=activated
+    end
+
     local started,result=self.liveControlDispatcher:dispatch(request,candidate)
     local outcome=started and self.liveControlDispatcher:notifyAccepted(request,{kind="BLOCKED_WORKER_RECOVERY_CONTROL_ACCEPTED"})
         or self.liveControlDispatcher:notifyRejected(request,result,{kind="NO_PHYSICAL_EFFECT_CONFIRMED"})
     if started~=true then
         self.boundedAuthority:release(request.boundedAuthorityId,"BLOCKED_WORKER_RECOVERY_START_REJECTED")
         logWarning("NORMAL","BLOCKED_WORKER_RECOVERY_START_REQUIRES_REASSESSMENT",
-            "commitment=%s reason=%s semanticSettlement=false",tostring(applied.commitment.identity),tostring(result))
-        return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,commitment=applied.commitment,blockedWorkerRecovery=true}
+            "commitment=%s reason=%s semanticSettlement=false recoveryBubble=%s",tostring(applied.commitment.identity),tostring(result),tostring(protection.status))
+        return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,commitment=applied.commitment,blockedWorkerRecovery=true,recoveryBubbleBulletTime=protection}
     end
-    return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,currentResponsibility=applied.currentResponsibility,blockedWorkerRecovery=true,result=result}
+    return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,currentResponsibility=applied.currentResponsibility,blockedWorkerRecovery=true,recoveryBubbleBulletTime=protection,result=result}
 end
 
 function Runtime:onObstructionRelocationCompletion(result)
@@ -938,23 +977,28 @@ end
 
 function Runtime:processLiveObservation(raw)
     local processed=self:processSealedObservation(raw)
-    -- Existing Resolution decision-horizon behavior remains fail-closed by default.
-    -- Blocked Worker Recovery is the explicit single-subject non-exclusive exception.
+    -- A current BWR owns a Recovery Bubble decision horizon: observe continuously,
+    -- but defer new prospective responsibilities until Recovery reaches terminality.
+    -- Other Resolution types retain their existing fail-closed decision-horizon behavior.
     local contexts=processed.picture.commitmentContext or {}
+    local recoveryBubbleResolution=false
     local exclusiveResolution=false
     for _,context in OuttaMyWay.ValueRecord.ipairs(contexts) do
         if type(context.commitmentId)=="string" then
             local current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(context.commitmentId)
             local kind=current and current.purpose and current.purpose.kind or nil
-            if kind~=nil and kind~="BLOCKED_WORKER_RECOVERY" then
+            if kind=="BLOCKED_WORKER_RECOVERY" then
+                recoveryBubbleResolution=true
+            elseif kind~=nil then
                 exclusiveResolution=true
-                break
             end
         end
     end
 
     local supported=nil
-    if exclusiveResolution then
+    if recoveryBubbleResolution then
+        supported=self.passiveCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
+    elseif exclusiveResolution then
         supported=self.obstructionRelocationCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot)
         if supported==nil then supported=self.liveTrafficCandidateSupport:publishDecisionPicture(processed.picture,processed.snapshot) end
     else

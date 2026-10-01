@@ -36,25 +36,21 @@ A new Blocked Worker Recovery Resolution MUST be grounded in one coherent curren
 
 Raw `spec_aiFieldWorker.isBlocked` MUST NOT independently satisfy admission.
 
-### Decision horizon and compatible responsibilities
+### Recovery Bubble and protected decision horizon
 
-Blocked Worker Recovery is a single-subject Resolution. Its Current Responsibility owns the recovering assembly's bounded Recovery Excursion; it does not own the whole Local Operation's prospective Decision horizon.
+Blocked Worker Recovery is a single-subject Resolution for movement ownership, but once it becomes current it creates one temporary **Recovery Bubble** over the Local Operation's prospective decision horizon.
 
-> **Resolution Commitment != Exclusive Traffic Decision Horizon.**
+The Bubble MUST protect the recovering assembly without predicting which other worker is likely to enter its path. At Bubble formation, every other current active Operation participant MUST receive the purpose-bound **1 km/h Bullet Time** Supporting Speed Ceiling. The recovering assembly remains the only BWR movement subject.
 
-An already-current compatible Regulation whose controlled subject is another assembly MUST NOT, by its existence alone, make Recovery inadmissible. Likewise, once Recovery is current, ordinary traffic Candidate support for other assemblies remains live.
+The Bullet-Time effects are supporting temporal effects under the current BWR Resolution. They MUST NOT create separate Regulation responsibilities, Candidates or Decisions; MUST NOT acquire another participant's movement objective, route, steering or target; and MAY compose with an already-current compatible speed ceiling by least-permissive magnitude.
 
-Examples of accepted coexistence include:
+While the Recovery Bubble is current, Observation and Situation Assessment continue to publish fresh Reality, but prospective creation of new independent traffic or Resolution responsibilities for the same Local Operation is deferred. An already-current compatible responsibility is not implicitly terminated merely because BWR starts.
 
-- C under Recovery while B is tactically regulated to protect C's local movement domain;
-- C under Recovery while A is follower-regulated behind C; and
-- C under Recovery while A/B execute Cooperative Passage and Passage applies its independent 1 km/h Supporting Speed Ceiling to C.
+When BWR reaches an authoritative terminal state, the Recovery Bubble MUST dissolve sharply and all Recovery-Bubble Supporting Speed Ceilings MUST be released. Fresh Candidate / Constraint / Decision processing then reassesses the Local Operation from current Reality.
 
-These are independent Current Responsibilities, not one combined Recovery traffic mode.
+> **Recovery Bubble Protection != Traffic Prediction.**
 
-A responsibility that would require an incompatible movement objective or incompatible actuation ownership on C remains inadmissible while Recovery owns C's movement objective. Fresh cross-purpose ambiguity or incompatibility MUST be handled by explicit Candidate / Constraint / Decision semantics; Recovery gains no implicit precedence from Stall status.
-
-Selection of a compatible new responsibility MUST NOT automatically terminate or restart the current Recovery Resolution.
+> **Recovery First; Reassess After Release.**
 
 ### Blocked Progress Contradiction
 
@@ -195,25 +191,27 @@ The result may involve fold/raise/compact actuation, retention of an already sui
 
 A requested or settled Transit state MUST NOT itself be treated as proof of movement clearance. Movement uses fresh realised representation and current Bounded Authority.
 
-### Passage Bullet Time during Recovery
+### Recovery Bubble Bullet Time
 
-Blocked Worker Recovery does not create a special traffic class.
+Recovery Bubble formation is part of BWR establishment, not a separate strategic traffic decision.
 
-If an independent A/B Cooperative Passage Bubble forms while the recovering assembly is the Bubble's third active worker, the Recovery Resolution remains current and its Recovery Excursion continues under the Passage-owned **1 km/h Supporting Speed Ceiling**.
+For each other current active Operation participant at Bubble formation, BWR MUST establish an exact **1 km/h Supporting Speed Ceiling** before the Recovery Excursion begins. No Forward Intersection, follower relation, opposed-corridor relation, theatre-overlap prediction or other participant-intent predicate is required.
 
-The Bullet-Time ceiling:
+If no other active participant exists, Bubble formation requires no physical speed lease. Under the supported three-worker Operation envelope, one recovering assembly therefore produces zero, one or two Recovery-Bubble Bullet-Time leases.
 
-- narrows Recovery movement magnitude only;
-- MUST NOT acquire or replace the Recovery movement objective;
-- MUST NOT invalidate the Recovery Anchor merely because movement becomes slower;
-- MUST NOT restart the Recovery Excursion when the ceiling is applied or removed; and
-- MUST NOT be interpreted as Recovery failure merely because progress is slower while the cap is current.
+Each lease:
 
-When the Bubble dissolves, removing the ceiling changes only current permitted magnitude. Recovery continues under its own still-current Bounded Authority if its Recovery Return Region has not yet been reached.
+- owns magnitude only and MUST NOT acquire movement direction, target, steering or productive routing;
+- is subordinate to the current BWR Resolution and carries no independent Regulation lifecycle;
+- MUST remain active while its participant remains an active member of the protected Local Operation and BWR remains current;
+- MUST release promptly if that participant leaves the Local Operation; and
+- MUST release no later than authoritative BWR termination.
 
-Any Recovery progress-watchdog implementation MUST measure purpose-specific progress toward the current Recovery completion residual and MUST treat a current compatible speed ceiling as valid execution context rather than as evidence that the Recovery strategy has failed.
+The required leases are fail-closed protection for autonomous Recovery. If the runtime cannot establish all required Recovery-Bubble ceilings, Recovery Control MUST NOT begin the bounded retreat.
 
-> **Bullet Time Constrains Recovery; It Does Not Suspend Recovery.**
+Existing compatible supporting ceilings may compose through the normal least-permissive magnitude rule. Recovery Bubble Bullet Time does not rewrite their semantic ownership.
+
+> **Recovery Bubble Bullet Time Protects Time; BWR Owns The Retreat.**
 
 ### Direct Anchor-referenced retreat
 
@@ -474,9 +472,9 @@ Assessment Representation supplies purpose-fit current Physical Assembly evidenc
 
 ### Candidate Support, Constraint Evaluation and Decision
 
-Where strategic selection is required, prospective support and mandatory constraints remain upstream of Responsibility Transition. A Blocked Progress Stall does not automatically outrank an independently supported active-traffic, Causal Obstruction or other purpose-specific Candidate. Decision selects among current supported alternatives before Responsibility Transition. This Specification does not make `isBlocked`, Stall classification or Control availability equivalent to Candidate selection.
+Before BWR establishment, prospective support and mandatory constraints remain upstream of Responsibility Transition. A Blocked Progress Stall does not automatically outrank an independently supported active-traffic, Causal Obstruction or other purpose-specific Candidate. Decision selects among current supported alternatives before Responsibility Transition. This Specification does not make `isBlocked`, Stall classification or Control availability equivalent to Candidate selection.
 
-Decision scope is not operation-global merely because a Recovery Resolution is current. Compatible independent traffic support remains eligible while Recovery persists. Conversely, selection of such a compatible purpose does not by itself supersede Recovery.
+After BWR establishment, its Recovery Bubble temporarily owns the Local Operation's prospective decision horizon. Fresh Observation and Situation knowledge continue, but new independent Candidate / Decision creation is deferred until BWR terminates and the Bubble releases. This is bounded serialization for Recovery, not persistent pair history or future-route ownership.
 
 ### Responsibility Transition
 
@@ -494,11 +492,13 @@ Every positive Transit/configuration and Recovery-movement effect requires curre
 
 Control executes the granted Transit/configuration and Recovery movement, then the Resolution-authorised native FIELDWORK Job replacement and immediate OMW physical relinquishment. Control does not decide Blocked Progress Stall admission, productive routing or later fresh-Stall meaning.
 
-## Current implementation — purpose-specific decision horizon
+## Current implementation — Recovery Bubble decision horizon
 
-Production `Runtime:processLiveObservation()` now treats current Blocked Worker Recovery as the explicit non-exclusive exception to the existing Resolution decision-horizon behavior. A current Recovery Resolution does not set the operation-global exclusivity flag, so compatible independent traffic Candidate support remains live.
+Production `Runtime:processLiveObservation()` treats a current Blocked Worker Recovery as a protected Recovery Bubble. While that Resolution is current, prospective support for new independent responsibilities is replaced by passive decision support; fresh Observation and Situation knowledge still update for reassessment after release.
 
-Fresh independent Commitment creation is permitted beside an unrelated retained Recovery context. Existing responsibility-key and actuation-owner admission checks still fail closed on incompatible ownership.
+Production `RecoveryBubbleBulletTime` prepares one supporting-speed composition from the other active Operation participants at BWR formation and applies an exact 1 km/h Regulation lease to each of them before Recovery Control begins. These leases carry `SUPPORTING_SPEED_CEILING` authority only and are released when BWR terminates or the protected participant leaves the Local Operation.
+
+Fresh independent Commitment creation may still occur beside unrelated retained responsibilities **before** BWR establishment where ordinary admission allows it. Once the Recovery Bubble is current, no new competing responsibility is selected until Recovery ends.
 
 Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHold=false` unconditionally. That placeholder MUST NOT be used as positive evidence that OuttaMyWay did not cause quiescence. Recovery admission must use truthful current semantic/actuation ownership until Observation owns a truthful equivalent field.
 
@@ -511,6 +511,7 @@ Production Observation also currently publishes `jobEpisodeEvidence.outtaMyWayHo
 | [`scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) | `REALISES` |
 | [`scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) | `REALISES` |
 | [`scripts/control/BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) | `REALISES` |
+| [`scripts/authority/RecoveryBubbleBulletTime.lua`](../scripts/authority/RecoveryBubbleBulletTime.lua) | `REALISES` |
 | [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) | `SUPPORTS` |
 | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
 
@@ -523,8 +524,9 @@ Production implements one bounded Recovery cycle plus passive correlated-recurre
 - [`BlockedWorkerRecoveryCandidateSupport.lua`](../scripts/candidates/BlockedWorkerRecoveryCandidateSupport.lua) projects one current Stall+Anchor into one Recovery Candidate only when Correlated Recovery Recurrence has not established Recovery Strategy Exhausted;
 - [`BlockedWorkerRecoveryCommitmentLifecycle.lua`](../scripts/commitment/BlockedWorkerRecoveryCommitmentLifecycle.lua) owns specialised Recovery commitment settlement;
 - [`BlockedWorkerRecoveryResponsibilityTransition.lua`](../scripts/responsibility/BlockedWorkerRecoveryResponsibilityTransition.lua) establishes the single-subject Current Responsibility;
-- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, retreats into the Recovery Return Region using the selected Anchor as subordinate steering reference, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission; and
-- Runtime records passive recurrence provenance only after semantic Recovery success and preserves Recovery's non-exclusive traffic decision horizon while retaining Passage's Bubble horizon.
+- [`BlockedWorkerRecoveryControl.lua`](../scripts/control/BlockedWorkerRecoveryControl.lua) requests Transit, retreats into the Recovery Return Region using the selected Anchor as subordinate steering reference, prepares and commits a fresh direct-start GIANTS FIELDWORK Job, relinquishes OMW physical/configuration control, and waits only for intended-successor Job Episode admission;
+- [`RecoveryBubbleBulletTime.lua`](../scripts/authority/RecoveryBubbleBulletTime.lua) applies the Recovery-Bubble 1 km/h Supporting Speed Ceiling to every other active Operation participant at Bubble formation without acquiring their movement objectives; and
+- Runtime defers new prospective responsibility selection while BWR is current, releases the Recovery Bubble at terminal settlement, and records passive recurrence provenance only after semantic Recovery success.
 
 A correlated successor Stall does not become a failed prior Recovery and does not start another Control lifecycle. Candidate replay is vetoed and the runtime remains fail-closed with existing player authority available for intervention.
 
@@ -552,6 +554,10 @@ Current offline validation should challenge at least:
 - successful replacement start immediately relinquishes OMW movement and Transit-configuration bookkeeping without restoring the former working posture;
 - API start success alone does not settle Native Replanning;
 - only positive admission of the intended successor Job Episode for the same Physical Assembly completes Recovery;
+- Recovery Bubble formation applies 1 km/h Supporting Speed Ceilings to every other active Operation participant without requiring a traffic-intent predicate;
+- Recovery movement does not start unless all required Bubble ceilings are established;
+- no new prospective traffic/Resolution responsibility is selected while the Recovery Bubble remains current;
+- Bubble ceilings release on participant departure or authoritative BWR termination, after which fresh assessment resumes;
 - a later fresh Stall requires its own fresh Trail/Anchor evidence before recurrence correlation;
 - exact intended-successor lineage + <=5 m + <=60 s establishes Correlated Recovery Recurrence and vetoes Recovery Candidate replay; and
 - different lineage or a Stall outside either correlation bound does not manufacture Recovery Strategy Exhausted.
@@ -569,8 +575,9 @@ Initial Reality validation should include:
 5. immediate GIANTS ownership of post-restart configuration and movement with no OMW restore tail;
 6. absence or presence of a player-visible manual-stop notification when Recovery uses the supported nil-message stop lifecycle;
 7. preservation of deliberately distinctive player-selected FIELDWORK parameters across replacement in a dedicated scenario;
-8. the demonstrated S416 successor recurrence, proving that the fresh correlated Stall is classified Recovery Strategy Exhausted and Recovery #2 is not admitted; plus a non-correlated successor Stall proving independent fresh Recovery remains supportable outside the accepted correlation bounds; and
-9. existing Cooperative Passage / Regulation cases, proving that independent traffic responsibilities and Supporting Speed Ceilings remain correctly scoped during Recovery.
+8. the demonstrated S416 successor recurrence, proving that the fresh correlated Stall is classified Recovery Strategy Exhausted and Recovery #2 is not admitted; plus a non-correlated successor Stall proving independent fresh Recovery remains supportable outside the accepted correlation bounds;
+9. TS015-style live-worker blockage with one or two other active participants, proving that every non-recovering participant is held to 1 km/h for the Recovery Bubble and that fresh traffic assessment resumes only after BWR release; and
+10. existing Cooperative Passage / Regulation cases, proving that ordinary Bubble and Regulation behavior remains unchanged outside BWR.
 
 ### Outside this Specification's validation claim
 
