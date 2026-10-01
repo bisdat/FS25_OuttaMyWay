@@ -22,11 +22,31 @@ function Control:deleteMap() self:relinquishAll("MAP_DELETE") end
 function Control:keyEvent() end
 function Control:mouseEvent() end
 function Control:draw() end
+function Control:_beginRepresentationConfigurationAuthority(state)
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if cache==nil or type(cache.beginOuttaMyWayConfigurationAuthority)~="function" then
+        return false,"BYPASS_REPRESENTATION_CONFIGURATION_AUTHORITY_UNAVAILABLE"
+    end
+    cache:beginOuttaMyWayConfigurationAuthority(state.request.target.bridge.assemblyReferenceKey,
+        state.request.target.bridge.sourceJobToken)
+    state.representationConfigurationAuthority=true
+    return true
+end
+function Control:_endRepresentationConfigurationAuthority(state)
+    if state==nil or state.representationConfigurationAuthority~=true then return end
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if cache~=nil and type(cache.endOuttaMyWayConfigurationAuthority)=="function" then
+        cache:endOuttaMyWayConfigurationAuthority(state.request.target.bridge.assemblyReferenceKey,
+            state.request.target.bridge.sourceJobToken)
+    end
+    state.representationConfigurationAuthority=false
+end
 function Control:relinquishAll(reason)
     local state=self.active
     if state==nil then return {released=0,reason=reason} end
     self.driveMechanism:clearMovementObjective(state.vehicle)
     self.configurationMechanism:clear(state.vehicle)
+    self:_endRepresentationConfigurationAuthority(state)
     self.active=nil
     return {released=1,reason=reason}
 end
@@ -96,6 +116,8 @@ function Control:executeControlRequest(request)
     local held,holdReason=self.driveMechanism:setAxisTravel(vehicle,f.x,f.z,f.forwardX,f.forwardZ,0,0,true,1)
     if not held then return false,holdReason end
     self.active=state
+    local marked,markReason=self:_beginRepresentationConfigurationAuthority(state)
+    if not marked then self:_finish("FAILED",markReason); return false,markReason end
     local capability=self.runtime.assemblyRepresentationCache:getTransitFoldCapability(bridge.assemblyReferenceKey,bridge.sourceJobToken)
     local ok,transitReason=self.configurationMechanism:prepareCachedTransit(vehicle,capability,true)
     if not ok then self:_finish("FAILED",transitReason); return false,transitReason end
