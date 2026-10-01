@@ -181,7 +181,7 @@ test("Bubble preparation preserves movement ownership and fixed one kilometre pe
     equal(prepared.status,"PREPARED")
     equal(prepared.assemblyId,"C")
     equal(prepared.maxSpeedKmh,1.0)
-    equal(prepared.authorityRole,"SUPPORTING_SPEED_CEILING")
+    equal(prepared.supportingSpeedCeilingComposition.entries[1].authorityRole,"SUPPORTING_SPEED_CEILING")
     equal(prepared.effectiveActuationCompositionId,"COMP-PAIR")
     equal(commitment.effectiveActuationCompositionId,"COMP-PAIR")
     equal(prepared.physicalActive,false)
