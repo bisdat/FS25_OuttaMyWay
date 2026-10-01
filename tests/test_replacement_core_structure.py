@@ -2203,6 +2203,9 @@ def test_native_a8_clearance_exclusion_is_situation_owned_and_disc_remains_conse
     assert "inspectNeedsLowering" in maximum
     assert "FOLD_CAPABILITY_AND_AI_NEEDS_LOWERING" in maximum
     assert "AMBIGUOUS_FOLD_CONFIGURATION_CONSERVATIVE_WORKING_SPAN" in maximum
+    assert "CURRENT_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_MAXIMUM" in maximum
+    assert "MAXIMUM_PRODUCTIVE_A8_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_WITHOUT_WORKING_SPAN" in maximum
+    assert 'MaximumProductiveA8Representation.build(record,frame,worker,self:_api("localToWorld"),worldPrimitives)' in cache
     assert "maximumProductiveA8Envelope" in observation
     assert "maximumProductiveA8Envelope" in situation
     assert "NativeA8ClearanceAssessment.apply" in situation

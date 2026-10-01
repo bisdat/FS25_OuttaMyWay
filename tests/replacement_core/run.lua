@@ -8879,7 +8879,88 @@ test("Maximum Productive A8 distinguishes lateral articulation from unrelated fo
     equal(varioEvidence.maximumProductiveA8Envelope~=nil,true)
     equal(varioEvidence.maximumProductiveA8Envelope.lateralArticulation,false)
     spatialNear(varioEvidence.maximumProductiveA8Envelope.widthM,2.65,0.001)
+    spatialNear(varioEvidence.maximumProductiveA8Envelope.observedWorkingWidthM,8.0,0.001)
     equal(varioEvidence.maximumProductiveA8Envelope.workingWidthM,nil)
+    equal(varioEvidence.maximumProductiveA8Envelope.physicalSpanContradiction,false)
+    equal(varioEvidence.maximumProductiveA8Envelope.workingSpanAdmissionReason,"AUTHORED_PHYSICAL_SPAN_SUFFICIENT")
+
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("Maximum Productive A8 uses current physical contradiction to challenge an authored-only maximum",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={
+        [50]={0,0,0},[51]={-18,0,0},[52]={18,0,0}
+    }
+    getWorldTranslation=function(node)
+        local p=positions[node] or {0,0,0}
+        return p[1],p[2],p[3]
+    end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+
+    local function xml(width,length)
+        return {getValue=function(_,key)
+            local values={["vehicle.base.size#width"]=width,["vehicle.base.size#length"]=length}
+            return values[key]
+        end}
+    end
+    local function api()
+        return {
+            getNumOfChildren=function() return 0 end,
+            getChildAt=function() return nil end,
+            getName=function(node) return "root"..tostring(node) end,
+            localToWorld=function(node,x,y,z)
+                local p=positions[node] or {0,0,0}
+                return p[1]+x,p[2]+y,p[3]+z
+            end,
+            getShapeGeometryBoundingSphere=function() return 0,0,0,18,true end,
+            getShapeBoundingSphere=function() return 0,0,0,18,true end,
+            getShapeWorldBoundingSphere=function(node)
+                local p=positions[node] or {0,0,0}
+                return p[1],p[2],p[3],18
+            end,
+            getIsCompoundChild=function() return false end
+        }
+    end
+
+    local sprayer={
+        rootNode=50,xmlFile=xml(3.9,8.0),components={},
+        getAINeedsLowering=function() return false end,
+        getAIMarkers=function() return 51,52 end,
+        getName=function() return "Sprayer-like" end,
+        getAttachedImplements=function() return {} end,
+        getAISteeringNode=function() return 50 end
+    }
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    cache:beginObservationCycle()
+    local evidence=cache:observe(sprayer,"vehicle-root:sprayer","job-sprayer",0)
+    cache:endObservationCycle()
+
+    equal(evidence.maximumProductiveA8Envelope~=nil,true)
+    equal(evidence.maximumProductiveA8Envelope.lateralArticulation,false)
+    equal(evidence.maximumProductiveA8Envelope.physicalSpanContradiction,true)
+    spatialNear(evidence.maximumProductiveA8Envelope.currentDiscLateralSpanM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.observedWorkingWidthM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.workingWidthM,36.0,0.001)
+    spatialNear(evidence.maximumProductiveA8Envelope.widthM,36.0,0.001)
+    equal(evidence.maximumProductiveA8Envelope.workingSpanAdmissionReason,"CURRENT_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_MAXIMUM")
+
+    local unresolvedSprayer={
+        rootNode=50,xmlFile=xml(3.9,8.0),components={},
+        getAINeedsLowering=function() return false end,
+        getName=function() return "Sprayer-without-width" end,
+        getAttachedImplements=function() return {} end,
+        getAISteeringNode=function() return 50 end
+    }
+    local unresolvedCache=OuttaMyWay.AssemblyRepresentationCache.new({api=api()})
+    unresolvedCache:beginObservationCycle()
+    local unresolved=unresolvedCache:observe(unresolvedSprayer,"vehicle-root:sprayer-no-width","job-sprayer-no-width",0)
+    unresolvedCache:endObservationCycle()
+
+    equal(unresolved.maximumProductiveA8Envelope,nil)
+    equal(unresolved.maximumProductiveA8Reason,"MAXIMUM_PRODUCTIVE_A8_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_WITHOUT_WORKING_SPAN")
 
     getWorldTranslation=oldWorldTranslation
     localDirectionToWorld=oldLocalDirectionToWorld

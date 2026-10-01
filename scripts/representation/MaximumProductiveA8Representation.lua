@@ -172,7 +172,29 @@ local function include(bounds,right,forward)
     bounds.maxForwardM=bounds.maxForwardM==nil and forward or math.max(bounds.maxForwardM,forward)
 end
 
-function Representation.build(record,frame,worker,localToWorldFn)
+-- Conservative DISC evidence is used here only to challenge an authored-only
+-- maximum. It never becomes Maximum Productive A8 geometry or negative-clearance
+-- authority. A DISC span wider than the authored members' own diagonal bounds
+-- proves only that authored base dimensions have not explained all current
+-- physical possibility.
+local function positiveDiscLateralSpan(worldPrimitives,frame)
+    local minimum,maximum=nil,nil
+    if type(frame)~="table" then return nil end
+    for _,primitive in ipairs(worldPrimitives or {}) do
+        local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
+            and finite(x) and finite(z) and finite(radius) and radius>0 then
+            local dx,dz=x-frame.x,z-frame.z
+            local right=dx*frame.rightX+dz*frame.rightZ
+            minimum=minimum==nil and right-radius or math.min(minimum,right-radius)
+            maximum=maximum==nil and right+radius or math.max(maximum,right+radius)
+        end
+    end
+    if minimum==nil or maximum==nil or maximum<=minimum then return nil end
+    return maximum-minimum
+end
+
+function Representation.build(record,frame,worker,localToWorldFn,worldPrimitives)
     if type(record)~="table" or type(frame)~="table" then
         return nil,"MAXIMUM_PRODUCTIVE_A8_REFERENCE_FRAME_UNAVAILABLE"
     end
@@ -186,6 +208,7 @@ function Representation.build(record,frame,worker,localToWorldFn)
     if #members<1 then return nil,"MAXIMUM_PRODUCTIVE_A8_ASSEMBLY_MEMBERS_UNAVAILABLE" end
 
     local bounds={}
+    local authoredRadialBounds={}
     local lateralArticulation=false
     local articulationEvidence={}
     local metadataSources={}
@@ -252,6 +275,25 @@ function Representation.build(record,frame,worker,localToWorldFn)
 
         local centreRight=tonumber(metadata.widthOffsetM) or 0
         local centreForward=tonumber(metadata.lengthOffsetM) or 0
+
+        -- A base-size rectangle can legitimately yield a much wider bounding
+        -- sphere because longitudinal length contributes to sphere radius.
+        -- Compare current DISC scale against this diagonal-derived authored
+        -- possibility, not against width alone, before declaring contradiction.
+        local centreOk,centreX,_,centreZ=pcall(localToWorldFn,object.rootNode,centreRight,0,centreForward)
+        if not centreOk or not finite(centreX) or not finite(centreZ) then
+            return nil,"MAXIMUM_PRODUCTIVE_A8_MEMBER_CENTRE_TRANSFORM_FAILED:"..tostring(member.referenceKey)
+        end
+        local centreDx,centreDz=centreX-frame.x,centreZ-frame.z
+        local centreLateral=centreDx*frame.rightX+centreDz*frame.rightZ
+        local authoredRadius=math.sqrt(width*width+length*length)*0.5
+        authoredRadialBounds.minRightM=authoredRadialBounds.minRightM==nil
+            and centreLateral-authoredRadius
+            or math.min(authoredRadialBounds.minRightM,centreLateral-authoredRadius)
+        authoredRadialBounds.maxRightM=authoredRadialBounds.maxRightM==nil
+            and centreLateral+authoredRadius
+            or math.max(authoredRadialBounds.maxRightM,centreLateral+authoredRadius)
+
         for _,offset in ipairs({
             {-width*0.5,-length*0.5},{width*0.5,-length*0.5},
             {width*0.5,length*0.5},{-width*0.5,length*0.5}
@@ -266,19 +308,52 @@ function Representation.build(record,frame,worker,localToWorldFn)
         metadataSources[tostring(metadata.source or "UNRESOLVED")]=true
     end
 
+    local authoredBaseRadialSpanM=nil
+    if authoredRadialBounds.minRightM~=nil and authoredRadialBounds.maxRightM~=nil then
+        authoredBaseRadialSpanM=authoredRadialBounds.maxRightM-authoredRadialBounds.minRightM
+    end
+    local currentDiscLateralSpanM=positiveDiscLateralSpan(worldPrimitives,frame)
+    local physicalSpanContradiction=finite(currentDiscLateralSpanM)
+        and finite(authoredBaseRadialSpanM)
+        and currentDiscLateralSpanM>authoredBaseRadialSpanM+EPSILON
+
+    -- Working width is observed independently from the articulation classifier.
+    -- Classification may decide that the observation is not physically relevant,
+    -- but it must not prevent acquisition of evidence capable of contradicting
+    -- that classification.
+    local observation=OuttaMyWay.NativeFieldWorkObservation
+    local workingWidthObservation=nil
+    if observation~=nil and type(observation.workingWidth)=="function" then
+        workingWidthObservation=observation.workingWidth(worker)
+    end
+    local observedWorkingWidthM=workingWidthObservation and tonumber(workingWidthObservation.widthMetres) or nil
+
+    local useWorkingSpan=lateralArticulation or physicalSpanContradiction
+    local workingSpanAdmissionReason=lateralArticulation
+        and "CONFIGURATION_EVIDENCE_REQUIRES_PRODUCTIVE_WORKING_SPAN"
+        or (physicalSpanContradiction
+            and "CURRENT_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_MAXIMUM"
+            or "AUTHORED_PHYSICAL_SPAN_SUFFICIENT")
+
     local workingWidth=nil
-    if lateralArticulation then
-        local observation=OuttaMyWay.NativeFieldWorkObservation
+    if useWorkingSpan then
         if observation==nil or type(observation.workingWidth)~="function" then
             return nil,"MAXIMUM_PRODUCTIVE_A8_WORKING_SPAN_OBSERVATION_UNAVAILABLE"
         end
-        workingWidth=observation.workingWidth(worker)
-        local width=workingWidth and tonumber(workingWidth.widthMetres) or nil
-        local left=workingWidth and workingWidth.leftPoint or nil
-        local right=workingWidth and workingWidth.rightPoint or nil
-        if workingWidth==nil or workingWidth.available~=true or not finite(width) or width<=0 then
+        if workingWidthObservation==nil or workingWidthObservation.available~=true
+            or not finite(observedWorkingWidthM) or observedWorkingWidthM<=0 then
+            if physicalSpanContradiction then
+                return nil,"MAXIMUM_PRODUCTIVE_A8_PHYSICAL_SPAN_CONTRADICTS_AUTHORED_WITHOUT_WORKING_SPAN"
+            end
             return nil,"MAXIMUM_PRODUCTIVE_A8_WORKING_SPAN_UNAVAILABLE"
         end
+        if physicalSpanContradiction and finite(authoredBaseRadialSpanM)
+            and observedWorkingWidthM<=authoredBaseRadialSpanM+EPSILON then
+            return nil,"MAXIMUM_PRODUCTIVE_A8_WORKING_SPAN_DOES_NOT_RESOLVE_PHYSICAL_CONTRADICTION"
+        end
+
+        local left=workingWidthObservation.leftPoint
+        local right=workingWidthObservation.rightPoint
         if type(left)~="table" or type(right)~="table"
             or not finite(tonumber(left.x)) or not finite(tonumber(left.z))
             or not finite(tonumber(right.x)) or not finite(tonumber(right.z)) then
@@ -292,11 +367,12 @@ function Representation.build(record,frame,worker,localToWorldFn)
         local leftRight,leftForward=project(left)
         local rightRight,rightForward=project(right)
         local midpoint=(leftRight+rightRight)*0.5
-        local halfWidth=width*0.5
+        local halfWidth=observedWorkingWidthM*0.5
         include(bounds,midpoint-halfWidth,leftForward)
         include(bounds,midpoint-halfWidth,rightForward)
         include(bounds,midpoint+halfWidth,leftForward)
         include(bounds,midpoint+halfWidth,rightForward)
+        workingWidth=workingWidthObservation
     end
 
     local width=bounds.maxRightM-bounds.minRightM
@@ -320,12 +396,18 @@ function Representation.build(record,frame,worker,localToWorldFn)
         memberBaseSizeComplete=true,
         lateralArticulation=lateralArticulation,
         lateralArticulationEvidence=articulationEvidence,
+        observedWorkingWidthM=observedWorkingWidthM,
+        observedWorkingWidthSource=workingWidthObservation and workingWidthObservation.source or nil,
         workingWidthM=workingWidth and workingWidth.widthMetres or nil,
         workingWidthSource=workingWidth and workingWidth.source or nil,
         workingSpanMarkerBacked=workingWidth and workingWidth.markerBacked==true or false,
+        currentDiscLateralSpanM=currentDiscLateralSpanM,
+        authoredBaseRadialSpanM=authoredBaseRadialSpanM,
+        physicalSpanContradiction=physicalSpanContradiction,
+        workingSpanAdmissionReason=workingSpanAdmissionReason,
         authority="PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION",
         claimPermissions={"PASSAGE_NATIVE_A8_CLEARANCE_EXCLUSION"},
-        configurationBasis=lateralArticulation
+        configurationBasis=workingWidth~=nil
             and "EVIDENCE_FUSED_AUTHORED_PHYSICAL_PLUS_PRODUCTIVE_WORKING_SPAN"
             or "EVIDENCE_FUSED_AUTHORED_PHYSICAL_SPAN",
         geometryPurpose="NATIVE_A8_CLEARANCE_EXCLUSION",

@@ -760,7 +760,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     if record.maximumProductiveA8BootstrapAttempted~=true then
         record.maximumProductiveA8BootstrapAttempted=true
         record.cachedMaximumProductiveA8Envelope,record.cachedMaximumProductiveA8Reason=
-            OuttaMyWay.MaximumProductiveA8Representation.build(record,frame,worker,self:_api("localToWorld"))
+            OuttaMyWay.MaximumProductiveA8Representation.build(record,frame,worker,self:_api("localToWorld"),worldPrimitives)
     end
     local transitPassageEnvelope,transitPassageReason=record.cachedTransitPassageEnvelope,record.cachedTransitPassageReason
     local maximumProductiveA8Envelope=record.membershipChanged==true and nil or record.cachedMaximumProductiveA8Envelope
