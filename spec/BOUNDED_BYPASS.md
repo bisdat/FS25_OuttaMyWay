@@ -82,9 +82,11 @@ If the current local continuation is unavailable, turning/unresolved in a way th
 
 > **Recovery Approach Trail != Bypass Axis.**
 
-The immediately preceding successful Recovery MAY contribute only its positively demonstrated retreat magnitude as Launch Separation support. The fresh successor frame still supplies Bypass direction.
+The immediately preceding successful Recovery MAY contribute scalar magnitude provenance only. Its achieved retreat magnitude bounds Launch Separation admission, and its retained maximum supported retreat magnitude may supply a farther Reverse Steering Horizon. The fresh successor frame still supplies Bypass direction; historical Trail/Anchor direction is never reused.
 
 > **Recovery Outcome Magnitude != Recovery Axis Reuse.**
+
+> **Bypass Launch Completion != Reverse Steering Target.**
 
 ### Transit request before execution
 
@@ -106,14 +108,18 @@ The first implementation contract uses one fixed four-leg guide in the current `
 
 For selected side sign `S` where `S` is either `+1` or `-1`:
 
-1. **Bypass Launch Separation** — reverse along `-F` by the positive forward distance required by the Lateral Departure calibration. This magnitude MUST be no greater than the demonstrated retreat magnitude retained from the immediately preceding successful Recovery.
+1. **Bypass Launch Separation** — reverse along `-F` until longitudinal retreat from the recurrent Stall reaches the positive forward distance required by the Lateral Departure calibration. This completion magnitude MUST be no greater than the demonstrated retreat magnitude retained from the immediately preceding successful Recovery. GIANTS steering uses a separate farther Reverse Steering Horizon on the same fresh current axis.
 2. **Lateral Departure** — from the launch station, achieve approximately **10 m** lateral displacement in direction `S * R` using a forward-diagonal movement. The movement MUST contain positive forward progression; pure sideways translation is not required.
 3. **Bypass Advance** — from the displaced line, progress approximately **10 m** along `F`.
 4. **Post-Blockage Axis Rejoin** — achieve approximately **10 m** lateral displacement in direction `-S * R` using another forward-diagonal movement, returning to the original local continuation axis at a forward station later than the recurrent Stall.
 
 The exact positive forward component used by each diagonal leg is an implementation calibration owned by the movement helper. Launch Separation MUST be derived from that same component rather than introducing an unrelated longitudinal literal. It MUST NOT be interpreted as productive-route reconstruction.
 
-The prior successful Recovery supplies only a demonstrated magnitude bound. It does not prove the current reverse Launch segment clear; current execution progress remains authoritative.
+The reverse steering target MUST be farther than the Launch Separation completion station. Its look-through magnitude is the immediately preceding successful Recovery's retained maximum supported retreat magnitude, projected on the fresh current Bypass frame. Reaching that subordinate steering target is not Launch success and MUST NOT extend Bypass movement authority. Control completes Launch from fresh longitudinal retreat progress.
+
+The prior successful Recovery supplies scalar magnitude provenance only. It does not prove the current reverse Launch segment clear; current execution progress remains authoritative.
+
+> **Movement Completion Region != Reverse Steering Target.**
 
 > **Demonstrated Retreat Magnitude != Current Reverse Clearance.**
 
@@ -237,6 +243,7 @@ Positive contradiction of the supported Field World guide, current Job continuit
 - **Non-active obstruction lacks pose / Player Claim / worker-motion evidence** — not a Bypass veto.
 - **Current local continuation frame unresolved** — no Bounded Bypass Candidate.
 - **Immediately preceding successful Recovery did not positively demonstrate the retreat magnitude required by Launch Separation** — no Bounded Bypass Candidate.
+- **Immediately preceding successful Recovery does not retain a maximum supported retreat magnitude farther than Launch Separation** — no Bounded Bypass Candidate; do not collapse steering look-through onto the completion station.
 - **Neither fixed Dogleg side has supported Field World targets / reference progression** — no autonomous Bypass; Player Intervention remains legitimate.
 - **A positively identified active same-Operation causal blocker cannot be held at 0 km/h** — fail closed before movement.
 - **Required third-party Bubble Bullet Time cannot be established** — fail closed before movement.
@@ -306,12 +313,12 @@ Control realises only the authorised fixed Dogleg side and three movement legs. 
 The production path is explicit:
 
 - `BoundedBypassEvidence` consumes the current successor continuation and principal Player evidence and extracts only optional active same-Operation causal-blocker identities for Bubble coordination. It does not require a non-active obstruction's pose, Player state, motion evidence or stationarity.
-- `FixedBypassDogleg` derives Launch Separation from the same `ForwardDiagonalSteeringHelper` calibration used for Lateral Departure, constructs both four-leg fixed guides and checks their reference progression against Field World, including islands.
-- `BoundedBypassCandidateSupport` requires the exact correlated Stall / Recovery Strategy Exhausted condition, sufficient demonstrated retreat magnitude from the immediately preceding successful Recovery, current successor Job/frame and at least one Field-World-supported four-leg Dogleg side. Transit capability is not an admission prerequisite. Causal Obstruction is not an admission prerequisite.
+- `FixedBypassDogleg` derives Launch Separation from the same `ForwardDiagonalSteeringHelper` calibration used for Lateral Departure, keeps semantic Launch completion separate from a farther reverse steering target, constructs both four-leg fixed guides and checks their movement reference progression against Field World, including islands.
+- `BoundedBypassCandidateSupport` requires the exact correlated Stall / Recovery Strategy Exhausted condition, sufficient demonstrated retreat magnitude plus a farther maximum-supported retreat magnitude from the immediately preceding successful Recovery, current successor Job/frame and at least one Field-World-supported four-leg Dogleg side. Transit capability is not an admission prerequisite. Causal Obstruction is not an admission prerequisite.
 - `ProspectiveDecisionPortfolioSupport` enumerates Bypass independently. `ProspectivePortfolioDecisionPolicy` refuses unresolved cross-purpose competition; `DecisionSelector` prefers field-interior support among mandatory-admissible Bypass sides, then a deterministic side tie-break.
 - `BoundedBypassResponsibilityTransition` preflights the successor semantic product before commitment admission. `BoundedBypassCommitmentLifecycle` owns the excursion-or-escalation obligation and terminal settlement. A terminal attempt cannot be replayed for the same Stall evidence identity.
 - `BoundedBypassRuntime`, reached explicitly from `Runtime`, maps each positively identified active same-Operation causal blocker to the shared Bubble's 0 km/h hold and every other uninvolved active participant to 1 km/h Bubble Bullet Time before principal movement is authorised.
-- `BoundedBypassControl` requests cached Transit once and does not inspect the request result or later settlement state; it then dispatches the selected reverse Launch Separation followed by exactly three forward targets, validates current principal/Field World/Bubble authority, and fails the one bounded attempt when fresh target-distance evidence shows no meaningful progress for the implementation-owned watchdog interval. It does not inspect or control non-active obstruction objects.
+- `BoundedBypassControl` requests cached Transit once and does not inspect the request result or later settlement state; it dispatches reverse Launch using the farther steering horizon but completes that leg from fresh longitudinal retreat progress, then executes exactly three forward targets. It validates current principal/Field World/Bubble authority and fails the one bounded attempt when fresh purpose-specific progress evidence shows no meaningful improvement for the implementation-owned watchdog interval. It does not inspect or control non-active obstruction objects.
 - `TransitConfigurationMechanism` receives the one-shot Bypass Transit request. Bypass does not adopt its settlement result as a lifecycle condition; existing callers retain their own behaviour.
 
 The terminal-dependent obligation admits either observed final Rejoin or explicit Player escalation when the fixed attempt cannot continue. Escalation settles that branch as failure, never as excursion completion or obstruction clearance. Job termination and Player Claim over the bypassing worker settle through authoritative basis cessation. All terminal paths relinquish physical control and Bubble protection.

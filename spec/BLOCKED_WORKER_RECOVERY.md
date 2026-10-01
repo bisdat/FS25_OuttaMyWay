@@ -375,7 +375,7 @@ The previous Trail and Anchor MUST NOT be reused as permission for the new cycle
 
 Before admitting another Blocked Worker Recovery cycle, the implementation MUST correlate that fresh Stall against passive outcome/lineage memory from the immediately preceding successful Recovery for the same Physical Assembly.
 
-That passive memory MAY include **Successful Recovery Excursion Evidence** recorded from the positively completed physical Recovery, including the actually achieved retreat magnitude. Such evidence is a completed-outcome fact only. It MUST NOT preserve the previous Recovery Trail, Anchor or movement direction as current permission, and it MUST NOT claim current reverse clearance.
+That passive memory MAY include **Successful Recovery Excursion Evidence** recorded with the positively completed physical Recovery, including the actually achieved retreat magnitude and the maximum supported retreat magnitude derived from the Recovery Approach that bounded the completed excursion. These are scalar provenance only. They MUST NOT preserve the previous Recovery Trail, Anchor or movement direction as current permission, and they MUST NOT claim current reverse clearance.
 
 A **Correlated Recovery Recurrence** exists only when all of the following are true:
 
@@ -401,7 +401,7 @@ When Recovery Strategy Exhausted is established:
 - no automatic Recovery retry/replacement loop may be started;
 - passive recurrence state MUST NOT acquire Current Responsibility, Bounded Authority or Control authority;
 - independently supported traffic or other Resolution responsibilities remain independently assessable;
-- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence; Recovery Strategy Exhausted is its strategy-succession gate and MAY expose retained Successful Recovery Excursion Evidence as completed-outcome provenance, but MUST NOT establish the current local continuation frame, Transit support, Dogleg side or movement authority; and
+- the separate [`BOUNDED_BYPASS`](BOUNDED_BYPASS.md) Jurisdiction may be assessed from fresh current evidence; Recovery Strategy Exhausted is its strategy-succession gate and MAY expose retained Successful Recovery Excursion Evidence scalar magnitudes, but MUST NOT establish the current local continuation frame, reverse axis, Transit support, Dogleg side or movement authority; and
 - if no supported autonomous continuation remains, normal escalation may require Player Intervention.
 
 Outside the 5 m / 60 s bounds, or without exact intended-successor lineage, the later Stall is not a Correlated Recovery Recurrence and may independently support a new Recovery cycle if all ordinary admission requirements are satisfied.

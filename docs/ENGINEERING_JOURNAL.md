@@ -5838,3 +5838,18 @@ For Bounded Bypass, Control issues one best-effort Transit request immediately b
 **Authority Triad:** Architecture and Bounded Bypass Specification are corrected to remove the invented persistent Transit-state requirement. Source removes the Transit capability admission gate and all Bypass settlement/persistence checks. The shared Transit mechanism is not changed because other callers retain their own configuration contracts.
 
 **Validation boundary:** offline validation must prove Transit is requested even when capability is unavailable and that request failure or later settlement drift does not stop the Bypass. GIANTS Reality must then finally test the intended sequence: second Stall -> Transit request -> approximately 20 m reverse -> unchanged Dogleg.
+
+
+## 2026-10-01 — TS016 0.4.8.9 confirms Bypass Launch Reverse Steering Horizon (#400 / #336)
+
+**Observe:** the initial S416 BWR and later Bypass Launch in the same run both require approximately 20 m reverse, but only Bypass jackknifes. BWR steers toward a Recovery Anchor about 46 m behind the Stall and completes after 20 m, leaving substantial reverse look-through. Bypass used its 20 m Launch completion point itself as the reverse REPOSITION target. Near the intended station S416 was about 20.05 m rearward but ~1.22 m laterally displaced, just outside the 1 m point-target radius, so Control continued point pursuit and the articulated assembly diverged.
+
+**Discovery:** **Bypass Launch Completion != Reverse Steering Target.** This is the existing #336 principle **Movement Completion Region != Reverse Steering Target** in Bypass form. The reverse distance itself is not disproved; the same run demonstrates a clean 20 m reverse when steering look-through remains available.
+
+**Architectural correction:** Bypass Launch now reuses the accepted **Reverse Steering Horizon** concept. The immediately preceding successful BWR already retains two scalar magnitudes: achieved retreat and maximum supported retreat from its demonstrated Recovery Approach. The first continues to bound Launch admission; the second supplies steering look-through magnitude. Historical Recovery direction is discarded. The farther horizon is projected on the fresh successor-Job Bypass frame and is steering geometry only.
+
+**Implementation — TEST `0.4.8.10`:** the semantic Launch target remains 20 m rearward and remains part of Field World guide support. Reverse REPOSITION is instead aimed at the farther steering horizon. Control measures fresh longitudinal retreat from the recurrent Stall and advances to Lateral Departure once 20 m is reached, regardless of small lateral point miss. The Launch watchdog likewise measures remaining longitudinal retreat, not distance to the steering target. Reaching the steering horizon before Launch completion is a fail-safe contradiction, not success.
+
+**Non-scope:** no articulation threshold, jackknife predictor, S416 special case, longer reverse authority, route search or diagonal recalibration is introduced.
+
+**Reality boundary:** the next TS016 run must show approximately 20 m longitudinal reverse completing before point-pursuit instability, followed by the unchanged first diagonal.

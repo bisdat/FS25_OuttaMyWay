@@ -38,7 +38,7 @@ return function(test,equal)
             blockedProgressKnowledge={{assemblyId="AS-M",assemblyReferenceKey="m",operationId="OP",jobEpisodeId="JM",sourceJobToken="successor",blockedProgressStall=true,
                 stallEvidence={establishedAtObservationSnapshotId="STALL",poseX=0,poseZ=0},recoveryAnchor={poseX=-99,poseZ=0}}},
             blockedWorkerRecoveryRecurrenceKnowledge={{assemblyId="AS-M",correlated=true,status="RECOVERY_STRATEGY_EXHAUSTED",successorJobEpisodeId="JM",successorSourceJobToken="successor",currentStallObservationSnapshotId="STALL",
-                recoveryKey="blocked-worker-recovery:OP:AS-M:OLD",successfulRecoveryExcursion={kind="SUCCESSFUL_RECOVERY_EXCURSION",demonstratedRetreatM=20}}},
+                recoveryKey="blocked-worker-recovery:OP:AS-M:OLD",successfulRecoveryExcursion={kind="SUCCESSFUL_RECOVERY_EXCURSION",demonstratedRetreatM=20,maximumSupportedRetreatM=46}}},
             causalObstructionKnowledge={{identity="R",operationId="OP",beneficiaryAssemblyId="AS-M",blockerAssemblyId="AS-B",blockerAssemblyReferenceKey="b",provenance={authority="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION"}}},
             motionEvidence={{assemblyId="AS-M",assemblyReferenceKey="m",sourceJobToken="successor",headingX=0,headingZ=1,motionClassification="STATIONARY"},
                 {assemblyId="AS-B",assemblyReferenceKey="b",motionClassification="STATIONARY",positionDerivedSpeedMps=0,reportedSpeedMps=0},
@@ -105,20 +105,22 @@ return function(test,equal)
         f.s.fieldWorld.boundary[1].x=-5;f.s.fieldWorld.boundary[4].x=-5
         local group=assert(f.group());equal(#group.candidateSpecifications,1);equal(group.candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide.side,1)
     end)
-    test("Bypass fixed guide launches rearward before three forward legs and later on-axis Rejoin",function()
+    test("Bypass fixed guide separates 20 m Launch completion from farther reverse steering horizon",function()
         local f=fixture();local guide=assert(f.group()).candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide
-        equal(guide.launchSeparationM,20);equal(#guide.targets,4)
+        equal(guide.launchSeparationM,20);equal(guide.launchSteeringHorizonM,46);equal(#guide.targets,4)
+        equal(guide.launchSteeringTarget.x,0);equal(guide.launchSteeringTarget.z,-46)
         equal(guide.targets[1].x,0);equal(guide.targets[1].z,-20);equal(guide.targets[1].moveForwards,false)
         equal(guide.targets[2].x,10);equal(guide.targets[2].z,0);equal(guide.targets[2].moveForwards,true)
         equal(guide.targets[3].x,10);equal(guide.targets[3].z,10);equal(guide.targets[3].moveForwards,true)
         equal(guide.targets[4].x,0);equal(guide.targets[4].z,30);equal(guide.targets[4].moveForwards,true)
     end)
 
-    test("Bypass Launch Separation requires enough demonstrated successful Recovery retreat",function()
+    test("Bypass Launch requires demonstrated separation and farther steering-horizon support",function()
         local f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successfulRecoveryExcursion.demonstratedRetreatM=19.9
         local group,reason=f.group();equal(group,nil);equal(reason,"BYPASS_LAUNCH_SEPARATION_UNSUPPORTED")
-        f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successfulRecoveryExcursion.demonstratedRetreatM=20
-        assert(f.group())
+        f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successfulRecoveryExcursion.maximumSupportedRetreatM=20
+        group,reason=f.group();equal(group,nil);equal(reason,"BYPASS_LAUNCH_STEERING_HORIZON_UNSUPPORTED")
+        f=fixture();assert(f.group())
     end)
     test("Bypass requests Transit even when capability is absent and does not wait for settlement",function()
         local f=fixture()
@@ -132,6 +134,7 @@ return function(test,equal)
         local result=f.dispatch();equal(result.status,"ACCEPTED")
         equal(f.configuration.requested,true);equal(f.configuration.requestedCapability,nil)
         equal(#f.drive.moves,1);equal(f.drive.moves[1].forward,false)
+        equal(f.drive.moves[1].x,0);equal(f.drive.moves[1].z,-46)
         f.configuration.settled=false
         f.publish();f.control:update()
         equal(f.control:isActive(),true);equal(#f.drive.moves,1)
@@ -143,11 +146,26 @@ return function(test,equal)
         f.publish();f.control:update()
         equal(f.control:isActive(),true);equal(#f.drive.moves,1)
     end)
+    test("Bypass Launch completes on 20 m longitudinal retreat despite lateral miss",function()
+        local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
+        f.s.geometry.currentPhysicalPoseEvidence[1].x=1.22
+        f.s.geometry.currentPhysicalPoseEvidence[1].z=-20.05
+        f.publish();f.control:update()
+        equal(f.control:isActive(),true);equal(#f.drive.moves,2)
+        equal(f.drive.moves[2].forward,true)
+    end)
+    test("Bypass Launch does not treat steering-horizon arrival as semantic completion",function()
+        local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
+        f.drive.states[f.vehicles.m].targetReached=true
+        f.publish();f.control:update()
+        equal(f.control:isActive(),false)
+        equal(f.runtime.commitments:get(result.commitment.identity).state,"FAILED")
+    end)
     test("Bypass rejects a narrow island between reference samples",function()
         local f=fixture();f.s.fieldWorld.islands={{{x=4.9,z=-10.3},{x=5.1,z=-10.3},{x=5.1,z=-9.7},{x=4.9,z=-9.7}}}
         local group=assert(f.group());equal(#group.candidateSpecifications,1);equal(group.candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide.side,-1)
     end)
-    test("Bypass Decision requests Transit then immediately launches reverse before three forward targets",function()
+    test("Bypass Decision requests Transit then completes Launch from longitudinal retreat before three forward targets",function()
         local f=fixture(true);local result,candidate=f.dispatch();equal(result.status,"ACCEPTED")
         equal(candidate.evidenceBasis.boundedBypassBridge.guide.side,1)
         equal(f.configuration.requested,true);equal(#f.drive.moves,1)
@@ -155,8 +173,10 @@ return function(test,equal)
         local protection=f.runtime.bubbleBulletTime:getProtection(result.commitment.identity)
         equal(#protection.leases,2);equal(f.drive:getRegulationLease(f.vehicles.b,"BYPASS_BLOCKER_HOLD").speedKmh,0)
         equal(f.drive:getRegulationLease(f.vehicles.c,"BYPASS_BUBBLE_BULLET_TIME").speedKmh,1)
-        equal(f.drive.moves[1].forward,false)
-        for i=1,4 do f.drive.states[f.vehicles.m].targetReached=true;f.control:update() end
+        equal(f.drive.moves[1].forward,false);equal(f.drive.moves[1].z,-46)
+        f.s.geometry.currentPhysicalPoseEvidence[1].z=-20
+        f.publish();f.control:update();equal(#f.drive.moves,2)
+        for i=2,4 do f.drive.states[f.vehicles.m].targetReached=true;f.control:update() end
         equal(#f.drive.moves,4)
         equal(f.drive.moves[1].forward,false)
         for i=2,4 do equal(f.drive.moves[i].forward,true) end

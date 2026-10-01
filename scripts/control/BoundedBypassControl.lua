@@ -108,21 +108,48 @@ function Control:_validate(state)
     return true
 end
 function Control:_beginLeg(state,index)
-    local target=state.request.target.bridge.guide.targets[index]
-    local ok,reason=self.driveMechanism:setReposition(state.vehicle,target.x,target.z,SPEED_KMH,TARGET_RADIUS_M,target.moveForwards~=false)
+    local bridge=state.request.target.bridge
+    local guide=bridge.guide
+    local target=guide.targets[index]
+    local commandTarget=target
+    if index==1 and target.kind=="BYPASS_LAUNCH_SEPARATION" then
+        commandTarget=guide.launchSteeringTarget
+        if type(commandTarget)~="table" or tonumber(commandTarget.x)==nil or tonumber(commandTarget.z)==nil then
+            self:_finish("FAILED","BYPASS_LAUNCH_STEERING_HORIZON_UNAVAILABLE")
+            return false
+        end
+    end
+    local ok,reason=self.driveMechanism:setReposition(
+        state.vehicle,commandTarget.x,commandTarget.z,SPEED_KMH,TARGET_RADIUS_M,target.moveForwards~=false)
     if not ok then self:_finish("FAILED",reason); return false end
     state.legIndex=index; state.phase=target.kind
     state.progressBestResidualM=nil
     state.progressLastImprovementAtMs=tonumber(g_time) or 0
     return true
 end
-function Control:_targetProgressStalled(state)
-    local live=self.runtime.boundedBypassRuntime.currentByOperation[state.request.target.bridge.operationId]
-    local target=state.request.target.bridge.guide.targets[state.legIndex]
-    local pose=live and E.pose(live.snapshot,state.request.target.bridge.assemblyReferenceKey) or nil
-    if target==nil or pose==nil then return false end
+function Control:_progressResidual(state)
+    local bridge=state.request.target.bridge
+    local guide=bridge.guide
+    local live=self.runtime.boundedBypassRuntime.currentByOperation[bridge.operationId]
+    local target=guide.targets[state.legIndex]
+    local pose=live and E.pose(live.snapshot,bridge.assemblyReferenceKey) or nil
+    if target==nil or pose==nil then return nil,nil end
+    if state.legIndex==1 and target.kind=="BYPASS_LAUNCH_SEPARATION" then
+        local frame=guide.frame
+        local dx,dz=pose.x-frame.x,pose.z-frame.z
+        local forwardStation=dx*frame.forwardX+dz*frame.forwardZ
+        local lateral=dx*frame.rightX+dz*frame.rightZ
+        local retreat=math.max(0,-forwardStation)
+        return math.max(0,guide.launchSeparationM-retreat),{
+            retreatM=retreat,lateralM=lateral,forwardStationM=forwardStation
+        }
+    end
     local dx,dz=target.x-pose.x,target.z-pose.z
-    local residual=math.max(0,math.sqrt(dx*dx+dz*dz)-TARGET_RADIUS_M)
+    return math.max(0,math.sqrt(dx*dx+dz*dz)-TARGET_RADIUS_M),nil
+end
+function Control:_targetProgressStalled(state)
+    local residual=self:_progressResidual(state)
+    if residual==nil then return false end
     local nowMs=tonumber(g_time) or 0
     if state.progressBestResidualM==nil or state.progressBestResidualM-residual>=TARGET_PROGRESS_EPSILON_M then
         state.progressBestResidualM=residual
@@ -168,8 +195,19 @@ function Control:update()
     if not valid then self:_finish("FAILED",reason); return end
     local drive=self.driveMechanism:getState(state.vehicle)
     if drive==nil or drive.invalidReason~=nil then self:_finish("FAILED","BYPASS_MOVEMENT_UNAVAILABLE"); return end
+    if state.legIndex==1 then
+        local residual=self:_progressResidual(state)
+        if residual~=nil and residual<=0 then
+            self:_beginLeg(state,2)
+            return
+        end
+        if drive.targetReached==true then
+            self:_finish("FAILED","BYPASS_LAUNCH_STEERING_HORIZON_REACHED_BEFORE_COMPLETION")
+            return
+        end
+    end
     if self:_targetProgressStalled(state) then self:_finish("FAILED","BYPASS_TARGET_PROGRESS_STALLED"); return end
-    if drive.targetReached==true then
+    if state.legIndex~=1 and drive.targetReached==true then
         if state.legIndex==4 then self:_finish("SUCCEEDED","POST_BLOCKAGE_AXIS_REJOIN_REACHED")
         else self:_beginLeg(state,state.legIndex+1) end
     end

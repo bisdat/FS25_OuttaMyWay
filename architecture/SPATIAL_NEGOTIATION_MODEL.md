@@ -873,15 +873,23 @@ Its required magnitude is not an independent distance literal. It is derived fro
 
 Candidate Support may admit that rearward pre-position only when the immediately preceding successful Recovery retained positive **Successful Recovery Excursion Evidence** demonstrating at least the required retreat magnitude for the same Physical Assembly. That completed Recovery outcome supplies a magnitude bound only.
 
-The fresh successor-Job continuation frame remains authoritative for Bypass direction. The Launch target is placed rearward along `-F`; the historical Recovery Approach Trail and Recovery Anchor are not reused as the Bypass axis, steering target or current traversability proof.
+The fresh successor-Job continuation frame remains authoritative for Bypass direction. The historical Recovery Approach Trail and Recovery Anchor are not reused as the Bypass axis or current traversability proof.
+
+The 20 m Launch Separation is a **movement-completion distance**, not the subordinate reverse steering target. Bypass reuses the existing **Reverse Steering Horizon** principle: GIANTS receives a point target farther rearward on the fresh current Bypass axis, while Control ends reverse movement when longitudinal retreat from the recurrent Stall reaches the authorised Launch Separation.
+
+The steering-horizon magnitude is taken from the immediately preceding successful Recovery's retained maximum supported retreat magnitude. That scalar originated from its positively demonstrated Recovery Approach, but its historical direction is discarded; the magnitude is projected only on the fresh current Bypass frame. The steering horizon MUST be farther than the Launch Separation. It supplies look-through only and MUST NOT extend reverse movement authority beyond the 20 m Launch completion distance.
 
 > **Recovery Outcome Magnitude != Recovery Axis Reuse.**
+
+> **Bypass Launch Completion != Reverse Steering Target.**
+
+> **Movement Completion Region != Reverse Steering Target.**
 
 > **Demonstrated Retreat Magnitude != Current Reverse Clearance.**
 
 > **Transit Request != Transit State Contract.**
 
-The Launch Separation segment remains subject to the same current Field World reference-guide support, current Bounded Authority and execution-progress observation as the rest of the Dogleg. At Bypass start, Control requests Transit once before movement; Transit availability, settlement and later persistence are not Bypass admission or execution predicates. If the prior successful excursion did not demonstrate enough retreat, Bounded Bypass is unsupported rather than shortening the required launch or inventing another route.
+The Launch Separation segment remains subject to the same current Field World reference-guide support, current Bounded Authority and execution-progress observation as the rest of the Dogleg. At Bypass start, Control requests Transit once before movement; Transit availability, settlement and later persistence are not Bypass admission or execution predicates. If the prior successful Recovery did not demonstrate enough retreat or does not retain a longer supported retreat magnitude for steering look-through, Bounded Bypass is unsupported rather than shortening the required launch or collapsing its steering horizon onto the completion station.
 
 ### Fixed Bypass Dogleg
 
@@ -899,7 +907,7 @@ If a defensible current continuation frame is unavailable, Bounded Bypass remain
 
 The Dogleg has four movement legs after the one-shot Transit request:
 
-1. **Bypass Launch Separation** — reverse along `-F` by the forward distance required by the selected Lateral Departure calibration, bounded by Successful Recovery Excursion Evidence.
+1. **Bypass Launch Separation** — reverse along `-F` until longitudinal retreat reaches the forward distance required by the selected Lateral Departure calibration. A farther Reverse Steering Horizon supplies subordinate GIANTS steering look-through but does not extend this movement-completion distance.
 2. **Lateral Departure** — from that launch station, move toward the selected side to the calibrated lateral offset using forward-diagonal motion. With matched Launch Separation, this returns approximately to the recurrent-Stall longitudinal station already laterally displaced.
 3. **Bypass Advance** — from the displaced line, progress approximately **10 m** along `F`.
 4. **Post-Blockage Axis Rejoin** — move forward-diagonally back to the original local continuation axis at a later forward station.

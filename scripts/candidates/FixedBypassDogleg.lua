@@ -82,18 +82,26 @@ function Guide.requiredLaunchSeparationM()
     local profile=OuttaMyWay.ForwardDiagonalSteeringHelper.profile(LATERAL_OUTCOME_M)
     return profile and profile.forwardDistanceM or nil
 end
-function Guide.build(frame,side)
+function Guide.build(frame,side,launchSteeringHorizonM)
     if side~=1 and side~=-1 then return nil end
     local profile=OuttaMyWay.ForwardDiagonalSteeringHelper.profile(side*LATERAL_OUTCOME_M)
     local diagonal=profile.forwardDistanceM
+    local horizon=tonumber(launchSteeringHorizonM)
+    if not finite(horizon) or horizon<=diagonal then return nil end
     local function target(kind,forward,lateral,moveForwards)
         return {kind=kind,x=frame.x+frame.forwardX*forward+frame.rightX*lateral,
             z=frame.z+frame.forwardZ*forward+frame.rightZ*lateral,forwardM=forward,lateralM=lateral,
             moveForwards=moveForwards}
     end
-    return {origin={x=frame.x,z=frame.z},frame=frame,side=side,launchSeparationM=diagonal,targets={
-        target("BYPASS_LAUNCH_SEPARATION",-diagonal,0,false),
-        target("LATERAL_DEPARTURE",0,side*LATERAL_OUTCOME_M,true),
-        target("BYPASS_ADVANCE",ADVANCE_M,side*LATERAL_OUTCOME_M,true),
-        target("POST_BLOCKAGE_AXIS_REJOIN",diagonal+ADVANCE_M,0,true)}}
+    return {origin={x=frame.x,z=frame.z},frame=frame,side=side,launchSeparationM=diagonal,
+        launchSteeringHorizonM=horizon,
+        launchSteeringTarget={
+            x=frame.x-frame.forwardX*horizon,
+            z=frame.z-frame.forwardZ*horizon
+        },
+        targets={
+            target("BYPASS_LAUNCH_SEPARATION",-diagonal,0,false),
+            target("LATERAL_DEPARTURE",0,side*LATERAL_OUTCOME_M,true),
+            target("BYPASS_ADVANCE",ADVANCE_M,side*LATERAL_OUTCOME_M,true),
+            target("POST_BLOCKAGE_AXIS_REJOIN",diagonal+ADVANCE_M,0,true)}}
 end

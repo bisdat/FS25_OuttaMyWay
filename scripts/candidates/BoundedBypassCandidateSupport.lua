@@ -64,20 +64,24 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     local requiredLaunchSeparationM=OuttaMyWay.FixedBypassDogleg.requiredLaunchSeparationM()
     local excursion=recurrence.successfulRecoveryExcursion
     local demonstratedRetreatM=type(excursion)=="table" and tonumber(excursion.demonstratedRetreatM) or nil
+    local maximumSupportedRetreatM=type(excursion)=="table" and tonumber(excursion.maximumSupportedRetreatM) or nil
     if not finite(requiredLaunchSeparationM) or requiredLaunchSeparationM<=0
         or not finite(demonstratedRetreatM) or demonstratedRetreatM+0.001<requiredLaunchSeparationM then
         return refuse("BYPASS_LAUNCH_SEPARATION_UNSUPPORTED")
     end
+    if not finite(maximumSupportedRetreatM) or maximumSupportedRetreatM<=requiredLaunchSeparationM+0.001 then
+        return refuse("BYPASS_LAUNCH_STEERING_HORIZON_UNSUPPORTED")
+    end
     local candidates,fitness={},{}
     for _,side in ipairs({1,-1}) do
-        local guide=OuttaMyWay.FixedBypassDogleg.build(frame,side)
+        local guide=OuttaMyWay.FixedBypassDogleg.build(frame,side,maximumSupportedRetreatM)
         local supported,reserve=OuttaMyWay.FixedBypassDogleg.support(snapshot.fieldWorld,guide)
         if supported then
             local bridge={architecture="BOUNDED_BYPASS",bypassKey=key,operationId=k.operationId,
                 assemblyId=k.assemblyId,assemblyReferenceKey=k.assemblyReferenceKey,jobEpisodeId=k.jobEpisodeId,sourceJobToken=k.sourceJobToken,
                 observationSnapshotId=snapshot.identity,activeCausalBlockerAssemblyIds=activeCausalBlockerAssemblyIds,
                 launchSupport={recoveryKey=recurrence.recoveryKey,requiredSeparationM=requiredLaunchSeparationM,
-                    demonstratedRetreatM=demonstratedRetreatM},
+                    demonstratedRetreatM=demonstratedRetreatM,steeringHorizonM=maximumSupportedRetreatM},
                 guide=guide,fieldInteriorReserveM=reserve,
                 guideRepresentationId=key..":"..side..":"..targetPictureId}
             fitness[#fitness+1]={representationId=bridge.guideRepresentationId,assemblyId=k.assemblyId,
