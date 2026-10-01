@@ -42,7 +42,7 @@ def test_bubble_regulation_is_fixed_one_kmh_and_bounded_authority_gated():
     bubble = text("scripts/authority/BubbleBulletTime.lua")
     control = text("scripts/control/RegulationControl.lua")
     assert "local INTENT_REVELATION_CREEP_KMH = 1.0" in bubble
-    assert 'local OWNER_TAG = "BUBBLE_BULLET_TIME"' in bubble
+    assert 'local PASSAGE_OWNER_TAG = "BUBBLE_BULLET_TIME"' in bubble
     assert "self.runtime.boundedAuthority:authorize" in bubble
     assert 'local AUTHORITY_ROLE = "SUPPORTING_SPEED_CEILING"' in bubble
     assert "supportingSpeedCeilingComposition" in bubble
@@ -58,4 +58,4 @@ def test_live_coordinator_and_bubble_listener_release_owned_protection():
     assert "releaseUnsupportedProtection" in coordinator
     assert 'releaseAll("MAP_DELETE")' in coordinator
     assert "addModEventListener(OuttaMyWay.runtime.bubbleBulletTime)" in main
-    assert "function BulletTime:update() self:_releaseEndedResolutionProtection() end" in bubble
+    assert "function Bubble:update() self:_releaseEndedResolutionProtection() end" in bubble
