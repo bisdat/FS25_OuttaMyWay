@@ -452,6 +452,8 @@ function Representation.build(record,frame,worker,localToWorldFn,worldPrimitives
         configurationBasis=workingWidth~=nil
             and "EVIDENCE_FUSED_AUTHORED_PHYSICAL_PLUS_PRODUCTIVE_WORKING_SPAN"
             or "EVIDENCE_FUSED_AUTHORED_PHYSICAL_SPAN",
-        provenance={source="MaximumProductiveA8Representation",scope="JOB_EPISODE_STABLE_PRODUCTIVE_A8_MAXIMUM"}
-    },"SUPPORTED"
+        geometryPurpose="NATIVE_A8_CLEARANCE_EXCLUSION",
+        coverageComplete=false,
+        negativeClearanceAuthority=false
+    },nil
 end
