@@ -87,9 +87,10 @@ local function memberWorkingWidthEvidence(object)
     local leftPoint,rightPoint,currentMarkerSpanM=nil,nil,nil
     local intrinsicAIMarkerWidthM=nil
     if type(object.getAIMarkers)=="function" then
-        -- GIANTS' automatic-width path refreshes this cached semantic width
-        -- before reading the fifth getAIMarkers() return. This differs from
-        -- current world-space marker separation while an implement is folded.
+        -- GIANTS' automatic-width path ensures this cached semantic width
+        -- exists before reading the fifth getAIMarkers() return. The update
+        -- only derives it when absent; it is not a current-pose refresh and
+        -- remains distinct from current marker separation while folded.
         if type(object.updateAIMarkerWidth)=="function" then
             pcall(object.updateAIMarkerWidth,object)
         end
