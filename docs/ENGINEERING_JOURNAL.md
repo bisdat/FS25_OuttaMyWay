@@ -5853,3 +5853,24 @@ For Bounded Bypass, Control issues one best-effort Transit request immediately b
 **Non-scope:** no articulation threshold, jackknife predictor, S416 special case, longer reverse authority, route search or diagonal recalibration is introduced.
 
 **Reality boundary:** the next TS016 run must show approximately 20 m longitudinal reverse completing before point-pursuit instability, followed by the unchanged first diagonal.
+
+
+## 2026-10-01 — TS016 Reality PASS for Bounded Bypass TEST 0.4.8.10 (#400)
+
+**Validation evidence:** owner supplied `0.4.8.10_TS016` containing video and GIANTS log.
+
+**Observed chronology:**
+- runtime identifies FS25_OuttaMyWay **0.4.8.10**;
+- 19:15:47.542 — first S416 Blocked Progress Stall established;
+- 19:15:47.563 — BWR begins reverse toward Recovery Anchor, target retreat 20.00 m, maximum supported retreat 46.79 m;
+- 19:16:13.835 — correlated successor Stall established, anchor span 9.90 m;
+- 19:16:13.835 — Recovery Strategy Exhausted, Stall separation 0.08 m, elapsed 26.25 s;
+- 19:16:13.864 — Bounded Bypass starts;
+- 19:17:05.169 — Bounded Bypass ends `outcome=SUCCEEDED`;
+- no Bypass terminal-failure or Player Intervention event is present in the supplied run.
+
+**Reality result:** **PASS.** Video evidence is acceptable for the intended behaviour: the Bypass reverse proceeds into the Dogleg without the prior short-target jackknife becoming terminal, the obstruction theatre is negotiated, and the Resolution reaches its normal success boundary.
+
+**Validated architecture:** this run supports the current separation between **Bypass Launch Completion** and **Reverse Steering Target**. The 20 m Launch remains movement-completion authority while the farther Reverse Steering Horizon supplies GIANTS look-through. It also validates the deliberately simple one-shot Transit request contract used by Bypass in this theatre.
+
+**Scope of claim:** this PASS validates the current TS016 Bounded Bypass tranche. It does not establish complete obstacle clearance in all theatres, universal articulated reverse stability, or a Validated Plateau/canonical release by itself.
