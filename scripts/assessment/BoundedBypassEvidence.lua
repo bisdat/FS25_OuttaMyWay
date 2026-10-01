@@ -1,4 +1,4 @@
---- Evaluates current Bypass frame and blocker stability evidence without granting physical authority.
+--- Evaluates current Bypass frame and optional active-blocker coordination evidence without granting physical authority.
 -- Specification Jurisdictions: `BOUNDED_BYPASS`
 OuttaMyWay.BoundedBypassEvidence={}
 local Evidence=OuttaMyWay.BoundedBypassEvidence
@@ -31,6 +31,25 @@ function Evidence.hasPlayerClaim(snapshot,reference,isActive)
     return player.playerEnteredObserved~=true or player.playerEntered==true
 end
 
+-- A current positive Causal Obstruction matters to Bypass only when it names an
+-- active same-Operation GIANTS participant that requires the 0 km/h Bubble hold.
+-- Missing or non-active obstacle identity is not an admission veto.
+function Evidence.activeCausalBlockerIds(runtime,picture,operationId,beneficiaryAssemblyId)
+    local result,seen={},{}
+    for _,relation in V.ipairs(picture.causalObstructionKnowledge or {}) do
+        local id=relation.blockerAssemblyId
+        if relation.operationId==operationId and relation.beneficiaryAssemblyId==beneficiaryAssemblyId
+            and relation.provenance and relation.provenance.authority=="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION"
+            and id~=nil and id~=beneficiaryAssemblyId and seen[id]~=true
+            and Evidence.isMember(picture,operationId,id)
+            and runtime.jobEpisodes:getActiveForAssembly(id)~=nil then
+            result[#result+1]=id
+            seen[id]=true
+        end
+    end
+    return result
+end
+
 -- A current non-turn native continuation plus the current steering heading is a
 -- local frame only. No Recovery Trail/Anchor contributes to its direction.
 function Evidence.frame(picture,snapshot,knowledge)
@@ -47,38 +66,4 @@ function Evidence.frame(picture,snapshot,knowledge)
     if length<0.001 then return nil end
     return {x=pose.x,z=pose.z,forwardX=x/length,forwardZ=z/length,rightX=z/length,rightZ=-x/length,
         jobEpisodeId=knowledge.jobEpisodeId,sourceJobToken=knowledge.sourceJobToken,observationSnapshotId=snapshot.identity}
-end
--- Positive mechanical availability is admission support, not a lease. The actual
--- supporting grant and physical lease must still be acquired before movement.
-function Evidence.canHold(runtime,reference)
-    local control=runtime.liveControlDispatcher and runtime.liveControlDispatcher.regulationControl
-    local drive=control and control.driveMechanism
-    return runtime.bubbleBulletTime~=nil and control~=nil and drive~=nil and drive.installed==true
-        and type(drive.getRegulationLease)=="function"
-        and control:_vehicleForReferenceKey(reference)~=nil
-end
-function Evidence.stability(runtime,picture,snapshot,blocker,executing)
-    local episode=runtime.jobEpisodes:getActiveForAssembly(blocker.assemblyId)
-    if Evidence.hasPlayerClaim(snapshot,blocker.assemblyReferenceKey,episode~=nil) then return nil,"BYPASS_BLOCKER_PLAYER_CLAIM_UNRESOLVED_OR_PRESENT" end
-    local pose=Evidence.pose(snapshot,blocker.assemblyReferenceKey)
-    if pose==nil then return nil,"BYPASS_BLOCKER_CURRENT_POSE_UNAVAILABLE" end
-    local motion=Evidence.find(picture.motionEvidence,blocker.assemblyId)
-    local ai=snapshot.aiStates[blocker.assemblyReferenceKey]
-    if episode~=nil then
-        if blocker.kind=="NON_ACTIVE_STATIONARY" then return nil,"BYPASS_BLOCKER_ACTIVITY_CHANGED" end
-        if ai==nil or ai.observedActive~=true then return nil,"BYPASS_BLOCKER_ACTIVITY_UNRESOLVED" end
-        if not Evidence.isMember(picture,blocker.operationId,blocker.assemblyId)
-            or not Evidence.canHold(runtime,blocker.assemblyReferenceKey) then return nil,"BYPASS_BLOCKER_HOLD_UNAVAILABLE" end
-        if blocker.jobEpisodeId~=nil and episode.identity~=blocker.jobEpisodeId then return nil,"BYPASS_BLOCKER_JOB_CHANGED" end
-        if executing and (motion==nil or motion.motionClassification~="STATIONARY") then return nil,"BYPASS_BLOCKER_NOT_STATIONARY" end
-        return {kind="ACTIVE_BLOCKER_HOLD",jobEpisodeId=episode.identity,x=pose.x,z=pose.z}
-    end
-    if blocker.kind=="ACTIVE_BLOCKER_HOLD" then return nil,"BYPASS_BLOCKER_JOB_ENDED" end
-    if ai==nil or ai.aiActiveObserved~=true or ai.aiActive==true or ai.observedActive==true
-        or motion==nil or motion.motionClassification~="STATIONARY"
-        or not finite(motion.positionDerivedSpeedMps) or not finite(motion.reportedSpeedMps)
-        or math.abs(motion.positionDerivedSpeedMps)>=0.05 or math.abs(motion.reportedSpeedMps)>=0.05 then
-        return nil,"BYPASS_BLOCKER_STABILITY_UNRESOLVED"
-    end
-    return {kind="NON_ACTIVE_STATIONARY",x=pose.x,z=pose.z}
 end

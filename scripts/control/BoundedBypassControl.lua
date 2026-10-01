@@ -9,8 +9,10 @@ local SPEED_KMH=6
 local TARGET_RADIUS_M=1
 -- Evidence age limits permission, not semantic success or failure of GIANTS.
 local MAX_EVIDENCE_AGE_S=1
-local MAX_BLOCKER_DRIFT_M=0.25
-local BLOCKER_SETTLEMENT_WAIT_MS=2000
+-- A watchdog bounds observation of non-improving target residual. Elapsed time
+-- alone is never the failure evidence.
+local TARGET_PROGRESS_WATCHDOG_MS=10000
+local TARGET_PROGRESS_EPSILON_M=0.10
 function Control.new(runtime,mechanisms)
     return setmetatable({runtime=runtime,driveMechanism=mechanisms.driveMechanism,
         configurationMechanism=mechanisms.configurationMechanism},Control)
@@ -59,9 +61,15 @@ function Control:_finish(status,reason)
     elseif reason=="BYPASS_PLAYER_CLAIM" then event="PLAYER_CLAIM" end
     self.runtime.boundedBypassRuntime:complete({status=status,reason=reason,event=event,commitmentId=state.request.commitmentId})
 end
--- Fresh execution checks only narrow the selected guide. Losing the causal
--- overlap as we move is expected; blocker identity/stability remain mandatory.
-function Control:_validate(state,requireStationary)
+local function membershipSet(values)
+    local result={}
+    for _,id in V.ipairs(values or {}) do result[id]=true end
+    return result
+end
+-- Fresh execution checks narrow only principal authority, Field World guide and
+-- active-participant Bubble protection. Non-active obstruction telemetry is not
+-- part of Bypass permission.
+function Control:_validate(state)
     local bridge=state.request.target.bridge
     local live=self.runtime.boundedBypassRuntime.currentByOperation[bridge.operationId]
     if live==nil or (tonumber(g_time) or 0)/1000-live.snapshot.timestamp>MAX_EVIDENCE_AGE_S then return false,"BYPASS_CURRENT_EVIDENCE_UNAVAILABLE" end
@@ -70,9 +78,6 @@ function Control:_validate(state,requireStationary)
     if episode==nil or episode.identity~=bridge.jobEpisodeId or episode.sourceJobToken~=bridge.sourceJobToken then return false,"BYPASS_JOB_CONTINUITY_LOST" end
     if E.hasPlayerClaim(snapshot,bridge.assemblyReferenceKey,true) then return false,"BYPASS_PLAYER_CLAIM" end
     if self.runtime.boundedAuthority:validateRequest(state.request)~=true then return false,"BYPASS_BOUNDED_AUTHORITY_LOST" end
-    local stability,reason=E.stability(self.runtime,picture,snapshot,bridge.blocker,requireStationary)
-    if stability==nil then return false,reason end
-    if (stability.x-bridge.blocker.x)^2+(stability.z-bridge.blocker.z)^2>MAX_BLOCKER_DRIFT_M^2 then return false,"BYPASS_BLOCKER_MOVED" end
     if not OuttaMyWay.FixedBypassDogleg.support(snapshot.fieldWorld,bridge.guide) then return false,"BYPASS_FIELD_GUIDE_UNSUPPORTED" end
     local pose=E.pose(snapshot,bridge.assemblyReferenceKey)
     if pose==nil or not OuttaMyWay.FixedBypassDogleg.contains(snapshot.fieldWorld,pose.x,pose.z) then return false,"BYPASS_CURRENT_REFERENCE_OUTSIDE_FIELD" end
@@ -80,16 +85,25 @@ function Control:_validate(state,requireStationary)
     if protection==nil or (protection.status~="ACTIVE" and protection.status~="NOT_REQUIRED") then return false,"BYPASS_BUBBLE_UNAVAILABLE" end
     local protected={}
     for _,lease in V.ipairs(protection.leases) do
-        local control=self.runtime.liveControlDispatcher.regulationControl
-        local vehicle=control:_vehicleForReferenceKey(lease.referenceKey)
-        local physical=vehicle and control.driveMechanism:getRegulationLease(vehicle,lease.ownerTag)
+        local regulation=self.runtime.liveControlDispatcher.regulationControl
+        local vehicle=regulation:_vehicleForReferenceKey(lease.referenceKey)
+        local physical=vehicle and regulation.driveMechanism:getRegulationLease(vehicle,lease.ownerTag)
         if lease.physicalActive~=true or self.runtime.boundedAuthority:get(lease.boundedAuthorityId)==nil
             or physical==nil or physical.speedKmh~=lease.maxSpeedKmh then return false,"BYPASS_BUBBLE_LEASE_LOST" end
         protected[lease.assemblyId]=lease.maxSpeedKmh
     end
-    if bridge.blocker.kind=="ACTIVE_BLOCKER_HOLD" and protected[bridge.blocker.assemblyId]~=0 then return false,"BYPASS_BLOCKER_HOLD_LOST" end
+    local originalBlockers=membershipSet(bridge.activeCausalBlockerAssemblyIds)
+    for _,id in V.ipairs(bridge.activeCausalBlockerAssemblyIds or {}) do
+        if not E.isMember(picture,bridge.operationId,id) then return false,"BYPASS_ACTIVE_BLOCKER_CONTEXT_CHANGED" end
+    end
+    for _,id in V.ipairs(E.activeCausalBlockerIds(self.runtime,picture,bridge.operationId,bridge.assemblyId)) do
+        if originalBlockers[id]~=true then return false,"BYPASS_NEW_ACTIVE_BLOCKER_UNPROTECTED" end
+    end
     for _,id in V.ipairs(E.members(picture,bridge.operationId)) do
-        if id~=bridge.assemblyId and protected[id]==nil then return false,"BYPASS_UNPROTECTED_PARTICIPANT" end
+        if id~=bridge.assemblyId then
+            local expected=originalBlockers[id] and 0 or 1
+            if protected[id]~=expected then return false,"BYPASS_BUBBLE_PROTECTION_MISMATCH" end
+        end
     end
     return true
 end
@@ -98,7 +112,29 @@ function Control:_beginLeg(state,index)
     local ok,reason=self.driveMechanism:setReposition(state.vehicle,target.x,target.z,SPEED_KMH,TARGET_RADIUS_M,true)
     if not ok then self:_finish("FAILED",reason); return false end
     state.legIndex=index; state.phase=target.kind
+    state.progressBestResidualM=nil
+    state.progressLastImprovementAtMs=tonumber(g_time) or 0
     return true
+end
+function Control:_targetProgressStalled(state)
+    local live=self.runtime.boundedBypassRuntime.currentByOperation[state.request.target.bridge.operationId]
+    local target=state.request.target.bridge.guide.targets[state.legIndex]
+    local pose=live and E.pose(live.snapshot,state.request.target.bridge.assemblyReferenceKey) or nil
+    if target==nil or pose==nil then return false end
+    local dx,dz=target.x-pose.x,target.z-pose.z
+    local residual=math.max(0,math.sqrt(dx*dx+dz*dz)-TARGET_RADIUS_M)
+    local nowMs=tonumber(g_time) or 0
+    if state.progressBestResidualM==nil or state.progressBestResidualM-residual>=TARGET_PROGRESS_EPSILON_M then
+        state.progressBestResidualM=residual
+        state.progressLastImprovementAtMs=nowMs
+        return false
+    end
+    if residual<=0 then
+        state.progressBestResidualM=0
+        state.progressLastImprovementAtMs=nowMs
+        return false
+    end
+    return nowMs-(state.progressLastImprovementAtMs or nowMs)>=TARGET_PROGRESS_WATCHDOG_MS
 end
 function Control:executeControlRequest(request)
     if self.active~=nil then return false,"BYPASS_ALREADY_ACTIVE" end
@@ -108,10 +144,8 @@ function Control:executeControlRequest(request)
     local vehicle=self.runtime.liveObservationSource:getCurrentPhysicalObject(bridge.assemblyReferenceKey)
     if vehicle==nil then return false,"BYPASS_VEHICLE_UNAVAILABLE" end
     local state={request=request,vehicle=vehicle,phase="WAITING_FOR_TRANSIT",startedAtMs=tonumber(g_time) or 0}
-    local valid,reason=self:_validate(state,false)
+    local valid,reason=self:_validate(state)
     if not valid then return false,reason end
-    -- A zero-station, zero-speed objective holds the principal during Transit.
-    -- This is configuration protection, not an additional movement leg.
     local f=bridge.guide.frame
     local held,holdReason=self.driveMechanism:setAxisTravel(vehicle,f.x,f.z,f.forwardX,f.forwardZ,0,0,true,1)
     if not held then return false,holdReason end
@@ -126,7 +160,7 @@ end
 function Control:update()
     local state=self.active
     if state==nil then return end
-    local valid,reason=self:_validate(state,state.legIndex~=nil)
+    local valid,reason=self:_validate(state)
     if not valid then self:_finish("FAILED",reason); return end
     if self.configurationMechanism:getState(state.vehicle)==nil then self:_finish("FAILED","BYPASS_TRANSIT_AUTHORITY_LOST"); return end
     local settlement=self.configurationMechanism:getCachedTransitSettlement(state.vehicle)
@@ -136,17 +170,12 @@ function Control:update()
         return
     end
     if state.legIndex==nil then
-        -- An acquired hold may still be braking the blocker. No motion begins
-        -- until current observed stationarity corroborates the supporting lease.
-        local supported=self:_validate(state,true)
-        if supported then self:_beginLeg(state,1)
-        elseif (tonumber(g_time) or 0)-state.startedAtMs>BLOCKER_SETTLEMENT_WAIT_MS then
-            self:_finish("FAILED","BYPASS_BLOCKER_SETTLEMENT_UNRESOLVED")
-        end
+        self:_beginLeg(state,1)
         return
     end
     local drive=self.driveMechanism:getState(state.vehicle)
     if drive==nil or drive.invalidReason~=nil then self:_finish("FAILED","BYPASS_MOVEMENT_UNAVAILABLE"); return end
+    if self:_targetProgressStalled(state) then self:_finish("FAILED","BYPASS_TARGET_PROGRESS_STALLED"); return end
     if drive.targetReached==true then
         if state.legIndex==3 then self:_finish("SUCCEEDED","POST_BLOCKAGE_AXIS_REJOIN_REACHED")
         else self:_beginLeg(state,state.legIndex+1) end

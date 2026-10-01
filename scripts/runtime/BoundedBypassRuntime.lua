@@ -34,10 +34,12 @@ function Integration:dispatch(picture,evaluated,candidate,bridge)
         self:complete({status="FAILED",commitmentId=applied.commitment.identity,reason=why})
         return {status="REJECTED",reason=why,commitment=runtime.commitments:get(applied.commitment.identity)}
     end
+    local activeBlockers={}
+    for _,id in V.ipairs(bridge.activeCausalBlockerAssemblyIds or {}) do activeBlockers[id]=true end
     local leases={}
     for _,id in V.ipairs(E.members(picture,bridge.operationId)) do
         if id~=bridge.assemblyId then
-            local hold=bridge.blocker.kind=="ACTIVE_BLOCKER_HOLD" and id==bridge.blocker.assemblyId
+            local hold=activeBlockers[id]==true
             leases[#leases+1]={assemblyId=id,maxSpeedKmh=hold and 0 or 1,
                 ownerTag=hold and "BYPASS_BLOCKER_HOLD" or "BYPASS_BUBBLE_BULLET_TIME",
                 governingPurpose="BOUNDED_BYPASS_PROTECTION",role=hold and "BLOCKER_HOLD" or "BULLET_TIME"}

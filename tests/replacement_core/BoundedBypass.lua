@@ -70,20 +70,20 @@ return function(test,equal)
         end
         return {runtime=runtime,p=p,s=s,group=group,publish=publish,dispatch=dispatch,control=control,drive=drive,configuration=configuration,vehicles=vehicles,episodes=episodes}
     end
-    test("Bypass exhaustion alone cannot manufacture a causal blocker",function()
-        local f=fixture();f.p.causalObstructionKnowledge={};equal(f.group(),nil)
+    test("Bypass exhaustion may support a Dogleg without causal-obstruction identity",function()
+        local f=fixture();f.p.causalObstructionKnowledge={};assert(f.group())
     end)
     test("Bypass requires exact fresh Stall and successor recurrence",function()
         for _,field in ipairs({"blockedProgressKnowledge","blockedWorkerRecoveryRecurrenceKnowledge"}) do local f=fixture();f.p[field]={};equal(f.group(),nil) end
         local f=fixture();f.p.blockedWorkerRecoveryRecurrenceKnowledge[1].successorSourceJobToken="old";equal(f.group(),nil)
     end)
-    test("Bypass refuses unresolved stability and player claim",function()
-        local f=fixture();f.p.motionEvidence[2].motionClassification="MOTION_EVIDENCE_UNRESOLVED";equal(f.group(),nil)
-        f=fixture();f.s.playerControl.b.playerEntered=true;equal(f.group(),nil)
-        f=fixture();f.s.aiStates.b.aiActiveObserved=false;equal(f.group(),nil)
-    end)
-    test("Bypass active blocker needs an establishable hold",function()
-        local f=fixture(true);assert(f.group());f.drive.installed=false;equal(f.group(),nil)
+    test("Bypass ignores non-active obstruction pose, Player and motion telemetry",function()
+        local f=fixture()
+        f.p.motionEvidence={{assemblyId="AS-M",assemblyReferenceKey="m",sourceJobToken="successor",headingX=0,headingZ=1,motionClassification="STATIONARY"}}
+        f.s.geometry.currentPhysicalPoseEvidence={{assemblyReferenceKey="m",x=0,z=0}}
+        f.s.playerControl.b=nil
+        f.s.aiStates.b=nil
+        assert(f.group())
     end)
     test("Bypass uses current successor frame and ignores historical Recovery geometry",function()
         local f=fixture();local group=assert(f.group());local guide=group.candidateSpecifications[1].evidenceBasis.boundedBypassBridge.guide
@@ -126,10 +126,11 @@ return function(test,equal)
         equal(f.episodes["AS-M"].identity,"JM");equal(f.group(),nil)
     end)
     test("Bypass fails closed when protection, blocker movement, Job or Field guide contradicts",function()
-        for _,contradiction in ipairs({"lease","motion","job","field","transit","authority","player"}) do
+        for _,contradiction in ipairs({"lease","newBlocker","job","field","transit","authority","player"}) do
             local f=fixture(true);local result=f.dispatch();equal(result.status,"ACCEPTED");f.configuration.settled=true;f.control:update()
             if contradiction=="lease" then f.drive:clearRegulationLease(f.vehicles.b,"BYPASS_BLOCKER_HOLD")
-            elseif contradiction=="motion" then f.p.motionEvidence[2].motionClassification="STABLE_FORWARD"
+            elseif contradiction=="newBlocker" then
+                f.p.causalObstructionKnowledge[2]={identity="R2",operationId="OP",beneficiaryAssemblyId="AS-M",blockerAssemblyId="AS-C",blockerAssemblyReferenceKey="c",provenance={authority="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION"}}
             elseif contradiction=="job" then f.episodes["AS-M"]=nil
             elseif contradiction=="field" then f.s.fieldWorld.boundary[2].x=5;f.s.fieldWorld.boundary[3].x=5
             elseif contradiction=="transit" then f.configuration.settled=false
@@ -184,12 +185,23 @@ return function(test,equal)
         equal(mechanism:getCachedTransitSettlement(v).exhausted,true)
     end)
 
-    test("Bypass non-active blocker gains no speed authority and activity change invalidates stability",function()
+    test("Bypass gives non-active obstruction no speed authority or execution veto",function()
         local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
         equal(f.runtime.bubbleBulletTime:getProtection(result.commitment.identity).status,"NOT_REQUIRED")
         f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
-        f.episodes["AS-B"]={identity="NEW",sourceJobToken="new"};f.s.aiStates.b.observedActive=true
-        f.publish();f.control:update();equal(f.control:isActive(),false);equal(#f.drive.moves,1)
+        f.episodes["AS-B"]={identity="NEW",sourceJobToken="new"};f.s.aiStates.b={aiActiveObserved=true,aiActive=true,observedActive=true}
+        f.s.playerControl.b={playerControlled=true,playerEnteredObserved=true,playerEntered=true}
+        f.publish();f.control:update();equal(f.control:isActive(),true);equal(#f.drive.moves,1)
+    end)
+
+    test("Bypass positive target non-progress fails one bounded attempt",function()
+        local f=fixture();local result=f.dispatch();equal(result.status,"ACCEPTED")
+        f.configuration.settled=true;f.control:update();equal(#f.drive.moves,1)
+        f.publish();f.control:update()
+        g_time=g_time+10001;f.s.timestamp=g_time/1000;f.publish();f.control:update()
+        equal(f.control:isActive(),false)
+        equal(f.runtime.commitments:get(result.commitment.identity).state,"FAILED")
+        equal(f.runtime.bubbleBulletTime:getProtection(result.commitment.identity),nil)
     end)
 
     test("Bypass preserves active GIANTS passenger presence without inventing Player Claim",function()

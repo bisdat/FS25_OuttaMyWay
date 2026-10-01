@@ -55,17 +55,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if episode==nil or episode.identity~=k.jobEpisodeId or episode.sourceJobToken~=k.sourceJobToken
         or E.hasPlayerClaim(snapshot,k.assemblyReferenceKey,true) then return refuse("BYPASS_CURRENT_JOB_OR_PLAYER_AUTHORITY_UNSUPPORTED") end
     if self.runtime.authorities:ownerOf(k.assemblyId)~=nil then return refuse("BYPASS_MOVEMENT_ALREADY_OWNED") end
-    local relations={}
-    for _,r in V.ipairs(picture.causalObstructionKnowledge or {}) do
-        if r.operationId==k.operationId and r.beneficiaryAssemblyId==k.assemblyId
-            and r.provenance and r.provenance.authority=="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION" then relations[#relations+1]=r end
-    end
-    if #relations~=1 then return refuse("ONE_CURRENT_POSITIVE_CAUSAL_OBSTRUCTION_REQUIRED") end
-    local relation=relations[1]
-    local blocker={assemblyId=relation.blockerAssemblyId,assemblyReferenceKey=relation.blockerAssemblyReferenceKey,operationId=k.operationId}
-    local stability,reason=E.stability(self.runtime,picture,snapshot,blocker,false)
-    if stability==nil then return refuse(reason) end
-    for name,value in pairs(stability) do blocker[name]=value end
+    local activeCausalBlockerAssemblyIds=E.activeCausalBlockerIds(self.runtime,picture,k.operationId,k.assemblyId)
     local frame=E.frame(picture,snapshot,k)
     if frame==nil then return refuse("CURRENT_SUCCESSOR_CONTINUATION_FRAME_UNSUPPORTED") end
     local capability=self.runtime.assemblyRepresentationCache:getTransitFoldCapability(k.assemblyReferenceKey,k.sourceJobToken)
@@ -77,7 +67,8 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
         if supported then
             local bridge={architecture="BOUNDED_BYPASS",bypassKey=key,operationId=k.operationId,
                 assemblyId=k.assemblyId,assemblyReferenceKey=k.assemblyReferenceKey,jobEpisodeId=k.jobEpisodeId,sourceJobToken=k.sourceJobToken,
-                observationSnapshotId=snapshot.identity,blocker=blocker,guide=guide,fieldInteriorReserveM=reserve,
+                observationSnapshotId=snapshot.identity,activeCausalBlockerAssemblyIds=activeCausalBlockerAssemblyIds,
+                guide=guide,fieldInteriorReserveM=reserve,
                 guideRepresentationId=key..":"..side..":"..targetPictureId}
             fitness[#fitness+1]={representationId=bridge.guideRepresentationId,assemblyId=k.assemblyId,
                 question="FIXED_BYPASS_REFERENCE_GUIDE_INSIDE_FIELD",state="FIT_FOR_LIMITED_HORIZON",
