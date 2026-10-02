@@ -313,6 +313,12 @@ end
 
 local function actionSpaceRegulationRelation(picture,lease)
     if lease==nil then return nil end
+    if lease.admissionKind=="CLAIMED_OBSTRUCTION" then
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.causalObstructionKnowledge or {}) do
+            if relation.identity==lease.conflictIdentity then return relation end
+        end
+        return nil
+    end
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
         if relation.identity==lease.conflictIdentity then return relation end
     end
@@ -331,7 +337,24 @@ local function actionSpaceRegulationRelation(picture,lease)
     return nil
 end
 
-local function actionSpaceRegulationActuationState(relation)
+local function actionSpaceRegulationActuationState(relation,lease)
+    if lease~=nil and lease.admissionKind=="CLAIMED_OBSTRUCTION" then
+        if relation==nil then return "UNRESOLVED",nil end
+        if relation.blockerClassification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED"
+            and relation.positiveDissolution~=true and relation.positiveSupersession~=true then
+            return "SUPPORTED",{
+                status="REGULATE_SUPPORTED",supported=true,
+                reason="CURRENT_CLAIMED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"
+            }
+        end
+        if relation.positiveDissolution==true or relation.positiveSupersession==true then
+            return "NOT_REQUIRED",{
+                status="NOT_REQUIRED",supported=false,
+                reason="CLAIMED_OBSTRUCTION_POSITIVELY_DISSOLVED_OR_SUPERSEDED"
+            }
+        end
+        return "UNRESOLVED",nil
+    end
     local action=relation and relation.actionSpaceConservation or nil
     if type(action)~="table" then return "UNRESOLVED",nil end
     if action.status=="REGULATE_SUPPORTED" and action.supported==true then return "SUPPORTED",action end
@@ -1030,7 +1053,7 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
                 end
                 return {status="QUIESCENT",reason="CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION",actionSpaceRegulation=true,commitmentId=lease.commitmentId}
             end
-            local actuationState,action=actionSpaceRegulationActuationState(relation)
+            local actuationState,action=actionSpaceRegulationActuationState(relation,lease)
             if actuationState=="NOT_REQUIRED" then
                 local quiesceSupported,quiescenceReason=actionSpaceRegulationQuiescenceSupported(picture,lease,action)
                 if quiesceSupported then
