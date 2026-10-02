@@ -102,6 +102,22 @@ local function blockedWorkerRecoveryBridge(candidate)
     return nil
 end
 
+local function currentClaimedObstructionRegulation(runtime,picture)
+    local found=nil
+    for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
+        if type(context.commitmentId)=="string" then
+            local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(context.commitmentId)
+            if current~=nil and current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION" then
+                if found~=nil and found.identity~=current.identity then
+                    return nil,"MULTIPLE_CLAIMED_OBSTRUCTION_REGULATIONS_CURRENT"
+                end
+                found=current
+            end
+        end
+    end
+    return found,nil
+end
+
 local function selectedGroupBoundary(evaluated)
     local inventory=evaluated and evaluated.candidateInventory or nil
     local boundary=inventory and inventory.supportBoundary or nil
@@ -940,6 +956,32 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
 
     local candidate=selectedCandidate(evaluated)
+
+    -- Claim release/clearance retires the outgoing Claimed Obstruction Regulation
+    -- before any newly supportable physical purpose may acquire authority. This
+    -- deliberately creates a fresh-observation boundary before Obstruction
+    -- Relocation can restart after tab-out.
+    local currentClaimed,currentClaimedReason=currentClaimedObstructionRegulation(self,picture)
+    if currentClaimedReason~=nil then
+        return {status="NO_DISPATCH",reason=currentClaimedReason,claimedObstruction=true}
+    end
+    if currentClaimed~=nil then
+        local claimedAssessment=self.currentResponsibilityAssessment:assessActionSpaceRegulation(
+            currentClaimed,actionSpaceRelation(picture,currentClaimed))
+        if claimedAssessment.disposition=="TERMINATE" then
+            return self:_terminateActionSpaceRegulation(picture,evaluated,currentClaimed,claimedAssessment)
+        end
+        local selectedRelocation=relocationBridge(candidate)
+        if selectedRelocation~=nil then
+            return {
+                status="NO_DISPATCH",
+                reason="CLAIMED_OBSTRUCTION_REGULATION_REMAINS_CURRENT_FRESH_RELOCATION_NOT_YET_AUTHORISED",
+                claimedObstruction=true,
+                commitmentId=currentClaimed.provenance and currentClaimed.provenance.retainedCommitmentId or nil
+            }
+        end
+    end
+
     local bypassBridge=candidate and candidate.evidenceBasis and candidate.evidenceBasis.boundedBypassBridge
     if bypassBridge~=nil then return self.boundedBypassRuntime:dispatch(picture,evaluated,candidate,bypassBridge) end
     local recoveryBridge=blockedWorkerRecoveryBridge(candidate)
