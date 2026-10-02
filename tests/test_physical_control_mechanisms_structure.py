@@ -46,7 +46,10 @@ def test_controls_consume_mechanisms_without_new_semantic_authority():
     assert "driveMechanism=mechanisms.driveMechanism" in passage
     assert "configurationMechanism=mechanisms.configurationMechanism" in passage
     assert "OuttaMyWay.TransitConfigurationMechanism.new()" in terminal
-    assert "OuttaMyWay.NonJobActuationMechanism.new()" in terminal
+    assert "OuttaMyWay.NonJobActuationMechanism.new(runtime and runtime.playerActuationClaimAssessment or nil)" in terminal
+    mechanism=text("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    assert "getIsEntered" not in mechanism
+    assert "source:isClaimedReference" in mechanism
     assert "POST_JOB_ACTUATION" not in terminal
     assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
     assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()
