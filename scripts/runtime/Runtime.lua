@@ -143,8 +143,13 @@ function Runtime.new()
     local admission=OuttaMyWay.CommitmentAdmission.new(identities,epochs,commitments,obligations,authorities)
     local governingBasis=OuttaMyWay.GoverningBasisEvaluator.new(identities,epochs)
     local terminalSettlement=OuttaMyWay.TerminalSettlementEvaluator.new(epochs,commitments,obligations,authorities)
-    if OuttaMyWay.PlayerActuationObservation~=nil and type(OuttaMyWay.PlayerActuationObservation.reset)=="function" then
-        OuttaMyWay.PlayerActuationObservation.reset()
+    if OuttaMyWay.PlayerActuationObservation~=nil then
+        if type(OuttaMyWay.PlayerActuationObservation.install)=="function" then
+            OuttaMyWay.PlayerActuationObservation.install()
+        end
+        if type(OuttaMyWay.PlayerActuationObservation.reset)=="function" then
+            OuttaMyWay.PlayerActuationObservation.reset()
+        end
     end
     local playerActuationClaimAssessment=OuttaMyWay.PlayerActuationClaimAssessment.new()
     local causalObstructionAssessment=OuttaMyWay.CausalObstructionAssessment.new(jobEpisodes)
