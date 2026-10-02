@@ -396,9 +396,9 @@ CAUSAL OBSTRUCTION
 
 Positive Causal Obstruction evidence may arise from distinct current Situation bases, including current physical occupancy, positively supported prospective continuation / future-space demand, or bounded Realised Motion Demand intersecting a current physical subject. These evidence routes remain distinct; Realised Motion Demand MUST NOT be reused as prospective route authority elsewhere.
 
-### Non-active classification and Player Claim
+### Non-active classification and Player Actuation Claim
 
-After Causal Obstruction is established, current blocker classification determines which downstream response may be considered:
+After Causal Obstruction is established, current blocker authority classification determines which downstream response may be considered:
 
 ```text
 Causal Obstruction
@@ -408,10 +408,12 @@ Causal Obstruction
     |
     `-- blocker is non-active
             |
-            +-- current Player Claim exists
+            +-- current Player Actuation Claim exists
             |       -> OuttaMyWay must not actuate blocker
+            |       -> beneficiary may receive Claimed Obstruction Regulation
+            |          at the exact 1 km/h Intent-Revelation Creep
             |
-            `-- no current Player Claim
+            `-- no current Player Actuation Claim
                     -> non-active unclaimed blocker;
                        eligible for bounded obstruction resolution
 ```
@@ -420,11 +422,15 @@ A positively ended Job Episode may establish that the same Physical Assembly is 
 
 If the same assembly later begins a fresh GIANTS Job, that is an ordinary Situation change. A new active Job Episode is admitted, GIANTS again owns worker mechanics, and any non-active relocation purpose loses its basis.
 
-**Player Entry Is a Claim Boundary, Not a Vehicle Classification.** While a blocker remains an active GIANTS AI participant, player presence does not independently alter Job Episode or responsibility lifecycle. Once the blocker is non-active, current player presence is a human claim and OuttaMyWay must remain hands-off or relinquish actuation.
+**Player Actuation Claim Is Causal, Not Positional.** Player presence, seat entry, tab selection, `mission.controlledVehicle`, `getIsControlled()`, engine-running state and final steering/throttle state are evidence about presence or execution context; none independently establishes a human authority transfer. A Player Actuation Claim is established only from positively observed causal player actuation such as steering, accelerate/reverse, brake or an explicit propulsion-state command. Once established, current player control/presence may retain that claim while the human remains in control; loss of that control releases the claim to fresh Situation Assessment.
+
+**Player Claim Changes Authority, Not Obstruction Geometry.** The same current physical corridor/look-ahead intersection that establishes Causal Obstruction remains the obstruction predicate when the blocker becomes player-claimed. Human authority removes OuttaMyWay permission to move the blocker; it does not erase the blocker or the beneficiary's current demand.
+
+**Claimed Obstruction Regulation.** While a Player-Actuation-Claimed blocker continues to intersect the beneficiary's current supported obstruction corridor, Regulation may constrain the beneficiary to the exact **1 km/h Intent-Revelation Creep**. This is Regulation, not a 0 km/h hold, and it grants no actuation authority over the player-controlled blocker. If the player moves clear, fresh obstruction geometry releases the Regulation. If the player relinquishes control while still blocking, the claim ends and fresh Causal Obstruction assessment may again admit ordinary Obstruction Relocation; stale pre-claim actuation authority never resumes.
 
 **Vehicle Ownership != Obstruction Relocation Authority.** Ownership metadata does not replace current claim evidence.
 
-**Obstruction Recognition != Actuation Authority.** Situation Assessment establishes whether the subject is currently the blocker. Resolution and Bounded Authority determine whether and how OuttaMyWay may act.
+**Obstruction Recognition != Actuation Authority.** Situation Assessment establishes whether the subject is currently the blocker and whether a Player Actuation Claim exists. Regulation, Resolution and Bounded Authority determine which current physical response is permitted.
 
 ---
 
