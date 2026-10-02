@@ -278,6 +278,12 @@ local function positiveSupportedContinuation(motion,productive)
 end
 
 local function currentPlayerClaim(snapshot,referenceKey)
+    local probe=OuttaMyWay.PlayerActuationProbe
+    if probe~=nil
+        and type(probe.suppressesEnteredClaim)=="function"
+        and probe.suppressesEnteredClaim()==true then
+        return false
+    end
     local control=snapshot and snapshot.playerControl and snapshot.playerControl[referenceKey] or nil
     return type(control)=="table" and control.playerEnteredObserved==true and control.playerEntered==true
 end
