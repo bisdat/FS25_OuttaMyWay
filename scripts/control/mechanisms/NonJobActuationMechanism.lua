@@ -5,7 +5,7 @@
 -- Mechanical safety boundary only: semantic movement permission remains in the
 -- current Responsibility / Bounded Authority / Control path. This mechanism neither
 -- infers historical Job provenance nor creates relocation purpose.
--- Player Claim and source-AI reactivation remain higher-priority Reality boundaries.
+-- Current player control and source-AI reactivation remain higher-priority Reality boundaries.
 
 OuttaMyWay.NonJobActuationMechanism={}
 local Mechanism=OuttaMyWay.NonJobActuationMechanism
@@ -23,7 +23,7 @@ local function steeringPose(vehicle)
     local good,x,y,z=pcall(getWorldTranslation,node); if not good then return nil end
     return node,x,y,z
 end
-function Mechanism.new(playerClaimSource) return setmetatable({playerClaimSource=playerClaimSource,directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Mechanism) end
+function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Mechanism) end
 
 local function boolOrNil(ok,value) if ok then return value==true end return nil end
 function Mechanism:steeringTelemetry(vehicle)
@@ -66,21 +66,28 @@ function Mechanism:steeringTelemetry(vehicle)
     telemetry.steerableWheelCount=#telemetry.wheels
     return telemetry
 end
-function Mechanism:isPlayerClaimed(vehicle)
-    local source=self.playerClaimSource
-    if source==nil or type(source.isClaimedReference)~="function" or vehicle==nil then return false end
-    local root=vehicle
+local function rootVehicle(vehicle)
+    if vehicle==nil then return nil end
     local ok,value=safeCall(vehicle,"getRootVehicle")
-    if ok and type(value)=="table" and value.rootNode~=nil and value.rootNode~=0 then root=value end
-    if root.rootNode==nil or root.rootNode==0 then return false end
-    return source:isClaimedReference("vehicle-root:"..tostring(root.rootNode))==true
+    if ok and type(value)=="table" and value.rootNode~=nil and value.rootNode~=0 then return value end
+    return vehicle
+end
+
+function Mechanism:isPlayerControlled(vehicle)
+    if vehicle==nil then return false end
+    local ok,value=safeCall(vehicle,"getIsControlled")
+    if ok and value==true then return true end
+    local mission=g_currentMission
+    local controlled=mission and rootVehicle(mission.controlledVehicle) or nil
+    local target=rootVehicle(vehicle)
+    return controlled~=nil and target~=nil and controlled==target
 end
 function Mechanism:isSourceReactivated(vehicle)
     local ok,value=safeCall(vehicle,"getIsAIActive"); return ok and value==true
 end
 
 function Mechanism:acquireVehicleActivityContext(vehicle)
-    if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if vehicle==nil then return false,"VEHICLE_UNAVAILABLE" end
     local context={previousForceIsActive=vehicle.forceIsActive,acquiredForceIsActive=true}
@@ -129,7 +136,7 @@ local function steeringAngleLimitDeg(vehicle)
 end
 
 function Mechanism:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedKmh)
-    if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if AIVehicleUtil==nil or type(AIVehicleUtil.driveInDirection)~="function" then return false,"AIVEHICLEUTIL_DRIVE_IN_DIRECTION_UNAVAILABLE" end
     local node=steeringPose(vehicle); if node==nil then return false,"NON_JOB_POSE_UNAVAILABLE" end
@@ -166,7 +173,7 @@ function Mechanism:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedK
 end
 
 function Mechanism:neutralize(vehicle,dt)
-    if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if WheelsUtil==nil or type(WheelsUtil.updateWheelsPhysics)~="function" then return false,"WHEELSUTIL_UPDATE_PHYSICS_UNAVAILABLE" end
     self.neutralizeCalls=self.neutralizeCalls+1
