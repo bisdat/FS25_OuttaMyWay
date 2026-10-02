@@ -208,6 +208,11 @@ local function positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficia
     return realisedMotionDemandConflict(blockerPhysical,realisedDemand)
 end
 
+local function supportedCorridorEvaluable(beneficiaryFuture,realisedDemand)
+    if type(beneficiaryFuture)=="table" and OuttaMyWay.ValueRecord.length(beneficiaryFuture.alternatives or {})>0 then return true end
+    return type(realisedDemand)=="table" and realisedDemand.positive==true
+end
+
 local function sortedKeys(map)
     local result={}
     for key in OuttaMyWay.ValueRecord.pairs(map or {}) do result[#result+1]=key end
@@ -216,11 +221,12 @@ local function sortedKeys(map)
 end
 
 function Assessment.new(jobEpisodes)
-    return setmetatable({jobEpisodes=jobEpisodes,lastSignature=nil},Assessment)
+    return setmetatable({jobEpisodes=jobEpisodes,lastSignature=nil,claimedRelationsByIdentity={}},Assessment)
 end
 
 function Assessment:reset()
     self.lastSignature=nil
+    self.claimedRelationsByIdentity={}
 end
 
 function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,realisedMotionDemandKnowledge,playerActuationClaimKnowledge)
@@ -236,6 +242,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
         end
     end
     local records={}
+    local currentClaimedRelations={}
 
     for _,beneficiaryAssemblyId in OuttaMyWay.ValueRecord.ipairs(sortedKeys(activeOperationMemberSet)) do
         local beneficiaryPhysical=physical[beneficiaryAssemblyId]
@@ -293,7 +300,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                         end
 
                         local operationId=operationByAssembly and operationByAssembly[beneficiaryAssemblyId] or nil
-                        records[#records+1]={
+                        local record={
                             identity="causal-obstruction:"
                                 ..tostring(operationId or "no-operation")..":"
                                 ..tostring(blockerAssemblyId).."->"..tostring(beneficiaryAssemblyId),
@@ -337,11 +344,70 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                                 nativeBlockedRequired=false
                             }
                         }
+                        records[#records+1]=record
+                        if classification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED" then
+                            currentClaimedRelations[record.identity]=record
+                        end
                     end
                 end
             end
         end
     end
+
+    -- A claimed obstruction's release is positive, not inferred from mere relation absence.
+    -- Re-evaluate the same previously-positive corridor while the claim is current, or
+    -- publish explicit claim-release supersession when current player control has ended.
+    for identity,previous in OuttaMyWay.ValueRecord.pairs(self.claimedRelationsByIdentity or {}) do
+        if currentClaimedRelations[identity]==nil then
+            local blockerPhysical=physical[previous.blockerAssemblyId]
+            local beneficiaryPhysical=physical[previous.beneficiaryAssemblyId]
+            local beneficiaryFuture=future[previous.beneficiaryAssemblyId]
+            local demand=realisedDemand[previous.beneficiaryAssemblyId]
+            local blockerReferenceKey=previous.blockerAssemblyReferenceKey
+            local player=blockerReferenceKey and snapshot.playerControl and snapshot.playerControl[blockerReferenceKey] or nil
+            local claim=blockerReferenceKey and claimsByReference[blockerReferenceKey] or nil
+            local beneficiaryStillActive=activeOperationMemberSet[previous.beneficiaryAssemblyId]==true
+
+            if claim==nil and type(player)=="table" and player.playerControlled~=true then
+                local released=OuttaMyWay.ValueRecord.toTable(previous)
+                released.classification="CLAIMED_OBSTRUCTION_CLAIM_RELEASED"
+                released.relationshipStatus="SUPERSEDED"
+                released.positiveSupersession=true
+                released.relocationEligible=false
+                released.obstructionEvidence={
+                    kind="PLAYER_ACTUATION_CLAIM_RELEASED",
+                    authority="POSITIVE_AUTHORITY_SUPERSESSION",
+                    source="PlayerActuationClaimAssessment"
+                }
+                released.provenance={
+                    source="CausalObstructionAssessment",
+                    authority="POSITIVE_CLAIM_RELEASE_SUPERSESSION",
+                    predecessorIdentity=identity
+                }
+                records[#records+1]=released
+            elseif claim~=nil and beneficiaryStillActive and blockerPhysical~=nil and beneficiaryPhysical~=nil
+                and supportedCorridorEvaluable(beneficiaryFuture,demand)
+                and positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficiaryFuture,demand)==nil then
+                local dissolved=OuttaMyWay.ValueRecord.toTable(previous)
+                dissolved.classification="CLAIMED_OBSTRUCTION_DISSOLVED"
+                dissolved.relationshipStatus="NEGATIVE"
+                dissolved.positiveDissolution=true
+                dissolved.relocationEligible=false
+                dissolved.obstructionEvidence={
+                    kind="CURRENT_SUPPORTED_CORRIDOR_CLEAR",
+                    authority="POSITIVE_CLAIMED_OBSTRUCTION_DISSOLUTION",
+                    source="CausalObstructionAssessment"
+                }
+                dissolved.provenance={
+                    source="CausalObstructionAssessment",
+                    authority="POSITIVE_CLAIMED_OBSTRUCTION_DISSOLUTION",
+                    predecessorIdentity=identity
+                }
+                records[#records+1]=dissolved
+            end
+        end
+    end
+    self.claimedRelationsByIdentity=currentClaimedRelations
 
     table.sort(records,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
 
