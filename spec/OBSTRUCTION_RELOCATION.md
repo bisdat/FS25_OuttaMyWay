@@ -213,21 +213,21 @@ A current implementation may use positive supported productive continuation as t
 
 > **Obstruction Absence != Supported Continuation.**
 
-### Player Actuation Claim
+### Player Control Interlock
 
-A current Player Actuation Claim over the non-active blocker is higher authority than autonomous relocation.
+Current GIANTS player control over the non-active blocker is mechanically higher authority than autonomous relocation.
 
-Once positively established, OuttaMyWay MUST immediately stop acquiring new relocation authority for that blocker and MUST relinquish the current blocker actuation without issuing a final neutralisation command that competes with the higher-authority human input. Any activity/configuration context owned solely by the relocation MUST be released safely.
+When current player control becomes positive, OuttaMyWay MUST immediately stop acquiring new relocation authority for that blocker and MUST relinquish current blocker actuation without issuing a final neutralisation command that competes with the GIANTS player-control path. Any activity/configuration context owned solely by the relocation MUST be released safely.
 
-The pre-claim bounded movement objective and its Bounded Authority MUST be retired. They MUST NOT remain dormant and become executable again merely because the player later tabs out or loses controlled-vehicle context.
+The pre-control bounded movement objective and its Bounded Authority MUST be retired. They MUST NOT remain dormant and become executable again merely because the player later tabs out.
 
-If the claimed blocker remains a current Causal Obstruction, downstream response belongs to Regulation: Claimed Obstruction Regulation may constrain the active beneficiary to the exact 1 km/h Intent-Revelation Creep while leaving the blocker entirely human-owned.
+If the player-controlled blocker remains a current Causal Obstruction, downstream response belongs to Regulation: Player-Controlled Obstruction Regulation may constrain the active beneficiary to the exact 1 km/h Intent-Revelation Creep while leaving the blocker entirely player-controlled.
 
-When the Player Actuation Claim ends, ordinary Obstruction Relocation may be considered again only from fresh Situation Assessment and freshly acquired authority. A still-blocking abandoned vehicle is therefore reassessed as a non-active unclaimed blocker; a player-moved-clear vehicle creates no relocation purpose.
+When current player control ends, ordinary Obstruction Relocation may be considered again only from fresh Situation Assessment and freshly acquired authority. A still-blocking abandoned vehicle is therefore reassessed as a non-active unclaimed blocker; a player-moved-clear vehicle creates no relocation purpose.
 
-Vehicle ownership metadata, passive player entry and control context alone are not Player Actuation Claim evidence.
+Vehicle ownership metadata alone is not current player-control evidence.
 
-> **Claim Supersession Retires Physical Authority; It Does Not Pause It.**
+> **Player Control Supersession Retires Physical Authority; It Does Not Pause It.**
 
 > **Tab-Out Requires Fresh Authority.**
 
