@@ -93,78 +93,65 @@ function Assessment:assessActionSpaceRegulation(current,relation)
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
-    local claimed=current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION"
+    local playerControlled=current.provenance and current.provenance.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
+
     if relation==nil then
-        if claimed then
-        if relation.positiveDissolution==true or relation.classification=="CLAIMED_OBSTRUCTION_DISSOLVED" then
+        if forward then
+            return {disposition="PERSIST",evidenceState="WAITING_FOR_EVIDENCE",reason="FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"}
+        end
+        if corner then
+            return {disposition="PERSIST",evidenceState="WAITING_FOR_EVIDENCE",reason="SHARED_CORNER_COMPETING_DEMAND_TEMPORARILY_UNRESOLVED"}
+        end
+        if category2 then
+            return {disposition="PERSIST",evidenceState="WAITING_FOR_EVIDENCE",reason="SHARED_CATEGORY_2_DEMAND_TEMPORARILY_UNRESOLVED"}
+        end
+        if playerControlled then
+            return {disposition="PERSIST",evidenceState="WAITING_FOR_EVIDENCE",reason="PLAYER_CONTROLLED_OBSTRUCTION_CURRENT_CORRIDOR_TEMPORARILY_UNRESOLVED"}
+        end
+        return {disposition="PERSIST",reason="ACTION_SPACE_RELATIONSHIP_TEMPORARILY_UNRESOLVED"}
+    end
+
+    if playerControlled then
+        if relation.positiveDissolution==true
+            or relation.classification=="PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED" then
             return {
                 disposition="TERMINATE",
-                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION",
-                reason=relation.reason or "CLAIMED_OBSTRUCTION_CURRENT_SUPPORTED_CORRIDOR_POSITIVELY_CLEAR"
+                terminationEvidenceKind="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION",
+                reason=relation.reason or "PLAYER_CONTROLLED_OBSTRUCTION_CURRENT_SUPPORTED_CORRIDOR_POSITIVELY_CLEAR"
             }
         end
         if relation.blockerClassification=="ACTIVE_GIANTS_AI"
             or relation.blockerClassification=="GIANTS_AI_ACTIVE_UNRESOLVED" then
             return {
                 disposition="TERMINATE",
-                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION",
-                reason="CLAIMED_BLOCKER_GIANTS_AI_INTENT_POSITIVELY_REACTIVATED"
+                terminationEvidenceKind="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION",
+                reason="PLAYER_CONTROLLED_BLOCKER_GIANTS_AI_INTENT_POSITIVELY_REACTIVATED"
             }
         end
         if relation.positiveSupersession==true
-            or relation.classification=="CLAIMED_OBSTRUCTION_CLAIM_RELEASED"
+            or relation.classification=="PLAYER_CONTROLLED_OBSTRUCTION_CONTROL_RELEASED"
             or relation.blockerClassification=="NON_ACTIVE_UNCLAIMED" then
             return {
                 disposition="TERMINATE",
-                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE",
-                reason=relation.reason or "PLAYER_ACTUATION_CLAIM_POSITIVELY_RELEASED"
+                terminationEvidenceKind="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE",
+                reason=relation.reason or "PLAYER_CONTROL_POSITIVELY_RELEASED"
             }
         end
         if relation.identity==current.provenance.conflictIdentity
-            and relation.blockerClassification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED" then
+            and relation.blockerClassification=="NON_ACTIVE_PLAYER_CONTROLLED" then
             return {
                 disposition="PERSIST",
                 evidenceState="SUPPORTED",
-                reason="CLAIMED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"
+                reason="PLAYER_CONTROLLED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"
             }
         end
         return {
             disposition="PERSIST",
             evidenceState="WAITING_FOR_EVIDENCE",
-            reason=relation.reason or "CLAIMED_OBSTRUCTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
+            reason=relation.reason or "PLAYER_CONTROLLED_OBSTRUCTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
         }
     end
 
-    if forward then
-            return {
-                disposition="PERSIST",
-                evidenceState="WAITING_FOR_EVIDENCE",
-                reason="FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
-            }
-        end
-        if corner then
-            return {
-                disposition="PERSIST",
-                evidenceState="WAITING_FOR_EVIDENCE",
-                reason="SHARED_CORNER_COMPETING_DEMAND_TEMPORARILY_UNRESOLVED"
-            }
-        end
-        if category2 then
-            return {
-                disposition="PERSIST",
-                evidenceState="WAITING_FOR_EVIDENCE",
-                reason="SHARED_CATEGORY_2_DEMAND_TEMPORARILY_UNRESOLVED"
-            }
-        end
-        if claimed then
-            return {
-                disposition="PERSIST",
-                evidenceState="WAITING_FOR_EVIDENCE",
-                reason="CLAIMED_OBSTRUCTION_CURRENT_CORRIDOR_TEMPORARILY_UNRESOLVED"
-            }
-        end
-        return {disposition="PERSIST",reason="ACTION_SPACE_RELATIONSHIP_TEMPORARILY_UNRESOLVED"}
-    end
     if corner then
         if relation.positiveDissolution==true or relation.classification=="SHARED_CORNER_COMPETING_DEMAND_DISSOLVED" then
             return {
@@ -186,6 +173,7 @@ function Assessment:assessActionSpaceRegulation(current,relation)
             reason=relation.reason or "SHARED_CORNER_COMPETING_DEMAND_EVIDENCE_TEMPORARILY_UNRESOLVED"
         }
     end
+
     if category2 then
         if relation.positiveDissolution==true
             or relation.classification=="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN" then
@@ -250,6 +238,7 @@ function Assessment:assessActionSpaceRegulation(current,relation)
             reason=relation.reason or "FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
         }
     end
+
     local relationship=relation.resolutionSpaceRelationship
     if type(relationship)=="table" and relationship.positiveDissolution==true then
         return {disposition="TERMINATE",reason=relationship.reason or "ACTION_SPACE_RELATIONSHIP_POSITIVELY_DISSOLVED"}
