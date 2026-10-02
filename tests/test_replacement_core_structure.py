@@ -1133,7 +1133,10 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
         "actionSpaceRegulationRepresentation", "ACTION_SPACE_REGULATION",
         "actionSpaceRegulationBridge", "ACTION_SPACE_REGULATION",
         "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",
-            '"cooperative-passage:")..tostring(item.relation.identity)',
+        "local function actionSpaceRequirementKey(item)",
+        '"claimed-obstruction-regulation:"..tostring(item.relation.identity)',
+        '"forward-intersection-regulation:"..tostring(item.relation.identity)',
+        '"cooperative-passage:"..tostring(item.relation.identity)',
         'controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE"',
     ):
         assert token in support
