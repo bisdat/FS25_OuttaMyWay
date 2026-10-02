@@ -24,7 +24,7 @@ end
 local function obligationSettlement(eventKind)
     if eventKind=="OBJECTIVE_SATISFIED" then return "SATISFACTION","OBSTRUCTION_REMOVED" end
     if eventKind=="OBJECTIVE_FAILED" or eventKind=="CENTROID_STRATEGY_EXHAUSTED" then return "SATISFACTION","PLAYER_ESCALATION" end
-    if eventKind=="PLAYER_CLAIM" or eventKind=="NEW_AUTHORITATIVE_INTENT" then return "BASIS_CESSATION","RELOCATION_BASIS_CEASED" end
+    if eventKind=="PLAYER_CONTROL" or eventKind=="NEW_AUTHORITATIVE_INTENT" then return "BASIS_CESSATION","RELOCATION_BASIS_CEASED" end
     return nil,nil
 end
 
