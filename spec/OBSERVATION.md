@@ -182,6 +182,7 @@ Control may produce physical outcomes. Those outcomes become evidence only by re
 | [`scripts/contracts/ObservationSnapshot.lua`](../scripts/contracts/ObservationSnapshot.lua) | `REALISES` |
 | [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) | `REALISES` |
 | [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) | `REALISES` |
+| [`scripts/observation/PlayerActuationObservation.lua`](../scripts/observation/PlayerActuationObservation.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `REALISES` |
 | [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) | `REALISES` |
@@ -200,6 +201,7 @@ Primary current implementation routes include:
 - [`scripts/contracts/ObservationSnapshot.lua`](../scripts/contracts/ObservationSnapshot.lua) — sealed Snapshot value contract and guard against downstream semantic fields;
 - [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) — publication boundary assigning Observation identity/epoch while preserving raw evidence limits;
 - [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — live GIANTS/runtime evidence composition;
+- [`scripts/observation/PlayerActuationObservation.lua`](../scripts/observation/PlayerActuationObservation.lua) — causal player-command callback evidence with no Player Claim semantic authority;
 - [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) — current non-semantic Physical Assembly source evidence;
 - [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) — current pose acquisition plus purpose-scoped representation-evidence publication; its Assessment Representation role is governed separately;
 - [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) — current GIANTS AI-job source evidence;
