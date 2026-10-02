@@ -6016,3 +6016,22 @@ A player action that competes with OuttaMyWay movement authority — candidate c
 **Deliberate safety/test boundary:** detected player commands do **not** terminate relocation in 0.4.9.1. This is intentional evidence collection, not accepted product behaviour. The test should be run only as the controlled TS002 diagnostic: tab into the relocating Condor without touching controls, then deliberately exercise steer, brake, accelerate/reverse and optionally motor commands while observing whether the causal callbacks distinguish those actions from passive occupancy and from analog background noise.
 
 **Validation question:** if the callbacks are quiet during passive tab-in and respond cleanly to deliberate controls with the owner's actual devices, confidence increases that a future Player Actuation Claim can be established from causal command evidence. If passive controller noise produces material events, the evidence contract must account for GIANTS input/dead-zone semantics before any production handover rule is implemented.
+
+
+## 2026-10-02 — #412 TEST 0.4.9.1 disproof: Player Claim survives in Candidate reassessment
+
+**Reality basis:** TS002 TEST 0.4.9.1 did not establish the intended diagnostic condition. Condor Obstruction Relocation began at 09:05:33.238 with `controlled=false`. After the owner tabbed into Condor, the vehicle stopped and OMW settled the active Resolution as `PLAYER_CLAIM` at 09:05:35.745, despite the diagnostic having suppressed entered-state claim handling in Causal Obstruction classification, retained-track removal and the non-job Control mechanism.
+
+**Cause:** `ObstructionRelocationCandidateSupport.reassessmentSpec()` independently calls `currentPlayerClaim()`, which still interpreted `ObservationSnapshot.playerControl.playerEntered` as terminal claim evidence. That Candidate-owned reassessment emitted a terminal `PLAYER_CLAIM` specification; Runtime then released relocation serialization, settled the commitment as `SUPERSEDED_BY_NEW_INTENT`, and Control neutralised the physical actuation.
+
+> **Player Claim Has Multiple Semantic Owners.**
+
+> **Suppressing Control Claim != Suppressing Resolution Claim.**
+
+The run then churned: while the player remained entered/controlled, Obstruction Relocation could be admitted again because the other diagnostic suppressions were active, but Candidate reassessment settled it again on the next live cycle. The log contains 76 relocation starts and 75 Player Claim settlements.
+
+**Partial actuation evidence:** the probe still captured 17 `PLAYER_ACTUATION_PROBE` events, all ACCELERATE in this run, including positive values while `motorStarted=false`. This remains evidence that manual drive-command provenance can exist without successful propulsion. It does not yet validate a claim threshold because the relocation was repeatedly being torn down and restarted.
+
+**Implementation — TEST `0.4.9.2`:** the diagnostic suppression now also covers Candidate reassessment `currentPlayerClaim()`. Production semantics remain unchanged whenever the diagnostic probe is absent.
+
+**Next Reality discriminator:** first prove that Condor continues the same Obstruction Relocation after passive tab-in. If that succeeds, exercise steer, brake and accelerate/reverse while recording causal action callbacks. If Condor still ceases meaningful motion despite no semantic `PLAYER_CLAIM` settlement, investigate a lower mechanical conflict between GIANTS controlled-vehicle update/physics and OuttaMyWay `AIVehicleUtil.driveInDirection` actuation.
