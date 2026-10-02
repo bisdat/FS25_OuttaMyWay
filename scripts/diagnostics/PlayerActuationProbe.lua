@@ -91,15 +91,15 @@ local function shouldPublish(vehicle,action,inputValue,always)
     return publish,value
 end
 
-local function observe(vehicle,action,inputValue,callbackState,isAnalog,extra,always)
+local function observe(vehicle,action,inputAction,inputValue,callbackState,isAnalog,extra,always)
     local state=activeRelocation(vehicle)
     if state==nil then return false,"NO_ACTIVE_OBSTRUCTION_RELOCATION_FOR_VEHICLE" end
     local publish,value=shouldPublish(vehicle,action,inputValue,always)
     if not publish then return false,"UNCHANGED_INPUT_WITHIN_HEARTBEAT" end
     publication:info("DIAGNOSTIC","PLAYER_ACTUATION_PROBE",
-        "commitment=%s assembly=%s ref=%s action=%s input=%s callbackState=%s analog=%s %s %s lastInput={%s} claimAuthority=false diagnosticOnly=true",
+        "commitment=%s assembly=%s ref=%s action=%s inputAction=%s input=%s callbackState=%s analog=%s %s %s lastInput={%s} claimAuthority=false diagnosticOnly=true",
         tostring(state.commitmentId),tostring(state.assemblyId),tostring(state.assemblyReferenceKey),
-        tostring(action),numberText(value),tostring(callbackState),tostring(isAnalog==true),
+        tostring(action),tostring(inputAction),numberText(value),tostring(callbackState),tostring(isAnalog==true),
         stateText(vehicle),tostring(extra or ""),lastInputText(vehicle))
     return true,"PUBLISHED"
 end
@@ -111,12 +111,12 @@ function Probe.suppressesEnteredClaim()
     return true
 end
 
-function Probe.observeDriveAction(vehicle,action,inputValue,callbackState,isAnalog,extra)
-    return observe(vehicle,action,inputValue,callbackState,isAnalog,extra,false)
+function Probe.observeDriveAction(vehicle,action,inputAction,inputValue,callbackState,isAnalog,extra)
+    return observe(vehicle,action,inputAction,inputValue,callbackState,isAnalog,extra,false)
 end
 
-function Probe.observeMotorAction(vehicle,action,inputValue,callbackState,isAnalog)
-    return observe(vehicle,action,inputValue,callbackState,isAnalog,"motorCommand=true",true)
+function Probe.observeMotorAction(vehicle,action,inputAction,inputValue,callbackState,isAnalog)
+    return observe(vehicle,action,inputAction,inputValue,callbackState,isAnalog,"motorCommand=true",true)
 end
 
 function Probe.install()
@@ -130,14 +130,14 @@ function Probe.install()
         Drivable.actionEventAccelerate=Utils.appendedFunction(
             Drivable.actionEventAccelerate,
             function(self,actionName,inputValue,callbackState,isAnalog)
-                Probe.observeDriveAction(self,"ACCELERATE",inputValue,callbackState,isAnalog)
+                Probe.observeDriveAction(self,"ACCELERATE",actionName,inputValue,callbackState,isAnalog)
             end)
     end
     if type(Drivable.actionEventBrake)=="function" then
         Drivable.actionEventBrake=Utils.appendedFunction(
             Drivable.actionEventBrake,
             function(self,actionName,inputValue,callbackState,isAnalog)
-                Probe.observeDriveAction(self,"BRAKE",inputValue,callbackState,isAnalog)
+                Probe.observeDriveAction(self,"BRAKE",actionName,inputValue,callbackState,isAnalog)
             end)
     end
     if type(Drivable.actionEventSteer)=="function" then
@@ -145,7 +145,7 @@ function Probe.install()
             Drivable.actionEventSteer,
             function(self,actionName,inputValue,callbackState,isAnalog,isMouse,deviceCategory,binding)
                 Probe.observeDriveAction(
-                    self,"STEER",inputValue,callbackState,isAnalog,
+                    self,"STEER",actionName,inputValue,callbackState,isAnalog,
                     string.format("mouse=%s deviceCategory=%s binding=%s",tostring(isMouse==true),tostring(deviceCategory),tostring(binding)))
             end)
     end
@@ -156,7 +156,7 @@ function Probe.install()
                 Motorized[functionName]=Utils.appendedFunction(
                     Motorized[functionName],
                     function(self,actionName,inputValue,callbackState,isAnalog)
-                        Probe.observeMotorAction(self,action,inputValue,callbackState,isAnalog)
+                        Probe.observeMotorAction(self,action,actionName,inputValue,callbackState,isAnalog)
                     end)
             end
         end
