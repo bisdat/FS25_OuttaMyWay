@@ -42,10 +42,3 @@ def test_issue412_entered_state_claim_is_suppressed_only_through_probe_switch():
     assert "and not enteredClaimSuppressedForDiagnostic() then" in observation
     assert 'local ok,value=safeCall(vehicle,"getIsEntered"); return ok and value==true' in mechanism
 
-
-def test_issue412_test_identity_is_0491():
-    config = read("scripts/config.lua")
-    mod_desc = read("modDesc.xml")
-
-    assert 'OuttaMyWay.VERSION = "0.4.9.1"' in config
-    assert '<version value="0.4.9.1">0.4.9.1</version>' in mod_desc
