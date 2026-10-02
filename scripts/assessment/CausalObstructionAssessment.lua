@@ -242,6 +242,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
         end
     end
     local records={}
+    local currentRelationsByIdentity={}
     local currentClaimedRelations={}
 
     for _,beneficiaryAssemblyId in OuttaMyWay.ValueRecord.ipairs(sortedKeys(activeOperationMemberSet)) do
@@ -345,6 +346,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             }
                         }
                         records[#records+1]=record
+                        currentRelationsByIdentity[record.identity]=record
                         if classification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED" then
                             currentClaimedRelations[record.identity]=record
                         end
@@ -369,22 +371,37 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
             local beneficiaryStillActive=activeOperationMemberSet[previous.beneficiaryAssemblyId]==true
 
             if claim==nil and type(player)=="table" and player.playerControlled~=true then
-                local released=OuttaMyWay.ValueRecord.toTable(previous)
-                released.classification="CLAIMED_OBSTRUCTION_CLAIM_RELEASED"
-                released.relationshipStatus="SUPERSEDED"
-                released.positiveSupersession=true
-                released.relocationEligible=false
-                released.obstructionEvidence={
-                    kind="PLAYER_ACTUATION_CLAIM_RELEASED",
-                    authority="POSITIVE_AUTHORITY_SUPERSESSION",
-                    source="PlayerActuationClaimAssessment"
-                }
-                released.provenance={
-                    source="CausalObstructionAssessment",
-                    authority="POSITIVE_CLAIM_RELEASE_SUPERSESSION",
-                    predecessorIdentity=identity
-                }
-                records[#records+1]=released
+                local current=currentRelationsByIdentity[identity]
+                if current~=nil then
+                    -- The obstruction is still physically current. Preserve that
+                    -- current positive geometry as the single relation and attach
+                    -- positive claim-release supersession for the outgoing
+                    -- Claimed Obstruction Regulation.
+                    current.positiveSupersession=true
+                    current.claimReleaseEvidence={
+                        kind="PLAYER_ACTUATION_CLAIM_RELEASED",
+                        authority="POSITIVE_AUTHORITY_SUPERSESSION",
+                        source="PlayerActuationClaimAssessment",
+                        predecessorBlockerClassification="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED"
+                    }
+                else
+                    local released=OuttaMyWay.ValueRecord.toTable(previous)
+                    released.classification="CLAIMED_OBSTRUCTION_CLAIM_RELEASED"
+                    released.relationshipStatus="SUPERSEDED"
+                    released.positiveSupersession=true
+                    released.relocationEligible=false
+                    released.obstructionEvidence={
+                        kind="PLAYER_ACTUATION_CLAIM_RELEASED",
+                        authority="POSITIVE_AUTHORITY_SUPERSESSION",
+                        source="PlayerActuationClaimAssessment"
+                    }
+                    released.provenance={
+                        source="CausalObstructionAssessment",
+                        authority="POSITIVE_CLAIM_RELEASE_SUPERSESSION",
+                        predecessorIdentity=identity
+                    }
+                    records[#records+1]=released
+                end
             elseif claim~=nil and beneficiaryStillActive and blockerPhysical~=nil and beneficiaryPhysical~=nil
                 and supportedCorridorEvaluable(beneficiaryFuture,demand)
                 and positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficiaryFuture,demand)==nil then
