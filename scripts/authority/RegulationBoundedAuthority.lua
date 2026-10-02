@@ -340,7 +340,7 @@ end
 local function actionSpaceRegulationActuationState(relation,lease)
     if lease~=nil and lease.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION" then
         if relation==nil then return "UNRESOLVED",nil end
-        if relation.blockerClassification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED"
+        if relation.blockerClassification=="NON_ACTIVE_PLAYER_CONTROLLED"
             and relation.positiveDissolution~=true and relation.positiveSupersession~=true then
             return "SUPPORTED",{
                 status="REGULATE_SUPPORTED",supported=true,
