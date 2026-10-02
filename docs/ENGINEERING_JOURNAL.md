@@ -6060,3 +6060,22 @@ This increases confidence in the #412 hypothesis that **Player Claim establishme
 > **Motor Object Availability != Motor Running State.**
 
 Inspection shows `NonJobActuationMechanism.driveInWorldDirection()` temporarily provides legacy `vehicle.motor` / `vehicle.cruiseControl` compatibility fields to `AIVehicleUtil.driveInDirection()`, but it does not start the GIANTS motor. The helper can therefore produce physical movement while the vehicle's actual propulsion state remains stopped. This is tracked separately as Issue #417 so #412 remains focused on the human-authority boundary.
+
+
+## 2026-10-02 — #412 TS002_B exposes mechanical writer handover on tab-out
+
+**Reality basis:** TEST 0.4.9.2 TS002_B provides a cleaner mechanical-control witness than the prior run. One Obstruction Relocation Control actuation under `CM-00001` starts at 09:32:24.281 and remains live throughout the player interaction. By 09:32:28.338 Condor is `controlled=true` while OMW continues issuing relocation drive commands. Deliberate steering begins at 09:32:30.454 and reaches full-scale input. At 09:32:31.337 realised steering is materially displaced (`rotatedTime=-0.332884`) while the player remains in control.
+
+Around 09:32:42 the video shows the owner tab back to Patriot. The next steering heartbeat reports Condor `controlled=false` at 09:32:42.430; realised steering then evolves under the continuing OMW command stream, including `rotatedTime=-0.385081` at 09:32:42.430, `-0.388547` at 09:32:43.435 and `+0.618343` at 09:32:44.441.
+
+> **Player Control Context Governs Mechanical Writer Precedence.**
+
+> **Tab-Out Releases Mechanical Precedence, Not Semantic Permission.**
+
+The diagnostic deliberately leaves OMW actuation alive after player input. Therefore the observed automatic same-actuation resumption after tab-out is **mechanical evidence only**, not the intended production lifecycle.
+
+**Architectural implication:** a production Player Actuation Claim should terminate/relinquish OMW blocker actuation when causal player input is positively established. While the claim remains current, beneficiary protection must persist if the Causal Obstruction remains positive. Loss of player control/tab-out may release the human claim, but it must not resurrect stale pre-claim physical authority. Fresh Situation Assessment must determine whether the blocker is again a non-active unclaimed Causal Obstruction and, if so, may support fresh Obstruction Relocation authority.
+
+Candidate lifecycle:
+
+`manual actuation -> Player Actuation Claim -> OMW blocker actuation relinquished -> player control retained -> tab-out/loss of player control -> claim released -> fresh Situation Assessment -> possible fresh Obstruction Relocation`.
