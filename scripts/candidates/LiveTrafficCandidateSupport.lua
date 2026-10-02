@@ -522,6 +522,13 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     }
 end
 
+local function actionSpaceRequirementKey(item)
+    local admission=item and item.action and item.action.admissionKind or nil
+    if admission=="CLAIMED_OBSTRUCTION" then return "claimed-obstruction-regulation:"..tostring(item.relation.identity) end
+    if admission=="FORWARD_INTERSECTION" then return "forward-intersection-regulation:"..tostring(item.relation.identity) end
+    return "cooperative-passage:"..tostring(item.relation.identity)
+end
+
 local function passageCaptureState(plan)
     local entry=plan and plan.passageEntry or nil
     local separation=tonumber(entry and (entry.selectionLongitudinalSeparationM or entry.selectionSeparationM) or (plan and plan.longitudinalSeparationM))
@@ -563,7 +570,7 @@ local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local pictureId=self.identities:issue("PICTURE")
     values.identity=pictureId; values.epoch=self.epochs:next()
-    local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "cooperative-passage:")..tostring(item.relation.identity)
+    local requirement=actionSpaceRequirementKey(item)
     local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
     if existingReason~=nil then self.lastStatus=existingReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
     values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
@@ -1013,7 +1020,7 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
 end
 
 local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
-    local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "cooperative-passage:")..tostring(item.relation.identity)
+    local requirement=actionSpaceRequirementKey(item)
     local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
     if existingReason~=nil then return nil,existingReason end
     local baseline=#(values.representationFitness or {})
@@ -1044,6 +1051,13 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     values.identity=targetPictureId
     values.epoch=targetEpoch
+
+    if projection.kind=="CLAIMED_OBSTRUCTION" then
+        if type(projection.relationshipIdentity)~="string" then return nil,"CLAIMED_OBSTRUCTION_ID_REQUIRED" end
+        local item,reason=claimedObstructionRecord(picture,projection.relationshipIdentity)
+        if item==nil then return nil,reason or "CLAIMED_OBSTRUCTION_NOT_FOUND" end
+        return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
+    end
 
     if projection.kind=="FOLLOWER_BOUNDARY" then
         local record,reason=followerBoundaryRecord(picture)
@@ -1141,6 +1155,10 @@ end
 function Support:publishDecisionPicture(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
+
+    local claimed,claimedReason=claimedObstructionRecord(picture,nil)
+    if claimed~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,claimed) end
+    if claimedReason~=nil then self.lastStatus=claimedReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
 
     local follower,followerReason=followerBoundaryRecord(picture)
     if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return publishFollowerBoundaryPicture(self,picture,snapshot,follower) end
