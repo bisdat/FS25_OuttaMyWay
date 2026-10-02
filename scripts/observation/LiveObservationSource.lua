@@ -38,19 +38,6 @@ local function isPlayerControlled(mission,object)
     return controlled~=nil and target~=nil and controlled==target
 end
 
-local function latestPlayerActuation(referenceKeyValue)
-    local source=OuttaMyWay.PlayerActuationObservation
-    if source==nil or type(source.latest)~="function" then return nil end
-    return source.latest(referenceKeyValue)
-end
-
-local function playerActuationSourceStatus()
-    local source=OuttaMyWay.PlayerActuationObservation
-    if source==nil or type(source.isAvailable)~="function" then return false,"PLAYER_ACTUATION_OBSERVATION_UNAVAILABLE" end
-    local available,reason=source.isAvailable()
-    return available==true,reason
-end
-
 local function objectName(object)
     local ok, value = safeCall(object, "getName")
     if ok and value ~= nil and value ~= "" then return tostring(value) end
@@ -426,7 +413,7 @@ function Source:capture(mission, nowSeconds)
             -- The retained track supplies one raw GIANTS lifecycle proof: whether
             -- the admitted source job is now conclusively ended. Job Episode
             -- admission consumes that proof directly; no parallel termination-cause
-            -- flag is retained. Post-completion player control remains subject to the Player Claim boundary.
+            -- flag is retained. Post-completion player control remains subject to the transient Player Control Interlock.
             local playerControlled = isPlayerControlled(mission,object)
             local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
             if sourceJobEndEvidence.observed==true then
@@ -653,10 +640,12 @@ function Source:capture(mission, nowSeconds)
                 fieldActive = worker.fieldActive, aiActive = worker.aiActive, aiActiveObserved=worker.aiActiveObserved==true, observedActive = worker.activeObserved,
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
-            do
-                local causalAvailable,causalReason=playerActuationSourceStatus()
-                raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true, playerEnteredObserved=worker.playerEnteredObserved==true, causalActionSourceAvailable=causalAvailable, causalActionSourceReason=causalReason, latestCausalAction=latestPlayerActuation(worker.referenceKey)}
-            end
+            raw.playerControl[worker.referenceKey] = {
+                playerControlled=worker.playerControlled==true,
+                playerPresent=worker.playerPresent==true,
+                playerEntered=worker.playerEntered==true,
+                playerEnteredObserved=worker.playerEnteredObserved==true
+            }
             local md=worker.motionSample or {}
             local li=worker.localIntent or {}
             local nativeFieldWork=nil
@@ -923,15 +912,11 @@ function Source:capture(mission, nowSeconds)
                 fieldActive=physical.fieldActive,aiActive=physical.aiActive,aiActiveObserved=physical.aiActiveObserved,observedActive=false,
                 blocked=physical.blocked,speedMps=physical.speedMps,name=physical.name
             }
-            local causalAvailable,causalReason=playerActuationSourceStatus()
             raw.playerControl[physical.referenceKey]={
-                playerControlled=physical.playerControlled,
-                playerPresent=physical.playerEntered,
-                playerEntered=physical.playerEntered,
-                playerEnteredObserved=physical.playerEnteredObserved,
-                causalActionSourceAvailable=causalAvailable,
-                causalActionSourceReason=causalReason,
-                latestCausalAction=latestPlayerActuation(physical.referenceKey)
+                playerControlled=physical.playerControlled==true,
+                playerPresent=physical.playerEntered==true,
+                playerEntered=physical.playerEntered==true,
+                playerEnteredObserved=physical.playerEnteredObserved==true
             }
             if diagnosticActive then
                 raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
