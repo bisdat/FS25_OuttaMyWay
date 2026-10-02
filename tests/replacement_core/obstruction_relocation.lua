@@ -352,8 +352,15 @@ local function genericControlFixture()
     local authorities=OuttaMyWay.AuthorityRegistry.new(ids,epochs,commitments)
     local commitment=commitments:create({objective={kind="CAUSAL_OBSTRUCTION_RELOCATION"},governingBasis={responsibilityKey="obstruction-relocation:OR-1:AS-BLOCKER"}})
     local token=authorities:acquireObstructionRelocation("AS-BLOCKER",commitment.identity)
+    local playerClaimed=false
+    local playerActuationClaimAssessment={
+        isClaimedReference=function(_,referenceKey)
+            return referenceKey=="vehicle-root:9901" and playerClaimed==true
+        end
+    }
     local runtime={
         identities=ids,epochs=epochs,commitments=commitments,authorities=authorities,
+        playerActuationClaimAssessment=playerActuationClaimAssessment,
         boundedAuthority={
             validateRequest=function(_,request) return request.boundedAuthorityId=="BA-TEST",nil end,
             isCurrent=function(_,identity) return identity=="BA-TEST" end
@@ -381,7 +388,7 @@ local function genericControlFixture()
         authorityToken=token.identity,boundedAuthorityId="BA-TEST",operationalPictureEpoch=1,evidenceEpoch=1,
         effectiveActuationCompositionId="EC-GENERIC",preconditions={},invalidationConditions={}
     })
-    return control,request,vehicle,function(value) entered=value end,function() return completion end
+    return control,request,vehicle,function(value) entered=value end,function(value) playerClaimed=value end,function() return completion end
 end
 
 test("generic Obstruction Relocation Player Claim relinquishes activity context without post-claim actuation", function()
@@ -392,11 +399,15 @@ test("generic Obstruction Relocation Player Claim relinquishes activity context 
     getWorldTranslation=function() return 0,0,0 end
     worldDirectionToLocal=function(_,x,y,z) return x,y,z end
 
-    local control,request,vehicle,setEntered,completion=genericControlFixture()
+    local control,request,vehicle,setEntered,setPlayerClaimed,completion=genericControlFixture()
     local started=control:executeControlRequest(request,nil)
     equal(started,true)
     equal(vehicle.forceIsActive,true)
+    -- Passive entry is deliberately not the semantic claim trigger.
     setEntered(true)
+    control:update(16)
+    equal(completion(),nil)
+    setPlayerClaimed(true)
     control:update(16)
     equal(completion().status,"PLAYER_CLAIM")
     equal(vehicle.forceIsActive,false)
@@ -420,7 +431,7 @@ test("generic Obstruction Relocation owned drive failure neutralizes propulsion 
     getWorldTranslation=function() return 0,0,0 end
     worldDirectionToLocal=function(_,x,y,z) return x,y,z end
 
-    local control,request,vehicle,_,completion=genericControlFixture()
+    local control,request,vehicle,_,_,completion=genericControlFixture()
     local started=control:executeControlRequest(request,nil)
     equal(started,true)
     control:update(16)
