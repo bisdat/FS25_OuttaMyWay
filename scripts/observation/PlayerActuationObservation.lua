@@ -77,6 +77,26 @@ function Observation.install()
             return false,installReason
         end
     end
+    if Motorized==nil then
+        available=false
+        installReason="MOTORIZED_ACTION_CALLBACKS_UNAVAILABLE"
+        return false,installReason
+    end
+    local motorFunctions={
+        "actionEventToggleMotorState",
+        "actionEventSetMotorStateIgnition",
+        "actionEventSetMotorStateOn",
+        "actionEventSetMotorStateOff"
+    }
+    local motorHookCount=0
+    for _,functionName in ipairs(motorFunctions) do
+        if type(Motorized[functionName])=="function" then motorHookCount=motorHookCount+1 end
+    end
+    if motorHookCount==0 then
+        available=false
+        installReason="MOTORIZED_ACTION_CALLBACKS_UNAVAILABLE"
+        return false,installReason
+    end
 
     if type(Drivable.actionEventAccelerate)=="function" then
         Drivable.actionEventAccelerate=Utils.appendedFunction(
