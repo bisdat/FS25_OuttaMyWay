@@ -44,6 +44,13 @@ local function latestPlayerActuation(referenceKeyValue)
     return source.latest(referenceKeyValue)
 end
 
+local function playerActuationSourceStatus()
+    local source=OuttaMyWay.PlayerActuationObservation
+    if source==nil or type(source.isAvailable)~="function" then return false,"PLAYER_ACTUATION_OBSERVATION_UNAVAILABLE" end
+    local available,reason=source.isAvailable()
+    return available==true,reason
+end
+
 local function objectName(object)
     local ok, value = safeCall(object, "getName")
     if ok and value ~= nil and value ~= "" then return tostring(value) end
@@ -646,7 +653,10 @@ function Source:capture(mission, nowSeconds)
                 fieldActive = worker.fieldActive, aiActive = worker.aiActive, aiActiveObserved=worker.aiActiveObserved==true, observedActive = worker.activeObserved,
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
-            raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true, playerEnteredObserved=worker.playerEnteredObserved==true, latestCausalAction=latestPlayerActuation(worker.referenceKey)}
+            do
+                local causalAvailable,causalReason=playerActuationSourceStatus()
+                raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true, playerEnteredObserved=worker.playerEnteredObserved==true, causalActionSourceAvailable=causalAvailable, causalActionSourceReason=causalReason, latestCausalAction=latestPlayerActuation(worker.referenceKey)}
+            end
             local md=worker.motionSample or {}
             local li=worker.localIntent or {}
             local nativeFieldWork=nil
@@ -913,11 +923,14 @@ function Source:capture(mission, nowSeconds)
                 fieldActive=physical.fieldActive,aiActive=physical.aiActive,aiActiveObserved=physical.aiActiveObserved,observedActive=false,
                 blocked=physical.blocked,speedMps=physical.speedMps,name=physical.name
             }
+            local causalAvailable,causalReason=playerActuationSourceStatus()
             raw.playerControl[physical.referenceKey]={
                 playerControlled=physical.playerControlled,
                 playerPresent=physical.playerEntered,
                 playerEntered=physical.playerEntered,
                 playerEnteredObserved=physical.playerEnteredObserved,
+                causalActionSourceAvailable=causalAvailable,
+                causalActionSourceReason=causalReason,
                 latestCausalAction=latestPlayerActuation(physical.referenceKey)
             }
             if diagnosticActive then
