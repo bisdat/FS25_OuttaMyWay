@@ -249,13 +249,25 @@ For a Realised Motion Demand basis, fresh reassessment after any blocker relocat
 
 Causal Obstruction is Situation meaning only. Obstruction Relocation, Bounded Authority and Control remain downstream.
 
-### Player Claim and non-active classification
+### Player Actuation Claim and non-active classification
 
-For a non-active blocker, current player presence/entry may establish a **Player Claim** requiring OuttaMyWay to remain hands-off or relinquish physical authority.
+For a non-active blocker, Situation Assessment may establish a **Player Actuation Claim** only from positive causal player-command evidence. Passive seat entry, tab selection, current controlled-vehicle context, engine-running state, vehicle speed and final steering/throttle state do not independently establish the claim.
+
+Qualifying causal evidence includes positively observed player steering, accelerate/reverse, brake or explicit propulsion-state commands. Situation Assessment MUST preserve the distinction between the causal command and any resulting physical state; unsuccessful propulsion because the engine is stopped does not erase the command evidence.
+
+Once established, current player control/presence MAY retain the claim while the human continues controlling that physical subject without requiring continuous non-zero input. Loss of current player control releases the claim; any later OuttaMyWay action requires fresh Situation Assessment and fresh downstream authority.
 
 Vehicle ownership metadata MUST NOT substitute for current claim evidence.
 
-While the exact qualifying GIANTS Job Episode remains active, player presence alone MUST NOT reclassify that active participant as a non-active blocker.
+While the exact qualifying GIANTS Job Episode remains active, player presence or causal control input MUST NOT reclassify that active participant as a non-active blocker; Job Episode lifecycle remains authoritative for active-participant status.
+
+> **Player Actuation Claim Is Causal, Not Positional.**
+
+> **Control Context May Retain An Established Claim; It Does Not Create One.**
+
+Player Actuation Claim changes the authority classification of an already-recognised blocker, not the underlying obstruction geometry. If the claimed physical subject continues to intersect the beneficiary's current positively supported obstruction corridor/look-ahead, the Causal Obstruction remains current for downstream response selection.
+
+> **Player Claim Changes Authority, Not Obstruction Geometry.**
 
 ### Spatial Situation specialisations
 
