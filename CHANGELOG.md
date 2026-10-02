@@ -1,3 +1,26 @@
+# v0.4.9.0 PATCH CHECKPOINT — Representation, Recovery and Passage Resilience Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #414 (`b617960fd8c2ede6f5d4ad866128d0eeb4ae3650`), carrying field-validated TEST `0.4.8.13`.
+
+**Version rationale:** owner-selected PATCH checkpoint under the current pre-1.0 policy. The accepted delta since `0.4.8.0` strengthens the existing 0.4 responsibility-oriented architecture across Maximum Productive A8 evidence, Recovery Strategy Exhausted handling, articulated reverse steering and realised-origin Cooperative Passage reassessment. Although Bounded Bypass is represented as its own Resolution specialisation, it remains a bounded continuation of the existing Recovery/Resolution model within the current 0.4 capability epoch rather than an owner-selected MINOR epoch.
+
+**PATCH checkpoint boundary:** this increment changes product version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted and field-validated `0.4.8.13` baseline.
+
+**Validated plateau summary:**
+- PR #403 / Issue #398 corrected the **Maximum Productive A8 Envelope** evidence cascade so productive-width observation is not suppressed by an earlier articulation classification. Intrinsic GIANTS AI-marker width, working-width evidence and contradictory physical evidence now preserve the non-underestimating requirement without promoting DISC into exact productive width authority. Reality controls passed TS015, TS004 and TS019.
+- PRs #407/#408/#410/#409 / Issue #400 discovered, specified and implemented **Bounded Bypass** as a separate successor Resolution after Recovery Strategy Exhausted. The accepted fixed dogleg is bounded to one Transit request, reverse Launch Separation, forward-diagonal Lateral Departure, Bypass Advance, Post-Blockage Axis Rejoin and GIANTS handback. **Bypass Acts On The Blockage Theatre, Not The Blocker Object** and **Axis Rejoin != Axis Restoration** remain governing discoveries. TEST `0.4.8.10` TS016 passed.
+- PR #411 / Issue #336 separated BWR movement authority from articulated reverse steering look-through. The Recovery Anchor / Recovery Return Region remains the movement and completion bound while GIANTS receives a universal **40 m Reverse Steering Horizon**. TEST `0.4.8.11` TS016 supplied two successful BWR witnesses without the prior reverse jackknife/divergence.
+- PR #414 / Issue #393 closed the realised-origin Cooperative Passage support boundary. **Prospective Guide Preflight != Realised Execution Guide Preflight**; after Transit settlement, retained and replacement arrangements are reassessed against current pair sweep plus execution constraints, and a rejected arrangement is Constraint evidence rather than an automatic terminal Resolution verdict. The existing 50/50, 25/75, 75/25, 0/100 and 100/0 spatial allocations remain available. TEST `0.4.8.13` TS004 completed Passage successfully after realised-origin reassessment.
+- The accepted TS004 result also records **Bounded Field-Margin Encroachment != Extra-Field Passage**: an approximately 0.5–1 m immediate Deere-side margin excursion was accepted as plausible local Passage behaviour while off-field steering targets, remote extra-field relocation and arbitrary extra-field travel remain unauthorised. No numeric overhang threshold was invented from the single witness.
+- PRs #405/#406 recorded FS25 1.24 engine-source compatibility findings and corrected cached AI-marker-width wording. These changes sharpen engine-knowledge provenance without changing runtime semantics.
+- Issues #398, #400, #336 and #393 are closed as completed.
+
+**Validation basis:** the accepted TEST lineage includes targeted GIANTS Reality validation for Maximum Productive A8 controls, Bounded Bypass, the BWR Reverse Steering Horizon and the constrained TS004 Cooperative Passage theatre. Blocking offline validation remained green on the accepted behavioural heads, including PR #411 Offline Validation #1190 and PR #414 Offline Validation #1196, before their merges to `main`.
+
+**Known separable work:** current open Issues remain independent of this checkpoint, including #396 opposed-corridor / Passage-identification continuity, #399 bootstrap representation-cache refresh cost, #404 same-pair tactical-purpose composition and failed-Passage Bubble Bullet Time lifetime, #412 Player Claim versus Completed Worker Relocation, #228 adversarial stress validation, #89 player-facing HUD messaging and #86 performance/frame-pacing evidence.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. A future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.8.0 PATCH CHECKPOINT — Recovery Bubble and Spatial Coordination Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #397 (`be65ba3b72092111a27e4482e401d153b4e4ec8c`), carrying field-validated TEST `0.4.7.10`.
