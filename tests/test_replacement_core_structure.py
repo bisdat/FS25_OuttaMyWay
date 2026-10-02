@@ -1096,8 +1096,9 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     assert 'local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"' in initial
     assert 'local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"' in initial
     assert 'local fixedSharedCategory2=bridge.admissionKind=="SHARED_CATEGORY_2_DEMAND"' in initial
+    assert 'local fixedClaimedObstruction=bridge.admissionKind=="CLAIMED_OBSTRUCTION"' in initial
     assert 'local fixedPassageApproach=bridge.admissionKind=="PASSAGE_APPROACH"' in initial
-    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedSharedCategory2 or fixedPassageApproach" in initial
+    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedSharedCategory2 or fixedClaimedObstruction or fixedPassageApproach" in initial
     assert f"if not fixed then\n        envelope,envelopeReason={establish_call}\n    end" in initial
     assert "if fixed then" in initial
     assert "initialCap=bridge.fixedRegulationSpeedKmh" in initial
@@ -1989,7 +1990,8 @@ def test_causal_obstruction_recognition_stays_upstream_of_control():
     assert "causalObstructionKnowledge" in picture
 
     assert 'classification="NON_ACTIVE_UNCLAIMED"' in causal
-    assert 'classification="NON_ACTIVE_PLAYER_CLAIMED"' in causal
+    assert 'classification="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED"' in causal
+    assert 'classification="NON_ACTIVE_PLAYER_CLAIMED"' not in causal
     assert 'classification="ACTIVE_GIANTS_AI"' in causal
     assert "nativeBlockedRequired=false" in causal
 
