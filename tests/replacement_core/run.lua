@@ -8727,6 +8727,48 @@ test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-k
     equal(lease.currentCapKmh,1)
 end)
 
+test("Claimed Obstruction quiescent lease reactivates from fresh Causal Obstruction support",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    authority.regulationControl={executeControlRequest=function() return true end}
+    local lease={
+        commitmentId="CM-CLAIMED-REACTIVATE",
+        conflictIdentity="causal-obstruction:OR-1:AS-BLOCKER->AS-BENEFICIARY",
+        admissionKind="CLAIMED_OBSTRUCTION",
+        regulatedAssemblyId="AS-BENEFICIARY",regulatedReferenceKey="vehicle-root:beneficiary",
+        protectedAssemblyId="AS-BLOCKER",protectedReferenceKey="vehicle-root:blocker",
+        governingPurpose="PRESERVE_PLAYER_CLAIMED_CAUSAL_OBSTRUCTION_INTENT_REVELATION",
+        ownerTag="CLAIMED_OBSTRUCTION_INTENT_REVELATION",
+        actuationActive=false,fixedClaimedObstruction=true
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity=lease.conflictIdentity,
+        blockerAssemblyId="AS-BLOCKER",beneficiaryAssemblyId="AS-BENEFICIARY",
+        blockerClassification="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED",
+        relocationEligible=false
+    }
+    local candidate={
+        identity="CA-CLAIMED-REACTIVATE",capability="REGULATE_SPEED",
+        evidenceBasis={actionSpaceRegulationBridge={
+            conflictIdentity=lease.conflictIdentity,admissionKind="CLAIMED_OBSTRUCTION",
+            regulatedAssemblyId="AS-BENEFICIARY",regulatedReferenceKey="vehicle-root:beneficiary",
+            protectedAssemblyId="AS-BLOCKER",protectedReferenceKey="vehicle-root:blocker",
+            fixedRegulationSpeedKmh=1,
+            governingPurpose=lease.governingPurpose
+        }}
+    }
+    local evaluated={decision={selectedCandidateId=candidate.identity,epoch=1},candidates={candidate}}
+    local picture={causalObstructionKnowledge={relation},opposedCorridorKnowledge={},spatialConstraintKnowledge={}}
+    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="CLAIMED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"}
+
+    local result=authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semantic)
+    equal(result.status,"ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED")
+    equal(result.applicationContext,"REACTIVATION")
+    equal(result.regulatedAssemblyId,"AS-BENEFICIARY")
+    equal(result.commitmentId,"CM-CLAIMED-REACTIVATE")
+end)
+
 test("Forward Intersection unresolved evidence cannot settle or release as positive dissolution",function()
     local runtime=OuttaMyWay.Runtime.new()
     local record=runtime.commitments:create({
