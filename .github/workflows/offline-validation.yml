@@ -154,6 +154,7 @@ jobs:
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua
           "$LUAJIT_BIN" tests/replacement_core/configuration.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
+          "$LUAJIT_BIN" tests/replacement_core/player_control_interlock.lua
           "$LUAJIT_BIN" tests/replacement_core/prospective_decision_admissibility.lua
 
       - name: Run focused obstruction relocation contract

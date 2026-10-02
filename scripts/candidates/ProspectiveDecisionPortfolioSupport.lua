@@ -71,6 +71,18 @@ local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,tar
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
 end
 
+local function playerControlledObstructions(picture)
+    local result={}
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.causalObstructionKnowledge or {}) do
+        if relation.blockerClassification=="NON_ACTIVE_PLAYER_CONTROLLED"
+            and relation.positiveDissolution~=true and relation.positiveSupersession~=true then
+            result[#result+1]=relation
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
 local function sharedCornerSituations(picture)
     local result={}
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
@@ -155,6 +167,20 @@ function Support:publishDecisionPicture(picture,snapshot)
 
     local relocation=self.obstructionSupport and self.obstructionSupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch) or nil
     if relocation~=nil then appendGroup(state,relocation,"OBSTRUCTION_RELOCATION","obstruction-relocation",1) end
+
+    local playerControlled=playerControlledObstructions(picture)
+    if #playerControlled==1 then
+        local group,reason=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{kind="PLAYER_CONTROLLED_OBSTRUCTION",relationshipIdentity=playerControlled[1].identity},targetPictureId,targetEpoch)
+        if modeOfGroup(group)=="ACTION_SPACE_REGULATION" then
+            appendGroup(state,group,"PLAYER_CONTROLLED_OBSTRUCTION","player-controlled-obstruction:"..tostring(playerControlled[1].identity),1)
+        elseif reason~=nil then
+            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"PLAYER_CONTROLLED_OBSTRUCTION_FAIL_CLOSED",reason,1)
+        end
+    elseif #playerControlled>1 then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+            "PLAYER_CONTROLLED_OBSTRUCTION_FAIL_CLOSED","MULTIPLE_PLAYER_CONTROLLED_OBSTRUCTION_CONTEXTS",1)
+    end
 
     local recovery,recoveryReason=nil,nil
     if self.recoverySupport~=nil then

@@ -208,6 +208,11 @@ local function positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficia
     return realisedMotionDemandConflict(blockerPhysical,realisedDemand)
 end
 
+local function supportedCorridorEvaluable(beneficiaryFuture,realisedDemand)
+    if type(beneficiaryFuture)=="table" and OuttaMyWay.ValueRecord.length(beneficiaryFuture.alternatives or {})>0 then return true end
+    return type(realisedDemand)=="table" and realisedDemand.positive==true
+end
+
 local function sortedKeys(map)
     local result={}
     for key in OuttaMyWay.ValueRecord.pairs(map or {}) do result[#result+1]=key end
@@ -215,12 +220,22 @@ local function sortedKeys(map)
     return result
 end
 
+local function copyRelationEnvelope(record)
+    local result={}
+    for key,value in OuttaMyWay.ValueRecord.pairs(record or {}) do
+        result[key]=value
+    end
+    return result
+end
+
+
 function Assessment.new(jobEpisodes)
-    return setmetatable({jobEpisodes=jobEpisodes,lastSignature=nil},Assessment)
+    return setmetatable({jobEpisodes=jobEpisodes,lastSignature=nil,playerControlledRelationsByIdentity={}},Assessment)
 end
 
 function Assessment:reset()
     self.lastSignature=nil
+    self.playerControlledRelationsByIdentity={}
 end
 
 function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,realisedMotionDemandKnowledge)
@@ -230,6 +245,8 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
     local references=referencesByAssembly(snapshot)
     local activeEpisodes,endedEpisodes=jobEpisodesByAssembly(self.jobEpisodes)
     local records={}
+    local currentRelationsByIdentity={}
+    local currentPlayerControlledRelations={}
 
     for _,beneficiaryAssemblyId in OuttaMyWay.ValueRecord.ipairs(sortedKeys(activeOperationMemberSet)) do
         local beneficiaryPhysical=physical[beneficiaryAssemblyId]
@@ -274,17 +291,17 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             classification="GIANTS_AI_ACTIVE_UNRESOLVED"
                         elseif not nonActiveActivityResolved then
                             classification="ACTIVITY_UNRESOLVED"
-                        elseif type(player)~="table" or player.playerEnteredObserved~=true then
-                            classification="PLAYER_CLAIM_UNRESOLVED"
-                        elseif player.playerEntered==true then
-                            classification="NON_ACTIVE_PLAYER_CLAIMED"
+                        elseif type(player)~="table" then
+                            classification="PLAYER_CONTROL_UNRESOLVED"
+                        elseif player.playerControlled==true then
+                            classification="NON_ACTIVE_PLAYER_CONTROLLED"
                         else
                             classification="NON_ACTIVE_UNCLAIMED"
                             relocationEligible=true
                         end
 
                         local operationId=operationByAssembly and operationByAssembly[beneficiaryAssemblyId] or nil
-                        records[#records+1]={
+                        local record={
                             identity="causal-obstruction:"
                                 ..tostring(operationId or "no-operation")..":"
                                 ..tostring(blockerAssemblyId).."->"..tostring(beneficiaryAssemblyId),
@@ -307,10 +324,14 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                                     or (currentAiInactiveObserved and "CURRENT_GIANTS_INACTIVITY_OBSERVATION" or nil),
                                 source="JobEpisodeAdmission+ObservationSnapshot.aiStates"
                             },
-                            playerClaimEvidence={
+                            playerControlEvidence={
+                                playerControlled=type(player)=="table" and player.playerControlled==true or false,
+                                playerPresent=type(player)=="table" and player.playerPresent==true or false,
                                 playerEntered=type(player)=="table" and player.playerEntered==true or false,
                                 playerEnteredObserved=type(player)=="table" and player.playerEnteredObserved==true or false,
-                                source="ObservationSnapshot.playerControl"
+                                source="ObservationSnapshot.playerControl",
+                                authority="CURRENT_PLAYER_CONTROL_CONTEXT_ONLY",
+                                persistentClaim=false
                             },
                             obstructionEvidence=evidence,
                             provenance={
@@ -322,11 +343,82 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                                 nativeBlockedRequired=false
                             }
                         }
+                        records[#records+1]=record
+                        currentRelationsByIdentity[record.identity]=record
+                        if classification=="NON_ACTIVE_PLAYER_CONTROLLED" then
+                            currentPlayerControlledRelations[record.identity]=record
+                        end
                     end
                 end
             end
         end
     end
+
+    -- Player-control exclusion is transient. Preserve one-cycle positive
+    -- supersession/dissolution evidence so Regulation retires before any fresh
+    -- Obstruction Relocation authority can be reacquired.
+    for identity,previous in OuttaMyWay.ValueRecord.pairs(self.playerControlledRelationsByIdentity or {}) do
+        if currentPlayerControlledRelations[identity]==nil then
+            local blockerPhysical=physical[previous.blockerAssemblyId]
+            local beneficiaryPhysical=physical[previous.beneficiaryAssemblyId]
+            local beneficiaryFuture=future[previous.beneficiaryAssemblyId]
+            local demand=realisedDemand[previous.beneficiaryAssemblyId]
+            local blockerReferenceKey=previous.blockerAssemblyReferenceKey
+            local player=blockerReferenceKey and snapshot.playerControl and snapshot.playerControl[blockerReferenceKey] or nil
+            local beneficiaryStillActive=activeOperationMemberSet[previous.beneficiaryAssemblyId]==true
+
+            if type(player)=="table" and player.playerControlled~=true then
+                local current=currentRelationsByIdentity[identity]
+                if current~=nil then
+                    current.positiveSupersession=true
+                    current.playerControlReleaseEvidence={
+                        kind="PLAYER_CONTROL_RELEASED",
+                        authority="POSITIVE_AUTHORITY_SUPERSESSION",
+                        source="ObservationSnapshot.playerControl",
+                        predecessorBlockerClassification="NON_ACTIVE_PLAYER_CONTROLLED"
+                    }
+                else
+                    local released=copyRelationEnvelope(previous)
+                    released.classification="PLAYER_CONTROLLED_OBSTRUCTION_CONTROL_RELEASED"
+                    released.relationshipStatus="SUPERSEDED"
+                    released.positiveSupersession=true
+                    released.relocationEligible=false
+                    released.obstructionEvidence={
+                        kind="PLAYER_CONTROL_RELEASED",
+                        authority="POSITIVE_AUTHORITY_SUPERSESSION",
+                        source="ObservationSnapshot.playerControl"
+                    }
+                    released.provenance={
+                        source="CausalObstructionAssessment",
+                        authority="POSITIVE_PLAYER_CONTROL_RELEASE_SUPERSESSION",
+                        predecessorIdentity=identity
+                    }
+                    records[#records+1]=released
+                end
+            elseif type(player)=="table" and player.playerControlled==true
+                and beneficiaryStillActive and blockerPhysical~=nil and beneficiaryPhysical~=nil
+                and supportedCorridorEvaluable(beneficiaryFuture,demand)
+                and positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficiaryFuture,demand)==nil then
+                local dissolved=copyRelationEnvelope(previous)
+                dissolved.classification="PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED"
+                dissolved.relationshipStatus="NEGATIVE"
+                dissolved.positiveDissolution=true
+                dissolved.relocationEligible=false
+                dissolved.obstructionEvidence={
+                    kind="CURRENT_SUPPORTED_CORRIDOR_CLEAR",
+                    authority="POSITIVE_PLAYER_CONTROLLED_OBSTRUCTION_DISSOLUTION",
+                    source="CausalObstructionAssessment"
+                }
+                dissolved.provenance={
+                    source="CausalObstructionAssessment",
+                    authority="POSITIVE_PLAYER_CONTROLLED_OBSTRUCTION_DISSOLUTION",
+                    predecessorIdentity=identity
+                }
+                records[#records+1]=dissolved
+            end
+        end
+    end
+    self.playerControlledRelationsByIdentity=currentPlayerControlledRelations
 
     table.sort(records,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
 

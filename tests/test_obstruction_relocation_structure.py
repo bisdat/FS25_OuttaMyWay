@@ -114,7 +114,7 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
 
     assert "getCurrentPhysicalObject(referenceKey)" in control
-    assert "isPlayerClaimed(vehicle)" in control
+    assert "isPlayerControlled(vehicle)" in control
     assert "isSourceReactivated(vehicle)" in control
     assert "acquireVehicleActivityContext" in control
     assert "driveInWorldDirection" in control
@@ -198,7 +198,7 @@ def test_issue87_obstruction_relocation_is_core_capability_not_optional_configur
     assert 'blockerClassification~="NON_ACTIVE_UNCLAIMED"' in candidate
     assert 'relation.relocationEligible~=true' in candidate
     assert 'historicalJobProvenanceRequired=false' in candidate
-    assert '"PLAYER_CLAIM"' in candidate
+    assert '"PLAYER_CONTROL"' in candidate
     assert '"SOURCE_AI_REACTIVATION"' in candidate
 
 def test_issue87_obstruction_relocation_bounds_live_with_their_narrowest_owners():

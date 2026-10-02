@@ -61,6 +61,33 @@ Control may act only on the resulting current permission.
 
 > **Responsibility Persistence != Actuation Persistence.**
 
+### Player-Controlled Obstruction Regulation
+
+When Situation Assessment positively establishes both:
+
+- a current Causal Obstruction in which an active supported beneficiary's current obstruction corridor/look-ahead intersects a non-active physical blocker; and
+- current GIANTS player control over that blocker,
+
+the supported response is **Player-Controlled Obstruction Regulation**.
+
+This Regulation:
+
+- MUST NOT acquire movement, steering, configuration or propulsion authority over the player-controlled blocker;
+- regulates only the active AI beneficiary whose supported corridor remains obstructed;
+- uses the exact **1 km/h Intent-Revelation Creep** where Bounded Authority confirms the effect is currently permitted;
+- preserves GIANTS productive routing and steering for the beneficiary;
+- remains justified by fresh current obstruction geometry plus current player-control context, not by historical completed-worker provenance;
+- releases when fresh geometry positively establishes that the player-controlled blocker no longer intersects the supported obstruction corridor; and
+- terminates/supersedes when current player control ends, after which fresh Situation Assessment may support ordinary Obstruction Relocation if the non-active unclaimed blocker still obstructs the beneficiary.
+
+The player may therefore choose to continue blocking their own worker; OuttaMyWay constrains the beneficiary temporally but does not move the human-controlled object.
+
+> **Player-Controlled Blocker -> Regulate Beneficiary, Do Not Move Blocker.**
+
+> **Control Release Requires Fresh Assessment, Not Stale Actuation Resumption.**
+
+Player-Controlled Obstruction Regulation is an ordinary Regulation responsibility specialised by its governing Situation. It does not create a new obstruction geometry model and does not inherit or resume any pre-control Obstruction Relocation actuation.
+
 ## Regulation lifecycle
 
 Regulation has weak persistence relative to Resolution Commitment. Its semantic lifecycle is:

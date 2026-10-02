@@ -249,13 +249,30 @@ For a Realised Motion Demand basis, fresh reassessment after any blocker relocat
 
 Causal Obstruction is Situation meaning only. Obstruction Relocation, Bounded Authority and Control remain downstream.
 
-### Player Claim and non-active classification
+### Player Control Interlock and non-active classification
 
-For a non-active blocker, current player presence/entry may establish a **Player Claim** requiring OuttaMyWay to remain hands-off or relinquish physical authority.
+For a non-active blocker, current positive GIANTS player-control context establishes a **Player Control Interlock**.
 
-Vehicle ownership metadata MUST NOT substitute for current claim evidence.
+The interlock is deliberately transient:
 
-While the exact qualifying GIANTS Job Episode remains active, player presence alone MUST NOT reclassify that active participant as a non-active blocker.
+- it exists only while the blocker is currently player-controlled;
+- it does not infer whether the player intends to move, observe or remain stationary;
+- it does not survive tab-out/control release; and
+- control release does not revive any earlier OuttaMyWay actuation.
+
+A blocker under the interlock is not eligible for autonomous Obstruction Relocation. Any current relocation authority over that blocker is superseded and must be retired. A later relocation requires fresh Situation Assessment and freshly acquired downstream authority.
+
+Vehicle ownership metadata MUST NOT substitute for current player-control evidence.
+
+While the exact qualifying GIANTS Job Episode remains active, player control does not reclassify that active participant as a non-active blocker; Job Episode lifecycle remains authoritative for active-participant status.
+
+> **Player Control Interlock Is Current, Not Historical.**
+
+> **Control Release Removes the Interlock; It Does Not Resume Old Authority.**
+
+Player control changes the authority classification of an already-recognised blocker, not the underlying obstruction geometry. If the player-controlled physical subject continues to intersect the beneficiary's current positively supported obstruction corridor/look-ahead, the Causal Obstruction remains current for downstream response selection.
+
+> **Player Control Changes Authority, Not Obstruction Geometry.**
 
 ### Spatial Situation specialisations
 

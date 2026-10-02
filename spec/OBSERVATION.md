@@ -50,6 +50,20 @@ Those domains are not semantic classifications merely because they are grouped i
 
 Diagnostic projections MAY accompany Observation when they remain clearly non-authoritative. Diagnostic convenience MUST NOT alter the raw evidence contract or silently become Situation meaning.
 
+### Player-control causal evidence
+
+Observation MAY publish current player-presence and player-control context for a physical subject.
+
+For the Player Control Interlock, the relevant evidence is current GIANTS control context: whether that physical root vehicle is presently the player-controlled vehicle / reports current controlled state. Observation does not infer deliberate player intent from that context.
+
+Player-control context is authoritative only for the narrow mechanical exclusion question: OuttaMyWay must not concurrently actuate a vehicle while GIANTS currently owns the player-control path. It does not create historical Player Claim state and does not survive a later Observation in which control has been released.
+
+Engine state, vehicle motion, steering angle and ownership metadata do not substitute for current player-control context.
+
+> **Current Player Control != Historical Player Intent.**
+
+> **Control Context May Exclude Actuation Without Becoming Persistent Claim State.**
+
 ### Identity and reference rules
 
 External/runtime reference keys are correlation inputs unless another authority has established semantic identity.
@@ -164,6 +178,7 @@ Control may produce physical outcomes. Those outcomes become evidence only by re
 | [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) | `REALISES` |
 | [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) | `REALISES` |
+| [`scripts/observation/CurrentPlayerControlObservation.lua`](../scripts/observation/CurrentPlayerControlObservation.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `REALISES` |
 | [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) | `REALISES` |
 | [`scripts/observation/LiveInteractionObservation.lua`](../scripts/observation/LiveInteractionObservation.lua) | `REALISES` |
@@ -182,6 +197,7 @@ Primary current implementation routes include:
 - [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) — publication boundary assigning Observation identity/epoch while preserving raw evidence limits;
 - [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — live GIANTS/runtime evidence composition;
 - [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) — current non-semantic Physical Assembly source evidence;
+- [`scripts/observation/CurrentPlayerControlObservation.lua`](../scripts/observation/CurrentPlayerControlObservation.lua) — shared current GIANTS player-control evidence predicate used by Observation and the downstream mechanical interlock;
 - [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) — current pose acquisition plus purpose-scoped representation-evidence publication; its Assessment Representation role is governed separately;
 - [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) — current GIANTS AI-job source evidence;
 - [`scripts/observation/LiveInteractionObservation.lua`](../scripts/observation/LiveInteractionObservation.lua) — current interaction source evidence;

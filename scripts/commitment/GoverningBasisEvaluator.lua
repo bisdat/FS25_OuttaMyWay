@@ -13,6 +13,7 @@ local terminalEvents = {
     CENTROID_STRATEGY_EXHAUSTED={disposition="FAILED",cause="CENTROID_STRATEGY_EXHAUSTED",basisCessation=false},
     NEW_AUTHORITATIVE_INTENT={disposition="SUPERSEDED_BY_NEW_INTENT",cause="NEW_AUTHORITATIVE_INTENT",basisCessation=true},
     PLAYER_CLAIM={disposition="SUPERSEDED_BY_NEW_INTENT",cause="PLAYER_CLAIM",basisCessation=true},
+    PLAYER_CONTROL={disposition="SUPERSEDED_BY_NEW_INTENT",cause="PLAYER_CONTROL",basisCessation=true},
     SOURCE_INTENT_TERMINATED={disposition="CANCELLED_BY_SOURCE_INTENT_TERMINATION",cause="SOURCE_INTENT_TERMINATED",basisCessation=true},
     PLAYER_TAKEOVER={disposition="CANCELLED_BY_SOURCE_INTENT_TERMINATION",cause="PLAYER_TAKEOVER",basisCessation=true},
     GIANTS_ABORT={disposition="CANCELLED_BY_SOURCE_INTENT_TERMINATION",cause="GIANTS_ABORT",basisCessation=true},

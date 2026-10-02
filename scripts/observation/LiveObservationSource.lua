@@ -25,6 +25,17 @@ local function referenceKey(object)
     return "vehicle-root:" .. tostring(object and (object.rootNode or object) or "nil")
 end
 
+local function rootVehicle(object)
+    if isDeleted(object) then return nil end
+    local ok,root=safeCall(object,"getRootVehicle")
+    if ok and not isDeleted(root) then return root end
+    return object
+end
+
+local function isPlayerControlled(mission,object)
+    return OuttaMyWay.CurrentPlayerControlObservation.isControlled(mission,object)
+end
+
 local function objectName(object)
     local ok, value = safeCall(object, "getName")
     if ok and value ~= nil and value ~= "" then return tostring(value) end
@@ -381,13 +392,14 @@ function Source:capture(mission, nowSeconds)
             track.fieldActive = fieldActive; track.aiActive = aiActive; track.aiActiveObserved=aiActiveObserved; track.hasFieldWorker = hasFieldWorker
             track.nativeJob = job; track.nativeJobSource = jobSource; track.nativeJobToken = nativeToken; track.sourceJobToken = sourceToken
             local okEnteredActive,enteredActive=safeCall(object,"getIsEntered")
-            local activePlayerPresent=(mission.controlledVehicle==object) or (okEnteredActive and enteredActive==true)
+            local activePlayerControlled=isPlayerControlled(mission,object)
+            local activePlayerPresent=activePlayerControlled or (okEnteredActive and enteredActive==true)
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionSample=motionSample,
                 fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
                 fieldActive = fieldActive, aiActive = aiActive, aiActiveObserved=aiActiveObserved, hasFieldWorker = hasFieldWorker, activeObserved = true,
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
-                playerPresent = activePlayerPresent, playerEntered=activePlayerPresent, playerEnteredObserved=okEnteredActive, playerControlled = false, blocked = blockedState(object),
+                playerPresent = activePlayerPresent, playerEntered=okEnteredActive and enteredActive==true, playerEnteredObserved=okEnteredActive, playerControlled = activePlayerControlled, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
                 sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, assemblyRepresentation=track.assemblyRepresentation, localIntent=track.localIntent,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
@@ -399,8 +411,8 @@ function Source:capture(mission, nowSeconds)
             -- The retained track supplies one raw GIANTS lifecycle proof: whether
             -- the admitted source job is now conclusively ended. Job Episode
             -- admission consumes that proof directly; no parallel termination-cause
-            -- flag is retained. Post-completion player control remains subject to the Player Claim boundary.
-            local playerControlled = playerEntered
+            -- flag is retained. Post-completion player control remains subject to the transient Player Control Interlock.
+            local playerControlled = isPlayerControlled(mission,object)
             local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
             if sourceJobEndEvidence.observed==true then
                 self:_dischargeFieldWorldSuccessionBridge(track,"SUCCESSOR_JOB_ENDED")
@@ -440,9 +452,8 @@ function Source:capture(mission, nowSeconds)
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
             -- Genuine source completion ends Operation membership but not
-            -- physical observability. Retain the completed assembly until Player
-            -- Claim or a fresh GIANTS activation supersedes this terminal episode.
-            if playerEntered and sourceJobEndEvidence.observed==true then removeAfterCapture[ref] = true end
+            -- physical observability. Player Actuation Claim changes downstream
+            -- authority; it does not remove the physical blocker from Observation.
         end
     end
 
@@ -627,7 +638,12 @@ function Source:capture(mission, nowSeconds)
                 fieldActive = worker.fieldActive, aiActive = worker.aiActive, aiActiveObserved=worker.aiActiveObserved==true, observedActive = worker.activeObserved,
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
-            raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true, playerEnteredObserved=worker.playerEnteredObserved==true}
+            raw.playerControl[worker.referenceKey] = {
+                playerControlled=worker.playerControlled==true,
+                playerPresent=worker.playerPresent==true,
+                playerEntered=worker.playerEntered==true,
+                playerEnteredObserved=worker.playerEnteredObserved==true
+            }
             local md=worker.motionSample or {}
             local li=worker.localIntent or {}
             local nativeFieldWork=nil
@@ -895,10 +911,10 @@ function Source:capture(mission, nowSeconds)
                 blocked=physical.blocked,speedMps=physical.speedMps,name=physical.name
             }
             raw.playerControl[physical.referenceKey]={
-                playerControlled=physical.playerControlled,
-                playerPresent=physical.playerEntered,
-                playerEntered=physical.playerEntered,
-                playerEnteredObserved=physical.playerEnteredObserved
+                playerControlled=physical.playerControlled==true,
+                playerPresent=physical.playerEntered==true,
+                playerEntered=physical.playerEntered==true,
+                playerEnteredObserved=physical.playerEnteredObserved==true
             }
             if diagnosticActive then
                 raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={

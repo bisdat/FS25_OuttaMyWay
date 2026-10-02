@@ -1096,8 +1096,9 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     assert 'local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"' in initial
     assert 'local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"' in initial
     assert 'local fixedSharedCategory2=bridge.admissionKind=="SHARED_CATEGORY_2_DEMAND"' in initial
+    assert 'local fixedPlayerControlledObstruction=bridge.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"' in initial
     assert 'local fixedPassageApproach=bridge.admissionKind=="PASSAGE_APPROACH"' in initial
-    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedSharedCategory2 or fixedPassageApproach" in initial
+    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedSharedCategory2 or fixedPlayerControlledObstruction or fixedPassageApproach" in initial
     assert f"if not fixed then\n        envelope,envelopeReason={establish_call}\n    end" in initial
     assert "if fixed then" in initial
     assert "initialCap=bridge.fixedRegulationSpeedKmh" in initial
@@ -1132,7 +1133,10 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
         "actionSpaceRegulationRepresentation", "ACTION_SPACE_REGULATION",
         "actionSpaceRegulationBridge", "ACTION_SPACE_REGULATION",
         "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",
-            '"cooperative-passage:")..tostring(item.relation.identity)',
+        "local function actionSpaceRequirementKey(item)",
+        '"player-controlled-obstruction-regulation:"..tostring(item.relation.identity)',
+        '"forward-intersection-regulation:"..tostring(item.relation.identity)',
+        '"cooperative-passage:"..tostring(item.relation.identity)',
         'controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE"',
     ):
         assert token in support
@@ -1239,7 +1243,7 @@ def test_v47118_obstruction_relocation_diagnostic_steering_telemetry_and_owned_e
         "STEERING_NEXT_UPDATE",
         "STEERING_HEARTBEAT",
         "ACTUATION_NEUTRALIZED",
-        "PLAYER_CLAIM_HIGHER_AUTHORITY",
+        "PLAYER_CONTROL_HIGHER_AUTHORITY",
         "SOURCE_INTENT_REACTIVATED_HIGHER_AUTHORITY",
     ):
         assert token in control
@@ -1989,7 +1993,8 @@ def test_causal_obstruction_recognition_stays_upstream_of_control():
     assert "causalObstructionKnowledge" in picture
 
     assert 'classification="NON_ACTIVE_UNCLAIMED"' in causal
-    assert 'classification="NON_ACTIVE_PLAYER_CLAIMED"' in causal
+    assert 'classification="NON_ACTIVE_PLAYER_CONTROLLED"' in causal
+    assert 'classification="NON_ACTIVE_PLAYER_CLAIMED"' not in causal
     assert 'classification="ACTIVE_GIANTS_AI"' in causal
     assert "nativeBlockedRequired=false" in causal
 

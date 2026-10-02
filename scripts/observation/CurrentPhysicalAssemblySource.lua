@@ -86,14 +86,13 @@ local function observeCurrentState(root,mission)
     local okEntered,entered=safeCall(root,"getIsEntered")
     local specFieldActive=root.spec_aiFieldWorker~=nil and root.spec_aiFieldWorker.isActive==true
     local blocked=root.spec_aiFieldWorker~=nil and root.spec_aiFieldWorker.isBlocked==true
-    local controlledRoot=rootVehicle(mission and mission.controlledVehicle or nil)
     return {
         aiActive=okAI and aiActive==true or false,
         aiActiveObserved=okAI==true,
         fieldActive=(okField and fieldActive==true) or specFieldActive,
         playerEntered=okEntered and entered==true or false,
         playerEnteredObserved=okEntered==true,
-        playerControlled=controlledRoot==root,
+        playerControlled=OuttaMyWay.CurrentPlayerControlObservation.isControlled(mission,root),
         blocked=blocked,
         speedMps=math.abs(tonumber(root.lastSpeedReal) or 0)*1000
     }

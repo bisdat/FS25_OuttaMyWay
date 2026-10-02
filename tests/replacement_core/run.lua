@@ -4,6 +4,7 @@ local function load(relativePath) dofile(root .. "/" .. relativePath) end
 OuttaMyWay = {}
 ClassIds={SHAPE=1}
 getHasClassId=function() return true end
+
 load("scripts/config.lua")
 load("scripts/publication/LogPublication.lua")
 OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function()
@@ -43,6 +44,7 @@ load("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
 load("scripts/identity/FieldWorldEquivalenceAuthority.lua")
 load("scripts/observation/RuntimeObservationAdapter.lua")
 load("scripts/observation/LiveAIJobEvidence.lua")
+load("scripts/observation/CurrentPlayerControlObservation.lua")
 load("scripts/observation/CurrentPhysicalAssemblySource.lua")
 load("scripts/observation/CurrentPhysicalPoseSource.lua")
 load("scripts/observation/LocalIntentObservation.lua")
@@ -1662,6 +1664,26 @@ test("Governing Basis preserves intent through non-terminal evidence",function()
     end
 end)
 
+test("Obstruction Relocation Player Control completion settles through Governing Basis",function()
+    local runtime=newDecisionRuntime()
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="CAUSAL_OBSTRUCTION_RELOCATION"},
+        governingBasis={responsibilityKey="obstruction-relocation:test-player-control"}
+    })
+    runtime:onObstructionRelocationCompletion({
+        status="PLAYER_CONTROL",
+        commitmentId=admitted.commitment.identity,
+        relocationKey="obstruction-relocation:test-player-control",
+        evidence={kind="PLAYER_CONTROL_INTERLOCK",playerControlled=true}
+    })
+    local terminal=runtime.commitments:get(admitted.commitment.identity)
+    equal(terminal.state,"SUPERSEDED_BY_NEW_INTENT")
+    equal(terminal.terminalCause,"PLAYER_CONTROL")
+    equal(terminal.terminalSettlementEvidence.terminalEvent,"PLAYER_CONTROL")
+    equal(terminal.terminalSettlementEvidence.requiredOutcomeBranch,"RELOCATION_BASIS_CEASED")
+    equal(terminal.terminalSettlementEvidence.causalObstructionBasisCeased,true)
+end)
+
 test("Commitment admission rejects duplicate unresolved responsibility",function()
     local runtime=newDecisionRuntime()
     runtime.commitmentAdmission:admit({objective={kind="a"},governingBasis={responsibilityKey="same"}})
@@ -2145,9 +2167,27 @@ test("player presence in an AI-active vehicle does not imply player Control",fun
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
         equal(raw.playerControl["vehicle-root:101"].playerPresent,true)
-        equal(raw.playerControl["vehicle-root:101"].playerControlled,false)
+        equal(raw.playerControl["vehicle-root:101"].playerControlled,true)
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.jobEpisodes.activeEpisodeIds,1)
+    end)
+end)
+
+test("getIsControlled positive evidence survives when mission controlledVehicle does not identify the vehicle",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        mission.vehicles={a}
+        setActiveVehicles(mission,a)
+        mission.controlledVehicle=nil
+        a.getIsControlled=function() return true end
+
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(raw.playerControl["vehicle-root:101"].playerControlled,true)
+
+        mission.vehicleSystem={vehicles={a}}
+        local currentRecords=runtime.currentPhysicalAssemblySource:observe(mission)
+        equal(#currentRecords,1)
+        equal(currentRecords[1].playerControlled,true)
     end)
 end)
 
@@ -8700,6 +8740,48 @@ test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-k
     equal(lease.currentCapKmh,1)
 end)
 
+test("Claimed Obstruction quiescent lease reactivates from fresh Causal Obstruction support",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    authority.regulationControl={executeControlRequest=function() return true end}
+    local lease={
+        commitmentId="CM-PLAYER-CONTROLLED-REACTIVATE",
+        conflictIdentity="causal-obstruction:OR-1:AS-BLOCKER->AS-BENEFICIARY",
+        admissionKind="PLAYER_CONTROLLED_OBSTRUCTION",
+        regulatedAssemblyId="AS-BENEFICIARY",regulatedReferenceKey="vehicle-root:beneficiary",
+        protectedAssemblyId="AS-BLOCKER",protectedReferenceKey="vehicle-root:blocker",
+        governingPurpose="PRESERVE_PLAYER_CLAIMED_CAUSAL_OBSTRUCTION_INTENT_REVELATION",
+        ownerTag="PLAYER_CONTROLLED_OBSTRUCTION_INTENT_REVELATION",
+        actuationActive=false,fixedClaimedObstruction=true
+    }
+    authority.actionSpaceRegulationLease=lease
+    local relation={
+        identity=lease.conflictIdentity,
+        blockerAssemblyId="AS-BLOCKER",beneficiaryAssemblyId="AS-BENEFICIARY",
+        blockerClassification="NON_ACTIVE_PLAYER_CONTROLLED",
+        relocationEligible=false
+    }
+    local candidate={
+        identity="CA-PLAYER-CONTROLLED-REACTIVATE",capability="REGULATE_SPEED",
+        evidenceBasis={actionSpaceRegulationBridge={
+            conflictIdentity=lease.conflictIdentity,admissionKind="PLAYER_CONTROLLED_OBSTRUCTION",
+            regulatedAssemblyId="AS-BENEFICIARY",regulatedReferenceKey="vehicle-root:beneficiary",
+            protectedAssemblyId="AS-BLOCKER",protectedReferenceKey="vehicle-root:blocker",
+            fixedRegulationSpeedKmh=1,
+            governingPurpose=lease.governingPurpose
+        }}
+    }
+    local evaluated={decision={selectedCandidateId=candidate.identity,epoch=1},candidates={candidate}}
+    local picture={causalObstructionKnowledge={relation},opposedCorridorKnowledge={},spatialConstraintKnowledge={}}
+    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="PLAYER_CONTROLLED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"}
+
+    local result=authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semantic)
+    equal(result.status,"ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED")
+    equal(result.applicationContext,"REACTIVATION")
+    equal(result.regulatedAssemblyId,"AS-BENEFICIARY")
+    equal(result.commitmentId,"CM-PLAYER-CONTROLLED-REACTIVATE")
+end)
+
 test("Forward Intersection unresolved evidence cannot settle or release as positive dissolution",function()
     local runtime=OuttaMyWay.Runtime.new()
     local record=runtime.commitments:create({
@@ -8749,14 +8831,19 @@ local function causalObstructionAssessmentFixture(options)
             ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
             ["vehicle-root:blocker"]={aiActive=(options.rawAiActive==true or options.activeBlocker==true),aiActiveObserved=options.aiObserved~=false,observedActive=(options.activeJobObserved==true or options.activeBlocker==true),blocked=false}
         },
-        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=options.playerObserved~=false}}
+        playerControl=options.omitPlayerControl==true and {} or {["vehicle-root:blocker"]={
+            playerControlled=options.playerControlled==true,
+            playerPresent=options.playerControlled==true or options.playerEntered==true,
+            playerEntered=options.playerEntered==true,
+            playerEnteredObserved=options.playerObserved~=false
+        }}
     }
     local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
     local physicalSpace={
         {assemblyId="AS-BENEFICIARY",assemblyReferenceKey="vehicle-root:beneficiary",primitives={{identity="beneficiary-disc",kind="DISC",x=0,z=0,radius=1,positiveConflictSupport=true}}},
         {assemblyId="AS-BLOCKER",assemblyReferenceKey="vehicle-root:blocker",primitives={{identity="blocker-disc",kind="DISC",x=10,z=blockerZ,radius=1,positiveConflictSupport=true}}}
     }
-    return assessment:assess(snapshot,futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"})
+    return assessment:assess(snapshot,futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
 end
 
 test("Causal Obstruction: cold non-active unclaimed blocker is recognised from spatial evidence while native blocked is false",function()
@@ -8775,12 +8862,87 @@ test("Merely present parked assembly does not become a Causal Obstruction",funct
     equal(#records,0)
 end)
 
-test("Causal Obstruction: player claim preserves physical obstruction but withholds relocation eligibility",function()
-    local records=causalObstructionAssessmentFixture({playerEntered=true})
+test("Causal Obstruction: current player control preserves obstruction but interlocks relocation",function()
+    local records=causalObstructionAssessmentFixture({playerControlled=true,playerEntered=true})
     equal(#records,1)
-    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_CLAIMED")
+    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
     equal(records[1].relocationEligible,false)
-    equal(records[1].playerClaimEvidence.playerEntered,true)
+    equal(records[1].playerControlEvidence.playerControlled,true)
+    equal(records[1].playerControlEvidence.persistentClaim,false)
+end)
+
+test("Causal Obstruction: tab-out transiently releases interlock and makes still-blocking vehicle relocation-eligible",function()
+    local jobs={}
+    function jobs:list() return {{identity="JE-BENEFICIARY",assemblyId="AS-BENEFICIARY",status="ACTIVE"}} end
+    local assessment=OuttaMyWay.CausalObstructionAssessment.new(jobs)
+    local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
+    local physicalSpace={
+        {assemblyId="AS-BENEFICIARY",assemblyReferenceKey="vehicle-root:beneficiary",primitives={{identity="beneficiary-disc",kind="DISC",x=0,z=0,radius=1,positiveConflictSupport=true}}},
+        {assemblyId="AS-BLOCKER",assemblyReferenceKey="vehicle-root:blocker",primitives={{identity="blocker-disc",kind="DISC",x=10,z=0,radius=1,positiveConflictSupport=true}}}
+    }
+    local function snapshot(controlled)
+        return {
+            assemblies={
+                {assemblyId="AS-BENEFICIARY",referenceKey="vehicle-root:beneficiary"},
+                {assemblyId="AS-BLOCKER",referenceKey="vehicle-root:blocker"}
+            },
+            aiStates={
+                ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
+                ["vehicle-root:blocker"]={aiActive=false,aiActiveObserved=true,observedActive=false,blocked=false}
+            },
+            playerControl={["vehicle-root:blocker"]={playerControlled=controlled,playerPresent=controlled,playerEntered=controlled,playerEnteredObserved=true}}
+        }
+    end
+    local first=assessment:assess(snapshot(true),futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
+    equal(#first,1)
+    equal(first[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
+    equal(first[1].relocationEligible,false)
+
+    local second=assessment:assess(snapshot(false),futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
+    equal(#second,1)
+    equal(second[1].blockerClassification,"NON_ACTIVE_UNCLAIMED")
+    equal(second[1].relocationEligible,true)
+    equal(second[1].positiveSupersession,true)
+    equal(second[1].playerControlReleaseEvidence.kind,"PLAYER_CONTROL_RELEASED")
+end)
+
+test("Causal Obstruction: player-controlled blocker clear publishes positive dissolution from retained plain relation",function()
+    local jobs={}
+    function jobs:list() return {{identity="JE-BENEFICIARY",assemblyId="AS-BENEFICIARY",status="ACTIVE"}} end
+    local assessment=OuttaMyWay.CausalObstructionAssessment.new(jobs)
+    local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
+    local function physical(blockerZ)
+        return {
+            {assemblyId="AS-BENEFICIARY",assemblyReferenceKey="vehicle-root:beneficiary",primitives={{identity="beneficiary-disc",kind="DISC",x=0,z=0,radius=1,positiveConflictSupport=true}}},
+            {assemblyId="AS-BLOCKER",assemblyReferenceKey="vehicle-root:blocker",primitives={{identity="blocker-disc",kind="DISC",x=10,z=blockerZ,radius=1,positiveConflictSupport=true}}}
+        }
+    end
+    local snapshot={
+        assemblies={
+            {assemblyId="AS-BENEFICIARY",referenceKey="vehicle-root:beneficiary"},
+            {assemblyId="AS-BLOCKER",referenceKey="vehicle-root:blocker"}
+        },
+        aiStates={
+            ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
+            ["vehicle-root:blocker"]={aiActive=false,aiActiveObserved=true,observedActive=false,blocked=false}
+        },
+        playerControl={["vehicle-root:blocker"]={playerControlled=true,playerPresent=true,playerEntered=true,playerEnteredObserved=true}}
+    }
+
+    local first=assessment:assess(snapshot,futureSpace,physical(0),{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
+    equal(#first,1)
+    equal(first[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
+    equal(first[1].obstructionEvidence.kind,"CONTINUING_ACTIVE_FUTURE_SPACE")
+
+    local second=assessment:assess(snapshot,futureSpace,physical(30),{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
+    equal(#second,1)
+    equal(second[1].classification,"PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED")
+    equal(second[1].relationshipStatus,"NEGATIVE")
+    equal(second[1].positiveDissolution,true)
+    equal(second[1].relocationEligible,false)
+    equal(second[1].obstructionEvidence.kind,"CURRENT_SUPPORTED_CORRIDOR_CLEAR")
+    equal(second[1].provenance.predecessorIdentity,first[1].identity)
+    equal(first[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
 end)
 
 test("Causal Obstruction: active GIANTS AI blocker remains outside non-active relocation eligibility",function()
@@ -8822,10 +8984,10 @@ test("Causal Obstruction: fresh ACTIVE Job Episode outranks older ENDED Episode"
     equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
 end)
 
-test("Causal Obstruction: ENDED Job evidence still requires current Player Claim evidence",function()
-    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,playerObserved=false})
+test("Causal Obstruction: missing player-control observation fails closed",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,omitPlayerControl=true})
     equal(#records,1)
-    equal(records[1].blockerClassification,"PLAYER_CLAIM_UNRESOLVED")
+    equal(records[1].blockerClassification,"PLAYER_CONTROL_UNRESOLVED")
     equal(records[1].relocationEligible,false)
 end)
 

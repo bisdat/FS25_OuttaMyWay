@@ -15,6 +15,7 @@ load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
 load("scripts/authority/AuthorityRegistry.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
+load("scripts/observation/CurrentPlayerControlObservation.lua")
 load("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
 load("scripts/control/ObstructionRelocationControl.lua")
@@ -360,9 +361,9 @@ local function genericControlFixture()
         }
     }
     local vehicle={rootNode=9901,forceIsActive=false,rotatedTime=0}
-    local entered=false
+    local controlled=false
     function vehicle:getAISteeringNode() return self.rootNode end
-    function vehicle:getIsEntered() return entered end
+    function vehicle:getIsControlled() return controlled end
     function vehicle:getIsAIActive() return false end
     function vehicle:getMotor() return {getMaximumForwardSpeed=function() return 10 end} end
     function vehicle:getCruiseControlState() return 0 end
@@ -381,10 +382,10 @@ local function genericControlFixture()
         authorityToken=token.identity,boundedAuthorityId="BA-TEST",operationalPictureEpoch=1,evidenceEpoch=1,
         effectiveActuationCompositionId="EC-GENERIC",preconditions={},invalidationConditions={}
     })
-    return control,request,vehicle,function(value) entered=value end,function() return completion end
+    return control,request,vehicle,function(value) controlled=value end,function() return completion end
 end
 
-test("generic Obstruction Relocation Player Claim relinquishes activity context without post-claim actuation", function()
+test("generic Obstruction Relocation Player Control Interlock relinquishes immediately without competing actuation", function()
     local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
     local driveCalls,neutralizeCalls=0,0
     AIVehicleUtil={driveInDirection=function() driveCalls=driveCalls+1; return true end}
@@ -392,13 +393,13 @@ test("generic Obstruction Relocation Player Claim relinquishes activity context 
     getWorldTranslation=function() return 0,0,0 end
     worldDirectionToLocal=function(_,x,y,z) return x,y,z end
 
-    local control,request,vehicle,setEntered,completion=genericControlFixture()
+    local control,request,vehicle,setControlled,completion=genericControlFixture()
     local started=control:executeControlRequest(request,nil)
     equal(started,true)
     equal(vehicle.forceIsActive,true)
-    setEntered(true)
+    setControlled(true)
     control:update(16)
-    equal(completion().status,"PLAYER_CLAIM")
+    equal(completion().status,"PLAYER_CONTROL")
     equal(vehicle.forceIsActive,false)
     equal(driveCalls,0)
     equal(neutralizeCalls,0)

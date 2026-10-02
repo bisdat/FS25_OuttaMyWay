@@ -5,7 +5,7 @@
 -- Mechanical safety boundary only: semantic movement permission remains in the
 -- current Responsibility / Bounded Authority / Control path. This mechanism neither
 -- infers historical Job provenance nor creates relocation purpose.
--- Player Claim and source-AI reactivation remain higher-priority Reality boundaries.
+-- Current player control and source-AI reactivation remain higher-priority Reality boundaries.
 
 OuttaMyWay.NonJobActuationMechanism={}
 local Mechanism=OuttaMyWay.NonJobActuationMechanism
@@ -66,15 +66,15 @@ function Mechanism:steeringTelemetry(vehicle)
     telemetry.steerableWheelCount=#telemetry.wheels
     return telemetry
 end
-function Mechanism:isPlayerClaimed(vehicle)
-    local ok,value=safeCall(vehicle,"getIsEntered"); return ok and value==true
+function Mechanism:isPlayerControlled(vehicle)
+    return OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle)
 end
 function Mechanism:isSourceReactivated(vehicle)
     local ok,value=safeCall(vehicle,"getIsAIActive"); return ok and value==true
 end
 
 function Mechanism:acquireVehicleActivityContext(vehicle)
-    if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if vehicle==nil then return false,"VEHICLE_UNAVAILABLE" end
     local context={previousForceIsActive=vehicle.forceIsActive,acquiredForceIsActive=true}
@@ -123,7 +123,7 @@ local function steeringAngleLimitDeg(vehicle)
 end
 
 function Mechanism:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedKmh)
-    if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if AIVehicleUtil==nil or type(AIVehicleUtil.driveInDirection)~="function" then return false,"AIVEHICLEUTIL_DRIVE_IN_DIRECTION_UNAVAILABLE" end
     local node=steeringPose(vehicle); if node==nil then return false,"NON_JOB_POSE_UNAVAILABLE" end
@@ -160,7 +160,7 @@ function Mechanism:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedK
 end
 
 function Mechanism:neutralize(vehicle,dt)
-    if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if WheelsUtil==nil or type(WheelsUtil.updateWheelsPhysics)~="function" then return false,"WHEELSUTIL_UPDATE_PHYSICS_UNAVAILABLE" end
     self.neutralizeCalls=self.neutralizeCalls+1

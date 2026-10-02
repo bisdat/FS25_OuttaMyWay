@@ -5987,3 +5987,172 @@ Candidate Support owns prospective Field World / third-party theatre support. Be
 **Known boundary:** there is currently no explicit maximum physical-overhang predicate. A future Reality case in which a centre/steering target remains Field-supported but the assembly excursion becomes implausibly large would be new evidence requiring architectural reassessment; it is not a reason to invent a threshold now.
 
 **Validation verdict:** TEST 0.4.8.13 demonstrates the intended #393 realised-origin reassessment path in Reality and produces an acceptable Passage outcome. The prior concern that the approximately 0.5–1 m Deere-side excursion itself represented a Field World failure is withdrawn.
+
+## 2026-10-02 — #412 Player Actuation Claim replaces positional Player Claim — TEST 0.4.9.3
+
+**Observe — inherited occupancy:** TS016 0.4.8.11 showed MT665 complete its GIANTS Job while still physically obstructing a continuing worker. The player was already seated only to observe. The completed assembly was immediately classified as player-claimed because `getIsEntered()==true`, so otherwise-supported Obstruction Relocation was suppressed. A no-occupant TS004_S control on 0.4.8.13 then exercised the same completed-worker path successfully through Causal Obstruction, Obstruction Relocation, bounded non-job actuation and fresh positive settlement. This isolated the defect to Player Claim evidence rather than completed-worker relocation generally.
+
+> **Inherited AI-Worker Occupancy != Fresh Post-Completion Player Claim.**
+
+**Observe — tab-in control:** TS002 0.4.9.0 began Obstruction Relocation for a non-active Condor. Tabbing into that already-moving vehicle, without deliberate steering/throttle/brake input, caused the old entry-based boundary to relinquish relocation immediately. Video later showed the first deliberate movement attempt fail because the engine was stopped; the GIANTS HUD displayed “Please start the engine first!”. Therefore neither tab selection, controlled-vehicle context, current motor state nor successful propulsion is the semantic authority-transfer event.
+
+> **Tab-In != Player Actuation Claim.**
+
+> **Control Context != Competing Manual Actuation.**
+
+> **Manual Drive Command != Successful Propulsion.**
+
+> **Engine-Off Does Not Erase Player Actuation Evidence.**
+
+**GIANTS/API investigation:** `getIsEntered()`, `mission.controlledVehicle` / `getIsControlled()`, current motor-running state and final input/steering state are positional or resulting-state evidence. GIANTS player drive callbacks — `Drivable.actionEventAccelerate`, `actionEventBrake`, `actionEventSteer` — are causal command surfaces. Explicit `Motorized` action callbacks are also causal command evidence where exposed. AI and automatic-start paths can start the motor without proving manual intent.
+
+**Diagnostic result — TEST 0.4.9.1 / 0.4.9.2:** the diagnostic line deliberately suppressed the old positional claim so relocation continued while the player entered the vehicle and then exercised steering/brake/accelerate/motor commands. The callback evidence separated passive control context from deliberate player actuation strongly enough to replace the old claim rule.
+
+> **Player Claim Evidence Must Be Causal, Not Positional.**
+
+> **Manual Actuation Establishes Player Actuation Claim.**
+
+**Architecture decision:** rename the semantic boundary **Player Actuation Claim**. A non-active blocker becomes human-claimed only after a positively observed causal player command. Once established, current player control retains the claim without requiring continuous non-zero input. Tab-out/control release ends the claim. Consumed action sequence is retained so an old command cannot establish a fresh claim on later passive re-entry.
+
+Player Actuation Claim changes **authority**, not **obstruction geometry**. If the claimed physical blocker still intersects the continuing worker's current supported Causal Obstruction corridor, OuttaMyWay does not move or hold the claimed vehicle. Instead it establishes **Claimed Obstruction Regulation** over the affected AI beneficiary at the exact **1 km/h Intent-Revelation Creep**. An unaffected third AI participant receives no special hold merely because the player claimed another blocker.
+
+> **Player-Controlled Blocker -> Regulate Beneficiary, Do Not Move Blocker.**
+
+> **Player Claim Changes Authority, Not Obstruction Geometry.**
+
+**Fresh-authority boundaries:** a Player Actuation Claim during active Obstruction Relocation immediately retires blocker movement authority and releases the activity context without post-claim neutralisation. Claimed Obstruction Regulation is admitted from the next fresh picture. If the player moves clear, positive current-corridor dissolution retires that Regulation. If the player tabs out while still blocking, positive claim release retires the Regulation first; only a later fresh picture may reacquire Obstruction Relocation authority. A fresh GIANTS AI Job is a separate positive intent supersession. No pre-claim relocation objective or Bounded Authority is paused for later reuse.
+
+> **Claim Supersession Retires Physical Authority; It Does Not Pause It.**
+
+> **Tab-Out Requires Fresh Authority.**
+
+**Implementation — TEST `0.4.9.3`:** `PlayerActuationObservation` observes causal GIANTS action callbacks without semantic authority and fails closed unless the three core Drivable command callbacks plus at least one supported Motorized command callback are available. `PlayerActuationClaimAssessment` owns establishment/retention/release. `LiveObservationSource` keeps claimed completed assemblies physically observable instead of deleting them on entry. `CausalObstructionAssessment` consumes Player Actuation Claim knowledge, preserves the same geometry, and publishes positive clear/claim-release successor evidence. Obstruction Relocation Control consumes the same semantic claim source instead of `getIsEntered()`. Claimed Obstruction is projected as an outer Causal Obstruction response through the existing Action-Space Regulation responsibility, Bounded Authority and Regulation Control path with a fixed 1 km/h cap.
+
+**Validation boundary:** focused offline contracts now target passive entry, deliberate steer/brake/accelerate, engine-independent command evidence, claim retention, tab-out release, stale-input re-entry and relocation relinquishment. Independent GitHub Actions and then GIANTS Reality remain required before #412 is accepted. The PR remains draft until those gates are satisfied.
+## 2026-10-02 — #412 Reality correction: Player Control Interlock replaces Player Actuation Claim — TEST 0.4.9.4
+
+**Reality disproof — TEST 0.4.9.3 TS002:** three same-theatre runs isolated player control as the mechanical discriminator. In Runs #1/#2, Condor changed from `controlled=false` with OMW steering fully realised (`rotatedTime=0.875`) to `controlled=true` with steering collapsing to approximately zero immediately after tab-in, before deliberate player steering. Run #3 without player intervention remained `controlled=false` and followed the expected OMW relocation path.
+
+> **Semantic Non-Claim != Mechanical Non-Interference.**
+
+> **Passive Control Context Rewrites OMW Steering.**
+
+The same runs also disproved the causal callback hypothesis. Deliberate steering became visible in realised vehicle state, but no `PLAYER_ACTUATION_CLAIM_ESTABLISHED` event appeared and OMW later reacquired relocation while the vehicle was already `controlled=true`.
+
+> **Causal Callback Availability != Causal Callback Observation.**
+
+**Architecture correction:** OuttaMyWay will not attempt to reinterpret or rewrite GIANTS player-control mechanics. The discarded Player Actuation Claim concept is replaced by a transient **Player Control Interlock**. Current GIANTS player control alone excludes OMW physical actuation over that vehicle. The interlock has no memory: tab-out/control release removes it, but previously retired OMW authority never resumes.
+
+> **Player Control Interlock Is Current, Not Historical.**
+
+> **Control Release Removes the Interlock; It Does Not Resume Old Authority.**
+
+If the currently player-controlled vehicle remains a positive Causal Obstruction, the response is **Player-Controlled Obstruction Regulation**: leave the blocker entirely under GIANTS/player control and regulate only the affected active AI beneficiary to the exact **1 km/h Intent-Revelation Creep**. If the player moves clear, fresh geometry releases the Regulation. If the player tabs out while still blocking, the Regulation retires on positive control-release supersession and a later fresh picture may admit ordinary Obstruction Relocation.
+
+> **Player-Controlled Blocker -> Regulate Beneficiary, Do Not Move Blocker.**
+
+**Implementation — TEST 0.4.9.4:** removed `PlayerActuationObservation` and `PlayerActuationClaimAssessment`; Runtime no longer owns retained Player Claim state. `NonJobActuationMechanism:isPlayerControlled()` consumes current GIANTS control context directly. Causal Obstruction classifies a non-active controlled blocker as `NON_ACTIVE_PLAYER_CONTROLLED`. Existing Regulation infrastructure now carries `PLAYER_CONTROLLED_OBSTRUCTION` as the fixed-creep purpose. Obstruction Relocation terminates with `PLAYER_CONTROL` and skips competing neutralisation. One-cycle positive control-release evidence enforces the fresh-picture handover before any renewed relocation.
+
+**Offline validation:** run `37040907775` green — 282 structural/source contracts, 475 replacement-core behavioural tests, 3 focused Player Control Interlock tests, 18 focused Obstruction Relocation tests, and generated source reference PASS.
+
+**Next gate:** GIANTS Reality. The critical scenarios are: passive tab-in during relocation must immediately retire OMW actuation rather than veer; while the controlled blocker remains obstructing the beneficiary must regulate at exactly 1 km/h; moving clear must release Regulation; tab-out while still blocking must permit only a fresh later Obstruction Relocation, never stale actuation resumption.
+
+## 2026-10-02 — #412 TEST 0.4.9.4 Reality disproof: Interlock Terminal Vocabulary Drift
+
+**Observe — Runs 1 and 2:** TS002 reached active Obstruction Relocation, then passive tab-in made GIANTS current player control positive. At 18:40:28.310 in Run 1 and 18:43:26.094 in Run 2, Obstruction Relocation Control correctly released its Vehicle Activity Context, completed with `status=PLAYER_CONTROL`, and released relocation serialization without issuing competing post-control neutralisation. The immediately following semantic settlement failed with `unsupported Governing Basis event PLAYER_CONTROL`, after which live runtime processing repeatedly failed. Player-Controlled Obstruction Regulation, its exact 1 km/h effect, clear-geometry release, and tab-out fresh-relocation handover were therefore not reached in either failed run.
+
+**Observe — Run 3 control:** with no player intervention, no `PLAYER_CONTROL` terminal event occurred and normal Obstruction Relocation continued through its existing manoeuvre-complete / fresh-reassessment path without the runtime fault.
+
+> **Interlock Terminal Vocabulary Drift.**
+
+**Interpretation:** Reality supports the mechanical Player Control Interlock boundary itself: current GIANTS player control stopped OMW blocker actuation at the intended boundary. The defect is the downstream terminal vocabulary. `ObstructionRelocationControl`, Runtime and `ObstructionRelocationCommitmentLifecycle` use the current `PLAYER_CONTROL` event, while the generic `GoverningBasisEvaluator` still recognised the retired `PLAYER_CLAIM` event. The correct interlock event therefore reached an incompatible generic settlement vocabulary.
+
+**Implementation hypothesis — TEST 0.4.9.5:** replace the retired generic `PLAYER_CLAIM` terminal event with `PLAYER_CONTROL` and protect the complete Runtime completion -> Obstruction Relocation lifecycle -> Governing Basis -> terminal settlement chain with an executable regression. This is a vocabulary-integration correction only; it does not change Player Control Interlock, Causal Obstruction or Player-Controlled Obstruction Regulation architecture.
+
+**Authority Triad disposition:** Runtime Responsibility Architecture remains correct and unchanged; `OBSTRUCTION_RELOCATION` already requires immediate relinquishment on current player control and fresh authority after release; `RESOLUTION_LIFECYCLE` already permits positive governing-basis cessation / supersession. Production source was the drifting surface.
+
+**Validation boundary:** independent CI must first prove the corrected offline chain. GIANTS Reality must then repeat the same three-run TS002 sequence because 0.4.9.4 did not reach Player-Controlled Obstruction Regulation in Runs 1 or 2.
+
+## 2026-10-02 — #412 TEST 0.4.9.5 CI disproof: Generic Player Claim remains a separate live terminal vocabulary
+
+**Validation result:** the new Player Control Runtime settlement regression passed, changed-runtime Lua syntax passed, the focused Obstruction Relocation contract passed 18/18, Structural contracts passed, and Generated source reference passed. The full replacement-core harness nevertheless finished 475 passed / 1 failed, so the final Lua behavioural enforcement gate correctly failed.
+
+The failing regression was the existing Bounded Bypass contradiction contract: `BoundedBypassCommitmentLifecycle` still emits `PLAYER_CLAIM` when a higher-authority Player Claim takes over the bypassing worker. `BOUNDED_BYPASS` explicitly retains that current semantic contract. Removing `PLAYER_CLAIM` from the generic Governing Basis vocabulary therefore broke an unrelated accepted responsibility.
+
+> **Player Control Interlock Vocabulary != Global Player Claim Vocabulary.**
+
+**Learning:** the 0.4.9.5 hypothesis was too broad. The #412 correction must not reinterpret every existing Player Claim concept. Obstruction Relocation now needs `PLAYER_CONTROL` because its new interlock is current mechanical control rather than retained semantic claim; Bounded Bypass still legitimately needs `PLAYER_CLAIM` under its own governing Specification.
+
+**Implementation hypothesis — TEST 0.4.9.6:** make generic Governing Basis terminal vocabulary additive: retain `PLAYER_CLAIM` for current responsibilities that still own that semantic event and add `PLAYER_CONTROL` for the #412 Obstruction Relocation interlock. No architecture or Specification change is justified by this CI evidence.
+
+**Validation boundary:** the existing Bounded Bypass regression and the new Obstruction Relocation Runtime-settlement regression together must both pass before returning to GIANTS Reality.
+
+## 2026-10-02 — #412 TEST 0.4.9.6 Reality: Player Control Evidence Split-Brain
+
+**Observe:** the 0.4.9.6 TS002 three-run repeat proves the repaired terminal settlement path. In Runs 1 and 2, active Obstruction Relocation observes `controlled=true`, releases Vehicle Activity Context immediately, completes with `status=PLAYER_CONTROL`, and settles through Governing Basis without the prior runtime fault. Run 3 remains an unchanged no-player-control Obstruction Relocation control.
+
+Runs 1 and 2 nevertheless fail the next expected transition. While Condor remains under player control, Situation Assessment republishes the blocker as `NON_ACTIVE_UNCLAIMED|RELOCATION_ELIGIBLE`. Runtime repeatedly creates fresh Obstruction Relocation commitments; Control then immediately rejects each at `PLAYER_CONTROL_AT_CONTROL_BOUNDARY`. No `NON_ACTIVE_PLAYER_CONTROLLED` relation and no exact 1 km/h Player-Controlled Obstruction Regulation appear.
+
+Run 1 produced 42 Obstruction Relocation commitments / 41 Player Control boundary rejections before the player moved Condor clear. Run 2 produced 24 rejected attempts before tab-out; after tab-out a later fresh commitment executed with `controlled=false`, confirming stale pre-control authority was not resurrected.
+
+> **Player Control Evidence Split-Brain.**
+
+**Code walk:** `NonJobActuationMechanism:isPlayerControlled()` used `vehicle:getIsControlled()` first and mission controlled-root comparison as fallback. `LiveObservationSource` and `CurrentPhysicalAssemblySource` used only mission controlled-root comparison. Reality therefore allowed Control to know the interlock was current while Observation told Situation Assessment that the same blocker was unclaimed.
+
+> **Control-Side Interlock Truth != Observation-Side Player Control Truth.**
+
+> **One Architectural Fact Requires One Coherent Reality Predicate.**
+
+**Architecture / Specification disposition:** no architectural change is justified. Runtime Responsibility Architecture already defines Player Control Interlock as current, not historical. `OBSERVATION` already permits the physical root reporting current controlled state. The defect is duplicated implementation evidence with non-equivalent GIANTS surfaces.
+
+**Implementation hypothesis — TEST 0.4.9.7:** introduce one Observation-owned current Player Control predicate consumed by Live Observation, Current Physical Assembly Observation and the non-job mechanical interlock. Either positive `getIsControlled()==true` or positive mission controlled-root identity establishes current control. A negative result from one surface cannot overrule a positive result from the other. This preserves the already Reality-valid mechanical interlock while giving Situation Assessment the same current fact.
+
+**Validation boundary:** CI must prove both Observation routes and Control consume the shared predicate. GIANTS Reality must then repeat the same three-run TS002 sequence and reach Player-Controlled Obstruction Regulation at exactly 1 km/h in Runs 1 and 2 before clear/control-release semantics can be judged.
+
+## 2026-10-02 — #412 TEST 0.4.9.7 CI composition correction
+
+**Validation observation:** the first 0.4.9.7 CI run failed before changing the runtime hypothesis. Production composition was correct, but the offline harnesses manually enumerate source dependencies and had not loaded the new `CurrentPlayerControlObservation` module. The structural suite also retained the obsolete assumption that `NonJobActuationMechanism` itself owned both GIANTS player-control surfaces, and the new Observation participant had not yet been added to `OBSERVATION` traceability.
+
+> **Runtime Composition != Test Harness Composition.**
+
+**Correction:** load the shared predicate explicitly in the replacement-core and focused Obstruction Relocation harnesses, update the physical-mechanism structural contract to assert delegation rather than duplicated evidence acquisition, and register `CurrentPlayerControlObservation` as a current `OBSERVATION` participant. No runtime source or build identity changes are made; the executable remains TEST 0.4.9.7.
+
+**Validation boundary:** rerun the same independent CI gates. Only after all gates are green does 0.4.9.7 return to GIANTS Reality.
+
+## 2026-10-02 — #412 TEST 0.4.9.7 Reality: Dissolution Copy Boundary Mismatch
+
+**Observe:** Run 1 reaches the intended Player-Controlled Obstruction lifecycle through current Player Control classification and exact 1 km/h Regulation. At `19:38:54.816`, fresh geometry satisfies the positive-clearance predicate: the player remains in control, the beneficiary remains active, the supported corridor is evaluable, and `positiveObstruction(...)` returns nil. Instead of publishing `PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED`, live runtime processing fails at `CausalObstructionAssessment.lua:393` with `OuttaMyWay ValueRecord: value is not a sealed record`.
+
+> **Dissolution Copy Boundary Mismatch.**
+
+**Cause:** `CausalObstructionAssessment` retains the previous player-controlled obstruction relation in its own assessment-local state as a plain Lua value table. The positive-dissolution and no-current-relation control-release branches incorrectly call `ValueRecord.toTable(previous)`, whose contract intentionally accepts sealed ValueRecords only.
+
+**Decision:** do not weaken `ValueRecord.toTable`. Causal Obstruction owns the retained relation and should copy only its top-level relation envelope through `ValueRecord.pairs`, which is explicitly valid for both ordinary plain tables and sealed value tables. The lifecycle branch then replaces the top-level classification, relationship status, terminal evidence and provenance fields without mutating the retained predecessor.
+
+**Implementation hypothesis — TEST 0.4.9.8:** use one local relation-envelope copy helper for both positive geometric dissolution and no-current-relation Player Control release. Add a two-cycle regression that first retains a plain `NON_ACTIVE_PLAYER_CONTROLLED` relation, then moves the blocker 30 m laterally while player control remains current and requires `PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED` / `CURRENT_SUPPORTED_CORRIDOR_CLEAR` without exception.
+
+**Authority Triad disposition:** Architecture unchanged; Specification unchanged; source implementation and executable regression only. The architecture already requires fresh positive clearance to retire Player-Controlled Obstruction Regulation.
+
+**Validation boundary:** independent CI must pass before GIANTS Reality repeats the clear-dissolution branch.
+
+## 2026-10-02 — #412 TEST 0.4.9.8 GIANTS Reality: positive-clearance lifecycle PASS
+
+**Reality artefact:** `0.4.9.8_TS002.zip`.
+
+The previously failing clear-dissolution branch now completes end-to-end in GIANTS Reality.
+
+- `20:05:15.155` — active Obstruction Relocation relinquishes immediately on Player Control and settles through `PLAYER_CONTROL`.
+- `20:05:16.617` — Situation Assessment publishes the blocker as `NON_ACTIVE_PLAYER_CONTROLLED`.
+- `20:05:16.634–20:05:16.635` — Player-Controlled Obstruction Regulation is established on the beneficiary at exactly 1 km/h.
+- `20:05:27.617` — fresh Situation evidence publishes `CURRENT_SUPPORTED_CORRIDOR_CLEAR` while the blocker remains under Player Control.
+- `20:05:27.635` — Regulation bounded authority releases for `PLAYER_CONTROLLED_OBSTRUCTION_CURRENT_SUPPORTED_CORRIDOR_POSITIVELY_CLEAR`.
+- `20:05:27.636` — `REGULATION_ENDED`; the action-space Regulation purpose settles with terminal state `SUCCEEDED`.
+- `20:05:27.863` — Causal Obstruction relation census returns to zero.
+- `LIVE_RUNTIME_PROCESSING_FAILED`: zero occurrences.
+
+This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7.
+
+> **Positive Clearance Requires Positive Dissolution, Then Authority Release.**
+
+**Validation conclusion:** Player Control Interlock, Player-Controlled Obstruction classification, exact 1 km/h Regulation, positive geometric dissolution, Regulation retirement, and terminal settlement are now all demonstrated in GIANTS Reality for the #412 clear branch. Architecture and Specification remain unchanged; the defect was the implementation-local relation-copy boundary.
+

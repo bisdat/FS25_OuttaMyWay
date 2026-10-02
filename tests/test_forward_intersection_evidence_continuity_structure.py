@@ -52,8 +52,9 @@ def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
     assert 'if type(magnitude)~="number" or magnitude~=magnitude or magnitude<=0 or magnitude==math.huge then return nil end' in authority
     assert 'local fixedCornerRightOfWay=bridge.admissionKind=="CORNER_RIGHT_OF_WAY"' in authority
     assert 'local fixedSharedCategory2=bridge.admissionKind=="SHARED_CATEGORY_2_DEMAND"' in authority
+    assert 'local fixedPlayerControlledObstruction=bridge.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"' in authority
     assert 'local fixedPassageApproach=bridge.admissionKind=="PASSAGE_APPROACH"' in authority
-    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedSharedCategory2 or fixedPassageApproach" in authority
+    assert "local fixed=fixedForwardIntersection or fixedCornerRightOfWay or fixedSharedCategory2 or fixedPlayerControlledObstruction or fixedPassageApproach" in authority
     assert "if fixed then" in authority
     assert "initialCap=bridge.fixedRegulationSpeedKmh" in authority
     assert "initialCap=tonumber(envelope.capKmh) or 0" in authority

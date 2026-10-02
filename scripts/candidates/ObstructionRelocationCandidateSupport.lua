@@ -225,7 +225,7 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
         },
         representationFitness={requirements={{representationId="current-obstruction-relocation:"..group.blockerAssemblyReferenceKey,acceptedStates={"USABLE_WITH_UNCERTAINTY","FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}}}},
         preconditions={evidenceContracts={{kind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey=group.relocationKey},{kind="NON_ACTIVE_UNCLAIMED_BLOCKER"},{kind="CURRENT_PHYSICAL_RELOCATION_REFERENCE"}}},
-        invalidationConditions={{kind="PLAYER_CLAIM"},{kind="SOURCE_AI_REACTIVATION"},{kind="BLOCKER_PHYSICAL_IDENTITY_LOST"}},
+        invalidationConditions={{kind="PLAYER_CONTROL"},{kind="SOURCE_AI_REACTIVATION"},{kind="BLOCKER_PHYSICAL_IDENTITY_LOST"}},
         reversibility={kind="BOUNDED_INWARD_RELOCATION_THEN_FRESH_REALITY"},
         obligationsCreated={{origin={kind="CAUSAL_OBSTRUCTION",relocationKey=group.relocationKey},basis={kind="CURRENT_CAUSAL_OBSTRUCTION",blockerAssemblyId=group.blockerAssemblyId,beneficiaryAssemblyIds=protectedIds},requiredOutcome={kind="CAUSAL_OBSTRUCTION_REMOVED_OR_ESCALATED"},requiredAuthority={classes={"OBSTRUCTION_RELOCATION_ACTUATION","PROGRESS_ACTUATION"}},evidenceContract={kind="FRESH_POSITIVE_CONTINUATION_AFTER_BOUNDED_RELOCATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true,creationEvidence={relations=group.relations}}},
         releaseImplications={releaseBoundedAuthorityAfterActuation=true,freshSituationRequired=true,repeatedActuationRequiresFreshPositiveObstruction=true},
@@ -277,9 +277,9 @@ local function positiveSupportedContinuation(motion,productive)
         and productive.representationFitness=="FIT_FOR_LIMITED_HORIZON"
 end
 
-local function currentPlayerClaim(snapshot,referenceKey)
+local function currentPlayerControl(snapshot,referenceKey)
     local control=snapshot and snapshot.playerControl and snapshot.playerControl[referenceKey] or nil
-    return type(control)=="table" and control.playerEnteredObserved==true and control.playerEntered==true
+    return type(control)=="table" and control.playerControlled==true
 end
 
 local function currentSourceAi(snapshot,referenceKey)
@@ -308,7 +308,7 @@ local function waitingSpec(context,blockerAssemblyId,referenceKey)
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION_REASSESSMENT"},subject={assemblyId=blockerAssemblyId},capability="CONTINUE_OBSERVATION",
         expectedEffect={physicalChange=false,waitingForEvidence=true},
         evidenceBasis={maintainsExistingCommitment=true,existingProgressMayContinue=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,phase="WAITING_FOR_EVIDENCE",blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
-        representationFitness={requirements={}},preconditions={evidenceContracts={{kind="FRESH_POSITIVE_SUPPORTED_CONTINUATION_REQUIRED"}}},invalidationConditions={{kind="PLAYER_CLAIM"},{kind="SOURCE_AI_REACTIVATION"}},reversibility={kind="OBSERVE_ONLY"},obligationsCreated={},releaseImplications={noActuation=true},uncertainty={{kind="OBSTRUCTION_CESSATION_OR_SUPPORTED_CONTINUATION_NOT_YET_POSITIVELY_ESTABLISHED"}},comparisonCost=0
+        representationFitness={requirements={}},preconditions={evidenceContracts={{kind="FRESH_POSITIVE_SUPPORTED_CONTINUATION_REQUIRED"}}},invalidationConditions={{kind="PLAYER_CONTROL"},{kind="SOURCE_AI_REACTIVATION"}},reversibility={kind="OBSERVE_ONLY"},obligationsCreated={},releaseImplications={noActuation=true},uncertainty={{kind="OBSTRUCTION_CESSATION_OR_SUPPORTED_CONTINUATION_NOT_YET_POSITIVELY_ESTABLISHED"}},comparisonCost=0
     }
 end
 
@@ -338,12 +338,12 @@ local function reassessmentSpec(picture,snapshot,context,references)
     local blockerAssemblyId=basis.blockerAssemblyId
     local blockerReferenceKey=references[blockerAssemblyId]
     if type(blockerAssemblyId)~="string" or type(blockerReferenceKey)~="string" then return nil,"BLOCKER_CONTEXT_UNAVAILABLE" end
-    if currentPlayerClaim(snapshot,blockerReferenceKey) then return terminalSpec(context,"PLAYER_CLAIM",blockerAssemblyId,blockerReferenceKey),nil end
+    if currentPlayerControl(snapshot,blockerReferenceKey) then return terminalSpec(context,"PLAYER_CONTROL",blockerAssemblyId,blockerReferenceKey),nil end
     if currentSourceAi(snapshot,blockerReferenceKey) then return terminalSpec(context,"NEW_AUTHORITATIVE_INTENT",blockerAssemblyId,blockerReferenceKey),nil end
     local outcome=latestControlOutcome(picture,context.commitmentId)
     if outcome==nil then return nil,"CONTROL_OUTCOME_NOT_YET_OBSERVED" end
     if outcome.status=="FAILED" then return terminalSpec(context,"OBJECTIVE_FAILED",blockerAssemblyId,blockerReferenceKey),nil end
-    if outcome.status=="PLAYER_CLAIM" then return terminalSpec(context,"PLAYER_CLAIM",blockerAssemblyId,blockerReferenceKey),nil end
+    if outcome.status=="PLAYER_CONTROL" then return terminalSpec(context,"PLAYER_CONTROL",blockerAssemblyId,blockerReferenceKey),nil end
     if outcome.status=="SUPERSEDED" then return terminalSpec(context,"NEW_AUTHORITATIVE_INTENT",blockerAssemblyId,blockerReferenceKey),nil end
     if outcome.status~="MANOEUVRE_COMPLETE" then return waitingSpec(context,blockerAssemblyId,blockerReferenceKey),nil end
 
