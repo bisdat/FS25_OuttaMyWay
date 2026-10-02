@@ -71,10 +71,10 @@ local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,tar
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
 end
 
-local function claimedObstructions(picture)
+local function playerControlledObstructions(picture)
     local result={}
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.causalObstructionKnowledge or {}) do
-        if relation.blockerClassification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED"
+        if relation.blockerClassification=="NON_ACTIVE_PLAYER_CONTROLLED"
             and relation.positiveDissolution~=true and relation.positiveSupersession~=true then
             result[#result+1]=relation
         end
@@ -168,18 +168,18 @@ function Support:publishDecisionPicture(picture,snapshot)
     local relocation=self.obstructionSupport and self.obstructionSupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch) or nil
     if relocation~=nil then appendGroup(state,relocation,"OBSTRUCTION_RELOCATION","obstruction-relocation",1) end
 
-    local claimed=claimedObstructions(picture)
-    if #claimed==1 then
+    local playerControlled=playerControlledObstructions(picture)
+    if #playerControlled==1 then
         local group,reason=self.liveSupport:buildProjectedGroup(
-            picture,snapshot,{kind="CLAIMED_OBSTRUCTION",relationshipIdentity=claimed[1].identity},targetPictureId,targetEpoch)
+            picture,snapshot,{kind="PLAYER_CONTROLLED_OBSTRUCTION",relationshipIdentity=playerControlled[1].identity},targetPictureId,targetEpoch)
         if modeOfGroup(group)=="ACTION_SPACE_REGULATION" then
-            appendGroup(state,group,"CLAIMED_OBSTRUCTION","claimed-obstruction:"..tostring(claimed[1].identity),1)
+            appendGroup(state,group,"PLAYER_CONTROLLED_OBSTRUCTION","player-controlled-obstruction:"..tostring(playerControlled[1].identity),1)
         elseif reason~=nil then
-            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"CLAIMED_OBSTRUCTION_FAIL_CLOSED",reason,1)
+            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"PLAYER_CONTROLLED_OBSTRUCTION_FAIL_CLOSED",reason,1)
         end
-    elseif #claimed>1 then
+    elseif #playerControlled>1 then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
-            "CLAIMED_OBSTRUCTION_FAIL_CLOSED","MULTIPLE_CLAIMED_OBSTRUCTION_CONTEXTS",1)
+            "PLAYER_CONTROLLED_OBSTRUCTION_FAIL_CLOSED","MULTIPLE_PLAYER_CONTROLLED_OBSTRUCTION_CONTEXTS",1)
     end
 
     local recovery,recoveryReason=nil,nil
