@@ -362,7 +362,8 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     elseif claimed then
         local evidenceKind=evidence and evidence.kind or nil
         if evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION"
-            or evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION" then
+            or evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE"
+            or evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
             settlementMode="SATISFACTION"
         else
             return nil,"CLAIMED_OBSTRUCTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_CLAIM_RELEASE"
@@ -408,9 +409,11 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
             provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         local terminalEvidenceKind=crossContext and "TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
-            or (claimed and ((evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION")
+            or (claimed and ((evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE")
                 and "CLAIMED_OBSTRUCTION_PLAYER_CLAIM_RELEASED"
-                or "CLAIMED_OBSTRUCTION_CORRIDOR_POSITIVELY_DISSOLVED")
+                or ((evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION")
+                and "CLAIMED_OBSTRUCTION_GIANTS_INTENT_REACTIVATED"
+                or "CLAIMED_OBSTRUCTION_CORRIDOR_POSITIVELY_DISSOLVED"))
             or (corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
             or (category2 and "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED"
             or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED")))
