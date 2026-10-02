@@ -35,7 +35,7 @@ def test_mechanical_surface_is_preserved():
 
     for method in (
         "steeringTelemetry",
-        "isPlayerClaimed",
+        "isPlayerControlled",
         "isSourceReactivated",
         "acquireVehicleActivityContext",
         "releaseVehicleActivityContext",
@@ -70,9 +70,9 @@ def test_single_generic_obstruction_relocation_authority_uses_shared_non_job_mec
     assert '"OBSTRUCTION_RELOCATION_ACTUATION"' in current
     assert "POST_JOB_ACTUATION" not in current
     assert "POST_JOB_ACTUATION" not in control
-    assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(runtime and runtime.playerActuationClaimAssessment or nil)" in control
-    assert "getIsEntered" not in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
-    assert "source:isClaimedReference" in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()" in control
+    assert 'safeCall(vehicle,"getIsControlled")' in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    assert "mission.controlledVehicle" in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
     assert (ROOT / "scripts" / "control" / "ObstructionRelocationControl.lua").is_file()
     assert not (ROOT / "scripts" / "candidates" / "TerminalEgressCandidateSupport.lua").exists()
 
