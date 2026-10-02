@@ -70,10 +70,15 @@ function Observation.install()
     if installed then return true,"ALREADY_INSTALLED" end
     if Utils==nil or type(Utils.appendedFunction)~="function" then available=false; installReason="APPENDED_FUNCTION_UNAVAILABLE"; return false,installReason end
     if Drivable==nil then available=false; installReason="DRIVABLE_UNAVAILABLE"; return false,installReason end
+    for _,functionName in ipairs({"actionEventAccelerate","actionEventBrake","actionEventSteer"}) do
+        if type(Drivable[functionName])~="function" then
+            available=false
+            installReason="CORE_DRIVABLE_ACTION_CALLBACK_UNAVAILABLE:"..functionName
+            return false,installReason
+        end
+    end
 
-    local coreHookCount=0
     if type(Drivable.actionEventAccelerate)=="function" then
-        coreHookCount=coreHookCount+1
         Drivable.actionEventAccelerate=Utils.appendedFunction(
             Drivable.actionEventAccelerate,
             function(self,actionName,inputValue,callbackState,isAnalog)
@@ -81,7 +86,6 @@ function Observation.install()
             end)
     end
     if type(Drivable.actionEventBrake)=="function" then
-        coreHookCount=coreHookCount+1
         Drivable.actionEventBrake=Utils.appendedFunction(
             Drivable.actionEventBrake,
             function(self,actionName,inputValue,callbackState,isAnalog)
@@ -89,7 +93,6 @@ function Observation.install()
             end)
     end
     if type(Drivable.actionEventSteer)=="function" then
-        coreHookCount=coreHookCount+1
         Drivable.actionEventSteer=Utils.appendedFunction(
             Drivable.actionEventSteer,
             function(self,actionName,inputValue,callbackState,isAnalog)
@@ -111,12 +114,6 @@ function Observation.install()
         appendMotor("actionEventSetMotorStateIgnition","MOTOR_IGNITION")
         appendMotor("actionEventSetMotorStateOn","MOTOR_ON")
         appendMotor("actionEventSetMotorStateOff","MOTOR_OFF")
-    end
-
-    if coreHookCount~=3 then
-        available=false
-        installReason="CORE_DRIVABLE_ACTION_CALLBACKS_INCOMPLETE:"..tostring(coreHookCount).."/3"
-        return false,installReason
     end
 
     installed=true
