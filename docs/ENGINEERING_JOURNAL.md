@@ -5912,3 +5912,26 @@ The 40 m point is not supported occupancy, negative-clearance evidence or permis
 **Authority Triad:** Architecture now requires complete current support for fresh realised arrangements and distinguishes spatial from temporal asymmetry; Specification requires execution adaptation to include current Field World and third-party constraints; Source changes only realised-origin arrangement selection/preflight integration.
 
 **Reality boundary:** offline validation proves search/support semantics only. TS004 must determine whether an existing in-field asymmetric allocation actually resolves the constrained theatre. If none does, #393 proceeds to temporal-asymmetric single-mover Passage investigation before any off-field authority change.
+
+
+## 2026-10-02 — TS004 Reality disproof: realised-origin adaptation is unreachable before prospective preflight rejection (#393)
+
+**Reality basis — TEST `0.4.8.12`:** TS004 did not exercise the new realised-origin arrangement search. At 06:53:31.977 Cooperative Passage became Current Responsibility, but `CooperativePassageControl` rejected the joint start two milliseconds later because the retained prospective guide contained an 8RX target not positively inside Field World. The same commit/fail cycle repeated several times before native Stall evidence matured.
+
+No `COOPERATIVE_PASSAGE_TRANSIT_*`, `COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED`, `COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION` or `COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE` event preceded those failures. The configured realised-origin boundary therefore never ran.
+
+**Disproven hypothesis:** TEST 0.4.8.12 cannot yet determine whether an existing asymmetric in-field allocation resolves TS004, because the current joint-start preflight prevents the pair from reaching Transit settlement and realised-origin adaptation in this theatre.
+
+**Implementation observation:** `_executeCooperativePassageJointRequests` calls `_preflightPassageGuide(run)` before installing the run. That helper checks every guide gate's current Field World and third-party support. The same helper is also correctly used after configuration/rebase, where exact realised guide targets are authoritative.
+
+The pre-Transit call therefore applies an execution-origin predicate to prospective guide geometry before physical Transit realisation. This conflicts with the existing Passage contract that prospective Candidate Support must not require a complete helper-specific pair sweep from a hypothetical future Entry origin.
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+This is a boundary-placement defect, not evidence that spatially asymmetric allocations are exhausted.
+
+**Secondary Reality:** after the repeated Passage start rejections, both workers established Blocked Progress Stall evidence. MT665 entered Blocked Worker Recovery at 06:53:34.219; BWR requested Transit, held the 8RX as the recovery blocker, and completed successfully at 06:53:43.716. The fallback/recovery path therefore remained available in this run.
+
+**Next architectural discussion:** determine the minimum non-actuating validation appropriate at Passage joint start, preserving prospective Candidate/theatre support while deferring exact helper-gate Field World and third-party execution validation until the fresh realised Transit origin exists. Do not introduce temporal-asymmetric Passage or off-field authority until this boundary is corrected and TS004 can actually exercise the existing spatial-allocation search.
+
+**Reality boundary:** 0.4.8.12 remains offline-valid but is not Reality-validated for its intended TS004 hypothesis.
