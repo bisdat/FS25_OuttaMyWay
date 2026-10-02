@@ -52,22 +52,17 @@ Diagnostic projections MAY accompany Observation when they remain clearly non-au
 
 ### Player-control causal evidence
 
-Observation MAY publish current player-presence/control-context evidence and causal player-action evidence for a physical subject.
+Observation MAY publish current player-presence and player-control context for a physical subject.
 
-These evidence classes are distinct:
+For the Player Control Interlock, the relevant evidence is current GIANTS control context: whether that physical root vehicle is presently the player-controlled vehicle / reports current controlled state. Observation does not infer deliberate player intent from that context.
 
-- **presence/context evidence** includes seat entry, tab selection, controlled-vehicle identity, `getIsControlled()`, current engine state, speed and other current execution context;
-- **causal action evidence** records that a player-originated GIANTS action callback occurred, including steering, accelerate/reverse, brake or explicit propulsion-state commands, with the raw action/value and source provenance needed for downstream interpretation.
+Player-control context is authoritative only for the narrow mechanical exclusion question: OuttaMyWay must not concurrently actuate a vehicle while GIANTS currently owns the player-control path. It does not create historical Player Claim state and does not survive a later Observation in which control has been released.
 
-Observation MUST NOT promote either class directly into Player Claim. It MUST preserve enough provenance for Situation Assessment to distinguish a causal human command from resulting vehicle state or from OuttaMyWay/GIANTS-authored actuation.
+Engine state, vehicle motion, steering angle and ownership metadata do not substitute for current player-control context.
 
-A causal command remains observable evidence even when its intended physical result is unavailable; for example, an accelerate command issued while the engine is stopped remains a player-command observation even if the vehicle does not propel.
+> **Current Player Control != Historical Player Intent.**
 
-Final drivable state such as axis values, steering angle, motor-running state or vehicle motion MAY corroborate causal evidence but MUST NOT substitute for player-command provenance.
-
-> **Command Observation != Claim Authority.**
-
-> **Resulting State != Command Provenance.**
+> **Control Context May Exclude Actuation Without Becoming Persistent Claim State.**
 
 ### Identity and reference rules
 
