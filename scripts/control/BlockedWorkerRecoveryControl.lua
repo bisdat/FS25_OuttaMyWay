@@ -7,6 +7,9 @@ Control.__index=Control
 
 local RECOVERY_SPEED_KMH=8.0
 local RECOVERY_STEERING_TARGET_RADIUS_M=1.0
+-- Subordinate GIANTS reverse look-through. Recovery Return Region / Anchor
+-- still own physical movement extent and semantic completion.
+local RECOVERY_REVERSE_STEERING_HORIZON_M=40.0
 local publication=OuttaMyWay.LogPublication.origin("CONTROL")
 
 local function logInfo(class,code,formatText,...)
@@ -283,16 +286,22 @@ function Control:_replaceNativeFieldWorkJob(state)
 end
 
 function Control:_beginMovement(state)
+    local steeringTargetX=state.returnOriginX+state.returnDirectionX*RECOVERY_REVERSE_STEERING_HORIZON_M
+    local steeringTargetZ=state.returnOriginZ+state.returnDirectionZ*RECOVERY_REVERSE_STEERING_HORIZON_M
     local ok,reason=self.driveMechanism:setReposition(
-        state.vehicle,state.anchorX,state.anchorZ,RECOVERY_SPEED_KMH,RECOVERY_STEERING_TARGET_RADIUS_M,false)
+        state.vehicle,steeringTargetX,steeringTargetZ,RECOVERY_SPEED_KMH,RECOVERY_STEERING_TARGET_RADIUS_M,false)
     if not ok then return false,reason end
+    state.reverseSteeringTargetX=steeringTargetX
+    state.reverseSteeringTargetZ=steeringTargetZ
+    state.reverseSteeringHorizonM=RECOVERY_REVERSE_STEERING_HORIZON_M
     state.phase="MOVING_TO_RECOVERY_RETURN_REGION"
     local driveState=self.driveMechanism:getState(state.vehicle) or {}
     logInfo("DEBUG","BLOCKED_WORKER_RECOVERY_MOVEMENT_STARTED",
-        "commitment=%s assembly=%s stall=(%.2f,%.2f) anchor=(%.2f,%.2f) targetRetreat=%.2fm maxSupported=%.2fm cappedByAnchor=%s speed=%.2f reverse=true completion=RECOVERY_RETURN_REGION steeringTarget=RECOVERY_ANCHOR reverseReference=%s reverseNode=%s distinctFromSteering=%s toolReverserDirection=%s toolNode=%s nativeToolAdjustment=DRIVE_TIME_WHEN_AVAILABLE",
+        "commitment=%s assembly=%s stall=(%.2f,%.2f) anchor=(%.2f,%.2f) targetRetreat=%.2fm maxSupported=%.2fm cappedByAnchor=%s speed=%.2f reverse=true completion=RECOVERY_RETURN_REGION steeringHorizon=%.2fm steeringTarget=(%.2f,%.2f) steeringBasis=RECOVERY_RETURN_DIRECTION reverseReference=%s reverseNode=%s distinctFromSteering=%s toolReverserDirection=%s toolNode=%s nativeToolAdjustment=DRIVE_TIME_WHEN_AVAILABLE",
         tostring(state.commitmentId),tostring(state.assemblyId),
         state.returnOriginX,state.returnOriginZ,state.anchorX,state.anchorZ,
         state.requiredRetreatM,state.maximumSupportedRetreatM,tostring(state.cappedByAnchor==true),RECOVERY_SPEED_KMH,
+        RECOVERY_REVERSE_STEERING_HORIZON_M,steeringTargetX,steeringTargetZ,
         tostring(driveState.repositionReferenceNodeSource or "UNAVAILABLE"),
         tostring(driveState.repositionReferenceNode or "n/a"),
         tostring(driveState.reverseReferenceDistinctFromSteering==true),
@@ -547,11 +556,6 @@ function Control:update(dt)
         end
         if progress.retreatProgressM>=state.requiredRetreatM then
             progress.completionBasis="RECOVERY_RETURN_REGION_PROGRESS"
-            self:_beginNativeReplanning(state,progress)
-            return
-        end
-        if drive.targetReached==true then
-            progress.completionBasis="RECOVERY_ANCHOR_STEERING_TARGET_REACHED_WITHIN_BOUND"
             self:_beginNativeReplanning(state,progress)
             return
         end

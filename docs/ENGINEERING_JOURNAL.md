@@ -5874,3 +5874,22 @@ For Bounded Bypass, Control issues one best-effort Transit request immediately b
 **Validated architecture:** this run supports the current separation between **Bypass Launch Completion** and **Reverse Steering Target**. The 20 m Launch remains movement-completion authority while the farther Reverse Steering Horizon supplies GIANTS look-through. It also validates the deliberately simple one-shot Transit request contract used by Bypass in this theatre.
 
 **Scope of claim:** this PASS validates the current TS016 Bounded Bypass tranche. It does not establish complete obstacle clearance in all theatres, universal articulated reverse stability, or a Validated Plateau/canonical release by itself.
+
+
+## 2026-10-02 — #336 BWR adopts universal 40 m Reverse Steering Horizon
+
+**Reality basis:** TS004 0.4.8.10 showed a healthy long-look-through BWR followed by legitimately admitted short-Anchor Recoveries whose GIANTS articulated reverse geometry destabilised as the steering point collapsed onto the Anchor/Return Region bound. The strongest witness plateaued and then lost retreat progress while lateral/Anchor error grew.
+
+**Decision:** Blocked Worker Recovery now separates physical movement extent from reverse steering look-through. The Recovery Anchor and Recovery Return Region remain the sole movement-authority/completion bound. GIANTS reverse point steering is given a universal **40 m Reverse Steering Horizon** projected from the Stall along the Recovery Return direction, even where that point lies beyond a short Anchor.
+
+> **Recovery Anchor != Reverse Steering Target.**
+
+> **Recovery Return Region != Reverse Steering Horizon.**
+
+The 40 m point is not supported occupancy, negative-clearance evidence or permission to travel beyond the Anchor. Control continues to complete from fresh Return Region progress and no longer treats steering-target arrival as semantic Recovery completion.
+
+**Implementation — TEST `0.4.8.11`:** `BlockedWorkerRecoveryControl` projects the fixed 40 m target from the Stall on the existing normalised Return direction and passes that point to native reverse `REPOSITION`. Candidate/Assessment geometry is unchanged. Focused offline coverage proves the target remains 40 m even when the Anchor caps authorised retreat to 6 m, and the existing end-to-end Recovery contract still completes at its 20 m Return Region rather than the steering point.
+
+**Authority Triad:** Architecture changed to separate BWR movement completion from steering horizon; Specification fixes the current BWR horizon at 40 m and preserves Anchor-bounded authority; Source changes only BWR Control. Candidate Support and Bounded Authority remain unchanged because they already own the correct movement extent.
+
+**Reality boundary:** offline validation cannot prove GIANTS articulated stability. Targeted in-game validation should revisit the short-Anchor TS004 Recovery and confirm that the longer steering look-through prevents the prior sign-flip/jackknife while Recovery still stops at the Anchor-bounded Return Region.

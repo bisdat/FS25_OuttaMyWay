@@ -734,9 +734,15 @@ The excursion uses recent **Demonstrated Traversability** as positive support fo
 
 Once the Recovery Resolution is current, the assembly **always requests Transit before recovery movement**. Transit is execution choreography, not a strategic Candidate question. The physical configuration mechanism settles that request before movement proceeds.
 
-The Recovery Anchor may remain a subordinate steering/look-through reference because it proves the supported retreat direction and maximum bound. It is not the semantic destination. Physical Recovery completes as soon as fresh Reality establishes that the assembly has entered the Recovery Return Region.
+Recovery movement completion and reverse steering are deliberately separate. The Recovery Anchor and Recovery Return Region continue to bound how far OuttaMyWay may physically retreat and when Physical Recovery is complete.
 
-> **Recovery Target Reference != Recovery Completion Condition.**
+For the current capability, GIANTS reverse steering uses a **40 m Reverse Steering Horizon** projected from the Stall along the Recovery Return direction. The steering point may therefore lie beyond the Recovery Anchor. That farther point is subordinate steering look-through only: it is not supported occupancy, a Recovery destination, negative-clearance evidence, or permission to move beyond the Anchor-bounded Return Region.
+
+> **Recovery Anchor != Reverse Steering Target.**
+
+> **Recovery Return Region != Reverse Steering Horizon.**
+
+> **Movement Completion Region != Reverse Steering Target.**
 
 > **Recovery Need Does Not Require Blockage Cause.**
 
