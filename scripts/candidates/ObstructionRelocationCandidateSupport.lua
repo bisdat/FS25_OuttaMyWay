@@ -277,9 +277,11 @@ local function positiveSupportedContinuation(motion,productive)
         and productive.representationFitness=="FIT_FOR_LIMITED_HORIZON"
 end
 
-local function currentPlayerClaim(snapshot,referenceKey)
-    local control=snapshot and snapshot.playerControl and snapshot.playerControl[referenceKey] or nil
-    return type(control)=="table" and control.playerEnteredObserved==true and control.playerEntered==true
+local function currentPlayerClaim(picture,referenceKey)
+    for _,claim in OuttaMyWay.ValueRecord.ipairs(picture and picture.playerActuationClaimKnowledge or {}) do
+        if claim.current==true and claim.assemblyReferenceKey==referenceKey then return true end
+    end
+    return false
 end
 
 local function currentSourceAi(snapshot,referenceKey)
@@ -338,7 +340,7 @@ local function reassessmentSpec(picture,snapshot,context,references)
     local blockerAssemblyId=basis.blockerAssemblyId
     local blockerReferenceKey=references[blockerAssemblyId]
     if type(blockerAssemblyId)~="string" or type(blockerReferenceKey)~="string" then return nil,"BLOCKER_CONTEXT_UNAVAILABLE" end
-    if currentPlayerClaim(snapshot,blockerReferenceKey) then return terminalSpec(context,"PLAYER_CLAIM",blockerAssemblyId,blockerReferenceKey),nil end
+    if currentPlayerClaim(picture,blockerReferenceKey) then return terminalSpec(context,"PLAYER_CLAIM",blockerAssemblyId,blockerReferenceKey),nil end
     if currentSourceAi(snapshot,blockerReferenceKey) then return terminalSpec(context,"NEW_AUTHORITATIVE_INTENT",blockerAssemblyId,blockerReferenceKey),nil end
     local outcome=latestControlOutcome(picture,context.commitmentId)
     if outcome==nil then return nil,"CONTROL_OUTCOME_NOT_YET_OBSERVED" end
