@@ -157,7 +157,7 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, playerActuationClaimAssessment, causalObstructionAssessment, blockedWorkerRecoveryRecurrenceAssessment)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, causalObstructionAssessment, blockedWorkerRecoveryRecurrenceAssessment)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
@@ -165,7 +165,6 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.operations = operations
     self.commitments = commitments
     self.obligations = obligations
-    self.playerActuationClaimAssessment=playerActuationClaimAssessment
     self.causalObstructionAssessment=causalObstructionAssessment
     self.blockedWorkerRecoveryRecurrenceAssessment=blockedWorkerRecoveryRecurrenceAssessment
     self.blockedProgressAssessment=OuttaMyWay.BlockedProgressAssessment.new(jobEpisodes)
@@ -349,16 +348,11 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         commitments=self.commitments:list()
     })
 
-    local playerActuationClaimKnowledge={}
-    if self.playerActuationClaimAssessment~=nil then
-        playerActuationClaimKnowledge=self.playerActuationClaimAssessment:assess(snapshot)
-    end
-
     local causalObstructionKnowledge={}
     if self.causalObstructionAssessment~=nil then
         causalObstructionKnowledge=self.causalObstructionAssessment:assess(
             snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,
-            realisedMotionDemandKnowledge,playerActuationClaimKnowledge
+            realisedMotionDemandKnowledge
         )
         for _,relation in OuttaMyWay.ValueRecord.ipairs(causalObstructionKnowledge) do
             relevant[#relevant+1]=relation.beneficiaryAssemblyId
@@ -628,7 +622,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         opposedCorridorKnowledge=opposedCorridorKnowledge,
         spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
-        playerActuationClaimKnowledge=playerActuationClaimKnowledge,
         causalObstructionKnowledge=causalObstructionKnowledge,
         blockedProgressKnowledge=blockedProgressKnowledge,
         blockedWorkerRecoveryRecurrenceKnowledge=blockedWorkerRecoveryRecurrenceKnowledge,
@@ -648,7 +641,6 @@ end
 function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
-    if self.playerActuationClaimAssessment~=nil then self.playerActuationClaimAssessment:reset() end
     if self.blockedProgressAssessment~=nil then self.blockedProgressAssessment:reset() end
     if self.blockedWorkerRecoveryRecurrenceAssessment~=nil then self.blockedWorkerRecoveryRecurrenceAssessment:reset() end
     if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
