@@ -408,20 +408,24 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
             evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},
             provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-        local terminalEvidenceKind=crossContext and "TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
-            or (claimed and ((evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE")
-                and "CLAIMED_OBSTRUCTION_PLAYER_CLAIM_RELEASED"
-                or ((evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION")
-                and "CLAIMED_OBSTRUCTION_GIANTS_INTENT_REACTIVATED"
-                or "CLAIMED_OBSTRUCTION_CORRIDOR_POSITIVELY_DISSOLVED"))
-            or (corner and "CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
-            or (category2 and "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED"
-            or "ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED")))
-        if forward and not crossContext then
+        local terminalEvidenceKind="ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"
+        if crossContext then
+            terminalEvidenceKind="TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
+        elseif claimed then
+            if evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE" then
+                terminalEvidenceKind="CLAIMED_OBSTRUCTION_PLAYER_CLAIM_RELEASED"
+            elseif evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
+                terminalEvidenceKind="CLAIMED_OBSTRUCTION_GIANTS_INTENT_REACTIVATED"
+            else
+                terminalEvidenceKind="CLAIMED_OBSTRUCTION_CORRIDOR_POSITIVELY_DISSOLVED"
+            end
+        elseif forward then
             terminalEvidenceKind=(evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
                 or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
-        elseif category2 and not crossContext then
+        elseif corner then
+            terminalEvidenceKind="CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
+        elseif category2 then
             terminalEvidenceKind="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED"
         end
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
