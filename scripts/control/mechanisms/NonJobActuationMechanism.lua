@@ -66,21 +66,8 @@ function Mechanism:steeringTelemetry(vehicle)
     telemetry.steerableWheelCount=#telemetry.wheels
     return telemetry
 end
-local function rootVehicle(vehicle)
-    if vehicle==nil then return nil end
-    local ok,value=safeCall(vehicle,"getRootVehicle")
-    if ok and type(value)=="table" and value.rootNode~=nil and value.rootNode~=0 then return value end
-    return vehicle
-end
-
 function Mechanism:isPlayerControlled(vehicle)
-    if vehicle==nil then return false end
-    local ok,value=safeCall(vehicle,"getIsControlled")
-    if ok and value==true then return true end
-    local mission=g_currentMission
-    local controlled=mission and rootVehicle(mission.controlledVehicle) or nil
-    local target=rootVehicle(vehicle)
-    return controlled~=nil and target~=nil and controlled==target
+    return OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle)
 end
 function Mechanism:isSourceReactivated(vehicle)
     local ok,value=safeCall(vehicle,"getIsAIActive"); return ok and value==true

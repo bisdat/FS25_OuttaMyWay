@@ -71,10 +71,27 @@ def test_single_generic_obstruction_relocation_authority_uses_shared_non_job_mec
     assert "POST_JOB_ACTUATION" not in current
     assert "POST_JOB_ACTUATION" not in control
     assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()" in control
-    assert 'safeCall(vehicle,"getIsControlled")' in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
-    assert "mission.controlledVehicle" in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    shared = read("scripts/observation/CurrentPlayerControlObservation.lua")
+    assert "OuttaMyWay.CurrentPlayerControlObservation.isControlled" in read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    assert 'safeCall(target,"getIsControlled")' in shared
+    assert "mission.controlledVehicle" in shared
     assert (ROOT / "scripts" / "control" / "ObstructionRelocationControl.lua").is_file()
     assert not (ROOT / "scripts" / "candidates" / "TerminalEgressCandidateSupport.lua").exists()
+
+
+def test_current_player_control_has_one_shared_reality_predicate():
+    main = read("scripts/main.lua")
+    shared = read("scripts/observation/CurrentPlayerControlObservation.lua")
+    live = read("scripts/observation/LiveObservationSource.lua")
+    current = read("scripts/observation/CurrentPhysicalAssemblySource.lua")
+    mechanism = read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+
+    assert "scripts/observation/CurrentPlayerControlObservation.lua" in main
+    assert "OuttaMyWay.CurrentPlayerControlObservation={}" in shared
+    assert 'safeCall(target,"getIsControlled")' in shared
+    assert "mission.controlledVehicle" in shared
+    for consumer in (live,current,mechanism):
+        assert "OuttaMyWay.CurrentPlayerControlObservation.isControlled" in consumer
 
 
 def test_current_causal_obstruction_is_provenance_neutral_and_geometry_bounded():

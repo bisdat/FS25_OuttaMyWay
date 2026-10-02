@@ -5,6 +5,7 @@ OuttaMyWay = {}
 g_currentMission={controlledVehicle=nil}
 
 load("scripts/config.lua")
+load("scripts/observation/CurrentPlayerControlObservation.lua")
 load("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 
 local passed,failed=0,0
@@ -27,26 +28,31 @@ local vehicle={rootNode=9901}
 function vehicle:getRootVehicle() return self end
 function vehicle:getIsControlled() return controlled end
 
-test("Player Control Interlock is transient",function()
+test("Player Control Interlock and Observation share transient getIsControlled evidence",function()
     local mechanism=OuttaMyWay.NonJobActuationMechanism.new()
     controlled=false
     g_currentMission.controlledVehicle=nil
+    equal(OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle),false)
     equal(mechanism:isPlayerControlled(vehicle),false)
 
     controlled=true
+    equal(OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle),true)
     equal(mechanism:isPlayerControlled(vehicle),true)
 
     controlled=false
+    equal(OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle),false)
     equal(mechanism:isPlayerControlled(vehicle),false)
 end)
 
-test("mission controlled-root context also establishes current interlock",function()
+test("mission controlled-root context remains an independent positive fallback",function()
     local mechanism=OuttaMyWay.NonJobActuationMechanism.new()
     controlled=false
     g_currentMission.controlledVehicle=vehicle
+    equal(OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle),true)
     equal(mechanism:isPlayerControlled(vehicle),true)
 
     g_currentMission.controlledVehicle=nil
+    equal(OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle),false)
     equal(mechanism:isPlayerControlled(vehicle),false)
 end)
 

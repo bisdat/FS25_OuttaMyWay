@@ -33,9 +33,7 @@ local function rootVehicle(object)
 end
 
 local function isPlayerControlled(mission,object)
-    local controlled=rootVehicle(mission and mission.controlledVehicle or nil)
-    local target=rootVehicle(object)
-    return controlled~=nil and target~=nil and controlled==target
+    return OuttaMyWay.CurrentPlayerControlObservation.isControlled(mission,object)
 end
 
 local function objectName(object)

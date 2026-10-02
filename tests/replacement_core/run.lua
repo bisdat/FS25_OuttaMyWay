@@ -2172,6 +2172,24 @@ test("player presence in an AI-active vehicle does not imply player Control",fun
     end)
 end)
 
+test("getIsControlled positive evidence survives when mission controlledVehicle does not identify the vehicle",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        mission.vehicles={a}
+        setActiveVehicles(mission,a)
+        mission.controlledVehicle=nil
+        a.getIsControlled=function() return true end
+
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(raw.playerControl["vehicle-root:101"].playerControlled,true)
+
+        mission.vehicleSystem={vehicles={a}}
+        local currentRecords=runtime.currentPhysicalAssemblySource:observe(mission)
+        equal(#currentRecords,1)
+        equal(currentRecords[1].playerControlled,true)
+    end)
+end)
+
 test("activeJobVehicles membership is authoritative over false corroborating methods",function()
     withFakeLiveGlobals(function(mission,a,b)
         a.spec_aiFieldWorker.isActive=false; b.spec_aiFieldWorker.isActive=false

@@ -6086,3 +6086,25 @@ The failing regression was the existing Bounded Bypass contradiction contract: `
 **Implementation hypothesis — TEST 0.4.9.6:** make generic Governing Basis terminal vocabulary additive: retain `PLAYER_CLAIM` for current responsibilities that still own that semantic event and add `PLAYER_CONTROL` for the #412 Obstruction Relocation interlock. No architecture or Specification change is justified by this CI evidence.
 
 **Validation boundary:** the existing Bounded Bypass regression and the new Obstruction Relocation Runtime-settlement regression together must both pass before returning to GIANTS Reality.
+
+## 2026-10-02 — #412 TEST 0.4.9.6 Reality: Player Control Evidence Split-Brain
+
+**Observe:** the 0.4.9.6 TS002 three-run repeat proves the repaired terminal settlement path. In Runs 1 and 2, active Obstruction Relocation observes `controlled=true`, releases Vehicle Activity Context immediately, completes with `status=PLAYER_CONTROL`, and settles through Governing Basis without the prior runtime fault. Run 3 remains an unchanged no-player-control Obstruction Relocation control.
+
+Runs 1 and 2 nevertheless fail the next expected transition. While Condor remains under player control, Situation Assessment republishes the blocker as `NON_ACTIVE_UNCLAIMED|RELOCATION_ELIGIBLE`. Runtime repeatedly creates fresh Obstruction Relocation commitments; Control then immediately rejects each at `PLAYER_CONTROL_AT_CONTROL_BOUNDARY`. No `NON_ACTIVE_PLAYER_CONTROLLED` relation and no exact 1 km/h Player-Controlled Obstruction Regulation appear.
+
+Run 1 produced 42 Obstruction Relocation commitments / 41 Player Control boundary rejections before the player moved Condor clear. Run 2 produced 24 rejected attempts before tab-out; after tab-out a later fresh commitment executed with `controlled=false`, confirming stale pre-control authority was not resurrected.
+
+> **Player Control Evidence Split-Brain.**
+
+**Code walk:** `NonJobActuationMechanism:isPlayerControlled()` used `vehicle:getIsControlled()` first and mission controlled-root comparison as fallback. `LiveObservationSource` and `CurrentPhysicalAssemblySource` used only mission controlled-root comparison. Reality therefore allowed Control to know the interlock was current while Observation told Situation Assessment that the same blocker was unclaimed.
+
+> **Control-Side Interlock Truth != Observation-Side Player Control Truth.**
+
+> **One Architectural Fact Requires One Coherent Reality Predicate.**
+
+**Architecture / Specification disposition:** no architectural change is justified. Runtime Responsibility Architecture already defines Player Control Interlock as current, not historical. `OBSERVATION` already permits the physical root reporting current controlled state. The defect is duplicated implementation evidence with non-equivalent GIANTS surfaces.
+
+**Implementation hypothesis — TEST 0.4.9.7:** introduce one Observation-owned current Player Control predicate consumed by Live Observation, Current Physical Assembly Observation and the non-job mechanical interlock. Either positive `getIsControlled()==true` or positive mission controlled-root identity establishes current control. A negative result from one surface cannot overrule a positive result from the other. This preserves the already Reality-valid mechanical interlock while giving Situation Assessment the same current fact.
+
+**Validation boundary:** CI must prove both Observation routes and Control consume the shared predicate. GIANTS Reality must then repeat the same three-run TS002 sequence and reach Player-Controlled Obstruction Regulation at exactly 1 km/h in Runs 1 and 2 before clear/control-release semantics can be judged.
