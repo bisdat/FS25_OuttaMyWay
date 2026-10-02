@@ -6029,4 +6029,31 @@ Player Actuation Claim changes **authority**, not **obstruction geometry**. If t
 **Implementation — TEST `0.4.9.3`:** `PlayerActuationObservation` observes causal GIANTS action callbacks without semantic authority and fails closed unless the three core Drivable command callbacks plus at least one supported Motorized command callback are available. `PlayerActuationClaimAssessment` owns establishment/retention/release. `LiveObservationSource` keeps claimed completed assemblies physically observable instead of deleting them on entry. `CausalObstructionAssessment` consumes Player Actuation Claim knowledge, preserves the same geometry, and publishes positive clear/claim-release successor evidence. Obstruction Relocation Control consumes the same semantic claim source instead of `getIsEntered()`. Claimed Obstruction is projected as an outer Causal Obstruction response through the existing Action-Space Regulation responsibility, Bounded Authority and Regulation Control path with a fixed 1 km/h cap.
 
 **Validation boundary:** focused offline contracts now target passive entry, deliberate steer/brake/accelerate, engine-independent command evidence, claim retention, tab-out release, stale-input re-entry and relocation relinquishment. Independent GitHub Actions and then GIANTS Reality remain required before #412 is accepted. The PR remains draft until those gates are satisfied.
+## 2026-10-02 — #412 Reality correction: Player Control Interlock replaces Player Actuation Claim — TEST 0.4.9.4
+
+**Reality disproof — TEST 0.4.9.3 TS002:** three same-theatre runs isolated player control as the mechanical discriminator. In Runs #1/#2, Condor changed from `controlled=false` with OMW steering fully realised (`rotatedTime=0.875`) to `controlled=true` with steering collapsing to approximately zero immediately after tab-in, before deliberate player steering. Run #3 without player intervention remained `controlled=false` and followed the expected OMW relocation path.
+
+> **Semantic Non-Claim != Mechanical Non-Interference.**
+
+> **Passive Control Context Rewrites OMW Steering.**
+
+The same runs also disproved the causal callback hypothesis. Deliberate steering became visible in realised vehicle state, but no `PLAYER_ACTUATION_CLAIM_ESTABLISHED` event appeared and OMW later reacquired relocation while the vehicle was already `controlled=true`.
+
+> **Causal Callback Availability != Causal Callback Observation.**
+
+**Architecture correction:** OuttaMyWay will not attempt to reinterpret or rewrite GIANTS player-control mechanics. The discarded Player Actuation Claim concept is replaced by a transient **Player Control Interlock**. Current GIANTS player control alone excludes OMW physical actuation over that vehicle. The interlock has no memory: tab-out/control release removes it, but previously retired OMW authority never resumes.
+
+> **Player Control Interlock Is Current, Not Historical.**
+
+> **Control Release Removes the Interlock; It Does Not Resume Old Authority.**
+
+If the currently player-controlled vehicle remains a positive Causal Obstruction, the response is **Player-Controlled Obstruction Regulation**: leave the blocker entirely under GIANTS/player control and regulate only the affected active AI beneficiary to the exact **1 km/h Intent-Revelation Creep**. If the player moves clear, fresh geometry releases the Regulation. If the player tabs out while still blocking, the Regulation retires on positive control-release supersession and a later fresh picture may admit ordinary Obstruction Relocation.
+
+> **Player-Controlled Blocker -> Regulate Beneficiary, Do Not Move Blocker.**
+
+**Implementation — TEST 0.4.9.4:** removed `PlayerActuationObservation` and `PlayerActuationClaimAssessment`; Runtime no longer owns retained Player Claim state. `NonJobActuationMechanism:isPlayerControlled()` consumes current GIANTS control context directly. Causal Obstruction classifies a non-active controlled blocker as `NON_ACTIVE_PLAYER_CONTROLLED`. Existing Regulation infrastructure now carries `PLAYER_CONTROLLED_OBSTRUCTION` as the fixed-creep purpose. Obstruction Relocation terminates with `PLAYER_CONTROL` and skips competing neutralisation. One-cycle positive control-release evidence enforces the fresh-picture handover before any renewed relocation.
+
+**Offline validation:** run `37040907775` green — 282 structural/source contracts, 475 replacement-core behavioural tests, 3 focused Player Control Interlock tests, 18 focused Obstruction Relocation tests, and generated source reference PASS.
+
+**Next gate:** GIANTS Reality. The critical scenarios are: passive tab-in during relocation must immediately retire OMW actuation rather than veer; while the controlled blocker remains obstructing the beneficiary must regulate at exactly 1 km/h; moving clear must release Regulation; tab-out while still blocking must permit only a fresh later Obstruction Relocation, never stale actuation resumption.
 
