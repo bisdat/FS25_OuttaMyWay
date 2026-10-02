@@ -50,7 +50,7 @@ local function actionSpaceRelation(picture,current)
     local provenance=current.provenance or {}
     local conflictIdentity=provenance.conflictIdentity
     if conflictIdentity==nil then return nil end
-    if provenance.admissionKind=="CLAIMED_OBSTRUCTION" then
+    if provenance.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION" then
         for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.causalObstructionKnowledge or {}) do
             if relation.identity==conflictIdentity then return relation end
         end
@@ -102,14 +102,14 @@ local function blockedWorkerRecoveryBridge(candidate)
     return nil
 end
 
-local function currentClaimedObstructionRegulation(runtime,picture)
+local function currentPlayerControlledObstructionRegulation(runtime,picture)
     local found=nil
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if type(context.commitmentId)=="string" then
             local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(context.commitmentId)
-            if current~=nil and current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION" then
+            if current~=nil and current.provenance and current.provenance.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION" then
                 if found~=nil and found.identity~=current.identity then
-                    return nil,"MULTIPLE_CLAIMED_OBSTRUCTION_REGULATIONS_CURRENT"
+                    return nil,"MULTIPLE_PLAYER_CONTROLLED_OBSTRUCTION_REGULATIONS_CURRENT"
                 end
                 found=current
             end
@@ -499,17 +499,17 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
-    local claimed=current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION"
-    if claimed
-        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION"
-        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE"
-        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
+    local playerControlled=current.provenance and current.provenance.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
+    if playerControlled
+        and assessment.terminationEvidenceKind~="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION"
+        and assessment.terminationEvidenceKind~="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE"
+        and assessment.terminationEvidenceKind~="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
         return {
             status="NO_DISPATCH",
-            reason="CLAIMED_OBSTRUCTION_TERMINATION_EVIDENCE_REQUIRED",
+            reason="PLAYER_CONTROLLED_OBSTRUCTION_TERMINATION_EVIDENCE_REQUIRED",
             detail=assessment.reason,
             actionSpaceRegulation=true,
-            claimedObstruction=true,
+            playerControlledObstruction=true,
             commitmentId=commitmentId
         }
     end
@@ -551,7 +551,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        local settlementKind=claimed and assessment.terminationEvidenceKind
+        local settlementKind=playerControlled and assessment.terminationEvidenceKind
             or (forward and assessment.terminationEvidenceKind
             or (corner and assessment.terminationEvidenceKind
             or (category2 and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY")))
@@ -562,10 +562,10 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
                 or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION"
                 or settlementKind=="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION"
-                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION",
+                or settlementKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
-                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE"
-                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION"
+                or settlementKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE"
+                or settlementKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION"
         })
     end
     self.responsibilityTransitionAuthority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)
@@ -923,7 +923,7 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
     if started~=true then
         self.boundedAuthority:release(request.boundedAuthorityId,"OBSTRUCTION_RELOCATION_START_REJECTED")
         self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"OBSTRUCTION_RELOCATION_START_REJECTED")
-        local eventKind=result=="PLAYER_CLAIM_AT_CONTROL_BOUNDARY" and "PLAYER_CLAIM" or (result=="SOURCE_AI_REACTIVATED_AT_CONTROL_BOUNDARY" and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_FAILED")
+        local eventKind=result=="PLAYER_CONTROL_AT_CONTROL_BOUNDARY" and "PLAYER_CONTROL" or (result=="SOURCE_AI_REACTIVATED_AT_CONTROL_BOUNDARY" and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_FAILED")
         OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,applied.commitment.identity,eventKind,{kind="OBSTRUCTION_RELOCATION_START_REJECTED",reason=tostring(result)})
         return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,obstructionRelocation=true,commitment=applied.commitment}
     end
@@ -959,23 +959,23 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     -- before any newly supportable physical purpose may acquire authority. This
     -- deliberately creates a fresh-observation boundary before Obstruction
     -- Relocation can restart after tab-out.
-    local currentClaimed,currentClaimedReason=currentClaimedObstructionRegulation(self,picture)
-    if currentClaimedReason~=nil then
-        return {status="NO_DISPATCH",reason=currentClaimedReason,claimedObstruction=true}
+    local currentPlayerControlled,currentPlayerControlledReason=currentPlayerControlledObstructionRegulation(self,picture)
+    if currentPlayerControlledReason~=nil then
+        return {status="NO_DISPATCH",reason=currentPlayerControlledReason,playerControlledObstruction=true}
     end
-    if currentClaimed~=nil then
-        local claimedAssessment=self.currentResponsibilityAssessment:assessActionSpaceRegulation(
-            currentClaimed,actionSpaceRelation(picture,currentClaimed))
-        if claimedAssessment.disposition=="TERMINATE" then
-            return self:_terminateActionSpaceRegulation(picture,evaluated,currentClaimed,claimedAssessment)
+    if currentPlayerControlled~=nil then
+        local playerControlledAssessment=self.currentResponsibilityAssessment:assessActionSpaceRegulation(
+            currentPlayerControlled,actionSpaceRelation(picture,currentPlayerControlled))
+        if playerControlledAssessment.disposition=="TERMINATE" then
+            return self:_terminateActionSpaceRegulation(picture,evaluated,currentPlayerControlled,playerControlledAssessment)
         end
         local selectedRelocation=relocationBridge(candidate)
         if selectedRelocation~=nil then
             return {
                 status="NO_DISPATCH",
-                reason="CLAIMED_OBSTRUCTION_REGULATION_REMAINS_CURRENT_FRESH_RELOCATION_NOT_YET_AUTHORISED",
-                claimedObstruction=true,
-                commitmentId=currentClaimed.provenance and currentClaimed.provenance.retainedCommitmentId or nil
+                reason="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION_REMAINS_CURRENT_FRESH_RELOCATION_NOT_YET_AUTHORISED",
+                playerControlledObstruction=true,
+                commitmentId=currentPlayerControlled.provenance and currentPlayerControlled.provenance.retainedCommitmentId or nil
             }
         end
     end
@@ -988,18 +988,18 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
     local obstructionBridge=relocationBridge(candidate)
     if obstructionBridge~=nil then
-        local currentClaimedRegulation=self.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation()
-        if currentClaimedRegulation~=nil
-            and currentClaimedRegulation.provenance
-            and currentClaimedRegulation.provenance.admissionKind=="CLAIMED_OBSTRUCTION" then
-            local claimedAssessment=self.currentResponsibilityAssessment:assessActionSpaceRegulation(
-                currentClaimedRegulation,actionSpaceRelation(picture,currentClaimedRegulation))
-            if claimedAssessment.disposition=="TERMINATE" then
-                return self:_terminateActionSpaceRegulation(picture,evaluated,currentClaimedRegulation,claimedAssessment)
+        local currentPlayerControlledRegulation=self.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation()
+        if currentPlayerControlledRegulation~=nil
+            and currentPlayerControlledRegulation.provenance
+            and currentPlayerControlledRegulation.provenance.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION" then
+            local playerControlledAssessment=self.currentResponsibilityAssessment:assessActionSpaceRegulation(
+                currentPlayerControlledRegulation,actionSpaceRelation(picture,currentPlayerControlledRegulation))
+            if playerControlledAssessment.disposition=="TERMINATE" then
+                return self:_terminateActionSpaceRegulation(picture,evaluated,currentPlayerControlledRegulation,playerControlledAssessment)
             end
             return {
                 status="NO_DISPATCH",
-                reason="CLAIMED_OBSTRUCTION_REGULATION_MUST_RETIRE_BEFORE_FRESH_RELOCATION_AUTHORITY",
+                reason="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION_MUST_RETIRE_BEFORE_FRESH_RELOCATION_AUTHORITY",
                 actionSpaceRegulation=true,obstructionRelocation=true
             }
         end
