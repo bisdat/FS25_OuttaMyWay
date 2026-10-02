@@ -122,14 +122,18 @@ function Runtime.new()
     local admission=OuttaMyWay.CommitmentAdmission.new(identities,epochs,commitments,obligations,authorities)
     local governingBasis=OuttaMyWay.GoverningBasisEvaluator.new(identities,epochs)
     local terminalSettlement=OuttaMyWay.TerminalSettlementEvaluator.new(epochs,commitments,obligations,authorities)
+    if OuttaMyWay.PlayerActuationObservation~=nil and type(OuttaMyWay.PlayerActuationObservation.reset)=="function" then
+        OuttaMyWay.PlayerActuationObservation.reset()
+    end
+    local playerActuationClaimAssessment=OuttaMyWay.PlayerActuationClaimAssessment.new()
     local causalObstructionAssessment=OuttaMyWay.CausalObstructionAssessment.new(jobEpisodes)
     local blockedWorkerRecoveryRecurrenceAssessment=OuttaMyWay.BlockedWorkerRecoveryRecurrenceAssessment.new()
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
         commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
-        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment),
+        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,playerActuationClaimAssessment,causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
-        fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,causalObstructionAssessment=causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment=blockedWorkerRecoveryRecurrenceAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
+        fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,playerActuationClaimAssessment=playerActuationClaimAssessment,causalObstructionAssessment=causalObstructionAssessment,blockedWorkerRecoveryRecurrenceAssessment=blockedWorkerRecoveryRecurrenceAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
         initialized=false,cooperativeVerdictTraceKey=nil
     },Runtime)
     runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots,runtime.fieldWorldEquivalenceAuthority,runtime.assemblyRepresentationCache,runtime.currentPhysicalAssemblySource,runtime.currentPhysicalConflictRepresentation)
