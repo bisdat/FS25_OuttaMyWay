@@ -178,6 +178,7 @@ Control may produce physical outcomes. Those outcomes become evidence only by re
 | [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) | `REALISES` |
 | [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) | `REALISES` |
+| [`scripts/observation/CurrentPlayerControlObservation.lua`](../scripts/observation/CurrentPlayerControlObservation.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `REALISES` |
 | [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) | `REALISES` |
 | [`scripts/observation/LiveInteractionObservation.lua`](../scripts/observation/LiveInteractionObservation.lua) | `REALISES` |
@@ -196,6 +197,7 @@ Primary current implementation routes include:
 - [`scripts/observation/RuntimeObservationAdapter.lua`](../scripts/observation/RuntimeObservationAdapter.lua) — publication boundary assigning Observation identity/epoch while preserving raw evidence limits;
 - [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) — live GIANTS/runtime evidence composition;
 - [`scripts/observation/CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua) — current non-semantic Physical Assembly source evidence;
+- [`scripts/observation/CurrentPlayerControlObservation.lua`](../scripts/observation/CurrentPlayerControlObservation.lua) — shared current GIANTS player-control evidence predicate used by Observation and the downstream mechanical interlock;
 - [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) — current pose acquisition plus purpose-scoped representation-evidence publication; its Assessment Representation role is governed separately;
 - [`scripts/observation/LiveAIJobEvidence.lua`](../scripts/observation/LiveAIJobEvidence.lua) — current GIANTS AI-job source evidence;
 - [`scripts/observation/LiveInteractionObservation.lua`](../scripts/observation/LiveInteractionObservation.lua) — current interaction source evidence;

@@ -48,9 +48,11 @@ def test_controls_consume_mechanisms_without_new_semantic_authority():
     assert "OuttaMyWay.TransitConfigurationMechanism.new()" in terminal
     assert "OuttaMyWay.NonJobActuationMechanism.new()" in terminal
     mechanism=text("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    player_control=text("scripts/observation/CurrentPlayerControlObservation.lua")
     assert "function Mechanism:isPlayerControlled(vehicle)" in mechanism
-    assert 'safeCall(vehicle,"getIsControlled")' in mechanism
-    assert "mission.controlledVehicle" in mechanism
+    assert "OuttaMyWay.CurrentPlayerControlObservation.isControlled" in mechanism
+    assert 'safeCall(target,"getIsControlled")' in player_control
+    assert "mission.controlledVehicle" in player_control
     assert "POST_JOB_ACTUATION" not in terminal
     assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
     assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()

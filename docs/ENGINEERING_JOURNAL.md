@@ -6108,3 +6108,13 @@ Run 1 produced 42 Obstruction Relocation commitments / 41 Player Control boundar
 **Implementation hypothesis — TEST 0.4.9.7:** introduce one Observation-owned current Player Control predicate consumed by Live Observation, Current Physical Assembly Observation and the non-job mechanical interlock. Either positive `getIsControlled()==true` or positive mission controlled-root identity establishes current control. A negative result from one surface cannot overrule a positive result from the other. This preserves the already Reality-valid mechanical interlock while giving Situation Assessment the same current fact.
 
 **Validation boundary:** CI must prove both Observation routes and Control consume the shared predicate. GIANTS Reality must then repeat the same three-run TS002 sequence and reach Player-Controlled Obstruction Regulation at exactly 1 km/h in Runs 1 and 2 before clear/control-release semantics can be judged.
+
+## 2026-10-02 — #412 TEST 0.4.9.7 CI composition correction
+
+**Validation observation:** the first 0.4.9.7 CI run failed before changing the runtime hypothesis. Production composition was correct, but the offline harnesses manually enumerate source dependencies and had not loaded the new `CurrentPlayerControlObservation` module. The structural suite also retained the obsolete assumption that `NonJobActuationMechanism` itself owned both GIANTS player-control surfaces, and the new Observation participant had not yet been added to `OBSERVATION` traceability.
+
+> **Runtime Composition != Test Harness Composition.**
+
+**Correction:** load the shared predicate explicitly in the replacement-core and focused Obstruction Relocation harnesses, update the physical-mechanism structural contract to assert delegation rather than duplicated evidence acquisition, and register `CurrentPlayerControlObservation` as a current `OBSERVATION` participant. No runtime source or build identity changes are made; the executable remains TEST 0.4.9.7.
+
+**Validation boundary:** rerun the same independent CI gates. Only after all gates are green does 0.4.9.7 return to GIANTS Reality.
