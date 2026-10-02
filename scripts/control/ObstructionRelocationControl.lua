@@ -4,7 +4,7 @@
 -- Provenance-neutral physical Obstruction Relocation execution.
 -- This Control consumes only an authorised current Obstruction Relocation objective,
 -- current physical subject and current Bounded Authority. Historical Job provenance
--- does not select a different executor. Player Claim and source-AI reactivation remain
+-- does not select a different executor. Player control and source-AI reactivation remain
 -- higher-priority Reality boundaries.
 
 OuttaMyWay.ObstructionRelocationControl={}
@@ -63,7 +63,7 @@ end
 function Control.new(runtime,observationSource)
     return setmetatable({
         runtime=runtime,source=observationSource,
-        actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(runtime and runtime.playerActuationClaimAssessment or nil),
+        actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(),
         configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),
         active=nil,completionHandler=nil,latestObservation=nil,
         startedCount=0,completedCount=0,failedCount=0
@@ -112,8 +112,8 @@ function Control:_complete(status,evidence)
     local ownedCleanupFailed=false
 
     if state.phase=="INFIELD" and state.actuationIssued==true then
-        if status=="PLAYER_CLAIM" then
-            completionEvidence.neutralization={performed=false,reason="PLAYER_CLAIM_HIGHER_AUTHORITY"}
+        if status=="PLAYER_CONTROL" then
+            completionEvidence.neutralization={performed=false,reason="PLAYER_CONTROL_HIGHER_AUTHORITY"}
         elseif status=="SUPERSEDED" then
             completionEvidence.neutralization={performed=false,reason="SOURCE_INTENT_REACTIVATED_HIGHER_AUTHORITY"}
         elseif vehicle==nil then
@@ -137,7 +137,7 @@ function Control:_complete(status,evidence)
     if state.phase=="INFIELD" and state.activityContext~=nil then
         if vehicle==nil then
             completionEvidence.activityContext={released=false,reason="CURRENT_PHYSICAL_OBJECT_LOST"}
-            if status~="PLAYER_CLAIM" and status~="SUPERSEDED" then ownedCleanupFailed=true end
+            if status~="PLAYER_CONTROL" and status~="SUPERSEDED" then ownedCleanupFailed=true end
         else
             local released,releaseEvidence=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
             completionEvidence.activityContext={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
@@ -147,7 +147,7 @@ function Control:_complete(status,evidence)
                     self.actuationMechanism:getActivityContextReleaseCallCount(),
                     tostring(type(releaseEvidence)=="table" and releaseEvidence.restoredForceIsActive or nil),
                     steeringTelemetryText(type(releaseEvidence)=="table" and releaseEvidence.postReleaseSteering or nil))
-            elseif status~="PLAYER_CLAIM" and status~="SUPERSEDED" then
+            elseif status~="PLAYER_CONTROL" and status~="SUPERSEDED" then
                 ownedCleanupFailed=true
                 logWarning("OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_RELEASE_FAILED","commitment=%s reason=%s",tostring(state.commitmentId),tostring(releaseEvidence))
             end
@@ -217,7 +217,7 @@ function Control:executeControlRequest(request,candidate)
 
     local vehicle=self:_vehicle(target.assemblyReferenceKey)
     if vehicle==nil then return self:_rejectBeforeStart(request,target,"FAILED","CURRENT_PHYSICAL_OBJECT_UNAVAILABLE") end
-    if self.actuationMechanism:isPlayerClaimed(vehicle) then return self:_rejectBeforeStart(request,target,"PLAYER_CLAIM","PLAYER_CLAIM_AT_CONTROL_BOUNDARY") end
+    if self.actuationMechanism:isPlayerControlled(vehicle) then return self:_rejectBeforeStart(request,target,"PLAYER_CONTROL","PLAYER_CONTROL_AT_CONTROL_BOUNDARY") end
     if self.actuationMechanism:isSourceReactivated(vehicle) then return self:_rejectBeforeStart(request,target,"SUPERSEDED","SOURCE_AI_REACTIVATED_AT_CONTROL_BOUNDARY") end
 
     local state={
@@ -247,7 +247,7 @@ function Control:executeControlRequest(request,candidate)
     if position==nil then return self:_rejectBeforeStart(request,target,"FAILED","NON_JOB_POSE_UNAVAILABLE") end
     local activityOk,activityContext=self.actuationMechanism:acquireVehicleActivityContext(vehicle)
     if not activityOk then
-        local status=activityContext=="PLAYER_CLAIM" and "PLAYER_CLAIM" or (activityContext=="SOURCE_INTENT_REACTIVATED" and "SUPERSEDED" or "FAILED")
+        local status=activityContext=="PLAYER_CONTROL" and "PLAYER_CONTROL" or (activityContext=="SOURCE_INTENT_REACTIVATED" and "SUPERSEDED" or "FAILED")
         return self:_rejectBeforeStart(request,target,status,"VEHICLE_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext))
     end
     state.activityContext=activityContext
@@ -305,7 +305,7 @@ function Control:update(dt)
 
     local vehicle=self:_vehicle(state.assemblyReferenceKey)
     if vehicle==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="CURRENT_PHYSICAL_OBJECT_LOST"}); return end
-    if self.actuationMechanism:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"}); return end
+    if self.actuationMechanism:isPlayerControlled(vehicle) then self:_complete("PLAYER_CONTROL",{kind="CURRENT_PLAYER_CONTROL"}); return end
     if self.actuationMechanism:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"}); return end
 
     if state.phase=="INFIELD" and state.actuationIssued==true then
@@ -349,7 +349,7 @@ function Control:update(dt)
 
     local ok,result=self.actuationMechanism:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
     if not ok then
-        if result=="PLAYER_CLAIM" then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"})
+        if result=="PLAYER_CONTROL" then self:_complete("PLAYER_CONTROL",{kind="CURRENT_PLAYER_CONTROL"})
         elseif result=="SOURCE_INTENT_REACTIVATED" then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"})
         else self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason=tostring(result)}) end
         return
@@ -385,7 +385,7 @@ function Control:relinquishAll(reason)
     local neutralized=false
     local neutralizeReason=nil
     if state.phase=="INFIELD" and state.actuationIssued==true and vehicle~=nil
-        and not self.actuationMechanism:isPlayerClaimed(vehicle)
+        and not self.actuationMechanism:isPlayerControlled(vehicle)
         and not self.actuationMechanism:isSourceReactivated(vehicle) then
         neutralized,neutralizeReason=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
         if neutralized~=true then
