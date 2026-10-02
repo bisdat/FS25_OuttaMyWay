@@ -6110,3 +6110,29 @@ The stronger TS002_C supersession evidence is the later spatial discontinuity: t
 > **Object Reachability != Current Spatial Authority.**
 
 The future claimed-blocker protection lifecycle therefore needs positive current-purpose evidence that survives the beneficiary hold's observer effect, plus positive supersession evidence capable of ending protection/relocation when the blocker leaves the relevant Operation/spatial context. Tab-out must return to fresh authority rather than reactivate the old physical grant.
+
+## 2026-10-02 — #412 decision: player claim changes response authority, not obstruction geometry
+
+**Decision:** the original completed/abandoned vehicle becomes a Causal Obstruction because the active beneficiary's current supported corridor / look-ahead geometry intersects the blocker. Whether the blocker is player-claimed does not change that geometry; it changes what OuttaMyWay is permitted to do about it.
+
+> **Player Claim Changes Authority, Not Obstruction Geometry.**
+
+> **Obstruction Evidence Is Stable Across Authority Transfer; Response Authority Is Not.**
+
+Accepted response split:
+
+- `NON_ACTIVE_UNCLAIMED` blocker with current positive Causal Obstruction -> ordinary Obstruction Relocation may acquire fresh authority to move the blocker;
+- `PLAYER_ACTUATION_CLAIMED` blocker with the same current positive obstruction geometry -> OuttaMyWay does not actuate the blocker and instead regulates the active AI beneficiary to **1 km/h**;
+- if the player moves the claimed blocker clear, fresh geometry releases the beneficiary regulation;
+- if the player relinquishes control/tab-outs while leaving the vehicle blocking, Player Actuation Claim ends and fresh Causal Obstruction assessment may again admit ordinary Obstruction Relocation;
+- stale pre-claim relocation authority never resumes.
+
+The 1 km/h effect is Regulation, not a 0 km/h hold. This preserves player agency: the player may choose to block their own worker or move away. It also avoids making a protective stop erase the beneficiary motion evidence used to understand the obstruction.
+
+Candidate production lifecycle:
+
+`causal manual actuation -> Player Actuation Claim -> revoke blocker movement authority -> while current corridor still intersects, regulate beneficiary to 1 km/h -> player clears blocker OR relinquishes control -> fresh Situation Assessment -> release regulation or admit fresh Obstruction Relocation according to current Reality`.
+
+The previously discussed separate long-lived `Claimed Object Protection` clearance model is therefore unnecessary as a distinct geometry model. A named **Claimed Obstruction Regulation** responsibility may still be useful as the authority/lifecycle representation of the 1 km/h beneficiary effect, but it should consume the same current obstruction geometry rather than inventing new blockage evidence.
+
+#418 remains orthogonal: central Authority Liveness Supervision must revoke stale delegated physical authority if any local #412 path fails.
