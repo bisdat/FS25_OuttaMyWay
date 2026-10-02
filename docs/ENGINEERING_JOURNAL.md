@@ -6134,3 +6134,25 @@ Run 1 produced 42 Obstruction Relocation commitments / 41 Player Control boundar
 **Authority Triad disposition:** Architecture unchanged; Specification unchanged; source implementation and executable regression only. The architecture already requires fresh positive clearance to retire Player-Controlled Obstruction Regulation.
 
 **Validation boundary:** independent CI must pass before GIANTS Reality repeats the clear-dissolution branch.
+
+## 2026-10-02 — #412 TEST 0.4.9.8 GIANTS Reality: positive-clearance lifecycle PASS
+
+**Reality artefact:** `0.4.9.8_TS002.zip`.
+
+The previously failing clear-dissolution branch now completes end-to-end in GIANTS Reality.
+
+- `20:05:15.155` — active Obstruction Relocation relinquishes immediately on Player Control and settles through `PLAYER_CONTROL`.
+- `20:05:16.617` — Situation Assessment publishes the blocker as `NON_ACTIVE_PLAYER_CONTROLLED`.
+- `20:05:16.634–20:05:16.635` — Player-Controlled Obstruction Regulation is established on the beneficiary at exactly 1 km/h.
+- `20:05:27.617` — fresh Situation evidence publishes `CURRENT_SUPPORTED_CORRIDOR_CLEAR` while the blocker remains under Player Control.
+- `20:05:27.635` — Regulation bounded authority releases for `PLAYER_CONTROLLED_OBSTRUCTION_CURRENT_SUPPORTED_CORRIDOR_POSITIVELY_CLEAR`.
+- `20:05:27.636` — `REGULATION_ENDED`; the action-space Regulation purpose settles with terminal state `SUCCEEDED`.
+- `20:05:27.863` — Causal Obstruction relation census returns to zero.
+- `LIVE_RUNTIME_PROCESSING_FAILED`: zero occurrences.
+
+This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7.
+
+> **Positive Clearance Requires Positive Dissolution, Then Authority Release.**
+
+**Validation conclusion:** Player Control Interlock, Player-Controlled Obstruction classification, exact 1 km/h Regulation, positive geometric dissolution, Regulation retirement, and terminal settlement are now all demonstrated in GIANTS Reality for the #412 clear branch. Architecture and Specification remain unchanged; the defect was the implementation-local relation-copy boundary.
+
