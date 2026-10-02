@@ -749,6 +749,10 @@ When realised Transit geometry or a current execution constraint disproves the r
 
 A Field World contradiction is authoritative as a **movement constraint**: the affected target MUST NOT be executed under ordinary in-field authority. It is not, by itself, a verdict that the pairwise Resolution has no solution. The contradicted arrangement becomes positive Constraint evidence and the existing bounded arrangement search must reassess the remaining spatial allocations before autonomous Passage is abandoned.
 
+Field World target support does **not** require every represented point of a Transit-configured assembly to remain strictly inside the field polygon. A bounded immediate field-margin overhang may occur during an otherwise Field-supported local Passage when the steering targets remain positively inside Field World and hard non-contact / third-party constraints remain supported. Reality in TS004 TEST 0.4.8.13 showed an approximately 0.5–1 m Deere-side margin excursion during a successful, visually plausible Passage; that outcome is accepted. This does not authorise an off-field steering target, remote extra-field relocation, or arbitrary extra-field travel.
+
+> **Bounded Field-Margin Encroachment != Extra-Field Passage.**
+
 > **Target Outside Field World != Interaction Unresolvable.**
 
 > **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
@@ -761,7 +765,7 @@ Before Transit settlement, Candidate Support owns prospective theatre feasibilit
 
 > **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
 
-Existing participant-scoped lateral allocations, including fully asymmetric lateral burden, must be considered under those same constraints before concluding that ordinary in-field Cooperative Passage has no executable arrangement. This is spatial asymmetry inside the existing Passage contract; it does not authorise a temporally sequential single-mover choreography or Field World encroachment.
+Existing participant-scoped lateral allocations, including fully asymmetric lateral burden, must be considered under those same constraints before concluding that ordinary in-field Cooperative Passage has no executable arrangement. This is spatial asymmetry inside the existing Passage contract; it does not authorise a temporally sequential single-mover choreography, an off-field steering target, or remote extra-field movement. Bounded immediate field-margin overhang remains within the accepted local Passage theatre described above.
 
 > **Spatial Asymmetry != Temporal Asymmetry.**
 
