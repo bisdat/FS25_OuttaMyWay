@@ -5987,3 +5987,46 @@ Candidate Support owns prospective Field World / third-party theatre support. Be
 **Known boundary:** there is currently no explicit maximum physical-overhang predicate. A future Reality case in which a centre/steering target remains Field-supported but the assembly excursion becomes implausibly large would be new evidence requiring architectural reassessment; it is not a reason to invent a threshold now.
 
 **Validation verdict:** TEST 0.4.8.13 demonstrates the intended #393 realised-origin reassessment path in Reality and produces an acceptable Passage outcome. The prior concern that the approximately 0.5–1 m Deere-side excursion itself represented a Field World failure is withdrawn.
+
+## 2026-10-02 — #412 Player Actuation Claim replaces positional Player Claim — TEST 0.4.9.3
+
+**Observe — inherited occupancy:** TS016 0.4.8.11 showed MT665 complete its GIANTS Job while still physically obstructing a continuing worker. The player was already seated only to observe. The completed assembly was immediately classified as player-claimed because `getIsEntered()==true`, so otherwise-supported Obstruction Relocation was suppressed. A no-occupant TS004_S control on 0.4.8.13 then exercised the same completed-worker path successfully through Causal Obstruction, Obstruction Relocation, bounded non-job actuation and fresh positive settlement. This isolated the defect to Player Claim evidence rather than completed-worker relocation generally.
+
+> **Inherited AI-Worker Occupancy != Fresh Post-Completion Player Claim.**
+
+**Observe — tab-in control:** TS002 0.4.9.0 began Obstruction Relocation for a non-active Condor. Tabbing into that already-moving vehicle, without deliberate steering/throttle/brake input, caused the old entry-based boundary to relinquish relocation immediately. Video later showed the first deliberate movement attempt fail because the engine was stopped; the GIANTS HUD displayed “Please start the engine first!”. Therefore neither tab selection, controlled-vehicle context, current motor state nor successful propulsion is the semantic authority-transfer event.
+
+> **Tab-In != Player Actuation Claim.**
+
+> **Control Context != Competing Manual Actuation.**
+
+> **Manual Drive Command != Successful Propulsion.**
+
+> **Engine-Off Does Not Erase Player Actuation Evidence.**
+
+**GIANTS/API investigation:** `getIsEntered()`, `mission.controlledVehicle` / `getIsControlled()`, current motor-running state and final input/steering state are positional or resulting-state evidence. GIANTS player drive callbacks — `Drivable.actionEventAccelerate`, `actionEventBrake`, `actionEventSteer` — are causal command surfaces. Explicit `Motorized` action callbacks are also causal command evidence where exposed. AI and automatic-start paths can start the motor without proving manual intent.
+
+**Diagnostic result — TEST 0.4.9.1 / 0.4.9.2:** the diagnostic line deliberately suppressed the old positional claim so relocation continued while the player entered the vehicle and then exercised steering/brake/accelerate/motor commands. The callback evidence separated passive control context from deliberate player actuation strongly enough to replace the old claim rule.
+
+> **Player Claim Evidence Must Be Causal, Not Positional.**
+
+> **Manual Actuation Establishes Player Actuation Claim.**
+
+**Architecture decision:** rename the semantic boundary **Player Actuation Claim**. A non-active blocker becomes human-claimed only after a positively observed causal player command. Once established, current player control retains the claim without requiring continuous non-zero input. Tab-out/control release ends the claim. Consumed action sequence is retained so an old command cannot establish a fresh claim on later passive re-entry.
+
+Player Actuation Claim changes **authority**, not **obstruction geometry**. If the claimed physical blocker still intersects the continuing worker's current supported Causal Obstruction corridor, OuttaMyWay does not move or hold the claimed vehicle. Instead it establishes **Claimed Obstruction Regulation** over the affected AI beneficiary at the exact **1 km/h Intent-Revelation Creep**. An unaffected third AI participant receives no special hold merely because the player claimed another blocker.
+
+> **Player-Controlled Blocker -> Regulate Beneficiary, Do Not Move Blocker.**
+
+> **Player Claim Changes Authority, Not Obstruction Geometry.**
+
+**Fresh-authority boundaries:** a Player Actuation Claim during active Obstruction Relocation immediately retires blocker movement authority and releases the activity context without post-claim neutralisation. Claimed Obstruction Regulation is admitted from the next fresh picture. If the player moves clear, positive current-corridor dissolution retires that Regulation. If the player tabs out while still blocking, positive claim release retires the Regulation first; only a later fresh picture may reacquire Obstruction Relocation authority. A fresh GIANTS AI Job is a separate positive intent supersession. No pre-claim relocation objective or Bounded Authority is paused for later reuse.
+
+> **Claim Supersession Retires Physical Authority; It Does Not Pause It.**
+
+> **Tab-Out Requires Fresh Authority.**
+
+**Implementation — TEST `0.4.9.3`:** `PlayerActuationObservation` observes causal GIANTS action callbacks without semantic authority and fails closed unless the three core Drivable command callbacks are all available. `PlayerActuationClaimAssessment` owns establishment/retention/release. `LiveObservationSource` keeps claimed completed assemblies physically observable instead of deleting them on entry. `CausalObstructionAssessment` consumes Player Actuation Claim knowledge, preserves the same geometry, and publishes positive clear/claim-release successor evidence. Obstruction Relocation Control consumes the same semantic claim source instead of `getIsEntered()`. Claimed Obstruction is projected as an outer Causal Obstruction response through the existing Action-Space Regulation responsibility, Bounded Authority and Regulation Control path with a fixed 1 km/h cap.
+
+**Validation boundary:** focused offline contracts now target passive entry, deliberate steer/brake/accelerate, engine-independent command evidence, claim retention, tab-out release, stale-input re-entry and relocation relinquishment. Independent GitHub Actions and then GIANTS Reality remain required before #412 is accepted. The PR remains draft until those gates are satisfied.
+
