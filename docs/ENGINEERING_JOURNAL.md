@@ -6079,3 +6079,20 @@ The diagnostic deliberately leaves OMW actuation alive after player input. There
 Candidate lifecycle:
 
 `manual actuation -> Player Actuation Claim -> OMW blocker actuation relinquished -> player control retained -> tab-out/loss of player control -> claim released -> fresh Situation Assessment -> possible fresh Obstruction Relocation`.
+
+
+## 2026-10-02 — #412 TS002_C: external displacement exposes stale relocation authority
+
+**Reality basis:** TEST 0.4.9.2 TS002_C extends the diagnostic beyond simple manual steering. Causal Obstruction `AS-00002 -> AS-00001` is positively present at 09:43:34.566. At 09:43:34.582 OuttaMyWay establishes `CM-00001` / `RS-00001`, applies the subordinate 0 km/h relocation-serialization hold to Patriot, and starts one Condor relocation actuation with a 60 m target and fixed world direction `(-0.5096,-0.8604)`.
+
+Fresh Situation already reports `CAUSAL_OBSTRUCTION_RELATION_CENSUS count=0` at 09:43:35.571. The subordinate Patriot hold nevertheless persists until the physical Condor actuation completes at 09:44:12.404.
+
+> **Supporting Protection Lifetime Must Follow Current Purpose, Not Merely Actuation Lifetime.**
+
+The owner then manually drives Condor into another field while the TEST deliberately leaves the original relocation actuation alive. By 09:43:44.856 Passive Live Validator reports Condor `operation=n/a`, `activeJobMember=false`, `pose=false`, but Control still owns the direct vehicle object and the original start-relative relocation objective. After the owner tabs out around 09:44:05, Condor becomes `controlled=false` and the still-live OMW writer becomes mechanically effective again. It continues chasing the original 60 m projected-progress objective until `MANOEUVRE_COMPLETE` at 09:44:12.404.
+
+> **External Displacement Invalidates a Start-Relative Relocation Objective.**
+
+> **Tab-Out Must Not Reactivate Stale Physical Authority.**
+
+This is diagnostic evidence for the required production Player Actuation lifecycle rather than evidence that same-actuation resumption is acceptable. Positive manual actuation must terminate/relinquish the current blocker actuation. While Player Claim remains current, any beneficiary protection must be justified by fresh current obstruction purpose. When the player later relinquishes control, fresh Situation Assessment may establish a new Obstruction Relocation only if the blocker is still a current non-active unclaimed Causal Obstruction. A stale pre-claim geometric objective must never resume merely because GIANTS mechanical player-control precedence ended.
