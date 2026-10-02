@@ -63,7 +63,7 @@ end
 function Control.new(runtime,observationSource)
     return setmetatable({
         runtime=runtime,source=observationSource,
-        actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(),
+        actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(runtime and runtime.playerActuationClaimAssessment or nil),
         configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),
         active=nil,completionHandler=nil,latestObservation=nil,
         startedCount=0,completedCount=0,failedCount=0
