@@ -6096,3 +6096,17 @@ The owner then manually drives Condor into another field while the TEST delibera
 > **Tab-Out Must Not Reactivate Stale Physical Authority.**
 
 This is diagnostic evidence for the required production Player Actuation lifecycle rather than evidence that same-actuation resumption is acceptable. Positive manual actuation must terminate/relinquish the current blocker actuation. While Player Claim remains current, any beneficiary protection must be justified by fresh current obstruction purpose. When the player later relinquishes control, fresh Situation Assessment may establish a new Obstruction Relocation only if the blocker is still a current non-active unclaimed Causal Obstruction. A stale pre-claim geometric objective must never resume merely because GIANTS mechanical player-control precedence ended.
+
+### TS002_C evidence-asymmetry refinement
+
+The immediate `CAUSAL_OBSTRUCTION_RELATION_CENSUS count=0` after the 0 km/h beneficiary hold is **not** sufficient positive evidence that obstruction purpose ended. `CausalObstructionAssessment` may establish Causal Obstruction from current overlap, Continuing Active Future Space, or Realised Motion Demand. A supporting 0 km/h hold can suppress the beneficiary progression/demand that supplied one of those positive witnesses.
+
+> **Protective Hold Can Suppress Its Own Obstruction Evidence.**
+
+This is an expected evidence asymmetry and prevents treating relation absence as negative-clearance or purpose-discharge authority.
+
+The stronger TS002_C supersession evidence is the later spatial discontinuity: the owner physically drives Condor across the Field 77 boundary into another field, and at 09:43:44.856 Passive Live Validator reports Condor `operation=n/a`, `activeJobMember=false`, `pose=false`. The original Control nevertheless retains its direct vehicle object and start-relative 60 m objective. Once the player tabs out, that stale actuation becomes mechanically effective again.
+
+> **Object Reachability != Current Spatial Authority.**
+
+The future claimed-blocker protection lifecycle therefore needs positive current-purpose evidence that survives the beneficiary hold's observer effect, plus positive supersession evidence capable of ending protection/relocation when the blocker leaves the relevant Operation/spatial context. Tab-out must return to fresh authority rather than reactivate the old physical grant.
