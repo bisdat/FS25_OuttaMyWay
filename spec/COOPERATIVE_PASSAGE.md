@@ -142,7 +142,17 @@ The initial Forward-Diagonal Steering Helper uses a **2.0 m forward per 1.0 m la
 
 Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete helper-specific pair sweep from a hypothetical future Entry origin. Prospective planning MUST NOT materialise Forward-Diagonal travel as hidden Entry reserve.
 
-After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin. Candidate Support MUST then materialise the selected Steering Helper from that realised origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement with its materialised helper is unsupported, a fresh arrangement MAY be selected from the same realised origin and subjected to the same helper realisation and pair-sweep requirement. If no fresh realised-origin arrangement is supported, autonomous Passage movement MUST NOT begin.
+After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin. Candidate Support MUST then materialise the selected Steering Helper from that realised origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement with its materialised helper is unsupported, a fresh arrangement MAY be selected from the same realised origin.
+
+That realised-origin adaptation MUST NOT select an arrangement on pair-sweep support alone. Each considered replacement arrangement MUST also satisfy the current execution constraints that would otherwise reject it before movement, including Field World target support and current third-party guide support. A pair-clearance-valid but field-invalid arrangement is a rejected search candidate, not the terminal result of the adaptation search.
+
+The existing bounded spatial-allocation set includes participant-asymmetric lateral burdens. Those alternatives MUST be exhausted under the same support predicates before ordinary in-field Passage is declared unavailable. This does not authorise a new sequential/single-mover choreography or off-field excursion.
+
+> **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
+
+> **Spatial Asymmetry != Temporal Asymmetry.**
+
+If no fresh realised-origin arrangement is supported under the complete current execution constraints, autonomous Passage movement MUST NOT begin.
 
 > **Development Reserve != Steering Trajectory**
 

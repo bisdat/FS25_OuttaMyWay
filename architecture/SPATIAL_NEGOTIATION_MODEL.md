@@ -743,7 +743,15 @@ Before geometry-dependent Passage movement begins after capture, both participan
 
 There is no supported full-width/working-configuration Cooperative Passage execution fallback.
 
-Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry. Concrete Steering Helper geometry is materialised at that **realised Transit execution origin** and must pass current pairwise execution validation before movement begins.
+Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry. Concrete Steering Helper geometry is materialised at that **realised Transit execution origin** and must pass current execution validation before movement begins.
+
+When realised Transit geometry disproves the retained arrangement, any fresh realised-origin replacement remains part of the same Cooperative Passage Resolution. A replacement arrangement is supportable only when the complete current execution constraints required before movement are positive for that exact arrangement. Pair-sweep clearance alone is insufficient where Field World or current third-party support rejects the same guide.
+
+> **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
+
+Existing participant-scoped lateral allocations, including fully asymmetric lateral burden, must be considered under those same constraints before concluding that ordinary in-field Cooperative Passage has no executable arrangement. This is spatial asymmetry inside the existing Passage contract; it does not authorise a temporally sequential single-mover choreography or Field World encroachment.
+
+> **Spatial Asymmetry != Temporal Asymmetry.**
 
 > **Correct Origin + Correct Trajectory Must Be Validated Together**
 

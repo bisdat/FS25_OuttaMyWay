@@ -6837,7 +6837,7 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
-test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed lateral arrangement before movement",function()
+test("Cooperative Passage: realised adaptation skips pair-valid field-invalid allocations before movement",function()
     local vehicleA={rootNode=1311}; local vehicleB={rootNode=1312}
     function vehicleA:getAISteeringNode() return self.rootNode end
     function vehicleB:getAISteeringNode() return self.rootNode end
@@ -6847,7 +6847,14 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
     getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
-    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+    -- The cheapest realised-origin positive-relation allocations are pair-sweep
+    -- supportable but push the subject beyond x=-1. Adaptation must continue
+    -- through the existing spatial allocations instead of selecting a guide
+    -- that Control will immediately reject.
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function(mission,x,z)
+        if x < -1.0 then return {resolved=false} end
+        return {resolved=true,sourceFieldId=1}
+    end
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
     local runtime={
         assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
@@ -6885,6 +6892,12 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     equal(control.run.passageArrangement.relationSign,1)
     equal(control.run.passageArrangement.subjectLateralOffsetM<0,true)
     equal(control.run.passageArrangement.otherLateralOffsetM>0,true)
+    equal(math.abs(control.run.passageArrangement.subjectLateralOffsetM)<math.abs(control.run.passageArrangement.otherLateralOffsetM),true,
+        "field-constrained subject should receive the smaller lateral burden")
+    for _,gate in OuttaMyWay.ValueRecord.ipairs(control.run.guide.gates or {}) do
+        equal(gate.subject.x>=-1.0,true,"selected subject target must be field-supported")
+        equal(gate.other.x>=-1.0,true,"selected other target must be field-supported")
+    end
     local sweepOk,sweepReason=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(
         control.run.guide,control.run.passageArrangement)
     equal(sweepOk,true); equal(sweepReason,nil)

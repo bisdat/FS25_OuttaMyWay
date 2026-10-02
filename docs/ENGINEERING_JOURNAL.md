@@ -5893,3 +5893,22 @@ The 40 m point is not supported occupancy, negative-clearance evidence or permis
 **Authority Triad:** Architecture changed to separate BWR movement completion from steering horizon; Specification fixes the current BWR horizon at 40 m and preserves Anchor-bounded authority; Source changes only BWR Control. Candidate Support and Bounded Authority remain unchanged because they already own the correct movement extent.
 
 **Reality boundary:** offline validation cannot prove GIANTS articulated stability. Targeted in-game validation should revisit the short-Anchor TS004 Recovery and confirm that the longer steering look-through prevents the prior sign-flip/jackknife while Recovery still stops at the Anchor-bounded Return Region.
+
+
+## 2026-10-02 — #393 realised-origin Passage adaptation closes current support before selection
+
+**Reality basis:** TS004 TEST 0.4.8.11 showed Cooperative Passage correctly reject the retained realised-Transit crossing on pair sweep, then adapt to a wider equal-split arrangement that was pair-clearance-valid but immediately failed Control preflight because the 8RX target lay outside Field World. The Passage then entered `FAILED_HELD`, preventing native Stall evidence and leaving Player Intervention as the only continuation.
+
+**Discovery:** current Passage already enumerates spatially asymmetric allocations, including 0/100 and 100/0. The missing behaviour was not asymmetric geometry itself. Realised-origin adaptation stopped at the first pair-sweep-supported arrangement without asking whether that same arrangement survived the current execution preflight.
+
+> **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
+
+> **Spatial Asymmetry != Temporal Asymmetry.**
+
+**Implementation — TEST `0.4.8.12`:** `LocalPassagePlanner.adaptExecutionGuide` now consumes a non-actuating current execution-guide support predicate and continues its existing bounded arrangement search when a pair-sweep-supported candidate is rejected by Field World or third-party preflight. `CooperativePassageControl` evaluates candidate adapted guides using the same preflight used immediately before movement. No new arrangement family, movement choreography, Field World encroachment or temporal-asymmetric/single-mover Passage is introduced.
+
+**Regression:** the existing realised side-flip fixture now makes the lowest-burden pair-valid allocations field-invalid. The test requires adaptation to continue until it finds an already-supported asymmetric in-field allocation and verifies every selected guide target remains field-supported.
+
+**Authority Triad:** Architecture now requires complete current support for fresh realised arrangements and distinguishes spatial from temporal asymmetry; Specification requires execution adaptation to include current Field World and third-party constraints; Source changes only realised-origin arrangement selection/preflight integration.
+
+**Reality boundary:** offline validation proves search/support semantics only. TS004 must determine whether an existing in-field asymmetric allocation actually resolves the constrained theatre. If none does, #393 proceeds to temporal-asymmetric single-mover Passage investigation before any off-field authority change.

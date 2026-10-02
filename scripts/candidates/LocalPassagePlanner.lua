@@ -1145,7 +1145,7 @@ local function arrangementCandidates(currentSigned,pairClearance)
 end
 
 
-function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation)
+function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation,executionGuideSupport)
     if type(retainedGuide)~="table" or type(retainedGuide.executionFrame)~="table" then
         return nil,"RETAINED_PASSAGE_EXECUTION_FRAME_UNAVAILABLE"
     end
@@ -1263,45 +1263,56 @@ function Planner.adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPo
                     sweepEvidence.otherConfigurationProfileId=otherGeometry.configurationProfileId
                 end
                 if supported then
-                    arrangement.identity=tostring(retainedArrangement.identity or "cooperative-passage-arrangement")..":execution-adapted:"..tostring(index)
-                    arrangement.currentSignedSeparationM=currentSigned
-                    arrangement.currentLateralSeparationM=math.abs(currentSigned)
-                    arrangement.targetCentrelineSeparationM=arrangement.policyRequiredSeparationM
-                    arrangement.currentRelationPolicyReserveM=pairClearance.policyReserveM
-                    arrangement.currentPolicyReserveM=pairClearance.policyReserveM
-                    arrangement.directionalPassageEnvelopeBasis=pairClearance.representationBasis
-                    arrangement.passageGeometrySource=pairClearance.planningGeometrySource
-                    arrangement.configurationReduction="TRANSIT_ALREADY_REALISED"
-                    arrangement.pairwisePassageEconomy={
-                        combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,
-                        tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"
+                    local executionSupported,executionReason,executionEvidence=true,nil,nil
+                    if type(executionGuideSupport)=="function" then
+                        executionSupported,executionReason,executionEvidence=executionGuideSupport(guide,arrangement)
+                    end
+                    if executionSupported then
+                        arrangement.identity=tostring(retainedArrangement.identity or "cooperative-passage-arrangement")..":execution-adapted:"..tostring(index)
+                        arrangement.currentSignedSeparationM=currentSigned
+                        arrangement.currentLateralSeparationM=math.abs(currentSigned)
+                        arrangement.targetCentrelineSeparationM=arrangement.policyRequiredSeparationM
+                        arrangement.currentRelationPolicyReserveM=pairClearance.policyReserveM
+                        arrangement.currentPolicyReserveM=pairClearance.policyReserveM
+                        arrangement.directionalPassageEnvelopeBasis=pairClearance.representationBasis
+                        arrangement.passageGeometrySource=pairClearance.planningGeometrySource
+                        arrangement.configurationReduction="TRANSIT_ALREADY_REALISED"
+                        arrangement.pairwisePassageEconomy={
+                            combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,
+                            tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"
+                        }
+                        guide.identity=tostring(retainedGuide.identity or "cooperative-passage-guide")..":execution-adapted:"..tostring(index)
+                        guide.pairSweepSupport=sweepEvidence
+                        return {
+                            guide=guide,arrangement=arrangement,
+                            passageExcursion={
+                                model=geometry.model,clearanceDeficitM=geometry.clearanceDeficitM,
+                                maximumParticipantLateralExcursionM=geometry.maximumParticipantLateralExcursionM,
+                                participantProfiles=geometry.participantProfiles,
+                                developmentDistanceM=geometry.developmentDistanceM,reacquisitionDistanceM=geometry.reacquisitionDistanceM,
+                                totalForwardDistanceM=geometry.totalForwardDistanceM,
+                                crossingWindowEntrySeparationM=geometry.crossingWindowEntrySeparationM,
+                                crossingWindowRearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
+                                crossingWindowForwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
+                                subjectFrontExtentM=geometry.subjectFrontExtentM,subjectRearExtentM=geometry.subjectRearExtentM,
+                                otherFrontExtentM=geometry.otherFrontExtentM,otherRearExtentM=geometry.otherRearExtentM,
+                                crossingWindowBasis=geometry.crossingWindowBasis
+                            },
+                            currentSignedSeparationM=currentSigned,currentLongitudinalSeparationM=longitudinal,
+                            subjectConfigurationProfileId=subjectGeometry.configurationProfileId,
+                            otherConfigurationProfileId=otherGeometry.configurationProfileId,
+                            selectedIndex=index,rejectedBeforeSelection=rejected,
+                            authority="COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION",
+                            reason="FRESH_EXECUTION_ORIGIN_COMPLETE_SUPPORT"
+                        },nil
+                    end
+                    rejected[#rejected+1]={
+                        index=index,reason="EXECUTION_GUIDE_SUPPORT_REJECTED:"..tostring(executionReason or "UNRESOLVED"),
+                        evidence=executionEvidence,pairSweepEvidence=sweepEvidence,executionSupportRejected=true
                     }
-                    guide.identity=tostring(retainedGuide.identity or "cooperative-passage-guide")..":execution-adapted:"..tostring(index)
-                    guide.pairSweepSupport=sweepEvidence
-                    return {
-                        guide=guide,arrangement=arrangement,
-                        passageExcursion={
-                            model=geometry.model,clearanceDeficitM=geometry.clearanceDeficitM,
-                            maximumParticipantLateralExcursionM=geometry.maximumParticipantLateralExcursionM,
-                            participantProfiles=geometry.participantProfiles,
-                            developmentDistanceM=geometry.developmentDistanceM,reacquisitionDistanceM=geometry.reacquisitionDistanceM,
-                            totalForwardDistanceM=geometry.totalForwardDistanceM,
-                            crossingWindowEntrySeparationM=geometry.crossingWindowEntrySeparationM,
-                            crossingWindowRearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
-                            crossingWindowForwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
-                            subjectFrontExtentM=geometry.subjectFrontExtentM,subjectRearExtentM=geometry.subjectRearExtentM,
-                            otherFrontExtentM=geometry.otherFrontExtentM,otherRearExtentM=geometry.otherRearExtentM,
-                            crossingWindowBasis=geometry.crossingWindowBasis
-                        },
-                        currentSignedSeparationM=currentSigned,currentLongitudinalSeparationM=longitudinal,
-                        subjectConfigurationProfileId=subjectGeometry.configurationProfileId,
-                        otherConfigurationProfileId=otherGeometry.configurationProfileId,
-                        selectedIndex=index,rejectedBeforeSelection=rejected,
-                        authority="COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION",
-                        reason="FRESH_EXECUTION_ORIGIN_PAIR_SWEEP_SUPPORTED"
-                    },nil
+                else
+                    rejected[#rejected+1]={index=index,reason=sweepReason or "PAIR_SWEEP_UNSUPPORTED",evidence=sweepEvidence}
                 end
-                rejected[#rejected+1]={index=index,reason=sweepReason or "PAIR_SWEEP_UNSUPPORTED",evidence=sweepEvidence}
             else
                 rejected[#rejected+1]={index=index,reason=guideReason}
             end

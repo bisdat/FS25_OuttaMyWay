@@ -585,9 +585,10 @@ function Control:_guideTargetFor(run,p,gate)
     return nil
 end
 
-function Control:_preflightPassageGuide(run)
-    if type(run.guide)~="table" or type(run.guide.gates)~="table" or OuttaMyWay.ValueRecord.length(run.guide.gates)<1 then return false,"PASSAGE_GUIDE_UNAVAILABLE" end
-    for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates) do
+function Control:_preflightPassageGuide(run,candidateGuide)
+    local guide=candidateGuide or run.guide
+    if type(guide)~="table" or type(guide.gates)~="table" or OuttaMyWay.ValueRecord.length(guide.gates)<1 then return false,"PASSAGE_GUIDE_UNAVAILABLE" end
+    for index,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates) do
         if tonumber(gate.index)~=index then return false,"PASSAGE_GUIDE_GATE_INDEX_INVALID:"..tostring(index) end
         for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
             local target=self:_guideTargetFor(run,p,gate)
@@ -738,15 +739,33 @@ function Control:_rebasePassageGuide(run)
             guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
         if not retainedOk then
             logPairSweepFailureWitness(run.commitmentId,"RETAINED",retainedReason,retainedEvidence,nil)
+            local function currentExecutionGuideSupport(candidateGuide)
+                return self:_preflightPassageGuide(run,candidateGuide)
+            end
             local adapted,adaptReason,adaptEvidence=planner.adaptExecutionGuide(
                 guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId,
-                subjectRepresentation,otherRepresentation)
+                subjectRepresentation,otherRepresentation,currentExecutionGuideSupport)
             if adapted==nil then
                 for _,rejection in OuttaMyWay.ValueRecord.ipairs(adaptEvidence and adaptEvidence.rejected or {}) do
-                    logPairSweepFailureWitness(run.commitmentId,"ADAPTATION",rejection.reason,rejection.evidence,rejection.index)
+                    if rejection.executionSupportRejected==true then
+                        logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION_REJECTED",
+                            "commitment=%s candidate=%s reason=%s pairSweepSupported=true completeExecutionSupport=false",
+                            tostring(run.commitmentId),tostring(rejection.index),tostring(rejection.reason))
+                    else
+                        logPairSweepFailureWitness(run.commitmentId,"ADAPTATION",rejection.reason,rejection.evidence,rejection.index)
+                    end
                 end
                 return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
                     ..":ADAPTATION:"..tostring(adaptReason)
+            end
+            for _,rejection in OuttaMyWay.ValueRecord.ipairs(adapted.rejectedBeforeSelection or {}) do
+                if rejection.executionSupportRejected==true then
+                    logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION_REJECTED",
+                        "commitment=%s candidate=%s reason=%s pairSweepSupported=true completeExecutionSupport=false",
+                        tostring(run.commitmentId),tostring(rejection.index),tostring(rejection.reason))
+                else
+                    logPairSweepFailureWitness(run.commitmentId,"ADAPTATION",rejection.reason,rejection.evidence,rejection.index)
+                end
             end
             adaptation=adapted
             guide=adapted.guide
