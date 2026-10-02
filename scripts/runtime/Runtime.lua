@@ -50,6 +50,11 @@ local function actionSpaceRelation(picture,current)
     local provenance=current.provenance or {}
     local conflictIdentity=provenance.conflictIdentity
     if conflictIdentity==nil then return nil end
+    if provenance.admissionKind=="CLAIMED_OBSTRUCTION" then
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.causalObstructionKnowledge or {}) do
+            if relation.identity==conflictIdentity then return relation end
+        end
+    end
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
         if relation.identity==conflictIdentity then return relation end
     end
@@ -482,6 +487,19 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
+    local claimed=current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION"
+    if claimed
+        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION"
+        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION" then
+        return {
+            status="NO_DISPATCH",
+            reason="CLAIMED_OBSTRUCTION_TERMINATION_EVIDENCE_REQUIRED",
+            detail=assessment.reason,
+            actionSpaceRegulation=true,
+            claimedObstruction=true,
+            commitmentId=commitmentId
+        }
+    end
     if forward
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION" then
@@ -520,17 +538,20 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        local settlementKind=forward and assessment.terminationEvidenceKind
+        local settlementKind=claimed and assessment.terminationEvidenceKind
+            or (forward and assessment.terminationEvidenceKind
             or (corner and assessment.terminationEvidenceKind
-            or (category2 and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY"))
+            or (category2 and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY")))
         OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,
             conflictIdentity=conflictIdentity,
             positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
                 or settlementKind=="CORNER_COMPETING_DEMAND_POSITIVE_DISSOLUTION"
-                or settlementKind=="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION",
+                or settlementKind=="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION"
+                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
+                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION"
         })
     end
     self.responsibilityTransitionAuthority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)
