@@ -1663,6 +1663,26 @@ test("Governing Basis preserves intent through non-terminal evidence",function()
     end
 end)
 
+test("Obstruction Relocation Player Control completion settles through Governing Basis",function()
+    local runtime=newDecisionRuntime()
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="CAUSAL_OBSTRUCTION_RELOCATION"},
+        governingBasis={responsibilityKey="obstruction-relocation:test-player-control"}
+    })
+    runtime:onObstructionRelocationCompletion({
+        status="PLAYER_CONTROL",
+        commitmentId=admitted.commitment.identity,
+        relocationKey="obstruction-relocation:test-player-control",
+        evidence={kind="PLAYER_CONTROL_INTERLOCK",playerControlled=true}
+    })
+    local terminal=runtime.commitments:get(admitted.commitment.identity)
+    equal(terminal.state,"SUPERSEDED_BY_NEW_INTENT")
+    equal(terminal.terminalCause,"PLAYER_CONTROL")
+    equal(terminal.terminalSettlementEvidence.terminalEvent,"PLAYER_CONTROL")
+    equal(terminal.terminalSettlementEvidence.requiredOutcomeBranch,"RELOCATION_BASIS_CEASED")
+    equal(terminal.terminalSettlementEvidence.causalObstructionBasisCeased,true)
+end)
+
 test("Commitment admission rejects duplicate unresolved responsibility",function()
     local runtime=newDecisionRuntime()
     runtime.commitmentAdmission:admit({objective={kind="a"},governingBasis={responsibilityKey="same"}})

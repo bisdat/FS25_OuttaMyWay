@@ -6057,3 +6057,18 @@ If the currently player-controlled vehicle remains a positive Causal Obstruction
 
 **Next gate:** GIANTS Reality. The critical scenarios are: passive tab-in during relocation must immediately retire OMW actuation rather than veer; while the controlled blocker remains obstructing the beneficiary must regulate at exactly 1 km/h; moving clear must release Regulation; tab-out while still blocking must permit only a fresh later Obstruction Relocation, never stale actuation resumption.
 
+## 2026-10-02 — #412 TEST 0.4.9.4 Reality disproof: Interlock Terminal Vocabulary Drift
+
+**Observe — Runs 1 and 2:** TS002 reached active Obstruction Relocation, then passive tab-in made GIANTS current player control positive. At 18:40:28.310 in Run 1 and 18:43:26.094 in Run 2, Obstruction Relocation Control correctly released its Vehicle Activity Context, completed with `status=PLAYER_CONTROL`, and released relocation serialization without issuing competing post-control neutralisation. The immediately following semantic settlement failed with `unsupported Governing Basis event PLAYER_CONTROL`, after which live runtime processing repeatedly failed. Player-Controlled Obstruction Regulation, its exact 1 km/h effect, clear-geometry release, and tab-out fresh-relocation handover were therefore not reached in either failed run.
+
+**Observe — Run 3 control:** with no player intervention, no `PLAYER_CONTROL` terminal event occurred and normal Obstruction Relocation continued through its existing manoeuvre-complete / fresh-reassessment path without the runtime fault.
+
+> **Interlock Terminal Vocabulary Drift.**
+
+**Interpretation:** Reality supports the mechanical Player Control Interlock boundary itself: current GIANTS player control stopped OMW blocker actuation at the intended boundary. The defect is the downstream terminal vocabulary. `ObstructionRelocationControl`, Runtime and `ObstructionRelocationCommitmentLifecycle` use the current `PLAYER_CONTROL` event, while the generic `GoverningBasisEvaluator` still recognised the retired `PLAYER_CLAIM` event. The correct interlock event therefore reached an incompatible generic settlement vocabulary.
+
+**Implementation hypothesis — TEST 0.4.9.5:** replace the retired generic `PLAYER_CLAIM` terminal event with `PLAYER_CONTROL` and protect the complete Runtime completion -> Obstruction Relocation lifecycle -> Governing Basis -> terminal settlement chain with an executable regression. This is a vocabulary-integration correction only; it does not change Player Control Interlock, Causal Obstruction or Player-Controlled Obstruction Regulation architecture.
+
+**Authority Triad disposition:** Runtime Responsibility Architecture remains correct and unchanged; `OBSTRUCTION_RELOCATION` already requires immediate relinquishment on current player control and fresh authority after release; `RESOLUTION_LIFECYCLE` already permits positive governing-basis cessation / supersession. Production source was the drifting surface.
+
+**Validation boundary:** independent CI must first prove the corrected offline chain. GIANTS Reality must then repeat the same three-run TS002 sequence because 0.4.9.4 did not reach Player-Controlled Obstruction Regulation in Runs 1 or 2.
