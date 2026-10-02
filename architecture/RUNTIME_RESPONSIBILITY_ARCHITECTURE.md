@@ -396,7 +396,7 @@ CAUSAL OBSTRUCTION
 
 Positive Causal Obstruction evidence may arise from distinct current Situation bases, including current physical occupancy, positively supported prospective continuation / future-space demand, or bounded Realised Motion Demand intersecting a current physical subject. These evidence routes remain distinct; Realised Motion Demand MUST NOT be reused as prospective route authority elsewhere.
 
-### Non-active classification and Player Actuation Claim
+### Non-active classification and Player Control Interlock
 
 After Causal Obstruction is established, current blocker authority classification determines which downstream response may be considered:
 
@@ -408,12 +408,13 @@ Causal Obstruction
     |
     `-- blocker is non-active
             |
-            +-- current Player Actuation Claim exists
+            +-- blocker is currently player-controlled by GIANTS
+            |       -> Player Control Interlock
             |       -> OuttaMyWay must not actuate blocker
-            |       -> beneficiary may receive Claimed Obstruction Regulation
-            |          at the exact 1 km/h Intent-Revelation Creep
+            |       -> beneficiary may receive Player-Controlled Obstruction
+            |          Regulation at exactly 1 km/h
             |
-            `-- no current Player Actuation Claim
+            `-- blocker is not currently player-controlled
                     -> non-active unclaimed blocker;
                        eligible for bounded obstruction resolution
 ```
@@ -422,15 +423,15 @@ A positively ended Job Episode may establish that the same Physical Assembly is 
 
 If the same assembly later begins a fresh GIANTS Job, that is an ordinary Situation change. A new active Job Episode is admitted, GIANTS again owns worker mechanics, and any non-active relocation purpose loses its basis.
 
-**Player Actuation Claim Is Causal, Not Positional.** Player presence, seat entry, tab selection, `mission.controlledVehicle`, `getIsControlled()`, engine-running state and final steering/throttle state are evidence about presence or execution context; none independently establishes a human authority transfer. A Player Actuation Claim is established only from positively observed causal player actuation such as steering, accelerate/reverse, brake or an explicit propulsion-state command. Once established, current player control/presence may retain that claim while the human remains in control; loss of that control releases the claim to fresh Situation Assessment.
+**Player Control Interlock Is Current, Not Historical.** Current GIANTS player-control context is mechanically incompatible with OuttaMyWay non-job actuation over the same vehicle. While that control context is current, OuttaMyWay must not acquire or retain steering, propulsion or configuration authority over the vehicle. The interlock does not infer deliberate player intent and does not persist after control is released.
 
-**Player Claim Changes Authority, Not Obstruction Geometry.** The same current physical corridor/look-ahead intersection that establishes Causal Obstruction remains the obstruction predicate when the blocker becomes player-claimed. Human authority removes OuttaMyWay permission to move the blocker; it does not erase the blocker or the beneficiary's current demand.
+**Player Control Changes Authority, Not Obstruction Geometry.** The same current physical corridor/look-ahead intersection that establishes Causal Obstruction remains the obstruction predicate while the blocker is player-controlled. Player control removes OuttaMyWay permission to move the blocker; it does not erase the blocker or the beneficiary's current demand.
 
-**Claimed Obstruction Regulation.** While a Player-Actuation-Claimed blocker continues to intersect the beneficiary's current supported obstruction corridor, Regulation may constrain the beneficiary to the exact **1 km/h Intent-Revelation Creep**. This is Regulation, not a 0 km/h hold, and it grants no actuation authority over the player-controlled blocker. If the player moves clear, fresh obstruction geometry releases the Regulation. If the player relinquishes control while still blocking, the claim ends and fresh Causal Obstruction assessment may again admit ordinary Obstruction Relocation; stale pre-claim actuation authority never resumes.
+**Player-Controlled Obstruction Regulation.** While a player-controlled blocker continues to intersect the beneficiary's current supported obstruction corridor, Regulation may constrain only that beneficiary to the exact **1 km/h Intent-Revelation Creep**. This is Regulation, not a 0 km/h hold, and it grants no actuation authority over the player-controlled blocker. If the player moves clear, fresh obstruction geometry releases the Regulation. If the player releases control while still blocking, the Regulation retires and fresh Causal Obstruction assessment may again admit ordinary Obstruction Relocation; stale pre-control actuation authority never resumes.
 
-**Vehicle Ownership != Obstruction Relocation Authority.** Ownership metadata does not replace current claim evidence.
+**Vehicle Ownership != Player Control.** Ownership metadata does not replace current GIANTS player-control evidence.
 
-**Obstruction Recognition != Actuation Authority.** Situation Assessment establishes whether the subject is currently the blocker and whether a Player Actuation Claim exists. Regulation, Resolution and Bounded Authority determine which current physical response is permitted.
+**Obstruction Recognition != Actuation Authority.** Situation Assessment establishes whether the subject is currently the blocker and whether the Player Control Interlock applies. Regulation, Resolution and Bounded Authority determine which current physical response is permitted.
 
 ---
 
