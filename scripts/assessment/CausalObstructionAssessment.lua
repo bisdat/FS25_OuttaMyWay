@@ -223,12 +223,18 @@ function Assessment:reset()
     self.lastSignature=nil
 end
 
-function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,realisedMotionDemandKnowledge)
+function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly,realisedMotionDemandKnowledge,playerActuationClaimKnowledge)
     local physical=physicalByAssembly(physicalSpaceEvidence)
     local future=futureByAssembly(futureSpace)
     local realisedDemand=realisedDemandByAssembly(realisedMotionDemandKnowledge)
     local references=referencesByAssembly(snapshot)
     local activeEpisodes,endedEpisodes=jobEpisodesByAssembly(self.jobEpisodes)
+    local claimsByReference={}
+    for _,claim in OuttaMyWay.ValueRecord.ipairs(playerActuationClaimKnowledge or {}) do
+        if claim.current==true and type(claim.assemblyReferenceKey)=="string" then
+            claimsByReference[claim.assemblyReferenceKey]=claim
+        end
+    end
     local records={}
 
     for _,beneficiaryAssemblyId in OuttaMyWay.ValueRecord.ipairs(sortedKeys(activeOperationMemberSet)) do
@@ -264,6 +270,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             and aiState.aiActive~=true
                         local nonActiveActivityResolved=endedEpisode~=nil or currentAiInactiveObserved
 
+                        local claim=blockerReferenceKey and claimsByReference[blockerReferenceKey] or nil
                         local classification
                         local relocationEligible=false
                         if activeEpisode~=nil then
@@ -274,10 +281,12 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             classification="GIANTS_AI_ACTIVE_UNRESOLVED"
                         elseif not nonActiveActivityResolved then
                             classification="ACTIVITY_UNRESOLVED"
-                        elseif type(player)~="table" or player.playerEnteredObserved~=true then
+                        elseif claim~=nil then
+                            classification="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED"
+                        elseif type(player)~="table" then
                             classification="PLAYER_CLAIM_UNRESOLVED"
-                        elseif player.playerEntered==true then
-                            classification="NON_ACTIVE_PLAYER_CLAIMED"
+                        elseif player.playerControlled==true and player.causalActionSourceAvailable~=true then
+                            classification="PLAYER_CLAIM_UNRESOLVED"
                         else
                             classification="NON_ACTIVE_UNCLAIMED"
                             relocationEligible=true
@@ -308,9 +317,15 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                                 source="JobEpisodeAdmission+ObservationSnapshot.aiStates"
                             },
                             playerClaimEvidence={
+                                playerControlled=type(player)=="table" and player.playerControlled==true or false,
                                 playerEntered=type(player)=="table" and player.playerEntered==true or false,
                                 playerEnteredObserved=type(player)=="table" and player.playerEnteredObserved==true or false,
-                                source="ObservationSnapshot.playerControl"
+                                causalActionSourceAvailable=type(player)=="table" and player.causalActionSourceAvailable==true or false,
+                                causalActionSourceReason=type(player)=="table" and player.causalActionSourceReason or nil,
+                                playerActuationClaimCurrent=claim~=nil,
+                                establishedSequence=claim and claim.establishedSequence or nil,
+                                latestSequence=claim and claim.latestSequence or nil,
+                                source="ObservationSnapshot.playerControl+PlayerActuationClaimAssessment"
                             },
                             obstructionEvidence=evidence,
                             provenance={
