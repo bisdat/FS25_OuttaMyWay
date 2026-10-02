@@ -114,6 +114,7 @@ jobs:
             scripts/diagnostics/PassiveLiveValidator.lua \
             scripts/diagnostics/VersionHud.lua \
             scripts/observation/LiveInteractionObservation.lua \
+            scripts/observation/PlayerActuationObservation.lua \
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
             scripts/responsibility/CooperativePassageResponsibilityTransition.lua \
