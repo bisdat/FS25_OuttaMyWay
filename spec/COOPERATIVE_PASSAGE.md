@@ -144,7 +144,19 @@ Prospective Candidate Support MUST establish a supported Transit arrangement, fi
 
 After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin. Candidate Support MUST then materialise the selected Steering Helper from that realised origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement with its materialised helper is unsupported, a fresh arrangement MAY be selected from the same realised origin.
 
-That realised-origin adaptation MUST NOT select an arrangement on pair-sweep support alone. Each considered replacement arrangement MUST also satisfy the current execution constraints that would otherwise reject it before movement, including Field World target support and current third-party guide support. A pair-clearance-valid but field-invalid arrangement is a rejected search candidate, not the terminal result of the adaptation search.
+Joint Passage start MUST distinguish prospective guide integrity from realised execution support. Before Transit settlement, Control MAY validate guide/gate structure and participant binding, but MUST NOT convert an exact future guide-target Field World or third-party contradiction into a terminal Resolution verdict. Candidate Support already owns prospective theatre support; exact target execution support is reassessed from the realised Transit origin.
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+At the realised origin, adaptation MUST NOT select an arrangement on pair-sweep support alone. The retained arrangement and every considered replacement arrangement MUST satisfy the complete current execution constraints required before movement, including Field World target support and current third-party guide support.
+
+A Field World failure is a hard veto on the affected movement target under ordinary in-field authority. It is positive Constraint evidence about that arrangement, not automatic failure of the pairwise Resolution. If the retained arrangement is pair-clearance-valid but field-invalid, Control MUST NOT execute it and MUST route the contradiction into the existing realised-origin arrangement reassessment. The search continues until a complete supported spatial arrangement is found or the existing spatial allocation set is exhausted.
+
+> **Target Outside Field World != Interaction Unresolvable.**
+
+> **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
+
+> **Control Veto != Resolution Verdict.**
 
 The existing bounded spatial-allocation set includes participant-asymmetric lateral burdens. Those alternatives MUST be exhausted under the same support predicates before ordinary in-field Passage is declared unavailable. This does not authorise a new sequential/single-mover choreography or off-field excursion.
 

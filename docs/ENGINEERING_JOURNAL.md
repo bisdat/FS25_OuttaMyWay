@@ -5935,3 +5935,38 @@ This is a boundary-placement defect, not evidence that spatially asymmetric allo
 **Next architectural discussion:** determine the minimum non-actuating validation appropriate at Passage joint start, preserving prospective Candidate/theatre support while deferring exact helper-gate Field World and third-party execution validation until the fresh realised Transit origin exists. Do not introduce temporal-asymmetric Passage or off-field authority until this boundary is corrected and TS004 can actually exercise the existing spatial-allocation search.
 
 **Reality boundary:** 0.4.8.12 remains offline-valid but is not Reality-validated for its intended TS004 hypothesis.
+
+
+## 2026-10-02 — #393 Field World rejection becomes arrangement reassessment — TEST 0.4.8.13
+
+**Reality basis:** TEST 0.4.8.12 TS004 disproved the intended validation path because Cooperative Passage applied realised-execution guide preflight at joint start. A prospective 8RX guide target that the live field query did not positively resolve caused immediate Passage start rejection, so Transit settlement and the newly-added realised-origin spatial search were never reached.
+
+**Architectural decision:** an outside-Field-World target remains a hard no-actuation constraint for that exact movement, but it is not a terminal verdict on the interaction.
+
+> **Target Outside Field World != Interaction Unresolvable.**
+
+> **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
+
+> **Control Veto != Resolution Verdict.**
+
+The pairwise Resolution must seek another positively supported arrangement before escalation. Existing spatial allocations are the first reassessment family; temporal asymmetry and separately-authorised margin use remain later solution families if ordinary in-field spatial arrangements are exhausted.
+
+A second boundary is now explicit:
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+Candidate Support owns prospective Field World / third-party theatre support. Before Transit settlement, Control validates only guide structure and participant binding. Exact target execution support belongs after Transit settlement and fresh execution-origin capture.
+
+**Implementation — TEST `0.4.8.13`:**
+- joint Passage start now performs prospective structural guide validation rather than exact future target Field/third-party execution preflight;
+- after Transit settlement, the retained realised guide is checked for both pair-sweep support and complete execution support;
+- either pair-sweep failure **or** Field/third-party execution rejection triggers the existing realised-origin spatial arrangement search;
+- each replacement still requires pair-sweep support plus current execution preflight;
+- no outside-Field target is executed;
+- no temporal-asymmetric choreography, margin authority or clearance relaxation is introduced.
+
+**Regression:** one contract proves that a prospective future target can fail execution Field support without blocking prospective structural validation. A second makes the retained realised arrangement pair-supportable but Field-invalid and requires Control to reassess into an existing asymmetric Field-valid allocation.
+
+**Authority Triad:** Architecture defines Field World rejection as arrangement-level Constraint evidence and separates prospective from realised preflight; Specification requires reassessment before terminal Passage failure; Source changes the joint-start and realised-origin Control boundaries while reusing the existing planner search.
+
+**Reality target:** rerun TS004. The expected discriminator is now observable: Passage should reach Transit/configuration, capture the realised origin, reject any Field-invalid retained arrangement without moving it, and either select an existing Field-valid asymmetric spatial allocation or positively exhaust that allocation family. Only the latter justifies moving #393 to temporal-asymmetric single-mover Passage.

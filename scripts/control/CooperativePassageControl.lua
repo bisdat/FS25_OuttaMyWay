@@ -585,6 +585,23 @@ function Control:_guideTargetFor(run,p,gate)
     return nil
 end
 
+function Control:_validateProspectivePassageGuide(run)
+    local guide=run and run.guide or nil
+    if type(guide)~="table" or type(guide.gates)~="table" or OuttaMyWay.ValueRecord.length(guide.gates)<1 then
+        return false,"PASSAGE_PROSPECTIVE_GUIDE_UNAVAILABLE"
+    end
+    for index,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates) do
+        if tonumber(gate.index)~=index then return false,"PASSAGE_PROSPECTIVE_GUIDE_GATE_INDEX_INVALID:"..tostring(index) end
+        for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
+            local target=self:_guideTargetFor(run,p,gate)
+            if not validGuideTarget(target,p.assemblyId) then
+                return false,"PASSAGE_PROSPECTIVE_GUIDE_TARGET_INVALID:"..tostring(index)..":"..tostring(p.assemblyId)
+            end
+        end
+    end
+    return true,nil
+end
+
 function Control:_preflightPassageGuide(run,candidateGuide)
     local guide=candidateGuide or run.guide
     if type(guide)~="table" or type(guide.gates)~="table" or OuttaMyWay.ValueRecord.length(guide.gates)<1 then return false,"PASSAGE_GUIDE_UNAVAILABLE" end
@@ -607,8 +624,10 @@ function Control:_startGuideGate(run,index)
     if gate==nil then return false,"PASSAGE_GUIDE_GATE_UNAVAILABLE:"..tostring(index) end
     local thirdOk,thirdReason=self:_thirdPartySupport(run,gate)
     if not thirdOk then return false,thirdReason end
-    -- Revalidate the Candidate-supplied support at each execution boundary.
-    -- Control may reject; it may not invent a replacement target.
+    -- Revalidate the selected arrangement at each physical execution boundary.
+    -- A Field World contradiction vetoes this movement command.  Control still
+    -- does not invent geometry; realised-origin arrangement reassessment belongs
+    -- to the planning boundary before the guide is installed.
     for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         local target=self:_guideTargetFor(run,p,gate)
         if not validGuideTarget(target,p.assemblyId) then return false,"PASSAGE_GUIDE_TARGET_INVALID:"..tostring(index)..":"..tostring(p.assemblyId) end
@@ -735,13 +754,24 @@ function Control:_rebasePassageGuide(run)
             tonumber(steeringEvidence and steeringEvidence.otherReacquisitionForwardM) or 0,
             tonumber(steeringEvidence and steeringEvidence.crossingForwardPerParticipantM) or 0)
 
-        local retainedOk,retainedReason,retainedEvidence=planner.validateRebasedGuidePairSweep(
+        local function currentExecutionGuideSupport(candidateGuide)
+            return self:_preflightPassageGuide(run,candidateGuide)
+        end
+        local retainedPairOk,retainedPairReason,retainedPairEvidence=planner.validateRebasedGuidePairSweep(
             guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)
-        if not retainedOk then
-            logPairSweepFailureWitness(run.commitmentId,"RETAINED",retainedReason,retainedEvidence,nil)
-            local function currentExecutionGuideSupport(candidateGuide)
-                return self:_preflightPassageGuide(run,candidateGuide)
-            end
+        local retainedExecutionOk,retainedExecutionReason=currentExecutionGuideSupport(guide)
+        local reassessmentCause=nil
+        if not retainedPairOk then
+            reassessmentCause="PAIR_SWEEP:"..tostring(retainedPairReason)
+            logPairSweepFailureWitness(run.commitmentId,"RETAINED",retainedPairReason,retainedPairEvidence,nil)
+        elseif not retainedExecutionOk then
+            reassessmentCause="EXECUTION_CONSTRAINT:"..tostring(retainedExecutionReason)
+            logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_RETAINED_ARRANGEMENT_REJECTED",
+                "commitment=%s reason=%s pairSweepSupported=true action=REASSESS_EXISTING_SPATIAL_ALLOCATIONS terminalResolutionVeto=false",
+                tostring(run.commitmentId),tostring(retainedExecutionReason))
+        end
+
+        if reassessmentCause~=nil then
             local adapted,adaptReason,adaptEvidence=planner.adaptExecutionGuide(
                 guide,arrangement,subjectPose,otherPose,run.subjectAssemblyId,run.otherAssemblyId,
                 subjectRepresentation,otherRepresentation,currentExecutionGuideSupport)
@@ -755,7 +785,7 @@ function Control:_rebasePassageGuide(run)
                         logPairSweepFailureWitness(run.commitmentId,"ADAPTATION",rejection.reason,rejection.evidence,rejection.index)
                     end
                 end
-                return false,"EXECUTION_REBASE_PAIR_SUPPORT_LOSS:"..tostring(retainedReason)
+                return false,"EXECUTION_REBASE_NO_SUPPORTED_SPATIAL_ARRANGEMENT:"..tostring(reassessmentCause)
                     ..":ADAPTATION:"..tostring(adaptReason)
             end
             for _,rejection in OuttaMyWay.ValueRecord.ipairs(adapted.rejectedBeforeSelection or {}) do
@@ -774,15 +804,15 @@ function Control:_rebasePassageGuide(run)
             run.passageExcursion=adapted.passageExcursion or run.passageExcursion
             geometryUnchanged=false
             logInfo("DIAGNOSTIC","COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION","commitment=%s cause=%s signedLateral=%.2fm longitudinal=%.2fm oldOffsets=%+.2f/%+.2f newOffsets=%+.2f/%+.2f required=%.2fm selected=%s authority=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s",
-                tostring(run.commitmentId),tostring(retainedReason),
+                tostring(run.commitmentId),tostring(reassessmentCause),
                 tonumber(adapted.currentSignedSeparationM) or 0,tonumber(adapted.currentLongitudinalSeparationM) or 0,
                 originalSubjectOffset,originalOtherOffset,
                 tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,
                 tonumber(arrangement.policyRequiredSeparationM) or 0,tostring(adapted.selectedIndex),tostring(adapted.authority),
                 tostring(adapted.subjectConfigurationProfileId),tostring(adapted.otherConfigurationProfileId))
         else
-            guide.pairSweepSupport=retainedEvidence or guide.pairSweepSupport
-            logInfo("DEBUG","COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED","commitment=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s retainedArrangement=true",
+            guide.pairSweepSupport=retainedPairEvidence or guide.pairSweepSupport
+            logInfo("DEBUG","COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED","commitment=%s geometry=REALISED_TRANSIT subjectProfile=%s otherProfile=%s retainedArrangement=true completeExecutionSupport=true",
                 tostring(run.commitmentId),tostring(subjectRepresentation.configurationProfileId),tostring(otherRepresentation.configurationProfileId))
         end
     end
@@ -1440,8 +1470,12 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         initialSeparationM=distance(a.startX,a.startZ,b.startX,b.startZ),headingDot=dot(a.startForwardX,a.startForwardZ,b.startForwardX,b.startForwardZ),
         speedKmh=COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH
     }
-    local guideOk,guideReason=self:_preflightPassageGuide(run)
-    if not guideOk then return false,"COOPERATIVE_PASSAGE_GUIDE_PREFLIGHT:"..tostring(guideReason) end
+    -- Candidate Support already owns prospective Field World / third-party theatre
+    -- feasibility.  Exact guide targets are re-derived after Transit settlement.
+    -- Joint start therefore validates only structural integrity; it must not turn a
+    -- prospective target contradiction into a terminal Resolution veto.
+    local guideOk,guideReason=self:_validateProspectivePassageGuide(run)
+    if not guideOk then return false,"COOPERATIVE_PASSAGE_PROSPECTIVE_GUIDE_INVALID:"..tostring(guideReason) end
 
     self.run=run
     if entryReady then
