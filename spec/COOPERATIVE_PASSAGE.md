@@ -152,13 +152,17 @@ At the realised origin, adaptation MUST NOT select an arrangement on pair-sweep 
 
 A Field World failure is a hard veto on the affected movement target under ordinary in-field authority. It is positive Constraint evidence about that arrangement, not automatic failure of the pairwise Resolution. If the retained arrangement is pair-clearance-valid but field-invalid, Control MUST NOT execute it and MUST route the contradiction into the existing realised-origin arrangement reassessment. The search continues until a complete supported spatial arrangement is found or the existing spatial allocation set is exhausted.
 
+Field support at this boundary is target authority, not a requirement that every point of the Transit-configured assembly remain strictly inside the polygon. A bounded immediate field-margin overhang MAY occur during a local Passage when the selected steering targets remain positively Field-supported and all hard pair / third-party safety predicates remain positive. The accepted TS004 TEST 0.4.8.13 Reality result includes an approximately 0.5–1 m Deere-side margin excursion during successful Passage. No fixed overhang-distance literal is introduced by this observation.
+
+> **Bounded Field-Margin Encroachment != Extra-Field Passage.**
+
 > **Target Outside Field World != Interaction Unresolvable.**
 
 > **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
 
 > **Control Veto != Resolution Verdict.**
 
-The existing bounded spatial-allocation set includes participant-asymmetric lateral burdens. Those alternatives MUST be exhausted under the same support predicates before ordinary in-field Passage is declared unavailable. This does not authorise a new sequential/single-mover choreography or off-field excursion.
+The existing bounded spatial-allocation set includes participant-asymmetric lateral burdens. Those alternatives MUST remain available under the same support predicates before ordinary local Passage is declared unavailable. This does not authorise a new sequential/single-mover choreography, an off-field steering target, or remote extra-field travel; bounded immediate field-margin overhang is governed by the accepted local-theatre rule above.
 
 > **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
 
