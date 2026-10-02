@@ -93,8 +93,41 @@ function Assessment:assessActionSpaceRegulation(current,relation)
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
+    local claimed=current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION"
     if relation==nil then
-        if forward then
+        if claimed then
+        if relation.positiveDissolution==true or relation.classification=="CLAIMED_OBSTRUCTION_DISSOLVED" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION",
+                reason=relation.reason or "CLAIMED_OBSTRUCTION_CURRENT_SUPPORTED_CORRIDOR_POSITIVELY_CLEAR"
+            }
+        end
+        if relation.positiveSupersession==true
+            or relation.classification=="CLAIMED_OBSTRUCTION_CLAIM_RELEASED"
+            or relation.blockerClassification=="NON_ACTIVE_UNCLAIMED" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION",
+                reason=relation.reason or "PLAYER_ACTUATION_CLAIM_POSITIVELY_RELEASED"
+            }
+        end
+        if relation.identity==current.provenance.conflictIdentity
+            and relation.blockerClassification=="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED" then
+            return {
+                disposition="PERSIST",
+                evidenceState="SUPPORTED",
+                reason="CLAIMED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"
+            }
+        end
+        return {
+            disposition="PERSIST",
+            evidenceState="WAITING_FOR_EVIDENCE",
+            reason=relation.reason or "CLAIMED_OBSTRUCTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
+        }
+    end
+
+    if forward then
             return {
                 disposition="PERSIST",
                 evidenceState="WAITING_FOR_EVIDENCE",
@@ -113,6 +146,13 @@ function Assessment:assessActionSpaceRegulation(current,relation)
                 disposition="PERSIST",
                 evidenceState="WAITING_FOR_EVIDENCE",
                 reason="SHARED_CATEGORY_2_DEMAND_TEMPORARILY_UNRESOLVED"
+            }
+        end
+        if claimed then
+            return {
+                disposition="PERSIST",
+                evidenceState="WAITING_FOR_EVIDENCE",
+                reason="CLAIMED_OBSTRUCTION_CURRENT_CORRIDOR_TEMPORARILY_UNRESOLVED"
             }
         end
         return {disposition="PERSIST",reason="ACTION_SPACE_RELATIONSHIP_TEMPORARILY_UNRESOLVED"}
