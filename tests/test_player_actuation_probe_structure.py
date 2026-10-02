@@ -33,12 +33,15 @@ def test_issue412_entered_state_claim_is_suppressed_only_through_probe_switch():
     assessment = read("scripts/assessment/CausalObstructionAssessment.lua")
     observation = read("scripts/observation/LiveObservationSource.lua")
     mechanism = read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
+    candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
-    for source in (assessment, observation, mechanism):
+    for source in (assessment, observation, mechanism, candidate):
         assert "suppressesEnteredClaim" in source
 
     assert 'player.playerEntered==true and not enteredClaimSuppressedForDiagnostic()' in assessment
     assert "enteredClaimSuppressedForDiagnostic=enteredClaimSuppressedForDiagnostic()" in assessment
     assert "and not enteredClaimSuppressedForDiagnostic() then" in observation
     assert 'local ok,value=safeCall(vehicle,"getIsEntered"); return ok and value==true' in mechanism
+    assert "local function currentPlayerClaim(snapshot,referenceKey)" in candidate
+    assert "return false" in candidate
 
