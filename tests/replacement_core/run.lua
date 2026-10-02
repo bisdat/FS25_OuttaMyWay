@@ -8776,14 +8776,28 @@ local function causalObstructionAssessmentFixture(options)
             ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
             ["vehicle-root:blocker"]={aiActive=(options.rawAiActive==true or options.activeBlocker==true),aiActiveObserved=options.aiObserved~=false,observedActive=(options.activeJobObserved==true or options.activeBlocker==true),blocked=false}
         },
-        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=options.playerObserved~=false}}
+        playerControl={["vehicle-root:blocker"]={
+            playerControlled=options.playerControlled==true,
+            playerEntered=options.playerEntered==true,
+            playerEnteredObserved=options.playerObserved~=false,
+            causalActionSourceAvailable=options.causalSourceAvailable~=false,
+            causalActionSourceReason=options.causalSourceAvailable==false and "TEST_UNAVAILABLE" or "INSTALLED"
+        }}
     }
     local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
     local physicalSpace={
         {assemblyId="AS-BENEFICIARY",assemblyReferenceKey="vehicle-root:beneficiary",primitives={{identity="beneficiary-disc",kind="DISC",x=0,z=0,radius=1,positiveConflictSupport=true}}},
         {assemblyId="AS-BLOCKER",assemblyReferenceKey="vehicle-root:blocker",primitives={{identity="blocker-disc",kind="DISC",x=10,z=blockerZ,radius=1,positiveConflictSupport=true}}}
     }
-    return assessment:assess(snapshot,futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"})
+    local claimKnowledge={}
+    if options.playerClaim==true then
+        claimKnowledge={{
+            assemblyReferenceKey="vehicle-root:blocker",current=true,
+            establishedSequence=1,latestSequence=1,
+            establishedAction="STEER",latestAction="STEER"
+        }}
+    end
+    return assessment:assess(snapshot,futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil,claimKnowledge)
 end
 
 test("Causal Obstruction: cold non-active unclaimed blocker is recognised from spatial evidence while native blocked is false",function()
@@ -8802,12 +8816,22 @@ test("Merely present parked assembly does not become a Causal Obstruction",funct
     equal(#records,0)
 end)
 
-test("Causal Obstruction: player claim preserves physical obstruction but withholds relocation eligibility",function()
-    local records=causalObstructionAssessmentFixture({playerEntered=true})
+test("Causal Obstruction: Player Actuation Claim preserves physical obstruction but withholds relocation eligibility",function()
+    local records=causalObstructionAssessmentFixture({playerControlled=true,playerEntered=true,playerClaim=true})
     equal(#records,1)
-    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_CLAIMED")
+    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_ACTUATION_CLAIMED")
     equal(records[1].relocationEligible,false)
-    equal(records[1].playerClaimEvidence.playerEntered,true)
+    equal(records[1].playerClaimEvidence.playerActuationClaimCurrent,true)
+    equal(records[1].playerClaimEvidence.establishedSequence,1)
+end)
+
+test("Causal Obstruction: passive controlled blocker remains unclaimed when causal action evidence is available",function()
+    local records=causalObstructionAssessmentFixture({playerControlled=true,playerEntered=true,causalSourceAvailable=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"NON_ACTIVE_UNCLAIMED")
+    equal(records[1].relocationEligible,true)
+    equal(records[1].playerClaimEvidence.playerControlled,true)
+    equal(records[1].playerClaimEvidence.playerActuationClaimCurrent,false)
 end)
 
 test("Causal Obstruction: active GIANTS AI blocker remains outside non-active relocation eligibility",function()
@@ -8849,11 +8873,12 @@ test("Causal Obstruction: fresh ACTIVE Job Episode outranks older ENDED Episode"
     equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
 end)
 
-test("Causal Obstruction: ENDED Job evidence still requires current Player Claim evidence",function()
-    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,playerObserved=false})
+test("Causal Obstruction: controlled blocker fails closed when causal player-action source is unavailable",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,playerControlled=true,playerEntered=true,causalSourceAvailable=false})
     equal(#records,1)
     equal(records[1].blockerClassification,"PLAYER_CLAIM_UNRESOLVED")
     equal(records[1].relocationEligible,false)
+    equal(records[1].playerClaimEvidence.causalActionSourceAvailable,false)
 end)
 
 test("legacy follower shadow retirement preserves aligned production clearance behaviour", function()
