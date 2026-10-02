@@ -692,9 +692,12 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     assert re.findall(r"function Planner\.([^\n]+)", planner) == [
         "realiseExecutionSteeringGuide(guide,arrangement,subjectPose,otherPose)",
         "validateRebasedGuidePairSweep(guide,arrangement,subjectRepresentation,otherRepresentation,subjectPose,otherPose)",
-        "adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation)",
+        "adaptExecutionGuide(retainedGuide,retainedArrangement,subjectPose,otherPose,subjectAssemblyId,otherAssemblyId,subjectRepresentation,otherRepresentation,executionGuideSupport)",
         "planConflict(picture,snapshot,conflict)", "plan(picture,snapshot)"
     ]
+    assert "type(executionGuideSupport)==\"function\"" in planner
+    assert "executionGuideSupport(guide,arrangement)" in planner
+    assert "executionSupportRejected=true" in planner
     # Counterfactual Test Input != Supported Runtime Policy: no harness retains
     # a root lookup/write, including a bracket-form override.
     for path in (ROOT / "tests").rglob("*.lua"):

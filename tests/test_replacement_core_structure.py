@@ -1056,7 +1056,8 @@ def test_v47105_cooperative_passage_control_uses_giants_safe_value_record_traver
     control = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text()
     assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
     assert "for _,constraint in OuttaMyWay.ValueRecord.ipairs(run.thirdPartyConstraints or {})" in control
-    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
+    assert "local guide=candidateGuide or run.guide" in control
+    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates)" in control
     assert "for _,entry in ipairs(plan.participants)" not in control
     assert "for _,constraint in ipairs(run.thirdPartyConstraints or {})" not in control
     assert "for index,gate in ipairs(run.guide.gates)" not in control
