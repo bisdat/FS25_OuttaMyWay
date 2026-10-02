@@ -6072,3 +6072,17 @@ If the currently player-controlled vehicle remains a positive Causal Obstruction
 **Authority Triad disposition:** Runtime Responsibility Architecture remains correct and unchanged; `OBSTRUCTION_RELOCATION` already requires immediate relinquishment on current player control and fresh authority after release; `RESOLUTION_LIFECYCLE` already permits positive governing-basis cessation / supersession. Production source was the drifting surface.
 
 **Validation boundary:** independent CI must first prove the corrected offline chain. GIANTS Reality must then repeat the same three-run TS002 sequence because 0.4.9.4 did not reach Player-Controlled Obstruction Regulation in Runs 1 or 2.
+
+## 2026-10-02 — #412 TEST 0.4.9.5 CI disproof: Generic Player Claim remains a separate live terminal vocabulary
+
+**Validation result:** the new Player Control Runtime settlement regression passed, changed-runtime Lua syntax passed, the focused Obstruction Relocation contract passed 18/18, Structural contracts passed, and Generated source reference passed. The full replacement-core harness nevertheless finished 475 passed / 1 failed, so the final Lua behavioural enforcement gate correctly failed.
+
+The failing regression was the existing Bounded Bypass contradiction contract: `BoundedBypassCommitmentLifecycle` still emits `PLAYER_CLAIM` when a higher-authority Player Claim takes over the bypassing worker. `BOUNDED_BYPASS` explicitly retains that current semantic contract. Removing `PLAYER_CLAIM` from the generic Governing Basis vocabulary therefore broke an unrelated accepted responsibility.
+
+> **Player Control Interlock Vocabulary != Global Player Claim Vocabulary.**
+
+**Learning:** the 0.4.9.5 hypothesis was too broad. The #412 correction must not reinterpret every existing Player Claim concept. Obstruction Relocation now needs `PLAYER_CONTROL` because its new interlock is current mechanical control rather than retained semantic claim; Bounded Bypass still legitimately needs `PLAYER_CLAIM` under its own governing Specification.
+
+**Implementation hypothesis — TEST 0.4.9.6:** make generic Governing Basis terminal vocabulary additive: retain `PLAYER_CLAIM` for current responsibilities that still own that semantic event and add `PLAYER_CONTROL` for the #412 Obstruction Relocation interlock. No architecture or Specification change is justified by this CI evidence.
+
+**Validation boundary:** the existing Bounded Bypass regression and the new Obstruction Relocation Runtime-settlement regression together must both pass before returning to GIANTS Reality.
