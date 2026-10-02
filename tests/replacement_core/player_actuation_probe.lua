@@ -79,6 +79,7 @@ assert(originalAccelerateCalls==2)
 assert(#publications==1)
 assert(publications[1].code=="PLAYER_ACTUATION_PROBE")
 assert(string.find(publications[1].text,"action=ACCELERATE",1,true)~=nil)
+assert(string.find(publications[1].text,"inputAction=AXIS_ACCELERATE_VEHICLE",1,true)~=nil)
 assert(string.find(publications[1].text,"motorStarted=false",1,true)~=nil)
 assert(string.find(publications[1].text,"claimAuthority=false",1,true)~=nil)
 
