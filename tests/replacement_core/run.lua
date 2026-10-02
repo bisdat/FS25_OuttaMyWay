@@ -8906,6 +8906,45 @@ test("Causal Obstruction: tab-out transiently releases interlock and makes still
     equal(second[1].playerControlReleaseEvidence.kind,"PLAYER_CONTROL_RELEASED")
 end)
 
+test("Causal Obstruction: player-controlled blocker clear publishes positive dissolution from retained plain relation",function()
+    local jobs={}
+    function jobs:list() return {{identity="JE-BENEFICIARY",assemblyId="AS-BENEFICIARY",status="ACTIVE"}} end
+    local assessment=OuttaMyWay.CausalObstructionAssessment.new(jobs)
+    local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
+    local function physical(blockerZ)
+        return {
+            {assemblyId="AS-BENEFICIARY",assemblyReferenceKey="vehicle-root:beneficiary",primitives={{identity="beneficiary-disc",kind="DISC",x=0,z=0,radius=1,positiveConflictSupport=true}}},
+            {assemblyId="AS-BLOCKER",assemblyReferenceKey="vehicle-root:blocker",primitives={{identity="blocker-disc",kind="DISC",x=10,z=blockerZ,radius=1,positiveConflictSupport=true}}}
+        }
+    end
+    local snapshot={
+        assemblies={
+            {assemblyId="AS-BENEFICIARY",referenceKey="vehicle-root:beneficiary"},
+            {assemblyId="AS-BLOCKER",referenceKey="vehicle-root:blocker"}
+        },
+        aiStates={
+            ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
+            ["vehicle-root:blocker"]={aiActive=false,aiActiveObserved=true,observedActive=false,blocked=false}
+        },
+        playerControl={["vehicle-root:blocker"]={playerControlled=true,playerPresent=true,playerEntered=true,playerEnteredObserved=true}}
+    }
+
+    local first=assessment:assess(snapshot,futureSpace,physical(0),{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
+    equal(#first,1)
+    equal(first[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
+    equal(first[1].obstructionEvidence.kind,"CONTINUING_ACTIVE_FUTURE_SPACE")
+
+    local second=assessment:assess(snapshot,futureSpace,physical(30),{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"},nil)
+    equal(#second,1)
+    equal(second[1].classification,"PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED")
+    equal(second[1].relationshipStatus,"NEGATIVE")
+    equal(second[1].positiveDissolution,true)
+    equal(second[1].relocationEligible,false)
+    equal(second[1].obstructionEvidence.kind,"CURRENT_SUPPORTED_CORRIDOR_CLEAR")
+    equal(second[1].provenance.predecessorIdentity,first[1].identity)
+    equal(first[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
+end)
+
 test("Causal Obstruction: active GIANTS AI blocker remains outside non-active relocation eligibility",function()
     local records=causalObstructionAssessmentFixture({activeBlocker=true})
     equal(#records,1)

@@ -6118,3 +6118,19 @@ Run 1 produced 42 Obstruction Relocation commitments / 41 Player Control boundar
 **Correction:** load the shared predicate explicitly in the replacement-core and focused Obstruction Relocation harnesses, update the physical-mechanism structural contract to assert delegation rather than duplicated evidence acquisition, and register `CurrentPlayerControlObservation` as a current `OBSERVATION` participant. No runtime source or build identity changes are made; the executable remains TEST 0.4.9.7.
 
 **Validation boundary:** rerun the same independent CI gates. Only after all gates are green does 0.4.9.7 return to GIANTS Reality.
+
+## 2026-10-02 — #412 TEST 0.4.9.7 Reality: Dissolution Copy Boundary Mismatch
+
+**Observe:** Run 1 reaches the intended Player-Controlled Obstruction lifecycle through current Player Control classification and exact 1 km/h Regulation. At `19:38:54.816`, fresh geometry satisfies the positive-clearance predicate: the player remains in control, the beneficiary remains active, the supported corridor is evaluable, and `positiveObstruction(...)` returns nil. Instead of publishing `PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED`, live runtime processing fails at `CausalObstructionAssessment.lua:393` with `OuttaMyWay ValueRecord: value is not a sealed record`.
+
+> **Dissolution Copy Boundary Mismatch.**
+
+**Cause:** `CausalObstructionAssessment` retains the previous player-controlled obstruction relation in its own assessment-local state as a plain Lua value table. The positive-dissolution and no-current-relation control-release branches incorrectly call `ValueRecord.toTable(previous)`, whose contract intentionally accepts sealed ValueRecords only.
+
+**Decision:** do not weaken `ValueRecord.toTable`. Causal Obstruction owns the retained relation and should copy only its top-level relation envelope through `ValueRecord.pairs`, which is explicitly valid for both ordinary plain tables and sealed value tables. The lifecycle branch then replaces the top-level classification, relationship status, terminal evidence and provenance fields without mutating the retained predecessor.
+
+**Implementation hypothesis — TEST 0.4.9.8:** use one local relation-envelope copy helper for both positive geometric dissolution and no-current-relation Player Control release. Add a two-cycle regression that first retains a plain `NON_ACTIVE_PLAYER_CONTROLLED` relation, then moves the blocker 30 m laterally while player control remains current and requires `PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED` / `CURRENT_SUPPORTED_CORRIDOR_CLEAR` without exception.
+
+**Authority Triad disposition:** Architecture unchanged; Specification unchanged; source implementation and executable regression only. The architecture already requires fresh positive clearance to retire Player-Controlled Obstruction Regulation.
+
+**Validation boundary:** independent CI must pass before GIANTS Reality repeats the clear-dissolution branch.

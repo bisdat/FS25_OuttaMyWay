@@ -220,6 +220,15 @@ local function sortedKeys(map)
     return result
 end
 
+local function copyRelationEnvelope(record)
+    local result={}
+    for key,value in OuttaMyWay.ValueRecord.pairs(record or {}) do
+        result[key]=value
+    end
+    return result
+end
+
+
 function Assessment.new(jobEpisodes)
     return setmetatable({jobEpisodes=jobEpisodes,lastSignature=nil,playerControlledRelationsByIdentity={}},Assessment)
 end
@@ -369,7 +378,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                         predecessorBlockerClassification="NON_ACTIVE_PLAYER_CONTROLLED"
                     }
                 else
-                    local released=OuttaMyWay.ValueRecord.toTable(previous)
+                    local released=copyRelationEnvelope(previous)
                     released.classification="PLAYER_CONTROLLED_OBSTRUCTION_CONTROL_RELEASED"
                     released.relationshipStatus="SUPERSEDED"
                     released.positiveSupersession=true
@@ -390,7 +399,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                 and beneficiaryStillActive and blockerPhysical~=nil and beneficiaryPhysical~=nil
                 and supportedCorridorEvaluable(beneficiaryFuture,demand)
                 and positiveObstruction(blockerPhysical,beneficiaryPhysical,beneficiaryFuture,demand)==nil then
-                local dissolved=OuttaMyWay.ValueRecord.toTable(previous)
+                local dissolved=copyRelationEnvelope(previous)
                 dissolved.classification="PLAYER_CONTROLLED_OBSTRUCTION_DISSOLVED"
                 dissolved.relationshipStatus="NEGATIVE"
                 dissolved.positiveDissolution=true
