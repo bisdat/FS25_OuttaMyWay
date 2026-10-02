@@ -269,13 +269,13 @@ local function findActionSpaceRegulationObligation(runtime,commitmentId,conflict
         local supportedBasis=type(basis)=="table" and (
             basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION"
             or basis.kind=="CORNER_RIGHT_OF_WAY" or basis.kind=="SHARED_CATEGORY_2_DEMAND_REGULATION"
-            or basis.kind=="CLAIMED_OBSTRUCTION_REGULATION")
+            or basis.kind=="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION")
         local supportedOutcome=type(outcome)=="table" and (
             outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"
             or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
             or outcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
             or outcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN"
-            or outcome.kind=="CLAIMED_OBSTRUCTION_REGULATION_PRESERVED_UNTIL_CLEAR_OR_CLAIM_RELEASE")
+            or outcome.kind=="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION_PRESERVED_UNTIL_CLEAR_OR_CONTROL_RELEASE")
         if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
@@ -315,7 +315,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
                 or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
                 or item.requiredOutcome.kind=="CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
                 or item.requiredOutcome.kind=="SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN"
-                or item.requiredOutcome.kind=="CLAIMED_OBSTRUCTION_REGULATION_PRESERVED_UNTIL_CLEAR_OR_CLAIM_RELEASE") then specification=item break end
+                or item.requiredOutcome.kind=="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION_PRESERVED_UNTIL_CLEAR_OR_CONTROL_RELEASE") then specification=item break end
         end
         if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
@@ -353,20 +353,20 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
     local corner=hasPrefix(responsibility,"corner-right-of-way:")
     local category2=hasPrefix(responsibility,"shared-category-2-regulation:")
-    local claimed=hasPrefix(responsibility,"claimed-obstruction-regulation:")
+    local playerControlled=hasPrefix(responsibility,"player-controlled-obstruction-regulation:")
     local settlementMode=nil
     if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
         or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_CORNER_RIGHT_OF_WAY"
         or bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_SHARED_CATEGORY_2" then
         settlementMode="BASIS_CESSATION"
-    elseif claimed then
+    elseif playerControlled then
         local evidenceKind=evidence and evidence.kind or nil
-        if evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION"
-            or evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE"
-            or evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
+        if evidenceKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION"
+            or evidenceKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE"
+            or evidenceKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
             settlementMode="SATISFACTION"
         else
-            return nil,"CLAIMED_OBSTRUCTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_CLAIM_RELEASE"
+            return nil,"PLAYER_CONTROLLED_OBSTRUCTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_CONTROL_RELEASE"
         end
     elseif forward then
         local evidenceKind=evidence and evidence.kind or nil
@@ -399,7 +399,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner or category2 or claimed
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner or category2 or playerControlled
     if #remaining==0 and ownedTrafficPurpose then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
@@ -411,13 +411,13 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         local terminalEvidenceKind="ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"
         if crossContext then
             terminalEvidenceKind="TACTICAL_REGULATION_RESPONSIBILITY_POSITIVELY_SUPERSEDED_BY_COOPERATIVE_PASSAGE"
-        elseif claimed then
-            if evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE" then
-                terminalEvidenceKind="CLAIMED_OBSTRUCTION_PLAYER_CLAIM_RELEASED"
-            elseif evidenceKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
-                terminalEvidenceKind="CLAIMED_OBSTRUCTION_GIANTS_INTENT_REACTIVATED"
+        elseif playerControlled then
+            if evidenceKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE" then
+                terminalEvidenceKind="PLAYER_CONTROLLED_OBSTRUCTION_PLAYER_CONTROL_RELEASED"
+            elseif evidenceKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
+                terminalEvidenceKind="PLAYER_CONTROLLED_OBSTRUCTION_GIANTS_INTENT_REACTIVATED"
             else
-                terminalEvidenceKind="CLAIMED_OBSTRUCTION_CORRIDOR_POSITIVELY_DISSOLVED"
+                terminalEvidenceKind="PLAYER_CONTROLLED_OBSTRUCTION_CORRIDOR_POSITIVELY_DISSOLVED"
             end
         elseif forward then
             terminalEvidenceKind=(evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
