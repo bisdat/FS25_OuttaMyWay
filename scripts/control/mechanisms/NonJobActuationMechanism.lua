@@ -67,6 +67,12 @@ function Mechanism:steeringTelemetry(vehicle)
     return telemetry
 end
 function Mechanism:isPlayerClaimed(vehicle)
+    local probe=OuttaMyWay.PlayerActuationProbe
+    if probe~=nil
+        and type(probe.suppressesEnteredClaim)=="function"
+        and probe.suppressesEnteredClaim()==true then
+        return false
+    end
     local ok,value=safeCall(vehicle,"getIsEntered"); return ok and value==true
 end
 function Mechanism:isSourceReactivated(vehicle)
