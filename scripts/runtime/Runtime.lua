@@ -948,6 +948,21 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
     local obstructionBridge=relocationBridge(candidate)
     if obstructionBridge~=nil then
+        local currentClaimedRegulation=self.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation()
+        if currentClaimedRegulation~=nil
+            and currentClaimedRegulation.provenance
+            and currentClaimedRegulation.provenance.admissionKind=="CLAIMED_OBSTRUCTION" then
+            local claimedAssessment=self.currentResponsibilityAssessment:assessActionSpaceRegulation(
+                currentClaimedRegulation,actionSpaceRelation(picture,currentClaimedRegulation))
+            if claimedAssessment.disposition=="TERMINATE" then
+                return self:_terminateActionSpaceRegulation(picture,evaluated,currentClaimedRegulation,claimedAssessment)
+            end
+            return {
+                status="NO_DISPATCH",
+                reason="CLAIMED_OBSTRUCTION_REGULATION_MUST_RETIRE_BEFORE_FRESH_RELOCATION_AUTHORITY",
+                actionSpaceRegulation=true,obstructionRelocation=true
+            }
+        end
         return self:_dispatchObstructionRelocation(picture,evaluated,candidate,obstructionBridge)
     end
     local followerBridge=followerBoundaryBridge(candidate)
