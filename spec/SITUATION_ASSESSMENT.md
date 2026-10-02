@@ -630,6 +630,7 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | [`scripts/assessment/FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) | `REALISES` |
 | [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) | `REALISES` |
 | [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) | `REALISES` |
+| [`scripts/assessment/PlayerActuationClaimAssessment.lua`](../scripts/assessment/PlayerActuationClaimAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) | `REALISES` |
 | [`scripts/assessment/BlockedProgressAssessment.lua`](../scripts/assessment/BlockedProgressAssessment.lua) | `REALISES` |
 | [`scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua`](../scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua) | `REALISES` |
@@ -647,6 +648,7 @@ The following mapping is **non-normative source traceability**.
 Current implementation routes include:
 
 - [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) — baseline Operational Picture composition and semantic handoff;
+- [`scripts/assessment/PlayerActuationClaimAssessment.lua`](../scripts/assessment/PlayerActuationClaimAssessment.lua) — establishes, retains and releases Player Actuation Claim from causal player-command evidence plus current control context;
 - [`scripts/assessment/ResolutionMarginDemandAssessment.lua`](../scripts/assessment/ResolutionMarginDemandAssessment.lua) — current one-sided positive progression-to-Current-Space/Demand witness interpretation using neutral progression geometry;
 - [`scripts/assessment/ResolutionMarginSituationAssessment.lua`](../scripts/assessment/ResolutionMarginSituationAssessment.lua) — Situation-layer composition that enriches the baseline picture with `resolutionMarginDemandKnowledge` while preserving the same picture identity/epoch;
 - [`scripts/assessment/CurrentPairAssessmentScope.lua`](../scripts/assessment/CurrentPairAssessmentScope.lua) — current ephemeral exact-member pair scope;
