@@ -5987,3 +5987,32 @@ Candidate Support owns prospective Field World / third-party theatre support. Be
 **Known boundary:** there is currently no explicit maximum physical-overhang predicate. A future Reality case in which a centre/steering target remains Field-supported but the assembly excursion becomes implausibly large would be new evidence requiring architectural reassessment; it is not a reason to invent a threshold now.
 
 **Validation verdict:** TEST 0.4.8.13 demonstrates the intended #393 realised-origin reassessment path in Reality and produces an acceptable Passage outcome. The prior concern that the approximately 0.5–1 m Deere-side excursion itself represented a Field World failure is withdrawn.
+
+
+## 2026-10-02 — #412 TS002 separates tab-in from manual actuation — TEST 0.4.9.1 diagnostic
+
+**Observe:** TEST 0.4.9.0 TS002 provides a control witness for the current Player Claim boundary. Condor Obstruction Relocation began at 08:29:38.060 with Control telemetry `controlled=false`. The owner then tabbed into Condor while relocation was still executing. At 08:29:41.743 the historical entered-state check immediately produced `PLAYER_CLAIM`; post-release telemetry showed `controlled=true`, Situation reclassified the blocker `NON_ACTIVE_PLAYER_CLAIMED`, and the relocation responsibility terminated. No competing manual drive command was demonstrated before that termination.
+
+> **Tab-In != Player Actuation Claim.**
+
+> **Control Context != Competing Manual Actuation.**
+
+**Additional Reality:** around 08:29:47, after OMW had already relinquished, the owner attempted to move Condor and GIANTS displayed **“Please start the engine first.”** The owner uses manual motor start. This demonstrates that a manual drive command may exist without realised propulsion or movement.
+
+> **Manual Drive Command != Successful Propulsion.**
+
+> **Engine-Off Does Not Erase Player Actuation Evidence.**
+
+The opposite edge also matters: players using automatic motor start may receive a running engine on entry without an explicit manual motor-start command. Therefore motor-running state is not sufficient Player Claim provenance.
+
+**Current hypothesis:** retain the validated human-precedence boundary from #123, but investigate stronger establishment evidence:
+
+> **Player Claim Evidence Must Be Causal, Not Positional.**
+
+A player action that competes with OuttaMyWay movement authority — candidate classes are accelerate/reverse, brake, steer and explicit propulsion-state command — is stronger evidence than entry, controlled-vehicle focus, speed, final steering axes or motor-running state. This remains a hypothesis; no production Player Claim policy is accepted yet.
+
+**Implementation — TEST `0.4.9.1` diagnostic:** a dedicated `PlayerActuationProbe` wraps the native Drivable/Motorized action callbacks only for the vehicle currently under Obstruction Relocation. It publishes raw input action/value and current player/AI/motor/control context as `PLAYER_ACTUATION_PROBE` with `claimAuthority=false diagnosticOnly=true`. The TEST-only probe also suppresses the three historical entered-state claim effects — Situation classification, retained completed-track removal and the non-job Control mechanism check — so tabbing into the vehicle does not terminate relocation during this experiment.
+
+**Deliberate safety/test boundary:** detected player commands do **not** terminate relocation in 0.4.9.1. This is intentional evidence collection, not accepted product behaviour. The test should be run only as the controlled TS002 diagnostic: tab into the relocating Condor without touching controls, then deliberately exercise steer, brake, accelerate/reverse and optionally motor commands while observing whether the causal callbacks distinguish those actions from passive occupancy and from analog background noise.
+
+**Validation question:** if the callbacks are quiet during passive tab-in and respond cleanly to deliberate controls with the owner's actual devices, confidence increases that a future Player Actuation Claim can be established from causal command evidence. If passive controller noise produces material events, the evidence contract must account for GIANTS input/dead-zone semantics before any production handover rule is implemented.
