@@ -5,33 +5,8 @@ OuttaMyWay = {}
 ClassIds={SHAPE=1}
 getHasClassId=function() return true end
 
--- Minimal GIANTS causal-action callback surface for production Observation.
--- These callbacks are not semantic fixtures: PlayerActuationObservation still
--- receives the same callback shape it consumes in-game.
-Utils={
-    appendedFunction=function(original,after)
-        return function(...)
-            local results={original(...)}
-            after(...)
-            return unpack(results)
-        end
-    end
-}
-Drivable={
-    actionEventAccelerate=function() end,
-    actionEventBrake=function() end,
-    actionEventSteer=function() end
-}
-Motorized={
-    actionEventToggleMotorState=function() end,
-    actionEventSetMotorStateIgnition=function() end,
-    actionEventSetMotorStateOn=function() end,
-    actionEventSetMotorStateOff=function() end
-}
-
 load("scripts/config.lua")
 load("scripts/publication/LogPublication.lua")
-load("scripts/observation/PlayerActuationObservation.lua")
 OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function()
     return OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"
 end)
@@ -86,7 +61,6 @@ load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/NativeA8ClearanceAssessment.lua")
 load("scripts/assessment/RealisedMotionDemandAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
-load("scripts/assessment/PlayerActuationClaimAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/BlockedProgressAssessment.lua")
 load("scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua")
@@ -8732,26 +8706,26 @@ test("Claimed Obstruction quiescent lease reactivates from fresh Causal Obstruct
     local authority=runtime.regulationBoundedAuthority
     authority.regulationControl={executeControlRequest=function() return true end}
     local lease={
-        commitmentId="CM-CLAIMED-REACTIVATE",
+        commitmentId="CM-PLAYER-CONTROLLED-REACTIVATE",
         conflictIdentity="causal-obstruction:OR-1:AS-BLOCKER->AS-BENEFICIARY",
-        admissionKind="CLAIMED_OBSTRUCTION",
+        admissionKind="PLAYER_CONTROLLED_OBSTRUCTION",
         regulatedAssemblyId="AS-BENEFICIARY",regulatedReferenceKey="vehicle-root:beneficiary",
         protectedAssemblyId="AS-BLOCKER",protectedReferenceKey="vehicle-root:blocker",
         governingPurpose="PRESERVE_PLAYER_CLAIMED_CAUSAL_OBSTRUCTION_INTENT_REVELATION",
-        ownerTag="CLAIMED_OBSTRUCTION_INTENT_REVELATION",
+        ownerTag="PLAYER_CONTROLLED_OBSTRUCTION_INTENT_REVELATION",
         actuationActive=false,fixedClaimedObstruction=true
     }
     authority.actionSpaceRegulationLease=lease
     local relation={
         identity=lease.conflictIdentity,
         blockerAssemblyId="AS-BLOCKER",beneficiaryAssemblyId="AS-BENEFICIARY",
-        blockerClassification="NON_ACTIVE_PLAYER_ACTUATION_CLAIMED",
+        blockerClassification="NON_ACTIVE_PLAYER_CONTROLLED",
         relocationEligible=false
     }
     local candidate={
-        identity="CA-CLAIMED-REACTIVATE",capability="REGULATE_SPEED",
+        identity="CA-PLAYER-CONTROLLED-REACTIVATE",capability="REGULATE_SPEED",
         evidenceBasis={actionSpaceRegulationBridge={
-            conflictIdentity=lease.conflictIdentity,admissionKind="CLAIMED_OBSTRUCTION",
+            conflictIdentity=lease.conflictIdentity,admissionKind="PLAYER_CONTROLLED_OBSTRUCTION",
             regulatedAssemblyId="AS-BENEFICIARY",regulatedReferenceKey="vehicle-root:beneficiary",
             protectedAssemblyId="AS-BLOCKER",protectedReferenceKey="vehicle-root:blocker",
             fixedRegulationSpeedKmh=1,
@@ -8760,13 +8734,13 @@ test("Claimed Obstruction quiescent lease reactivates from fresh Causal Obstruct
     }
     local evaluated={decision={selectedCandidateId=candidate.identity,epoch=1},candidates={candidate}}
     local picture={causalObstructionKnowledge={relation},opposedCorridorKnowledge={},spatialConstraintKnowledge={}}
-    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="CLAIMED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"}
+    local semantic={disposition="PERSIST",evidenceState="SUPPORTED",reason="PLAYER_CONTROLLED_OBSTRUCTION_REMAINS_POSITIVELY_SUPPORTED"}
 
     local result=authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semantic)
     equal(result.status,"ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED")
     equal(result.applicationContext,"REACTIVATION")
     equal(result.regulatedAssemblyId,"AS-BENEFICIARY")
-    equal(result.commitmentId,"CM-CLAIMED-REACTIVATE")
+    equal(result.commitmentId,"CM-PLAYER-CONTROLLED-REACTIVATE")
 end)
 
 test("Forward Intersection unresolved evidence cannot settle or release as positive dissolution",function()
@@ -8861,7 +8835,7 @@ end)
 test("Causal Obstruction: Player Actuation Claim preserves physical obstruction but withholds relocation eligibility",function()
     local records=causalObstructionAssessmentFixture({playerControlled=true,playerEntered=true,playerClaim=true})
     equal(#records,1)
-    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_ACTUATION_CLAIMED")
+    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_CONTROLLED")
     equal(records[1].relocationEligible,false)
     equal(records[1].playerClaimEvidence.playerActuationClaimCurrent,true)
     equal(records[1].playerClaimEvidence.establishedSequence,1)
