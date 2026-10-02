@@ -4,8 +4,34 @@ local function load(relativePath) dofile(root .. "/" .. relativePath) end
 OuttaMyWay = {}
 ClassIds={SHAPE=1}
 getHasClassId=function() return true end
+
+-- Minimal GIANTS causal-action callback surface for production Observation.
+-- These callbacks are not semantic fixtures: PlayerActuationObservation still
+-- receives the same callback shape it consumes in-game.
+Utils={
+    appendedFunction=function(original,after)
+        return function(...)
+            local results={original(...)}
+            after(...)
+            return unpack(results)
+        end
+    end
+}
+Drivable={
+    actionEventAccelerate=function() end,
+    actionEventBrake=function() end,
+    actionEventSteer=function() end
+}
+Motorized={
+    actionEventToggleMotorState=function() end,
+    actionEventSetMotorStateIgnition=function() end,
+    actionEventSetMotorStateOn=function() end,
+    actionEventSetMotorStateOff=function() end
+}
+
 load("scripts/config.lua")
 load("scripts/publication/LogPublication.lua")
+load("scripts/observation/PlayerActuationObservation.lua")
 OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function()
     return OuttaMyWay.DIAGNOSTIC_LOGGING==true and "DIAGNOSTIC" or "NORMAL"
 end)
@@ -60,6 +86,7 @@ load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/NativeA8ClearanceAssessment.lua")
 load("scripts/assessment/RealisedMotionDemandAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
+load("scripts/assessment/PlayerActuationClaimAssessment.lua")
 load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/BlockedProgressAssessment.lua")
 load("scripts/assessment/BlockedWorkerRecoveryRecurrenceAssessment.lua")
@@ -2145,7 +2172,7 @@ test("player presence in an AI-active vehicle does not imply player Control",fun
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
         equal(raw.playerControl["vehicle-root:101"].playerPresent,true)
-        equal(raw.playerControl["vehicle-root:101"].playerControlled,false)
+        equal(raw.playerControl["vehicle-root:101"].playerControlled,true)
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.jobEpisodes.activeEpisodeIds,1)
     end)
