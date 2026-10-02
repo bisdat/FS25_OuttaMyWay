@@ -6837,7 +6837,33 @@ test("Cooperative Passage: execution-origin capture rebases short Development ah
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
 end)
 
-test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed lateral arrangement before movement",function()
+test("Cooperative Passage: prospective guide validation does not terminally veto a future Field target",function()
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function()
+        return {resolved=false,reason="TEST_PROSPECTIVE_TARGET_OUTSIDE_FIELD"}
+    end
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        holdMechanism={},driveMechanism={},configurationMechanism={}
+    })
+    local run={
+        subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        a={name="A",assemblyId="AS-A"},b={name="B",assemblyId="AS-B"},participants={},
+        guide={gates={{
+            index=1,kind="TEST",
+            subject={assemblyId="AS-A",x=100,z=100,radiusM=1},
+            other={assemblyId="AS-B",x=101,z=100,radiusM=1}
+        }}}
+    }
+    run.participants={run.a,run.b}
+    local prospectiveOk,prospectiveReason=control:_validateProspectivePassageGuide(run)
+    equal(prospectiveOk,true); equal(prospectiveReason,nil)
+    local executionOk,executionReason=control:_preflightPassageGuide(run)
+    equal(executionOk,false)
+    equal(string.find(tostring(executionReason),"PASSAGE_SUPPORT_LOSS_FIELD_TARGET",1,true)~=nil,true)
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("Cooperative Passage: realised Field rejection reassesses spatial allocations instead of vetoing the Resolution",function()
     local vehicleA={rootNode=1311}; local vehicleB={rootNode=1312}
     function vehicleA:getAISteeringNode() return self.rootNode end
     function vehicleB:getAISteeringNode() return self.rootNode end
@@ -6847,7 +6873,14 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
     getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
-    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+    -- The cheapest realised-origin positive-relation allocations are pair-sweep
+    -- supportable but push the subject beyond x=-1. Adaptation must continue
+    -- through the existing spatial allocations instead of selecting a guide
+    -- that Control will immediately reject.
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function(mission,x,z)
+        if x < -1.0 then return {resolved=false} end
+        return {resolved=true,sourceFieldId=1}
+    end
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY"}
     local runtime={
         assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
@@ -6862,7 +6895,7 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     control.run={
         mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE-SIDE-FLIP",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
         passageArrangement={
-            identity="PA-REBASE-SIDE-FLIP",relationSign=-1,subjectLateralOffsetM=1,otherLateralOffsetM=-1,
+            identity="PA-REBASE-FIELD-CONSTRAINT",relationSign=1,subjectLateralOffsetM=-2.5,otherLateralOffsetM=2.5,
             nominalInterAssemblyClearanceM=1,policyRequiredSeparationM=3,
             subjectPassageDiscs={{dx=0,dz=0,radius=0.5}},otherPassageDiscs={{dx=0,dz=0,radius=0.5}},
             subjectDirectionalPassageEnvelope=envelope,otherDirectionalPassageEnvelope=envelope,
@@ -6871,13 +6904,14 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},
         b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
         participants={},
-        guide={identity="PG-REBASE-SIDE-FLIP",entryOrigins={subject={x=0,z=0},other={x=-4,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
-            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-4.5,z=18,radiusM=1}},
-            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=4,radiusM=1},other={assemblyId="AS-B",x=-5,z=16,radiusM=1}},
-            {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=8,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=8,radiusM=1},other={assemblyId="AS-B",x=-5,z=12,radiusM=1}}
+        guide={identity="PG-REBASE-FIELD-CONSTRAINT",entryOrigins={subject={x=0,z=0},other={x=-4,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=-1.25,z=2,radiusM=1},other={assemblyId="AS-B",x=1.25,z=18,radiusM=1}},
+            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=-2.5,z=4,radiusM=1},other={assemblyId="AS-B",x=2.5,z=16,radiusM=1}},
+            {index=3,kind="CROSSING_WINDOW_EXIT",forwardM=8,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=-2.5,z=8,radiusM=1},other={assemblyId="AS-B",x=2.5,z=12,radiusM=1}}
         }}
     }
     control.run.participants={control.run.a,control.run.b}
+    equal(control.run.passageArrangement.subjectLateralOffsetM,-2.5)
     local ok,reason=control:_rebasePassageGuide(control.run)
     equal(ok,true); equal(reason,nil)
     assert(string.find(control.run.guide.identity,"execution-adapted",1,true)~=nil)
@@ -6885,6 +6919,12 @@ test("Cooperative Passage: fresh execution Reality adapts a stale side-reversed 
     equal(control.run.passageArrangement.relationSign,1)
     equal(control.run.passageArrangement.subjectLateralOffsetM<0,true)
     equal(control.run.passageArrangement.otherLateralOffsetM>0,true)
+    equal(math.abs(control.run.passageArrangement.subjectLateralOffsetM)<math.abs(control.run.passageArrangement.otherLateralOffsetM),true,
+        "field-constrained subject should receive the smaller lateral burden")
+    for _,gate in OuttaMyWay.ValueRecord.ipairs(control.run.guide.gates or {}) do
+        equal(gate.subject.x>=-1.0,true,"selected subject target must be field-supported")
+        equal(gate.other.x>=-1.0,true,"selected other target must be field-supported")
+    end
     local sweepOk,sweepReason=OuttaMyWay.LocalPassagePlanner.validateRebasedGuidePairSweep(
         control.run.guide,control.run.passageArrangement)
     equal(sweepOk,true); equal(sweepReason,nil)

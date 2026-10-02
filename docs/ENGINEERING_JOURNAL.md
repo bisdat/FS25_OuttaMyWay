@@ -5893,3 +5893,97 @@ The 40 m point is not supported occupancy, negative-clearance evidence or permis
 **Authority Triad:** Architecture changed to separate BWR movement completion from steering horizon; Specification fixes the current BWR horizon at 40 m and preserves Anchor-bounded authority; Source changes only BWR Control. Candidate Support and Bounded Authority remain unchanged because they already own the correct movement extent.
 
 **Reality boundary:** offline validation cannot prove GIANTS articulated stability. Targeted in-game validation should revisit the short-Anchor TS004 Recovery and confirm that the longer steering look-through prevents the prior sign-flip/jackknife while Recovery still stops at the Anchor-bounded Return Region.
+
+
+## 2026-10-02 — #393 realised-origin Passage adaptation closes current support before selection
+
+**Reality basis:** TS004 TEST 0.4.8.11 showed Cooperative Passage correctly reject the retained realised-Transit crossing on pair sweep, then adapt to a wider equal-split arrangement that was pair-clearance-valid but immediately failed Control preflight because the 8RX target lay outside Field World. The Passage then entered `FAILED_HELD`, preventing native Stall evidence and leaving Player Intervention as the only continuation.
+
+**Discovery:** current Passage already enumerates spatially asymmetric allocations, including 0/100 and 100/0. The missing behaviour was not asymmetric geometry itself. Realised-origin adaptation stopped at the first pair-sweep-supported arrangement without asking whether that same arrangement survived the current execution preflight.
+
+> **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
+
+> **Spatial Asymmetry != Temporal Asymmetry.**
+
+**Implementation — TEST `0.4.8.12`:** `LocalPassagePlanner.adaptExecutionGuide` now consumes a non-actuating current execution-guide support predicate and continues its existing bounded arrangement search when a pair-sweep-supported candidate is rejected by Field World or third-party preflight. `CooperativePassageControl` evaluates candidate adapted guides using the same preflight used immediately before movement. No new arrangement family, movement choreography, Field World encroachment or temporal-asymmetric/single-mover Passage is introduced.
+
+**Regression:** the existing realised side-flip fixture now makes the lowest-burden pair-valid allocations field-invalid. The test requires adaptation to continue until it finds an already-supported asymmetric in-field allocation and verifies every selected guide target remains field-supported.
+
+**Authority Triad:** Architecture now requires complete current support for fresh realised arrangements and distinguishes spatial from temporal asymmetry; Specification requires execution adaptation to include current Field World and third-party constraints; Source changes only realised-origin arrangement selection/preflight integration.
+
+**Reality boundary:** offline validation proves search/support semantics only. TS004 must determine whether an existing in-field asymmetric allocation actually resolves the constrained theatre. If none does, #393 proceeds to temporal-asymmetric single-mover Passage investigation before any off-field authority change.
+
+
+## 2026-10-02 — TS004 Reality disproof: realised-origin adaptation is unreachable before prospective preflight rejection (#393)
+
+**Reality basis — TEST `0.4.8.12`:** TS004 did not exercise the new realised-origin arrangement search. At 06:53:31.977 Cooperative Passage became Current Responsibility, but `CooperativePassageControl` rejected the joint start two milliseconds later because the retained prospective guide contained an 8RX target not positively inside Field World. The same commit/fail cycle repeated several times before native Stall evidence matured.
+
+No `COOPERATIVE_PASSAGE_TRANSIT_*`, `COOPERATIVE_PASSAGE_EXECUTION_REVALIDATED`, `COOPERATIVE_PASSAGE_EXECUTION_ADAPTATION` or `COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE` event preceded those failures. The configured realised-origin boundary therefore never ran.
+
+**Disproven hypothesis:** TEST 0.4.8.12 cannot yet determine whether an existing asymmetric in-field allocation resolves TS004, because the current joint-start preflight prevents the pair from reaching Transit settlement and realised-origin adaptation in this theatre.
+
+**Implementation observation:** `_executeCooperativePassageJointRequests` calls `_preflightPassageGuide(run)` before installing the run. That helper checks every guide gate's current Field World and third-party support. The same helper is also correctly used after configuration/rebase, where exact realised guide targets are authoritative.
+
+The pre-Transit call therefore applies an execution-origin predicate to prospective guide geometry before physical Transit realisation. This conflicts with the existing Passage contract that prospective Candidate Support must not require a complete helper-specific pair sweep from a hypothetical future Entry origin.
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+This is a boundary-placement defect, not evidence that spatially asymmetric allocations are exhausted.
+
+**Secondary Reality:** after the repeated Passage start rejections, both workers established Blocked Progress Stall evidence. MT665 entered Blocked Worker Recovery at 06:53:34.219; BWR requested Transit, held the 8RX as the recovery blocker, and completed successfully at 06:53:43.716. The fallback/recovery path therefore remained available in this run.
+
+**Next architectural discussion:** determine the minimum non-actuating validation appropriate at Passage joint start, preserving prospective Candidate/theatre support while deferring exact helper-gate Field World and third-party execution validation until the fresh realised Transit origin exists. Do not introduce temporal-asymmetric Passage or off-field authority until this boundary is corrected and TS004 can actually exercise the existing spatial-allocation search.
+
+**Reality boundary:** 0.4.8.12 remains offline-valid but is not Reality-validated for its intended TS004 hypothesis.
+
+
+## 2026-10-02 — #393 Field World rejection becomes arrangement reassessment — TEST 0.4.8.13
+
+**Reality basis:** TEST 0.4.8.12 TS004 disproved the intended validation path because Cooperative Passage applied realised-execution guide preflight at joint start. A prospective 8RX guide target that the live field query did not positively resolve caused immediate Passage start rejection, so Transit settlement and the newly-added realised-origin spatial search were never reached.
+
+**Architectural decision:** an outside-Field-World target remains a hard no-actuation constraint for that exact movement, but it is not a terminal verdict on the interaction.
+
+> **Target Outside Field World != Interaction Unresolvable.**
+
+> **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
+
+> **Control Veto != Resolution Verdict.**
+
+The pairwise Resolution must seek another positively supported arrangement before escalation. Existing spatial allocations are the first reassessment family; temporal asymmetry and separately-authorised margin use remain later solution families if ordinary in-field spatial arrangements are exhausted.
+
+A second boundary is now explicit:
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+Candidate Support owns prospective Field World / third-party theatre support. Before Transit settlement, Control validates only guide structure and participant binding. Exact target execution support belongs after Transit settlement and fresh execution-origin capture.
+
+**Implementation — TEST `0.4.8.13`:**
+- joint Passage start now performs prospective structural guide validation rather than exact future target Field/third-party execution preflight;
+- after Transit settlement, the retained realised guide is checked for both pair-sweep support and complete execution support;
+- either pair-sweep failure **or** Field/third-party execution rejection triggers the existing realised-origin spatial arrangement search;
+- each replacement still requires pair-sweep support plus current execution preflight;
+- no outside-Field target is executed;
+- no temporal-asymmetric choreography, margin authority or clearance relaxation is introduced.
+
+**Regression:** one contract proves that a prospective future target can fail execution Field support without blocking prospective structural validation. A second makes the retained realised arrangement pair-supportable but Field-invalid and requires Control to reassess into an existing asymmetric Field-valid allocation.
+
+**Authority Triad:** Architecture defines Field World rejection as arrangement-level Constraint evidence and separates prospective from realised preflight; Specification requires reassessment before terminal Passage failure; Source changes the joint-start and realised-origin Control boundaries while reusing the existing planner search.
+
+**Reality target:** rerun TS004. The expected discriminator is now observable: Passage should reach Transit/configuration, capture the realised origin, reject any Field-invalid retained arrangement without moving it, and either select an existing Field-valid asymmetric spatial allocation or positively exhaust that allocation family. Only the latter justifies moving #393 to temporal-asymmetric single-mover Passage.
+
+
+## 2026-10-02 — TS004 Reality accepts bounded field-margin Passage — TEST 0.4.8.13
+
+**Observe:** the full TS004 replay reached realised-origin adaptation and completed Cooperative Passage successfully at approximately 07:41:32. The retained realised arrangement was rejected by pair sweep and the existing spatial-allocation search selected a near-equal replacement (`-1.70/+1.70`). In-game observation showed the Deere assembly/implement extending approximately 0.5–1 m beyond the field boundary during the manoeuvre, while the Passage itself remained stable, non-contact and visually plausible. Similar small field-edge excursions are also observed from ordinary GIANTS AI behaviour.
+
+**Discuss:** the observed excursion is not the same concept as an off-field target or extra-field relocation. Requiring every represented point of an articulated Transit assembly to remain strictly within the field polygon would reject a manoeuvre that Reality demonstrated as acceptable and would make the architecture stricter than the experienced field theatre warrants.
+
+**Decision:** accept **bounded immediate field-margin encroachment** as part of local Cooperative Passage when the steering targets remain positively Field-supported and hard pair/third-party constraints remain positive. Do not introduce a numeric footprint-overhang limit from this single observation. Off-field steering targets, remote extra-field movement and arbitrary extra-field authority remain outside this acceptance.
+
+> **Bounded Field-Margin Encroachment != Extra-Field Passage.**
+
+**Existing alternatives confirmed:** `LocalPassagePlanner.arrangementCandidates()` still enumerates burden fractions `0.5, 0.25, 0.75, 0.0, 1.0`, preserving equal, asymmetric and fully asymmetric 0/100 or 100/0 spatial allocations. `adaptExecutionGuide()` continues to reject an unsupported candidate and evaluate the remaining bounded candidates. Therefore the successful near-equal TS004 outcome does not remove the more asymmetric paths; they remain selectable when pair sweep, target-Field support or third-party support disproves an earlier allocation.
+
+**Known boundary:** there is currently no explicit maximum physical-overhang predicate. A future Reality case in which a centre/steering target remains Field-supported but the assembly excursion becomes implausibly large would be new evidence requiring architectural reassessment; it is not a reason to invent a threshold now.
+
+**Validation verdict:** TEST 0.4.8.13 demonstrates the intended #393 realised-origin reassessment path in Reality and produces an acceptable Passage outcome. The prior concern that the approximately 0.5–1 m Deere-side excursion itself represented a Field World failure is withdrawn.

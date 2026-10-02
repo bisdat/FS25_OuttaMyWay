@@ -1056,7 +1056,8 @@ def test_v47105_cooperative_passage_control_uses_giants_safe_value_record_traver
     control = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text()
     assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
     assert "for _,constraint in OuttaMyWay.ValueRecord.ipairs(run.thirdPartyConstraints or {})" in control
-    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
+    assert "local guide=candidateGuide or run.guide" in control
+    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates)" in control
     assert "for _,entry in ipairs(plan.participants)" not in control
     assert "for _,constraint in ipairs(run.thirdPartyConstraints or {})" not in control
     assert "for index,gate in ipairs(run.guide.gates)" not in control
@@ -1164,7 +1165,8 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
 
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
-    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
+    assert "local guide=candidateGuide or run.guide" in control
+    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(guide.gates)" in control
 
 def test_v01141_action_space_regulation_obligation_persistence_is_not_actuation_persistence():
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")

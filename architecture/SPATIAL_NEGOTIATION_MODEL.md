@@ -743,7 +743,31 @@ Before geometry-dependent Passage movement begins after capture, both participan
 
 There is no supported full-width/working-configuration Cooperative Passage execution fallback.
 
-Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry. Concrete Steering Helper geometry is materialised at that **realised Transit execution origin** and must pass current pairwise execution validation before movement begins.
+Stale early guide assumptions have no independent authority. After Transit configuration settlement, the execution boundary must return to fresh Reality before Passage movement that depends on the realised geometry. Concrete Steering Helper geometry is materialised at that **realised Transit execution origin** and must pass current execution validation before movement begins.
+
+When realised Transit geometry or a current execution constraint disproves the retained arrangement, any fresh realised-origin replacement remains part of the same Cooperative Passage Resolution. A replacement arrangement is supportable only when the complete current execution constraints required before movement are positive for that exact arrangement. Pair-sweep clearance alone is insufficient where Field World or current third-party support rejects the same guide.
+
+A Field World contradiction is authoritative as a **movement constraint**: the affected target MUST NOT be executed under ordinary in-field authority. It is not, by itself, a verdict that the pairwise Resolution has no solution. The contradicted arrangement becomes positive Constraint evidence and the existing bounded arrangement search must reassess the remaining spatial allocations before autonomous Passage is abandoned.
+
+Field World target support does **not** require every represented point of a Transit-configured assembly to remain strictly inside the field polygon. A bounded immediate field-margin overhang may occur during an otherwise Field-supported local Passage when the steering targets remain positively inside Field World and hard non-contact / third-party constraints remain supported. Reality in TS004 TEST 0.4.8.13 showed an approximately 0.5–1 m Deere-side margin excursion during a successful, visually plausible Passage; that outcome is accepted. This does not authorise an off-field steering target, remote extra-field relocation, or arbitrary extra-field travel.
+
+> **Bounded Field-Margin Encroachment != Extra-Field Passage.**
+
+> **Target Outside Field World != Interaction Unresolvable.**
+
+> **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
+
+> **Control Veto != Resolution Verdict.**
+
+Before Transit settlement, Candidate Support owns prospective theatre feasibility. Control may validate the structural integrity of the retained prospective guide, but exact future guide-target Field World/third-party execution preflight belongs after Transit realisation and execution-origin capture.
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+> **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
+
+Existing participant-scoped lateral allocations, including fully asymmetric lateral burden, must be considered under those same constraints before concluding that ordinary in-field Cooperative Passage has no executable arrangement. This is spatial asymmetry inside the existing Passage contract; it does not authorise a temporally sequential single-mover choreography, an off-field steering target, or remote extra-field movement. Bounded immediate field-margin overhang remains within the accepted local Passage theatre described above.
+
+> **Spatial Asymmetry != Temporal Asymmetry.**
 
 > **Correct Origin + Correct Trajectory Must Be Validated Together**
 

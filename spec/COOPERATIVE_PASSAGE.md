@@ -142,7 +142,33 @@ The initial Forward-Diagonal Steering Helper uses a **2.0 m forward per 1.0 m la
 
 Prospective Candidate Support MUST establish a supported Transit arrangement, field/third-party theatre and Shared Crossing Core without requiring a complete helper-specific pair sweep from a hypothetical future Entry origin. Prospective planning MUST NOT materialise Forward-Diagonal travel as hidden Entry reserve.
 
-After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin. Candidate Support MUST then materialise the selected Steering Helper from that realised origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement with its materialised helper is unsupported, a fresh arrangement MAY be selected from the same realised origin and subjected to the same helper realisation and pair-sweep requirement. If no fresh realised-origin arrangement is supported, autonomous Passage movement MUST NOT begin.
+After Capture and Transit settlement, Control MUST rebase the selected guide to the fresh realised execution origin. Candidate Support MUST then materialise the selected Steering Helper from that realised origin and MUST obtain positive pair-sweep support from current realised Transit geometry before any guide movement begins. If the retained arrangement with its materialised helper is unsupported, a fresh arrangement MAY be selected from the same realised origin.
+
+Joint Passage start MUST distinguish prospective guide integrity from realised execution support. Before Transit settlement, Control MAY validate guide/gate structure and participant binding, but MUST NOT convert an exact future guide-target Field World or third-party contradiction into a terminal Resolution verdict. Candidate Support already owns prospective theatre support; exact target execution support is reassessed from the realised Transit origin.
+
+> **Prospective Guide Preflight != Realised Execution Guide Preflight.**
+
+At the realised origin, adaptation MUST NOT select an arrangement on pair-sweep support alone. The retained arrangement and every considered replacement arrangement MUST satisfy the complete current execution constraints required before movement, including Field World target support and current third-party guide support.
+
+A Field World failure is a hard veto on the affected movement target under ordinary in-field authority. It is positive Constraint evidence about that arrangement, not automatic failure of the pairwise Resolution. If the retained arrangement is pair-clearance-valid but field-invalid, Control MUST NOT execute it and MUST route the contradiction into the existing realised-origin arrangement reassessment. The search continues until a complete supported spatial arrangement is found or the existing spatial allocation set is exhausted.
+
+Field support at this boundary is target authority, not a requirement that every point of the Transit-configured assembly remain strictly inside the polygon. A bounded immediate field-margin overhang MAY occur during a local Passage when the selected steering targets remain positively Field-supported and all hard pair / third-party safety predicates remain positive. The accepted TS004 TEST 0.4.8.13 Reality result includes an approximately 0.5–1 m Deere-side margin excursion during successful Passage. No fixed overhang-distance literal is introduced by this observation.
+
+> **Bounded Field-Margin Encroachment != Extra-Field Passage.**
+
+> **Target Outside Field World != Interaction Unresolvable.**
+
+> **Field World Rejection Is Arrangement Evidence, Not Resolution Veto.**
+
+> **Control Veto != Resolution Verdict.**
+
+The existing bounded spatial-allocation set includes participant-asymmetric lateral burdens. Those alternatives MUST remain available under the same support predicates before ordinary local Passage is declared unavailable. This does not authorise a new sequential/single-mover choreography, an off-field steering target, or remote extra-field travel; bounded immediate field-margin overhang is governed by the accepted local-theatre rule above.
+
+> **Fresh Realised Arrangement Support Requires Complete Current Constraints.**
+
+> **Spatial Asymmetry != Temporal Asymmetry.**
+
+If no fresh realised-origin arrangement is supported under the complete current execution constraints, autonomous Passage movement MUST NOT begin.
 
 > **Development Reserve != Steering Trajectory**
 
