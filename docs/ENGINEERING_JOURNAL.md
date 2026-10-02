@@ -5970,3 +5970,20 @@ Candidate Support owns prospective Field World / third-party theatre support. Be
 **Authority Triad:** Architecture defines Field World rejection as arrangement-level Constraint evidence and separates prospective from realised preflight; Specification requires reassessment before terminal Passage failure; Source changes the joint-start and realised-origin Control boundaries while reusing the existing planner search.
 
 **Reality target:** rerun TS004. The expected discriminator is now observable: Passage should reach Transit/configuration, capture the realised origin, reject any Field-invalid retained arrangement without moving it, and either select an existing Field-valid asymmetric spatial allocation or positively exhaust that allocation family. Only the latter justifies moving #393 to temporal-asymmetric single-mover Passage.
+
+
+## 2026-10-02 — TS004 Reality accepts bounded field-margin Passage — TEST 0.4.8.13
+
+**Observe:** the full TS004 replay reached realised-origin adaptation and completed Cooperative Passage successfully at approximately 07:41:32. The retained realised arrangement was rejected by pair sweep and the existing spatial-allocation search selected a near-equal replacement (`-1.70/+1.70`). In-game observation showed the Deere assembly/implement extending approximately 0.5–1 m beyond the field boundary during the manoeuvre, while the Passage itself remained stable, non-contact and visually plausible. Similar small field-edge excursions are also observed from ordinary GIANTS AI behaviour.
+
+**Discuss:** the observed excursion is not the same concept as an off-field target or extra-field relocation. Requiring every represented point of an articulated Transit assembly to remain strictly within the field polygon would reject a manoeuvre that Reality demonstrated as acceptable and would make the architecture stricter than the experienced field theatre warrants.
+
+**Decision:** accept **bounded immediate field-margin encroachment** as part of local Cooperative Passage when the steering targets remain positively Field-supported and hard pair/third-party constraints remain positive. Do not introduce a numeric footprint-overhang limit from this single observation. Off-field steering targets, remote extra-field movement and arbitrary extra-field authority remain outside this acceptance.
+
+> **Bounded Field-Margin Encroachment != Extra-Field Passage.**
+
+**Existing alternatives confirmed:** `LocalPassagePlanner.arrangementCandidates()` still enumerates burden fractions `0.5, 0.25, 0.75, 0.0, 1.0`, preserving equal, asymmetric and fully asymmetric 0/100 or 100/0 spatial allocations. `adaptExecutionGuide()` continues to reject an unsupported candidate and evaluate the remaining bounded candidates. Therefore the successful near-equal TS004 outcome does not remove the more asymmetric paths; they remain selectable when pair sweep, target-Field support or third-party support disproves an earlier allocation.
+
+**Known boundary:** there is currently no explicit maximum physical-overhang predicate. A future Reality case in which a centre/steering target remains Field-supported but the assembly excursion becomes implausibly large would be new evidence requiring architectural reassessment; it is not a reason to invent a threshold now.
+
+**Validation verdict:** TEST 0.4.8.13 demonstrates the intended #393 realised-origin reassessment path in Reality and produces an acceptable Passage outcome. The prior concern that the approximately 0.5–1 m Deere-side excursion itself represented a Field World failure is withdrawn.
