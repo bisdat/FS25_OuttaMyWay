@@ -511,7 +511,8 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local claimed=current.provenance and current.provenance.admissionKind=="CLAIMED_OBSTRUCTION"
     if claimed
         and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION"
-        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION" then
+        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE"
+        and assessment.terminationEvidenceKind~="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION" then
         return {
             status="NO_DISPATCH",
             reason="CLAIMED_OBSTRUCTION_TERMINATION_EVIDENCE_REQUIRED",
@@ -572,7 +573,8 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
                 or settlementKind=="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVE_DISSOLUTION"
                 or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_DISSOLUTION",
             positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
-                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION"
+                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE"
+                or settlementKind=="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION"
         })
     end
     self.responsibilityTransitionAuthority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)
