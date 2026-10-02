@@ -114,7 +114,6 @@ jobs:
             scripts/diagnostics/PassiveLiveValidator.lua \
             scripts/diagnostics/VersionHud.lua \
             scripts/observation/LiveInteractionObservation.lua \
-            scripts/observation/PlayerActuationObservation.lua \
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
             scripts/responsibility/CooperativePassageResponsibilityTransition.lua \
@@ -155,7 +154,7 @@ jobs:
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua
           "$LUAJIT_BIN" tests/replacement_core/configuration.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
-          "$LUAJIT_BIN" tests/replacement_core/player_actuation_claim.lua
+          "$LUAJIT_BIN" tests/replacement_core/player_control_interlock.lua
           "$LUAJIT_BIN" tests/replacement_core/prospective_decision_admissibility.lua
 
       - name: Run focused obstruction relocation contract
