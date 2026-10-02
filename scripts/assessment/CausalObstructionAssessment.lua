@@ -14,6 +14,13 @@ local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
 
+local function enteredClaimSuppressedForDiagnostic()
+    local probe=OuttaMyWay.PlayerActuationProbe
+    return probe~=nil
+        and type(probe.suppressesEnteredClaim)=="function"
+        and probe.suppressesEnteredClaim()==true
+end
+
 local function physicalByAssembly(values)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
@@ -276,7 +283,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             classification="ACTIVITY_UNRESOLVED"
                         elseif type(player)~="table" or player.playerEnteredObserved~=true then
                             classification="PLAYER_CLAIM_UNRESOLVED"
-                        elseif player.playerEntered==true then
+                        elseif player.playerEntered==true and not enteredClaimSuppressedForDiagnostic() then
                             classification="NON_ACTIVE_PLAYER_CLAIMED"
                         else
                             classification="NON_ACTIVE_UNCLAIMED"
@@ -310,6 +317,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             playerClaimEvidence={
                                 playerEntered=type(player)=="table" and player.playerEntered==true or false,
                                 playerEnteredObserved=type(player)=="table" and player.playerEnteredObserved==true or false,
+                                enteredClaimSuppressedForDiagnostic=enteredClaimSuppressedForDiagnostic(),
                                 source="ObservationSnapshot.playerControl"
                             },
                             obstructionEvidence=evidence,
