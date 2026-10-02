@@ -407,11 +407,13 @@ test("generic Obstruction Relocation Player Claim relinquishes activity context 
     setEntered(true)
     control:update(16)
     equal(completion(),nil)
+    equal(driveCalls,1)
+    local driveCallsBeforeClaim=driveCalls
     setPlayerClaimed(true)
     control:update(16)
     equal(completion().status,"PLAYER_CLAIM")
     equal(vehicle.forceIsActive,false)
-    equal(driveCalls,0)
+    equal(driveCalls,driveCallsBeforeClaim)
     equal(neutralizeCalls,0)
     equal(completion().evidence.activityContext.released,true)
 
