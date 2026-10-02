@@ -213,13 +213,23 @@ A current implementation may use positive supported productive continuation as t
 
 > **Obstruction Absence != Supported Continuation.**
 
-### Player Claim
+### Player Actuation Claim
 
-A current Player Claim over the non-active blocker is higher authority than autonomous relocation.
+A current Player Actuation Claim over the non-active blocker is higher authority than autonomous relocation.
 
-Once positively established, OuttaMyWay MUST stop acquiring new relocation authority and MUST relinquish/neutralise owned physical effects according to Control safety. The relocation responsibility may then terminate or be superseded through the parent lifecycle using evidence truthful to that claim boundary.
+Once positively established, OuttaMyWay MUST immediately stop acquiring new relocation authority for that blocker and MUST relinquish the current blocker actuation without issuing a final neutralisation command that competes with the higher-authority human input. Any activity/configuration context owned solely by the relocation MUST be released safely.
 
-Vehicle ownership metadata alone is not Player Claim evidence.
+The pre-claim bounded movement objective and its Bounded Authority MUST be retired. They MUST NOT remain dormant and become executable again merely because the player later tabs out or loses controlled-vehicle context.
+
+If the claimed blocker remains a current Causal Obstruction, downstream response belongs to Regulation: Claimed Obstruction Regulation may constrain the active beneficiary to the exact 1 km/h Intent-Revelation Creep while leaving the blocker entirely human-owned.
+
+When the Player Actuation Claim ends, ordinary Obstruction Relocation may be considered again only from fresh Situation Assessment and freshly acquired authority. A still-blocking abandoned vehicle is therefore reassessed as a non-active unclaimed blocker; a player-moved-clear vehicle creates no relocation purpose.
+
+Vehicle ownership metadata, passive player entry and control context alone are not Player Actuation Claim evidence.
+
+> **Claim Supersession Retires Physical Authority; It Does Not Pause It.**
+
+> **Tab-Out Requires Fresh Authority.**
 
 ### New authoritative GIANTS intent
 
