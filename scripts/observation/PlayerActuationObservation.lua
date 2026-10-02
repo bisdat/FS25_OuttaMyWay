@@ -5,6 +5,8 @@ OuttaMyWay.PlayerActuationObservation={}
 local Observation=OuttaMyWay.PlayerActuationObservation
 
 local installed=false
+local available=false
+local installReason="NOT_INSTALLED"
 local nextSequence=0
 local latestByReference={}
 
@@ -56,14 +58,18 @@ function Observation.latest(referenceKeyValue)
     return latestByReference[referenceKeyValue]
 end
 
+function Observation.isAvailable()
+    return available,installReason
+end
+
 function Observation.reset()
     latestByReference={}
 end
 
 function Observation.install()
     if installed then return true,"ALREADY_INSTALLED" end
-    if Utils==nil or type(Utils.appendedFunction)~="function" then return false,"APPENDED_FUNCTION_UNAVAILABLE" end
-    if Drivable==nil then return false,"DRIVABLE_UNAVAILABLE" end
+    if Utils==nil or type(Utils.appendedFunction)~="function" then available=false; installReason="APPENDED_FUNCTION_UNAVAILABLE"; return false,installReason end
+    if Drivable==nil then available=false; installReason="DRIVABLE_UNAVAILABLE"; return false,installReason end
 
     if type(Drivable.actionEventAccelerate)=="function" then
         Drivable.actionEventAccelerate=Utils.appendedFunction(
@@ -104,7 +110,9 @@ function Observation.install()
     end
 
     installed=true
-    return true,"INSTALLED"
+    available=true
+    installReason="INSTALLED"
+    return true,installReason
 end
 
 Observation.install()
