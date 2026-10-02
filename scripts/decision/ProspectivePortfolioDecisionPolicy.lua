@@ -89,6 +89,12 @@ function Policy:selectGroup(inventory,admissibleCandidates)
         return nil,"RECOVERY_WITH_FRESH_CROSS_PURPOSE_REQUIRES_COMPARATOR"
     end
 
+    local claimed=family(groups,"CLAIMED_OBSTRUCTION")
+    if #claimed>1 then return nil,"MULTIPLE_CLAIMED_OBSTRUCTIONS_REQUIRE_COMPARATOR" end
+    if #claimed==1 then
+        return choose(claimed[1],"OUTER_PURPOSE_PRECEDENCE","CURRENT_PLAYER_CLAIMED_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC")
+    end
+
     local obstruction=family(groups,"OBSTRUCTION_RELOCATION")[1]
     if obstruction~=nil then
         return choose(obstruction,"OUTER_PURPOSE_PRECEDENCE","CURRENT_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC")
@@ -131,6 +137,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     -- Same-class ambiguity is fail-closed support meaning, not a preference
     -- among otherwise supportable tactical purposes.
     local failClosed=families(groups,{
+        "CLAIMED_OBSTRUCTION_FAIL_CLOSED",
         "FOLLOWER_FAIL_CLOSED",
         "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
