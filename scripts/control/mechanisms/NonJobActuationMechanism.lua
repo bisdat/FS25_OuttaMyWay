@@ -23,7 +23,7 @@ local function steeringPose(vehicle)
     local good,x,y,z=pcall(getWorldTranslation,node); if not good then return nil end
     return node,x,y,z
 end
-function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Mechanism) end
+function Mechanism.new(playerClaimSource) return setmetatable({playerClaimSource=playerClaimSource,directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Mechanism) end
 
 local function boolOrNil(ok,value) if ok then return value==true end return nil end
 function Mechanism:steeringTelemetry(vehicle)
@@ -67,7 +67,13 @@ function Mechanism:steeringTelemetry(vehicle)
     return telemetry
 end
 function Mechanism:isPlayerClaimed(vehicle)
-    local ok,value=safeCall(vehicle,"getIsEntered"); return ok and value==true
+    local source=self.playerClaimSource
+    if source==nil or type(source.isClaimedReference)~="function" or vehicle==nil then return false end
+    local root=vehicle
+    local ok,value=safeCall(vehicle,"getRootVehicle")
+    if ok and type(value)=="table" and value.rootNode~=nil and value.rootNode~=0 then root=value end
+    if root.rootNode==nil or root.rootNode==0 then return false end
+    return source:isClaimedReference("vehicle-root:"..tostring(root.rootNode))==true
 end
 function Mechanism:isSourceReactivated(vehicle)
     local ok,value=safeCall(vehicle,"getIsAIActive"); return ok and value==true
