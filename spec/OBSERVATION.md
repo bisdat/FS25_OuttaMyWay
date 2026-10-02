@@ -50,6 +50,25 @@ Those domains are not semantic classifications merely because they are grouped i
 
 Diagnostic projections MAY accompany Observation when they remain clearly non-authoritative. Diagnostic convenience MUST NOT alter the raw evidence contract or silently become Situation meaning.
 
+### Player-control causal evidence
+
+Observation MAY publish current player-presence/control-context evidence and causal player-action evidence for a physical subject.
+
+These evidence classes are distinct:
+
+- **presence/context evidence** includes seat entry, tab selection, controlled-vehicle identity, `getIsControlled()`, current engine state, speed and other current execution context;
+- **causal action evidence** records that a player-originated GIANTS action callback occurred, including steering, accelerate/reverse, brake or explicit propulsion-state commands, with the raw action/value and source provenance needed for downstream interpretation.
+
+Observation MUST NOT promote either class directly into Player Claim. It MUST preserve enough provenance for Situation Assessment to distinguish a causal human command from resulting vehicle state or from OuttaMyWay/GIANTS-authored actuation.
+
+A causal command remains observable evidence even when its intended physical result is unavailable; for example, an accelerate command issued while the engine is stopped remains a player-command observation even if the vehicle does not propel.
+
+Final drivable state such as axis values, steering angle, motor-running state or vehicle motion MAY corroborate causal evidence but MUST NOT substitute for player-command provenance.
+
+> **Command Observation != Claim Authority.**
+
+> **Resulting State != Command Provenance.**
+
 ### Identity and reference rules
 
 External/runtime reference keys are correlation inputs unless another authority has established semantic identity.
