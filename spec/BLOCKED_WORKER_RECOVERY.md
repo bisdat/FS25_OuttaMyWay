@@ -235,15 +235,28 @@ The 1 km/h mechanism is the same shared **Bubble Bullet Time** authority used by
 
 > **Recovery Bubble Temporal Protection Protects Time; BWR Owns The Retreat.**
 
-### Direct Anchor-referenced retreat
+### Anchor-bounded retreat with fixed Reverse Steering Horizon
 
-The initial capability performs one direct bounded retreat toward the selected Recovery Anchor and ends the manoeuvre when the Recovery Return Region is reached.
+The initial capability performs one direct bounded retreat along the Stall-to-Anchor Recovery Return direction and ends the manoeuvre when the Recovery Return Region is reached.
 
-The Anchor may remain the subordinate steering reference so Control does not invent a second route or steering geometry. Completion, however, is measured from the Stall-side retreat requirement rather than exact Anchor arrival.
+For BWR reverse steering, Control MUST use a universal **40 m Reverse Steering Horizon** measured from the Stall along that Recovery Return direction. This steering target is intentionally independent of Anchor distance and MAY lie beyond a short Recovery Anchor.
 
-It MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle, invent a second release direction, or extend beyond the Anchor merely to satisfy the calibrated retreat target.
+The 40 m point is subordinate GIANTS steering geometry only. It MUST NOT:
+- extend physical Bounded Authority beyond the Anchor-supported Recovery Return Region;
+- enlarge `requiredRetreatM` or `maximumSupportedRetreatM`;
+- become Recovery completion evidence;
+- claim that the point itself is inside supported Recovery space or clear of obstacles; or
+- cause Control to continue reverse movement after Return Region completion.
 
-> **Recovery Target Reference != Recovery Completion Condition.**
+Physical Recovery completion remains exclusively owned by fresh Return Region progress. Steering-target arrival MUST NOT manufacture Recovery success.
+
+The capability MUST NOT reconstruct the complete historical GIANTS path, synthesize a turning centre, steer around a guessed obstacle, invent a second release direction, or extend authorised retreat merely to satisfy the steering horizon.
+
+> **Recovery Anchor != Reverse Steering Target.**
+
+> **Recovery Return Region != Reverse Steering Horizon.**
+
+> **Movement Completion Region != Reverse Steering Target.**
 
 The granted movement envelope MUST remain no broader than the currently supported local release purpose.
 

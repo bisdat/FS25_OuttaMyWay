@@ -280,7 +280,7 @@ return function(test,equal)
         equal(selected.rule,"BLOCKED_WORKER_RECOVERY_ESTABLISHMENT")
     end)
 
-    test("Recovery Control enters Return Region before Anchor, replaces native job, releases physically, then settles on successor admission",function()
+    test("Recovery Control uses forty metre steering horizon, enters Return Region before it, then settles on successor admission",function()
         local oldMission,oldTranslation=g_currentMission,getWorldTranslation
         local calls={}
         local currentJob={jobId=41}
@@ -401,7 +401,8 @@ return function(test,equal)
 
         control:update(16)
         if reposition==nil then error("Recovery movement not started") end
-        equal(reposition.x,0); equal(reposition.z,0)
+        equal(reposition.x,-10); equal(reposition.z,0)
+        equal(reposition.x<request.target.recoveryAnchor.x,true)
         equal(reposition.moveForwards,false)
         equal(control:getStatus().phase,"MOVING_TO_RECOVERY_RETURN_REGION")
 
@@ -439,6 +440,36 @@ return function(test,equal)
         equal(completion.successfulRecoveryExcursion.returnX,10)
         equal(control:isActive(),false)
         g_currentMission,getWorldTranslation=oldMission,oldTranslation
+    end)
+
+    test("Recovery forty metre steering horizon remains independent of a short Anchor",function()
+        local reposition=nil
+        local drive={
+            install=function() return true end,
+            setReposition=function(_,vehicle,x,z,speed,radius,moveForwards)
+                reposition={vehicle=vehicle,x=x,z=z,speed=speed,radius=radius,moveForwards=moveForwards}
+                return true
+            end,
+            getState=function() return {} end,
+            clearMovementObjective=function() return true end
+        }
+        local control=OuttaMyWay.BlockedWorkerRecoveryControl.new({},{
+            driveMechanism=drive,configurationMechanism={}
+        })
+        local vehicle={}
+        local state={
+            vehicle=vehicle,commitmentId="CM-SHORT",assemblyId="AS-SHORT",
+            returnOriginX=30,returnOriginZ=0,returnDirectionX=-1,returnDirectionZ=0,
+            anchorX=24,anchorZ=0,requiredRetreatM=6,maximumSupportedRetreatM=6,cappedByAnchor=true
+        }
+        local ok,reason=control:_beginMovement(state)
+        equal(ok,true,reason)
+        equal(reposition.x,-10);equal(reposition.z,0)
+        equal(reposition.x<state.anchorX,true)
+        equal(reposition.moveForwards,false)
+        equal(state.reverseSteeringHorizonM,40)
+        equal(state.reverseSteeringTargetX,-10)
+        equal(state.reverseSteeringTargetZ,0)
     end)
 
     test("Native job replacement prepares before synchronous stop-start commitment",function()
