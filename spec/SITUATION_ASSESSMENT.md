@@ -249,25 +249,30 @@ For a Realised Motion Demand basis, fresh reassessment after any blocker relocat
 
 Causal Obstruction is Situation meaning only. Obstruction Relocation, Bounded Authority and Control remain downstream.
 
-### Player Actuation Claim and non-active classification
+### Player Control Interlock and non-active classification
 
-For a non-active blocker, Situation Assessment may establish a **Player Actuation Claim** only from positive causal player-command evidence. Passive seat entry, tab selection, current controlled-vehicle context, engine-running state, vehicle speed and final steering/throttle state do not independently establish the claim.
+For a non-active blocker, current positive GIANTS player-control context establishes a **Player Control Interlock**.
 
-Qualifying causal evidence includes positively observed player steering, accelerate/reverse, brake or explicit propulsion-state commands. Situation Assessment MUST preserve the distinction between the causal command and any resulting physical state; unsuccessful propulsion because the engine is stopped does not erase the command evidence.
+The interlock is deliberately transient:
 
-Once established, current player control/presence MAY retain the claim while the human continues controlling that physical subject without requiring continuous non-zero input. Loss of current player control releases the claim; any later OuttaMyWay action requires fresh Situation Assessment and fresh downstream authority.
+- it exists only while the blocker is currently player-controlled;
+- it does not infer whether the player intends to move, observe or remain stationary;
+- it does not survive tab-out/control release; and
+- control release does not revive any earlier OuttaMyWay actuation.
 
-Vehicle ownership metadata MUST NOT substitute for current claim evidence.
+A blocker under the interlock is not eligible for autonomous Obstruction Relocation. Any current relocation authority over that blocker is superseded and must be retired. A later relocation requires fresh Situation Assessment and freshly acquired downstream authority.
 
-While the exact qualifying GIANTS Job Episode remains active, player presence or causal control input MUST NOT reclassify that active participant as a non-active blocker; Job Episode lifecycle remains authoritative for active-participant status.
+Vehicle ownership metadata MUST NOT substitute for current player-control evidence.
 
-> **Player Actuation Claim Is Causal, Not Positional.**
+While the exact qualifying GIANTS Job Episode remains active, player control does not reclassify that active participant as a non-active blocker; Job Episode lifecycle remains authoritative for active-participant status.
 
-> **Control Context May Retain An Established Claim; It Does Not Create One.**
+> **Player Control Interlock Is Current, Not Historical.**
 
-Player Actuation Claim changes the authority classification of an already-recognised blocker, not the underlying obstruction geometry. If the claimed physical subject continues to intersect the beneficiary's current positively supported obstruction corridor/look-ahead, the Causal Obstruction remains current for downstream response selection.
+> **Control Release Removes the Interlock; It Does Not Resume Old Authority.**
 
-> **Player Claim Changes Authority, Not Obstruction Geometry.**
+Player control changes the authority classification of an already-recognised blocker, not the underlying obstruction geometry. If the player-controlled physical subject continues to intersect the beneficiary's current positively supported obstruction corridor/look-ahead, the Causal Obstruction remains current for downstream response selection.
+
+> **Player Control Changes Authority, Not Obstruction Geometry.**
 
 ### Spatial Situation specialisations
 
