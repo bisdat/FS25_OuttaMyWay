@@ -863,7 +863,7 @@ function Runtime:onObstructionRelocationCompletion(result)
 
     local eventKind=nil
     if result.status=="FAILED" then eventKind="OBJECTIVE_FAILED"
-    elseif result.status=="PLAYER_CLAIM" then eventKind="PLAYER_CLAIM"
+    elseif result.status=="PLAYER_CONTROL" then eventKind="PLAYER_CONTROL"
     elseif result.status=="SUPERSEDED" then eventKind="NEW_AUTHORITATIVE_INTENT" end
     if eventKind~=nil then
         local terminal,reason=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,result.commitmentId,eventKind,result.evidence)
