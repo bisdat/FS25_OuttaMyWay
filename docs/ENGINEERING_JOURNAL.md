@@ -6035,3 +6035,28 @@ The run then churned: while the player remained entered/controlled, Obstruction 
 **Implementation — TEST `0.4.9.2`:** the diagnostic suppression now also covers Candidate reassessment `currentPlayerClaim()`. Production semantics remain unchanged whenever the diagnostic probe is absent.
 
 **Next Reality discriminator:** first prove that Condor continues the same Obstruction Relocation after passive tab-in. If that succeeds, exercise steer, brake and accelerate/reverse while recording causal action callbacks. If Condor still ceases meaningful motion despite no semantic `PLAYER_CLAIM` settlement, investigate a lower mechanical conflict between GIANTS controlled-vehicle update/physics and OuttaMyWay `AIVehicleUtil.driveInDirection` actuation.
+
+
+## 2026-10-02 — #412 TEST 0.4.9.2: passive tab-in separates cleanly from causal actuation
+
+**Reality basis:** TS002 TEST 0.4.9.2 corrected the missed Candidate reassessment Player Claim owner and finally established the intended experiment. Condor Obstruction Relocation `CM-00001` began at 09:16:23.769. By 09:16:26.779 the owner had tabbed into Condor and Control telemetry reported `controlled=true`, but the same relocation commitment remained active and continued materially.
+
+No `PLAYER_ACTUATION_PROBE` event appeared until 09:16:31.981 — approximately **5.2 seconds of passive entered/controlled occupancy**.
+
+> **Passive Tab-In Is Observably Distinct From Player Actuation.**
+
+Deliberate controls then produced causal callbacks:
+- ACCELERATE at 09:16:31.981, reaching 1.0 at 09:16:32.231;
+- BRAKE at 09:16:33.036;
+- explicit MOTOR_TOGGLE at 09:16:35.987;
+- STEER from 09:16:36.548 onward, including full-scale -1.0 and later opposite-direction input.
+
+This increases confidence in the #412 hypothesis that **Player Claim establishment should use causal player actuation evidence rather than entry/control context**. No arbitrary analog threshold is accepted from this one run. The relevant result is that passive occupancy remained callback-quiet while deliberate operation generated clear action events.
+
+**Separate discovery:** throughout much of the same relocation GIANTS reported `motorStarted=false` while OMW physically moved Condor at approximately 27–35 km/h. The explicit motor toggle occurred at 09:16:35.987 and `motorStarted=true` was not observed until 09:16:37.055.
+
+> **Physical Non-Job Actuation != Propulsion Readiness.**
+
+> **Motor Object Availability != Motor Running State.**
+
+Inspection shows `NonJobActuationMechanism.driveInWorldDirection()` temporarily provides legacy `vehicle.motor` / `vehicle.cruiseControl` compatibility fields to `AIVehicleUtil.driveInDirection()`, but it does not start the GIANTS motor. The helper can therefore produce physical movement while the vehicle's actual propulsion state remains stopped. This is tracked separately as Issue #417 so #412 remains focused on the human-authority boundary.
