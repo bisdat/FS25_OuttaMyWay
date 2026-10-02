@@ -103,12 +103,20 @@ function Assessment:assessActionSpaceRegulation(current,relation)
                 reason=relation.reason or "CLAIMED_OBSTRUCTION_CURRENT_SUPPORTED_CORRIDOR_POSITIVELY_CLEAR"
             }
         end
+        if relation.blockerClassification=="ACTIVE_GIANTS_AI"
+            or relation.blockerClassification=="GIANTS_AI_ACTIVE_UNRESOLVED" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION",
+                reason="CLAIMED_BLOCKER_GIANTS_AI_INTENT_POSITIVELY_REACTIVATED"
+            }
+        end
         if relation.positiveSupersession==true
             or relation.classification=="CLAIMED_OBSTRUCTION_CLAIM_RELEASED"
             or relation.blockerClassification=="NON_ACTIVE_UNCLAIMED" then
             return {
                 disposition="TERMINATE",
-                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_SUPERSESSION",
+                terminationEvidenceKind="CLAIMED_OBSTRUCTION_POSITIVE_CLAIM_RELEASE",
                 reason=relation.reason or "PLAYER_ACTUATION_CLAIM_POSITIVELY_RELEASED"
             }
         end
