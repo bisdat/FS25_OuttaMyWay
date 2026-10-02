@@ -333,8 +333,8 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
     local action=item.action
     local representationId="action-space-regulation:"..tostring(relation.identity)..":"..tostring(pictureId)
     local category2=action.admissionKind=="SHARED_CATEGORY_2_DEMAND"
-    local claimed=action.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
-    if action.admissionKind=="CORNER_RIGHT_OF_WAY" or category2 or claimed then
+    local playerControlled=action.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
+    if action.admissionKind=="CORNER_RIGHT_OF_WAY" or category2 or playerControlled then
         representationId=representationId..":"..tostring(action.regulatedAssemblyId)
     end
     values.representationFitness=values.representationFitness or {}
@@ -344,11 +344,11 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
         question=action.admissionKind=="FORWARD_INTERSECTION" and "FORWARD_INTERSECTION_TEMPORAL_REGULATION"
             or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY"
             or (category2 and "SHARED_CATEGORY_2_BOUNDARY_DEMAND_TEMPORAL_REGULATION"
-            or (claimed and "PLAYER_CONTROLLED_OBSTRUCTION_TEMPORAL_REGULATION" or "ACTION_SPACE_REGULATION"))),
+            or (playerControlled and "PLAYER_CONTROLLED_OBSTRUCTION_TEMPORAL_REGULATION" or "ACTION_SPACE_REGULATION"))),
         assessmentHorizon=action.admissionKind=="FORWARD_INTERSECTION" and "CURRENT_POSITIVELY_SUPPORTED_FIELD_BOUNDED_FORWARD_CONTINUATIONS"
             or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and "CURRENT_SHARED_CORNER_INCUMBENCY_OR_PROSPECTIVE_ARRIVAL_EVIDENCE"
             or (category2 and "CURRENT_SHARED_CATEGORY_2_BOUNDARY_DEMAND_OR_INCUMBENT_WAITING_FOR_EVIDENCE"
-            or (claimed and "CURRENT_PLAYER_CONTROL_PLUS_CURRENT_CAUSAL_OBSTRUCTION_CORRIDOR"
+            or (playerControlled and "CURRENT_PLAYER_CONTROL_PLUS_CURRENT_CAUSAL_OBSTRUCTION_CORRIDOR"
             or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE")))),
         state="USABLE_WITH_UNCERTAINTY",
         claimPermissions={"REGULATE_SPEED_TO_PRESERVE_LOCAL_PASSAGE_ACTION_SPACE","ESCALATE_REALIZED_INSUFFICIENT_REGULATION_TO_ZERO_SPEED_HOLD"},
@@ -357,9 +357,9 @@ local function actionSpaceRegulationRepresentation(values,pictureId,item)
         validityDependencies=action.admissionKind=="FORWARD_INTERSECTION" and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","POSITIVE_FORWARD_INTERSECTION","POSITIVE_PROGRESS_RATES"}
             or (action.admissionKind=="CORNER_RIGHT_OF_WAY" and {"POSITIVE_STRUCTURAL_CORNER_FEATURE","CURRENT_CORNER_INCUMBENCY_OR_SUPPORTED_ARRIVAL_EVIDENCE","SHARED_CORNER_COMPETING_DEMAND"}
             or (category2 and {"SHARED_CATEGORY_2_DEMAND_OR_INCUMBENT_PURPOSE","BOUNDARY_INTERACTION_REACH","FIELD_WORLD_CLIPPED_BOUNDARY_DEMAND_LOCALITY"}
-            or (claimed and {"CURRENT_CAUSAL_OBSTRUCTION","CURRENT_PLAYER_CONTROL","CURRENT_SUPPORTED_OBSTRUCTION_CORRIDOR"}
+            or (playerControlled and {"CURRENT_CAUSAL_OBSTRUCTION","CURRENT_PLAYER_CONTROL","CURRENT_SUPPORTED_OBSTRUCTION_CORRIDOR"}
             or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"}))),
-        provenance={source=claimed and "CausalObstructionAssessment" or ((action.admissionKind=="FORWARD_INTERSECTION" or action.admissionKind=="CORNER_RIGHT_OF_WAY" or category2) and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment"),layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
+        provenance={source=playerControlled and "CausalObstructionAssessment" or ((action.admissionKind=="FORWARD_INTERSECTION" or action.admissionKind=="CORNER_RIGHT_OF_WAY" or category2) and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment"),layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
     }
     return representationId
 end
@@ -371,8 +371,8 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local corner=action.admissionKind=="CORNER_RIGHT_OF_WAY"
     local category2=action.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     local passageApproach=action.admissionKind=="PASSAGE_APPROACH"
-    local claimed=action.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
-    local fixed=forward or corner or category2 or passageApproach or claimed
+    local playerControlled=action.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
+    local fixed=forward or corner or category2 or passageApproach or playerControlled
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
     local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
@@ -388,8 +388,8 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         epoch=pictureValues.epoch,relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},entries=compositionEntries
     }
 
-    local referenceKey=(claimed and "player-controlled-obstruction-regulation:" or (forward and "forward-intersection-regulation:" or (passageApproach and "passage-approach-regulation:" or "action-space-regulation:")))..tostring(relation.identity)
-    local purpose=claimed and {kind="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION",result="PRESERVE_BENEFICIARY_INTENT_REVELATION_WHILE_PLAYER_CLAIMED_BLOCKER_INTERSECTS_CURRENT_CORRIDOR"}
+    local referenceKey=(playerControlled and "player-controlled-obstruction-regulation:" or (forward and "forward-intersection-regulation:" or (passageApproach and "passage-approach-regulation:" or "action-space-regulation:")))..tostring(relation.identity)
+    local purpose=playerControlled and {kind="PLAYER_CONTROLLED_OBSTRUCTION_REGULATION",result="PRESERVE_BENEFICIARY_INTENT_REVELATION_WHILE_PLAYER_CONTROLLED_BLOCKER_INTERSECTS_CURRENT_CORRIDOR"}
         or (forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"}
         or (passageApproach and {kind="PASSAGE_APPROACH_REGULATION",result="BOUND_CONFIRMED_PASSAGE_APPROACH_UNTIL_CAPTURE_SUCCESSION"}
         or {kind="ACTION_SPACE_REGULATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"}))
@@ -401,25 +401,25 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         purpose={kind="SHARED_CATEGORY_2_INTENT_REVELATION",result="PRESERVE_TEMPORARY_BOUNDARY_DEMAND_ORDERING_UNTIL_PROTECTED_BOUNDARY_TURN"}
     end
 
-    local observeReason=claimed and "Current player-claimed Causal Obstruction requires beneficiary Intent-Revelation Creep while the human controls the blocker"
+    local observeReason=playerControlled and "Current player-playerControlled Causal Obstruction requires beneficiary Intent-Revelation Creep while the human controls the blocker"
         or (corner and "Current shared Corner competing demand requires an allocated temporary right-of-way rather than observation-only progression"
         or (category2 and "Current Shared Category-2 Demand requires one temporary yielder while the protected boundary interaction reveals intent"
         or "The active opposed relationship has no selected supported Passage expression while unrestricted progression is positively consuming the bounded local Passage envelope"))
 
-    local originDecision=claimed and "PLAYER_CONTROLLED_OBSTRUCTION"
+    local originDecision=playerControlled and "PLAYER_CONTROLLED_OBSTRUCTION"
         or (forward and "FORWARD_INTERSECTION"
         or (corner and "CORNER_RIGHT_OF_WAY"
         or (category2 and "SHARED_CATEGORY_2_DEMAND" or "ACTION_SPACE_REGULATION")))
-    local basisKind=claimed and "PLAYER_CONTROLLED_OBSTRUCTION_REGULATION"
+    local basisKind=playerControlled and "PLAYER_CONTROLLED_OBSTRUCTION_REGULATION"
         or (forward and "FORWARD_INTERSECTION_INTENT_REVELATION"
         or (corner and "CORNER_RIGHT_OF_WAY"
         or (category2 and "SHARED_CATEGORY_2_DEMAND_REGULATION" or "ACTION_SPACE_REGULATION")))
-    local outcomeKind=claimed and "PLAYER_CONTROLLED_OBSTRUCTION_REGULATION_PRESERVED_UNTIL_CLEAR_OR_CLAIM_RELEASE"
+    local outcomeKind=playerControlled and "PLAYER_CONTROLLED_OBSTRUCTION_REGULATION_PRESERVED_UNTIL_CLEAR_OR_CONTROL_RELEASE"
         or (forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED"
         or (corner and "CORNER_RIGHT_OF_WAY_PRESERVED_UNTIL_COMPETING_DEMAND_DISSOLVES"
         or (category2 and "SHARED_CATEGORY_2_ORDERING_PRESERVED_UNTIL_BOUNDARY_TURN"
         or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES")))
-    local evidenceKind=claimed and "FRESH_PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION_OR_CLAIM_RELEASE"
+    local evidenceKind=playerControlled and "FRESH_PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION_OR_CONTROL_RELEASE"
         or (forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED"
         or (corner and "FRESH_SHARED_CORNER_COMPETING_DEMAND_OR_POSITIVE_DISSOLUTION"
         or (category2 and "FRESH_SHARED_CATEGORY_2_DEMAND_OR_BOUNDARY_TURN_DISSOLUTION"
@@ -434,7 +434,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,
             protectedParticipantUnrestricted=not passageApproach,
             pairwisePassageApproachCeiling=passageApproach,elasticProgressionEnvelope=not fixed,
-            fixedIntentRevelationCreep=(forward or corner or category2 or claimed),
+            fixedIntentRevelationCreep=(forward or corner or category2 or playerControlled),
             fixedPassageApproachCeiling=passageApproach,zeroSpeedHoldExpression=not fixed
         },
         evidenceBasis={
@@ -495,24 +495,24 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             actionSpaceConservationStatus="REGULATE_SUPPORTED",
             cooperativePassageEligible=relation.cooperativePassageEligible~=false
         },
-        invalidationConditions=claimed and {{kind="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION"},{kind="PLAYER_ACTUATION_CLAIM_RELEASED"},{kind="JOB_EPISODE_CHANGE"}}
+        invalidationConditions=playerControlled and {{kind="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION"},{kind="PLAYER_ACTUATION_CONTROL_RELEASED"},{kind="JOB_EPISODE_CHANGE"}}
             or {{kind="POSITIVE_RELATIONSHIP_DISSOLUTION"},{kind="COOPERATIVE_PASSAGE_SUCCESSION"},{kind="JOB_EPISODE_CHANGE"}},
         reversibility={physicalEffect=true,releaseOnPurposeExpiry=true},
         obligationsCreated={{
             origin={kind="TRAFFIC_INTERVENTION",decision=originDecision,conflictIdentity=relation.identity},
             basis={
                 kind=basisKind,conflictIdentity=relation.identity,cornerKey=action.cornerKey,admissionKind=action.admissionKind,
-                roleAssignmentMutable=not forward and not category2 and not claimed,
+                roleAssignmentMutable=not forward and not category2 and not playerControlled,
                 regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId
             },
             requiredOutcome={kind=outcomeKind,conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
-            evidenceContract={kind=evidenceKind,absenceDoesNotRetire=not forward and not corner and not claimed},
+            evidenceContract={kind=evidenceKind,absenceDoesNotRetire=not forward and not corner and not playerControlled},
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={
             releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,
-            currentRoleMayMigrateWithoutSettlingObligation=not category2 and not claimed
+            currentRoleMayMigrateWithoutSettlingObligation=not category2 and not playerControlled
         },
         uncertainty=category2 and {
             "NO_ROUTE_OR_TURN_PATH_AUTHORITY",
@@ -1156,9 +1156,9 @@ function Support:publishDecisionPicture(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
 
-    local claimed,claimedReason=playerControlledObstructionRecord(picture,nil)
-    if claimed~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,claimed) end
-    if claimedReason~=nil then self.lastStatus=claimedReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
+    local playerControlled,playerControlledReason=playerControlledObstructionRecord(picture,nil)
+    if playerControlled~=nil then return publishActionSpaceRegulationPicture(self,picture,snapshot,playerControlled) end
+    if playerControlledReason~=nil then self.lastStatus=playerControlledReason; return self.passiveSupport:publishDecisionPicture(picture,snapshot) end
 
     local follower,followerReason=followerBoundaryRecord(picture)
     if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return publishFollowerBoundaryPicture(self,picture,snapshot,follower) end
