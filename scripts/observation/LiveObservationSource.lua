@@ -21,6 +21,13 @@ local function isDeleted(object)
     return object == nil or object.isDeleted == true or object.rootNode == nil or object.rootNode == 0
 end
 
+local function enteredClaimSuppressedForDiagnostic()
+    local probe=OuttaMyWay.PlayerActuationProbe
+    return probe~=nil
+        and type(probe.suppressesEnteredClaim)=="function"
+        and probe.suppressesEnteredClaim()==true
+end
+
 local function referenceKey(object)
     return "vehicle-root:" .. tostring(object and (object.rootNode or object) or "nil")
 end
@@ -440,9 +447,13 @@ function Source:capture(mission, nowSeconds)
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
             -- Genuine source completion ends Operation membership but not
-            -- physical observability. Retain the completed assembly until Player
-            -- Claim or a fresh GIANTS activation supersedes this terminal episode.
-            if playerEntered and sourceJobEndEvidence.observed==true then removeAfterCapture[ref] = true end
+            -- physical observability. Production normally retires this retained
+            -- track on Player Claim. Issue #412 TEST suppresses entered-state claim
+            -- so tab/seat presence can be observed while relocation continues.
+            if playerEntered and sourceJobEndEvidence.observed==true
+                and not enteredClaimSuppressedForDiagnostic() then
+                removeAfterCapture[ref] = true
+            end
         end
     end
 
