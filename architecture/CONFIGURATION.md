@@ -451,7 +451,7 @@ Configuration does not own enduring product explanation merely because Help is r
 
 > **Configuration Choice != Product Explanation**
 
-A future OuttaMyWay settings/menu surface must provide a discoverable route to the in-game Help / Reference responsibility tracked by Issue #293. Help content itself is not another Configuration setting. It explains enduring product concepts and supported behaviour, while GUI Architecture owns transient operational communication about what OuttaMyWay is doing now; Issue #89 tracks the unresolved message-lifecycle work.
+The OuttaMyWay Configuration area remains the architectural host for a future discoverable route to the in-game Help / Reference responsibility tracked by Issue #293. Help content itself is not another Configuration setting. It explains enduring product concepts and supported behaviour, while GUI Architecture owns transient operational communication about what OuttaMyWay is doing now; Issue #89 tracks the unresolved message-lifecycle work.
 
 Diagnostic/test HUDs remain instrumentation unless deliberately promoted through the GUI/HUD responsibility. The existence of a visible diagnostic control does not make it part of HUD visibility Configuration.
 
