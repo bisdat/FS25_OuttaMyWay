@@ -500,6 +500,45 @@ test("generic Obstruction Relocation waits for positive propulsion readiness bef
     AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
 end)
 
+test("generic Obstruction Relocation does not claim a pre-existing transitional motor start", function()
+    local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls,neutralizeCalls=0,0
+    local failDrive=false
+    AIVehicleUtil={driveInDirection=function()
+        driveCalls=driveCalls+1
+        if failDrive then error("synthetic direction actuation failure") end
+        return true
+    end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(_,x,y,z) return x,y,z end
+
+    local control,request,_,_,completion,setMotorState,propulsionCalls=genericControlFixture({initialMotorState=MotorState.STARTING})
+    equal(control:executeControlRequest(request,nil),true)
+    local startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,0)
+    equal(stopCalls,0)
+    equal(motorState,MotorState.STARTING)
+
+    control:update(16)
+    equal(driveCalls,0)
+    equal(completion(),nil)
+
+    setMotorState(MotorState.ON)
+    control:update(16)
+    equal(driveCalls,1)
+    failDrive=true
+    control:update(16)
+    equal(completion().status,"FAILED")
+    startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,0)
+    equal(stopCalls,0)
+    equal(motorState,MotorState.ON)
+    equal(completion().evidence.propulsion.evidence.reason,"PROPULSION_NOT_OWNED")
+
+    AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
+end)
+
 test("generic Obstruction Relocation preserves a pre-existing running motor", function()
     local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
     local driveCalls,neutralizeCalls=0,0
