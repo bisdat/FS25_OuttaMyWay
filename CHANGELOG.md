@@ -1,3 +1,26 @@
+# v0.4.10.0 PATCH CHECKPOINT — Player Control Interlock and Repository Conformance Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #423 (`6cd5a9486c700fcc22be41e191417e9c37403340`), carrying offline-validated TEST `0.4.9.9`. The last behaviour-changing head in this lineage was field-validated TEST `0.4.9.8`; `0.4.9.9` then reconciled current naming and validation topology without changing Decision or GIANTS-facing behaviour.
+
+**Version rationale:** owner-selected PATCH checkpoint under the current pre-1.0 policy. The accepted delta since `0.4.9.0` closes the Player Control / Obstruction Relocation boundary exposed by #412, then restores repository traceability, current-truth authority and production/validation naming through #378. These are corrections and conformance refinements within the existing 0.4 responsibility-oriented architecture, not a materially new supported capability or responsibility epoch.
+
+**PATCH checkpoint boundary:** this increment changes product version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted `0.4.9.9` source baseline.
+
+**Validated plateau summary:**
+- PR #419 / Issue #412 replaced the Reality-disproved Player Actuation Claim callback path with the **Player Control Interlock**: current GIANTS player control immediately supersedes OuttaMyWay non-job actuation over that vehicle, does not retain a synthetic claim, and cannot later reactivate the superseded relocation objective without fresh assessment and authority.
+- The same #419 tranche established **Player-Controlled Obstruction Regulation**: while the blocker remains a current player-controlled Causal Obstruction, OuttaMyWay leaves that vehicle entirely to GIANTS/player control and regulates only the affected active AI beneficiary at exactly **1 km/h Intent-Revelation Creep**. Tab-out positively releases that Regulation before any later fresh Obstruction Relocation may begin.
+- Reality exposed and #419 corrected the **Dissolution Copy Boundary Mismatch** on the positive-clear branch. TEST `0.4.9.8` then demonstrated current supported corridor clearance while Player Control remained active, clean Regulation release/settlement, Causal Obstruction dissolution and no runtime processing failure.
+- PR #421 closed the #378 traceability-participation gaps by making the Boundary Demand assessment/representation source acknowledgements reciprocal with their primary Specifications.
+- PR #422 restored live current-truth authority by removing TEST/build chronology and stale closed-Issue ownership from Architecture/Specification surfaces while retaining their durable contracts and keeping open Issues as work trackers rather than authority owners.
+- PR #423 retired production **TrafficPoliceman** vocabulary in favour of the current **Within-Group Traffic Decision Policy** responsibility, reconciled current validation identities away from Issue-number provenance, made Forward-Diagonal Steering an explicitly blocking structural contract, and preserved `VersionHud` source placement for separate Product Status Indicator work under #89 rather than forcing an implementation-led GUI architecture decision.
+- Issues #412 and #378 are closed as completed.
+
+**Validation basis:** PR #419 TEST `0.4.9.8` completed Offline Validation run `37051327325` with Structural contracts PASS (283), main replacement-core PASS (478/0), Player Control Interlock PASS (3/0), focused Obstruction Relocation PASS (18/0), changed-runtime Lua syntax PASS and Generated source reference PASS. GIANTS Reality then positively validated the remaining player-controlled clear-dissolution branch. PR #423 final head `74f214db77097d0d38a03755ec83d129901318e8` completed Offline Validation run `37094145319` with Structural contracts, Lua offline behavioural contracts and Generated source reference all PASS after stale validation-topology references to the retired policy name were reconciled.
+
+**Known separable work:** remaining open work is independent of this checkpoint, including #417 truthful Propulsion Readiness during non-job actuation, #418 central Authority Liveness Supervision, #413 recurrent-Stall Bounded Bypass admission, #396 opposed-corridor / Passage-identification continuity, #399 representation-cache refresh cost, #404 same-pair tactical-purpose composition and failed-Passage Bubble Bullet Time lifetime, #228 adversarial stress validation, #89 player-facing HUD/Product Status work and #86 performance/frame-pacing evidence.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. A future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.9.0 PATCH CHECKPOINT — Representation, Recovery and Passage Resilience Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #414 (`b617960fd8c2ede6f5d4ad866128d0eeb4ae3650`), carrying field-validated TEST `0.4.8.13`.
