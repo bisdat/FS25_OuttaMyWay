@@ -284,9 +284,10 @@ function Control:executeControlRequest(request,candidate)
         return self:_rejectBeforeStart(request,target,"FAILED","PROPULSION_CONTEXT_UNAVAILABLE:"..tostring(propulsionContext))
     end
     state.propulsionContext=propulsionContext
-    logInfo("DEBUG","OBSTRUCTION_RELOCATION_PROPULSION_CONTEXT_ACQUIRED","commitment=%s assembly=%s initiallyRunning=%s owned=%s initialState=%s postStartState=%s",
+    logInfo("DEBUG","OBSTRUCTION_RELOCATION_PROPULSION_CONTEXT_ACQUIRED","commitment=%s assembly=%s initiallyRunning=%s owned=%s inheritedDebt=%s initialState=%s postStartState=%s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
         tostring(propulsionContext.initialRunning),tostring(propulsionContext.startedByOuttaMyWay),
+        tostring(propulsionContext.inheritedRestorationDebt==true),
         tostring(propulsionContext.initialState),tostring(propulsionContext.postStartState))
 
     local configurationEvidence=nil
@@ -333,6 +334,7 @@ function Control:executeControlRequest(request,candidate)
     return true,"MANOEUVRE_STARTED"
 end
 function Control:update(dt)
+    self.actuationMechanism:refreshDeferredPropulsionRestoration()
     local state=self.active
     if state==nil then return end
     state.lastDt=dt
@@ -465,6 +467,7 @@ function Control:relinquishAll(reason)
     end
     if vehicle~=nil then self:_releaseConfigurationOwnership(vehicle,state) end
     self.configurationMechanism:clearAll()
+    self.actuationMechanism:clearDeferredPropulsionRestoration()
     self.active=nil
     self.latestObservation=nil
     return {
@@ -479,8 +482,8 @@ function Control:relinquishAll(reason)
     }
 end
 
-function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
-function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
+function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll(); self.actuationMechanism:clearDeferredPropulsionRestoration() end
+function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll(); self.actuationMechanism:clearDeferredPropulsionRestoration() end
 function Control:keyEvent() end
 function Control:mouseEvent() end
 function Control:draw() end

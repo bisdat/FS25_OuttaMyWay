@@ -399,7 +399,8 @@ local function genericControlFixture(options)
     })
     return control,request,vehicle,function(value) controlled=value end,function() return completion end,
         function(value) motorState=value end,
-        function() return startCalls,stopCalls,motorState end
+        function() return startCalls,stopCalls,motorState end,
+        function() completion=nil end
 end
 
 test("generic Obstruction Relocation Player Control Interlock relinquishes immediately without competing actuation", function()
@@ -428,6 +429,56 @@ test("generic Obstruction Relocation Player Control Interlock relinquishes immed
     equal(completion().evidence.propulsion.released,true)
     equal(completion().evidence.propulsion.evidence.reason,"PLAYER_CONTROL_HIGHER_AUTHORITY")
     equal(completion().evidence.activityContext.released,true)
+
+    AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
+end)
+
+test("generic Obstruction Relocation carries OMW propulsion restoration debt across Player Control into fresh relocation", function()
+    local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls,neutralizeCalls=0,0
+    local failDrive=false
+    AIVehicleUtil={driveInDirection=function()
+        driveCalls=driveCalls+1
+        if failDrive then error("synthetic direction actuation failure") end
+        return true
+    end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(_,x,y,z) return x,y,z end
+
+    local control,request,vehicle,setControlled,completion,_,propulsionCalls,resetCompletion=genericControlFixture()
+    equal(control:executeControlRequest(request,nil),true)
+    control:update(16)
+    equal(driveCalls,1)
+
+    setControlled(true)
+    control:update(16)
+    equal(completion().status,"PLAYER_CONTROL")
+    local startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,1)
+    equal(stopCalls,0)
+    equal(motorState,MotorState.ON)
+    equal(completion().evidence.propulsion.evidence.deferred,true)
+
+    resetCompletion()
+    setControlled(false)
+    control:update(16)
+    equal(control:executeControlRequest(request,nil),true)
+    control:update(16)
+    equal(completion(),nil)
+    startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,1)
+    equal(stopCalls,0)
+    equal(motorState,MotorState.ON)
+
+    failDrive=true
+    control:update(16)
+    equal(completion().status,"FAILED")
+    startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,1)
+    equal(stopCalls,1)
+    equal(motorState,MotorState.OFF)
+    equal(completion().evidence.propulsion.evidence.inheritedRestorationDebt,true)
 
     AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
 end)

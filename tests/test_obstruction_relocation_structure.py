@@ -120,6 +120,8 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     assert "acquirePropulsionContext" in control
     assert "propulsionReadiness" in control
     assert "releasePropulsionContext" in control
+    assert "refreshDeferredPropulsionRestoration" in control
+    assert "clearDeferredPropulsionRestoration" in control
     assert "driveInWorldDirection" in control
     assert "neutralize(vehicle" in control
     assert "releaseVehicleActivityContext" in control

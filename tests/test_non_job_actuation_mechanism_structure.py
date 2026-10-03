@@ -42,6 +42,8 @@ def test_mechanical_surface_is_preserved():
         "acquirePropulsionContext",
         "propulsionReadiness",
         "releasePropulsionContext",
+        "refreshDeferredPropulsionRestoration",
+        "clearDeferredPropulsionRestoration",
         "position",
         "heading",
         "maximumForwardSpeedKmh",
@@ -70,6 +72,9 @@ def test_mechanical_surface_is_preserved():
         'safeCall(vehicle,"getCanMotorRun")',
         'safeCall(vehicle,"startMotor",true)',
         'safeCall(vehicle,"stopMotor",true)',
+        "deferredPropulsionRestoration",
+        "inheritedRestorationDebt",
+        "PLAYER_CONTROL_HIGHER_AUTHORITY",
     ):
         assert token in mechanism
 

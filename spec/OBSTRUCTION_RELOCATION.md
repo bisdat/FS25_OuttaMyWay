@@ -224,8 +224,14 @@ The relocation Resolution does not acquire a new propulsion purpose. Instead, ge
 - relocation movement MUST NOT begin merely because a start command was accepted; the motor must be positively observed running before the first drive actuation;
 - if OuttaMyWay started the motor, ordinary manoeuvre completion or an OuttaMyWay-owned physical failure MUST neutralise movement and then stop that motor again before releasing the owned activity context;
 - if OuttaMyWay did not start the motor, relocation cleanup MUST NOT stop it;
-- current Player Control or fresh source-AI reactivation supersedes OuttaMyWay propulsion ownership together with blocker actuation, so no terminal motor-stop command may compete with that higher-authority path; and
-- propulsion readiness, start/stop ownership and restoration are physical Control evidence only. They do not establish Causal Obstruction, Player Control, semantic success or a new relocation Candidate.
+- current Player Control supersedes blocker actuation and forbids a competing motor-stop command while control is current, but an OMW-created stopped->running change may remain as Deferred Propulsion Restoration Debt with no relocation or movement authority;
+- after Player Control ends, a fresh Obstruction Relocation may inherit that still-positive OMW restoration debt for the same physical blocker; if the motor remains running/starting without intervening positive evidence that the OMW-created state ceased, terminal cleanup restores the original stopped condition;
+- fresh source-AI reactivation retires the OMW restoration debt because GIANTS has established a new authoritative native activity/propulsion lifecycle;
+- propulsion readiness, start/stop ownership and restoration debt are physical Control evidence only. They do not establish Causal Obstruction, Player Control, semantic success or a new relocation Candidate.
+
+> **Cleanup Deferral != Ownership Transfer.**
+
+> **Deferred Restoration Debt Carries Cleanup, Not Movement Authority.**
 
 > **OMW-Started Propulsion Must Be Reversible.**
 

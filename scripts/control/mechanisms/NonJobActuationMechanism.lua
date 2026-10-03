@@ -23,7 +23,7 @@ local function steeringPose(vehicle)
     local good,x,y,z=pcall(getWorldTranslation,node); if not good then return nil end
     return node,x,y,z
 end
-function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0,propulsionStartCalls=0,propulsionStopCalls=0},Mechanism) end
+function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0,propulsionStartCalls=0,propulsionStopCalls=0,deferredPropulsionRestoration=setmetatable({}, {__mode="k"})},Mechanism) end
 
 local function boolOrNil(ok,value) if ok then return value==true end return nil end
 function Mechanism:steeringTelemetry(vehicle)
@@ -105,17 +105,56 @@ local function motorStateEvidence(vehicle)
     return {state=state,running=running==true},nil
 end
 
+function Mechanism:refreshDeferredPropulsionRestoration()
+    local cleared=0
+    for vehicle,_ in pairs(self.deferredPropulsionRestoration) do
+        if vehicle==nil or vehicle.isDeleted==true or self:isSourceReactivated(vehicle) then
+            self.deferredPropulsionRestoration[vehicle]=nil
+            cleared=cleared+1
+        else
+            local evidence=motorStateEvidence(vehicle)
+            if evidence~=nil and evidence.state~=MotorState.STARTING and evidence.state~=MotorState.ON then
+                self.deferredPropulsionRestoration[vehicle]=nil
+                cleared=cleared+1
+            end
+        end
+    end
+    return cleared
+end
+
+function Mechanism:clearDeferredPropulsionRestoration()
+    self.deferredPropulsionRestoration=setmetatable({}, {__mode="k"})
+end
+
 function Mechanism:acquirePropulsionContext(vehicle)
     if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
-    if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
+    if self:isSourceReactivated(vehicle) then
+        self.deferredPropulsionRestoration[vehicle]=nil
+        return false,"SOURCE_INTENT_REACTIVATED"
+    end
+    self:refreshDeferredPropulsionRestoration()
     local evidence,reason=motorStateEvidence(vehicle)
     if evidence==nil then return false,reason end
+    local inheritedDebt=self.deferredPropulsionRestoration[vehicle]
     local context={
         initialState=evidence.state,
         initialRunning=evidence.running,
-        startedByOuttaMyWay=false,
+        startedByOuttaMyWay=inheritedDebt~=nil,
+        inheritedRestorationDebt=inheritedDebt~=nil,
+        restorationOriginState=inheritedDebt and inheritedDebt.restorationOriginState or evidence.state,
         readyObserved=evidence.running
     }
+    if inheritedDebt~=nil then
+        if evidence.running then return true,context end
+        if evidence.state==MotorState.STARTING then
+            context.transitionalStartObserved=true
+            return true,context
+        end
+        self.deferredPropulsionRestoration[vehicle]=nil
+        context.startedByOuttaMyWay=false
+        context.inheritedRestorationDebt=false
+        context.restorationOriginState=evidence.state
+    end
     if evidence.running then return true,context end
     if evidence.state==MotorState.STARTING then
         context.transitionalStartObserved=true
@@ -131,6 +170,7 @@ function Mechanism:acquirePropulsionContext(vehicle)
     if not startOk then return false,"NON_JOB_MOTOR_START_FAILED" end
     self.propulsionStartCalls=self.propulsionStartCalls+1
     context.startedByOuttaMyWay=true
+    context.restorationOriginState=evidence.state
     context.startCall=self.propulsionStartCalls
     local after,afterReason=motorStateEvidence(vehicle)
     if after~=nil then
@@ -166,15 +206,24 @@ function Mechanism:releasePropulsionContext(vehicle,context)
         return true,{owned=false,stopRequested=false,stopped=false,reason="PROPULSION_NOT_OWNED"}
     end
     if vehicle==nil then return false,"VEHICLE_UNAVAILABLE" end
+    local restorationDebt={
+        restorationOriginState=context.restorationOriginState or context.initialState,
+        deferredByPlayerControl=false
+    }
     if self:isPlayerControlled(vehicle) then
-        return true,{owned=true,stopRequested=false,stopped=false,relinquished=true,reason="PLAYER_CONTROL_HIGHER_AUTHORITY"}
+        restorationDebt.deferredByPlayerControl=true
+        self.deferredPropulsionRestoration[vehicle]=restorationDebt
+        return true,{owned=true,stopRequested=false,stopped=false,deferred=true,reason="PLAYER_CONTROL_HIGHER_AUTHORITY"}
     end
     if self:isSourceReactivated(vehicle) then
+        self.deferredPropulsionRestoration[vehicle]=nil
         return true,{owned=true,stopRequested=false,stopped=false,relinquished=true,reason="SOURCE_INTENT_REACTIVATED_HIGHER_AUTHORITY"}
     end
+    self.deferredPropulsionRestoration[vehicle]=restorationDebt
     local before,reason=motorStateEvidence(vehicle)
     if before==nil then return false,reason end
     if before.state==MotorState.OFF and before.running~=true then
+        self.deferredPropulsionRestoration[vehicle]=nil
         return true,{owned=true,stopRequested=false,stopped=true,reason="ALREADY_STOPPED",state=before.state}
     end
     local stopOk=safeCall(vehicle,"stopMotor",true)
@@ -185,7 +234,8 @@ function Mechanism:releasePropulsionContext(vehicle,context)
     if after.state~=MotorState.OFF or after.running==true then
         return false,"NON_JOB_MOTOR_STOP_NOT_SETTLED:"..tostring(after.state)
     end
-    return true,{owned=true,stopRequested=true,stopped=true,stopCall=self.propulsionStopCalls,state=after.state}
+    self.deferredPropulsionRestoration[vehicle]=nil
+    return true,{owned=true,stopRequested=true,stopped=true,stopCall=self.propulsionStopCalls,state=after.state,inheritedRestorationDebt=context.inheritedRestorationDebt==true}
 end
 
 function Mechanism:position(vehicle)
