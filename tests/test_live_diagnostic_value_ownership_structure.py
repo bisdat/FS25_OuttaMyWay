@@ -101,7 +101,7 @@ def test_product_status_indicator_currently_uses_version_hud_surface():
     for name in ("VERSION_HUD_ENABLED","VERSION_HUD_X","VERSION_HUD_Y","VERSION_HUD_TEXT_SIZE"):
         assert re.search(rf"OuttaMyWay\.{name}\b", config) is None
 
-def test_stage2a_passive_diagnostics_are_ephemeral_and_do_not_own_runtime_history():
+def test_passive_diagnostics_are_ephemeral_and_do_not_own_runtime_history():
     main = read("scripts/main.lua")
     runtime = read("scripts/runtime/Runtime.lua")
     coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
