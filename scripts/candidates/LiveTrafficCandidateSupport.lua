@@ -108,6 +108,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
                 subjectJobToken=plan.subjectJobToken,otherJobToken=plan.otherJobToken,
                 subjectStartX=plan.subjectStartX,subjectStartZ=plan.subjectStartZ,otherStartX=plan.otherStartX,otherStartZ=plan.otherStartZ,
                 initialSeparationM=plan.separationM,trajectoryDot=plan.trajectoryDot,
+                passageDirectionBasisKind=plan.passageDirectionBasisKind,
                 localPassageSpace=plan.localPassageSpace,passageCapableTheatre=plan.passageCapableTheatre,
                 passageArrangement=plan.passageArrangement,passageGuide=plan.passageGuide,passageConfiguration=plan.passageConfiguration,
                 passageEntry=plan.passageEntry,passageExcursion=plan.passageExcursion,progressiveSearch=plan.progressiveSearch,

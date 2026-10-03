@@ -682,6 +682,141 @@ local function positiveSettledContinuation(trajectory,motion)
         and motion.intentValid==true
 end
 
+local function currentDirectionPersistence(trajectory,persistenceAlignmentMinDot)
+    if trajectory==nil then return nil,false end
+    local currentDot=tonumber(trajectory.currentToEstablishedDot)
+    local usesExcursion=trajectory.currentExcursion==true
+        or (finite(currentDot) and currentDot<persistenceAlignmentMinDot)
+    local distance=tonumber(usesExcursion and trajectory.excursionDistanceM or trajectory.currentAlignedDistanceM) or 0
+    return distance,usesExcursion
+end
+
+local function currentMutuallyFacing(aTrajectory,bTrajectory,aSpace,bSpace)
+    if aTrajectory==nil or bTrajectory==nil
+        or aSpace==nil or bSpace==nil
+        or type(aSpace.occupancy)~="table" or type(bSpace.occupancy)~="table" then
+        return nil,nil,nil
+    end
+    local ax,az=normalize(tonumber(aTrajectory.currentDirectionX),tonumber(aTrajectory.currentDirectionZ))
+    local bx,bz=normalize(tonumber(bTrajectory.currentDirectionX),tonumber(bTrajectory.currentDirectionZ))
+    local aX,aZ=tonumber(aSpace.occupancy.x),tonumber(aSpace.occupancy.z)
+    local bX,bZ=tonumber(bSpace.occupancy.x),tonumber(bSpace.occupancy.z)
+    if ax==nil or bx==nil or not finite(aX) or not finite(aZ) or not finite(bX) or not finite(bZ) then
+        return nil,nil,nil
+    end
+    local dx,dz=bX-aX,bZ-aZ
+    local aAhead=dot(dx,dz,ax,az)
+    local bAhead=dot(-dx,-dz,bx,bz)
+    if aAhead==nil or bAhead==nil then return nil,aAhead,bAhead end
+    return aAhead>0 and bAhead>0,aAhead,bAhead
+end
+
+-- Current Opposed Reacquisition is deliberately pair-scoped. It answers the
+-- current Passage question from fresh settled productive motion while an
+-- individual Established Trajectory is still accumulating supersession
+-- evidence. It does not rewrite either participant's general trajectory.
+local function currentOpposedReacquisition(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,context)
+    local result={
+        status="NOT_SUPPORTED",supported=false,
+        reason="CURRENT_OPPOSED_REACQUISITION_NOT_SUPPORTED",
+        authority="OPPOSED_CORRIDOR_SITUATION_KNOWLEDGE",
+        decisionAuthority=false,controlAuthority=false,trajectoryMutation=false
+    }
+    if not positiveSettledContinuation(aTrajectory,aMotion)
+        or not positiveSettledContinuation(bTrajectory,bMotion) then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_REQUIRES_SETTLED_PRODUCTIVE_CONTINUATION"
+        return result
+    end
+
+    local ax,az=normalize(tonumber(aTrajectory.currentDirectionX),tonumber(aTrajectory.currentDirectionZ))
+    local bx,bz=normalize(tonumber(bTrajectory.currentDirectionX),tonumber(bTrajectory.currentDirectionZ))
+    if ax==nil or bx==nil then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_DIRECTION_UNAVAILABLE"
+        return result
+    end
+
+    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT)
+    local currentStableDistanceM=threshold(context,"currentStableDistanceM",OPPOSED_CURRENT_STABLE_DISTANCE_M)
+    local aPersistence,aUsesExcursion=currentDirectionPersistence(aTrajectory,persistenceAlignmentMinDot)
+    local bPersistence,bUsesExcursion=currentDirectionPersistence(bTrajectory,persistenceAlignmentMinDot)
+    result.subjectPersistenceM=aPersistence
+    result.otherPersistenceM=bPersistence
+    result.subjectUsesExcursionEvidence=aUsesExcursion
+    result.otherUsesExcursionEvidence=bUsesExcursion
+    result.requiredPersistenceM=currentStableDistanceM
+    if not finite(aPersistence) or not finite(bPersistence)
+        or aPersistence<currentStableDistanceM or bPersistence<currentStableDistanceM then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_DIRECTION_NOT_YET_PERSISTENT"
+        return result
+    end
+
+    local currentDot=dot(ax,az,bx,bz)
+    local currentOpposedMaxDot=threshold(context,"currentOpposedMaxDot",OPPOSED_CURRENT_MAX_DOT)
+    result.currentDirectionDot=currentDot
+    if not finite(currentDot) or currentDot>currentOpposedMaxDot then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_DIRECTIONS_NOT_SUBSTANTIALLY_OPPOSED"
+        return result
+    end
+
+    local facing,aAhead,bAhead=currentMutuallyFacing(aTrajectory,bTrajectory,aSpace,bSpace)
+    result.mutuallyFacing=facing==true
+    result.subjectAheadM=aAhead
+    result.otherAheadM=bAhead
+    if facing~=true then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_PARTICIPANTS_NOT_MUTUALLY_FACING"
+        return result
+    end
+
+    local closing=currentClosing(aMotion,bMotion,aSpace,bSpace)
+    result.currentClosing=copy(closing)
+    local minClosingRateMps=threshold(context,"minClosingRateMps",OPPOSED_MIN_CLOSING_RATE_MPS)
+    if closing.resolved~=true or not finite(tonumber(closing.closingRateMps))
+        or closing.closingRateMps<minClosingRateMps then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_POSITIVE_CLOSURE_UNAVAILABLE"
+        return result
+    end
+
+    local axisX,axisZ=normalize(ax-bx,az-bz)
+    if axisX==nil then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_COMMON_AXIS_UNRESOLVED"
+        return result
+    end
+    local overlap=currentCorridorOverlapOnAxis(
+        {establishedDirectionX=axisX,establishedDirectionZ=axisZ},
+        aPhysical,bPhysical,aSpace,bSpace)
+    result.currentCorridorOverlap=copy(overlap)
+    if overlap.positive~=true then
+        result.reason=overlap.status=="UNRESOLVED"
+            and tostring(overlap.reason)
+            or "CURRENT_OPPOSED_REACQUISITION_POSITIVE_CORRIDOR_OVERLAP_UNAVAILABLE"
+        return result
+    end
+
+    result.status="SUPPORTED"
+    result.supported=true
+    result.reason="CURRENT_SETTLED_OPPOSED_MOTION_REACQUIRES_CORRIDOR_CONFLICT"
+    result.passageDirectionBasis={
+        status="SUPPORTED",kind="CURRENT_OPPOSED_REACQUISITION",
+        authority="OPPOSED_CORRIDOR_SITUATION_KNOWLEDGE",
+        decisionAuthority=false,controlAuthority=false,productiveRouteAuthority=false,
+        currentDirectionDot=currentDot,closingRateMps=closing.closingRateMps,
+        subject={
+            assemblyId=aTrajectory.assemblyId,directionX=ax,directionZ=az,
+            persistenceM=aPersistence,usesExcursionEvidence=aUsesExcursion
+        },
+        other={
+            assemblyId=bTrajectory.assemblyId,directionX=bx,directionZ=bz,
+            persistenceM=bPersistence,usesExcursionEvidence=bUsesExcursion
+        },
+        validityDependencies={
+            "CURRENT_OPERATIONAL_PICTURE","SAME_JOB_EPISODES",
+            "SETTLED_PRODUCTIVE_CONTINUATION","CURRENT_DIRECTION_PERSISTENCE",
+            "CURRENT_POSITIVE_CLOSURE","CURRENT_POSITIVE_CORRIDOR_OVERLAP"
+        }
+    }
+    return result
+end
+
 -- Situation-owned positive relationship invalidation for an already-admitted
 -- Resolution-Space obligation.  This does not create Control authority.  It
 -- distinguishes actual relationship dissolution from a transient change in the
@@ -818,7 +953,31 @@ function Assessment.classifyPairs(context)
                             record.currentNonClosingPositive=actionClosingRate<minClosingRateMps
                         end
                     end
-                    if actionSpace.supported==true then
+                    local currentReacquisition=currentOpposedReacquisition(
+                        aTrajectory,bTrajectory,motionByAssembly[aId],motionByAssembly[bId],
+                        physicalByAssembly[aId],physicalByAssembly[bId],
+                        spaceByAssembly[aId],spaceByAssembly[bId],context)
+                    record.currentOpposedReacquisition=copy(currentReacquisition)
+                    if currentReacquisition.supported==true then
+                        record.status="CLASSIFIED"
+                        record.classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
+                        record.reason=currentReacquisition.reason
+                        record.mutuallyFacing=true
+                        record.subjectAheadM=currentReacquisition.subjectAheadM
+                        record.otherAheadM=currentReacquisition.otherAheadM
+                        record.supportedCorridorOverlap=copy(currentReacquisition.currentCorridorOverlap)
+                        record.currentClosing=copy(currentReacquisition.currentClosing)
+                        record.currentOpposed=true
+                        record.currentClosingPositive=true
+                        record.currentNonClosingPositive=false
+                        record.subjectCurrentDirectionPersistent=true
+                        record.otherCurrentDirectionPersistent=true
+                        record.passageDirectionBasis=copy(currentReacquisition.passageDirectionBasis)
+                        local establishedConservation=establishedConflictConservation(
+                            record,aTrajectory,bTrajectory,motionByAssembly[aId],motionByAssembly[bId],
+                            spaceByAssembly[aId],spaceByAssembly[bId],aParticipation,bParticipation,context)
+                        record.actionSpaceConservation=copy(establishedConservation)
+                    elseif actionSpace.supported==true then
                         record.status="CLASSIFIED"
                         record.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
                         record.reason="CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE"

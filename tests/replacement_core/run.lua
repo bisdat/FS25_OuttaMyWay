@@ -4165,6 +4165,56 @@ local function classifyTestTrajectoryConflict(trajectories,motions,spaces,physic
     })[1]
 end
 
+test("Trajectory Conflict: fresh settled opposed motion reacquires Passage concern before stale trajectory supersession",function()
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",established=true,establishedDirectionX=-1,establishedDirectionZ=0,corridorAnchorX=0,corridorAnchorZ=12,currentDirectionX=0,currentDirectionZ=-1,currentExcursion=true,currentAlignedDistanceM=0,excursionDistanceM=1.37,currentToEstablishedDot=0,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"}
+    }
+    local motions={
+        buildTrajectoryMotionEvidence("AS-A","JE-A",0,1,2,1,nil,"SETTLED_CONTINUATION",true,true,0,1),
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,1,1,nil,"SETTLED_CONTINUATION",true,true,0,-1)
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,12)}
+    local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,12,3)}
+    local relation=classifyTestTrajectoryConflict(trajectories,motions,spaces,physical)
+    equal(relation.trajectoryDot,0)
+    equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(relation.reason,"CURRENT_SETTLED_OPPOSED_MOTION_REACQUIRES_CORRIDOR_CONFLICT")
+    equal(relation.currentOpposedReacquisition.supported,true)
+    equal(relation.passageDirectionBasis.kind,"CURRENT_OPPOSED_REACQUISITION")
+    equal(relation.passageDirectionBasis.subject.directionZ,1)
+    equal(relation.passageDirectionBasis.other.directionZ,-1)
+    equal(relation.currentOpposed,true)
+    equal(relation.currentClosingPositive,true)
+    equal(relation.supportedCorridorOverlap.positive,true)
+    equal(relation.actionSpaceConservation.maxSeparationM,80)
+
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={relation},currentSpace=spaces,physicalSpaceEvidence=physical
+    })
+    equal(relation.passageEvaluationReady,true)
+    equal(relation.cooperativePassageEligible,true)
+end)
+
+test("Trajectory Conflict: current opposed vectors cannot reacquire Passage without settled productive continuation",function()
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",established=true,establishedDirectionX=-1,establishedDirectionZ=0,corridorAnchorX=0,corridorAnchorZ=12,currentDirectionX=0,currentDirectionZ=-1,currentExcursion=true,currentAlignedDistanceM=0,excursionDistanceM=1.37,currentToEstablishedDot=0,contextProductivePositive=false,contextEvidenceClass="TURN_SEGMENT"}
+    }
+    local motions={
+        buildTrajectoryMotionEvidence("AS-A","JE-A",0,1,2,1,nil,"SETTLED_CONTINUATION",true,true,0,1),
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,1,1,nil,"TURNING",true,true,0,-1)
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,12)}
+    local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,12,3)}
+    local relation=classifyTestTrajectoryConflict(trajectories,motions,spaces,physical)
+    equal(relation.classification,"NO_OPPOSED_CONFLICT")
+    equal(relation.reason,"ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED")
+    equal(relation.currentOpposedReacquisition.supported,false)
+    equal(relation.currentOpposedReacquisition.reason,"CURRENT_OPPOSED_REACQUISITION_REQUIRES_SETTLED_PRODUCTIVE_CONTINUATION")
+    equal(relation.passageDirectionBasis,nil)
+end)
+
 test("Trajectory Conflict: established opposed pair is Passage-evaluation-ready while one member remains transitional",function()
     local trajectories={
         {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
@@ -4596,6 +4646,33 @@ test("Cooperative Passage requires the published Situation boundary and rejects 
     conflict.actionSpaceConservation.maxSeparationM=80
     plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
+end)
+
+test("Cooperative Passage planning consumes Current Opposed Reacquisition direction basis without mutating trajectory history",function()
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local conflict=values.opposedCorridorKnowledge[1]
+    local staleOther=values.trajectoryKnowledge[2]
+    staleOther.establishedDirectionX=-1
+    staleOther.establishedDirectionZ=0
+    conflict.trajectoryDot=0
+    conflict.passageDirectionBasis={
+        status="SUPPORTED",kind="CURRENT_OPPOSED_REACQUISITION",currentDirectionDot=-1,
+        subject={assemblyId="AS-A",directionX=0,directionZ=1,persistenceM=5},
+        other={assemblyId="AS-B",directionX=0,directionZ=-1,persistenceM=1.37}
+    }
+
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
+    equal(reason,nil)
+    equal(plan.status,"SUPPORTED")
+    equal(plan.passageDirectionBasisKind,"CURRENT_OPPOSED_REACQUISITION")
+    equal(plan.trajectoryDot,-1)
+    equal(plan.passageGuide.executionFrame.subjectForwardX,0)
+    equal(plan.passageGuide.executionFrame.subjectForwardZ,1)
+    equal(plan.passageGuide.executionFrame.otherForwardX,0)
+    equal(plan.passageGuide.executionFrame.otherForwardZ,-1)
+    equal(values.trajectoryKnowledge[2].establishedDirectionX,-1)
+    equal(values.trajectoryKnowledge[2].establishedDirectionZ,0)
 end)
 
 test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing one-sided extents rather than whole represented width",function()

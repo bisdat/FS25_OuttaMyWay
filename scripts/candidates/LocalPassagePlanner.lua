@@ -45,6 +45,30 @@ local function byAssembly(values)
     return result
 end
 local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
+
+local function passageTrajectoryView(conflict,trajectory,role)
+    if type(trajectory)~="table" then return nil,"PASSAGE_TRAJECTORY_UNAVAILABLE" end
+    local basis=conflict and conflict.passageDirectionBasis or nil
+    if type(basis)~="table" or basis.status~="SUPPORTED" or basis.kind~="CURRENT_OPPOSED_REACQUISITION" then
+        return trajectory,nil
+    end
+    local participant=basis[role]
+    if type(participant)~="table" then return nil,"PASSAGE_DIRECTION_BASIS_PARTICIPANT_UNAVAILABLE" end
+    if participant.assemblyId~=nil and participant.assemblyId~=trajectory.assemblyId then
+        return nil,"PASSAGE_DIRECTION_BASIS_PARTICIPANT_MISMATCH"
+    end
+    local dx,dz=tonumber(participant.directionX),tonumber(participant.directionZ)
+    if not finite(dx) or not finite(dz) then return nil,"PASSAGE_DIRECTION_BASIS_DIRECTION_UNAVAILABLE" end
+    local length=math.sqrt(dx*dx+dz*dz)
+    if length<=0.000001 then return nil,"PASSAGE_DIRECTION_BASIS_DIRECTION_UNRESOLVED" end
+    local view={}
+    for key,value in OuttaMyWay.ValueRecord.pairs(trajectory) do view[key]=value end
+    view.establishedDirectionX=dx/length
+    view.establishedDirectionZ=dz/length
+    view.passageDirectionBasisKind=basis.kind
+    return view,nil
+end
+
 local function dot(ax,az,bx,bz) return ax*bx+az*bz end
 local function distance(ax,az,bx,bz) local dx,dz=bx-ax,bz-az; return math.sqrt(dx*dx+dz*dz) end
 
@@ -1340,6 +1364,11 @@ local function planConflict(picture,snapshot,conflict)
     local aMotion,bMotion=motion[conflict.subjectAssemblyId],motion[conflict.otherAssemblyId]
     local aPhysical,bPhysical=physical[conflict.subjectAssemblyId],physical[conflict.otherAssemblyId]
     if not aTrajectory or not bTrajectory or not aSpace or not bSpace or not aMotion or not bMotion or not aPhysical or not bPhysical then return nil,"PASSAGE_INPUT_KNOWLEDGE_INCOMPLETE" end
+    local aPlanningTrajectory,aDirectionReason=passageTrajectoryView(conflict,aTrajectory,"subject")
+    if aPlanningTrajectory==nil then return nil,aDirectionReason end
+    local bPlanningTrajectory,bDirectionReason=passageTrajectoryView(conflict,bTrajectory,"other")
+    if bPlanningTrajectory==nil then return nil,bDirectionReason end
+    aTrajectory,bTrajectory=aPlanningTrajectory,bPlanningTrajectory
     local closing=conflict.currentClosing or {}
     local separation=tonumber(closing.separationM)
     local maxSeparation=conflict.actionSpaceConservation and conflict.actionSpaceConservation.maxSeparationM
@@ -1443,7 +1472,9 @@ local function planConflict(picture,snapshot,conflict)
                     subjectJobToken=aTrajectory.jobToken,otherJobToken=bTrajectory.jobToken,
                     subjectName=aMotion.name,otherName=bMotion.name,
                     subjectStartX=ax,subjectStartZ=az,otherStartX=bx,otherStartZ=bz,
-                    separationM=separation,longitudinalSeparationM=longitudinalSeparation,trajectoryDot=conflict.trajectoryDot,
+                    separationM=separation,longitudinalSeparationM=longitudinalSeparation,
+                    trajectoryDot=(conflict.passageDirectionBasis and tonumber(conflict.passageDirectionBasis.currentDirectionDot)) or conflict.trajectoryDot,
+                    passageDirectionBasisKind=conflict.passageDirectionBasis and conflict.passageDirectionBasis.kind or "ESTABLISHED_TRAJECTORY",
                     representationFitnessIds={fitness[1].representationId,fitness[2].representationId},
                     localPassageSpace={
                         fieldWorldReferenceKey=fieldWorld and fieldWorld.referenceKey or nil,passagePresumption=true,
