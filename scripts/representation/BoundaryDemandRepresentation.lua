@@ -1,5 +1,5 @@
 --- Purpose-scoped representation for Category-2 boundary demand.
--- Specification Jurisdiction: ASSESSMENT_REPRESENTATION
+-- Specification Jurisdictions: `ASSESSMENT_REPRESENTATION`
 -- Geometry here has Situation-support authority only through its published
 -- provenance/claim limits. It creates no Candidate, Decision or Control authority.
 

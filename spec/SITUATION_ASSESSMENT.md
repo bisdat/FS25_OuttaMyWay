@@ -633,6 +633,7 @@ Resolution contracts own persistence/obligation terminality. Situation Assessmen
 | [`scripts/assessment/NativeA8ClearanceAssessment.lua`](../scripts/assessment/NativeA8ClearanceAssessment.lua) | `REALISES` |
 | [`scripts/assessment/RealisedMotionDemandAssessment.lua`](../scripts/assessment/RealisedMotionDemandAssessment.lua) | `REALISES` |
 | [`scripts/assessment/FollowerBoundaryDemandAssessment.lua`](../scripts/assessment/FollowerBoundaryDemandAssessment.lua) | `REALISES` |
+| [`scripts/assessment/BoundaryDemandAssessment.lua`](../scripts/assessment/BoundaryDemandAssessment.lua) | `REALISES` |
 | [`scripts/assessment/StructuralFieldShapeAssessment.lua`](../scripts/assessment/StructuralFieldShapeAssessment.lua) | `REALISES` |
 | [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) | `REALISES` |
 | [`scripts/assessment/CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua) | `REALISES` |

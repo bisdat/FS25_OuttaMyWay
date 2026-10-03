@@ -1,5 +1,5 @@
 --- Interprets purpose-scoped boundary-demand representation into Category-2 Situation meaning.
--- Specification Jurisdiction: SITUATION_ASSESSMENT
+-- Specification Jurisdictions: `SITUATION_ASSESSMENT`
 -- This assessment is independent of Forward Intersection. It publishes no
 -- Candidate, Decision, Responsibility Transition or Control authority.
 
