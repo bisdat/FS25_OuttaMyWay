@@ -333,7 +333,7 @@ function Authority:composeFollowerBoundaryTrigger(commitmentId,composite,bridge)
     end
     if type(composite)~="table" or composite.architecture~="COMPOSED_REGULATION_TRIGGERS"
         or type(bridge)~="table" or bridge.action~="APPLY"
-        or composite.existingCommitmentId~=commitmentId
+        or (composite.existingCommitmentId~=nil and composite.existingCommitmentId~=commitmentId)
         or composite.pairKey~=bridge.pairKey
         or composite.leaderAssemblyId~=bridge.leaderAssemblyId
         or composite.followerAssemblyId~=bridge.followerAssemblyId then
