@@ -14,14 +14,14 @@ ROOT_NAMES = (
     "FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC",
 )
 
-def test_issue87_follower_boundary_assessment_calibration_leaves_mixed_root_and_situation_courier():
+def test_follower_boundary_assessment_calibration_leaves_mixed_root_and_situation_courier():
     config = read("scripts/config.lua")
     situation = read("scripts/assessment/SituationAssessment.lua")
     for token in ROOT_NAMES:
         assert token not in config
         assert f"OuttaMyWay.{token}" not in situation
 
-def test_issue87_follower_boundary_assessment_owns_exact_accepted_values():
+def test_follower_boundary_assessment_owns_exact_accepted_values():
     assessment = read("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
     required = (
         "local FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR=0.90",
@@ -42,7 +42,7 @@ def test_issue87_follower_boundary_assessment_owns_exact_accepted_values():
     for token in ROOT_NAMES:
         assert f"OuttaMyWay.{token}" not in assessment
 
-def test_issue87_focused_overrides_remain_and_aligned_candidate_expression_is_unconditional():
+def test_focused_overrides_remain_and_aligned_candidate_expression_is_unconditional():
     assessment = read("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
     config = read("scripts/config.lua")
     support = read("scripts/candidates/LiveTrafficCandidateSupport.lua")

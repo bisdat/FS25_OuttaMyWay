@@ -80,7 +80,7 @@ def test_phase13_relocation_is_geometry_bounded_not_count_bounded():
         assert retired not in candidate
 
 
-def test_issue352_offset_relocation_centre_is_candidate_owned_and_rmd_bounded():
+def test_offset_relocation_centre_is_candidate_owned_and_rmd_bounded():
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     control = read("scripts/control/ObstructionRelocationControl.lua")
 
@@ -132,7 +132,7 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     assert "getObstructionRelocationObservation" in coordinator
 
 
-def test_issue112_donor_topology_is_retired_after_generic_reality_validation():
+def test_donor_topology_is_retired_after_generic_reality_validation():
     main = read("scripts/main.lua")
     runtime = read("scripts/runtime/Runtime.lua")
     control = read("scripts/control/ObstructionRelocationControl.lua")
@@ -161,7 +161,7 @@ def test_issue112_donor_topology_is_retired_after_generic_reality_validation():
     assert "OBSTRUCTION_RELOCATION_ACTUATION" in runtime
 
 
-def test_issue121_ended_job_evidence_resolves_activity_without_creating_provenance_specific_responsibility():
+def test_ended_job_evidence_resolves_activity_without_creating_provenance_specific_responsibility():
     assessment = read("scripts/assessment/CausalObstructionAssessment.lua")
     observation = read("scripts/observation/LiveObservationSource.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
@@ -180,7 +180,7 @@ def test_issue121_ended_job_evidence_resolves_activity_without_creating_provenan
     assert 'state.observedActive==true' in candidate
     assert 'terminalSpec(context,"NEW_AUTHORITATIVE_INTENT"' in candidate
 
-def test_issue87_obstruction_relocation_is_core_capability_not_optional_configuration():
+def test_obstruction_relocation_is_core_capability_not_optional_configuration():
     main = read("scripts/main.lua")
     config = read("scripts/config.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
@@ -201,7 +201,7 @@ def test_issue87_obstruction_relocation_is_core_capability_not_optional_configur
     assert '"PLAYER_CONTROL"' in candidate
     assert '"SOURCE_AI_REACTIVATION"' in candidate
 
-def test_issue87_obstruction_relocation_bounds_live_with_their_narrowest_owners():
+def test_obstruction_relocation_bounds_live_with_their_narrowest_owners():
     config = read("scripts/config.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     control = read("scripts/control/ObstructionRelocationControl.lua")
@@ -218,7 +218,7 @@ def test_issue87_obstruction_relocation_bounds_live_with_their_narrowest_owners(
     assert 'reason="BOUNDED_MOVE_WATCHDOG_EXPIRED"' in control
 
 
-def test_issue176_centroid_strategy_exhaustion_escalates_without_basis_cessation():
+def test_centroid_strategy_exhaustion_escalates_without_basis_cessation():
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     lifecycle = read("scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua")
     verdict = read("scripts/contracts/GoverningBasisVerdict.lua")

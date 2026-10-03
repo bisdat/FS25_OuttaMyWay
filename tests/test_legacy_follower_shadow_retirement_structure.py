@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
-def test_issue87_legacy_follower_shadow_and_diagnostic_hud_are_not_shipped_or_wired():
+def test_legacy_follower_shadow_and_diagnostic_hud_are_not_shipped_or_wired():
     main = read("scripts/main.lua")
     config = read("scripts/config.lua")
 
@@ -16,7 +16,7 @@ def test_issue87_legacy_follower_shadow_and_diagnostic_hud_are_not_shipped_or_wi
     assert "FollowerPacingHud" not in main
     assert "FOLLOWER_MATURATION_" not in config
 
-def test_issue87_aligned_follower_boundary_path_remains_current():
+def test_aligned_follower_boundary_path_remains_current():
     config = read("scripts/config.lua")
     follower = read("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
     support = read("scripts/candidates/LiveTrafficCandidateSupport.lua")

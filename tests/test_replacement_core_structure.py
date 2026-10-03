@@ -58,7 +58,7 @@ def test_d0184_retired_passage_and_fixture_implementation_is_deleted_not_archive
     assert 'COOPERATIVE_PASSAGE_REVISE' in lifecycle
     assert 'COOPERATIVE_PASSAGE_POSITIVE_RESTORATION_AND_HANDOFF' in lifecycle
 
-def test_issue101_guarded_recovery_orphan_chain_is_retired():
+def test_guarded_recovery_orphan_chain_is_retired():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     for rel in (
         "scripts/assessment/GuardedRecoveryThreatAssessment.lua",
@@ -527,7 +527,7 @@ def test_v4718_positive_filtered_footprint_admission_is_monotonic_and_passive():
         assert forbidden not in source
 
 
-def test_issue100_current_pair_assessment_scope_replaces_persistent_encounter_history():
+def test_current_pair_assessment_scope_replaces_persistent_encounter_history():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     scope=(ROOT/"scripts"/"assessment"/"CurrentPairAssessmentScope.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
@@ -2038,7 +2038,7 @@ def test_follower_boundary_permissible_magnitude_is_bounded_authority_owned():
     )
     assert "requestedFollowerCapKmh" not in active_lua
 
-def test_issue112_retired_completed_worker_donor_is_not_active_source_topology():
+def test_retired_completed_worker_donor_is_not_active_source_topology():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     active="\n".join(
         path.read_text(encoding="utf-8")
@@ -2075,7 +2075,7 @@ def test_projected_passage_rejection_clearance_telemetry_is_bound_before_runtime
     assert "ipairs(passageClearanceRejectionTelemetry(allRejected))" in support
 
 
-def test_issue240_feature_relative_corner_arrival_is_production_situation_meaning_and_probe_is_retired():
+def test_feature_relative_corner_arrival_is_production_situation_meaning_and_probe_is_retired():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
@@ -2115,7 +2115,7 @@ def test_category2_shared_boundary_domain_not_disc_overlap_owns_admission():
     assert "nativeTimeToBoundarySec" in decision
 
 
-def test_issue358_return_staging_uses_five_metre_maximum_reassessment_step():
+def test_return_staging_uses_five_metre_maximum_reassessment_step():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     assert re.search(r"^local COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M = 5\.0$", control, re.M)
     assert "local stepDistance=math.min(length,COOPERATIVE_PASSAGE_RETURN_STAGING_STEP_MAX_M)" in control
@@ -2123,7 +2123,7 @@ def test_issue358_return_staging_uses_five_metre_maximum_reassessment_step():
     assert "purpose=CREATE_SEQUENTIAL_RETURN_SPACE" in control
 
 
-def test_issue266_cooperative_passage_watchdog_is_completion_residual_based():
+def test_cooperative_passage_watchdog_is_completion_residual_based():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     mechanism=(ROOT/"scripts"/"control"/"mechanisms"/"TransitConfigurationMechanism.lua").read_text(encoding="utf-8")
     assert re.search(r"^local COOPERATIVE_PASSAGE_PROGRESS_WATCHDOG_MS = 10000$", control, re.M)
@@ -2173,7 +2173,7 @@ def test_sequential_return_clearance_is_mutual_region_evidence_wait():
     assert 'gate.kind=="CROSSING_WINDOW_EXIT"' in clearance
 
 
-def test_issue345_bubble_formation_readiness_is_explicit_pretransition_boundary():
+def test_bubble_formation_readiness_is_explicit_pretransition_boundary():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
     evaluator = (ROOT / "scripts" / "responsibility" / "BubbleFormationReadinessEvaluator.lua").read_text(encoding="utf-8")

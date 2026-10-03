@@ -22,21 +22,21 @@ RETIRED = (
     "FIELD_WORLD_EQUIVALENCE_MAX_RESOLUTIONS",
 )
 
-def test_issue87_field_world_root_value_family_is_retired():
+def test_field_world_root_value_family_is_retired():
     config = read("scripts/config.lua")
     active = "\n".join(p.read_text(encoding="utf-8") for p in (ROOT / "scripts").rglob("*.lua"))
     for name in RETIRED:
         assert name not in config
         assert f"OuttaMyWay.{name}" not in active
 
-def test_issue87_snapshot_registry_owns_snapshot_and_fingerprint_values():
+def test_snapshot_registry_owns_snapshot_and_fingerprint_values():
     source = read("scripts/identity/FieldWorldSnapshotRegistry.lua")
     assert "local SNAPSHOT_GENERATION_BUDGET=0.00025" in source
     assert "local FINGERPRINT_QUANTIZATION_METRES=0.1" in source
     assert 'local FINGERPRINT_SCHEMA_VERSION="FWG1"' in source
     assert "canonicalizationVersion=FINGERPRINT_SCHEMA_VERSION" in source
 
-def test_issue87_equivalence_evaluator_owns_interpretation_values():
+def test_equivalence_evaluator_owns_interpretation_values():
     source = read("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
     for declaration in (
         "local EQUIVALENCE_SAMPLE_SIDE=31",
@@ -52,14 +52,14 @@ def test_issue87_equivalence_evaluator_owns_interpretation_values():
         assert declaration in source
     assert "threshold(" not in source
 
-def test_issue87_equivalence_authority_owns_evidence_history_retention():
+def test_equivalence_authority_owns_evidence_history_retention():
     source = read("scripts/identity/FieldWorldEquivalenceAuthority.lua")
     assert "local COMPARISON_RECORD_RETENTION_LIMIT=128" in source
     assert "local RESOLUTION_RECORD_RETENTION_LIMIT=128" in source
     assert "local maximum=COMPARISON_RECORD_RETENTION_LIMIT" in source
     assert "local maximum=RESOLUTION_RECORD_RETENTION_LIMIT" in source
 
-def test_issue87_existing_field_world_behavioural_witnesses_remain_independent():
+def test_existing_field_world_behavioural_witnesses_remain_independent():
     harness = read("tests/replacement_core/run.lua")
     for witness in (
         "Field World fingerprint is invariant to ring start winding and sub-quantum jitter",
@@ -73,7 +73,7 @@ def test_issue87_existing_field_world_behavioural_witnesses_remain_independent()
     for name in RETIRED:
         assert name not in harness
 
-def test_issue331_job_succession_preserves_comparison_authority_without_identity_inheritance():
+def test_job_succession_preserves_comparison_authority_without_identity_inheritance():
     source = read("scripts/observation/LiveObservationSource.lua")
     assert "fieldWorldSuccessionBridge" in source
     assert "predecessorSnapshotReferenceKey" in source

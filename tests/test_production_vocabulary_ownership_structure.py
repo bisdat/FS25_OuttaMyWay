@@ -43,7 +43,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         assert stale not in config + support + capability + authority + runtime + planner
 
 
-def test_issue112_graduated_physical_representation_uses_current_names_without_erasing_distinct_evidence_contracts():
+def test_graduated_physical_representation_uses_current_names_without_erasing_distinct_evidence_contracts():
     current_paths = (
         ROOT / "scripts" / "observation" / "LiveObservationSource.lua",
         ROOT / "scripts" / "observation" / "FieldBoundedFutureSpace.lua",
@@ -766,3 +766,13 @@ def test_within_group_traffic_decision_policy_uses_current_responsibility_vocabu
                 offenders.append(path.relative_to(ROOT).as_posix())
         assert offenders == []
 
+
+def test_current_validation_identity_avoids_issue_provenance():
+    offenders = []
+    for path in sorted((ROOT / "tests").glob("test_*.py")):
+        if re.search(r"^test_issue\\d+", path.name):
+            offenders.append(path.relative_to(ROOT).as_posix())
+        source = path.read_text(encoding="utf-8")
+        for match in re.finditer(r"^def (test_issue\\d+_[^(]+)", source, re.M):
+            offenders.append(f"{path.relative_to(ROOT).as_posix()}:{match.group(1)}")
+    assert offenders == []
