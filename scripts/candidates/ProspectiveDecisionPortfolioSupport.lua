@@ -68,6 +68,14 @@ end
 
 local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,family,reason,ordinal)
     local group=self.passiveSupport:buildProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
+    -- One Decision Picture may contain more than one fail-closed support scope.
+    -- Namespace each projected passive expression before Candidate Space
+    -- materialisation; ordinary passive support keeps its own stable key.
+    for index,specification in ipairs(group and group.candidateSpecifications or {}) do
+        specification.referenceKey="passive-fail-closed:"..tostring(targetPictureId)
+            ..":"..string.lower(tostring(family))..":"..tostring(reason)
+            ..":"..tostring(ordinal)..":"..tostring(#state.groups+index)
+    end
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
 end
 
@@ -126,6 +134,21 @@ local function sharedCategory2PairSet(situations)
     return result
 end
 
+local function incumbentSharedCategory2Situation(situations)
+    local match=nil
+    for _,situation in OuttaMyWay.ValueRecord.ipairs(situations or {}) do
+        if type(situation.incumbentCommitmentId)=="string"
+            and type(situation.incumbentRegulatedAssemblyId)=="string" then
+            if match~=nil and match.identity~=situation.identity then
+                return nil,"MULTIPLE_INCUMBENT_SHARED_CATEGORY_2_SITUATIONS"
+            end
+            match=situation
+        end
+    end
+    if match==nil then return nil,"INCUMBENT_SHARED_CATEGORY_2_SITUATION_UNAVAILABLE" end
+    return match,nil
+end
+
 local function currentResponsibilityKey(picture,commitmentId)
     if type(commitmentId)~="string" then return nil end
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture.commitmentContext or {}) do
@@ -172,12 +195,18 @@ local function mergeGroupFitness(first,second)
     return result
 end
 
+local function appendUniqueValue(values,value)
+    if type(value)~="string" then return end
+    for _,existing in ipairs(values or {}) do if existing==value then return end end
+    values[#values+1]=value
+end
+
 local function composeFollowerCategory2Group(picture,follower,category2,situation,targetPictureId,targetEpoch)
     if modeOfGroup(follower)~="FOLLOWER_BOUNDARY" or modeOfGroup(category2)~="SHARED_CATEGORY_2_DEMAND" then return nil,"NOT_COMPOSABLE" end
     local followerSpecification,followerBridge=followerGroupContext(follower)
     if followerSpecification==nil then return nil,"FOLLOWER_TRIGGER_UNAVAILABLE" end
     local situationPair=pairKey(situation.subjectAssemblyId,situation.otherAssemblyId)
-    if followerBridge.pairKey~=situationPair then return nil,"DIFFERENT_PAIR" end
+    local samePair=followerBridge.pairKey==situationPair
 
     local existingCommitmentId=followerBridge.existingCommitmentId
     for _,specification in ipairs(category2.candidateSpecifications or {}) do
@@ -189,6 +218,10 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
             existingCommitmentId=bridge.existingCommitmentId
         end
     end
+    if not samePair and type(existingCommitmentId)~="string" then
+        return nil,"SHARED_PROTECTED_DEMAND_REQUIRES_CURRENT_REGULATION"
+    end
+
     local governingRequirementKey=currentResponsibilityKey(picture,existingCommitmentId)
         or ("pairwise-regulation:"..tostring(followerBridge.operationId)..":"..tostring(followerBridge.pairKey))
 
@@ -196,11 +229,24 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
     for _,specification in ipairs(category2.candidateSpecifications or {}) do
         local evidence=specification.evidenceBasis or {}
         local actionBridge=evidence.actionSpaceRegulationBridge
-        local roleCompatible=followerBridge.action=="RETIRE"
-            or (type(actionBridge)=="table"
-                and actionBridge.regulatedAssemblyId==followerBridge.followerAssemblyId
-                and actionBridge.protectedAssemblyId==followerBridge.leaderAssemblyId)
+        local crossPairCompatible=not samePair
+            and type(actionBridge)=="table"
+            and actionBridge.admissionKind=="SHARED_CATEGORY_2_DEMAND"
+            and actionBridge.protectedAssemblyId==followerBridge.leaderAssemblyId
+            and actionBridge.regulatedAssemblyId~=followerBridge.followerAssemblyId
+            and actionBridge.operationId==followerBridge.operationId
+            and actionBridge.existingCommitmentId==existingCommitmentId
+            and (followerBridge.action=="APPLY"
+                or (followerBridge.action=="RETIRE" and followerBridge.existingCommitmentId==existingCommitmentId))
+        local roleCompatible=(samePair and (
+                followerBridge.action=="RETIRE"
+                or (type(actionBridge)=="table"
+                    and actionBridge.regulatedAssemblyId==followerBridge.followerAssemblyId
+                    and actionBridge.protectedAssemblyId==followerBridge.leaderAssemblyId)))
+            or crossPairCompatible
+
         if roleCompatible then
+            local compositionScope=samePair and "SAME_PAIR" or "SHARED_PROTECTED_DEMAND"
             actionBridge.governingRequirementKey=governingRequirementKey
             actionBridge.existingCommitmentId=existingCommitmentId
             followerBridge.governingRequirementKey=governingRequirementKey
@@ -214,21 +260,59 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
                     if type(record)=="table" then record.governingRequirementKey=governingRequirementKey end
                 end
             end
+
             evidence.followerBoundaryBridge=followerBridge
             evidence.compositeRegulationBridge={
-                architecture="COMPOSED_REGULATION_TRIGGERS",
+                architecture="COMPOSED_REGULATION_TRIGGERS",compositionScope=compositionScope,
                 pairKey=followerBridge.pairKey,operationId=followerBridge.operationId,
                 leaderAssemblyId=followerBridge.leaderAssemblyId,followerAssemblyId=followerBridge.followerAssemblyId,
                 regulatedAssemblyId=actionBridge.regulatedAssemblyId,protectedAssemblyId=actionBridge.protectedAssemblyId,
+                incumbentRegulatedAssemblyId=actionBridge.regulatedAssemblyId,
+                sharedProtectedAssemblyId=actionBridge.protectedAssemblyId,
                 conflictIdentity=actionBridge.conflictIdentity,admissionKind=actionBridge.admissionKind,
                 existingCommitmentId=existingCommitmentId,governingRequirementKey=governingRequirementKey,
                 followerAction=followerBridge.action,
                 assemblyIds={followerBridge.leaderAssemblyId,followerBridge.followerAssemblyId},
                 triggerKinds={"FOLLOWER_BOUNDARY","SHARED_CATEGORY_2_DEMAND"}
             }
-            specification.referenceKey="composed-regulation:"..tostring(followerBridge.pairKey)..":"..tostring(actionBridge.regulatedAssemblyId)
+
+            if not samePair then
+                specification.subject=specification.subject or {}
+                specification.subject.assemblyIds=specification.subject.assemblyIds or {}
+                appendUniqueValue(specification.subject.assemblyIds,actionBridge.regulatedAssemblyId)
+                appendUniqueValue(specification.subject.assemblyIds,followerBridge.followerAssemblyId)
+
+                evidence.progressActuationOwnership=evidence.progressActuationOwnership or {assemblyIds={}}
+                evidence.progressActuationOwnership.assemblyIds=evidence.progressActuationOwnership.assemblyIds or {}
+                appendUniqueValue(evidence.progressActuationOwnership.assemblyIds,actionBridge.regulatedAssemblyId)
+                appendUniqueValue(evidence.progressActuationOwnership.assemblyIds,followerBridge.followerAssemblyId)
+
+                local composition=evidence.effectiveActuationComposition
+                if type(composition)=="table" then
+                    composition.relevantAssemblyIds=composition.relevantAssemblyIds or {}
+                    appendUniqueValue(composition.relevantAssemblyIds,actionBridge.protectedAssemblyId)
+                    appendUniqueValue(composition.relevantAssemblyIds,actionBridge.regulatedAssemblyId)
+                    appendUniqueValue(composition.relevantAssemblyIds,followerBridge.followerAssemblyId)
+                    composition.entries=composition.entries or {}
+                    local followerEntry=false
+                    for _,entry in ipairs(composition.entries) do
+                        if entry.assemblyId==followerBridge.followerAssemblyId
+                            and entry.capability=="REGULATE_SPEED" then followerEntry=true break end
+                    end
+                    if not followerEntry then
+                        composition.entries[#composition.entries+1]={
+                            assemblyId=followerBridge.followerAssemblyId,commitmentId=existingCommitmentId,
+                            capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true
+                        }
+                    end
+                end
+            end
+
+            specification.referenceKey="composed-regulation:"..tostring(compositionScope)
+                ..":"..tostring(followerBridge.pairKey)..":"..tostring(actionBridge.regulatedAssemblyId)
             specification.purpose={
-                kind="PAIRWISE_REGULATION_TRIGGER_COMPOSITION",
+                kind=samePair and "PAIRWISE_REGULATION_TRIGGER_COMPOSITION"
+                    or "SHARED_PROTECTED_DEMAND_TRIGGER_COMPOSITION",
                 result="PRESERVE_TEMPORAL_ORDERING_WHILE_ANY_ADMITTED_TRIGGER_REMAINS_CURRENT"
             }
             specification.expectedEffect.composedRegulationTriggers=true
@@ -244,19 +328,24 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
             specifications[#specifications+1]=specification
         end
     end
-    if #specifications==0 then return nil,"COMPOSED_REGULATION_TRIGGER_ROLE_CONFLICT" end
+    if #specifications==0 then
+        return nil,samePair and "COMPOSED_REGULATION_TRIGGER_ROLE_CONFLICT"
+            or "SHARED_PROTECTED_DEMAND_TRIGGER_ROLE_CONFLICT"
+    end
     return {
         supportBoundary={
             mode="COMPOSED_REGULATION_TRIGGERS",supportedCandidateClasses={"REGULATE_SPEED"},
             physicalCapabilitiesImplemented=true,controlAuthority="COMPOSED_SPEED_CEILINGS",
-            boundedScope="SAME_PAIR_FOLLOWER_BOUNDARY_OR_SHARED_CATEGORY_2_TEMPORAL_COORDINATION",
+            boundedScope=samePair and "SAME_PAIR_FOLLOWER_BOUNDARY_OR_SHARED_CATEGORY_2_TEMPORAL_COORDINATION"
+                or "SHARED_PROTECTED_DEMAND_WITH_PARTICIPANT_SPECIFIC_REGULATION",
             decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}
         },
         candidateSpecifications=specifications,
         representationFitness=mergeGroupFitness(follower,category2),
         provenance={
             source="ProspectiveDecisionPortfolioSupport",targetOperationalPictureId=targetPictureId,targetEpoch=targetEpoch,
-            candidateSupportProjection=true,authority="SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
+            candidateSupportProjection=true,
+            authority=samePair and "SAME_PAIR_REGULATION_TRIGGER_COMPOSITION" or "SHARED_PROTECTED_DEMAND_COMPOSITION",
             pairKey=followerBridge.pairKey,sharedCategory2Identity=situation.identity
         }
     },nil
@@ -358,40 +447,64 @@ function Support:publishDecisionPicture(picture,snapshot)
     local sharedCategory2=sharedCategory2Situations(picture)
     local category2Pairs=sharedCategory2PairSet(sharedCategory2)
     local category2,category2Reason=nil,nil
+    local category2Situation=nil
+    local category2FreshAmbiguity=nil
+
     if #sharedCategory2==1 then
+        category2Situation=sharedCategory2[1]
+    elseif #sharedCategory2>1 then
+        local incumbent,incumbentReason=incumbentSharedCategory2Situation(sharedCategory2)
+        if incumbent~=nil then
+            category2Situation=incumbent
+            category2FreshAmbiguity="MULTIPLE_FRESH_SHARED_CATEGORY_2_SITUATIONS_WITH_INCUMBENT"
+        else
+            category2Reason=incumbentReason=="MULTIPLE_INCUMBENT_SHARED_CATEGORY_2_SITUATIONS"
+                and incumbentReason or "MULTIPLE_SHARED_CATEGORY_2_SITUATIONS"
+        end
+    end
+
+    if category2Situation~=nil then
         local _,followerBridge=followerGroupContext(follower)
         local compatibleExistingCommitmentId=nil
-        if followerBridge~=nil and followerBridge.pairKey==pairKey(sharedCategory2[1].subjectAssemblyId,sharedCategory2[1].otherAssemblyId) then
+        if followerBridge~=nil and followerBridge.pairKey==pairKey(
+            category2Situation.subjectAssemblyId,category2Situation.otherAssemblyId) then
             compatibleExistingCommitmentId=followerBridge.existingCommitmentId
         end
         category2,category2Reason=self.liveSupport:buildProjectedGroup(
             picture,snapshot,{
-                kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=sharedCategory2[1].identity,
+                kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=category2Situation.identity,
                 compatibleExistingCommitmentId=compatibleExistingCommitmentId
             },targetPictureId,targetEpoch)
-    elseif #sharedCategory2>1 then
+    end
+
+    if category2FreshAmbiguity~=nil then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
-            "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED","MULTIPLE_SHARED_CATEGORY_2_SITUATIONS",1)
+            "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",category2FreshAmbiguity,1)
+    elseif category2Situation==nil and category2Reason~=nil then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+            "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",category2Reason,1)
     end
 
     local composed,compositionReason=nil,nil
-    if followerFamily~=nil and modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" and #sharedCategory2==1 then
+    if followerFamily~=nil and modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" and category2Situation~=nil then
         composed,compositionReason=composeFollowerCategory2Group(
-            picture,follower,category2,sharedCategory2[1],targetPictureId,targetEpoch)
+            picture,follower,category2,category2Situation,targetPictureId,targetEpoch)
     end
     if composed~=nil then
         local _,bridge=followerGroupContext(follower)
-        appendGroup(state,composed,"COMPOSED_REGULATION","composed-regulation:"..tostring(bridge and bridge.pairKey or sharedCategory2[1].identity),1)
+        appendGroup(state,composed,"COMPOSED_REGULATION",
+            "composed-regulation:"..tostring(bridge and bridge.pairKey or category2Situation.identity),1)
     elseif compositionReason=="COMPOSED_REGULATION_TRIGGER_ROLE_CONFLICT"
-        or compositionReason=="COMPOSED_REGULATION_EXISTING_COMMITMENT_CONFLICT" then
+        or compositionReason=="COMPOSED_REGULATION_EXISTING_COMMITMENT_CONFLICT"
+        or compositionReason=="SHARED_PROTECTED_DEMAND_TRIGGER_ROLE_CONFLICT" then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
             "COMPOSED_REGULATION_FAIL_CLOSED",compositionReason,1)
     else
         if followerFamily~=nil then appendGroup(state,follower,followerFamily,"follower",1) end
         if modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" then
             appendGroup(state,category2,"CATEGORY_2_BOUNDARY_DEMAND",
-                "category-2-boundary-demand:"..tostring(sharedCategory2[1].identity),1)
-        elseif category2Reason~=nil then
+                "category-2-boundary-demand:"..tostring(category2Situation and category2Situation.identity or "UNKNOWN"),1)
+        elseif category2Reason~=nil and category2FreshAmbiguity==nil and category2Situation~=nil then
             passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
                 "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",category2Reason,1)
         end
