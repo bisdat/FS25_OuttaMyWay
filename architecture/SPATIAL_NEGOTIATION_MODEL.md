@@ -210,7 +210,7 @@ Reality also establishes a narrower cross-pair case: two pairwise triggers may e
 - P is exactly the current protected participant and exactly the Follower Boundary leader;
 - F is a different regulated/follower participant from the incumbent regulated participant;
 - the new trigger does not re-arbitrate the incumbent protected participant or manufacture a relationship between the two followers; and
-- the physical constraints remain participant-specific and mutually compatible.
+- physical permissions remain participant-scoped, but every controlled participant that can consume P's same current constrained demand must remain inside the least-permissive compatible protective magnitude while that shared-demand trigger is current.
 
 The additional trigger extends the same temporal-coordination responsibility because both reasons answer the same world question: **preserve P's current constrained demand by bounding workers that can consume it first**. It does not create a three-worker Resolution Commitment or a coupled three-worker movement plan.
 
@@ -222,7 +222,13 @@ The additional trigger extends the same temporal-coordination responsibility bec
 
 The semantic responsibility remains current while any admitted trigger remains positively current or legitimately waiting for evidence. Each trigger may retire independently; retirement of one trigger does not terminate the Regulation while another still supports the same temporal-coordination responsibility. For Shared Protected Demand Composition, retirement of the incumbent Category-2 trigger may therefore leave the Follower Boundary trigger current under the same Regulation identity, and the converse is equally valid.
 
-The physical effect must satisfy all current trigger constraints. Where Follower Boundary supplies an elastic maximum and Shared Category-2 simultaneously requires exact Intent-Revelation Creep, the current authorised effect may be no less restrictive than either requirement. Magnitude remains Bounded Authority, not Situation or Decision, authority.
+The physical effect must satisfy all current trigger constraints. Where Follower Boundary supplies an elastic maximum and Shared Category-2 simultaneously requires exact Intent-Revelation Creep, the current authorised effect may be no less restrictive than either requirement. Under Shared Protected Demand Composition, that exact protective creep constrains every controlled follower admitted to preserve the same protected demand while the Shared Category-2 trigger remains current; it is not limited to whichever pair happened to establish incumbency first. When the Shared Category-2 trigger positively retires, a surviving Follower trigger returns to its own current elastic magnitude through fresh Bounded-Authority continuation.
+
+> **Incumbency Order Must Not Weaken Shared Protection.**
+
+Equivalent Shared Protected Demand geometry must not receive a looser physical result merely because pairwise evidence arrived in a different order. This preserves one semantic Regulation responsibility without manufacturing a traffic relationship between the controlled followers.
+
+Magnitude remains Bounded Authority, not Situation or Decision, authority.
 
 This is the original temporal purpose of Category 2:
 

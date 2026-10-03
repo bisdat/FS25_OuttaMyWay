@@ -535,7 +535,7 @@ function Authority:assessFollowerBoundaryPermission(picture,evaluated,candidate,
     return {status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,pairKey=bridge.pairKey,followerAssemblyId=bridge.followerAssemblyId,followerBoundary=true}
 end
 
-function Authority:continueFollowerBoundary(picture,evaluated,applied)
+function Authority:continueFollowerBoundary(picture,evaluated,applied,constraint)
     if picture==nil or evaluated==nil or evaluated.decision==nil or type(applied)~="table" or applied.commitment==nil then
         return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_ESTABLISHED_RESPONSIBILITY_REQUIRED",followerBoundary=true}
     end
@@ -554,7 +554,14 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
     if magnitude==nil then
         return {status="NO_DISPATCH",reason=magnitudeReason or "FOLLOWER_BOUNDARY_PERMISSIBLE_MAGNITUDE_UNAVAILABLE",followerBoundary=true}
     end
-    local permittedFollowerCapKmh=magnitude.permittedFollowerCapKmh
+    local elasticFollowerCapKmh=magnitude.permittedFollowerCapKmh
+    local sharedProtectiveCapKmh=tonumber(constraint and constraint.sharedProtectiveCapKmh)
+    if sharedProtectiveCapKmh~=nil
+        and (sharedProtectiveCapKmh~=sharedProtectiveCapKmh or sharedProtectiveCapKmh<=0 or sharedProtectiveCapKmh==math.huge) then
+        sharedProtectiveCapKmh=nil
+    end
+    local permittedFollowerCapKmh=elasticFollowerCapKmh
+    if sharedProtectiveCapKmh~=nil then permittedFollowerCapKmh=math.min(permittedFollowerCapKmh,sharedProtectiveCapKmh) end
     local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",FOLLOWER_BOUNDARY_OWNER_TAG,permittedFollowerCapKmh,applied.currentResponsibility)
     if request==nil then return {status="NO_DISPATCH",reason=requestReason,followerBoundary=true} end
     local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
@@ -572,7 +579,8 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
     local priorReactivationCount=update and tonumber(current.reactivationCount) or 0
     self.followerBoundaryLease={commitmentId=applied.commitment.identity,pairKey=bridge.pairKey,leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
         leaderReferenceKey=bridge.leaderReferenceKey,followerReferenceKey=bridge.followerReferenceKey,leaderName=bridge.leaderName,followerName=bridge.followerName,governingPurpose=bridge.governingPurpose,
-        authorityTokenId=token.identity,boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=permittedFollowerCapKmh,nativeUnrestrictedFollowerKmh=magnitude.nativeUnrestrictedFollowerKmh,
+        authorityTokenId=token.identity,boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=permittedFollowerCapKmh,
+        elasticCapKmh=elasticFollowerCapKmh,sharedProtectiveCapKmh=sharedProtectiveCapKmh,nativeUnrestrictedFollowerKmh=magnitude.nativeUnrestrictedFollowerKmh,
         leaderRateUsedKmh=magnitude.leaderRateUsedKmh,transitionPreservation=bridge.transitionPreservation==true,actuationActive=true,quiescenceReason=nil,
         quiescenceCount=priorQuiescenceCount or 0,reactivationCount=(priorReactivationCount or 0)+(reactivated and 1 or 0)}
     if update then self.followerBoundaryUpdateCount=self.followerBoundaryUpdateCount+1 else self.followerBoundaryApplyCount=self.followerBoundaryApplyCount+1 end
@@ -584,7 +592,7 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
         logInfo("DEBUG","FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED","commitment=%s pair=%s follower=%s cap=%.2fkmh purposeRetained=true reactivationCount=%d",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tonumber(permittedFollowerCapKmh) or 0,tonumber(self.followerBoundaryLease.reactivationCount) or 0)
     else
         local publicationCode=update and "FOLLOWER_BOUNDARY_UPDATED" or "FOLLOWER_BOUNDARY_APPLIED"
-    logInfo("DEBUG",publicationCode,"commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(permittedFollowerCapKmh) or 0,tonumber(magnitude.nativeUnrestrictedFollowerKmh) or 0,tostring(magnitude.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
+    logInfo("DEBUG",publicationCode,"commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh elastic=%.2fkmh sharedProtective=%s native=%.2fkmh leaderRate=%s transition=%s purpose=%s",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(permittedFollowerCapKmh) or 0,tonumber(elasticFollowerCapKmh) or 0,tostring(sharedProtectiveCapKmh or "n/a"),tonumber(magnitude.nativeUnrestrictedFollowerKmh) or 0,tostring(magnitude.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
     end
     return {status=reactivated and "REACTIVATED" or "ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,followerBoundary=true,elasticUpdate=update,reactivated=reactivated}
 end
@@ -594,6 +602,7 @@ function Authority:getFollowerBoundaryStatus()
     return {active=lease~=nil and lease.actuationActive~=false,retainedPurpose=lease~=nil,actuationActive=lease~=nil and lease.actuationActive~=false,commitmentId=lease and lease.commitmentId or nil,pairKey=lease and lease.pairKey or nil,
         leaderName=lease and lease.leaderName or nil,followerName=lease and lease.followerName or nil,
         followerReferenceKey=lease and lease.followerReferenceKey or nil,currentCapKmh=lease and lease.currentCapKmh or nil,
+        elasticCapKmh=lease and lease.elasticCapKmh or nil,sharedProtectiveCapKmh=lease and lease.sharedProtectiveCapKmh or nil,
         nativeUnrestrictedFollowerKmh=lease and lease.nativeUnrestrictedFollowerKmh or nil,leaderRateUsedKmh=lease and lease.leaderRateUsedKmh or nil,
         transitionPreservation=lease and lease.transitionPreservation==true or false,quiescenceReason=lease and lease.quiescenceReason or nil,applyCount=self.followerBoundaryApplyCount,
         updateCount=self.followerBoundaryUpdateCount,releaseCount=self.followerBoundaryReleaseCount,quiescenceCount=self.followerBoundaryQuiescenceCount,reactivationCount=self.followerBoundaryReactivationCount,ownerTag=FOLLOWER_BOUNDARY_OWNER_TAG}

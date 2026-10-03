@@ -289,6 +289,8 @@ Regulation owns why temporal coordination persists. Bounded Authority owns the c
 
 Where one Regulation responsibility is supported by a composed trigger basis, Bounded Authority MUST respect every current trigger-specific physical constraint. It may not select a looser magnitude merely because one trigger independently permits it. The granted speed effect is bounded by the least-permissive compatible current requirement while semantic responsibility identity remains owned by Regulation.
 
+For Shared Protected Demand Composition, the fixed magnitude protecting the shared constrained demand is a purpose-wide upper bound over each admitted controlled follower while that fixed trigger remains current. Pair-incumbency order MUST NOT permit a later-composed follower to retain a looser elastic ceiling. When the fixed Shared Category-2 trigger positively retires, Bounded Authority may refresh the surviving Follower lease to its current elastic magnitude.
+
 > **Semantic Support OR; Physical Constraint AND.**
 
 ### Resolution Lifecycle and specialised Resolutions

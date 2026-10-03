@@ -276,6 +276,7 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
                 regulatedAssemblyId=actionBridge.regulatedAssemblyId,protectedAssemblyId=actionBridge.protectedAssemblyId,
                 incumbentRegulatedAssemblyId=actionBridge.regulatedAssemblyId,
                 sharedProtectedAssemblyId=actionBridge.protectedAssemblyId,
+                sharedProtectiveSpeedKmh=not samePair and tonumber(actionBridge.fixedRegulationSpeedKmh) or nil,
                 conflictIdentity=actionBridge.conflictIdentity,admissionKind=actionBridge.admissionKind,
                 existingCommitmentId=existingCommitmentId,governingRequirementKey=governingRequirementKey,
                 followerAction=followerBridge.action,

@@ -545,7 +545,14 @@ function Runtime:_continueCompositeFollowerConstraint(picture,evaluated,current,
         commitment=commitment,authorityToken=token,authorityAcquired=acquired,
         currentResponsibility=current
     }
-    local continued=self.regulationBoundedAuthority:continueFollowerBoundary(picture,evaluated,applied)
+    local followerConstraint=nil
+    if composite.compositionScope=="SHARED_PROTECTED_DEMAND" then
+        followerConstraint={
+            sharedProtectiveCapKmh=tonumber(composite.sharedProtectiveSpeedKmh),
+            basis="SHARED_PROTECTED_DEMAND"
+        }
+    end
+    local continued=self.regulationBoundedAuthority:continueFollowerBoundary(picture,evaluated,applied,followerConstraint)
     continued.compositeRegulation=true
     return continued
 end

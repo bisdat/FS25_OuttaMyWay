@@ -3791,7 +3791,9 @@ test("TS015 Shared Protected Demand composes Condor Follower into incumbent Patr
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().pairKey,"AS-C|AS-S")
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().followerReferenceKey,"vehicle-root:C")
-    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,1)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().elasticCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().sharedProtectiveCapKmh,1)
 
     local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
     local retainedFollower=threeWorkerFollowerRecord(14,commitmentId,followerObligation.identity)
