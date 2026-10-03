@@ -715,13 +715,17 @@ end
 -- current Passage question from fresh settled productive motion while an
 -- individual Established Trajectory is still accumulating supersession
 -- evidence. It does not rewrite either participant's general trajectory.
-local function currentOpposedReacquisition(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,context)
+local function currentOpposedReacquisition(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,trajectoryDot,opposedMaxDot,context)
     local result={
         status="NOT_SUPPORTED",supported=false,
         reason="CURRENT_OPPOSED_REACQUISITION_NOT_SUPPORTED",
         authority="OPPOSED_CORRIDOR_SITUATION_KNOWLEDGE",
         decisionAuthority=false,controlAuthority=false,trajectoryMutation=false
     }
+    if finite(trajectoryDot) and trajectoryDot<=opposedMaxDot then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_RETAINED_RELATION_ALREADY_OPPOSED"
+        return result
+    end
     if not positiveSettledContinuation(aTrajectory,aMotion)
         or not positiveSettledContinuation(bTrajectory,bMotion) then
         result.reason="CURRENT_OPPOSED_REACQUISITION_REQUIRES_SETTLED_PRODUCTIVE_CONTINUATION"
@@ -744,6 +748,10 @@ local function currentOpposedReacquisition(aTrajectory,bTrajectory,aMotion,bMoti
     result.subjectUsesExcursionEvidence=aUsesExcursion
     result.otherUsesExcursionEvidence=bUsesExcursion
     result.requiredPersistenceM=currentStableDistanceM
+    if not aUsesExcursion and not bUsesExcursion then
+        result.reason="CURRENT_OPPOSED_REACQUISITION_REQUIRES_TRAJECTORY_LAG"
+        return result
+    end
     if not finite(aPersistence) or not finite(bPersistence)
         or aPersistence<currentStableDistanceM or bPersistence<currentStableDistanceM then
         result.reason="CURRENT_OPPOSED_REACQUISITION_DIRECTION_NOT_YET_PERSISTENT"
@@ -956,7 +964,7 @@ function Assessment.classifyPairs(context)
                     local currentReacquisition=currentOpposedReacquisition(
                         aTrajectory,bTrajectory,motionByAssembly[aId],motionByAssembly[bId],
                         physicalByAssembly[aId],physicalByAssembly[bId],
-                        spaceByAssembly[aId],spaceByAssembly[bId],context)
+                        spaceByAssembly[aId],spaceByAssembly[bId],trajectoryDot,opposedMaxDot,context)
                     record.currentOpposedReacquisition=copy(currentReacquisition)
                     if currentReacquisition.supported==true then
                         record.status="CLASSIFIED"

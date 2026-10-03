@@ -4196,6 +4196,26 @@ test("Trajectory Conflict: fresh settled opposed motion reacquires Passage conce
     equal(relation.cooperativePassageEligible,true)
 end)
 
+test("Trajectory Conflict: ordinary retained opposed pair remains on established-trajectory path",function()
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",established=true,establishedDirectionX=0,establishedDirectionZ=-1,corridorAnchorX=0,corridorAnchorZ=12,currentDirectionX=0,currentDirectionZ=-1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"}
+    }
+    local motions={
+        buildTrajectoryMotionEvidence("AS-A","JE-A",0,1,2,1,nil,"SETTLED_CONTINUATION",true,true,0,1),
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,1,1,nil,"SETTLED_CONTINUATION",true,true,0,-1)
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,12)}
+    local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,12,3)}
+    local relation=classifyTestTrajectoryConflict(trajectories,motions,spaces,physical)
+    equal(relation.trajectoryDot,-1)
+    equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(relation.reason,"PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP")
+    equal(relation.currentOpposedReacquisition.supported,false)
+    equal(relation.currentOpposedReacquisition.reason,"CURRENT_OPPOSED_REACQUISITION_RETAINED_RELATION_ALREADY_OPPOSED")
+    equal(relation.passageDirectionBasis,nil)
+end)
+
 test("Trajectory Conflict: current opposed vectors cannot reacquire Passage without settled productive continuation",function()
     local trajectories={
         {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
