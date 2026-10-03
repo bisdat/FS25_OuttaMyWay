@@ -74,7 +74,7 @@ def test_projection_keeps_full_parent_evidence_and_uses_direct_per_conflict_plan
 
 def test_same_picture_traffic_exhaustion_contract_remains_strict():
     live=read("scripts/candidates/LiveTrafficCandidateSupport.lua")
-    policy=read("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
+    policy=read("scripts/decision/WithinGroupTrafficDecisionPolicy.lua")
     portfolio=read("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
     assert "operationalPictureId=pictureId" in live
     assert 'return false, "STALE_OPERATIONAL_PICTURE"' in policy
