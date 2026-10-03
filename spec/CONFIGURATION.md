@@ -253,7 +253,7 @@ That file is outside the `CONFIGURATION` Jurisdiction:
 - its absence MUST mean DIAGNOSTIC off;
 - it has no player-facing migration guarantee.
 
-The engineering-only control remains outside this Configuration Jurisdiction and is governed by its own diagnostic/logging mechanism.
+The engineering-only control belongs to Log Publication rather than Configuration; [`LOG_PUBLICATION.md`](LOG_PUBLICATION.md) owns the implementation-facing contract for the optional `diagnostics.xml` publication-policy sidecar.
 
 > **Shared Persistence Location != Shared Configuration Contract**
 
