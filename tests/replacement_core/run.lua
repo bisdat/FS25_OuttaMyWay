@@ -3556,6 +3556,80 @@ test("TS015 same-pair Follower and Shared Category-2 compose one Regulation and 
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
 end)
 
+test("TS015 late Follower trigger composes into incumbent Category-2 Regulation without responsibility churn", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    -- Reality path from 0.4.10.7: Category-2 exists first.
+    local noFollower=buildFollowerBoundaryRecord(25,nil,nil)
+    noFollower.status="NOT_APPLICABLE"; noFollower.purposeState="NONE"; noFollower.controlMagnitude=nil
+    local category2Only=OuttaMyWay.ValueRecord.toTable(
+        buildComposedRegulationPicture(runtime,noFollower,"SUPPORTED",nil,nil))
+    category2Only.followerBoundaryKnowledge={}
+    category2Only=OuttaMyWay.OperationalPicture.new(category2Only)
+    local first=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(category2Only,headOnTestSnapshot())
+    local firstEval=runtime:evaluateSealedOperationalPicture(first)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(first,firstEval)
+    equal(admitted.status=="ACCEPTED" or admitted.status=="MAINTAINED",true)
+    local commitmentId=admitted.commitment.identity
+    local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    local responsibilityId=current.identity
+    equal(current.provenance.admissionKind,"SHARED_CATEGORY_2_DEMAND")
+    equal(current.provenance.compositeTriggerBasis,nil)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+
+    -- Follower support appears later while Category-2 remains current.  This
+    -- must extend the same semantic Regulation rather than merely adding a
+    -- hidden obligation beneath an unchanged single-trigger responsibility.
+    local follower=buildFollowerBoundaryRecord(16,nil,nil)
+    local composed=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,follower,"SUPPORTED",commitmentId,"AS-P"),headOnTestSnapshot())
+    local composedEval=runtime:evaluateSealedOperationalPicture(composed)
+    local composedResult=runtime:dispatchEvaluatedOperationalPicture(composed,composedEval)
+    equal(composedResult.compositeRegulation,true)
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current.identity,responsibilityId)
+    equal(type(current.provenance.compositeTriggerBasis),"table")
+    equal(current.provenance.compositeTriggerBasis.followerActive,true)
+    equal(current.provenance.compositeTriggerBasis.sharedCategory2Active,true)
+    equal(current.provenance.pairKey,"AS-C|AS-P")
+    equal(#runtime.obligations:openForOwner(commitmentId),2)
+
+    -- Category-2 may now retire without ending the Regulation because the late
+    -- Follower trigger is part of the same current trigger basis.
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+    local retainedFollower=buildFollowerBoundaryRecord(14,commitmentId,followerObligation.identity)
+    local category2Dissolved=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retainedFollower,"DISSOLVED",commitmentId,"AS-P"),headOnTestSnapshot())
+    local category2Eval=runtime:evaluateSealedOperationalPicture(category2Dissolved)
+    local category2Retired=runtime:dispatchEvaluatedOperationalPicture(category2Dissolved,category2Eval)
+    equal(category2Retired.compositeRegulation,true)
+    equal(category2Retired.triggerRetired,"SHARED_CATEGORY_2_DEMAND")
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current.identity,responsibilityId)
+    equal(current.provenance.compositeTriggerBasis.sharedCategory2Active,false)
+    equal(current.provenance.compositeTriggerBasis.followerActive,true)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+
+    -- Final positive Follower retirement exhausts the composed trigger basis,
+    -- so no purposeless active Commitment may remain to block a fresh Passage.
+    local retireFollower=buildFollowerBoundaryRecord(25,commitmentId,followerObligation.identity)
+    retireFollower.status="RETIRE_SUPPORTED"; retireFollower.purposeState="RETIRE"; retireFollower.controlMagnitude=nil
+    retireFollower.reason="ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION"
+    local finalPicture=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retireFollower,nil,commitmentId,nil),headOnTestSnapshot())
+    local finalEval=runtime:evaluateSealedOperationalPicture(finalPicture)
+    local final=runtime:dispatchEvaluatedOperationalPicture(finalPicture,finalEval)
+    equal(final.status,"RELEASED")
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
+    equal(#runtime.obligations:openForOwner(commitmentId),0)
+end)
+
 test("TS015 composed Regulation preserves Category-2 when Follower trigger retires first", function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
