@@ -208,7 +208,11 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
             evidence.governingBasis.responsibilityKey=governingRequirementKey
             evidence.maintainsExistingCommitment=existingCommitmentId~=nil
             if type(evidence.withinGroupTrafficPreference)=="table" then
-                evidence.withinGroupTrafficPreference.governingRequirementKey=governingRequirementKey
+                local preference=evidence.withinGroupTrafficPreference
+                preference.governingRequirementKey=governingRequirementKey
+                for _,record in pairs(preference.exhaustionEvidence or {}) do
+                    if type(record)=="table" then record.governingRequirementKey=governingRequirementKey end
+                end
             end
             evidence.followerBoundaryBridge=followerBridge
             evidence.compositeRegulationBridge={
