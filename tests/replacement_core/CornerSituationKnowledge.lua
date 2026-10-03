@@ -464,7 +464,7 @@ return function(test,equal)
         return OuttaMyWay.CandidateInventory.new({
             identity="CI-CORNER",epoch=1,operationalPictureId="OP-CORNER",
             candidateIds=candidateIds,complete=true,
-            supportBoundary={decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+            supportBoundary={decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement}},
             provenance={source="CornerSituationKnowledge"}
         })
     end
@@ -472,7 +472,7 @@ return function(test,equal)
     local function regulationCandidate(id,requirement,protected,regulated)
         return {
             identity=id,capability="REGULATE_SPEED",comparisonCost=0,
-            evidenceBasis={trafficPolicemanPreference={
+            evidenceBasis={withinGroupTrafficPreference={
                 primaryResolution=true,governingRequirementKey=requirement,
                 exhaustionEvidence={CONTINUE_OBSERVATION={
                     result="PASS",operationalPictureId="OP-CORNER",
@@ -499,7 +499,7 @@ return function(test,equal)
         },{
             assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
-        local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
+        local decision=OuttaMyWay.WithinGroupTrafficDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
         equal(decision.selected.identity,"CA-PROTECT-A")
         equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_CORNER_INCUMBENT")
@@ -517,7 +517,7 @@ return function(test,equal)
         },{
             assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
-        local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
+        local decision=OuttaMyWay.WithinGroupTrafficDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
         equal(decision.selected.identity,"CA-PROTECT-B")
         equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_ONLY_CURRENT_SUPPORTED_CORNER_ARRIVAL")
@@ -535,7 +535,7 @@ return function(test,equal)
         },{
             assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
-        local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
+        local decision=OuttaMyWay.WithinGroupTrafficDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
         equal(decision.selected.identity,"CA-PROTECT-B")
         equal(decision.rule,"CORNER_RIGHT_OF_WAY:PROTECT_EARLIER_CURRENT_CORNER_ARRIVAL")
@@ -553,7 +553,7 @@ return function(test,equal)
         },{
             assemblyId="AS-A",cornerIncumbent=false,currentConstrainedCornerOccupancy=false
         })
-        local decision=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(
+        local decision=OuttaMyWay.WithinGroupTrafficDecisionPolicy:select(
             picture(),inventory(requirement,{protectA.identity,protectB.identity}),{protectA,protectB})
         equal(decision.selected,nil)
         equal(decision.waitForPreferenceEvidence,true)
