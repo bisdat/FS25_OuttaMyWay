@@ -135,7 +135,7 @@ Because the reminder communicates product operational status rather than Operati
 
 > **Disabled Startup Reminder != Operational Player Message**
 
-The startup reminder duration is intentionally longer than the current shutdown hand-back warning. The latter follows an explicit player action; the startup reminder must remain readable through entry into gameplay. TEST 0.4.2.7 established that GIANTS blinking means nominal warning lifetime is not equivalent to continuously readable exposure.
+The startup reminder duration is intentionally longer than the current shutdown hand-back warning. The latter follows an explicit player action; the startup reminder must remain readable through entry into gameplay because GIANTS blinking means nominal warning lifetime is not equivalent to continuously readable exposure.
 
 > **Warning Lifetime != Readable Exposure**
 
@@ -253,7 +253,7 @@ That file is outside the `CONFIGURATION` Jurisdiction:
 - its absence MUST mean DIAGNOSTIC off;
 - it has no player-facing migration guarantee.
 
-Issue #303 owns that engineering-control mechanism.
+The engineering-only control remains outside this Configuration Jurisdiction and is governed by its own diagnostic/logging mechanism.
 
 > **Shared Persistence Location != Shared Configuration Contract**
 
@@ -305,7 +305,7 @@ The current implementation establishes the supported local-profile state/persist
 - [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) injects exactly the three supported semantic choices into GIANTS `InGameMenuSettingsFrame.generalSettingsLayout` and writes changes only through Configuration setters. It owns no persistence, Runtime, top-level menu page or map-lifecycle authority.
 - [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) is a product-shell mission listener that consumes resolved `enabled=false` at mission load, waits for the GIANTS warning surface, presents the localized 5000 ms Disabled Startup Reminder once, and then becomes inert for that mission. It does not consume `hudVisible` and does not require Runtime.
 
-Issue #139 still owns the remaining Configuration integration and Reality validation. The General Settings Configuration Section provides the supported player interaction surface and master enablement is symmetric: durable `enabled -> true` triggers a fresh Runtime bootstrap from current GIANTS Reality. `hudVisible` remains intentionally without the full #89 Operational Player Message consumer.
+The General Settings Configuration Section provides the supported player interaction surface and master enablement is symmetric: durable `enabled -> true` triggers a fresh Runtime bootstrap from current GIANTS Reality. `hudVisible` remains intentionally without the full Operational Player Message consumer; GUI Architecture owns that responsibility and Issue #89 tracks the unresolved design and implementation work.
 
 The existing `scripts/config.lua` file is not a Configuration implementation. It continues to own root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
 
