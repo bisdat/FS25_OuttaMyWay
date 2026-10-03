@@ -371,6 +371,7 @@ Situation Assessment determines representation fitness for the current question.
 | [`scripts/representation/CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua) | `REALISES` |
 | [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua) | `REALISES` |
 | [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) | `REALISES` |
+| [`scripts/representation/BoundaryDemandRepresentation.lua`](../scripts/representation/BoundaryDemandRepresentation.lua) | `REALISES` |
 | [`scripts/observation/CurrentPhysicalPoseSource.lua`](../scripts/observation/CurrentPhysicalPoseSource.lua) | `REALISES` |
 
 ## Implementation traceability
