@@ -82,7 +82,7 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
         assert token in selector
     assert "lowerPrecedenceConstraintFallback" not in policy
     assert "lowerPrecedenceConstraintFallback" not in selector
-    assert "TrafficPolicemanDecisionPolicy:select" in selector
+    assert "WithinGroupTrafficDecisionPolicy:select" in selector
 
 
 def test_phase13_runtime_uses_one_portfolio_outside_protected_resolution_horizons():

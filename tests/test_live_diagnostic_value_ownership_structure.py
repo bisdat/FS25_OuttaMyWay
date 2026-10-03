@@ -16,7 +16,7 @@ RETIRED_DIAGNOSTICS = (
     "scripts/diagnostics/FollowerPacingHud.lua",
 )
 
-def test_issue152_completed_question_diagnostics_are_not_shipped_or_wired():
+def test_completed_question_diagnostics_are_not_shipped_or_wired():
     main = read("scripts/main.lua")
     runtime = read("scripts/runtime/Runtime.lua")
     coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
@@ -48,7 +48,7 @@ def test_issue152_completed_question_diagnostics_are_not_shipped_or_wired():
     assert "self.trace" not in runtime
     assert "runtime.trace" not in validator
 
-def test_issue152_promoted_knowledge_survives_probe_retirement():
+def test_promoted_knowledge_survives_probe_retirement():
     main = read("scripts/main.lua")
     situation = read("scripts/assessment/SituationAssessment.lua")
     resolution_margin = read("scripts/assessment/ResolutionMarginDemandAssessment.lua")
@@ -74,7 +74,7 @@ def test_issue152_promoted_knowledge_survives_probe_retirement():
     assert "resolveField" in live_jobs
     assert "jobToken" in live_jobs
 
-def test_issue152_native_drive_research_knowledge_survives_runtime_probe_retirement():
+def test_native_drive_research_knowledge_survives_runtime_probe_retirement():
     decision = read("docs/DECISION_LOG.md")
     d0137 = read("docs/research/prototypes/PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md")
     d0138 = read("docs/research/prototypes/PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md")
@@ -83,7 +83,7 @@ def test_issue152_native_drive_research_knowledge_survives_runtime_probe_retirem
     assert "Result — falsified" in d0137
     assert "Fast falsification" in d0138
 
-def test_issue152_version_hud_remains_temporary_development_build_identity_only():
+def test_product_status_indicator_currently_uses_version_hud_surface():
     main = read("scripts/main.lua")
     config = read("scripts/config.lua")
     hud = read("scripts/diagnostics/VersionHud.lua")
@@ -101,7 +101,7 @@ def test_issue152_version_hud_remains_temporary_development_build_identity_only(
     for name in ("VERSION_HUD_ENABLED","VERSION_HUD_X","VERSION_HUD_Y","VERSION_HUD_TEXT_SIZE"):
         assert re.search(rf"OuttaMyWay\.{name}\b", config) is None
 
-def test_issue152_stage2a_passive_diagnostics_are_ephemeral_and_do_not_own_runtime_history():
+def test_passive_diagnostics_are_ephemeral_and_do_not_own_runtime_history():
     main = read("scripts/main.lua")
     runtime = read("scripts/runtime/Runtime.lua")
     coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
@@ -134,7 +134,7 @@ def test_issue152_stage2a_passive_diagnostics_are_ephemeral_and_do_not_own_runti
 
 
 
-def test_issue286_semantic_motion_evidence_is_not_named_as_diagnostic():
+def test_semantic_motion_evidence_is_not_named_as_diagnostic():
     source = read("scripts/observation/LiveObservationSource.lua")
     interaction = read("scripts/observation/LiveInteractionObservation.lua")
     situation = read("scripts/assessment/SituationAssessment.lua")

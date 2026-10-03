@@ -25,7 +25,7 @@ def test_trajectory_conflict_calibration_is_module_owned_without_situation_couri
         assert token not in config
         assert f"OuttaMyWay.{token}" not in situation
 
-def test_issue87_trajectory_conflict_assessment_owns_exact_accepted_values():
+def test_trajectory_conflict_assessment_owns_exact_accepted_values():
     assessment = read("scripts/assessment/TrajectoryConflictAssessment.lua")
     required = (
         "local TRAJECTORY_MIN_SAMPLE_DISTANCE_M=0.10",

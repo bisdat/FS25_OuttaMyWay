@@ -152,7 +152,7 @@ function Lifecycle.ensureFollowerBoundaryObligation(runtime,commitmentId,bridge,
             governingPurpose=bridge.governingPurpose},
         ownerCommitmentId=commitmentId,
         requiredOutcome={kind="FOLLOWER_BOUNDARY_ORDERING_PRESERVED_UNTIL_POSITIVE_RETIREMENT",pairKey=bridge.pairKey},
-        requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
+        requiredAuthority={capabilities={"REGULATE_SPEED"},withinGroupTrafficPolicy=true},
         evidenceContract={kind="POSITIVE_CURRENT_RELATIONSHIP_INVERSE_OR_PURPOSE_SUCCESSION",absenceDoesNotRetire=true},
         ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true,
         creationEvidence=evidence or {kind="FOLLOWER_BOUNDARY_PURPOSE_ADMITTED"}

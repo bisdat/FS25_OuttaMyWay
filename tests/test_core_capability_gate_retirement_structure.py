@@ -12,7 +12,7 @@ def active_lua():
         if "archive" not in path.parts
     }
 
-def test_issue87_core_capability_pseudo_state_is_absent_but_field_world_negative_authority_annotation_remains():
+def test_core_capability_pseudo_state_is_absent_but_field_world_negative_authority_annotation_remains():
     source = active_lua()
     for token in (
         "CONTROL_AUTHORITY_ENABLED",
@@ -38,7 +38,7 @@ def test_issue87_core_capability_pseudo_state_is_absent_but_field_world_negative
         if relative not in expected_field_world_counts:
             assert "controlAuthorityEnabled" not in text, relative
 
-def test_issue87_follower_boundary_is_unconditional_current_candidate_path():
+def test_follower_boundary_is_unconditional_current_candidate_path():
     support = read("scripts/candidates/LiveTrafficCandidateSupport.lua")
     assessment = read("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
     authority = read("scripts/authority/RegulationBoundedAuthority.lua")
@@ -49,7 +49,7 @@ def test_issue87_follower_boundary_is_unconditional_current_candidate_path():
     assert "FOLLOWER_BOUNDARY_OWNER_TAG" in authority
     assert "applyFollowerBoundaryDecision" in lifecycle
 
-def test_issue87_cooperative_passage_is_evidence_and_authority_gated_not_feature_gated():
+def test_cooperative_passage_is_evidence_and_authority_gated_not_feature_gated():
     planner = read("scripts/candidates/LocalPassagePlanner.lua")
     control = read("scripts/control/CooperativePassageControl.lua")
     runtime = read("scripts/runtime/Runtime.lua")
@@ -62,7 +62,7 @@ def test_issue87_cooperative_passage_is_evidence_and_authority_gated_not_feature
     assert "COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH" in runtime
     assert "transitionCooperativePassageResolution" in runtime
 
-def test_issue87_control_permission_is_typed_bounded_topology():
+def test_control_permission_is_typed_bounded_topology():
     runtime = read("scripts/runtime/Runtime.lua")
     dispatcher = read("scripts/control/LiveControlDispatcher.lua")
     bounded = read("scripts/authority/BoundedAuthority.lua")
@@ -84,7 +84,7 @@ def test_issue87_control_permission_is_typed_bounded_topology():
     assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
 
 
-def test_issue87_passive_diagnostics_report_actual_bounded_dispatch_not_pseudo_authority_state():
+def test_passive_diagnostics_report_actual_bounded_dispatch_not_pseudo_authority_state():
     validator = read("scripts/diagnostics/PassiveLiveValidator.lua")
     assert "boundedControlDispatchStatus=dispatch.status" in validator
     assert "boundedControlRequestId=request and request.identity or nil" in validator

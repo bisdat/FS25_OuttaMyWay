@@ -7,7 +7,7 @@ def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_issue87_entity_local_shape_evidence_owns_shared_resolution_calibration():
+def test_entity_local_shape_evidence_owns_shared_resolution_calibration():
     config = read("scripts/config.lua")
     evidence = read("scripts/representation/EntityLocalShapeEvidence.lua")
     cache = read("scripts/representation/AssemblyRepresentationCache.lua")
@@ -32,7 +32,7 @@ def test_issue87_entity_local_shape_evidence_owns_shared_resolution_calibration(
     assert "sphereDifference(" not in current
 
 
-def test_issue87_entity_local_shape_evidence_does_not_acquire_representation_product_authority():
+def test_entity_local_shape_evidence_does_not_acquire_representation_product_authority():
     evidence = read("scripts/representation/EntityLocalShapeEvidence.lua")
 
     for forbidden in (
@@ -50,7 +50,7 @@ def test_issue87_entity_local_shape_evidence_does_not_acquire_representation_pro
         assert forbidden not in evidence
 
 
-def test_issue87_shared_evidence_precedes_both_representation_products_in_all_loaders():
+def test_shared_evidence_precedes_both_representation_products_in_all_loaders():
     main = read("scripts/main.lua")
     harness = read("tests/replacement_core/run.lua")
     module = "scripts/representation/EntityLocalShapeEvidence.lua"
@@ -64,7 +64,7 @@ def test_issue87_shared_evidence_precedes_both_representation_products_in_all_lo
         assert loader.index(module) < loader.index(cache) < loader.index(current)
 
 
-def test_issue87_entity_local_shape_evidence_has_independent_behavioural_witnesses():
+def test_entity_local_shape_evidence_has_independent_behavioural_witnesses():
     harness = read("tests/replacement_core/run.lua")
 
     assert 'test("Entity-Local Shape Evidence preserves coherence and root-alias discrimination"' in harness
@@ -78,7 +78,7 @@ def test_issue87_entity_local_shape_evidence_has_independent_behavioural_witness
     assert "equal(alias.accepted,false)" in harness
 
 
-def test_issue87_historical_placement_contracts_no_longer_freeze_resolved_shape_evidence():
+def test_historical_placement_contracts_no_longer_freeze_resolved_shape_evidence():
     old55 = read("tests/test_assembly_discovery_bound_ownership_structure.py")
     old56 = read("tests/test_representation_cache_bound_ownership_structure.py")
 

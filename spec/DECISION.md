@@ -303,7 +303,7 @@ Purpose-specific contracts such as [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAG
 | --- | --- |
 | [`scripts/decision/DecisionSelector.lua`](../scripts/decision/DecisionSelector.lua) | `REALISES` |
 | [`scripts/decision/ProspectivePortfolioDecisionPolicy.lua`](../scripts/decision/ProspectivePortfolioDecisionPolicy.lua) | `REALISES` |
-| [`scripts/decision/TrafficPolicemanDecisionPolicy.lua`](../scripts/decision/TrafficPolicemanDecisionPolicy.lua) | `REALISES` |
+| [`scripts/decision/WithinGroupTrafficDecisionPolicy.lua`](../scripts/decision/WithinGroupTrafficDecisionPolicy.lua) | `REALISES` |
 | [`scripts/contracts/DecisionRecord.lua`](../scripts/contracts/DecisionRecord.lua) | `REALISES` |
 
 ## Implementation traceability
@@ -314,7 +314,7 @@ Current implementation routes include:
 
 - [`scripts/decision/DecisionSelector.lua`](../scripts/decision/DecisionSelector.lua) — current integration of mandatory-admissibility filtering, portfolio-scope selection, local policy, explicit non-selection and DecisionRecord publication;
 - [`scripts/decision/ProspectivePortfolioDecisionPolicy.lua`](../scripts/decision/ProspectivePortfolioDecisionPolicy.lua) — current cross-group compatibility/precedence policy for prospective portfolios;
-- [`scripts/decision/TrafficPolicemanDecisionPolicy.lua`](../scripts/decision/TrafficPolicemanDecisionPolicy.lua) — current within-group traffic preference/exhaustion policy; and
+- [`scripts/decision/WithinGroupTrafficDecisionPolicy.lua`](../scripts/decision/WithinGroupTrafficDecisionPolicy.lua) — current within-group traffic preference/exhaustion policy; and
 - [`scripts/contracts/DecisionRecord.lua`](../scripts/contracts/DecisionRecord.lua) — current semantic Decision product representation.
 
 Current policy helper names and ordering are implementation topology. The Specification owns the semantic distinction between supported admissibility, compatibility/preference, explicit non-selection and downstream transition intent.

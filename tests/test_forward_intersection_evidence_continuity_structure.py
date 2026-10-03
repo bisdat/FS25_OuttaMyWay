@@ -128,7 +128,7 @@ def test_forward_intersection_never_physically_regulates_current_corner_incumben
 
 def test_category_1_corner_incumbency_is_generic_regulation_ineligibility():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    policy = (ROOT / "scripts" / "decision" / "TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+    policy = (ROOT / "scripts" / "decision" / "WithinGroupTrafficDecisionPolicy.lua").read_text(encoding="utf-8")
 
     assert 'if operation=="APPLY" and currentCornerIncumbency(picture,assemblyId)~=nil then' in authority
     assert '"CATEGORY_1_CORNER_INCUMBENT_REQUIRES_NATIVE_EVACUATION"' in authority
@@ -142,7 +142,7 @@ def test_category_1_corner_incumbency_is_generic_regulation_ineligibility():
     assert '"REGULATE_ONLY_NON_CORNER_OCCUPANT"' in policy
     assert '"BOTH_REGULATED_PARTICIPANTS_REQUIRE_CATEGORY_1_CORNER_EVACUATION"' in policy
 
-def test_issue388_category2_turn_completion_contract():
+def test_category2_turn_completion_contract():
     boundary = (ROOT / "scripts" / "assessment" / "BoundaryDemandAssessment.lua").read_text(encoding="utf-8")
     candidate = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     current = (ROOT / "scripts" / "assessment" / "CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")

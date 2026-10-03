@@ -1,12 +1,12 @@
---- Traffic Policeman sequential Decision policy.
+--- Within-group traffic preference/exhaustion Decision policy.
 -- Implements the settled sequential Decision ordering only. It does not derive traffic evidence,
 -- assign roles, construct Vulnerable Space/Convergent Projection or actuate Control.
 -- Specification Jurisdictions: `DECISION`
 
-OuttaMyWay.TrafficPolicemanDecisionPolicy = {}
-local Policy = OuttaMyWay.TrafficPolicemanDecisionPolicy
+OuttaMyWay.WithinGroupTrafficDecisionPolicy = {}
+local Policy = OuttaMyWay.WithinGroupTrafficDecisionPolicy
 
-Policy.KIND = "TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY"
+Policy.KIND = "WITHIN_GROUP_TRAFFIC_PREFERENCE_EXHAUSTION"
 
 local orderedCapabilities = {
     "CONTINUE_OBSERVATION",
@@ -24,26 +24,26 @@ local function policyBoundary(candidateInventory)
     local policy = type(boundary) == "table" and boundary.decisionPolicy or nil
     if type(policy) ~= "table" or policy.kind ~= Policy.KIND then return nil end
     if type(policy.governingRequirementKey) ~= "string" or policy.governingRequirementKey == "" then
-        error("Traffic Policeman Decision policy requires governingRequirementKey", 3)
+        error("Within-group traffic Decision policy requires governingRequirementKey", 3)
     end
     return policy
 end
 
 local function candidateMetadata(candidate, governingRequirementKey)
     local basis = candidate.evidenceBasis or {}
-    local metadata = basis.trafficPolicemanPreference
+    local metadata = basis.withinGroupTrafficPreference
     if type(metadata) ~= "table" then
-        error("Traffic Policeman primary candidate lacks trafficPolicemanPreference evidence", 3)
+        error("Within-group traffic primary candidate lacks withinGroupTrafficPreference evidence", 3)
     end
     if metadata.governingRequirementKey ~= governingRequirementKey then
-        error("Traffic Policeman candidate governing requirement does not match Candidate support boundary", 3)
+        error("Within-group traffic candidate governing requirement does not match Candidate support boundary", 3)
     end
     if metadata.primaryResolution ~= true then
-        error("Traffic Policeman sequential primary policy received a non-primary candidate", 3)
+        error("Within-group traffic sequential primary policy received a non-primary candidate", 3)
     end
     local rank = rankByCapability[candidate.capability]
     if rank == nil then
-        error("Traffic Policeman primary candidate uses unsupported capability " .. tostring(candidate.capability), 3)
+        error("Within-group traffic primary candidate uses unsupported capability " .. tostring(candidate.capability), 3)
     end
     return metadata, rank
 end

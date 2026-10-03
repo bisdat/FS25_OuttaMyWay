@@ -7,7 +7,7 @@ def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_issue87_hierarchy_scan_budgets_belong_to_distinct_budget_domains():
+def test_hierarchy_scan_budgets_belong_to_distinct_budget_domains():
     config = read("scripts/config.lua")
     cache = read("scripts/representation/AssemblyRepresentationCache.lua")
     current = read("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
@@ -23,7 +23,7 @@ def test_issue87_hierarchy_scan_budgets_belong_to_distinct_budget_domains():
     assert "local budget=CURRENT_ASSEMBLY_CANDIDATE_HIERARCHY_SCAN_BUDGET" in current
 
 
-def test_issue87_revalidation_horizons_belong_to_distinct_validity_domains():
+def test_revalidation_horizons_belong_to_distinct_validity_domains():
     config = read("scripts/config.lua")
     cache = read("scripts/representation/AssemblyRepresentationCache.lua")
     current = read("scripts/representation/CurrentPhysicalConflictRepresentation.lua")

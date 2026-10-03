@@ -11,7 +11,7 @@ load("scripts/contracts/ConstraintVerdictSet.lua")
 load("scripts/contracts/DecisionRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/identity/IdentityRegistry.lua")
-load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
+load("scripts/decision/WithinGroupTrafficDecisionPolicy.lua")
 load("scripts/decision/ProspectivePortfolioDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
 
