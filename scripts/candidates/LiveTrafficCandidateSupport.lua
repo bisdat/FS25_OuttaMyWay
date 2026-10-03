@@ -95,7 +95,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             progressActuationOwnership={assemblyIds=plan.assemblyIds},
             effectiveActuationComposition={identity="cooperative-passage-composition:"..tostring(plan.conflictIdentity)..":"..pictureId,epoch=pictureValues.epoch,relevantAssemblyIds=plan.assemblyIds,entries=compositionEntries},
-            trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
+            withinGroupTrafficPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
                 CONTINUE_OBSERVATION=cooperativePassageBandExhaustion(pictureId,governingRequirementKey,"CONTINUE_OBSERVATION","Established conflict is already locally actionable and Candidate search found a sufficient supported passage expression"),
                 REGULATE_SPEED=cooperativePassageBandExhaustion(pictureId,governingRequirementKey,"REGULATE_SPEED","Regulation preserves Action Space but does not itself resolve the Established opposed spatial incompatibility"),
                 HOLD=cooperativePassageBandExhaustion(pictureId,governingRequirementKey,"HOLD","In-path Hold alone does not create a Stable Passing Relationship")
@@ -445,7 +445,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             },
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
             progressActuationOwnership={assemblyIds={action.regulatedAssemblyId}},effectiveActuationComposition=composition,
-            trafficPolicemanPreference={
+            withinGroupTrafficPreference={
                 primaryResolution=true,governingRequirementKey=governingRequirementKey,
                 exhaustionEvidence={
                     CONTINUE_OBSERVATION={
@@ -506,7 +506,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
                 regulatedAssemblyId=action.regulatedAssemblyId,protectedAssemblyId=protectedAssemblyId
             },
             requiredOutcome={kind=outcomeKind,conflictIdentity=relation.identity},
-            requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
+            requiredAuthority={capabilities={"REGULATE_SPEED"},withinGroupTrafficPolicy=true},
             evidenceContract={kind=evidenceKind,absenceDoesNotRetire=not forward and not corner and not playerControlled},
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
@@ -578,7 +578,7 @@ local function publishActionSpaceRegulationPicture(self,picture,snapshot,item)
     local specification=makeActionSpaceRegulationCandidate(pictureId,values,item,requirement,existing,representationId)
     values.candidateSupportEvidence={
         complete=true,
-        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement}},
         candidateSpecifications={specification},provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
     }
     local action=item.action
@@ -646,7 +646,7 @@ local function followerObligation(record)
             leaderReferenceKey=record.leaderReferenceKey,followerReferenceKey=record.followerReferenceKey,
             governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING"},
         requiredOutcome={kind="FOLLOWER_BOUNDARY_ORDERING_PRESERVED_UNTIL_POSITIVE_RETIREMENT",pairKey=record.pairKey},
-        requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
+        requiredAuthority={capabilities={"REGULATE_SPEED"},withinGroupTrafficPolicy=true},
         evidenceContract={kind="POSITIVE_CURRENT_RELATIONSHIP_INVERSE_OR_PURPOSE_SUCCESSION",absenceDoesNotRetire=true},
         ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
     }
@@ -680,7 +680,7 @@ local function followerSpecification(pictureId,pictureValues,record,representati
         governingBasis={responsibilityKey=requirement,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
         maintainsExistingCommitment=existing or (#(pictureValues.commitmentContext or {})==1),
         existingProgressMayContinue=true,
-        trafficPolicemanPreference=preference,
+        withinGroupTrafficPreference=preference,
         followerBoundaryBridge={
             action=operation,pairKey=record.pairKey,operationId=record.operationId,
             leaderAssemblyId=record.leaderAssemblyId,followerAssemblyId=record.followerAssemblyId,
@@ -739,7 +739,7 @@ local function publishFollowerBoundaryPicture(self,picture,snapshot,record)
     local representationId=followerRepresentation(values,pictureId,record)
     local specification,requirement=followerSpecification(pictureId,values,record,representationId)
     local decisionPolicy=nil
-    if specification.capability~="CONTINUE_UNCHANGED" then decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement} end
+    if specification.capability~="CONTINUE_UNCHANGED" then decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement} end
     values.candidateSupportEvidence={
         complete=true,
         supportBoundary={mode="FOLLOWER_BOUNDARY",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="CURRENT_ADJACENT_FOLLOWING_WITH_PROVISIONAL_DEMAND_SEED",decisionPolicy=decisionPolicy},
@@ -953,7 +953,7 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
     return {
         supportBoundary={mode="CORNER_RIGHT_OF_WAY",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,
             controlAuthority="FIXED_INTENT_REVELATION_CREEP",boundedScope="CURRENT_SHARED_STRUCTURAL_CORNER_COMPETING_DEMAND",
-            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+            decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement}},
         candidateSpecifications=specifications,
         representationFitness=projectedFitnessAdditions(values,baseline),
         provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,
@@ -1007,7 +1007,7 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
             mode="SHARED_CATEGORY_2_DEMAND",supportedCandidateClasses={"REGULATE_SPEED"},
             physicalCapabilitiesImplemented=true,controlAuthority="FIXED_INTENT_REVELATION_CREEP",
             boundedScope="CURRENT_SHARED_CATEGORY_2_BOUNDARY_DEMAND_OR_INCUMBENT_WAITING_FOR_EVIDENCE",
-            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}
+            decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement}
         },
         candidateSpecifications=specifications,
         representationFitness=projectedFitnessAdditions(values,baseline),
@@ -1032,7 +1032,7 @@ local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPict
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
     return {
-        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        supportBoundary={mode="ACTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_WITH_TRANSITIONAL_NATIVE_INTENT_REVELATION",decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement}},
         candidateSpecifications={specification},
         representationFitness=projectedFitnessAdditions(values,baseline),
         provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="ACTION_SPACE_REGULATION"}
@@ -1067,7 +1067,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         local specification,requirement=followerSpecification(targetPictureId,values,record,representationId)
         local decisionPolicy=nil
         if specification.capability~="CONTINUE_UNCHANGED" then
-            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}
+            decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=requirement}
         end
         return {
             supportBoundary={mode="FOLLOWER_BOUNDARY",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="CURRENT_ADJACENT_FOLLOWING_WITH_PROVISIONAL_DEMAND_SEED",decisionPolicy=decisionPolicy},
@@ -1129,7 +1129,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
                 logInfo("COOPERATIVE_PASSAGE_SUPPORTED","conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
                     tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tostring(targetPictureId))
                 return {
-                    supportBoundary={mode="COOPERATIVE_PASSAGE",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
+                    supportBoundary={mode="COOPERATIVE_PASSAGE",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
                     candidateSpecifications={specification},
                     representationFitness={},
                     provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",operatorCommandRequired=false}
@@ -1256,7 +1256,7 @@ function Support:publishDecisionPicture(picture,snapshot)
         local specification=makeCooperativePassageCandidate(pictureId,values,plan,governingRequirementKey)
         values.candidateSupportEvidence={
             complete=true,
-            supportBoundary={mode="COOPERATIVE_PASSAGE",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
+            supportBoundary={mode="COOPERATIVE_PASSAGE",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
             candidateSpecifications={specification},
             provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",operatorCommandRequired=false}
         }

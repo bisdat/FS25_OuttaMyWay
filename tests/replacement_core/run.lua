@@ -105,7 +105,7 @@ load("scripts/constraints/evaluators/ResponsibilityCompatibilityConstraint.lua")
 load("scripts/constraints/evaluators/CommitmentPreconditionsConstraint.lua")
 load("scripts/constraints/evaluators/EffectiveActuationCompositionConstraint.lua")
 load("scripts/constraints/ConstraintEngine.lua")
-load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
+load("scripts/decision/WithinGroupTrafficDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
 load("tests/replay/ConformanceAssertions.lua")
 load("tests/replay/ReplayRunner.lua")
@@ -1112,16 +1112,16 @@ test("comparison cost is applied only after mandatory admissibility",function()
 end)
 
 local function trafficPolicy(requirementKey)
-    return {kind="TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY",governingRequirementKey=requirementKey}
+    return {kind="WITHIN_GROUP_TRAFFIC_PREFERENCE_EXHAUSTION",governingRequirementKey=requirementKey}
 end
 
 local function trafficPreference(candidate,requirementKey)
-    candidate.evidenceBasis.trafficPolicemanPreference={
+    candidate.evidenceBasis.withinGroupTrafficPreference={
         primaryResolution=true,
         governingRequirementKey=requirementKey,
         exhaustionEvidence={}
     }
-    return candidate.evidenceBasis.trafficPolicemanPreference
+    return candidate.evidenceBasis.withinGroupTrafficPreference
 end
 
 local function bandExhaustion(pictureId,requirementKey,capability)
@@ -1137,7 +1137,7 @@ test("Traffic Policeman Decision selects Observe before cheaper later bands",fun
     trafficPreference(escalate,requirement)
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture({escalate,observe},{decisionPolicy=trafficPolicy(requirement)}))
     equal(result.decision.selectedCandidateId,candidateByCapability(result,"CONTINUE_OBSERVATION").identity)
-    equal(result.decision.comparisonBasis.rule,"TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY")
+    equal(result.decision.comparisonBasis.rule,"WITHIN_GROUP_TRAFFIC_PREFERENCE_EXHAUSTION")
 end)
 
 test("Traffic Policeman later band waits without explicit same-picture exhaustion evidence",function()
@@ -1325,7 +1325,7 @@ test("Corner Right-of-Way never regulates a participant occupying another Catego
         assemblyId="AS-S416",engagement=true,cornerIncumbent=false,
         currentConstrainedCornerOccupancy=false,timeToCornerSec=2
     },requirement,"REP-CORNER-CONDOR")
-    regulateCondor.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+    regulateCondor.evidenceBasis.withinGroupTrafficPreference.cornerRightOfWay.regulatedParticipant={
         assemblyId="AS-CONDOR",engagement=true,cornerIncumbent=true,
         currentConstrainedCornerOccupancy=true,occupiedCornerKey="corner:other"
     }
@@ -1333,7 +1333,7 @@ test("Corner Right-of-Way never regulates a participant occupying another Catego
         assemblyId="AS-CONDOR",engagement=true,cornerIncumbent=true,
         currentConstrainedCornerOccupancy=true,timeToCornerSec=nil
     },requirement,"REP-CORNER-S416")
-    regulateS416.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+    regulateS416.evidenceBasis.withinGroupTrafficPreference.cornerRightOfWay.regulatedParticipant={
         assemblyId="AS-S416",engagement=true,cornerIncumbent=false,
         currentConstrainedCornerOccupancy=false
     }
@@ -1352,13 +1352,13 @@ test("Corner Right-of-Way waits when both possible regulated participants requir
     local regulateA=cornerPolicyCandidate("corner-both-A","AS-A","AS-B",{
         assemblyId="AS-B",engagement=true,cornerIncumbent=true,currentConstrainedCornerOccupancy=true
     },requirement,"REP-CORNER-BOTH-A")
-    regulateA.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+    regulateA.evidenceBasis.withinGroupTrafficPreference.cornerRightOfWay.regulatedParticipant={
         assemblyId="AS-A",cornerIncumbent=true,currentConstrainedCornerOccupancy=true
     }
     local regulateB=cornerPolicyCandidate("corner-both-B","AS-B","AS-A",{
         assemblyId="AS-A",engagement=true,cornerIncumbent=true,currentConstrainedCornerOccupancy=true
     },requirement,"REP-CORNER-BOTH-B")
-    regulateB.evidenceBasis.trafficPolicemanPreference.cornerRightOfWay.regulatedParticipant={
+    regulateB.evidenceBasis.withinGroupTrafficPreference.cornerRightOfWay.regulatedParticipant={
         assemblyId="AS-B",cornerIncumbent=true,currentConstrainedCornerOccupancy=true
     }
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(cornerPolicyPicture({regulateA,regulateB},requirement))

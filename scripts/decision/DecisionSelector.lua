@@ -128,9 +128,9 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         end
     end
 
-    local trafficPolicy=nil
+    local withinGroupTrafficPolicy=nil
     if not portfolioSelectionMissing and not portfolioHasNoAdmissible then
-        trafficPolicy=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(operationalPicture,inventoryForLocalPolicy,selectable)
+        withinGroupTrafficPolicy=OuttaMyWay.WithinGroupTrafficDecisionPolicy:select(operationalPicture,inventoryForLocalPolicy,selectable)
     end
     -- Bypass alternatives are already mandatory-admissible. Interior reserve
     -- ranks the two fixed sides only; it does not rank Bypass above other purposes.
@@ -144,7 +144,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
             return aa.guide.side>bb.guide.side
         end)
     end
-    local selected=trafficPolicy and trafficPolicy.selected or selectable[1]
+    local selected=withinGroupTrafficPolicy and withinGroupTrafficPolicy.selected or selectable[1]
     local commitmentAction
     local nonIntervention
     local explanation
@@ -152,11 +152,11 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         commitmentAction="WAIT"
         nonIntervention={explicit=true,classification="PROSPECTIVE_PORTFOLIO_POLICY_UNRESOLVED",reason=portfolioPolicyReason}
         explanation="Prospective Decision Portfolio contained mandatory-admissible alternatives but compatibility policy could not identify one governing support group: "..tostring(portfolioPolicyReason or "UNSPECIFIED")
-    elseif trafficPolicy~=nil and trafficPolicy.waitForPreferenceEvidence==true then
+    elseif withinGroupTrafficPolicy~=nil and withinGroupTrafficPolicy.waitForPreferenceEvidence==true then
         selected=nil
         commitmentAction="WAIT"
-        nonIntervention={explicit=true,classification="WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE",governingRequirementKey=trafficPolicy.governingRequirementKey,blockedCandidates=trafficPolicy.blocked,selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
-        explanation="Traffic Policeman later-band candidate lacks explicit same-picture exhaustion evidence for every earlier preference band"
+        nonIntervention={explicit=true,classification="WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE",governingRequirementKey=withinGroupTrafficPolicy.governingRequirementKey,blockedCandidates=withinGroupTrafficPolicy.blocked,selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
+        explanation="within-group traffic later-band candidate lacks explicit same-picture exhaustion evidence for every earlier preference band"
     elseif selected~=nil then
         if selected.capability=="CONTINUE_OBSERVATION" then
             if selected.evidenceBasis and selected.evidenceBasis.maintainsExistingCommitment==true and selected.evidenceBasis.existingProgressMayContinue==true then commitmentAction="MAINTAIN" else commitmentAction="WAIT" end
@@ -171,7 +171,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         if portfolioChoice~=nil then
             explanation="Prospective Decision Portfolio compatibility policy selected the governing support group from mandatory-admissible alternatives; local group policy then selected within that scope"
         else
-            explanation=trafficPolicy~=nil and "Selected earliest supportable Traffic Policeman preference band after explicit earlier-band exhaustion, then minimum comparison cost within that band" or "Selected minimum-cost candidate after every mandatory verdict passed"
+            explanation=withinGroupTrafficPolicy~=nil and "Selected earliest supportable within-group traffic preference band after explicit earlier-band exhaustion, then minimum comparison cost within that band" or "Selected minimum-cost candidate after every mandatory verdict passed"
         end
     elseif #selectedUnresolved>0 then
         commitmentAction="WAIT"
@@ -185,7 +185,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
 
     local ranked={}
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(selectable) do ranked[#ranked+1]={candidateId=candidate.identity,comparisonCost=candidate.comparisonCost,capability=candidate.capability} end
-    local localBasis=trafficPolicy and {rule=trafficPolicy.rule,governingRequirementKey=trafficPolicy.governingRequirementKey,rankedCandidates=trafficPolicy.ranked,blockedCandidates=trafficPolicy.blocked or {}} or {rule="MINIMUM_COMPARISON_COST_AFTER_MANDATORY_PASS",rankedCandidates=ranked}
+    local localBasis=withinGroupTrafficPolicy and {rule=withinGroupTrafficPolicy.rule,governingRequirementKey=withinGroupTrafficPolicy.governingRequirementKey,rankedCandidates=withinGroupTrafficPolicy.ranked,blockedCandidates=withinGroupTrafficPolicy.blocked or {}} or {rule="MINIMUM_COMPARISON_COST_AFTER_MANDATORY_PASS",rankedCandidates=ranked}
     local comparisonBasis=localBasis
     if portfolioChoice~=nil then
         comparisonBasis={

@@ -743,3 +743,26 @@ def test_retired_recovery_tail_vocabulary_absent_from_sourced_production():
         for token in retired:
             assert token not in source, (path, token)
 
+def test_within_group_traffic_decision_policy_uses_current_responsibility_vocabulary():
+    main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
+    policy = (ROOT / "scripts" / "decision" / "WithinGroupTrafficDecisionPolicy.lua").read_text(encoding="utf-8")
+    support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    selector = (ROOT / "scripts" / "decision" / "DecisionSelector.lua").read_text(encoding="utf-8")
+    current = main + policy + support + lifecycle + selector
+
+    for required in (
+        "WithinGroupTrafficDecisionPolicy.lua",
+        "WITHIN_GROUP_TRAFFIC_PREFERENCE_EXHAUSTION",
+        "withinGroupTrafficPreference",
+        "withinGroupTrafficPolicy=true",
+    ):
+        assert required in current
+
+    for stale in ("TrafficPoliceman", "trafficPoliceman", "TRAFFIC_POLICEMAN"):
+        offenders = []
+        for path in _loaded_production_lua_paths():
+            if stale in path.read_text(encoding="utf-8"):
+                offenders.append(path.relative_to(ROOT).as_posix())
+        assert offenders == []
+

@@ -651,19 +651,19 @@ def test_v4742_traffic_policeman_decision_policy_current_implementation_contract
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     selector=(ROOT/"scripts"/"decision"/"DecisionSelector.lua").read_text(encoding="utf-8")
-    policy=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+    policy=(ROOT/"scripts"/"decision"/"WithinGroupTrafficDecisionPolicy.lua").read_text(encoding="utf-8")
     passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
 
-    assert 'TrafficPolicemanDecisionPolicy.lua' in main
-    assert main.index('TrafficPolicemanDecisionPolicy.lua') < main.index('DecisionSelector.lua')
-    assert 'TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY' in policy
+    assert 'WithinGroupTrafficDecisionPolicy.lua' in main
+    assert main.index('WithinGroupTrafficDecisionPolicy.lua') < main.index('DecisionSelector.lua')
+    assert 'WITHIN_GROUP_TRAFFIC_PREFERENCE_EXHAUSTION' in policy
     for capability in ('CONTINUE_OBSERVATION','REGULATE_SPEED','HOLD','REPOSITION','ESCALATE'):
         assert capability in policy
     assert 'STALE_OPERATIONAL_PICTURE' in policy
     assert 'completeSupportableAutonomousSpace' in policy
     assert 'participantComplete' in policy
     assert 'WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE' in selector
-    assert 'TrafficPolicemanDecisionPolicy:select' in selector
+    assert 'WithinGroupTrafficDecisionPolicy:select' in selector
     assert 'PASSIVE_LIVE_ZERO_CONTROL' in passive
 
 
@@ -1797,7 +1797,7 @@ def test_forward_intersection_is_situation_owned_and_consumed_without_geometry_r
     assert "FORWARD_INTERSECTION_REGULATION_ADMITTED" in authority
     assert "pointSegmentDistance" not in candidates
     assert "pointSegmentDistance" not in authority
-    for path in (ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua",ROOT/"scripts"/"decision"/"DecisionSelector.lua"):
+    for path in (ROOT/"scripts"/"decision"/"WithinGroupTrafficDecisionPolicy.lua",ROOT/"scripts"/"decision"/"DecisionSelector.lua"):
         assert "spatialConstraintKnowledge" not in path.read_text(encoding="utf-8")
 
 
@@ -2104,7 +2104,7 @@ def test_shared_corner_competing_demand_requires_two_current_corner_claims():
 
 def test_category2_shared_boundary_domain_not_disc_overlap_owns_admission():
     assessment=(ROOT/"scripts"/"assessment"/"BoundaryDemandAssessment.lua").read_text(encoding="utf-8")
-    decision=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+    decision=(ROOT/"scripts"/"decision"/"WithinGroupTrafficDecisionPolicy.lua").read_text(encoding="utf-8")
 
     assert "local function sameBoundaryDomain(a,b)" in assessment
     assert 'relation.reason="CURRENT_A8_BOUNDARY_DEMANDS_SHARE_TERMINATING_CATEGORY_2_DOMAIN"' in assessment
