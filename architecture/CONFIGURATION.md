@@ -10,7 +10,7 @@ Configuration exists to express choices the player is legitimately allowed to ma
 
 This document defines the current accepted Configuration responsibility and its boundaries. The implementation-facing contract is mature and is operationalised by the primary Configuration Specification.
 
-Issue #139 owns the remaining bounded implementation and validation work beneath this architecture.
+Implementation-facing detail and current source traceability belong to the primary Configuration Specification rather than this Architecture.
 
 The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Log Publication Architecture](LOG_PUBLICATION.md) owns runtime log-publication classes, eligibility and publication boundaries. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
 
@@ -451,7 +451,7 @@ Configuration does not own enduring product explanation merely because Help is r
 
 > **Configuration Choice != Product Explanation**
 
-A future OuttaMyWay settings/menu surface must provide a discoverable route to the in-game Help / Reference responsibility tracked by Issue #293. Help content itself is not another Configuration setting. It explains enduring product concepts and supported behaviour, while #89 owns transient operational communication about what OuttaMyWay is doing now.
+A future OuttaMyWay settings/menu surface must provide a discoverable route to the in-game Help / Reference responsibility tracked by Issue #293. Help content itself is not another Configuration setting. It explains enduring product concepts and supported behaviour, while GUI Architecture owns transient operational communication about what OuttaMyWay is doing now; Issue #89 tracks the unresolved message-lifecycle work.
 
 Diagnostic/test HUDs remain instrumentation unless deliberately promoted through the GUI/HUD responsibility. The existence of a visible diagnostic control does not make it part of HUD visibility Configuration.
 
@@ -462,8 +462,6 @@ The initial local-profile Configuration contract is mature enough for implementa
 The Specification owns the exact `modSettings` filename, XML representation, schema identifier, GIANTS persistence API obligations and storage-failure mechanics beneath this Architecture.
 
 Multiplayer/server-client Configuration semantics remain outside the current validated support scope. DIAGNOSTIC engineering controls remain outside supported player Configuration.
-
-Issue #139 now owns implementation and validation against this contract rather than further architectural invention.
 
 ## 12. Architectural boundaries
 
@@ -492,6 +490,6 @@ This architecture does not authorise:
 - using shutdown cleanup to continue or invent a strategic resolution after consent withdrawal;
 - resurrecting pre-disable Runtime semantic state on re-enable;
 - GUI/HUD layout, Help presentation or message-lifecycle decisions; or
-- implementation work under this documentation reconciliation.
+- implementation work that is not authorised by the accepted Configuration contract.
 
-Current implementation placement belongs outside this Architecture. Issue #139 owns the design-to-implementation work required to establish the still-missing Configuration contract and runtime surface.
+Current implementation placement belongs outside this Architecture and is described by the primary Configuration Specification's implementation traceability.
