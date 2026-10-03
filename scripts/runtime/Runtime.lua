@@ -31,6 +31,13 @@ local function actionSpaceBridge(candidate)
     if type(bridge)=="table" and type(bridge.conflictIdentity)=="string" and type(bridge.regulatedAssemblyId)=="string" then return bridge end
     return nil
 end
+local function compositeRegulationBridge(candidate)
+    local evidence=candidate and candidate.evidenceBasis or nil
+    local bridge=evidence and evidence.compositeRegulationBridge or nil
+    if type(bridge)=="table" and bridge.architecture=="COMPOSED_REGULATION_TRIGGERS"
+        and type(bridge.pairKey)=="string" and type(bridge.conflictIdentity)=="string" then return bridge end
+    return nil
+end
 local function cooperativePassageBridge(candidate)
     local evidence=candidate and candidate.evidenceBasis or nil
     local bridge=evidence and evidence.cooperativePassageBridge or nil
@@ -492,6 +499,51 @@ function Runtime:_assessCurrentActionSpaceRegulation(picture,current)
     return self.currentResponsibilityAssessment:assessActionSpaceRegulation(current,actionSpaceRelation(picture,current)),actionSpaceRelation(picture,current)
 end
 
+function Runtime:_continueCompositeFollowerConstraint(picture,evaluated,current,seedApplied)
+    local candidate=selectedCandidate(evaluated)
+    local composite=compositeRegulationBridge(candidate)
+    local bridge=followerBoundaryBridge(candidate)
+    if composite==nil or bridge==nil or bridge.action~="APPLY" then return nil end
+    local commitment=seedApplied and seedApplied.commitment or nil
+    if commitment==nil and current~=nil and current.provenance~=nil then
+        commitment=self.commitments:get(current.provenance.retainedCommitmentId)
+    end
+    if commitment==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
+        return {status="NO_DISPATCH",reason="COMPOSED_REGULATION_ACTIVE_COMMITMENT_REQUIRED",compositeRegulation=true}
+    end
+    local obligationResult,obligationReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.ensureFollowerBoundaryObligation(
+        self,commitment.identity,bridge,{kind="COMPOSED_REGULATION_FOLLOWER_TRIGGER_ADMITTED",decisionId=evaluated.decision.identity})
+    if obligationResult==nil then
+        return {status="NO_DISPATCH",reason=obligationReason or "COMPOSED_REGULATION_FOLLOWER_OBLIGATION_UNAVAILABLE",compositeRegulation=true}
+    end
+    commitment=obligationResult.commitment
+    local token=seedApplied and seedApplied.authorityToken or nil
+    if token==nil or token.assemblyId~=bridge.followerAssemblyId or self.authorities:validate(token)~=true then
+        token=nil
+        for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.authorities:tokensForCommitment(commitment.identity)) do
+            if candidateToken.assemblyId==bridge.followerAssemblyId and self.authorities:validate(candidateToken)==true then token=candidateToken break end
+        end
+    end
+    local acquired=false
+    if token==nil then
+        local acquiredResult,acquireReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.acquireSupportingRegulationAuthority(
+            self,commitment.identity,bridge.followerAssemblyId,{governingPurpose=bridge.governingPurpose})
+        if acquiredResult==nil then
+            return {status="NO_DISPATCH",reason=acquireReason or "COMPOSED_REGULATION_FOLLOWER_AUTHORITY_UNAVAILABLE",compositeRegulation=true}
+        end
+        commitment=acquiredResult.commitment
+        token=acquiredResult.authorityToken
+        acquired=true
+    end
+    local applied={
+        commitment=commitment,authorityToken=token,authorityAcquired=acquired,
+        currentResponsibility=(seedApplied and seedApplied.currentResponsibility) or current
+    }
+    local continued=self.regulationBoundedAuthority:continueFollowerBoundary(picture,evaluated,applied)
+    continued.compositeRegulation=true
+    return continued
+end
+
 function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,assessment)
     local commitmentId=current and current.provenance and current.provenance.retainedCommitmentId or nil
     local conflictIdentity=current and current.provenance and current.provenance.conflictIdentity or nil
@@ -500,6 +552,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local corner=current.provenance and current.provenance.admissionKind=="CORNER_RIGHT_OF_WAY"
     local category2=current.provenance and current.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
     local playerControlled=current.provenance and current.provenance.admissionKind=="PLAYER_CONTROLLED_OBSTRUCTION"
+    local composite=current.provenance and type(current.provenance.compositeTriggerBasis)=="table"
     if playerControlled
         and assessment.terminationEvidenceKind~="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_DISSOLUTION"
         and assessment.terminationEvidenceKind~="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE"
@@ -549,13 +602,15 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local status=self.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,assessment.reason)
     local commitment=self.commitments:get(commitmentId)
+    local settled=nil
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(
+            self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=composite==true})
         local settlementKind=playerControlled and assessment.terminationEvidenceKind
             or (forward and assessment.terminationEvidenceKind
             or (corner and assessment.terminationEvidenceKind
             or (category2 and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY")))
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
+        settled=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,
             conflictIdentity=conflictIdentity,
@@ -567,6 +622,15 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
                 or settlementKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_CONTROL_RELEASE"
                 or settlementKind=="PLAYER_CONTROLLED_OBSTRUCTION_POSITIVE_AI_SUPERSESSION"
         })
+    end
+    if composite==true and settled~=nil and #(settled.remainingObligations or {})>0 then
+        self.responsibilityTransitionAuthority:retireCompositeCategory2Trigger(commitmentId)
+        return {
+            status=physical and physical.status or "RELEASED",reason=assessment.reason,
+            actionSpaceRegulation=true,sharedCategory2=category2,compositeRegulation=true,
+            triggerRetired="SHARED_CATEGORY_2_DEMAND",commitmentId=commitmentId,
+            physical=physical,remainingObligationCount=#(settled.remainingObligations or {})
+        }
     end
     self.responsibilityTransitionAuthority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)
     return physical
@@ -580,9 +644,22 @@ function Runtime:_terminateFollowerBoundaryRegulation(picture,evaluated,current,
     if applied==nil then return {status="NO_DISPATCH",reason=applyReason,followerBoundary=true} end
     local physical=self.regulationBoundedAuthority:neutralizeFollowerBoundaryPhysical(picture,evaluated,selectedCandidate(evaluated),assessment.reason)
     local commitment=applied.commitment
+    local composite=current.provenance and type(current.provenance.compositeTriggerBasis)=="table"
+    local settled=nil
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitment.identity,record and record.followerAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self,commitment.identity,record or {pairKey=pairKey},{kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT",reason=assessment.reason,pairKey=pairKey})
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(
+            self,commitment.identity,record and record.followerAssemblyId,{reason=assessment.reason,preserveAuthority=composite==true})
+        settled=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(
+            self,commitment.identity,record or {pairKey=pairKey},
+            {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT",reason=assessment.reason,pairKey=pairKey})
+    end
+    if composite==true and settled~=nil and #(settled.remainingObligations or {})>0 then
+        self.responsibilityTransitionAuthority:retireCompositeFollowerTrigger(commitmentId)
+        return {
+            status=physical and physical.status or "RELEASED",reason=assessment.reason,
+            followerBoundary=true,compositeRegulation=true,triggerRetired="FOLLOWER_BOUNDARY",
+            commitmentId=commitmentId,physical=physical,remainingObligationCount=#(settled.remainingObligations or {})
+        }
     end
     self.responsibilityTransitionAuthority:terminateRegulation(commitmentId)
     return physical
@@ -1006,6 +1083,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         return self:_dispatchObstructionRelocation(picture,evaluated,candidate,obstructionBridge)
     end
     local followerBridge=followerBoundaryBridge(candidate)
+    local compositeBridge=compositeRegulationBridge(candidate)
     local currentFollower=followerBridge and self.responsibilityTransitionAuthority:findRegulation("pairKey",followerBridge.pairKey) or nil
     local followerAssessment=nil
     if currentFollower~=nil then
@@ -1078,6 +1156,18 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if applied==nil then return self.regulationBoundedAuthority:actionSpaceRegulationTransitionFailed(dispatch,reason) end
         local continued=self.regulationBoundedAuthority:continueActionSpaceRegulation(picture,evaluated,applied,dispatch)
         continued.currentResponsibility=applied.currentResponsibility
+        if compositeBridge~=nil and followerBridge~=nil and followerBridge.action=="APPLY" then
+            local followerContinued=self:_continueCompositeFollowerConstraint(picture,evaluated,applied.currentResponsibility,applied)
+            if followerContinued~=nil then
+                return {
+                    status=(continued.status=="ACCEPTED" or continued.status=="REACTIVATED") and followerContinued.status or continued.status,
+                    reason=continued.reason or followerContinued.reason,
+                    compositeRegulation=true,actionSpaceRegulation=true,followerBoundary=true,
+                    commitment=applied.commitment,currentResponsibility=applied.currentResponsibility,
+                    actionSpaceResult=continued,followerResult=followerContinued
+                }
+            end
+        end
         return continued
     end
     if dispatch.status=="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
@@ -1101,6 +1191,21 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         local continued=self:_continueCooperativePassage(picture,evaluated,applied)
         continued.currentResponsibility=applied.currentResponsibility
         return continued
+    end
+    if compositeBridge~=nil and followerBridge~=nil and followerBridge.action=="APPLY" then
+        local current=self.responsibilityTransitionAuthority:findRegulation("pairKey",compositeBridge.pairKey)
+            or self.responsibilityTransitionAuthority:findRegulation("conflictIdentity",compositeBridge.conflictIdentity)
+        if current~=nil then
+            local followerContinued=self:_continueCompositeFollowerConstraint(picture,evaluated,current,nil)
+            if followerContinued~=nil then
+                return {
+                    status=followerContinued.status,reason=followerContinued.reason,
+                    compositeRegulation=true,actionSpaceRegulation=dispatch and dispatch.actionSpaceRegulation==true,
+                    followerBoundary=true,commitmentId=current.provenance.retainedCommitmentId,
+                    currentResponsibility=current,actionSpaceResult=dispatch,followerResult=followerContinued
+                }
+            end
+        end
     end
     return dispatch
 end

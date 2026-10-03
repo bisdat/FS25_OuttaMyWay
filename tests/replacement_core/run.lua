@@ -1479,6 +1479,16 @@ test("Prospective Decision: multiple supported admissible Passages fail closed w
     equal(reason,"MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR")
 end)
 
+test("Prospective Decision: composed same-pair Regulation triggers are one tactical purpose",function()
+    local inventory,candidates=prospectivePortfolioPolicyFixture({
+        prospectiveGroup("composed-regulation:AS-C|AS-P","COMPOSED_REGULATION",1)
+    })
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"composed-regulation:AS-C|AS-P")
+    equal(choice.rule,"TACTICAL_REGULATION_SINGLE_PURPOSE")
+end)
+
 test("Prospective Decision: multiple unrelated tactical Regulation purposes do not manufacture cross-family precedence",function()
     local inventory,candidates=prospectivePortfolioPolicyFixture({
         prospectiveGroup("follower","FOLLOWER",1),
@@ -3427,6 +3437,180 @@ local function buildFollowerBoundaryRecord(cap,existingCommitmentId,existingObli
         provenance={source="FollowerBoundaryDemandAssessment",layer="KNOWLEDGE",historicalNativeManoeuvreAuthority=false}
     }
 end
+
+local function composedRegulationContext(runtime,commitmentId)
+    if commitmentId==nil then return {} end
+    local commitment=runtime.commitments:get(commitmentId)
+    local open={}
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
+        open[#open+1]={
+            identity=obligation.identity,basis=obligation.basis,requiredOutcome=obligation.requiredOutcome,
+            requiredAuthority=obligation.requiredAuthority,evidenceContract=obligation.evidenceContract,
+            ownershipClass=obligation.ownershipClass,terminalDependency=obligation.terminalDependency,status=obligation.status
+        }
+    end
+    return {{
+        commitmentId=commitmentId,governingBasis=commitment.governingBasis,
+        openObligations=open,progressActuationOwnership=commitment.progressActuationOwnership,
+        effectiveActuationCompositionId=commitment.effectiveActuationCompositionId
+    }}
+end
+
+local function composedCategory2Situation(state,commitmentId,incumbentRegulatedAssemblyId)
+    local dissolved=state=="DISSOLVED"
+    return {
+        identity="shared-category-2:OR-1:EDGE-1:AS-C:AS-P",operationId="OR-1",fieldWorldReferenceKey="field-world-77",
+        subjectAssemblyId="AS-C",otherAssemblyId="AS-P",
+        classification=dissolved and "SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN" or "SHARED_CATEGORY_2_DEMAND",
+        relationshipStatus=dissolved and "NEGATIVE" or "POSITIVE",
+        currentEvidenceState=dissolved and "DISSOLVED" or "SUPPORTED",
+        competingDemand=not dissolved,positiveDissolution=dissolved,regulationSpeedKmh=1,
+        incumbentCommitmentId=commitmentId,incumbentRegulatedAssemblyId=incumbentRegulatedAssemblyId,
+        participants={
+            {assemblyId="AS-C",assemblyReferenceKey="vehicle-root:C",nativeBoundaryArrivalSeconds=4,boundaryOptionSpaceRatio=0.4,currentMotionIntent="SETTLED_CONTINUATION"},
+            {assemblyId="AS-P",assemblyReferenceKey="vehicle-root:P",nativeBoundaryArrivalSeconds=7,boundaryOptionSpaceRatio=0.8,currentMotionIntent="SETTLED_CONTINUATION"}
+        },
+        provenance={source="TS015-COMPOSED-REGULATION-FIXTURE"}
+    }
+end
+
+local function buildComposedRegulationPicture(runtime,followerRecord,category2State,commitmentId,incumbentRegulatedAssemblyId)
+    local base=OuttaMyWay.ValueRecord.toTable(buildFollowerBoundaryPicture(followerRecord,commitmentId))
+    base.commitmentContext=composedRegulationContext(runtime,commitmentId)
+    base.spatialConstraintKnowledge={}
+    if category2State~=nil then
+        base.spatialConstraintKnowledge={{
+            operationId="OR-1",pairRelationships={},sharedCategory2Demands={
+                composedCategory2Situation(category2State,commitmentId,incumbentRegulatedAssemblyId)
+            },cornerKnowledge={sharedCornerSituations={},engagements={}}
+        }}
+    end
+    return OuttaMyWay.OperationalPicture.new(base)
+end
+
+local function findOpenObligationByKind(runtime,commitmentId,kind)
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
+        if obligation.basis and obligation.basis.kind==kind then return obligation end
+    end
+end
+
+test("TS015 same-pair Follower and Shared Category-2 compose one Regulation and retire independently", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local follower=buildFollowerBoundaryRecord(16.2,nil,nil)
+    local base=buildComposedRegulationPicture(runtime,follower,"SUPPORTED",nil,nil)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(base,headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"PROSPECTIVE_DECISION_PORTFOLIO")
+    local groups=supported.candidateSupportEvidence.supportBoundary.groups
+    equal(#groups,1)
+    equal(groups[1].family,"COMPOSED_REGULATION")
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"CREATE")
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.compositeRegulation,true)
+    equal(admitted.actionSpaceRegulation,true)
+    equal(admitted.followerBoundary,true)
+    local commitmentId=admitted.commitment.identity
+    local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(type(current.provenance.compositeTriggerBasis),"table")
+    equal(current.provenance.pairKey,"AS-C|AS-P")
+    equal(current.provenance.conflictIdentity,"shared-category-2:OR-1:EDGE-1:AS-C:AS-P")
+    equal(#runtime.obligations:openForOwner(commitmentId),2)
+    equal(findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")~=nil,true)
+    equal(findOpenObligationByKind(runtime,commitmentId,"SHARED_CATEGORY_2_DEMAND_REGULATION")~=nil,true)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
+    equal(requests[#requests-1].target.ownerTag,"SHARED_CATEGORY_2_INTENT_REVELATION")
+    equal(requests[#requests].target.ownerTag,"FOLLOWER_BOUNDARY")
+
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+    local retainedFollower=buildFollowerBoundaryRecord(14,commitmentId,followerObligation.identity)
+    local category2Dissolved=buildComposedRegulationPicture(runtime,retainedFollower,"DISSOLVED",commitmentId,"AS-P")
+    local afterCategory2=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(category2Dissolved,headOnTestSnapshot())
+    local afterCategory2Eval=runtime:evaluateSealedOperationalPicture(afterCategory2)
+    local category2Retired=runtime:dispatchEvaluatedOperationalPicture(afterCategory2,afterCategory2Eval)
+    equal(category2Retired.compositeRegulation,true)
+    equal(category2Retired.triggerRetired,"SHARED_CATEGORY_2_DEMAND")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current~=nil,true)
+    equal(current.provenance.conflictIdentity,nil)
+    equal(current.provenance.pairKey,"AS-C|AS-P")
+
+    local retireFollower=buildFollowerBoundaryRecord(25,commitmentId,followerObligation.identity)
+    retireFollower.status="RETIRE_SUPPORTED"; retireFollower.purposeState="RETIRE"; retireFollower.controlMagnitude=nil
+    retireFollower.reason="FOLLOWER_TRIGGER_POSITIVELY_RETIRED_AFTER_CATEGORY_2_DISSOLUTION"
+    local retireFollowerPicture=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retireFollower,nil,commitmentId,nil),headOnTestSnapshot())
+    local retireFollowerEval=runtime:evaluateSealedOperationalPicture(retireFollowerPicture)
+    local allRetired=runtime:dispatchEvaluatedOperationalPicture(retireFollowerPicture,retireFollowerEval)
+    equal(allRetired.status,"RELEASED")
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
+end)
+
+test("TS015 composed Regulation preserves Category-2 when Follower trigger retires first", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local first=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,buildFollowerBoundaryRecord(16,nil,nil),"SUPPORTED",nil,nil),headOnTestSnapshot())
+    local firstEval=runtime:evaluateSealedOperationalPicture(first)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(first,firstEval)
+    local commitmentId=admitted.commitment.identity
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+
+    local retireFollower=buildFollowerBoundaryRecord(25,commitmentId,followerObligation.identity)
+    retireFollower.status="RETIRE_SUPPORTED"; retireFollower.purposeState="RETIRE"; retireFollower.controlMagnitude=nil
+    retireFollower.reason="FOLLOWER_TRIGGER_POSITIVELY_RETIRED_CATEGORY_2_REMAINS"
+    local retirePicture=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retireFollower,"SUPPORTED",commitmentId,"AS-P"),headOnTestSnapshot())
+    local retireEval=runtime:evaluateSealedOperationalPicture(retirePicture)
+    local retired=runtime:dispatchEvaluatedOperationalPicture(retirePicture,retireEval)
+    equal(retired.compositeRegulation,true)
+    equal(retired.triggerRetired,"FOLLOWER_BOUNDARY")
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,true)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current~=nil,true)
+    equal(current.provenance.pairKey,nil)
+    equal(current.provenance.conflictIdentity,"shared-category-2:OR-1:EDGE-1:AS-C:AS-P")
+
+    local noFollower=buildFollowerBoundaryRecord(25,nil,nil)
+    noFollower.status="NOT_APPLICABLE"; noFollower.controlMagnitude=nil
+    local category2Only=buildComposedRegulationPicture(runtime,noFollower,"SUPPORTED",commitmentId,"AS-P")
+    category2Only=OuttaMyWay.ValueRecord.toTable(category2Only)
+    category2Only.followerBoundaryKnowledge={}
+    category2Only=OuttaMyWay.OperationalPicture.new(category2Only)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(category2Only,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"MAINTAIN")
+    local maintained=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(maintained.status=="MAINTAINED" or maintained.status=="ACCEPTED",true)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)~=nil,true)
+
+    local dissolved=buildComposedRegulationPicture(runtime,noFollower,"DISSOLVED",commitmentId,"AS-P")
+    dissolved=OuttaMyWay.ValueRecord.toTable(dissolved)
+    dissolved.followerBoundaryKnowledge={}
+    dissolved=OuttaMyWay.OperationalPicture.new(dissolved)
+    local finalPicture=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(dissolved,headOnTestSnapshot())
+    local finalEval=runtime:evaluateSealedOperationalPicture(finalPicture)
+    local final=runtime:dispatchEvaluatedOperationalPicture(finalPicture,finalEval)
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
+end)
 
 test("Follower Boundary: aligned follower Regulation travels Situation Candidate Decision Commitment central Control and cap magnitude is elastic", function()
     local runtime=autonomousHeadOnRuntime()

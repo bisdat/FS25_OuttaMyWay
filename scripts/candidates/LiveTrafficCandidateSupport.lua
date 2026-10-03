@@ -314,13 +314,25 @@ local function category2ActionItem(situation,regulated,protected)
         regulatedParticipant=regulated,protectedParticipant=protected}
 end
 
-local function actionSpaceExistingCommitmentForRequirement(pictureValues,requirement)
+local function actionSpaceExistingCommitmentForRequirement(pictureValues,requirement,triggerBasisKind,triggerIdentity)
     local contexts=pictureValues.commitmentContext or {}
     local match=nil
     for _,context in OuttaMyWay.ValueRecord.ipairs(contexts) do
         local basis=context.governingBasis
-        if type(basis)=="table" and basis.responsibilityKey==requirement then
-            if match~=nil then return nil,"MULTIPLE_ACTION_SPACE_REGULATION_COMMITMENTS" end
+        local matchesRequirement=type(basis)=="table" and basis.responsibilityKey==requirement
+        local matchesTrigger=false
+        if not matchesRequirement and type(triggerBasisKind)=="string" and type(triggerIdentity)=="string" then
+            for _,obligation in OuttaMyWay.ValueRecord.ipairs(context.openObligations or {}) do
+                local obligationBasis=obligation.basis
+                if type(obligationBasis)=="table" and obligationBasis.kind==triggerBasisKind
+                    and obligationBasis.conflictIdentity==triggerIdentity then
+                    matchesTrigger=true
+                    break
+                end
+            end
+        end
+        if matchesRequirement or matchesTrigger then
+            if match~=nil and match~=context.commitmentId then return nil,"MULTIPLE_ACTION_SPACE_REGULATION_COMMITMENTS" end
             match=context.commitmentId
         end
     end
@@ -961,7 +973,7 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
     },nil
 end
 
-local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation)
+local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,compatibleExistingCommitmentId)
     local participants={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
         if type(participant.assemblyId)=="string" and type(participant.assemblyReferenceKey)=="string" then
@@ -972,8 +984,19 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
     if #participants~=2 then return nil,"SHARED_CATEGORY_2_REQUIRES_EXACTLY_TWO_CURRENT_PARTICIPANTS" end
 
     local requirement="shared-category-2-regulation:"..tostring(situation.identity)
-    local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
-    if existingReason~=nil then return nil,existingReason end
+    local existing,existingReason=nil,nil
+    if type(compatibleExistingCommitmentId)=="string" then
+        local found=false
+        for _,context in OuttaMyWay.ValueRecord.ipairs(values.commitmentContext or {}) do
+            if context.commitmentId==compatibleExistingCommitmentId then found=true break end
+        end
+        if not found then return nil,"COMPOSED_REGULATION_EXISTING_COMMITMENT_NOT_CURRENT" end
+        existing=compatibleExistingCommitmentId
+    else
+        existing,existingReason=actionSpaceExistingCommitmentForRequirement(
+            values,requirement,"SHARED_CATEGORY_2_DEMAND_REGULATION",situation.identity)
+        if existingReason~=nil then return nil,existingReason end
+    end
 
     local baseline=#(values.representationFitness or {})
     local specifications={}
@@ -1087,7 +1110,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         if type(projection.sharedCategory2Identity)~="string" then return nil,"SHARED_CATEGORY_2_ID_REQUIRED" end
         local situation,reason=sharedCategory2Situation(picture,projection.sharedCategory2Identity)
         if situation==nil then return nil,reason or "NO_SHARED_CATEGORY_2_DEMAND" end
-        return projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation)
+        return projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,projection.compatibleExistingCommitmentId)
     end
 
     if projection.kind=="FORWARD_INTERSECTION" then

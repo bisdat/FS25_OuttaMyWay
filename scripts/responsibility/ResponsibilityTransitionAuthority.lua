@@ -165,10 +165,28 @@ end
 
 function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
     local bridge=selectedBridge(evaluated,"actionSpaceRegulationBridge")
+    local composite=selectedBridge(evaluated,"compositeRegulationBridge")
     local context=readiness and readiness.applicationContext or nil
     local current=self:findRegulation("conflictIdentity",bridge and bridge.conflictIdentity)
+    if current==nil and type(composite)=="table" then
+        if type(composite.existingCommitmentId)=="string" then
+            current=self:getCurrentRegulation(composite.existingCommitmentId)
+        end
+        if current==nil and type(composite.pairKey)=="string" then current=self:findRegulation("pairKey",composite.pairKey) end
+    end
     if bridge==nil or readiness==nil or bridge.conflictIdentity~=readiness.conflictIdentity then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    if type(composite)=="table" then
+        if composite.conflictIdentity~=bridge.conflictIdentity
+            or composite.regulatedAssemblyId~=bridge.regulatedAssemblyId
+            or composite.protectedAssemblyId~=bridge.protectedAssemblyId then
+            return nil,"COMPOSED_REGULATION_TRIGGER_CONTEXT_MISMATCH"
+        end
+        if current~=nil and type(current.provenance and current.provenance.pairKey)=="string"
+            and current.provenance.pairKey~=composite.pairKey then
+            return nil,"COMPOSED_REGULATION_PAIR_CONTINUITY_MISMATCH"
+        end
     end
     if context=="INITIAL" then
         for _,item in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
@@ -183,7 +201,8 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
             if targeted~=true then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_NOT_TARGETED" end
         end
         return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,admissionKind=bridge.admissionKind,cornerKey=bridge.cornerKey,
-            operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId},nil
+            operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId,
+            compositeTriggerBasis=composite},nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
     if context=="ROLE_MIGRATION" and current~=nil
@@ -195,7 +214,30 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
     end
     return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,commitmentId=readiness.commitmentId,admissionKind=bridge.admissionKind,cornerKey=bridge.cornerKey,
-        operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId},nil
+        operationId=bridge.operationId,regulatedAssemblyId=bridge.regulatedAssemblyId,protectedAssemblyId=bridge.protectedAssemblyId,
+        compositeTriggerBasis=composite},nil
+end
+
+local function refreshCompositeTriggerProvenance(current,preflight)
+    if current==nil or type(preflight and preflight.compositeTriggerBasis)~="table" then return current end
+    local values=OuttaMyWay.ValueRecord.toTable(current)
+    local provenance=values.provenance or {}
+    local composite=preflight.compositeTriggerBasis
+    provenance.conflictIdentity=preflight.conflictIdentity
+    provenance.admissionKind=preflight.admissionKind
+    provenance.operationId=preflight.operationId
+    provenance.regulatedAssemblyId=preflight.regulatedAssemblyId
+    provenance.protectedAssemblyId=preflight.protectedAssemblyId
+    provenance.pairKey=composite.pairKey
+    provenance.leaderAssemblyId=composite.leaderAssemblyId
+    provenance.followerAssemblyId=composite.followerAssemblyId
+    provenance.compositeTriggerBasis={
+        kind="SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
+        followerPairKey=composite.pairKey,sharedCategory2Identity=preflight.conflictIdentity,
+        followerActive=true,sharedCategory2Active=true
+    }
+    values.provenance=provenance
+    return OuttaMyWay.Regulation.new(values)
 end
 
 -- INITIAL establishes the semantic responsibility. REACTIVATION and
@@ -207,15 +249,34 @@ function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
     local current=preflight.current or self:getCurrentRegulation(commitment.identity)
     if context=="INITIAL" then
         if current~=nil then
-            if current.provenance.conflictIdentity==preflight.conflictIdentity and current.provenance.retainedCommitmentId==commitment.identity then return current,nil end
+            if current.provenance.retainedCommitmentId~=commitment.identity then
+                return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_ALREADY_CURRENT"
+            end
+            if type(preflight.compositeTriggerBasis)=="table" then
+                current=refreshCompositeTriggerProvenance(current,preflight)
+                self.regulationsByCommitmentId[commitment.identity]=current
+                return current,nil
+            end
+            if current.provenance.conflictIdentity==preflight.conflictIdentity then return current,nil end
             return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_ALREADY_CURRENT"
+        end
+        local provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity,
+            admissionKind=preflight.admissionKind,cornerKey=preflight.cornerKey,operationId=preflight.operationId,
+            regulatedAssemblyId=preflight.regulatedAssemblyId,protectedAssemblyId=preflight.protectedAssemblyId}
+        if type(preflight.compositeTriggerBasis)=="table" then
+            local composite=preflight.compositeTriggerBasis
+            provenance.pairKey=composite.pairKey
+            provenance.leaderAssemblyId=composite.leaderAssemblyId
+            provenance.followerAssemblyId=composite.followerAssemblyId
+            provenance.compositeTriggerBasis={
+                kind="SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
+                followerPairKey=composite.pairKey,sharedCategory2Identity=preflight.conflictIdentity,
+                followerActive=true,sharedCategory2Active=true
+            }
         end
         current=OuttaMyWay.Regulation.new({
             identity=self.runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",
-            governingBasis=commitment.governingBasis,
-            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity,
-                admissionKind=preflight.admissionKind,cornerKey=preflight.cornerKey,operationId=preflight.operationId,
-                regulatedAssemblyId=preflight.regulatedAssemblyId,protectedAssemblyId=preflight.protectedAssemblyId}
+            governingBasis=commitment.governingBasis,provenance=provenance
         })
         self.regulationsByCommitmentId[commitment.identity]=current
         publishRegulation(self.runtime,current,"STARTED","ESTABLISHED")
@@ -225,7 +286,38 @@ function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
     if current==nil or current.provenance.retainedCommitmentId~=commitment.identity then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
     end
+    if type(preflight.compositeTriggerBasis)=="table" then
+        current=refreshCompositeTriggerProvenance(current,preflight)
+        self.regulationsByCommitmentId[commitment.identity]=current
+    end
     return current,nil
+end
+
+function Authority:retireCompositeFollowerTrigger(commitmentId)
+    local current=self:getCurrentRegulation(commitmentId)
+    local composite=current and current.provenance and current.provenance.compositeTriggerBasis or nil
+    if current==nil or type(composite)~="table" then return current,false end
+    local values=OuttaMyWay.ValueRecord.toTable(current)
+    values.provenance.pairKey=nil
+    values.provenance.leaderAssemblyId=nil
+    values.provenance.followerAssemblyId=nil
+    values.provenance.compositeTriggerBasis.followerActive=false
+    local revised=OuttaMyWay.Regulation.new(values)
+    self.regulationsByCommitmentId[commitmentId]=revised
+    return revised,true
+end
+
+function Authority:retireCompositeCategory2Trigger(commitmentId)
+    local current=self:getCurrentRegulation(commitmentId)
+    local composite=current and current.provenance and current.provenance.compositeTriggerBasis or nil
+    if current==nil or type(composite)~="table" then return current,false end
+    local values=OuttaMyWay.ValueRecord.toTable(current)
+    values.provenance.conflictIdentity=nil
+    values.provenance.admissionKind=nil
+    values.provenance.compositeTriggerBasis.sharedCategory2Active=false
+    local revised=OuttaMyWay.Regulation.new(values)
+    self.regulationsByCommitmentId[commitmentId]=revised
+    return revised,true
 end
 
 local function sameTwoParticipants(current,bridge)

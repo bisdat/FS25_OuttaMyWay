@@ -139,6 +139,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     local failClosed=families(groups,{
         "PLAYER_CONTROLLED_OBSTRUCTION_FAIL_CLOSED",
         "FOLLOWER_FAIL_CLOSED",
+        "COMPOSED_REGULATION_FAIL_CLOSED",
         "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
         "ACTION_SPACE_FAIL_CLOSED"
@@ -157,6 +158,7 @@ function Policy:selectGroup(inventory,admissibleCandidates)
     local tactical=families(groups,{
         "FOLLOWER_RETIRE",
         "FOLLOWER",
+        "COMPOSED_REGULATION",
         "CATEGORY_2_BOUNDARY_DEMAND",
         "FORWARD_INTERSECTION",
         "ACTION_SPACE"
