@@ -319,9 +319,9 @@ Current implementation routes include:
 
 Current policy helper names and ordering are implementation topology. The Specification owns the semantic distinction between supported admissibility, compatibility/preference, explicit non-selection and downstream transition intent.
 
-The current `DecisionSelector` first derives the mandatory-admissible Candidate set and passes that set to `ProspectivePortfolioDecisionPolicy`; the policy now excludes support groups that contain no admissible Candidate. That is the accepted admissibility-aware correction from the earlier prospective-selection defect.
+The current `DecisionSelector` first derives the mandatory-admissible Candidate set and passes that set to `ProspectivePortfolioDecisionPolicy`; the policy excludes support groups that contain no admissible Candidate.
 
-The same policy still contains executable historical cross-purpose ordering, including fixed Follower / Forward-Intersection / Action-Space / Corner family precedence around Cooperative Passage and a nearest-by-initial-separation Passage choice. Those source rules remain **conformance questions**, not normative authority. In particular, a legacy or compatibility token MUST NOT permit tactical Regulation to suppress a supported, mandatory-admissible Passage contrary to the Spatial Negotiation stage transition above.
+The policy also contains implementation-level cross-purpose ordering among Follower / Forward-Intersection / Action-Space / Corner families around Cooperative Passage and a nearest-by-initial-separation Passage choice. Those source rules are non-normative implementation topology and MUST NOT override this Specification's semantic stage and compatibility rules. In particular, a legacy or compatibility token MUST NOT permit tactical Regulation to suppress a supported, mandatory-admissible Passage contrary to the Spatial Negotiation stage transition above.
 
 ## Validation route
 
