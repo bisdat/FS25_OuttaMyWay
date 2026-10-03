@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This document reserves one authoritative live home for future player-facing GUI, HUD, messaging and interaction architecture.
+This document is the authoritative live home for player-facing GUI, HUD, messaging and interaction architecture.
 
 ## Current observation and boundaries
 
