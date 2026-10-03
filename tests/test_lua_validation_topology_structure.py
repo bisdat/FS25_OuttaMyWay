@@ -16,7 +16,7 @@ def workflow_job(workflow, job_id):
     return tail[:next_job.start()] if next_job else tail
 
 
-def test_issue67_replacement_core_loader_matches_current_constraint_topology():
+def test_replacement_core_loader_matches_current_constraint_topology():
     run=read("tests/replacement_core/run.lua")
 
     retained=(
@@ -52,7 +52,7 @@ def test_issue67_replacement_core_loader_matches_current_constraint_topology():
         assert run.count(f'load("{relative}")') == 1
 
 
-def test_issue67_replay_causality_uses_current_constraint_authority():
+def test_replay_causality_uses_current_constraint_authority():
     replay=read("tests/replay/HistoricalFixtures.lua")
     engine=read("scripts/constraints/ConstraintEngine.lua")
 
@@ -81,7 +81,7 @@ def test_issue67_replay_causality_uses_current_constraint_authority():
         assert token not in replay
 
 
-def test_issue67_focused_obstruction_fixture_has_executable_load_helper():
+def test_focused_obstruction_fixture_has_executable_load_helper():
     focused=read("tests/replacement_core/obstruction_relocation.lua")
 
     assert "local function load(relativePath) dofile(root .. \"/\" .. relativePath) end" in focused
