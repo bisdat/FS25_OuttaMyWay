@@ -236,8 +236,10 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
+    local currentRegulation=runtime.responsibilityTransitionAuthority and runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId) or nil
+    local composite=currentRegulation and type(currentRegulation.provenance and currentRegulation.provenance.compositeTriggerBasis)=="table"
     local terminal=nil
-    if #remaining==0 and hasPrefix(responsibility,"follower-boundary:") then
+    if #remaining==0 and (hasPrefix(responsibility,"follower-boundary:") or composite) then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{
@@ -246,7 +248,8 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
             provenance={source="LiveTrafficCommitmentLifecycle"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{
-            kind=crossContext and "FOLLOWER_BOUNDARY_RESPONSIBILITY_POSITIVELY_SUPERSEDED" or "FOLLOWER_BOUNDARY_PURPOSE_POSITIVELY_RETIRED",
+            kind=crossContext and "FOLLOWER_BOUNDARY_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
+                or (composite and "COMPOSITE_REGULATION_TRIGGERS_EXHAUSTED" or "FOLLOWER_BOUNDARY_PURPOSE_POSITIVELY_RETIRED"),
             pairKey=bridge.pairKey,reason=bridge.reason})
         record=terminal
     end
@@ -350,9 +353,13 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local record=runtime.commitments:get(commitmentId)
     if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_LIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
+    local currentRegulation=runtime.responsibilityTransitionAuthority and runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId) or nil
+    local composite=currentRegulation and type(currentRegulation.provenance and currentRegulation.provenance.compositeTriggerBasis)=="table"
     local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
     local corner=hasPrefix(responsibility,"corner-right-of-way:")
     local category2=hasPrefix(responsibility,"shared-category-2-regulation:")
+        or (composite and currentRegulation.provenance.admissionKind=="SHARED_CATEGORY_2_DEMAND"
+            and currentRegulation.provenance.conflictIdentity==bridge.conflictIdentity)
     local playerControlled=hasPrefix(responsibility,"player-controlled-obstruction-regulation:")
     local settlementMode=nil
     if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION"
@@ -399,7 +406,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner or category2 or playerControlled
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward or corner or category2 or playerControlled or composite
     if #remaining==0 and ownedTrafficPurpose then
         local evidenceKind=evidence and evidence.kind or nil
         local crossContext=evidenceKind=="COOPERATIVE_PASSAGE_CROSS_CONTEXT_SUPERSESSION"
@@ -426,7 +433,10 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         elseif corner then
             terminalEvidenceKind="CORNER_RIGHT_OF_WAY_COMPETING_DEMAND_POSITIVELY_DISSOLVED"
         elseif category2 then
-            terminalEvidenceKind="SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED"
+            terminalEvidenceKind=composite and "COMPOSITE_REGULATION_TRIGGERS_EXHAUSTED"
+                or "SHARED_CATEGORY_2_BOUNDARY_TURN_POSITIVELY_DISSOLVED"
+        elseif composite then
+            terminalEvidenceKind="COMPOSITE_REGULATION_TRIGGERS_EXHAUSTED"
         end
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
