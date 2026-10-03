@@ -143,6 +143,25 @@ The [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) Specification owns what m
 
 Follower, Forward Intersection and Action-Space Regulation support consume already-assessed relationships. Candidate Support MUST NOT reclassify those relationships or convert one purpose's support into another purpose's Situation authority.
 
+#### Same-pair Regulation trigger composition
+
+Where accepted Architecture identifies several current Situation records as alternative triggers for the same pairwise Regulation responsibility, Candidate Support MUST compose those triggers before prospective Portfolio arbitration.
+
+For a composed trigger set:
+
+- all triggers MUST refer to the same unordered pair and Local Operation;
+- a positive directional allocation from one trigger MAY satisfy an otherwise-unallocated same-pair trigger;
+- two positive but contradictory directional allocations MUST fail closed;
+- Candidate Support MUST preserve each trigger's provenance, currentness and trigger-specific retirement evidence;
+- Candidate Support MUST publish one Regulation support group/candidate set for the composed responsibility rather than one group per trigger family; and
+- trigger composition MUST NOT collapse unrelated pairs or unrelated tactical purposes.
+
+The resulting semantic support is OR-composed: any admitted current trigger can retain the Regulation responsibility. Trigger-specific physical constraints are cumulative; Candidate Support preserves them for Bounded Authority rather than selecting a magnitude itself.
+
+> **Trigger Multiplicity != Responsibility Multiplicity.**
+
+> **Semantic Support OR; Physical Constraint AND.**
+
 #### Shared Category-2 Demand
 
 When Situation Assessment publishes one positive **Shared Category-2 Demand**, Candidate Support MUST treat the pairwise need for temporal coordination as already established.
@@ -170,7 +189,7 @@ Candidate Support MUST NOT:
 - convert one evidence signal into a permanent vehicle priority;
 - use working width, arrival-time windows or Forward Intersection as an unowned replacement comparator;
 - manufacture a third "shared" Candidate with no controlled subject; or
-- emit duplicate Regulation purposes merely because Shared Category-2 Demand and Forward Intersection are simultaneously positive for the same governing need.
+- emit duplicate Regulation purposes merely because Shared Category-2 Demand and another accepted same-pair trigger, including Follower Boundary or Forward Intersection where Architecture defines one governing need, are simultaneously positive.
 
 Where an incumbent Shared Category-2 Regulation purpose already exists and Situation Assessment reports it supported or `WAITING_FOR_EVIDENCE`, Candidate Support MUST preserve that incumbent directional allocation rather than republish the opposite participant as an equal fresh alternative merely because transient evidence has changed.
 

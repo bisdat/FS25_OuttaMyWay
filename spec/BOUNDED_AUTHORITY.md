@@ -287,6 +287,10 @@ Situation Assessment owns semantic meaning of current evidence. Purpose-specific
 
 Regulation owns why temporal coordination persists. Bounded Authority owns the controlled subject, current physical magnitude and whether a speed effect is currently permitted or quiescent.
 
+Where one Regulation responsibility is supported by a composed trigger basis, Bounded Authority MUST respect every current trigger-specific physical constraint. It may not select a looser magnitude merely because one trigger independently permits it. The granted speed effect is bounded by the least-permissive compatible current requirement while semantic responsibility identity remains owned by Regulation.
+
+> **Semantic Support OR; Physical Constraint AND.**
+
 ### Resolution Lifecycle and specialised Resolutions
 
 Resolution contracts own obligations/purpose. Bounded Authority may grant participant- or subject-scoped physical effects needed by those obligations without becoming the Resolution lifecycle owner.
