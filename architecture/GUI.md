@@ -1,10 +1,10 @@
 # GUI — Player Interface Architecture
 
-> **Status:** Partially reconciled. Configuration Section architecture is accepted; Operational Player Messages and Help / Reference remain open under #89 and #293.
+> **Status:** Partially reconciled. Configuration Section architecture is accepted; Operational Player Messages and Help / Reference remain unresolved. Issues #89 and #293 track that remaining work.
 
 ## Purpose
 
-This document reserves one authoritative live home for future player-facing GUI, HUD, messaging and interaction architecture.
+This document is the authoritative live home for player-facing GUI, HUD, messaging and interaction architecture.
 
 ## Current observation and boundaries
 
@@ -23,7 +23,7 @@ The Configuration **HUD visibility** choice governs Operational Player Messages 
 
 Master OuttaMyWay enablement governs whether the Product Status Indicator exists. Explicit disablement immediately supersedes OuttaMyWay functional responsibility and triggers bounded release/neutralisation of effects the mod already owns; there is no long-lived shutdown-drain state. The Product Status Indicator must disappear when that immediate hand-back has completed rather than remain visible for an unrelated GIANTS Job or Local Operation lifetime.
 
-A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. The current bounded shutdown/hand-back notification therefore confirms that OuttaMyWay has stopped and tells the player to review active workers. It uses the GIANTS blinking-warning surface for 2000 ms and remains governed by the existing Operational messages visibility choice. Broader Operational Player Message queueing and prioritisation remain #89 work.
+A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. The current bounded shutdown/hand-back notification therefore confirms that OuttaMyWay has stopped and tells the player to review active workers. It uses the GIANTS blinking-warning surface for 2000 ms and remains governed by the existing Operational messages visibility choice. Broader Operational Player Message queueing and prioritisation remain owned by this GUI Architecture; Issue #89 tracks the unresolved design and implementation work.
 
 ### Disabled Startup Reminder
 
@@ -45,7 +45,7 @@ The reminder:
 
 Although the GIANTS warning presentation is visually red/flashing, the semantic state is carried explicitly by the localized text; colour is not the sole carrier of meaning.
 
-Reality validation of TEST 0.4.2.7 showed that a nominal 2000 ms blinking-warning lifetime produced materially less readable exposure than its wall-clock duration: the reminder was visible around 08:27:37 and effectively gone by 08:27:38. The startup reminder therefore uses 5000 ms.
+The startup reminder uses 5000 ms because the GIANTS blinking-warning presentation does not make nominal warning lifetime equivalent to continuously readable exposure.
 
 > **Warning Lifetime != Readable Exposure**
 
@@ -78,9 +78,7 @@ The section follows the lifetime of the GIANTS Settings frame and is installed b
 > **Settings Extension != Map Lifecycle Participant**
 
 
-Reality validation of TEST 0.4.2.5 disproved the top-level-page approach: it appeared as an empty separate pause-menu page and its map-lifecycle tab teardown left GIANTS `TabbedMenu` in an inconsistent state during game shutdown.
-
-The Configuration area remains the architectural host for a future discoverable **Help / Reference** route. #293 owns the destination, content and navigation contract; until that responsibility is resolved, the Configuration Section MUST NOT expose an inert or misleading Help control.
+The Configuration area remains the architectural host for a future discoverable **Help / Reference** route. This GUI Architecture owns the player-facing integration boundary, while Issue #293 tracks the unresolved destination, content and navigation work. Until that work is resolved, the Configuration Section MUST NOT expose an inert or misleading Help control.
 
 ### English source wording
 
