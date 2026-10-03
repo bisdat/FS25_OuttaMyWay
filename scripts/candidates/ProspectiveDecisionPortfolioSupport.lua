@@ -12,7 +12,7 @@ end
 
 local function candidateMetadata(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or evidence.blockedWorkerRecoveryBridge or {}
+    local bridge=evidence.compositeRegulationBridge or evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or evidence.blockedWorkerRecoveryBridge or {}
     local metadata={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,recoveryKey=bridge.recoveryKey,
@@ -33,7 +33,7 @@ end
 
 local function descriptorFromSpecification(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or evidence.blockedWorkerRecoveryBridge or {}
+    local bridge=evidence.compositeRegulationBridge or evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or evidence.blockedWorkerRecoveryBridge or {}
     local descriptor={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
@@ -126,6 +126,138 @@ local function sharedCategory2PairSet(situations)
     return result
 end
 
+local function currentResponsibilityKey(picture,commitmentId)
+    if type(commitmentId)~="string" then return nil end
+    for _,context in OuttaMyWay.ValueRecord.ipairs(picture.commitmentContext or {}) do
+        if context.commitmentId==commitmentId then
+            local basis=context.governingBasis
+            return type(basis)=="table" and basis.responsibilityKey or nil
+        end
+    end
+    return nil
+end
+
+local function followerGroupContext(group)
+    local specification=group and group.candidateSpecifications and group.candidateSpecifications[1] or nil
+    local evidence=specification and specification.evidenceBasis or nil
+    local bridge=evidence and evidence.followerBoundaryBridge or nil
+    if type(bridge)~="table" or type(bridge.pairKey)~="string" then return nil,nil end
+    return specification,bridge
+end
+
+local function mergeRepresentationRequirements(target,source)
+    local seen={}
+    for _,item in ipairs(target.requirements or {}) do
+        if type(item.representationId)=="string" then seen[item.representationId]=true end
+    end
+    for _,item in ipairs(source.requirements or {}) do
+        if type(item.representationId)~="string" or seen[item.representationId]~=true then
+            target.requirements[#target.requirements+1]=item
+            if type(item.representationId)=="string" then seen[item.representationId]=true end
+        end
+    end
+end
+
+local function mergeGroupFitness(first,second)
+    local result,seen={},{}
+    for _,group in ipairs({first,second}) do
+        for _,fitness in ipairs(group and group.representationFitness or {}) do
+            local id=fitness.representationId
+            if type(id)~="string" or seen[id]~=true then
+                result[#result+1]=fitness
+                if type(id)=="string" then seen[id]=true end
+            end
+        end
+    end
+    return result
+end
+
+local function composeFollowerCategory2Group(picture,follower,category2,situation,targetPictureId,targetEpoch)
+    if modeOfGroup(follower)~="FOLLOWER_BOUNDARY" or modeOfGroup(category2)~="SHARED_CATEGORY_2_DEMAND" then return nil,"NOT_COMPOSABLE" end
+    local followerSpecification,followerBridge=followerGroupContext(follower)
+    if followerSpecification==nil then return nil,"FOLLOWER_TRIGGER_UNAVAILABLE" end
+    local situationPair=pairKey(situation.subjectAssemblyId,situation.otherAssemblyId)
+    if followerBridge.pairKey~=situationPair then return nil,"DIFFERENT_PAIR" end
+
+    local existingCommitmentId=followerBridge.existingCommitmentId
+    for _,specification in ipairs(category2.candidateSpecifications or {}) do
+        local bridge=specification.evidenceBasis and specification.evidenceBasis.actionSpaceRegulationBridge or nil
+        if type(bridge)=="table" and type(bridge.existingCommitmentId)=="string" then
+            if existingCommitmentId~=nil and existingCommitmentId~=bridge.existingCommitmentId then
+                return nil,"COMPOSED_REGULATION_EXISTING_COMMITMENT_CONFLICT"
+            end
+            existingCommitmentId=bridge.existingCommitmentId
+        end
+    end
+    local governingRequirementKey=currentResponsibilityKey(picture,existingCommitmentId)
+        or ("pairwise-regulation:"..tostring(followerBridge.operationId)..":"..tostring(followerBridge.pairKey))
+
+    local specifications={}
+    for _,specification in ipairs(category2.candidateSpecifications or {}) do
+        local evidence=specification.evidenceBasis or {}
+        local actionBridge=evidence.actionSpaceRegulationBridge
+        local roleCompatible=followerBridge.action=="RETIRE"
+            or (type(actionBridge)=="table"
+                and actionBridge.regulatedAssemblyId==followerBridge.followerAssemblyId
+                and actionBridge.protectedAssemblyId==followerBridge.leaderAssemblyId)
+        if roleCompatible then
+            actionBridge.governingRequirementKey=governingRequirementKey
+            actionBridge.existingCommitmentId=existingCommitmentId
+            followerBridge.governingRequirementKey=governingRequirementKey
+            followerBridge.existingCommitmentId=existingCommitmentId
+            evidence.governingBasis.responsibilityKey=governingRequirementKey
+            evidence.maintainsExistingCommitment=existingCommitmentId~=nil
+            if type(evidence.withinGroupTrafficPreference)=="table" then
+                evidence.withinGroupTrafficPreference.governingRequirementKey=governingRequirementKey
+            end
+            evidence.followerBoundaryBridge=followerBridge
+            evidence.compositeRegulationBridge={
+                architecture="COMPOSED_REGULATION_TRIGGERS",
+                pairKey=followerBridge.pairKey,operationId=followerBridge.operationId,
+                leaderAssemblyId=followerBridge.leaderAssemblyId,followerAssemblyId=followerBridge.followerAssemblyId,
+                regulatedAssemblyId=actionBridge.regulatedAssemblyId,protectedAssemblyId=actionBridge.protectedAssemblyId,
+                conflictIdentity=actionBridge.conflictIdentity,admissionKind=actionBridge.admissionKind,
+                existingCommitmentId=existingCommitmentId,governingRequirementKey=governingRequirementKey,
+                followerAction=followerBridge.action,
+                assemblyIds={followerBridge.leaderAssemblyId,followerBridge.followerAssemblyId},
+                triggerKinds={"FOLLOWER_BOUNDARY","SHARED_CATEGORY_2_DEMAND"}
+            }
+            specification.referenceKey="composed-regulation:"..tostring(followerBridge.pairKey)..":"..tostring(actionBridge.regulatedAssemblyId)
+            specification.purpose={
+                kind="PAIRWISE_REGULATION_TRIGGER_COMPOSITION",
+                result="PRESERVE_TEMPORAL_ORDERING_WHILE_ANY_ADMITTED_TRIGGER_REMAINS_CURRENT"
+            }
+            specification.expectedEffect.composedRegulationTriggers=true
+            specification.expectedEffect.multipleCompatibleSpeedCeilings=true
+            specification.obligationsCreated=specification.obligationsCreated or {}
+            for _,obligation in ipairs(followerSpecification.obligationsCreated or {}) do
+                specification.obligationsCreated[#specification.obligationsCreated+1]=obligation
+            end
+            mergeRepresentationRequirements(specification.representationFitness,followerSpecification.representationFitness or {requirements={}})
+            for _,condition in ipairs(followerSpecification.invalidationConditions or {}) do
+                specification.invalidationConditions[#specification.invalidationConditions+1]=condition
+            end
+            specifications[#specifications+1]=specification
+        end
+    end
+    if #specifications==0 then return nil,"COMPOSED_REGULATION_TRIGGER_ROLE_CONFLICT" end
+    return {
+        supportBoundary={
+            mode="COMPOSED_REGULATION_TRIGGERS",supportedCandidateClasses={"REGULATE_SPEED"},
+            physicalCapabilitiesImplemented=true,controlAuthority="COMPOSED_SPEED_CEILINGS",
+            boundedScope="SAME_PAIR_FOLLOWER_BOUNDARY_OR_SHARED_CATEGORY_2_TEMPORAL_COORDINATION",
+            decisionPolicy={kind=OuttaMyWay.WithinGroupTrafficDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}
+        },
+        candidateSpecifications=specifications,
+        representationFitness=mergeGroupFitness(follower,category2),
+        provenance={
+            source="ProspectiveDecisionPortfolioSupport",targetOperationalPictureId=targetPictureId,targetEpoch=targetEpoch,
+            candidateSupportProjection=true,authority="SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
+            pairKey=followerBridge.pairKey,sharedCategory2Identity=situation.identity
+        }
+    },nil
+end
+
 local function forwardRelationshipCount(picture,excludedPairKeys)
     local count=0
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
@@ -196,12 +328,12 @@ function Support:publishDecisionPicture(picture,snapshot)
     if bypass~=nil then appendGroup(state,bypass,"BOUNDED_BYPASS","bounded-bypass",1) end
 
     local follower,followerReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FOLLOWER_BOUNDARY"},targetPictureId,targetEpoch)
+    local followerFamily=nil
     if modeOfGroup(follower)=="FOLLOWER_BOUNDARY" then
-        local family="FOLLOWER"
+        followerFamily="FOLLOWER"
         local spec=follower.candidateSpecifications and follower.candidateSpecifications[1] or nil
         local action=spec and spec.evidenceBasis and spec.evidenceBasis.followerBoundaryBridge and spec.evidenceBasis.followerBoundaryBridge.action or nil
-        if action=="RETIRE" then family="FOLLOWER_RETIRE" end
-        appendGroup(state,follower,family,"follower",1)
+        if action=="RETIRE" then followerFamily="FOLLOWER_RETIRE" end
     elseif type(followerReason)=="string" and string.find(followerReason,"MULTIPLE_SIMULTANEOUS_FOLLOWER_BOUNDARY_CONTEXTS",1,true) then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"FOLLOWER_FAIL_CLOSED",followerReason,1)
     end
@@ -221,10 +353,37 @@ function Support:publishDecisionPicture(picture,snapshot)
 
     local sharedCategory2=sharedCategory2Situations(picture)
     local category2Pairs=sharedCategory2PairSet(sharedCategory2)
+    local category2,category2Reason=nil,nil
     if #sharedCategory2==1 then
-        local category2,category2Reason=self.liveSupport:buildProjectedGroup(
-            picture,snapshot,{kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=sharedCategory2[1].identity},
-            targetPictureId,targetEpoch)
+        local _,followerBridge=followerGroupContext(follower)
+        local compatibleExistingCommitmentId=nil
+        if followerBridge~=nil and followerBridge.pairKey==pairKey(sharedCategory2[1].subjectAssemblyId,sharedCategory2[1].otherAssemblyId) then
+            compatibleExistingCommitmentId=followerBridge.existingCommitmentId
+        end
+        category2,category2Reason=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{
+                kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=sharedCategory2[1].identity,
+                compatibleExistingCommitmentId=compatibleExistingCommitmentId
+            },targetPictureId,targetEpoch)
+    elseif #sharedCategory2>1 then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+            "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED","MULTIPLE_SHARED_CATEGORY_2_SITUATIONS",1)
+    end
+
+    local composed,compositionReason=nil,nil
+    if followerFamily~=nil and modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" and #sharedCategory2==1 then
+        composed,compositionReason=composeFollowerCategory2Group(
+            picture,follower,category2,sharedCategory2[1],targetPictureId,targetEpoch)
+    end
+    if composed~=nil then
+        local _,bridge=followerGroupContext(follower)
+        appendGroup(state,composed,"COMPOSED_REGULATION","composed-regulation:"..tostring(bridge and bridge.pairKey or sharedCategory2[1].identity),1)
+    elseif compositionReason=="COMPOSED_REGULATION_TRIGGER_ROLE_CONFLICT"
+        or compositionReason=="COMPOSED_REGULATION_EXISTING_COMMITMENT_CONFLICT" then
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
+            "COMPOSED_REGULATION_FAIL_CLOSED",compositionReason,1)
+    else
+        if followerFamily~=nil then appendGroup(state,follower,followerFamily,"follower",1) end
         if modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" then
             appendGroup(state,category2,"CATEGORY_2_BOUNDARY_DEMAND",
                 "category-2-boundary-demand:"..tostring(sharedCategory2[1].identity),1)
@@ -232,9 +391,6 @@ function Support:publishDecisionPicture(picture,snapshot)
             passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
                 "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED",category2Reason,1)
         end
-    elseif #sharedCategory2>1 then
-        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,
-            "CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED","MULTIPLE_SHARED_CATEGORY_2_SITUATIONS",1)
     end
 
     local forwardCount=forwardRelationshipCount(picture,category2Pairs)

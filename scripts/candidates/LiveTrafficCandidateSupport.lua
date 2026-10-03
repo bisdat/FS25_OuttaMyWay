@@ -961,7 +961,7 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
     },nil
 end
 
-local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation)
+local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,compatibleExistingCommitmentId)
     local participants={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
         if type(participant.assemblyId)=="string" and type(participant.assemblyReferenceKey)=="string" then
@@ -972,8 +972,18 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
     if #participants~=2 then return nil,"SHARED_CATEGORY_2_REQUIRES_EXACTLY_TWO_CURRENT_PARTICIPANTS" end
 
     local requirement="shared-category-2-regulation:"..tostring(situation.identity)
-    local existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
-    if existingReason~=nil then return nil,existingReason end
+    local existing,existingReason=nil,nil
+    if type(compatibleExistingCommitmentId)=="string" then
+        local found=false
+        for _,context in OuttaMyWay.ValueRecord.ipairs(values.commitmentContext or {}) do
+            if context.commitmentId==compatibleExistingCommitmentId then found=true break end
+        end
+        if not found then return nil,"COMPOSED_REGULATION_EXISTING_COMMITMENT_NOT_CURRENT" end
+        existing=compatibleExistingCommitmentId
+    else
+        existing,existingReason=actionSpaceExistingCommitmentForRequirement(values,requirement)
+        if existingReason~=nil then return nil,existingReason end
+    end
 
     local baseline=#(values.representationFitness or {})
     local specifications={}
@@ -1087,7 +1097,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         if type(projection.sharedCategory2Identity)~="string" then return nil,"SHARED_CATEGORY_2_ID_REQUIRED" end
         local situation,reason=sharedCategory2Situation(picture,projection.sharedCategory2Identity)
         if situation==nil then return nil,reason or "NO_SHARED_CATEGORY_2_DEMAND" end
-        return projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation)
+        return projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,projection.compatibleExistingCommitmentId)
     end
 
     if projection.kind=="FORWARD_INTERSECTION" then
