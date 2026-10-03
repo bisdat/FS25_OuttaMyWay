@@ -371,6 +371,26 @@ If either worker must first reach a headland or transition, A8 does not predict 
 
 Foreseeability is a Situation Assessment conclusion, not an obligation. It disappears when fresh Reality invalidates its evidence.
 
+#### Current Opposed Reacquisition
+
+An individual worker's retained Established Trajectory may legitimately lag a fresh productive direction while the trajectory's own supersession evidence is still accumulating. That lag MUST NOT by itself veto a pairwise opposed-corridor conclusion when stronger fresh current evidence already supports the Passage question.
+
+**Current Opposed Reacquisition** is the pair-scoped Situation conclusion that an Established Opposed Corridor Conflict is current even though one or both retained participant trajectories have not yet superseded to the fresh direction. It is supported only when fresh evidence positively establishes all of the following:
+
+- both participants are current Operation members and current settled productive continuation is positive for both;
+- each participant has sufficient current realised directional persistence for the opposed-corridor question;
+- their fresh current progression directions are substantially opposed and mutually facing;
+- current pair closure is positively established; and
+- current represented physical support bands positively overlap on the fresh opposed axis.
+
+The reacquired conclusion MUST publish the exact participant-specific fresh direction basis that supported it. Cooperative Passage Candidate planning MUST consume that pair-specific basis instead of a contradictory retained Established Trajectory while the reacquisition remains current.
+
+Current Opposed Reacquisition is deliberately narrower than Trajectory Supersession. It does not rewrite either participant's general Established Trajectory, create persistent pair history, predict a post-horizon route, or make a TURNING / unresolved direction Passage-ready. Loss of any required fresh evidence returns the pair to ordinary current assessment.
+
+> **Current Opposed Reacquisition != Trajectory Supersession.**
+
+> **Fresh Pairwise Passage Direction != General Route Authority.**
+
 ### Passage recognition geometry
 
 Passage recognition geometry is not Passage Candidate geometry.

@@ -320,6 +320,63 @@ function Authority:retireCompositeCategory2Trigger(commitmentId)
     return revised,true
 end
 
+-- A compatible Follower trigger may become current after an Action-Space
+-- Regulation already exists.  Trigger admission is Regulation maintenance:
+-- preserve the RS identity and extend its semantic trigger basis before the
+-- new physical constraint is continued.
+function Authority:composeFollowerBoundaryTrigger(commitmentId,composite,bridge)
+    local current=self:getCurrentRegulation(commitmentId)
+    if current==nil or current.kind~="REGULATION"
+        or current.provenance==nil
+        or current.provenance.retainedCommitmentId~=commitmentId then
+        return nil,false,"COMPOSED_FOLLOWER_CURRENT_REGULATION_UNAVAILABLE"
+    end
+    if type(composite)~="table" or composite.architecture~="COMPOSED_REGULATION_TRIGGERS"
+        or type(bridge)~="table" or bridge.action~="APPLY"
+        or (composite.existingCommitmentId~=nil and composite.existingCommitmentId~=commitmentId)
+        or composite.pairKey~=bridge.pairKey
+        or composite.leaderAssemblyId~=bridge.leaderAssemblyId
+        or composite.followerAssemblyId~=bridge.followerAssemblyId then
+        return nil,false,"COMPOSED_FOLLOWER_TRIGGER_CONTEXT_MISMATCH"
+    end
+    local provenance=current.provenance
+    if provenance.conflictIdentity~=composite.conflictIdentity
+        or provenance.regulatedAssemblyId~=composite.regulatedAssemblyId
+        or provenance.protectedAssemblyId~=composite.protectedAssemblyId then
+        return nil,false,"COMPOSED_FOLLOWER_TRIGGER_ROLE_MISMATCH"
+    end
+
+    local existing=provenance.compositeTriggerBasis
+    if type(existing)=="table" then
+        if existing.followerPairKey~=composite.pairKey
+            or existing.sharedCategory2Identity~=composite.conflictIdentity then
+            return nil,false,"COMPOSED_FOLLOWER_TRIGGER_BASIS_MISMATCH"
+        end
+        if existing.followerActive==true and existing.sharedCategory2Active==true then
+            return current,false,nil
+        end
+    end
+
+    local values=OuttaMyWay.ValueRecord.toTable(current)
+    local revisedProvenance=values.provenance
+    revisedProvenance.pairKey=composite.pairKey
+    revisedProvenance.leaderAssemblyId=composite.leaderAssemblyId
+    revisedProvenance.followerAssemblyId=composite.followerAssemblyId
+    revisedProvenance.compositeTriggerBasis={
+        kind="SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
+        followerPairKey=composite.pairKey,
+        sharedCategory2Identity=composite.conflictIdentity,
+        followerActive=true,
+        sharedCategory2Active=true
+    }
+    local revised=OuttaMyWay.Regulation.new(values)
+    self.regulationsByCommitmentId[commitmentId]=revised
+    logInfo("REGULATION_TRIGGER_COMPOSED",
+        "commitment=%s responsibility=%s pair=%s follower=true sharedCategory2=true sameResponsibility=true",
+        tostring(commitmentId),tostring(revised.identity),tostring(composite.pairKey))
+    return revised,true,nil
+end
+
 local function sameTwoParticipants(current,bridge)
     local provenance=current and current.provenance or nil
     local ids=bridge and bridge.assemblyIds or nil

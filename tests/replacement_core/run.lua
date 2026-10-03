@@ -3556,6 +3556,80 @@ test("TS015 same-pair Follower and Shared Category-2 compose one Regulation and 
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
 end)
 
+test("TS015 late Follower trigger composes into incumbent Category-2 Regulation without responsibility churn", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    -- Reality path from 0.4.10.7: Category-2 exists first.
+    local noFollower=buildFollowerBoundaryRecord(25,nil,nil)
+    noFollower.status="NOT_APPLICABLE"; noFollower.purposeState="NONE"; noFollower.controlMagnitude=nil
+    local category2Only=OuttaMyWay.ValueRecord.toTable(
+        buildComposedRegulationPicture(runtime,noFollower,"SUPPORTED",nil,nil))
+    category2Only.followerBoundaryKnowledge={}
+    category2Only=OuttaMyWay.OperationalPicture.new(category2Only)
+    local first=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(category2Only,headOnTestSnapshot())
+    local firstEval=runtime:evaluateSealedOperationalPicture(first)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(first,firstEval)
+    equal(admitted.status=="ACCEPTED" or admitted.status=="MAINTAINED",true)
+    local commitmentId=admitted.commitment.identity
+    local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    local responsibilityId=current.identity
+    equal(current.provenance.admissionKind,"SHARED_CATEGORY_2_DEMAND")
+    equal(current.provenance.compositeTriggerBasis,nil)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+
+    -- Follower support appears later while Category-2 remains current.  This
+    -- must extend the same semantic Regulation rather than merely adding a
+    -- hidden obligation beneath an unchanged single-trigger responsibility.
+    local follower=buildFollowerBoundaryRecord(16,nil,nil)
+    local composed=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,follower,"SUPPORTED",commitmentId,"AS-P"),headOnTestSnapshot())
+    local composedEval=runtime:evaluateSealedOperationalPicture(composed)
+    local composedResult=runtime:dispatchEvaluatedOperationalPicture(composed,composedEval)
+    equal(composedResult.compositeRegulation,true)
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current.identity,responsibilityId)
+    equal(type(current.provenance.compositeTriggerBasis),"table")
+    equal(current.provenance.compositeTriggerBasis.followerActive,true)
+    equal(current.provenance.compositeTriggerBasis.sharedCategory2Active,true)
+    equal(current.provenance.pairKey,"AS-C|AS-P")
+    equal(#runtime.obligations:openForOwner(commitmentId),2)
+
+    -- Category-2 may now retire without ending the Regulation because the late
+    -- Follower trigger is part of the same current trigger basis.
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+    local retainedFollower=buildFollowerBoundaryRecord(14,commitmentId,followerObligation.identity)
+    local category2Dissolved=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retainedFollower,"DISSOLVED",commitmentId,"AS-P"),headOnTestSnapshot())
+    local category2Eval=runtime:evaluateSealedOperationalPicture(category2Dissolved)
+    local category2Retired=runtime:dispatchEvaluatedOperationalPicture(category2Dissolved,category2Eval)
+    equal(category2Retired.compositeRegulation,true)
+    equal(category2Retired.triggerRetired,"SHARED_CATEGORY_2_DEMAND")
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current.identity,responsibilityId)
+    equal(current.provenance.compositeTriggerBasis.sharedCategory2Active,false)
+    equal(current.provenance.compositeTriggerBasis.followerActive,true)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+
+    -- Final positive Follower retirement exhausts the composed trigger basis,
+    -- so no purposeless active Commitment may remain to block a fresh Passage.
+    local retireFollower=buildFollowerBoundaryRecord(25,commitmentId,followerObligation.identity)
+    retireFollower.status="RETIRE_SUPPORTED"; retireFollower.purposeState="RETIRE"; retireFollower.controlMagnitude=nil
+    retireFollower.reason="ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION"
+    local finalPicture=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retireFollower,nil,commitmentId,nil),headOnTestSnapshot())
+    local finalEval=runtime:evaluateSealedOperationalPicture(finalPicture)
+    local final=runtime:dispatchEvaluatedOperationalPicture(finalPicture,finalEval)
+    equal(final.status,"RELEASED")
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId),nil)
+    equal(#runtime.obligations:openForOwner(commitmentId),0)
+end)
+
 test("TS015 composed Regulation preserves Category-2 when Follower trigger retires first", function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
@@ -4165,6 +4239,76 @@ local function classifyTestTrajectoryConflict(trajectories,motions,spaces,physic
     })[1]
 end
 
+test("Trajectory Conflict: fresh settled opposed motion reacquires Passage concern before stale trajectory supersession",function()
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",established=true,establishedDirectionX=-1,establishedDirectionZ=0,corridorAnchorX=0,corridorAnchorZ=12,currentDirectionX=0,currentDirectionZ=-1,currentExcursion=true,currentAlignedDistanceM=0,excursionDistanceM=1.37,currentToEstablishedDot=0,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"}
+    }
+    local motions={
+        buildTrajectoryMotionEvidence("AS-A","JE-A",0,1,2,1,nil,"SETTLED_CONTINUATION",true,true,0,1),
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,1,1,nil,"SETTLED_CONTINUATION",true,true,0,-1)
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,12)}
+    local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,12,3)}
+    local relation=classifyTestTrajectoryConflict(trajectories,motions,spaces,physical)
+    equal(relation.trajectoryDot,0)
+    equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(relation.reason,"CURRENT_SETTLED_OPPOSED_MOTION_REACQUIRES_CORRIDOR_CONFLICT")
+    equal(relation.currentOpposedReacquisition.supported,true)
+    equal(relation.passageDirectionBasis.kind,"CURRENT_OPPOSED_REACQUISITION")
+    equal(relation.passageDirectionBasis.subject.directionZ,1)
+    equal(relation.passageDirectionBasis.other.directionZ,-1)
+    equal(relation.currentOpposed,true)
+    equal(relation.currentClosingPositive,true)
+    equal(relation.supportedCorridorOverlap.positive,true)
+    equal(relation.actionSpaceConservation.maxSeparationM,80)
+
+    OuttaMyWay.NativeA8ClearanceAssessment.apply({
+        relationships={relation},currentSpace=spaces,physicalSpaceEvidence=physical
+    })
+    equal(relation.passageEvaluationReady,true)
+    equal(relation.cooperativePassageEligible,true)
+end)
+
+test("Trajectory Conflict: ordinary retained opposed pair remains on established-trajectory path",function()
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",established=true,establishedDirectionX=0,establishedDirectionZ=-1,corridorAnchorX=0,corridorAnchorZ=12,currentDirectionX=0,currentDirectionZ=-1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"}
+    }
+    local motions={
+        buildTrajectoryMotionEvidence("AS-A","JE-A",0,1,2,1,nil,"SETTLED_CONTINUATION",true,true,0,1),
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,1,1,nil,"SETTLED_CONTINUATION",true,true,0,-1)
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,12)}
+    local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,12,3)}
+    local relation=classifyTestTrajectoryConflict(trajectories,motions,spaces,physical)
+    equal(relation.trajectoryDot,-1)
+    equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(relation.reason,"PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP")
+    equal(relation.currentOpposedReacquisition.supported,false)
+    equal(relation.currentOpposedReacquisition.reason,"CURRENT_OPPOSED_REACQUISITION_RETAINED_RELATION_ALREADY_OPPOSED")
+    equal(relation.passageDirectionBasis,nil)
+end)
+
+test("Trajectory Conflict: current opposed vectors cannot reacquire Passage without settled productive continuation",function()
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
+        {assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",established=true,establishedDirectionX=-1,establishedDirectionZ=0,corridorAnchorX=0,corridorAnchorZ=12,currentDirectionX=0,currentDirectionZ=-1,currentExcursion=true,currentAlignedDistanceM=0,excursionDistanceM=1.37,currentToEstablishedDot=0,contextProductivePositive=false,contextEvidenceClass="TURN_SEGMENT"}
+    }
+    local motions={
+        buildTrajectoryMotionEvidence("AS-A","JE-A",0,1,2,1,nil,"SETTLED_CONTINUATION",true,true,0,1),
+        buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,1,1,nil,"TURNING",true,true,0,-1)
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0),buildTrajectoryCurrentSpace("AS-B",0,12)}
+    local physical={buildTrajectoryPhysicalEvidence("AS-A",0,0,3),buildTrajectoryPhysicalEvidence("AS-B",0,12,3)}
+    local relation=classifyTestTrajectoryConflict(trajectories,motions,spaces,physical)
+    equal(relation.classification,"NO_OPPOSED_CONFLICT")
+    equal(relation.reason,"ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED")
+    equal(relation.currentOpposedReacquisition.supported,false)
+    equal(relation.currentOpposedReacquisition.reason,"CURRENT_OPPOSED_REACQUISITION_REQUIRES_SETTLED_PRODUCTIVE_CONTINUATION")
+    equal(relation.passageDirectionBasis,nil)
+end)
+
 test("Trajectory Conflict: established opposed pair is Passage-evaluation-ready while one member remains transitional",function()
     local trajectories={
         {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentExcursion=false,currentAlignedDistanceM=5,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
@@ -4596,6 +4740,33 @@ test("Cooperative Passage requires the published Situation boundary and rejects 
     conflict.actionSpaceConservation.maxSeparationM=80
     plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
+end)
+
+test("Cooperative Passage planning consumes Current Opposed Reacquisition direction basis without mutating trajectory history",function()
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,18)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local conflict=values.opposedCorridorKnowledge[1]
+    local staleOther=values.trajectoryKnowledge[2]
+    staleOther.establishedDirectionX=-1
+    staleOther.establishedDirectionZ=0
+    conflict.trajectoryDot=0
+    conflict.passageDirectionBasis={
+        status="SUPPORTED",kind="CURRENT_OPPOSED_REACQUISITION",currentDirectionDot=-1,
+        subject={assemblyId="AS-A",directionX=0,directionZ=1,persistenceM=5},
+        other={assemblyId="AS-B",directionX=0,directionZ=-1,persistenceM=1.37}
+    }
+
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
+    equal(reason,nil)
+    equal(plan.status,"SUPPORTED")
+    equal(plan.passageDirectionBasisKind,"CURRENT_OPPOSED_REACQUISITION")
+    equal(plan.trajectoryDot,-1)
+    equal(plan.passageGuide.executionFrame.subjectForwardX,0)
+    equal(plan.passageGuide.executionFrame.subjectForwardZ,1)
+    equal(plan.passageGuide.executionFrame.otherForwardX,0)
+    equal(plan.passageGuide.executionFrame.otherForwardZ,-1)
+    equal(values.trajectoryKnowledge[2].establishedDirectionX,-1)
+    equal(values.trajectoryKnowledge[2].establishedDirectionZ,0)
 end)
 
 test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing one-sided extents rather than whole represented width",function()

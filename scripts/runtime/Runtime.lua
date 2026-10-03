@@ -517,6 +517,12 @@ function Runtime:_continueCompositeFollowerConstraint(picture,evaluated,current,
         return {status="NO_DISPATCH",reason=obligationReason or "COMPOSED_REGULATION_FOLLOWER_OBLIGATION_UNAVAILABLE",compositeRegulation=true}
     end
     commitment=obligationResult.commitment
+    local composedResponsibility,_,compositionReason=self.responsibilityTransitionAuthority:composeFollowerBoundaryTrigger(
+        commitment.identity,composite,bridge)
+    if composedResponsibility==nil then
+        return {status="NO_DISPATCH",reason=compositionReason or "COMPOSED_REGULATION_FOLLOWER_TRIGGER_NOT_REGISTERED",compositeRegulation=true}
+    end
+    current=composedResponsibility
     local token=seedApplied and seedApplied.authorityToken or nil
     if token==nil or token.assemblyId~=bridge.followerAssemblyId or self.authorities:validate(token)~=true then
         token=nil
@@ -537,7 +543,7 @@ function Runtime:_continueCompositeFollowerConstraint(picture,evaluated,current,
     end
     local applied={
         commitment=commitment,authorityToken=token,authorityAcquired=acquired,
-        currentResponsibility=(seedApplied and seedApplied.currentResponsibility) or current
+        currentResponsibility=current
     }
     local continued=self.regulationBoundedAuthority:continueFollowerBoundary(picture,evaluated,applied)
     continued.compositeRegulation=true
