@@ -148,7 +148,10 @@ Its physical restrictions are cumulative:
 
 - all current trigger-specific speed limits/envelopes remain constraints on Bounded Authority;
 - Bounded Authority may grant no broader physical effect than the least-permissive compatible current constraint;
-- changing which trigger supplies the tightest constraint is a magnitude update, not automatically a Responsibility Transition.
+- changing which trigger supplies the tightest constraint is a magnitude update, not automatically a Responsibility Transition; and
+- for Shared Protected Demand Composition, an exact fixed protective magnitude owned by the shared protected demand constrains every admitted controlled follower while that trigger remains current, even when a follower's own elastic ceiling would be looser. Positive retirement of that fixed trigger permits the surviving follower to return to its independently supported magnitude on fresh continuation.
+
+> **Incumbency Order Must Not Weaken Shared Protection.**
 
 > **Semantic Support OR; Physical Constraint AND.**
 

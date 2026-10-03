@@ -3494,6 +3494,48 @@ local function findOpenObligationByKind(runtime,commitmentId,kind)
     end
 end
 
+test("TS015 same-pair composition ignores directional Follower pair-key ordering", function()
+    local runtime=autonomousHeadOnRuntime()
+    local follower=buildFollowerBoundaryRecord(16.2,nil,nil)
+    follower.pairKey="AS-P|AS-C"
+    local picture=buildComposedRegulationPicture(runtime,follower,"SUPPORTED",nil,nil)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(picture,headOnTestSnapshot())
+    local groups=supported.candidateSupportEvidence.supportBoundary.groups
+    equal(#groups,1)
+    equal(groups[1].family,"COMPOSED_REGULATION")
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"CREATE")
+end)
+
+test("TS015 reversed Follower key can target an existing same-pair Regulation commitment", function()
+    local runtime=autonomousHeadOnRuntime()
+    local capability={}
+    function capability:executeControlRequest(request,candidate) return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local followerOnly=buildFollowerBoundaryRecord(16.2,nil,nil)
+    followerOnly.pairKey="AS-P|AS-C"
+    local firstPicture=buildFollowerBoundaryPicture(followerOnly,nil)
+    local firstSupported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(firstPicture,headOnTestSnapshot())
+    local firstEval=runtime:evaluateSealedOperationalPicture(firstSupported)
+    local firstResult=runtime:dispatchEvaluatedOperationalPicture(firstSupported,firstEval)
+    local commitmentId=firstResult.commitment.identity
+
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+    local retained=buildFollowerBoundaryRecord(16.2,commitmentId,followerObligation.identity)
+    retained.pairKey="AS-P|AS-C"
+    local composed=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retained,"SUPPORTED",commitmentId,nil),headOnTestSnapshot())
+    local groups=composed.candidateSupportEvidence.supportBoundary.groups
+    local composedGroup=nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(groups) do
+        if group.family=="COMPOSED_REGULATION" then composedGroup=group break end
+    end
+    equal(composedGroup~=nil,true)
+    equal(composedGroup.existingCommitmentId,commitmentId)
+end)
+
 test("TS015 same-pair Follower and Shared Category-2 compose one Regulation and retire independently", function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
@@ -3749,7 +3791,9 @@ test("TS015 Shared Protected Demand composes Condor Follower into incumbent Patr
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().pairKey,"AS-C|AS-S")
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().followerReferenceKey,"vehicle-root:C")
-    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,1)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().elasticCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().sharedProtectiveCapKmh,1)
 
     local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
     local retainedFollower=threeWorkerFollowerRecord(14,commitmentId,followerObligation.identity)

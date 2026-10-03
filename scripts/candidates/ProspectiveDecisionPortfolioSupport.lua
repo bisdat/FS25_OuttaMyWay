@@ -111,6 +111,12 @@ local function pairKey(a,b)
     return first.."|"..second
 end
 
+local function followerUnorderedPairKey(bridge)
+    if type(bridge)~="table" then return nil end
+    if type(bridge.leaderAssemblyId)~="string" or type(bridge.followerAssemblyId)~="string" then return nil end
+    return pairKey(bridge.leaderAssemblyId,bridge.followerAssemblyId)
+end
+
 local function sharedCategory2Situations(picture)
     local result={}
     for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
@@ -206,7 +212,8 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
     local followerSpecification,followerBridge=followerGroupContext(follower)
     if followerSpecification==nil then return nil,"FOLLOWER_TRIGGER_UNAVAILABLE" end
     local situationPair=pairKey(situation.subjectAssemblyId,situation.otherAssemblyId)
-    local samePair=followerBridge.pairKey==situationPair
+    local followerPair=followerUnorderedPairKey(followerBridge)
+    local samePair=followerPair~=nil and followerPair==situationPair
 
     local existingCommitmentId=followerBridge.existingCommitmentId
     for _,specification in ipairs(category2.candidateSpecifications or {}) do
@@ -269,6 +276,7 @@ local function composeFollowerCategory2Group(picture,follower,category2,situatio
                 regulatedAssemblyId=actionBridge.regulatedAssemblyId,protectedAssemblyId=actionBridge.protectedAssemblyId,
                 incumbentRegulatedAssemblyId=actionBridge.regulatedAssemblyId,
                 sharedProtectedAssemblyId=actionBridge.protectedAssemblyId,
+                sharedProtectiveSpeedKmh=not samePair and tonumber(actionBridge.fixedRegulationSpeedKmh) or nil,
                 conflictIdentity=actionBridge.conflictIdentity,admissionKind=actionBridge.admissionKind,
                 existingCommitmentId=existingCommitmentId,governingRequirementKey=governingRequirementKey,
                 followerAction=followerBridge.action,
@@ -466,7 +474,7 @@ function Support:publishDecisionPicture(picture,snapshot)
     if category2Situation~=nil then
         local _,followerBridge=followerGroupContext(follower)
         local compatibleExistingCommitmentId=nil
-        if followerBridge~=nil and followerBridge.pairKey==pairKey(
+        if followerBridge~=nil and followerUnorderedPairKey(followerBridge)==pairKey(
             category2Situation.subjectAssemblyId,category2Situation.otherAssemblyId) then
             compatibleExistingCommitmentId=followerBridge.existingCommitmentId
         end
