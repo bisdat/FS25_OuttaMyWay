@@ -2,6 +2,7 @@ local root = arg[1] or "."
 local function load(relativePath) dofile(root .. "/" .. relativePath) end
 
 OuttaMyWay = {}
+MotorState={OFF=0,IGNITION=1,STARTING=2,ON=3}
 load("scripts/config.lua")
 load("scripts/publication/LogPublication.lua")
 OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(function() return "DIAGNOSTIC" end)
@@ -346,7 +347,8 @@ test("active Job re-entry terminates retained obstruction relocation responsibil
     equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"NEW_AUTHORITATIVE_INTENT")
 end)
 
-local function genericControlFixture()
+local function genericControlFixture(options)
+    options=options or {}
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local commitments=OuttaMyWay.CommitmentRegistry.new(ids,epochs)
@@ -362,10 +364,23 @@ local function genericControlFixture()
     }
     local vehicle={rootNode=9901,forceIsActive=false,rotatedTime=0}
     local controlled=false
+    local motorState=options.initialMotorState or MotorState.OFF
+    local startCalls,stopCalls=0,0
     function vehicle:getAISteeringNode() return self.rootNode end
     function vehicle:getIsControlled() return controlled end
     function vehicle:getIsAIActive() return false end
     function vehicle:getMotor() return {getMaximumForwardSpeed=function() return 10 end} end
+    function vehicle:getMotorState() return motorState end
+    function vehicle:getIsMotorStarted() return motorState==MotorState.ON end
+    function vehicle:getCanMotorRun() return options.canMotorRun~=false end
+    function vehicle:startMotor(noEventSend)
+        startCalls=startCalls+1
+        motorState=options.delayedStart==true and MotorState.STARTING or MotorState.ON
+    end
+    function vehicle:stopMotor(noEventSend)
+        stopCalls=stopCalls+1
+        if motorState==MotorState.ON or motorState==MotorState.STARTING then motorState=MotorState.OFF end
+    end
     function vehicle:getCruiseControlState() return 0 end
     local source={getCurrentPhysicalObject=function(_,referenceKey) if referenceKey=="REF-BLOCKER" then return vehicle end return nil end}
     local control=OuttaMyWay.ObstructionRelocationControl.new(runtime,source)
@@ -382,7 +397,9 @@ local function genericControlFixture()
         authorityToken=token.identity,boundedAuthorityId="BA-TEST",operationalPictureEpoch=1,evidenceEpoch=1,
         effectiveActuationCompositionId="EC-GENERIC",preconditions={},invalidationConditions={}
     })
-    return control,request,vehicle,function(value) controlled=value end,function() return completion end
+    return control,request,vehicle,function(value) controlled=value end,function() return completion end,
+        function(value) motorState=value end,
+        function() return startCalls,stopCalls,motorState end
 end
 
 test("generic Obstruction Relocation Player Control Interlock relinquishes immediately without competing actuation", function()
@@ -393,16 +410,23 @@ test("generic Obstruction Relocation Player Control Interlock relinquishes immed
     getWorldTranslation=function() return 0,0,0 end
     worldDirectionToLocal=function(_,x,y,z) return x,y,z end
 
-    local control,request,vehicle,setControlled,completion=genericControlFixture()
+    local control,request,vehicle,setControlled,completion,_,propulsionCalls=genericControlFixture()
     local started=control:executeControlRequest(request,nil)
     equal(started,true)
     equal(vehicle.forceIsActive,true)
+    local startCalls,stopCalls=propulsionCalls()
+    equal(startCalls,1)
+    equal(stopCalls,0)
     setControlled(true)
     control:update(16)
     equal(completion().status,"PLAYER_CONTROL")
     equal(vehicle.forceIsActive,false)
     equal(driveCalls,0)
     equal(neutralizeCalls,0)
+    startCalls,stopCalls=propulsionCalls()
+    equal(stopCalls,0)
+    equal(completion().evidence.propulsion.released,true)
+    equal(completion().evidence.propulsion.evidence.reason,"PLAYER_CONTROL_HIGHER_AUTHORITY")
     equal(completion().evidence.activityContext.released,true)
 
     AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
@@ -421,7 +445,7 @@ test("generic Obstruction Relocation owned drive failure neutralizes propulsion 
     getWorldTranslation=function() return 0,0,0 end
     worldDirectionToLocal=function(_,x,y,z) return x,y,z end
 
-    local control,request,vehicle,_,completion=genericControlFixture()
+    local control,request,vehicle,_,completion,_,propulsionCalls=genericControlFixture()
     local started=control:executeControlRequest(request,nil)
     equal(started,true)
     control:update(16)
@@ -432,8 +456,76 @@ test("generic Obstruction Relocation owned drive failure neutralizes propulsion 
     equal(completion().status,"FAILED")
     equal(neutralizeCalls,1)
     equal(completion().evidence.neutralization.performed,true)
+    equal(completion().evidence.propulsion.released,true)
+    local startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,1)
+    equal(stopCalls,1)
+    equal(motorState,MotorState.OFF)
     equal(completion().evidence.activityContext.released,true)
     equal(vehicle.forceIsActive,false)
+
+    AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
+end)
+
+test("generic Obstruction Relocation waits for positive propulsion readiness before movement", function()
+    local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls,neutralizeCalls=0,0
+    AIVehicleUtil={driveInDirection=function() driveCalls=driveCalls+1; return true end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(_,x,y,z) return x,y,z end
+
+    local control,request,_,_,completion,setMotorState,propulsionCalls=genericControlFixture({delayedStart=true})
+    equal(control:executeControlRequest(request,nil),true)
+    local startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,1)
+    equal(stopCalls,0)
+    equal(motorState,MotorState.STARTING)
+
+    control:update(16)
+    equal(driveCalls,0)
+    equal(completion(),nil)
+    equal(control:getControlExecutionObservation().propulsionState,"WAITING_FOR_READINESS")
+
+    setMotorState(MotorState.ON)
+    control:update(16)
+    equal(driveCalls,1)
+    equal(completion(),nil)
+
+    control:relinquishAll("TEST_END")
+    startCalls,stopCalls,motorState=propulsionCalls()
+    equal(stopCalls,1)
+    equal(motorState,MotorState.OFF)
+
+    AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
+end)
+
+test("generic Obstruction Relocation preserves a pre-existing running motor", function()
+    local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls,neutralizeCalls=0,0
+    local failDrive=false
+    AIVehicleUtil={driveInDirection=function()
+        driveCalls=driveCalls+1
+        if failDrive then error("synthetic direction actuation failure") end
+        return true
+    end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(_,x,y,z) return x,y,z end
+
+    local control,request,_,_,completion,_,propulsionCalls=genericControlFixture({initialMotorState=MotorState.ON})
+    equal(control:executeControlRequest(request,nil),true)
+    control:update(16)
+    equal(driveCalls,1)
+    failDrive=true
+    control:update(16)
+    equal(completion().status,"FAILED")
+    local startCalls,stopCalls,motorState=propulsionCalls()
+    equal(startCalls,0)
+    equal(stopCalls,0)
+    equal(motorState,MotorState.ON)
+    equal(completion().evidence.propulsion.released,true)
+    equal(completion().evidence.propulsion.evidence.reason,"PROPULSION_NOT_OWNED")
 
     AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
 end)

@@ -134,6 +134,26 @@ function Control:_complete(status,evidence)
         end
     end
 
+    if state.phase=="INFIELD" and state.propulsionContext~=nil then
+        if vehicle==nil then
+            completionEvidence.propulsion={released=false,reason="CURRENT_PHYSICAL_OBJECT_LOST"}
+            if status~="PLAYER_CONTROL" and status~="SUPERSEDED" then ownedCleanupFailed=true end
+        else
+            local released,releaseEvidence=self.actuationMechanism:releasePropulsionContext(vehicle,state.propulsionContext)
+            completionEvidence.propulsion={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
+            if released==true then
+                logInfo("DEBUG","OBSTRUCTION_RELOCATION_PROPULSION_RELEASED","commitment=%s assembly=%s status=%s owned=%s stopped=%s reason=%s",
+                    tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
+                    tostring(type(releaseEvidence)=="table" and releaseEvidence.owned or nil),
+                    tostring(type(releaseEvidence)=="table" and releaseEvidence.stopped or nil),
+                    tostring(type(releaseEvidence)=="table" and releaseEvidence.reason or nil))
+            elseif status~="PLAYER_CONTROL" and status~="SUPERSEDED" then
+                ownedCleanupFailed=true
+                logWarning("OBSTRUCTION_RELOCATION_PROPULSION_RELEASE_FAILED","commitment=%s reason=%s",tostring(state.commitmentId),tostring(releaseEvidence))
+            end
+        end
+    end
+
     if state.phase=="INFIELD" and state.activityContext~=nil then
         if vehicle==nil then
             completionEvidence.activityContext={released=false,reason="CURRENT_PHYSICAL_OBJECT_LOST"}
@@ -257,6 +277,18 @@ function Control:executeControlRequest(request,candidate)
         tostring(activityContext.previousForceIsActive),
         steeringTelemetryText(activityContext.postAcquireSteering))
 
+    local propulsionOk,propulsionContext=self.actuationMechanism:acquirePropulsionContext(vehicle)
+    if not propulsionOk then
+        self.actuationMechanism:releaseVehicleActivityContext(vehicle,activityContext)
+        state.activityContext=nil
+        return self:_rejectBeforeStart(request,target,"FAILED","PROPULSION_CONTEXT_UNAVAILABLE:"..tostring(propulsionContext))
+    end
+    state.propulsionContext=propulsionContext
+    logInfo("DEBUG","OBSTRUCTION_RELOCATION_PROPULSION_CONTEXT_ACQUIRED","commitment=%s assembly=%s initiallyRunning=%s owned=%s initialState=%s postStartState=%s",
+        tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+        tostring(propulsionContext.initialRunning),tostring(propulsionContext.startedByOuttaMyWay),
+        tostring(propulsionContext.initialState),tostring(propulsionContext.postStartState))
+
     local configurationEvidence=nil
     if state.configurationPolicy=="OPPORTUNISTIC_NO_SETTLEMENT_GATE" then
         configurationEvidence=select(1,self:_prepareOpportunisticCompaction(vehicle,state))
@@ -267,9 +299,13 @@ function Control:executeControlRequest(request,candidate)
     local maximumSpeedKmh,speedReason=self.actuationMechanism:maximumForwardSpeedKmh(vehicle)
     if maximumSpeedKmh==nil then
         self:_releaseConfigurationOwnership(vehicle,state)
+        local propulsionReleased,propulsionReason=self.actuationMechanism:releasePropulsionContext(vehicle,propulsionContext)
+        state.propulsionContext=nil
         self.actuationMechanism:releaseVehicleActivityContext(vehicle,activityContext)
         state.activityContext=nil
-        return self:_rejectBeforeStart(request,target,"FAILED","OBSTRUCTION_RELOCATION_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(speedReason))
+        local reason="OBSTRUCTION_RELOCATION_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(speedReason)
+        if propulsionReleased~=true then reason=reason..":PROPULSION_CLEANUP_FAILED:"..tostring(propulsionReason) end
+        return self:_rejectBeforeStart(request,target,"FAILED",reason)
     end
 
     state.startX=position.x; state.startZ=position.z
@@ -308,6 +344,23 @@ function Control:update(dt)
     if self.actuationMechanism:isPlayerControlled(vehicle) then self:_complete("PLAYER_CONTROL",{kind="CURRENT_PLAYER_CONTROL"}); return end
     if self.actuationMechanism:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"}); return end
 
+    local elapsed=(tonumber(g_time) or 0)-state.startedAt
+    local propulsionStatus,propulsionEvidence=self.actuationMechanism:propulsionReadiness(vehicle,state.propulsionContext)
+    if propulsionStatus=="PENDING" then
+        if elapsed>BOUNDED_MOVE_WATCHDOG_MS then
+            self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="PROPULSION_READINESS_WATCHDOG_EXPIRED",propulsionEvidence=propulsionEvidence})
+        else
+            self:_publish(state,"MANOEUVRE_IN_PROGRESS",{
+                propulsionState="WAITING_FOR_READINESS",propulsionEvidence=propulsionEvidence,
+                configurationResult=state.configurationResult
+            })
+        end
+        return
+    elseif propulsionStatus~="READY" then
+        self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason=type(propulsionEvidence)=="table" and propulsionEvidence.reason or "PROPULSION_READINESS_UNAVAILABLE",propulsionEvidence=propulsionEvidence})
+        return
+    end
+
     if state.phase=="INFIELD" and state.actuationIssued==true then
         local now=tonumber(g_time) or 0
         if state.nextUpdateTelemetryLogged~=true
@@ -326,7 +379,6 @@ function Control:update(dt)
         end
     end
 
-    local elapsed=(tonumber(g_time) or 0)-state.startedAt
     local position=self.actuationMechanism:position(vehicle)
     if position==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="NON_JOB_POSE_LOST"}); return end
     local dx,dz=position.x-state.startX,position.z-state.startZ
@@ -393,6 +445,15 @@ function Control:relinquishAll(reason)
                 tostring(state.commitmentId),tostring(neutralizeReason))
         end
     end
+    local propulsionReleased=false
+    local propulsionReason=nil
+    if state.propulsionContext~=nil and vehicle~=nil then
+        propulsionReleased,propulsionReason=self.actuationMechanism:releasePropulsionContext(vehicle,state.propulsionContext)
+        if propulsionReleased~=true then
+            logWarning("OBSTRUCTION_RELOCATION_DISABLE_PROPULSION_RELEASE_FAILED","commitment=%s reason=%s",
+                tostring(state.commitmentId),tostring(propulsionReason))
+        end
+    end
     local activityContextReleased=false
     local activityContextReason=nil
     if state.activityContext~=nil and vehicle~=nil then
@@ -410,6 +471,8 @@ function Control:relinquishAll(reason)
         hadActiveControl=true,
         neutralized=neutralized,
         neutralizeReason=neutralizeReason,
+        propulsionReleased=propulsionReleased,
+        propulsionReason=propulsionReason,
         activityContextReleased=activityContextReleased,
         activityContextReason=activityContextReason,
         reason=reason
@@ -428,6 +491,8 @@ function Control:getStatus()
         directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),
         neutralizeCalls=self.actuationMechanism:getNeutralizeCallCount(),
         activityContextAcquireCalls=self.actuationMechanism:getActivityContextAcquireCallCount(),
-        activityContextReleaseCalls=self.actuationMechanism:getActivityContextReleaseCallCount()
+        activityContextReleaseCalls=self.actuationMechanism:getActivityContextReleaseCallCount(),
+        propulsionStartCalls=self.actuationMechanism:getPropulsionStartCallCount(),
+        propulsionStopCalls=self.actuationMechanism:getPropulsionStopCallCount()
     }
 end

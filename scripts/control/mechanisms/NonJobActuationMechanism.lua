@@ -23,7 +23,7 @@ local function steeringPose(vehicle)
     local good,x,y,z=pcall(getWorldTranslation,node); if not good then return nil end
     return node,x,y,z
 end
-function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Mechanism) end
+function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0,propulsionStartCalls=0,propulsionStopCalls=0},Mechanism) end
 
 local function boolOrNil(ok,value) if ok then return value==true end return nil end
 function Mechanism:steeringTelemetry(vehicle)
@@ -91,6 +91,103 @@ function Mechanism:releaseVehicleActivityContext(vehicle,context)
     self.activityContextReleaseCalls=self.activityContextReleaseCalls+1
     return true,{releaseCall=self.activityContextReleaseCalls,restoredForceIsActive=context.previousForceIsActive,postReleaseSteering=self:steeringTelemetry(vehicle)}
 end
+
+local function motorStateEvidence(vehicle)
+    if type(MotorState)~="table"
+        or MotorState.OFF==nil or MotorState.IGNITION==nil
+        or MotorState.STARTING==nil or MotorState.ON==nil then
+        return nil,"NON_JOB_MOTOR_STATE_ENUM_UNAVAILABLE"
+    end
+    local stateOk,state=safeCall(vehicle,"getMotorState")
+    if not stateOk then return nil,"NON_JOB_MOTOR_STATE_UNAVAILABLE" end
+    local runningOk,running=safeCall(vehicle,"getIsMotorStarted")
+    if not runningOk then return nil,"NON_JOB_MOTOR_RUNNING_STATE_UNAVAILABLE" end
+    return {state=state,running=running==true},nil
+end
+
+function Mechanism:acquirePropulsionContext(vehicle)
+    if self:isPlayerControlled(vehicle) then return false,"PLAYER_CONTROL" end
+    if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
+    local evidence,reason=motorStateEvidence(vehicle)
+    if evidence==nil then return false,reason end
+    local context={
+        initialState=evidence.state,
+        initialRunning=evidence.running,
+        startedByOuttaMyWay=false,
+        readyObserved=evidence.running
+    }
+    if evidence.running then return true,context end
+    if evidence.state==MotorState.STARTING then
+        context.transitionalStartObserved=true
+        return true,context
+    end
+    if evidence.state~=MotorState.OFF and evidence.state~=MotorState.IGNITION then
+        return false,"NON_JOB_MOTOR_STATE_UNSUPPORTED:"..tostring(evidence.state)
+    end
+    local canRunOk,canRun=safeCall(vehicle,"getCanMotorRun")
+    if not canRunOk then return false,"NON_JOB_MOTOR_CAN_RUN_UNAVAILABLE" end
+    if canRun~=true then return false,"NON_JOB_MOTOR_CANNOT_RUN" end
+    local startOk=safeCall(vehicle,"startMotor",true)
+    if not startOk then return false,"NON_JOB_MOTOR_START_FAILED" end
+    self.propulsionStartCalls=self.propulsionStartCalls+1
+    context.startedByOuttaMyWay=true
+    context.startCall=self.propulsionStartCalls
+    local after,afterReason=motorStateEvidence(vehicle)
+    if after~=nil then
+        context.postStartState=after.state
+        context.readyObserved=after.running
+    else
+        context.postStartEvidenceUnavailable=afterReason
+    end
+    return true,context
+end
+
+function Mechanism:propulsionReadiness(vehicle,context)
+    if type(context)~="table" then return "FAILED",{reason="NON_JOB_PROPULSION_CONTEXT_UNAVAILABLE"} end
+    local evidence,reason=motorStateEvidence(vehicle)
+    if evidence==nil then return "FAILED",{reason=reason} end
+    if evidence.running then
+        context.readyObserved=true
+        return "READY",{state=evidence.state,running=true,owned=context.startedByOuttaMyWay==true}
+    end
+    if context.readyObserved==true then
+        return "FAILED",{reason="NON_JOB_PROPULSION_READINESS_LOST",state=evidence.state,running=false,owned=context.startedByOuttaMyWay==true}
+    end
+    if evidence.state==MotorState.STARTING then
+        return "PENDING",{reason="NON_JOB_PROPULSION_STARTING",state=evidence.state,running=false,owned=context.startedByOuttaMyWay==true}
+    end
+    local notReadyReason=context.startedByOuttaMyWay==true and "NON_JOB_PROPULSION_START_DID_NOT_PROGRESS" or "NON_JOB_PROPULSION_NOT_RUNNING"
+    return "FAILED",{reason=notReadyReason,state=evidence.state,running=false,owned=context.startedByOuttaMyWay==true}
+end
+
+function Mechanism:releasePropulsionContext(vehicle,context)
+    if type(context)~="table" then return false,"NON_JOB_PROPULSION_CONTEXT_UNAVAILABLE" end
+    if context.startedByOuttaMyWay~=true then
+        return true,{owned=false,stopRequested=false,stopped=false,reason="PROPULSION_NOT_OWNED"}
+    end
+    if vehicle==nil then return false,"VEHICLE_UNAVAILABLE" end
+    if self:isPlayerControlled(vehicle) then
+        return true,{owned=true,stopRequested=false,stopped=false,relinquished=true,reason="PLAYER_CONTROL_HIGHER_AUTHORITY"}
+    end
+    if self:isSourceReactivated(vehicle) then
+        return true,{owned=true,stopRequested=false,stopped=false,relinquished=true,reason="SOURCE_INTENT_REACTIVATED_HIGHER_AUTHORITY"}
+    end
+    local before,reason=motorStateEvidence(vehicle)
+    if before==nil then return false,reason end
+    if before.state==MotorState.OFF and before.running~=true then
+        return true,{owned=true,stopRequested=false,stopped=true,reason="ALREADY_STOPPED",state=before.state}
+    end
+    local stopOk=safeCall(vehicle,"stopMotor",true)
+    if not stopOk then return false,"NON_JOB_MOTOR_STOP_FAILED" end
+    self.propulsionStopCalls=self.propulsionStopCalls+1
+    local after,afterReason=motorStateEvidence(vehicle)
+    if after==nil then return false,afterReason end
+    if after.state~=MotorState.OFF or after.running==true then
+        return false,"NON_JOB_MOTOR_STOP_NOT_SETTLED:"..tostring(after.state)
+    end
+    return true,{owned=true,stopRequested=true,stopped=true,stopCall=self.propulsionStopCalls,state=after.state}
+end
+
 function Mechanism:position(vehicle)
     local _,x,_,z=steeringPose(vehicle); if x==nil then return nil end; return {x=x,z=z}
 end
@@ -178,3 +275,5 @@ function Mechanism:getDirectDriveCallCount() return self.directDriveCalls end
 function Mechanism:getNeutralizeCallCount() return self.neutralizeCalls end
 function Mechanism:getActivityContextAcquireCallCount() return self.activityContextAcquireCalls end
 function Mechanism:getActivityContextReleaseCallCount() return self.activityContextReleaseCalls end
+function Mechanism:getPropulsionStartCallCount() return self.propulsionStartCalls end
+function Mechanism:getPropulsionStopCallCount() return self.propulsionStopCalls end
