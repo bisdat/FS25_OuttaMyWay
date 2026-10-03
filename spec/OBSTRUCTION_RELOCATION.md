@@ -213,6 +213,24 @@ A current implementation may use positive supported productive continuation as t
 
 > **Obstruction Absence != Supported Continuation.**
 
+### Non-job propulsion readiness
+
+Obstruction Relocation may move a motorised non-active blocker only while the physical executor has positive current propulsion readiness.
+
+The relocation Resolution does not acquire a new propulsion purpose. Instead, generic Control may establish the mechanical precondition needed to realise the already-authorised bounded movement:
+
+- if the motor is already running, relocation may use that state without claiming ownership of it;
+- if the motor is positively stopped and OuttaMyWay starts it solely for this relocation, that motor start is temporary Control-owned physical state;
+- relocation movement MUST NOT begin merely because a start command was accepted; the motor must be positively observed running before the first drive actuation;
+- if OuttaMyWay started the motor, ordinary manoeuvre completion or an OuttaMyWay-owned physical failure MUST neutralise movement and then stop that motor again before releasing the owned activity context;
+- if OuttaMyWay did not start the motor, relocation cleanup MUST NOT stop it;
+- current Player Control or fresh source-AI reactivation supersedes OuttaMyWay propulsion ownership together with blocker actuation, so no terminal motor-stop command may compete with that higher-authority path; and
+- propulsion readiness, start/stop ownership and restoration are physical Control evidence only. They do not establish Causal Obstruction, Player Control, semantic success or a new relocation Candidate.
+
+> **OMW-Started Propulsion Must Be Reversible.**
+
+> **Propulsion Readiness != Relocation Authority.**
+
 ### Player Control Interlock
 
 Current GIANTS player control over the non-active blocker is mechanically higher authority than autonomous relocation.

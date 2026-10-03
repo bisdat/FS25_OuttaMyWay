@@ -184,6 +184,28 @@ Cleanup MUST NOT use a release path to tighten, redirect or create a physical ef
 
 > **Relinquishment Is Authority-Narrowing, Not Authority Creation.**
 
+### Propulsion readiness and Temporary Propulsion Ownership
+
+An already-authorised physical movement may require current propulsion readiness as a subordinate mechanical precondition. Establishing that readiness does not create a new strategic purpose, Candidate, Responsibility or Bounded Authority grant.
+
+For a supported non-job movement executor:
+
+- current propulsion state MUST be observed before Control changes it;
+- an already-running motor may be consumed as current mechanical readiness, but OuttaMyWay MUST NOT claim ownership merely because it depends on that state;
+- when the motor is positively stopped and Control uses the supported native motor lifecycle to start it solely so the authorised movement can execute, that start becomes an OuttaMyWay-owned temporary physical effect;
+- an unresolved or transitional propulsion state MUST NOT be reclassified as OuttaMyWay-owned merely because Control is waiting for readiness;
+- a start request or callable motor object is not itself propulsion readiness: positive movement actuation MUST wait for positive current evidence that the motor is actually running;
+- on ordinary completion or an OuttaMyWay-owned execution failure, Control MUST first neutralise its movement effect, then restore any OuttaMyWay-started motor to the prior stopped condition, then release the owned vehicle-activity context;
+- if OuttaMyWay did not start the motor, terminal cleanup MUST NOT stop it merely because the movement ended;
+- if current Player Control or renewed source-AI authority supersedes the movement, Control MUST NOT issue a competing motor-stop command against that higher-authority path; and
+- failure to restore an OuttaMyWay-owned propulsion effect while Control still owns the physical context is cleanup failure, not successful handback.
+
+> **Temporary Propulsion Ownership != Propulsion State**
+
+> **OMW-Started Propulsion Must Be Reversible.**
+
+> **Motor Running != Player Intent.**
+
 ## Movement objective and speed-ceiling composition
 
 When current Bounded Authority contains both a movement objective and one or more compatible Supporting Speed Ceilings for the same assembly, Control MUST compose them without transferring semantic or mechanical ownership of the movement objective to the ceiling.
