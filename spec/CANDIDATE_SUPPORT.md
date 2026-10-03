@@ -129,6 +129,10 @@ Candidate Space MUST:
 - reject duplicate or malformed Candidate identities/specifications; and
 - publish a complete Candidate inventory for the declared support boundary.
 
+Distinct support meanings in one target Decision Picture MUST have distinct Candidate identities even when they share the same passive capability. In particular, independently justified fail-closed portfolio scopes MUST NOT reuse the ordinary passive Candidate identity or each other's identity.
+
+> **Fail-Closed Meaning Multiplicity Requires Candidate Identity Multiplicity.**
+
 Candidate Space MUST NOT import Constraint conclusions from planning packets or treat Candidate existence as admissibility.
 
 ## Relationship-specific boundaries
