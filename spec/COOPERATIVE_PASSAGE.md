@@ -28,6 +28,7 @@ Before the Candidate may be selected and committed, the implementation MUST pres
 - a positive **Native A8 Clearance Exclusion** proves that Cooperative Passage is unnecessary for that current opposed A8 relationship and MUST prevent Passage Evaluation Readiness / Candidate evaluation;
 - unavailable or unresolved Native A8 Clearance Exclusion evidence provides no independent veto and MUST NOT be promoted into positive conflict;
 - **Passage Evaluation Readiness** authorises Candidate evaluation after an Established Opposed Corridor Conflict only when no current positive Native A8 Clearance Exclusion applies, and grants no Passage Candidate, commitment or actuation authority;
+- when Situation establishes that conflict through **Current Opposed Reacquisition**, the Candidate MUST use the published participant-specific Passage Direction Basis for prospective Passage geometry instead of a contradictory retained Established Trajectory; consuming that basis does not mutate general trajectory knowledge or acquire productive-route authority;
 - complete-assembly Transit geometry MUST support prospective Passage arrangement planning for the declared Passage purpose;
 - complete Physical Assembly membership is required for complete-assembly Passage geometry claims;
 - directional asymmetry and offsets MUST be preserved where supported by evidence;

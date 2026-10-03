@@ -108,6 +108,22 @@ Settled-continuation / native-intent evidence remains valid Situation evidence f
 
 > **Failure To Prove Native A8 Clearance != Passage Conflict.**
 
+For the opposed-corridor question, Situation Assessment MUST distinguish an individual's retained Established Trajectory from the pair's fresh current productive-direction evidence.
+
+When a retained trajectory relation is not substantially opposed, Situation Assessment MAY nevertheless establish the current pair as an **Established Opposed Corridor Conflict** through **Current Opposed Reacquisition** only when:
+
+- both current Operation participants have positive settled productive continuation;
+- fresh current realised direction for each participant has persisted for at least the same calibrated local stability distance used by ordinary opposed-corridor current-motion assessment;
+- the fresh directions are substantially opposed and mutually facing;
+- positive current closure is established; and
+- current represented physical support bands positively overlap on the fresh opposed axis.
+
+The resulting relationship MUST carry a participant-specific **Passage Direction Basis** identifying the fresh directions and their bounded provenance. That basis is valid only for the current opposed-corridor / Passage question. It MUST NOT mutate the participants' general Established Trajectories, authorise productive routing, or survive loss of the supporting fresh evidence.
+
+TURNING, unresolved native continuation, raw chassis heading, proximity, blockage, or future-space intersection alone MUST NOT establish Current Opposed Reacquisition.
+
+> **Current Opposed Reacquisition != Trajectory Supersession.**
+
 ## Relationship interpretation
 
 ### Current Pair Assessment Scope
