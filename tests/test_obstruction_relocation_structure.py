@@ -117,9 +117,16 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     assert "isPlayerControlled(vehicle)" in control
     assert "isSourceReactivated(vehicle)" in control
     assert "acquireVehicleActivityContext" in control
+    assert "acquirePropulsionContext" in control
+    assert "propulsionReadiness" in control
+    assert "releasePropulsionContext" in control
+    assert "refreshDeferredPropulsionRestoration" in control
+    assert "clearDeferredPropulsionRestoration" in control
     assert "driveInWorldDirection" in control
     assert "neutralize(vehicle" in control
     assert "releaseVehicleActivityContext" in control
+    assert 'OBSTRUCTION_RELOCATION_PROPULSION_RELEASED' in control
+    assert 'PROPULSION_READINESS_WATCHDOG_EXPIRED' in control
     assert 'finalStatus="FAILED"' in control
     assert 'reason="OWNED_ACTUATION_CLEANUP_FAILED"' in control
     assert 'state.cleanupFailurePolicy=="FAIL_COMPLETION"' in control

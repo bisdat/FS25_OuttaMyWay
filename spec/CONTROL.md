@@ -197,10 +197,17 @@ For a supported non-job movement executor:
 - a start request or callable motor object is not itself propulsion readiness: positive movement actuation MUST wait for positive current evidence that the motor is actually running;
 - on ordinary completion or an OuttaMyWay-owned execution failure, Control MUST first neutralise its movement effect, then restore any OuttaMyWay-started motor to the prior stopped condition, then release the owned vehicle-activity context;
 - if OuttaMyWay did not start the motor, terminal cleanup MUST NOT stop it merely because the movement ended;
-- if current Player Control or renewed source-AI authority supersedes the movement, Control MUST NOT issue a competing motor-stop command against that higher-authority path; and
+- if current Player Control supersedes the movement, Control MUST NOT issue a competing motor-stop command while Player Control is current; however, supersession alone does not prove that the player changed the OMW-created propulsion state;
+- where Player Control prevents immediate restoration of an OMW-started motor, Control MAY retain a **Deferred Propulsion Restoration Debt** containing no movement authority. While Runtime remains enabled, passive observation must retire that debt if Reality positively shows the OMW-created running/starting state ceased; otherwise a later fresh OMW non-job actuation over the same physical vehicle may inherit the debt and restore the original stopped condition at its own terminal cleanup;
+- renewed source-AI authority positively establishes a new native activity/propulsion lifecycle and therefore retires any OMW propulsion-restoration debt without issuing a competing motor-stop command;
+- product-level relinquishment/disable MUST clear any deferred propulsion-restoration bookkeeping after its immediate safe cleanup attempt so a later product re-enable cannot resurrect stale cleanup authority; and
 - failure to restore an OuttaMyWay-owned propulsion effect while Control still owns the physical context is cleanup failure, not successful handback.
 
 > **Temporary Propulsion Ownership != Propulsion State**
+
+> **Cleanup Deferral != Ownership Transfer.**
+
+> **Deferred Restoration Debt Carries Cleanup, Not Movement Authority.**
 
 > **OMW-Started Propulsion Must Be Reversible.**
 

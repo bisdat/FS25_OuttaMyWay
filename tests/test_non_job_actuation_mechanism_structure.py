@@ -39,6 +39,11 @@ def test_mechanical_surface_is_preserved():
         "isSourceReactivated",
         "acquireVehicleActivityContext",
         "releaseVehicleActivityContext",
+        "acquirePropulsionContext",
+        "propulsionReadiness",
+        "releasePropulsionContext",
+        "refreshDeferredPropulsionRestoration",
+        "clearDeferredPropulsionRestoration",
         "position",
         "heading",
         "maximumForwardSpeedKmh",
@@ -49,6 +54,8 @@ def test_mechanical_surface_is_preserved():
         "getNeutralizeCallCount",
         "getActivityContextAcquireCallCount",
         "getActivityContextReleaseCallCount",
+        "getPropulsionStartCallCount",
+        "getPropulsionStopCallCount",
     ):
         assert f"function Mechanism:{method}" in mechanism
 
@@ -60,6 +67,14 @@ def test_mechanical_surface_is_preserved():
         "vehicle.motor=motor",
         "vehicle.cruiseControl={state=cruiseState}",
         "vehicle.motor,vehicle.cruiseControl=previousMotor,previousCruise",
+        'safeCall(vehicle,"getMotorState")',
+        'safeCall(vehicle,"getIsMotorStarted")',
+        'safeCall(vehicle,"getCanMotorRun")',
+        'safeCall(vehicle,"startMotor",true)',
+        'safeCall(vehicle,"stopMotor",true)',
+        "deferredPropulsionRestoration",
+        "inheritedRestorationDebt",
+        "PLAYER_CONTROL_HIGHER_AUTHORITY",
     ):
         assert token in mechanism
 
@@ -115,6 +130,10 @@ def test_non_job_failure_reason_vocabulary_is_provenance_neutral():
         "NON_JOB_POSE_UNAVAILABLE",
         "NON_JOB_DIRECTION_DRIVE_CALL_FAILED",
         "NON_JOB_NEUTRALIZE_WHEEL_PHYSICS_FAILED",
+        "NON_JOB_MOTOR_STATE_UNAVAILABLE",
+        "NON_JOB_MOTOR_CANNOT_RUN",
+        "NON_JOB_PROPULSION_READINESS_LOST",
+        "NON_JOB_MOTOR_STOP_NOT_SETTLED",
     ):
         assert token in mechanism
     assert "POST_JOB_" not in mechanism
