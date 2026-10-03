@@ -3630,6 +3630,180 @@ test("TS015 late Follower trigger composes into incumbent Category-2 Regulation 
     equal(#runtime.obligations:openForOwner(commitmentId),0)
 end)
 
+local function threeWorkerCategory2Situation(identity,subjectId,subjectRef,otherId,otherRef,commitmentId,incumbentRegulatedId,subjectArrival,otherArrival)
+    return {
+        identity=identity,operationId="OR-1",fieldWorldReferenceKey="field-world-77",
+        subjectAssemblyId=subjectId,otherAssemblyId=otherId,
+        classification="SHARED_CATEGORY_2_DEMAND",relationshipStatus="POSITIVE",
+        currentEvidenceState="SUPPORTED",competingDemand=true,positiveDissolution=false,regulationSpeedKmh=1,
+        incumbentCommitmentId=commitmentId,incumbentRegulatedAssemblyId=incumbentRegulatedId,
+        participants={
+            {assemblyId=subjectId,assemblyReferenceKey=subjectRef,nativeBoundaryArrivalSeconds=subjectArrival or 6,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"},
+            {assemblyId=otherId,assemblyReferenceKey=otherRef,nativeBoundaryArrivalSeconds=otherArrival or 7,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"}
+        },
+        provenance={source="TS015-SHARED-PROTECTED-DEMAND-FIXTURE"}
+    }
+end
+
+local function threeWorkerFollowerRecord(cap,commitmentId,obligationId)
+    local record=buildFollowerBoundaryRecord(cap,commitmentId,obligationId)
+    record.pairKey="AS-C|AS-S"
+    record.leaderAssemblyId="AS-S"; record.leaderReferenceKey="vehicle-root:S"; record.leaderName="S 416"
+    record.followerAssemblyId="AS-C"; record.followerReferenceKey="vehicle-root:C"; record.followerName="Condor Endurance II"
+    return record
+end
+
+local function threeWorkerRegulationPicture(runtime,followerRecord,situations,commitmentId)
+    local seed=buildFollowerBoundaryPicture(followerRecord or threeWorkerFollowerRecord(25,nil,nil),commitmentId)
+    local values=OuttaMyWay.ValueRecord.toTable(seed)
+    values.identity="OP-TS015-SHARED-PROTECTED-"..tostring(commitmentId or "FRESH").."-"..tostring(#(situations or {}))
+    values.identities.assemblies={"AS-C","AS-P","AS-S"}
+    values.identities.jobEpisodes.active={"JE-C","JE-P","JE-S"}
+    values.currentPairAssessmentScope={
+        {pairReferenceKey="live-pair:vehicle-root:C:vehicle-root:P",operationId="OR-1",subjectAssemblyId="AS-C",otherAssemblyId="AS-P",subjectReferenceKey="vehicle-root:C",otherReferenceKey="vehicle-root:P",subjectJobEpisodeId="JE-C",otherJobEpisodeId="JE-P",episodeSignature="JE-C|JE-P",relationshipStatus="UNRESOLVED",relationship="UNRESOLVED",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="UNRESOLVED",currentInteractionEvidencePresent=false,evidence={sourceInteractionReferenceKeys={},negativeClearanceAuthority=false},provenance={source="ts015-shared-protected-demand",ephemeral=true,persistentPairHistory=false}},
+        {pairReferenceKey="live-pair:vehicle-root:C:vehicle-root:S",operationId="OR-1",subjectAssemblyId="AS-C",otherAssemblyId="AS-S",subjectReferenceKey="vehicle-root:C",otherReferenceKey="vehicle-root:S",subjectJobEpisodeId="JE-C",otherJobEpisodeId="JE-S",episodeSignature="JE-C|JE-S",relationshipStatus="POSITIVE",relationship="FOLLOWER",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="UNRESOLVED",currentInteractionEvidencePresent=true,evidence={sourceInteractionReferenceKeys={},negativeClearanceAuthority=false},provenance={source="ts015-shared-protected-demand",ephemeral=true,persistentPairHistory=false}},
+        {pairReferenceKey="live-pair:vehicle-root:P:vehicle-root:S",operationId="OR-1",subjectAssemblyId="AS-P",otherAssemblyId="AS-S",subjectReferenceKey="vehicle-root:P",otherReferenceKey="vehicle-root:S",subjectJobEpisodeId="JE-P",otherJobEpisodeId="JE-S",episodeSignature="JE-P|JE-S",relationshipStatus="POSITIVE",relationship="SHARED_CATEGORY_2_DEMAND",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="POSITIVE",currentInteractionEvidencePresent=true,evidence={sourceInteractionReferenceKeys={},negativeClearanceAuthority=false},provenance={source="ts015-shared-protected-demand",ephemeral=true,persistentPairHistory=false}}
+    }
+    values.followerBoundaryKnowledge=followerRecord and {followerRecord} or {}
+    values.commitmentContext=composedRegulationContext(runtime,commitmentId)
+    values.spatialConstraintKnowledge={{
+        operationId="OR-1",pairRelationships={},sharedCategory2Demands=situations or {},
+        cornerKnowledge={sharedCornerSituations={},engagements={}}
+    }}
+    return OuttaMyWay.OperationalPicture.new(values)
+end
+
+test("TS015 Shared Protected Demand composes Condor Follower into incumbent Patriot/S416 Regulation", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local incumbentFresh=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",nil,nil,7,4)
+    local initial=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,nil,{incumbentFresh},nil),headOnTestSnapshot())
+    local initialEval=runtime:evaluateSealedOperationalPicture(initial)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(initial,initialEval)
+    equal(admitted.status=="ACCEPTED" or admitted.status=="MAINTAINED",true)
+    local commitmentId=admitted.commitment.identity
+    local current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    local responsibilityId=current.identity
+    equal(current.provenance.admissionKind,"SHARED_CATEGORY_2_DEMAND")
+    equal(current.provenance.regulatedAssemblyId,"AS-P")
+    equal(current.provenance.protectedAssemblyId,"AS-S")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().regulatedAssemblyId,"AS-P")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
+
+    local incumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",commitmentId,"AS-P",7,4)
+    local freshCondorS416=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-S",
+        "AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,6,4)
+    local freshCondorPatriot=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-P",
+        "AS-C","vehicle-root:C","AS-P","vehicle-root:P",nil,nil,6,7)
+    local follower=threeWorkerFollowerRecord(16.2,nil,nil)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,follower,{incumbent,freshCondorS416,freshCondorPatriot},commitmentId),
+        headOnTestSnapshot())
+
+    local groups=supported.candidateSupportEvidence.supportBoundary.groups
+    local composedGroup=nil
+    local category2FailClosed=nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(groups) do
+        if group.family=="COMPOSED_REGULATION" then composedGroup=group end
+        if group.family=="CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED" then category2FailClosed=group end
+    end
+    equal(composedGroup~=nil,true)
+    equal(composedGroup.existingCommitmentId,commitmentId)
+    equal(category2FailClosed~=nil,true)
+    equal(category2FailClosed.failClosedReason,"MULTIPLE_FRESH_SHARED_CATEGORY_2_SITUATIONS_WITH_INCUMBENT")
+
+    local references={}
+    for _,specification in OuttaMyWay.ValueRecord.ipairs(supported.candidateSupportEvidence.candidateSpecifications) do
+        equal(references[specification.referenceKey],nil)
+        references[specification.referenceKey]=true
+    end
+
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"MAINTAIN")
+    local result=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(result.compositeRegulation,true)
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current.identity,responsibilityId)
+    equal(current.provenance.regulatedAssemblyId,"AS-P")
+    equal(current.provenance.protectedAssemblyId,"AS-S")
+    equal(current.provenance.pairKey,"AS-C|AS-S")
+    equal(current.provenance.leaderAssemblyId,"AS-S")
+    equal(current.provenance.followerAssemblyId,"AS-C")
+    equal(current.provenance.compositeTriggerBasis.kind,"SHARED_PROTECTED_DEMAND_TRIGGER_COMPOSITION")
+    equal(current.provenance.compositeTriggerBasis.sharedProtectedAssemblyId,"AS-S")
+    equal(current.provenance.compositeTriggerBasis.incumbentRegulatedAssemblyId,"AS-P")
+    equal(#runtime.obligations:openForOwner(commitmentId),2)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().regulatedAssemblyId,"AS-P")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().pairKey,"AS-C|AS-S")
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().followerReferenceKey,"vehicle-root:C")
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,16.2)
+
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+    local retainedFollower=threeWorkerFollowerRecord(14,commitmentId,followerObligation.identity)
+    local dissolved=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",commitmentId,"AS-P",7,4)
+    dissolved.classification="SHARED_CATEGORY_2_DEMAND_DISSOLVED_BY_BOUNDARY_TURN"
+    dissolved.relationshipStatus="NEGATIVE"; dissolved.currentEvidenceState="DISSOLVED"
+    dissolved.competingDemand=false; dissolved.positiveDissolution=true
+    local retirePicture=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,retainedFollower,{dissolved},commitmentId),headOnTestSnapshot())
+    local retireEval=runtime:evaluateSealedOperationalPicture(retirePicture)
+    local retired=runtime:dispatchEvaluatedOperationalPicture(retirePicture,retireEval)
+    equal(retired.compositeRegulation,true)
+    equal(retired.triggerRetired,"SHARED_CATEGORY_2_DEMAND")
+    current=runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId)
+    equal(current.identity,responsibilityId)
+    equal(current.provenance.conflictIdentity,nil)
+    equal(current.provenance.regulatedAssemblyId,"AS-C")
+    equal(current.provenance.protectedAssemblyId,"AS-S")
+    equal(current.provenance.compositeTriggerBasis.sharedCategory2Active,false)
+    equal(current.provenance.compositeTriggerBasis.followerActive,true)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+end)
+
+test("Prospective portfolio fail-closed projections namespace passive Candidate reference keys", function()
+    local runtime=autonomousHeadOnRuntime()
+    local first=threeWorkerFollowerRecord(16.2,nil,nil)
+    local second=threeWorkerFollowerRecord(16.2,nil,nil)
+    second.pairKey="AS-P|AS-S"
+    second.followerAssemblyId="AS-P"; second.followerReferenceKey="vehicle-root:P"; second.followerName="Patriot 4450"
+
+    local values=OuttaMyWay.ValueRecord.toTable(threeWorkerRegulationPicture(runtime,first,{
+        threeWorkerCategory2Situation("shared-category-2:OR-1:EDGE-1:AS-C:AS-S","AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,6,4),
+        threeWorkerCategory2Situation("shared-category-2:OR-1:EDGE-1:AS-P:AS-S","AS-P","vehicle-root:P","AS-S","vehicle-root:S",nil,nil,7,4)
+    },nil))
+    values.followerBoundaryKnowledge={first,second}
+    local picture=OuttaMyWay.OperationalPicture.new(values)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(picture,headOnTestSnapshot())
+    local seen={}
+    local passiveCount=0
+    for _,specification in OuttaMyWay.ValueRecord.ipairs(supported.candidateSupportEvidence.candidateSpecifications) do
+        equal(seen[specification.referenceKey],nil)
+        seen[specification.referenceKey]=true
+        if string.find(specification.referenceKey,"passive-fail-closed:",1,true)==1 then passiveCount=passiveCount+1 end
+    end
+    equal(passiveCount>=2,true)
+    local ok,evaluated=pcall(function() return runtime:evaluateSealedOperationalPicture(supported) end)
+    equal(ok,true)
+    equal(evaluated~=nil,true)
+end)
+
 test("TS015 composed Regulation preserves Category-2 when Follower trigger retires first", function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}

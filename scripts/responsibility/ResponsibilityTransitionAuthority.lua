@@ -315,6 +315,10 @@ function Authority:retireCompositeCategory2Trigger(commitmentId)
     values.provenance.conflictIdentity=nil
     values.provenance.admissionKind=nil
     values.provenance.compositeTriggerBasis.sharedCategory2Active=false
+    if composite.kind=="SHARED_PROTECTED_DEMAND_TRIGGER_COMPOSITION" then
+        values.provenance.regulatedAssemblyId=values.provenance.followerAssemblyId
+        values.provenance.protectedAssemblyId=values.provenance.leaderAssemblyId
+    end
     local revised=OuttaMyWay.Regulation.new(values)
     self.regulationsByCommitmentId[commitmentId]=revised
     return revised,true
@@ -339,17 +343,34 @@ function Authority:composeFollowerBoundaryTrigger(commitmentId,composite,bridge)
         or composite.followerAssemblyId~=bridge.followerAssemblyId then
         return nil,false,"COMPOSED_FOLLOWER_TRIGGER_CONTEXT_MISMATCH"
     end
+
     local provenance=current.provenance
-    if provenance.conflictIdentity~=composite.conflictIdentity
-        or provenance.regulatedAssemblyId~=composite.regulatedAssemblyId
-        or provenance.protectedAssemblyId~=composite.protectedAssemblyId then
-        return nil,false,"COMPOSED_FOLLOWER_TRIGGER_ROLE_MISMATCH"
+    local scope=composite.compositionScope or "SAME_PAIR"
+    if scope=="SAME_PAIR" then
+        if provenance.conflictIdentity~=composite.conflictIdentity
+            or provenance.regulatedAssemblyId~=composite.regulatedAssemblyId
+            or provenance.protectedAssemblyId~=composite.protectedAssemblyId then
+            return nil,false,"COMPOSED_FOLLOWER_TRIGGER_ROLE_MISMATCH"
+        end
+    elseif scope=="SHARED_PROTECTED_DEMAND" then
+        if provenance.admissionKind~="SHARED_CATEGORY_2_DEMAND"
+            or provenance.conflictIdentity~=composite.conflictIdentity
+            or provenance.regulatedAssemblyId~=composite.regulatedAssemblyId
+            or provenance.protectedAssemblyId~=composite.protectedAssemblyId
+            or provenance.protectedAssemblyId~=bridge.leaderAssemblyId
+            or provenance.regulatedAssemblyId==bridge.followerAssemblyId
+            or (provenance.operationId~=nil and bridge.operationId~=nil and provenance.operationId~=bridge.operationId) then
+            return nil,false,"SHARED_PROTECTED_DEMAND_TRIGGER_ROLE_MISMATCH"
+        end
+    else
+        return nil,false,"COMPOSED_FOLLOWER_TRIGGER_SCOPE_UNSUPPORTED"
     end
 
     local existing=provenance.compositeTriggerBasis
     if type(existing)=="table" then
         if existing.followerPairKey~=composite.pairKey
-            or existing.sharedCategory2Identity~=composite.conflictIdentity then
+            or existing.sharedCategory2Identity~=composite.conflictIdentity
+            or (existing.kind=="SHARED_PROTECTED_DEMAND_TRIGGER_COMPOSITION")~=(scope=="SHARED_PROTECTED_DEMAND") then
             return nil,false,"COMPOSED_FOLLOWER_TRIGGER_BASIS_MISMATCH"
         end
         if existing.followerActive==true and existing.sharedCategory2Active==true then
@@ -363,17 +384,19 @@ function Authority:composeFollowerBoundaryTrigger(commitmentId,composite,bridge)
     revisedProvenance.leaderAssemblyId=composite.leaderAssemblyId
     revisedProvenance.followerAssemblyId=composite.followerAssemblyId
     revisedProvenance.compositeTriggerBasis={
-        kind="SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
+        kind=scope=="SHARED_PROTECTED_DEMAND" and "SHARED_PROTECTED_DEMAND_TRIGGER_COMPOSITION"
+            or "SAME_PAIR_REGULATION_TRIGGER_COMPOSITION",
         followerPairKey=composite.pairKey,
         sharedCategory2Identity=composite.conflictIdentity,
-        followerActive=true,
-        sharedCategory2Active=true
+        sharedProtectedAssemblyId=scope=="SHARED_PROTECTED_DEMAND" and composite.sharedProtectedAssemblyId or nil,
+        incumbentRegulatedAssemblyId=scope=="SHARED_PROTECTED_DEMAND" and composite.incumbentRegulatedAssemblyId or nil,
+        followerActive=true,sharedCategory2Active=true
     }
     local revised=OuttaMyWay.Regulation.new(values)
     self.regulationsByCommitmentId[commitmentId]=revised
     logInfo("REGULATION_TRIGGER_COMPOSED",
-        "commitment=%s responsibility=%s pair=%s follower=true sharedCategory2=true sameResponsibility=true",
-        tostring(commitmentId),tostring(revised.identity),tostring(composite.pairKey))
+        "commitment=%s responsibility=%s pair=%s scope=%s follower=true sharedCategory2=true sameResponsibility=true",
+        tostring(commitmentId),tostring(revised.identity),tostring(composite.pairKey),tostring(scope))
     return revised,true,nil
 end
 

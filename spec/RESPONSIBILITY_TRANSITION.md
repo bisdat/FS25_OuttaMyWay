@@ -151,6 +151,18 @@ A replacement path MUST NOT use a temporary GIANTS-AI responsibility merely to s
 
 Where a selected Cooperative Passage supersedes a current tactical Regulation whose retained Commitment is not a valid substrate for the new pairwise Resolution, Responsibility Transition MUST perform a cross-context replacement rather than suppress the successor. The predecessor physical effect must be neutralised, its authority relinquished, a fresh successor Commitment established, and the predecessor terminalised as superseded within the same runtime transition cycle before successor physical dispatch.
 
+### Composite Regulation trigger admission
+
+Adding a compatible trigger to an already-current Regulation is **maintenance of that Regulation responsibility**, not establishment of a second Current Responsibility.
+
+Responsibility Transition MUST preserve the existing responsibility identity when Candidate Support and Decision have selected a composed Regulation product whose new trigger is compatible with the incumbent governing purpose. It MUST validate the exact retained Commitment, Operation, protected participant and trigger roles before adding the new obligation or actuation authority.
+
+For **Shared Protected Demand Composition**, the incumbent protected participant MUST equal the new Follower Boundary leader, the new follower MUST be a distinct controlled participant, and the incumbent regulated participant MUST remain unchanged. Failure of any of those checks leaves the incumbent Regulation unchanged and admits no new subordinate authority.
+
+When one trigger later retires, Responsibility Transition preserves the same Regulation identity while another admitted trigger remains open; it terminates the Regulation only after the composed basis is positively exhausted or superseded.
+
+> **Trigger Admission != Responsibility Replacement.**
+
 ## Durable invariants
 
 ### Exclusive lifecycle authority
