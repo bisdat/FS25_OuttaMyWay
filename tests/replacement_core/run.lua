@@ -3780,7 +3780,7 @@ end)
 test("Prospective portfolio fail-closed projections namespace passive Candidate reference keys", function()
     local runtime=autonomousHeadOnRuntime()
     local first=threeWorkerFollowerRecord(16.2,nil,nil)
-    local second=OuttaMyWay.ValueRecord.toTable(first)
+    local second=threeWorkerFollowerRecord(16.2,nil,nil)
     second.pairKey="AS-P|AS-S"
     second.followerAssemblyId="AS-P"; second.followerReferenceKey="vehicle-root:P"; second.followerName="Patriot 4450"
 
