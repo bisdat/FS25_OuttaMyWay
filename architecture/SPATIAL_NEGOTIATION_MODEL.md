@@ -196,6 +196,18 @@ Shared Category-2 Demand justifies one temporary Regulation so both workers are 
 3. Boundary Option-Space and current intent evidence remain supporting ordering evidence when arrival evidence does not distinguish the pair; and
 4. a stable deterministic tie-break is permitted only after semantic evidence remains genuinely equivalent.
 
+A current Follower Boundary relationship for the same pair may independently establish directional temporal ordering at the same terminating boundary opportunity. When that Follower meaning and Shared Category-2 Demand are both positive, they are not two competing tactical Regulations.
+
+> **Regulation Purpose != Regulation Trigger.**
+
+> **Trigger Multiplicity != Responsibility Multiplicity.**
+
+If one accepted trigger already positively allocates the pair and another accepted same-pair trigger is unallocated, the allocated trigger may supply the regulated/protected roles for the one Regulation responsibility. If positively allocated triggers disagree, the composition is unresolved and must fail closed.
+
+The semantic responsibility remains current while any admitted trigger remains positively current or legitimately waiting for evidence. Each trigger may retire independently; retirement of one trigger does not terminate the Regulation while another still supports the same pairwise temporal-coordination responsibility.
+
+The physical effect must satisfy all current trigger constraints. Where Follower Boundary supplies an elastic maximum and Shared Category-2 simultaneously requires exact Intent-Revelation Creep, the current authorised effect may be no less restrictive than either requirement. Magnitude remains Bounded Authority, not Situation or Decision, authority.
+
 This is the original temporal purpose of Category 2:
 
 > **GIANTS Navigates; OuttaMyWay Negotiates Time.**

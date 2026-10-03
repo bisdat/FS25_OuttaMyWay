@@ -159,6 +159,30 @@ A support group does not:
 
 A single-purpose cycle is the degenerate case of the same contract with one support group. It does not create a different ownership model.
 
+### Regulation trigger composition
+
+Different current Situation records may be separate **triggers** for one pairwise Regulation responsibility rather than independently selectable purposes.
+
+Candidate Support MUST compose accepted same-pair Regulation triggers before Portfolio arbitration when Architecture says they support the same temporal-coordination responsibility. Their multiplicity therefore does not create multiple Candidate-support groups merely because the evidence arrived through different assessments.
+
+> **Trigger Multiplicity != Responsibility Multiplicity.**
+
+For a composed Regulation trigger set:
+
+- pair identity and Local Operation identity must agree;
+- every positively allocated trigger must agree on regulated/protected roles;
+- an unallocated trigger may consume roles positively supplied by another accepted trigger for that same pair;
+- conflicting positive role allocations are unresolved support and MUST fail closed rather than create a preference;
+- each trigger retains its own Situation provenance and continuation/retirement evidence;
+- positive retirement of one trigger removes only that trigger from the composed governing basis; and
+- the Regulation responsibility remains semantically current while at least one admitted trigger remains positively current or legitimately `WAITING_FOR_EVIDENCE`.
+
+This composition is Candidate Support meaning, not Decision precedence. Decision receives one Regulation support group for one composed responsibility and does not compare its internal triggers as peer tactical purposes.
+
+> **Semantic Support OR; Physical Constraint AND.**
+
+The semantic responsibility is supported by the union of its accepted triggers. Every physical restriction currently required by those triggers remains binding downstream; Bounded Authority owns the resulting subject and least-permissive current magnitude.
+
 ### Prospective Decision Portfolio
 
 A **Prospective Decision Portfolio** is the complete set of independently supportable fresh Candidate-support groups admitted for one Decision Picture.

@@ -186,6 +186,10 @@ Cooperative Passage
 
 Follower, Forward Intersection, Action-Space and Corner-derived right-of-way are reasons or allocations within the tactical **Regulation** stage. They MAY govern while no supported, mandatory-admissible Cooperative Passage is available and temporal shaping is still required. They are not peer strategic successors that acquire a generic right to defeat Passage through implementation-family ordering.
 
+Candidate Support must distinguish independent Regulation purposes from several triggers of the same pairwise Regulation responsibility before Decision receives the Portfolio. Decision MUST NOT invent a comparator between same-responsibility triggers, nor may it use implementation-family ordering to choose one trigger as the governing purpose.
+
+> **Regulation Purpose != Regulation Trigger.**
+
 When a Cooperative Passage Candidate is supported for the current Decision Picture and passes every applicable mandatory Constraint, Decision MUST NOT select an ordinary live-traffic Regulation scope instead merely because Follower, Forward Intersection, Action-Space or Corner Regulation appears earlier in an implementation ordering.
 
 For this stage transition, **supported Cooperative Passage** means the complete current Passage Candidate contract is positive: the Shared Crossing Core, capture/control reserve, and any participant-specific Lateral Excursion Development/Reacquisition required by the selected arrangement are supported. A crossing-only arrangement MUST NOT pre-empt tactical Regulation.

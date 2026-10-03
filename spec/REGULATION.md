@@ -125,9 +125,34 @@ Regulation requires explicit current justification for temporal coordination. Sh
 
 Different Situation reasons do not create different architectural Regulation Jurisdictions. Follower coordination, action-space conservation, intent revelation and other accepted reasons specialise the governing basis while using the same Regulation responsibility contract.
 
+### Composite trigger basis
+
+One Regulation responsibility may have more than one current **Regulation trigger** when accepted Situation meanings support the same pairwise temporal-coordination purpose.
+
+> **Trigger Multiplicity != Responsibility Multiplicity.**
+
+The governing basis of such a responsibility is a composed trigger set, not a winner among trigger families.
+
+Its semantic currentness is OR-composed:
+
+- any admitted trigger that remains positively current may retain the Regulation;
+- a trigger in legitimate `WAITING_FOR_EVIDENCE` may retain only the meaning its own contract permits;
+- positive retirement of one trigger removes that trigger without ending the responsibility while another admitted trigger remains current; and
+- the Regulation terminates only when the composed trigger basis is positively exhausted or superseded.
+
+Its physical restrictions are cumulative:
+
+- all current trigger-specific speed limits/envelopes remain constraints on Bounded Authority;
+- Bounded Authority may grant no broader physical effect than the least-permissive compatible current constraint;
+- changing which trigger supplies the tightest constraint is a magnitude update, not automatically a Responsibility Transition.
+
+> **Semantic Support OR; Physical Constraint AND.**
+
+Role allocation is part of support coherence. An unallocated trigger may inherit an allocation positively established by another trigger for the same pair. Conflicting positive allocations are unresolved and must not be resolved by implementation order.
+
 ### Maintenance
 
-If fresh Situation Assessment continues to support the same Regulation purpose, the same responsibility identity persists.
+If fresh Situation Assessment continues to support the same Regulation purpose, the same responsibility identity persists. For a composite trigger basis, the same responsibility identity likewise persists while at least one admitted trigger remains current, even if other triggers enter or retire.
 
 Maintenance MAY include:
 
