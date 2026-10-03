@@ -770,9 +770,9 @@ def test_within_group_traffic_decision_policy_uses_current_responsibility_vocabu
 def test_current_validation_identity_avoids_issue_provenance():
     offenders = []
     for path in sorted((ROOT / "tests").glob("test_*.py")):
-        if re.search(r"^test_issue\\d+", path.name):
+        if re.search(r"^test_issue\d+", path.name):
             offenders.append(path.relative_to(ROOT).as_posix())
         source = path.read_text(encoding="utf-8")
-        for match in re.finditer(r"^def (test_issue\\d+_[^(]+)", source, re.M):
+        for match in re.finditer(r"^def (test_issue\d+_[^(]+)", source, re.M):
             offenders.append(f"{path.relative_to(ROOT).as_posix()}:{match.group(1)}")
     assert offenders == []
