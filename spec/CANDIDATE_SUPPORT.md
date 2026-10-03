@@ -189,7 +189,11 @@ Candidate Support MUST NOT:
 - convert one evidence signal into a permanent vehicle priority;
 - use working width, arrival-time windows or Forward Intersection as an unowned replacement comparator;
 - manufacture a third "shared" Candidate with no controlled subject; or
-- emit duplicate Regulation purposes merely because Shared Category-2 Demand and another accepted same-pair trigger, including Follower Boundary or Forward Intersection where Architecture defines one governing need, are simultaneously positive.
+- emit duplicate Regulation purposes merely because Shared Category-2 Demand and another accepted trigger describe one architecturally shared Regulation purpose.
+
+Where an incumbent Regulation protects one assembly's current constrained demand and a fresh Follower Boundary trigger from another pair names that same assembly as leader, Candidate Support MUST test **Shared Protected Demand Composition** before publishing them as independent tactical purposes. Composition is supportable only when the new follower is a different controlled participant in the same Local Operation and the incumbent protected allocation remains unchanged.
+
+Multiple Shared Category-2 situations on different pairs do not, by count alone, make the incumbent purpose ambiguous. Candidate Support MUST preserve an exactly identifiable incumbent situation as its own support group while separately representing unresolved fresh same-class alternatives. It MUST NOT erase the incumbent merely because other pairwise Category-2 situations became positive.
 
 Where an incumbent Shared Category-2 Regulation purpose already exists and Situation Assessment reports it supported or `WAITING_FOR_EVIDENCE`, Candidate Support MUST preserve that incumbent directional allocation rather than republish the opposite participant as an equal fresh alternative merely because transient evidence has changed.
 

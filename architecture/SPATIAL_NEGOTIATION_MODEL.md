@@ -204,7 +204,23 @@ A current Follower Boundary relationship for the same pair may independently est
 
 If one accepted trigger already positively allocates the pair and another accepted same-pair trigger is unallocated, the allocated trigger may supply the regulated/protected roles for the one Regulation responsibility. If positively allocated triggers disagree, the composition is unresolved and must fail closed.
 
-The semantic responsibility remains current while any admitted trigger remains positively current or legitimately waiting for evidence. Each trigger may retire independently; retirement of one trigger does not terminate the Regulation while another still supports the same pairwise temporal-coordination responsibility.
+Reality also establishes a narrower cross-pair case: two pairwise triggers may express one **Shared Protected Demand** when they protect the same assembly's same current constrained-space opportunity. An incumbent Regulation that already protects assembly P may admit a Follower Boundary trigger F -> P from another pair when:
+
+- both triggers belong to the same Local Operation;
+- P is exactly the current protected participant and exactly the Follower Boundary leader;
+- F is a different regulated/follower participant from the incumbent regulated participant;
+- the new trigger does not re-arbitrate the incumbent protected participant or manufacture a relationship between the two followers; and
+- the physical constraints remain participant-specific and mutually compatible.
+
+The additional trigger extends the same temporal-coordination responsibility because both reasons answer the same world question: **preserve P's current constrained demand by bounding workers that can consume it first**. It does not create a three-worker Resolution Commitment or a coupled three-worker movement plan.
+
+> **Shared Protected Demand Composition**
+
+> **Pair Identity != Regulation-Purpose Identity**
+
+> **Shared Protected Demand Composition != Three-Worker Resolution Commitment**
+
+The semantic responsibility remains current while any admitted trigger remains positively current or legitimately waiting for evidence. Each trigger may retire independently; retirement of one trigger does not terminate the Regulation while another still supports the same temporal-coordination responsibility. For Shared Protected Demand Composition, retirement of the incumbent Category-2 trigger may therefore leave the Follower Boundary trigger current under the same Regulation identity, and the converse is equally valid.
 
 The physical effect must satisfy all current trigger constraints. Where Follower Boundary supplies an elastic maximum and Shared Category-2 simultaneously requires exact Intent-Revelation Creep, the current authorised effect may be no less restrictive than either requirement. Magnitude remains Bounded Authority, not Situation or Decision, authority.
 

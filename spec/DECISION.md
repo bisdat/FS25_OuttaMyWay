@@ -190,6 +190,10 @@ Candidate Support must distinguish independent Regulation purposes from several 
 
 > **Regulation Purpose != Regulation Trigger.**
 
+Candidate Support may also compose different pairwise triggers into one **Shared Protected Demand** Regulation when they preserve the same participant's same current constrained-space opportunity. Decision receives that as one tactical Regulation purpose. It MUST NOT force a choice between the incumbent trigger and the compatible new follower trigger merely because their pair identities differ.
+
+> **Pair Identity != Regulation-Purpose Identity.**
+
 When a Cooperative Passage Candidate is supported for the current Decision Picture and passes every applicable mandatory Constraint, Decision MUST NOT select an ordinary live-traffic Regulation scope instead merely because Follower, Forward Intersection, Action-Space or Corner Regulation appears earlier in an implementation ordering.
 
 For this stage transition, **supported Cooperative Passage** means the complete current Passage Candidate contract is positive: the Shared Crossing Core, capture/control reserve, and any participant-specific Lateral Excursion Development/Reacquisition required by the selected arrangement are supported. A crossing-only arrangement MUST NOT pre-empt tactical Regulation.

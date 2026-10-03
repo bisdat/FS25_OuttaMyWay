@@ -127,9 +127,13 @@ Different Situation reasons do not create different architectural Regulation Jur
 
 ### Composite trigger basis
 
-One Regulation responsibility may have more than one current **Regulation trigger** when accepted Situation meanings support the same pairwise temporal-coordination purpose.
+One Regulation responsibility may have more than one current **Regulation trigger** when accepted Situation meanings support the same temporal-coordination purpose.
+
+The ordinary composition case is same-pair. A second bounded case is **Shared Protected Demand Composition**: an already-allocated Regulation may absorb a Follower Boundary trigger from another pair when the new follower's leader is exactly the incumbent protected participant, the new follower is a different controlled participant, both triggers belong to the same Local Operation, and no role conflict is introduced. That extension protects one current constrained demand; it does not create a three-worker Resolution or infer a direct traffic relationship between the two controlled workers.
 
 > **Trigger Multiplicity != Responsibility Multiplicity.**
+
+> **Pair Identity != Regulation-Purpose Identity.**
 
 The governing basis of such a responsibility is a composed trigger set, not a winner among trigger families.
 
@@ -148,7 +152,7 @@ Its physical restrictions are cumulative:
 
 > **Semantic Support OR; Physical Constraint AND.**
 
-Role allocation is part of support coherence. An unallocated trigger may inherit an allocation positively established by another trigger for the same pair. Conflicting positive allocations are unresolved and must not be resolved by implementation order.
+Role allocation is part of support coherence. An unallocated trigger may inherit an allocation positively established by another trigger for the same pair. Under Shared Protected Demand Composition, the new Follower trigger may inherit only the incumbent **protected** participant: its own follower remains its controlled participant. The incumbent regulated participant remains unchanged. Conflicting positive allocations are unresolved and must not be resolved by implementation order.
 
 ### Maintenance
 
