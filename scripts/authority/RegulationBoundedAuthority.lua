@@ -59,7 +59,7 @@ function Authority:_actionSpaceRegulationLease(commitmentId)
 end
 
 function Authority:_followerBoundaryLeaseForBridge(bridge)
-    if type(bridge)~="table" then return nil end
+    if type(bridge)~="table" then return uniqueLease(self.followerBoundaryLeasesByCommitmentId) end
     if type(bridge.existingCommitmentId)=="string" then
         return self:_followerBoundaryLease(bridge.existingCommitmentId)
     end
@@ -76,7 +76,7 @@ function Authority:_followerBoundaryLeaseForBridge(bridge)
 end
 
 function Authority:_actionSpaceRegulationLeaseForBridge(bridge)
-    if type(bridge)~="table" then return nil end
+    if type(bridge)~="table" then return uniqueLease(self.actionSpaceRegulationLeasesByCommitmentId) end
     if type(bridge.existingCommitmentId)=="string" then
         return self:_actionSpaceRegulationLease(bridge.existingCommitmentId)
     end
