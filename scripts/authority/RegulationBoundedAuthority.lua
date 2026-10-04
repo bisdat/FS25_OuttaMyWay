@@ -58,6 +58,40 @@ function Authority:_actionSpaceRegulationLease(commitmentId)
     return uniqueLease(self.actionSpaceRegulationLeasesByCommitmentId)
 end
 
+function Authority:_followerBoundaryLeaseForBridge(bridge)
+    if type(bridge)~="table" then return nil end
+    if type(bridge.existingCommitmentId)=="string" then
+        return self:_followerBoundaryLease(bridge.existingCommitmentId)
+    end
+    if type(bridge.pairKey)=="string" then
+        local match=nil
+        for _,lease in pairs(self.followerBoundaryLeasesByCommitmentId or {}) do
+            if lease.pairKey==bridge.pairKey then
+                if match~=nil and match~=lease then return nil end
+                match=lease
+            end
+        end
+        return match
+    end
+end
+
+function Authority:_actionSpaceRegulationLeaseForBridge(bridge)
+    if type(bridge)~="table" then return nil end
+    if type(bridge.existingCommitmentId)=="string" then
+        return self:_actionSpaceRegulationLease(bridge.existingCommitmentId)
+    end
+    if type(bridge.conflictIdentity)=="string" then
+        local match=nil
+        for _,lease in pairs(self.actionSpaceRegulationLeasesByCommitmentId or {}) do
+            if lease.conflictIdentity==bridge.conflictIdentity then
+                if match~=nil and match~=lease then return nil end
+                match=lease
+            end
+        end
+        return match
+    end
+end
+
 function Authority:setRegulationControl(control)
     self.regulationControl=control
 end
@@ -492,7 +526,7 @@ end
 -- current physical permission. A retained lease is therefore not evidence of active
 -- actuation; reactivation must acquire fresh token / Bounded Authority state.
 function Authority:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
-    local lease=self:_followerBoundaryLease(bridge and bridge.existingCommitmentId or nil)
+    local lease=self:_followerBoundaryLeaseForBridge(bridge)
     if lease==nil then return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_QUIESCENCE_NO_RETAINED_PURPOSE",followerBoundary=true} end
     if lease.actuationActive==false then
         return {status="QUIESCENT",reason="FOLLOWER_BOUNDARY_UNRESOLVED_PURPOSE_RETAINED_ACTUATION_REMAINS_QUIESCENT",followerBoundary=true,commitmentId=lease.commitmentId}
@@ -533,8 +567,7 @@ end
 
 function Authority:assessFollowerBoundaryPermission(picture,evaluated,candidate,semanticAssessment)
     local bridge=followerBoundaryBridge(candidate)
-    local lease=bridge and type(bridge.existingCommitmentId)=="string"
-        and self:_followerBoundaryLease(bridge.existingCommitmentId) or nil
+    local lease=self:_followerBoundaryLeaseForBridge(bridge)
     if semanticAssessment~=nil and semanticAssessment.disposition=="TERMINATE" then return nil end
     if lease~=nil and currentCornerIncumbency(picture,lease.followerAssemblyId)~=nil then
         if lease.actuationActive~=false then
@@ -1065,8 +1098,7 @@ end
 
 function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semanticAssessment)
     local bridge=actionSpaceRegulationBridge(candidate)
-    local lease=bridge and type(bridge.existingCommitmentId)=="string"
-        and self:_actionSpaceRegulationLease(bridge.existingCommitmentId) or nil
+    local lease=self:_actionSpaceRegulationLeaseForBridge(bridge)
     if lease~=nil then
         local relation=actionSpaceRegulationRelation(picture,lease)
         local relationshipReason=semanticAssessment and semanticAssessment.reason or nil
