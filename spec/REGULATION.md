@@ -155,6 +155,14 @@ Its physical restrictions are cumulative:
 
 > **Semantic Support OR; Physical Constraint AND.**
 
+Independent pairwise Regulation responsibilities MAY coexist inside one Local Operation when their governing purposes remain independently current and physical actuation ownership remains compatible. A retained Regulation does not become an Operation-global lock merely because it already owns a Commitment. The currently supported coexistence boundary requires distinct controlled Physical Assemblies; same-subject competing Responsibility ownership remains unresolved unless an explicit composition contract authorises it.
+
+Where independent Regulations establish an acyclic temporal chain across the supported three-worker envelope, that **Regulation Ordering Chain** may satisfy an outer same-domain Shared Category-2 temporal demand without creating a third direct Responsibility. The chain is not a three-worker Resolution and does not infer a direct Follower relationship between its endpoints.
+
+> **Responsibility Persistence != Prospective Reselection.**
+
+> **Acyclic Pairwise Ordering Can Satisfy Outer Temporal Demand.**
+
 Role allocation is part of support coherence. An unallocated trigger may inherit an allocation positively established by another trigger for the same pair. Under Shared Protected Demand Composition, the new Follower trigger may inherit only the incumbent **protected** participant: its own follower remains its controlled participant. The incumbent regulated participant remains unchanged. Conflicting positive allocations are unresolved and must not be resolved by implementation order.
 
 ### Maintenance
