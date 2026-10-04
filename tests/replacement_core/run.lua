@@ -996,9 +996,9 @@ test("Corner Right-of-Way initial Regulation applies fixed creep without Resolut
     })
     equal(result.status,"ACCEPTED")
     equal(result.cornerRightOfWay,true)
-    equal(dispatcher.actionSpaceRegulationLease.currentCapKmh,1.0)
-    equal(dispatcher.actionSpaceRegulationLease.progressionEnvelope,nil)
-    equal(dispatcher.actionSpaceRegulationLease.fixedCornerRightOfWay,true)
+    equal(dispatcher:getActionSpaceRegulationStatus(commitment.identity).currentCapKmh,1.0)
+    equal(dispatcher:getActionSpaceRegulationStatus(commitment.identity).progressionEnvelope,nil)
+    equal(dispatcher:_actionSpaceRegulationLease(commitment.identity).fixedCornerRightOfWay,true)
 end)
 
 test("Rejected fresh Bounded Authority grant is released before return",function()
@@ -1017,7 +1017,7 @@ test("Rejected fresh Bounded Authority grant is released before return",function
     equal(result.status,"REJECTED")
     equal(runtime.boundedAuthority:isCurrent(rejectedGrantId),false)
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitment.identity).identity,current.identity)
-    equal(dispatcher.actionSpaceRegulationLease,nil)
+    equal(dispatcher:getActionSpaceRegulationStatus(commitment.identity).active,false)
 end)
 
 test("Rejected Bounded Authority update removes successor while predecessor remains current",function()
@@ -3692,8 +3692,8 @@ local function threeWorkerCategory2Situation(identity,subjectId,subjectRef,other
         currentEvidenceState="SUPPORTED",competingDemand=true,positiveDissolution=false,regulationSpeedKmh=1,
         incumbentCommitmentId=commitmentId,incumbentRegulatedAssemblyId=incumbentRegulatedId,
         participants={
-            {assemblyId=subjectId,assemblyReferenceKey=subjectRef,nativeBoundaryArrivalSeconds=subjectArrival or 6,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"},
-            {assemblyId=otherId,assemblyReferenceKey=otherRef,nativeBoundaryArrivalSeconds=otherArrival or 7,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"}
+            {assemblyId=subjectId,assemblyReferenceKey=subjectRef,nativeTimeToBoundarySec=subjectArrival or 6,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"},
+            {assemblyId=otherId,assemblyReferenceKey=otherRef,nativeTimeToBoundarySec=otherArrival or 7,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"}
         },
         provenance={source="TS015-SHARED-PROTECTED-DEMAND-FIXTURE"}
     }
@@ -6013,7 +6013,7 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
         if failure=="TARGET" then
             local values=OuttaMyWay.ValueRecord.toTable(picture); values.commitmentContext={}
             picture=OuttaMyWay.OperationalPicture.new(values)
-        elseif failure=="LEASE" then runtime.regulationBoundedAuthority.followerBoundaryLease=nil
+        elseif failure=="LEASE" then runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId={}
         elseif failure=="OBLIGATION" then
             local obligation=runtime.obligations:openForOwner(commitmentId)[1]
             runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",{kind="TEST_PREFLIGHT_ABSENT_OBLIGATION"})
@@ -6055,7 +6055,7 @@ end
 test("Follower terminal settlement removes semantic Regulation even without a physical lease",function()
     local runtime,admitted=followerResponsibilityFixture()
     local id=admitted.commitment.identity
-    runtime.regulationBoundedAuthority.followerBoundaryLease=nil
+    runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId={}
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(id)) do
         runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",{kind="TEST_DEPENDENCY_COLLAPSE"})
     end
@@ -6075,12 +6075,12 @@ test("Job Episode dependency collapse ends follower Regulation on eligible retai
     values.governingBasis={responsibilityKey="cooperative-passage:DEPENDENT",dependentJobEpisodeIds={"JE-END","JE-KEEP"}}
     values.revision=values.revision+1; values.epoch=runtime.epochs:next()
     runtime.commitments:save(OuttaMyWay.CommitmentRecord.new(values))
-    runtime.regulationBoundedAuthority.followerBoundaryLease.actuationActive=false
+    runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId[commitmentId].actuationActive=false
     local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"}},{identity="OBS-END"})
     equal(#collapsed,1)
     equal(runtime.commitments:get(id).state,"SUCCEEDED")
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(id),nil)
-    equal(runtime.regulationBoundedAuthority.followerBoundaryLease,nil)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(commitmentId).retainedPurpose,false)
     equal(events[1],"FALLBACK_CLEAR")
 end)
 
@@ -8368,11 +8368,11 @@ test("Job-Episode Dependency Collapse: ended Job Episode collapses dependent qui
     local unrelated=runtime.commitments:create({objective={kind="ACTION_SPACE_REGULATION"},governingBasis={responsibilityKey="cooperative-passage:REL-OTHER",dependentPairReferenceKey="pair:REL-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"SITUATION-OTHER"}})
     local cleared=0
     runtime.regulationBoundedAuthority.regulationControl={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1; return true end}
-    runtime.regulationBoundedAuthority.actionSpaceRegulationLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
+    runtime.regulationBoundedAuthority.actionSpaceRegulationLeasesByCommitmentId[dependent.identity]={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
     local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"},observationSnapshotId="OBS-END"},{identity="OBS-END"})
     equal(#result,1); equal(result[1].commitmentId,dependent.identity); equal(runtime.commitments:get(dependent.identity).state,"SUCCEEDED")
     equal(runtime.obligations:get(obligation.identity).status,"SETTLED"); equal(runtime.obligations:get(obligation.identity).settlementDisposition.mode,"BASIS_CESSATION")
-    equal(runtime.regulationBoundedAuthority.actionSpaceRegulationLease,nil); equal(cleared,1)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(dependent.identity).active,false); equal(cleared,1)
     equal(runtime.commitments:get(unrelated.identity).state,"ACTIVE")
 end)
 
@@ -8415,7 +8415,7 @@ test("Job-Episode Dependency Collapse: purpose-specific Regulation owner lease i
                 return true,"CONTROL_CLEANUP_RELEASED"
             end
         }
-        runtime.regulationBoundedAuthority.actionSpaceRegulationLease={
+        runtime.regulationBoundedAuthority.actionSpaceRegulationLeasesByCommitmentId[dependent.identity]={
             commitmentId=dependent.identity,
             conflictIdentity="OWNER-CLEANUP-"..tostring(index),
             regulatedAssemblyId="AS-A",
@@ -8433,7 +8433,7 @@ test("Job-Episode Dependency Collapse: purpose-specific Regulation owner lease i
         equal(clearedReferenceKey,"REF-A")
         equal(clearedOwnerTag,ownerTag)
         equal(physicalLeases[ownerTag],nil)
-        equal(runtime.regulationBoundedAuthority.actionSpaceRegulationLease,nil)
+        equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(dependent.identity).active,false)
     end
 end)
 
@@ -9229,7 +9229,7 @@ test("Follower Boundary Regulation quiesces when the follower becomes a Corner i
         leaderAssemblyId="AS-LEAD",leaderReferenceKey="vehicle-root:leader",
         governingPurpose="FOLLOWER_BOUNDARY_PROTECTION",actuationActive=true,currentCapKmh=4
     }
-    authority.followerBoundaryLease=lease
+    authority.followerBoundaryLeasesByCommitmentId[lease.commitmentId]=lease
     local picture={
         spatialConstraintKnowledge={{
             cornerKnowledge={engagements={{assemblyId="AS-FOLLOW",cornerIncumbent=true,cornerKey="C1"}}}
@@ -9253,7 +9253,7 @@ test("Corner Right-of-Way migrates Regulation away from a current Corner incumbe
         governingPurpose="PRESERVE_SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY",
         ownerTag="CORNER_RIGHT_OF_WAY",actuationActive=true,fixedCornerRightOfWay=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="shared-corner:test",classification="SHARED_CORNER_COMPETING_DEMAND",relationshipStatus="POSITIVE",
         actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true}
@@ -9305,7 +9305,7 @@ test("Forward Intersection regulated Corner incumbent is quiesced for native eva
         ownerTag="FORWARD_INTERSECTION_INTENT_REVELATION",
         actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="FI-INCUMBENT",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
         actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
@@ -9338,7 +9338,7 @@ test("Forward Intersection Corner engagement blocks role migration onto the prot
         governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
         actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="FI-CORNER",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
         actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
@@ -9378,7 +9378,7 @@ test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-k
         governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
         actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="FI-WAIT",classification="UNRESOLVED",relationshipStatus="UNRESOLVED",
         actionable=false,reason="FORWARD_CONTINUATION_UNRESOLVED"
@@ -9409,7 +9409,7 @@ test("Claimed Obstruction quiescent lease reactivates from fresh Causal Obstruct
         ownerTag="PLAYER_CONTROLLED_OBSTRUCTION_INTENT_REVELATION",
         actuationActive=false,fixedClaimedObstruction=true
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity=lease.conflictIdentity,
         blockerAssemblyId="AS-BLOCKER",beneficiaryAssemblyId="AS-BENEFICIARY",
