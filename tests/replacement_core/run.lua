@@ -3903,6 +3903,34 @@ test("TS015 regulated leader establishes independent same-pair Regulation orderi
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(second.commitment.identity).followerAssemblyId,"AS-C")
 end)
 
+test("TS015 Regulation Ordering Chain fails closed when outer pair is already incumbent", function()
+    local runtime=autonomousHeadOnRuntime()
+    local incumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S","CM-INNER","AS-S",4,7)
+    local condorS416=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-S",
+        "AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,8,7)
+    local outerIncumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-P",
+        "AS-C","vehicle-root:C","AS-P","vehicle-root:P","CM-OUTER","AS-P",8,4)
+    local follower=threeWorkerFollowerRecord(1.5,nil,nil)
+    local picture=threeWorkerRegulationPicture(
+        runtime,follower,{incumbent,condorS416,outerIncumbent},"CM-INNER")
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        picture,headOnTestSnapshot())
+
+    local extension=nil
+    local failClosed=nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(supported.candidateSupportEvidence.supportBoundary.groups) do
+        if group.independentRegulationExtension==true then extension=group end
+        if group.family=="CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED" then failClosed=group end
+    end
+    equal(extension,nil)
+    equal(failClosed~=nil,true)
+    equal(failClosed.failClosedReason,"MULTIPLE_INCUMBENT_SHARED_CATEGORY_2_SITUATIONS")
+end)
+
 test("Prospective portfolio fail-closed projections namespace passive Candidate reference keys", function()
     local runtime=autonomousHeadOnRuntime()
     local first=threeWorkerFollowerRecord(16.2,nil,nil)
