@@ -3905,18 +3905,29 @@ end)
 
 test("TS015 Regulation Ordering Chain fails closed when outer pair is already incumbent", function()
     local runtime=autonomousHeadOnRuntime()
+    local inner=runtime.commitments:create({
+        objective={kind="ACTION_SPACE_REGULATION"},
+        governingBasis={responsibilityKey="pairwise-regulation:OR-1:AS-P|AS-S"}
+    })
+    local outer=runtime.commitments:create({
+        objective={kind="ACTION_SPACE_REGULATION"},
+        governingBasis={responsibilityKey="pairwise-regulation:OR-1:AS-C|AS-P"}
+    })
     local incumbent=threeWorkerCategory2Situation(
         "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
-        "AS-P","vehicle-root:P","AS-S","vehicle-root:S","CM-INNER","AS-S",4,7)
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",inner.identity,"AS-S",4,7)
     local condorS416=threeWorkerCategory2Situation(
         "shared-category-2:OR-1:EDGE-1:AS-C:AS-S",
         "AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,8,7)
     local outerIncumbent=threeWorkerCategory2Situation(
         "shared-category-2:OR-1:EDGE-1:AS-C:AS-P",
-        "AS-C","vehicle-root:C","AS-P","vehicle-root:P","CM-OUTER","AS-P",8,4)
+        "AS-C","vehicle-root:C","AS-P","vehicle-root:P",outer.identity,"AS-P",8,4)
     local follower=threeWorkerFollowerRecord(1.5,nil,nil)
     local picture=threeWorkerRegulationPicture(
-        runtime,follower,{incumbent,condorS416,outerIncumbent},"CM-INNER")
+        runtime,follower,{incumbent,condorS416,outerIncumbent},inner.identity)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.commitmentContext[#values.commitmentContext+1]=composedRegulationContext(runtime,outer.identity)[1]
+    picture=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
         picture,headOnTestSnapshot())
 
