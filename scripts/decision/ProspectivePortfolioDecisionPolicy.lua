@@ -63,6 +63,30 @@ local function retainedCurrentGroups(groups)
     return result
 end
 
+local function independentRegulationExtension(groups)
+    local extension=nil
+    local retained=nil
+    for _,group in ipairs(groups) do
+        if group.independentRegulationExtension==true then
+            if extension~=nil then return nil,"MULTIPLE_INDEPENDENT_REGULATION_EXTENSIONS_REQUIRE_COMPARATOR" end
+            extension=group
+        end
+    end
+    if extension==nil or type(extension.coexistsWithCommitmentId)~="string" then return nil,nil end
+    for _,group in ipairs(groups) do
+        if group~=extension then
+            if group.existingCommitmentId==extension.coexistsWithCommitmentId then
+                if retained~=nil then return nil,"MULTIPLE_RETAINED_REGULATIONS_FOR_EXTENSION" end
+                retained=group
+            else
+                return nil,"INDEPENDENT_REGULATION_EXTENSION_WITH_UNRELATED_TACTICAL_PURPOSE"
+            end
+        end
+    end
+    if retained==nil then return nil,"INDEPENDENT_REGULATION_EXTENSION_RETAINED_CONTEXT_UNAVAILABLE" end
+    return extension,nil
+end
+
 function Policy:selectGroup(inventory,admissibleCandidates)
     local groups=groupsFor(inventory,admissibleCandidates)
     if #groups==0 then return nil,"NO_MANDATORY_ADMISSIBLE_SUPPORT_GROUP" end
@@ -111,9 +135,18 @@ function Policy:selectGroup(inventory,admissibleCandidates)
         return nil,"MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR"
     end
 
+    -- Responsibility persistence does not require prospective re-selection.
+    -- A proven fresh disjoint Regulation may establish while its retained peer
+    -- continues independently.
+    local extension,extensionReason=independentRegulationExtension(groups)
+    if extension~=nil then
+        return choose(extension,"INDEPENDENT_REGULATION_COEXISTENCE",
+            "RETAINED_REGULATION_PERSISTS_WHILE_FRESH_DISJOINT_PAIRWISE_REGULATION_ESTABLISHES")
+    end
+    if extensionReason~=nil then return nil,extensionReason end
+
     -- A live tactical Regulation remains the governing stage-2 purpose when no
-    -- Passage is yet viable. Portfolio enumeration must not manufacture a new
-    -- cross-purpose switch merely because fresh alternatives coexist.
+    -- Passage is yet viable and no compatible independent extension is proved.
     local retained=retainedCurrentGroups(groups)
     if #retained==1 then
         return choose(retained[1],"RETAIN_CURRENT_TACTICAL_REGULATION","NO_SUPPORTED_ADMISSIBLE_PASSAGE_AND_CURRENT_REGULATION_REMAINS_ADMISSIBLE")
