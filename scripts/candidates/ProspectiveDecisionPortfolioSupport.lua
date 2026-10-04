@@ -155,6 +155,101 @@ local function incumbentSharedCategory2Situation(situations)
     return match,nil
 end
 
+local function category2SituationForPair(situations,unorderedPairKey,excludedIdentity)
+    local match=nil
+    for _,situation in OuttaMyWay.ValueRecord.ipairs(situations or {}) do
+        if situation.identity~=excludedIdentity
+            and pairKey(situation.subjectAssemblyId,situation.otherAssemblyId)==unorderedPairKey then
+            if match~=nil and match.identity~=situation.identity then
+                return nil,"MULTIPLE_SHARED_CATEGORY_2_SITUATIONS_FOR_PAIR"
+            end
+            match=situation
+        end
+    end
+    return match,nil
+end
+
+local function otherCategory2Participant(situation,assemblyId)
+    if type(situation)~="table" or type(assemblyId)~="string" then return nil end
+    if situation.subjectAssemblyId==assemblyId then return situation.otherAssemblyId end
+    if situation.otherAssemblyId==assemblyId then return situation.subjectAssemblyId end
+    return nil
+end
+
+-- A retained pairwise Regulation may order the leader of a fresh Follower
+-- purpose without owning that fresh pair. In the supported three-worker
+-- envelope, the fresh pair may therefore establish an independent Regulation.
+-- If the third pair also has same-domain Category-2 demand, the two pairwise
+-- directions form an acyclic Regulation Ordering Chain and already order the
+-- outer endpoints. This is temporal satisfaction only.
+local function regulatedLeaderOrderingChain(situations,incumbent,followerBridge)
+    if type(incumbent)~="table" or type(followerBridge)~="table" then return nil end
+    if followerBridge.action~="APPLY" or type(followerBridge.existingCommitmentId)=="string" then return nil end
+    local incumbentCommitmentId=incumbent.incumbentCommitmentId
+    local middle=incumbent.incumbentRegulatedAssemblyId
+    if type(incumbentCommitmentId)~="string" or type(middle)~="string"
+        or followerBridge.leaderAssemblyId~=middle then return nil end
+    local protected=otherCategory2Participant(incumbent,middle)
+    local follower=followerBridge.followerAssemblyId
+    if type(protected)~="string" or type(follower)~="string"
+        or protected==follower or follower==middle then return nil end
+
+    local followerPair=followerUnorderedPairKey(followerBridge)
+    local matching,matchingReason=category2SituationForPair(situations,followerPair,incumbent.identity)
+    if matching==nil then return nil,matchingReason end
+    if type(matching.incumbentCommitmentId)=="string" then return nil,"REGULATED_LEADER_MATCHING_PAIR_ALREADY_INCUMBENT" end
+    if matching.operationId~=incumbent.operationId
+        or matching.fieldWorldReferenceKey~=incumbent.fieldWorldReferenceKey then
+        return nil,"REGULATED_LEADER_PAIR_CONTEXT_MISMATCH"
+    end
+
+    local outer=nil
+    if #situations>2 then
+        local outerPair=pairKey(follower,protected)
+        local outerReason=nil
+        outer,outerReason=category2SituationForPair(situations,outerPair,incumbent.identity)
+        if outer~=nil and outer.identity==matching.identity then outer=nil end
+        if outer==nil then return nil,outerReason or "REGULATION_ORDERING_CHAIN_OUTER_DEMAND_UNAVAILABLE" end
+        if type(outer.incumbentCommitmentId)=="string" then
+            return nil,"REGULATION_ORDERING_CHAIN_OUTER_DEMAND_ALREADY_INCUMBENT"
+        end
+        if outer.operationId~=incumbent.operationId
+            or outer.fieldWorldReferenceKey~=incumbent.fieldWorldReferenceKey then
+            return nil,"REGULATION_ORDERING_CHAIN_OUTER_CONTEXT_MISMATCH"
+        end
+    end
+    if #situations>3 then return nil,"REGULATION_ORDERING_CHAIN_EXCEEDS_SUPPORTED_THREE_WORKER_ENVELOPE" end
+
+    return {
+        incumbent=incumbent,matching=matching,outer=outer,
+        incumbentCommitmentId=incumbentCommitmentId,
+        followerAssemblyId=follower,middleAssemblyId=middle,protectedAssemblyId=protected,
+        direction={follower,middle,protected}
+    },nil
+end
+
+local function annotateRegulationOrderingChain(group,chain)
+    if type(group)~="table" or type(chain)~="table" then return end
+    for _,specification in ipairs(group.candidateSpecifications or {}) do
+        local evidence=specification.evidenceBasis or {}
+        evidence.regulationOrderingChain={
+            architecture="REGULATION_ORDERING_CHAIN",
+            incumbentCommitmentId=chain.incumbentCommitmentId,
+            incumbentSituationIdentity=chain.incumbent.identity,
+            freshSituationIdentity=chain.matching.identity,
+            outerSituationIdentity=chain.outer and chain.outer.identity or nil,
+            orderedAssemblyIds=chain.direction,
+            outerTemporalDemandSatisfied=chain.outer~=nil,
+            createsThirdResponsibility=false,
+            routeAuthority=false
+        }
+        specification.evidenceBasis=evidence
+        specification.expectedEffect=specification.expectedEffect or {}
+        specification.expectedEffect.independentRegulationCoexistence=true
+        specification.expectedEffect.regulationOrderingChain=true
+    end
+end
+
 local function currentResponsibilityKey(picture,commitmentId)
     if type(commitmentId)~="string" then return nil end
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture.commitmentContext or {}) do
@@ -457,14 +552,25 @@ function Support:publishDecisionPicture(picture,snapshot)
     local category2,category2Reason=nil,nil
     local category2Situation=nil
     local category2FreshAmbiguity=nil
+    local independentCategory2=nil
+    local independentCategory2Situation=nil
+    local independentOrderingChain=nil
+    local incumbentCategory2=nil
 
+    local _,followerBridge=followerGroupContext(follower)
     if #sharedCategory2==1 then
         category2Situation=sharedCategory2[1]
     elseif #sharedCategory2>1 then
         local incumbent,incumbentReason=incumbentSharedCategory2Situation(sharedCategory2)
         if incumbent~=nil then
             category2Situation=incumbent
-            category2FreshAmbiguity="MULTIPLE_FRESH_SHARED_CATEGORY_2_SITUATIONS_WITH_INCUMBENT"
+            local chain,chainReason=regulatedLeaderOrderingChain(sharedCategory2,incumbent,followerBridge)
+            if chain~=nil then
+                independentOrderingChain=chain
+                independentCategory2Situation=chain.matching
+            else
+                category2FreshAmbiguity=chainReason or "MULTIPLE_FRESH_SHARED_CATEGORY_2_SITUATIONS_WITH_INCUMBENT"
+            end
         else
             category2Reason=incumbentReason=="MULTIPLE_INCUMBENT_SHARED_CATEGORY_2_SITUATIONS"
                 and incumbentReason or "MULTIPLE_SHARED_CATEGORY_2_SITUATIONS"
@@ -472,7 +578,6 @@ function Support:publishDecisionPicture(picture,snapshot)
     end
 
     if category2Situation~=nil then
-        local _,followerBridge=followerGroupContext(follower)
         local compatibleExistingCommitmentId=nil
         if followerBridge~=nil and followerUnorderedPairKey(followerBridge)==pairKey(
             category2Situation.subjectAssemblyId,category2Situation.otherAssemblyId) then
@@ -482,6 +587,15 @@ function Support:publishDecisionPicture(picture,snapshot)
             picture,snapshot,{
                 kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=category2Situation.identity,
                 compatibleExistingCommitmentId=compatibleExistingCommitmentId
+            },targetPictureId,targetEpoch)
+        if independentOrderingChain~=nil then incumbentCategory2=category2 end
+    end
+
+    if independentCategory2Situation~=nil then
+        independentCategory2,category2Reason=self.liveSupport:buildProjectedGroup(
+            picture,snapshot,{
+                kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=independentCategory2Situation.identity,
+                compatibleExistingCommitmentId=followerBridge and followerBridge.existingCommitmentId or nil
             },targetPictureId,targetEpoch)
     end
 
@@ -494,14 +608,33 @@ function Support:publishDecisionPicture(picture,snapshot)
     end
 
     local composed,compositionReason=nil,nil
-    if followerFamily~=nil and modeOfGroup(category2)=="SHARED_CATEGORY_2_DEMAND" and category2Situation~=nil then
+    local compositionSituation=independentCategory2Situation or category2Situation
+    local compositionCategory2=independentCategory2 or category2
+    if followerFamily~=nil and modeOfGroup(compositionCategory2)=="SHARED_CATEGORY_2_DEMAND"
+        and compositionSituation~=nil then
         composed,compositionReason=composeFollowerCategory2Group(
-            picture,follower,category2,category2Situation,targetPictureId,targetEpoch)
+            picture,follower,compositionCategory2,compositionSituation,targetPictureId,targetEpoch)
     end
     if composed~=nil then
         local _,bridge=followerGroupContext(follower)
-        appendGroup(state,composed,"COMPOSED_REGULATION",
-            "composed-regulation:"..tostring(bridge and bridge.pairKey or category2Situation.identity),1)
+        if independentOrderingChain~=nil then
+            annotateRegulationOrderingChain(composed,independentOrderingChain)
+            if modeOfGroup(incumbentCategory2)=="SHARED_CATEGORY_2_DEMAND" then
+                appendGroup(state,incumbentCategory2,"CATEGORY_2_BOUNDARY_DEMAND",
+                    "category-2-boundary-demand:"..tostring(category2Situation.identity),1)
+            end
+            appendGroup(state,composed,"COMPOSED_REGULATION",
+                "composed-regulation:"..tostring(bridge and bridge.pairKey or compositionSituation.identity),1,{
+                    independentRegulationExtension=true,
+                    coexistsWithCommitmentId=independentOrderingChain.incumbentCommitmentId,
+                    regulationOrderingChain=true,
+                    orderingChainMiddleAssemblyId=independentOrderingChain.middleAssemblyId,
+                    orderingChainOuterSituationIdentity=independentOrderingChain.outer and independentOrderingChain.outer.identity or nil
+                })
+        else
+            appendGroup(state,composed,"COMPOSED_REGULATION",
+                "composed-regulation:"..tostring(bridge and bridge.pairKey or compositionSituation.identity),1)
+        end
     elseif compositionReason=="COMPOSED_REGULATION_TRIGGER_ROLE_CONFLICT"
         or compositionReason=="COMPOSED_REGULATION_EXISTING_COMMITMENT_CONFLICT"
         or compositionReason=="SHARED_PROTECTED_DEMAND_TRIGGER_ROLE_CONFLICT" then
