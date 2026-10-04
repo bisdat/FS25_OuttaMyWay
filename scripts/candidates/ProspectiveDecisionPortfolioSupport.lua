@@ -244,6 +244,7 @@ local function annotateRegulationOrderingChain(group,chain)
             routeAuthority=false
         }
         specification.evidenceBasis=evidence
+        evidence.independentConcurrentCommitment=true
         specification.expectedEffect=specification.expectedEffect or {}
         specification.expectedEffect.independentRegulationCoexistence=true
         specification.expectedEffect.regulationOrderingChain=true
