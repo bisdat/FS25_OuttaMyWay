@@ -73,6 +73,9 @@ function Authority:_followerBoundaryLeaseForBridge(bridge)
         end
         return match
     end
+    -- Lifecycle-only callers may supply a reason without a Candidate bridge.
+    -- That is safe only while exactly one Follower Regulation lease is current.
+    return uniqueLease(self.followerBoundaryLeasesByCommitmentId)
 end
 
 function Authority:_actionSpaceRegulationLeaseForBridge(bridge)
