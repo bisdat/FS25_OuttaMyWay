@@ -595,7 +595,8 @@ function Support:publishDecisionPicture(picture,snapshot)
         independentCategory2,category2Reason=self.liveSupport:buildProjectedGroup(
             picture,snapshot,{
                 kind="SHARED_CATEGORY_2_DEMAND",sharedCategory2Identity=independentCategory2Situation.identity,
-                compatibleExistingCommitmentId=followerBridge and followerBridge.existingCommitmentId or nil
+                compatibleExistingCommitmentId=followerBridge and followerBridge.existingCommitmentId or nil,
+                allowIndependentRegulation=true
             },targetPictureId,targetEpoch)
     end
 
