@@ -228,6 +228,26 @@ The physical effect must satisfy all current trigger constraints. Where Follower
 
 Equivalent Shared Protected Demand geometry must not receive a looser physical result merely because pairwise evidence arrived in a different order. This preserves one semantic Regulation responsibility without manufacturing a traffic relationship between the controlled followers.
 
+A different three-worker topology exists when the participant protected by a fresh Follower trigger is itself already the **regulated** participant of another pairwise Regulation. That is not Shared Protected Demand: the two purposes protect different pairwise demands and retain independent Responsibility identities.
+
+> **Independent Regulation Coexistence**
+
+> **Current Responsibility Scope != Local Operation Scope**
+
+Within one Local Operation, weaker purpose-bound pairwise Regulations may coexist when their semantic purposes remain independently current and their physical actuation ownership is compatible. The exclusive one-Resolution rule does not turn Regulation into an Operation-global singleton. In the currently supported bounded case, a fresh Regulation may establish alongside an incumbent when they control distinct Physical Assemblies; same-subject competing actuation ownership remains unresolved unless another explicit composition contract exists.
+
+Two such Regulations may form a **Regulation Ordering Chain**. For example:
+
+```text
+A -> B -> C
+```
+
+means A is temporally bounded behind B and B is temporally bounded behind C by independently justified pairwise responsibilities. If A/C also have current Shared Category-2 Demand in the same exact boundary domain, that outer temporal demand is already ordered by the acyclic chain and does not require manufacturing a third direct Regulation merely to restate the same ordering.
+
+> **Acyclic Pairwise Ordering Can Satisfy Outer Temporal Demand.**
+
+Regulation Ordering Chain is evidence about current temporal ordering only. It does not create a three-worker Responsibility, infer a direct Follower relationship between A and C, grant route authority, or permit cyclic/contradictory ordering. Any cycle, same-subject authority collision or incomplete chain remains unresolved and fails closed.
+
 Magnitude remains Bounded Authority, not Situation or Decision, authority.
 
 This is the original temporal purpose of Category 2:
