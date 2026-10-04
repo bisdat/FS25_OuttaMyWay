@@ -1499,6 +1499,18 @@ test("Prospective Decision: multiple unrelated tactical Regulation purposes do n
     equal(reason,"MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR")
 end)
 
+test("Prospective Decision: fresh disjoint Regulation may establish while retained Regulation persists",function()
+    local retained=prospectiveGroup("retained-category-2","CATEGORY_2_BOUNDARY_DEMAND",1,{existingCommitmentId="CM-A"})
+    local fresh=prospectiveGroup("fresh-composed","COMPOSED_REGULATION",1,{
+        independentRegulationExtension=true,coexistsWithCommitmentId="CM-A",regulationOrderingChain=true
+    })
+    local inventory,candidates=prospectivePortfolioPolicyFixture({retained,fresh})
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"fresh-composed")
+    equal(choice.rule,"INDEPENDENT_REGULATION_COEXISTENCE")
+end)
+
 test("Prospective Decision: one tactical Regulation purpose remains selectable before Passage support exists",function()
     local inventory,candidates=prospectivePortfolioPolicyFixture({
         prospectiveGroup("forward","FORWARD_INTERSECTION",1)
@@ -3819,6 +3831,76 @@ test("TS015 Shared Protected Demand composes Condor Follower into incumbent Patr
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
+end)
+
+test("TS015 regulated leader establishes independent same-pair Regulation ordering chain", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    -- Patriot arrives first; S416 is therefore the initial regulated participant.
+    local incumbentFresh=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",nil,nil,4,7)
+    local initial=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,nil,{incumbentFresh},nil),headOnTestSnapshot())
+    local initialEval=runtime:evaluateSealedOperationalPicture(initial)
+    local first=runtime:dispatchEvaluatedOperationalPicture(initial,initialEval)
+    equal(first.status=="ACCEPTED" or first.status=="MAINTAINED",true)
+    local incumbentCommitmentId=first.commitment.identity
+    local incumbentResponsibility=runtime.responsibilityTransitionAuthority:getCurrentRegulation(incumbentCommitmentId)
+    equal(incumbentResponsibility.provenance.regulatedAssemblyId,"AS-S")
+    equal(incumbentResponsibility.provenance.protectedAssemblyId,"AS-P")
+
+    local incumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",incumbentCommitmentId,"AS-S",4,7)
+    local condorS416=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-S",
+        "AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,8,7)
+    local condorPatriot=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-P",
+        "AS-C","vehicle-root:C","AS-P","vehicle-root:P",nil,nil,8,4)
+    local follower=threeWorkerFollowerRecord(1.5,nil,nil)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,follower,{incumbent,condorS416,condorPatriot},incumbentCommitmentId),
+        headOnTestSnapshot())
+
+    local retainedGroup,freshGroup,failClosed=nil,nil,nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(supported.candidateSupportEvidence.supportBoundary.groups) do
+        if group.existingCommitmentId==incumbentCommitmentId then retainedGroup=group end
+        if group.independentRegulationExtension==true then freshGroup=group end
+        if group.family=="CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED" then failClosed=group end
+    end
+    equal(retainedGroup~=nil,true)
+    equal(freshGroup~=nil,true)
+    equal(freshGroup.coexistsWithCommitmentId,incumbentCommitmentId)
+    equal(freshGroup.regulationOrderingChain,true)
+    equal(failClosed,nil)
+
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"CREATE")
+    local selected=nil
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates) do
+        if candidate.identity==evaluated.decision.selectedCandidateId then selected=candidate break end
+    end
+    equal(selected~=nil,true)
+    equal(selected.evidenceBasis.regulationOrderingChain.outerTemporalDemandSatisfied,true)
+    equal(selected.evidenceBasis.regulationOrderingChain.createsThirdResponsibility,false)
+
+    local second=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(second.status=="ACCEPTED" or second.status=="MAINTAINED",true)
+    equal(second.commitment.identity~=incumbentCommitmentId,true)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(incumbentCommitmentId).identity,incumbentResponsibility.identity)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(second.commitment.identity)~=nil,true)
+    equal(runtime.authorities:ownerOf("AS-S"),incumbentCommitmentId)
+    equal(runtime.authorities:ownerOf("AS-C"),second.commitment.identity)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(incumbentCommitmentId).regulatedAssemblyId,"AS-S")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(second.commitment.identity).regulatedAssemblyId,"AS-C")
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(second.commitment.identity).followerAssemblyId,"AS-C")
 end)
 
 test("Prospective portfolio fail-closed projections namespace passive Candidate reference keys", function()
