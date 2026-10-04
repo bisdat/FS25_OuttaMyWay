@@ -974,7 +974,7 @@ local function projectedCornerRightOfWayGroup(self,picture,snapshot,values,targe
     },nil
 end
 
-local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,compatibleExistingCommitmentId)
+local function projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,compatibleExistingCommitmentId,allowIndependentRegulation)
     local participants={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(situation and situation.participants or {}) do
         if type(participant.assemblyId)=="string" and type(participant.assemblyReferenceKey)=="string" then
@@ -993,6 +993,11 @@ local function projectedSharedCategory2Group(self,picture,snapshot,values,target
         end
         if not found then return nil,"COMPOSED_REGULATION_EXISTING_COMMITMENT_NOT_CURRENT" end
         existing=compatibleExistingCommitmentId
+    elseif allowIndependentRegulation==true then
+        -- Portfolio Support has already proved this fresh pair is a disjoint
+        -- Regulation extension beside one retained responsibility. Do not
+        -- reinterpret the unrelated incumbent commitment as this pair's owner.
+        existing=nil
     else
         existing,existingReason=actionSpaceExistingCommitmentForRequirement(
             values,requirement,"SHARED_CATEGORY_2_DEMAND_REGULATION",situation.identity)
@@ -1111,7 +1116,9 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         if type(projection.sharedCategory2Identity)~="string" then return nil,"SHARED_CATEGORY_2_ID_REQUIRED" end
         local situation,reason=sharedCategory2Situation(picture,projection.sharedCategory2Identity)
         if situation==nil then return nil,reason or "NO_SHARED_CATEGORY_2_DEMAND" end
-        return projectedSharedCategory2Group(self,picture,snapshot,values,targetPictureId,situation,projection.compatibleExistingCommitmentId)
+        return projectedSharedCategory2Group(
+            self,picture,snapshot,values,targetPictureId,situation,
+            projection.compatibleExistingCommitmentId,projection.allowIndependentRegulation==true)
     end
 
     if projection.kind=="FORWARD_INTERSECTION" then
