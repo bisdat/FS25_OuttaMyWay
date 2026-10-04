@@ -1381,7 +1381,7 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
             clear(actionSpace.supportingReferenceKey,actionSpace.supportingOwnerTag or PASSAGE_APPROACH_SUPPORTING_OWNER_TAG)
         end
         self:_releaseBoundedAuthority(actionSpace.supportingBoundedAuthorityId,reason)
-        self.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=nil
+        self.actionSpaceRegulationLeasesByCommitmentId[commitmentId]=nil
         self.actionSpaceRegulationReleaseCount=self.actionSpaceRegulationReleaseCount+1
         released=released+1
         logInfo("DEBUG","ACTION_SPACE_REGULATION_DEPENDENT_COMMITMENT_TERMINATED","commitment=%s conflict=%s regulated=%s reason=%s",
