@@ -6075,12 +6075,12 @@ test("Job Episode dependency collapse ends follower Regulation on eligible retai
     values.governingBasis={responsibilityKey="cooperative-passage:DEPENDENT",dependentJobEpisodeIds={"JE-END","JE-KEEP"}}
     values.revision=values.revision+1; values.epoch=runtime.epochs:next()
     runtime.commitments:save(OuttaMyWay.CommitmentRecord.new(values))
-    runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId[commitmentId].actuationActive=false
+    runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId[id].actuationActive=false
     local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"}},{identity="OBS-END"})
     equal(#collapsed,1)
     equal(runtime.commitments:get(id).state,"SUCCEEDED")
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(id),nil)
-    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(commitmentId).retainedPurpose,false)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(id).retainedPurpose,false)
     equal(events[1],"FALLBACK_CLEAR")
 end)
 
