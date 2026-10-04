@@ -612,8 +612,9 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             commitmentId=commitmentId
         }
     end
-    local status=self.regulationBoundedAuthority:getActionSpaceRegulationStatus()
-    local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,assessment.reason)
+    local status=self.regulationBoundedAuthority:getActionSpaceRegulationStatus(commitmentId)
+    local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(
+        picture,evaluated,assessment.reason,commitmentId)
     local commitment=self.commitments:get(commitmentId)
     local settled=nil
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
@@ -655,7 +656,8 @@ function Runtime:_terminateFollowerBoundaryRegulation(picture,evaluated,current,
     if type(commitmentId)~="string" or type(pairKey)~="string" then return {status="NO_DISPATCH",reason="FOLLOWER_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",followerBoundary=true} end
     local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyFollowerBoundaryRetirementDecision(self,picture,evaluated)
     if applied==nil then return {status="NO_DISPATCH",reason=applyReason,followerBoundary=true} end
-    local physical=self.regulationBoundedAuthority:neutralizeFollowerBoundaryPhysical(picture,evaluated,selectedCandidate(evaluated),assessment.reason)
+    local physical=self.regulationBoundedAuthority:neutralizeFollowerBoundaryPhysical(
+        picture,evaluated,selectedCandidate(evaluated),assessment.reason,commitmentId)
     local commitment=applied.commitment
     local composite=current.provenance and type(current.provenance.compositeTriggerBasis)=="table"
     local settled=nil
