@@ -429,6 +429,10 @@ The reacquired conclusion MUST publish the exact participant-specific fresh dire
 
 Current Opposed Reacquisition is deliberately narrower than Trajectory Supersession. It does not rewrite either participant's general Established Trajectory, create persistent pair history, predict a post-horizon route, or make a TURNING / unresolved direction Passage-ready. Loss of any required fresh evidence returns the pair to ordinary current assessment.
 
+Distance-based persistence MUST remain distance-based across Observation cadence. A noise-rejection minimum for one Observation increment may defer interpretation of that increment, but coherent sub-threshold realised travel MUST remain accumulable toward the relevant persistence/supersession distance. Sampling granularity MUST NOT manufacture a hidden minimum speed below which sustained physical travel becomes permanently invisible to Situation Assessment.
+
+> **Sample Granularity != Motion Persistence.**
+
 > **Current Opposed Reacquisition != Trajectory Supersession.**
 
 > **Fresh Pairwise Passage Direction != General Route Authority.**
