@@ -110,16 +110,30 @@ local function clearCandidate(track,prefix)
     track[prefix.."DistanceM"]=0
 end
 
-local function currentMotionSample(motion,minSampleDistanceM)
+local function currentMotionSample(track,motion,minSampleDistanceM,coherenceMinDot)
     local dx,dz=normalize(tonumber(motion.travelDirectionX),tonumber(motion.travelDirectionZ))
     local interval=tonumber(motion.sampleIntervalSeconds)
     local speed=tonumber(motion.positionDerivedSpeedMps)
-    local distance=nil
-    if interval~=nil and interval>0 and speed~=nil and speed>=0 then distance=interval*speed end
-    local meaningful=dx~=nil and distance~=nil and distance>=minSampleDistanceM
+    local rawDistance=nil
+    if interval~=nil and interval>0 and speed~=nil and speed>=0 then rawDistance=interval*speed end
+
+    -- Minimum sample distance is a noise floor, not a speed floor.  Coherent
+    -- sub-threshold realised travel therefore accumulates across observation
+    -- cycles until it becomes one meaningful displacement sample.
+    local sampleX,sampleZ,sampleDistance=dx,dz,rawDistance
+    local meaningful=false
+    if dx~=nil and rawDistance~=nil and rawDistance>0 then
+        sampleX,sampleZ,sampleDistance=accumulateCandidate(
+            track,"motionSample",dx,dz,rawDistance,coherenceMinDot)
+        meaningful=sampleDistance>=minSampleDistanceM
+        if meaningful then clearCandidate(track,"motionSample") end
+    else
+        clearCandidate(track,"motionSample")
+    end
+
     return {
-        directionX=dx,directionZ=dz,distanceM=distance,meaningful=meaningful,
-        speedMps=speed,classification=motion.motionClassification,reason=motion.motionReason,
+        directionX=sampleX,directionZ=sampleZ,distanceM=sampleDistance,meaningful=meaningful,
+        rawDistanceM=rawDistance,speedMps=speed,classification=motion.motionClassification,reason=motion.motionReason,
         sampleIntervalSeconds=interval
     }
 end
@@ -162,7 +176,7 @@ local function updateTrack(track,motion,space,productive,context)
     local stableMemoryDistanceM=threshold(context,"stableMemoryDistanceM",TRAJECTORY_STABLE_MEMORY_DISTANCE_M)
     local snapshotId=context.observationSnapshotId
     local timestamp=context.timestamp
-    local sample=currentMotionSample(motion,minSampleDistanceM)
+    local sample=currentMotionSample(track,motion,minSampleDistanceM,coherenceMinDot)
     track.lastObservationSnapshotId=snapshotId
     track.lastTimestamp=timestamp
     track.currentMotion=sample
