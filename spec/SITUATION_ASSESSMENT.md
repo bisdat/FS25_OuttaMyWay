@@ -120,6 +120,10 @@ When a retained trajectory relation is not substantially opposed, Situation Asse
 
 The resulting relationship MUST carry a participant-specific **Passage Direction Basis** identifying the fresh directions and their bounded provenance. That basis is valid only for the current opposed-corridor / Passage question. It MUST NOT mutate the participants' general Established Trajectories, authorise productive routing, or survive loss of the supporting fresh evidence.
 
+The calibrated minimum displacement used to reject one noisy Observation increment MUST NOT become an implicit speed threshold. Consecutive coherent positive displacement increments below that per-increment minimum MUST be accumulated until they either establish a meaningful displacement sample or are invalidated by contradictory direction/lifecycle evidence. This applies to the distance accumulation used by Established Trajectory formation/supersession and therefore to the fresh persistence that Current Opposed Reacquisition consumes.
+
+> **Sample Granularity != Motion Persistence.**
+
 TURNING, unresolved native continuation, raw chassis heading, proximity, blockage, or future-space intersection alone MUST NOT establish Current Opposed Reacquisition.
 
 > **Current Opposed Reacquisition != Trajectory Supersession.**
