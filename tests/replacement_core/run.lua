@@ -4578,6 +4578,58 @@ local function classifyTestTrajectoryConflict(trajectories,motions,spaces,physic
     })[1]
 end
 
+test("Trajectory Conflict: coherent 1 kmh travel accumulates across sub-threshold observation samples",function()
+    local tracks={
+        ["AS-B"]={
+            assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",
+            established=true,establishedDirectionX=-1,establishedDirectionZ=0,
+            anchorX=0,anchorZ=0,currentAlignedDistanceM=0,totalAlignedDistanceM=12,
+            formationDistanceM=0,excursionDistanceM=0,lastTransition="TEST_STALE_TRAJECTORY"
+        }
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-B",0,0)}
+    local productive={buildTrajectoryProductiveEvidence("AS-B",true,"NON_TURN_LINE_ACTIVE")}
+    local speedMps=1/3.6
+    local trajectories=nil
+
+    -- At the production 250 ms cadence, 1 km/h advances only ~0.069 m per
+    -- observation: below the 0.10 m noise floor.  Coherent physical travel
+    -- must accumulate rather than becoming permanently invisible.
+    for index=1,56 do
+        trajectories=updateTestTrajectories(
+            tracks,{buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,speedMps,0.25)},
+            spaces,index,productive)
+    end
+    equal(trajectories[1].establishedDirectionX,-1)
+    equal(trajectories[1].establishedDirectionZ,0)
+    equal(trajectories[1].excursionDistanceM<4,true)
+
+    for index=57,58 do
+        trajectories=updateTestTrajectories(
+            tracks,{buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,speedMps,0.25)},
+            spaces,index,productive)
+    end
+    equal(trajectories[1].lastTransition,"ESTABLISHED_TRAJECTORY_SUPERSEDED_BY_SUSTAINED_CONTRADICTORY_MOTION")
+    equal(math.abs(trajectories[1].establishedDirectionX)<0.000001,true)
+    equal(trajectories[1].establishedDirectionZ<-0.999,true)
+end)
+
+test("Trajectory Conflict: incoherent sub-threshold jitter does not accumulate into trajectory evidence",function()
+    local tracks={}
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0)}
+    local productive={buildTrajectoryProductiveEvidence("AS-A",true,"NON_TURN_LINE_ACTIVE")}
+    local speedMps=0.2
+    local trajectories=nil
+    for index=1,20 do
+        local dx=index%2==0 and 1 or -1
+        trajectories=updateTestTrajectories(
+            tracks,{buildTrajectoryMotionEvidence("AS-A","JE-A",dx,0,speedMps,0.25)},
+            spaces,index,productive)
+    end
+    equal(trajectories[1].established,false)
+    equal(trajectories[1].formationDistanceM,0)
+end)
+
 test("Trajectory Conflict: fresh settled opposed motion reacquires Passage concern before stale trajectory supersession",function()
     local trajectories={
         {assemblyId="AS-A",assemblyReferenceKey="REF-AS-A",jobToken="JE-A",established=true,establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentDirectionX=0,currentDirectionZ=1,currentExcursion=false,currentAlignedDistanceM=5,excursionDistanceM=0,currentToEstablishedDot=1,contextProductivePositive=true,contextEvidenceClass="NON_TURN_LINE_ACTIVE"},
