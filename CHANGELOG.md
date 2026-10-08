@@ -1,3 +1,17 @@
+# v0.5.0.0 RELEASE DECLARATION — Accepted Pre-Rewrite Baseline
+
+**Accepted source baseline before declaration:** `main` after merged PR #436, commit `7734e01d2fd82ddafbc654ea67efc235afd68fe2`, with product identity `0.4.11.0`. This is the last accepted repository state before the proposed major rewrite; it includes the previously accepted Regulation Composition and Passage Continuity plateau.
+
+**Checkpoint purpose and classification:** owner-selected **MINOR** epoch checkpoint `0.5.0.0`, deliberately establishing an immutable pre-rewrite comparison and recovery baseline for the forthcoming 0.5 engineering programme. The planned rewrite is **not** included in this declaration. The new MINOR identity marks the chosen epoch boundary; it must not be read as evidence that the future architecture, implementation or supported capabilities already exist.
+
+**Release declaration boundary:** only the two product-version owners (`scripts/config.lua` and `modDesc.xml`) and this release-history entry change. No executable traffic behaviour, GIANTS integration, Architecture, Specification, Control, Regulation, Cooperative Passage, Obstruction Relocation, Blocked Worker Recovery, Bounded Authority, Situation Assessment, Observation, Operation Lifecycle, Configuration, HUD or player-facing semantics change. All existing source and validation limitations remain inherited from the accepted baseline.
+
+**Accepted baseline and validation:** the preceding `0.4.11.0` PATCH checkpoint (PR #436) recorded the corrected `0.4.10.x` lineage from PRs #425/#426, #428/#430/#435, #431 and #433. The final behavioural TEST `0.4.10.17` passed repository Offline Validation (#1359) and GIANTS Reality positively demonstrated Category-2 authority release and settlement under composed Regulation, as well as an earlier Condor/Patriot Cooperative Passage and clean hand-back. The field run did **not** independently replay the later local Patriot/S416 Passage collision seen in `0.4.10.16`; the evidence boundary is preserved. The identity-only `0.4.11.0` checkpoint and this declaration make no new in-game behaviour claim.
+
+**Known separable work:** current open work includes player-facing messaging (#89), GIANTS-native AI API investigation (#420), Physical Representation pose-refresh cost (#399), performance/frame-pacing baseline (#86), adversarial stress testing (#228), in-game Help/Reference (#293) and LDoc usability (#210). These remain independent tracked responsibilities. The major rewrite begins in subsequent Engineering Increments, not in this declaration.
+
+**Canonical authority:** this is a **Release Declaration candidate** until the repository owner merges the explicitly designated `0.5.0.0` Release Declaration PR. **That owner merge is the Canonical Merge and declares its resulting exact `main` commit canonical `v0.5.0.0`.** A tag, GitHub Release, ZIP or other artefact may record the checkpoint later but cannot independently establish canonical authority.
+
 # v0.4.11.0 PATCH CHECKPOINT — Regulation Composition and Passage Continuity Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #435 (`ed5efe9129e9a29e85f72af2cdcc7eeae5967f4f`), carrying TEST `0.4.10.17`. This checkpoint captures the accepted 0.4.10.x correction lineage after the previous `0.4.10.0` plateau.
