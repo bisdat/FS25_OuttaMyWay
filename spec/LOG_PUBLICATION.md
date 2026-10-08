@@ -127,7 +127,7 @@ Job Episode admission is the principal current example.
 
 Payload roles MUST preserve the vocabulary of the owning semantic contract.
 
-Examples include regulated/protected for Regulation, participants for Cooperative Passage, blocker/beneficiary for Obstruction Relocation, and worker/Job Episode for Job lifecycle.
+The current shell publishes product-status context. A future worker-control contract must establish its own truthful role vocabulary before any corresponding lifecycle event is published.
 
 Log Publication MUST NOT force all producers into anonymous entity slots when doing so would erase semantic meaning.
 
@@ -140,12 +140,6 @@ The initial NORMAL contract requires support for these semantic publication fami
 | Publication family | Owning semantic boundary | Minimum useful context |
 | --- | --- | --- |
 | product startup / activation state | product startup after Configuration resolution | version and resolved enabled state |
-| Job Episode start/end | Operation Lifecycle | Job Episode identity and subject; Operation only if already established |
-| Local Operation start/end | Operation Lifecycle | Operation identity and field locator when available |
-| Regulation start/end | Responsibility Transition | Operation, responsibility identity, roles/reason/outcome |
-| Cooperative Passage start/end | Responsibility Transition plus governing Passage/Resolution terminal meaning | Operation, responsibility/resolution context, pair roles/outcome |
-| Obstruction Relocation start/end | Responsibility Transition plus governing Relocation/Resolution terminal meaning | Operation where applicable, responsibility/resolution context, blocker/beneficiary/outcome |
-| player intervention required | lifecycle that positively establishes escalation | relevant semantic context and reason |
 | operational warning/error | authority owning the abnormal semantic/system fact | stable event code, relevant context and reason |
 
 The event code for each implemented publication MUST follow the Event-code contract. This initial contract does not freeze a complete catalogue of every future DEBUG/DIAGNOSTIC code.

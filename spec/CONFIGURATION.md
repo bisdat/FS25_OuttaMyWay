@@ -90,7 +90,7 @@ A product version change MUST NOT invalidate persisted Configuration unless the 
 
 ## Startup lifecycle
 
-Configuration persistence MUST resolve during the product-shell startup path before normal Runtime bootstrap is considered.
+Configuration persistence MUST resolve during product-shell startup before consumers use the supported Configuration state.
 
 The ordered contract is:
 
@@ -121,11 +121,11 @@ does configuration.xml exist?
                           -> expose default semantic state
         |
         v
-resolved enabled value decides whether normal Runtime may bootstrap
+resolved enabled value determines shell status presentation
         |
-        +-- enabled=true --> Runtime may bootstrap
+        +-- enabled=true --> version-only Product Status Indicator may render
         |
-        `-- enabled=false -> Runtime remains absent
+        `-- enabled=false -> indicator absent
                             -> arm one Disabled Startup Reminder
 ```
 
@@ -153,7 +153,7 @@ If `configuration.xml` does not exist:
 2. all three supported values MUST be initialised to their accepted defaults;
 3. the schema-1 representation MUST be created and saved;
 4. only after successful persistence may the default semantic state be exposed to normal consumers; and
-5. Runtime bootstrap may then proceed only if the resolved `enabled` value permits it.
+5. shell consumers may then use the resolved semantic state, subject to their own responsibilities.
 
 Defaults MUST NOT remain only as volatile in-memory state after a successful first-use startup.
 
@@ -188,27 +188,27 @@ A storage failure includes inability to establish the required directory, inabil
 
 When Configuration cannot establish its durable persisted representation:
 
-- normal Runtime bootstrap MUST NOT proceed;
+- consumers MUST NOT treat unresolved Configuration as valid enabled consent;
 - Configuration MUST NOT report the new/recovered state as successfully persisted;
 - the product shell MAY remain available;
-- an operational error MUST be surfaced through a product-shell-safe error path that does not require normal Runtime bootstrap or successful Configuration persistence; and
+- an operational error MUST be surfaced through the product-shell-safe logging path without requiring successful Configuration persistence; and
 - no persisted setting may be silently treated as authoritative merely because an in-memory fallback exists.
 
 > **Configuration Invalidity Is Recoverable; Configuration Storage Failure Is Not**
 
 The exact user-facing HUD treatment of this failure remains GUI/HUD responsibility.
 
-## Runtime change contract
+## Live change contract
 
 ### Enabled
 
 A deliberate player change to `enabled=false` applies immediately as product-consent withdrawal.
 
-Configuration owns the value change and notification. Product lifecycle / Responsibility Transition / Control own the resulting termination of OuttaMyWay functional responsibility and bounded release/neutralisation of already-owned effects.
+Configuration owns the value change and notification. The current shell owns no worker physical effects; its consumers only update supported product-status presentation. Future worker Control, if ever implemented, requires a separately established release contract.
 
 Consent withdrawal takes effect immediately even if persisting `enabled=false` fails. A storage failure MUST NOT keep OuttaMyWay active merely to preserve consistency with the old persisted value. The current session remains disabled, the failure is surfaced, and durable success MUST NOT be claimed.
 
-A deliberate change to `enabled=true` requests immediate re-enablement, but fresh Runtime bootstrap MUST NOT occur until the new enabled state has been persisted successfully. If persistence fails, the product remains disabled and the failure is surfaced. Successful re-enablement MUST bootstrap from current GIANTS Reality and MUST NOT resume pre-disable Situation, Operation, Responsibility, Commitment or Authority state.
+A deliberate change to `enabled=true` requests shell re-enablement only after the new value has been persisted successfully. If persistence fails, the current session remains disabled and the failure is surfaced. Re-enabling does not create GIANTS AI Runtime or worker coordination.
 
 ### HUD visibility
 
@@ -293,25 +293,22 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 | --- | --- |
 | [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) | `REALISES` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
-| [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) | `REALISES` |
-| [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) | `SUPPORTS` |
 | [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) | `REALISES` |
 | [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) | `REALISES` |
 
 ## Implementation traceability
 
-The current implementation establishes the supported local-profile state/persistence boundary:
+The active 0.5 implementation consists only of the persistent product shell:
 
-- [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) owns schema-1 path construction, first-use materialisation, persisted validation/recovery, semantic getters, persistence-aware setters and change notification;
-- [`scripts/main.lua`](../scripts/main.lua) resolves Configuration in the product shell before Runtime bootstrap, blocks Runtime when persistence is unresolved or `enabled=false`, and composes Log Publication so the engineering DIAGNOSTIC sidecar remains independent while player `debug` resolves NORMAL/DEBUG.
-- [`scripts/lifecycle/ProductLifecycle.lua`](../scripts/lifecycle/ProductLifecycle.lua) subscribes to semantic Configuration changes and implements live `enabled -> false` consent withdrawal by stopping Runtime listener participation, invoking universal authority-reducing relinquishment, discarding the current Runtime graph, and issuing the bounded player hand-back notification.
-- [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua) supports that withdrawal by ceasing live coordination first, terminating current semantic responsibility through its existing authorities, and invoking authority-reducing relinquishment across current Regulation, Bubble Bullet Time, Cooperative Passage, Obstruction Relocation and residual Bounded Authority without settling the interrupted objective.
-- [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) injects exactly the three supported semantic choices into GIANTS `InGameMenuSettingsFrame.generalSettingsLayout` and writes changes only through Configuration setters. It owns no persistence, Runtime, top-level menu page or map-lifecycle authority.
-- [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) is a product-shell mission listener that consumes resolved `enabled=false` at mission load, waits for the GIANTS warning surface, presents the localized 5000 ms Disabled Startup Reminder once, and then becomes inert for that mission. It does not consume `hudVisible` and does not require Runtime.
+- [Configuration.lua](../scripts/configuration/Configuration.lua) owns profile-scoped persistence, first-use defaults, schema validation, recovery, getters/setters and durable change notifications;
+- [main.lua](../scripts/main.lua) resolves Configuration during startup, composes the NORMAL/DEBUG/DIAGNOSTIC publication policy, and publishes the shell's enabled/disabled status. There is **no AI Runtime or worker-control re-bootstrap**;
+- [ConfigurationSettingsExtension.lua](../scripts/gui/ConfigurationSettingsExtension.lua) exposes the supported player choices through GIANTS' General Settings and saves them through Configuration;
+- [DisabledStartupReminder.lua](../scripts/gui/DisabledStartupReminder.lua) displays the bounded disabled reminder at mission startup;
+- [VersionHud.lua](../scripts/diagnostics/VersionHud.lua) consumes the enabled/disabled state to display the dynamic version-only product status. It is a GUI consumer, not an additional `CONFIGURATION` contract participant.
 
-The General Settings Configuration Section provides the supported player interaction surface and master enablement is symmetric: durable `enabled -> true` triggers a fresh Runtime bootstrap from current GIANTS Reality. `hudVisible` remains intentionally without the full Operational Player Message consumer; GUI Architecture owns that responsibility and Issue #89 tracks the unresolved design and implementation work.
+The product `enabled` flag controls the supported shell experience. Enabling cannot imply worker coordination when no AI Runtime exists. Operational Player Messages and the full HUD remain deferred to [GUI Architecture](../architecture/GUI.md).
 
-The existing `scripts/config.lua` file is not a Configuration implementation. It continues to own root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
+`scripts/config.lua` continues to own product identity and version, not player settings or mixed runtime constants.
 
 ## Engine dependency
 
@@ -319,18 +316,15 @@ The persistence mechanism relies on the FS25 user-profile/XML surfaces recorded 
 
 Those engine surfaces supply mechanics only. They do not own Configuration semantics.
 
-The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. Live re-enable MUST initialise freshly registered Runtime listeners for the already-loaded map because `addModEventListener()` only registers future event delivery and does not replay `loadMap()`.
-
-Live re-enable creates fresh semantic Runtime state but MUST NOT repeatedly install equivalent mechanical interception wrappers. Current Hold and Native Drive mechanisms leave transparent engine/vehicle interception wrappers installed intentionally so other-mod overwrite chains are not broken. Their owned transient control state is cleared on disablement and the same subordinate mechanism instances are reused by the next fresh Runtime graph.
-
-> **Fresh Runtime State != Reinstalled Mechanical Interception**
+The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. Because the current shell has no GIANTS worker Runtime and no Control interceptors, toggling enabled only changes the shell's supported status and messaging behaviour. No worker reinitialisation, AI interception, Regulation or Control relinquishment is performed by Configuration in the current implementation.
 
 ## Repository validation participants
 
 | Validation surface | Relationship |
 | --- | --- |
-| [`tests/replacement_core/configuration.lua`](../tests/replacement_core/configuration.lua) | `CHALLENGES` |
-| [`tests/test_configuration_structure.py`](../tests/test_configuration_structure.py) | `CHALLENGES` |
+| [`tests/shell/configuration_persistence.lua`](../tests/shell/configuration_persistence.lua) | `CHALLENGES` |
+| [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
+| [`tests/test_product_shell_structure.py`](../tests/test_product_shell_structure.py) | `CHALLENGES` |
 
 ## Validation route
 
@@ -346,7 +340,7 @@ Current offline validation SHOULD challenge at least:
 - consumers receiving semantic state without direct storage access;
 - Debug mapping only to NORMAL/DEBUG;
 - DIAGNOSTIC sidecar remaining outside Configuration;
-- storage failure preventing normal Runtime bootstrap;
+- storage failure preventing consumers from claiming valid persisted Configuration;
 - disable/re-enable change semantics;
 - persistence failure not being reported as committed success.
 

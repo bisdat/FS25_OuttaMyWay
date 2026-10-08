@@ -7,7 +7,7 @@ authority.
 
 ## Breadcrumbs
 
-- [Native Blocked-State Evidence Probe](NATIVE_BLOCKED_STATE_PROBE.md) — current 0.5 passive blocked-signal experiment, hypotheses and TS015 Reality discriminator.
+- [Native Blocked-State Evidence Probe](NATIVE_BLOCKED_STATE_PROBE.md) — completed, historical 0.5 native-state experiment with dated TS015 observations, qualified findings and limits.
 
 - [Architecture Compliance Audit v4.6.49](ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) — bounded historical conformance audit and evidence.
 - [Architecture Compliance Audit v4.6.77](ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.77.md) — later bounded historical conformance audit and evidence.

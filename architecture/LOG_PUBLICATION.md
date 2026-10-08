@@ -96,7 +96,7 @@ NORMAL
 
 ### NORMAL — lifecycle and intervention journal
 
-NORMAL is a sparse, transition-driven operational journal. It records product/lifecycle boundaries and externally meaningful OuttaMyWay interventions: product activation state, Job Episode and Local Operation lifecycle, Regulation, Cooperative Passage, Obstruction Relocation, player-intervention escalation, and genuinely operational warnings/errors.
+NORMAL is a sparse, transition-driven operational journal. The current shell publishes product startup, resolved enabled-state changes, and established system warnings/errors. Future GIANTS Job, Regulation, Passage, Recovery or player-intervention events may enter NORMAL only after their owning responsibilities exist and can establish those facts.
 
 NORMAL does not describe continuous internal reasoning. Silence between meaningful transitions is desirable. A periodic "still running" heartbeat is not a NORMAL requirement.
 
@@ -205,16 +205,9 @@ NORMAL lifecycle lines must be emitted from the authority that establishes the l
 | NORMAL fact | Semantic authority |
 | --- | --- |
 | Product startup / resolved enabled state | product startup after Configuration resolution |
-| Job Episode start/end | Operation Lifecycle |
-| Local Operation start/end | Operation Lifecycle |
-| Regulation start/end | Responsibility Transition |
-| Cooperative Passage start/end | Responsibility Transition, with terminal meaning supplied by the governing Resolution/Passage lifecycle |
-| Obstruction Relocation start/end | Responsibility Transition, with terminal meaning supplied by the governing Resolution/Relocation lifecycle |
-| Player Claim affecting autonomous actuation | Situation Assessment owns Player Claim; Responsibility Transition owns any resulting responsibility exit |
-| Player intervention required | lifecycle that positively establishes autonomous escalation |
 | Operational warning/error | jurisdiction or system component that owns the abnormal semantic/system fact |
 
-A Control mechanism physically slowing a worker does not own Regulation start. Physical completion of one relocation manoeuvre does not by itself own Obstruction Relocation end.
+There is currently no OMW worker Control to publish any such events. Future operational publishers must acquire semantic ownership before logging their lifecycle claims.
 
 > **Normal Event Ownership Follows Semantic Authority**
 
@@ -242,7 +235,7 @@ A publication level controls what may be emitted. It does not automatically cont
 
 > **Publication Level != Instrument Activation**
 
-Turning logging down must not alter Observation, Situation Assessment, Decision, Responsibility Transition, Bounded Authority or Control. Likewise, enabling DIAGNOSTIC publication must not automatically activate every instrument.
+Turning logging down must not alter independent product operation. Enabling DIAGNOSTIC publication does not automatically create or activate an instrument. The completed blocked-state probe was retired after its research question ended.
 
 However, work that exists solely to prepare a suppressed log message should not run.
 
@@ -266,7 +259,7 @@ Any publication-failure reporting mechanism must avoid recursion through the sam
 
 [GUI Architecture](GUI.md) owns player-facing operational communication. Log Publication does not provide a second HUD/message channel.
 
-[Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md) and their Specifications own the semantic events that NORMAL and DEBUG may publish.
+The prior worker-control architectures are historical records, not active producers of NORMAL/DEBUG events. Future worker-traffic jurisdictions must establish their own semantic publication facts before implementation.
 
 Diagnostic instruments own the engineering questions and evidence they produce. Log Publication owns only whether and how eligible evidence reaches the GIANTS log.
 

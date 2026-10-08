@@ -214,11 +214,17 @@ remain distinct mechanisms.
 **Evidence:** current FS25 `AIDriveStrategyFieldCourse:getDriveData()` reverse
 path and Issue #336 S416/Condor comparison.
 
-### Field-worker and field-course blockage: separate candidate source signals
+### Native field-worker and field-course blocked-state observations — FS25 1.24.0.0
 
-In the [GIANTS field-course scripting source](https://gdn.giants-software.com/documentation_scripting_fs25.php?category=3&class=151&version=script), AIDriveStrategyFieldCourse holds isBlocked and hasStaticCollision values populated by its collision handler. Separately, the AIFieldWorker specialization exposes its own native blocked flag. Neither source proves that the flags match within a live update, that they identify a particular blocker, or that GIANTS native static-collision recovery has failed. The published source is labelled v1.20. The current test game is FS25 1.24.0.0, so installed-runtime correspondence needs Reality confirmation.
+**External source:** the [GIANTS field-course scripting reference](https://gdn.giants-software.com/documentation_scripting_fs25.php?category=3&class=151&version=script) (published scripting **v1.20**) describes a native course blocked flag and a separate static-collision flag. Source inspection is not evidence of equivalent field behaviour in every future game release.
 
-The opt-in [0.5 probe study](../research/NATIVE_BLOCKED_STATE_PROBE.md) compares these passive fields without invoking strategy updates or drive methods. It is a diagnostic experiment, not recovered authority to use the old Prediction/Regulation pipeline.
+**Observed in-game:** TS015 on FS25 **1.24.0.0**, Build-Id **b41780**, revision **83220**, through the read-only TEST 0.5.0.2/.3 diagnostic experiment. Condor, Patriot and S416 exposed field-course state while GIANTS jobs were active. In captured blocked samples, both `spec_aiFieldWorker.isBlocked` and field-course `isBlocked` were true; `hasStaticCollision` was false. Patriot's flags repeatedly changed true/false during native continuation attempts. The owner explains that GIANTS tries resuming as a nearby blocker moves, and brief blocked notices can also occur during safe adjacent opposed A8 passage. These are owner-reported situational observations; the logs establish the flag values, **not** physical clearance.
+
+**Independent static observation:** in TEST 0.5.0.3 at **12:33:39.231**, S416 had `hasStaticCollision=true` with **both** native blocked flags false. At **12:33:40.739**, static collision was false without a blocked assertion. Consequently **Native Static Collision Detection != Native Blocked Assertion**, even in this one tested game build.
+
+**Safe inference:** raw native fields are distinct positive engine signals, not an OMW Recovery admission verdict. Transient `isBlocked=false` is not proof of useful realised continuation. The samples do not identify the causal obstacle, verify static contact, prove a native skip, or demonstrate completed native recovery. Passive sampling every approximately 500 ms can miss shorter transitions.
+
+**Evidence:** completed [Native Blocked-State Probe research](../research/NATIVE_BLOCKED_STATE_PROBE.md). The diagnostic module has been retired from production after answering this narrow question; the subsequent qualification question is tracked under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
 
 ### Native zero and blocked states are ambiguous and reactive
 

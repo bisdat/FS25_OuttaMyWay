@@ -6,7 +6,6 @@ local expected={
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/diagnostics/VersionHud.lua",
-    "scripts/diagnostics/NativeBlockedProbe.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
 }
@@ -51,7 +50,6 @@ source=function(path)
             end
         }
     elseif path=="scripts/diagnostics/VersionHud.lua"
-        or path=="scripts/diagnostics/NativeBlockedProbe.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then
         dofile(path)
@@ -63,11 +61,9 @@ dofile("scripts/main.lua")
 assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
-assert(#registered==3 and registered[1]==OuttaMyWay.versionHud
-    and registered[2]==OuttaMyWay.nativeBlockedProbe
-    and registered[3]==OuttaMyWay.disabledStartupReminder)
--- Default NORMAL logging is dormant: no worker registry scan or AI runtime.
-OuttaMyWay.nativeBlockedProbe:update(1000)
+assert(#registered==2 and registered[1]==OuttaMyWay.versionHud
+    and registered[2]==OuttaMyWay.disabledStartupReminder)
+assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)

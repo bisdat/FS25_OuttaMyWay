@@ -13,7 +13,6 @@ SHELL_MODULES = [
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/diagnostics/VersionHud.lua",
-    "scripts/diagnostics/NativeBlockedProbe.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
 ]
@@ -44,8 +43,8 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 3
-    assert "OuttaMyWay.nativeBlockedProbe=OuttaMyWay.NativeBlockedProbe.new(" in text
+    assert text.count("addModEventListener(") == 2
+    assert "NativeBlockedProbe" not in text
 
 
 def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
@@ -86,15 +85,8 @@ def test_manifest_does_not_promise_active_ai_control():
     assert "This build does not control AI workers." in moddesc
     assert "AI worker coordination is inactive." in moddesc
 
-def test_probe_remains_opt_in_and_has_no_worker_actuation():
-    source = (ROOT / "scripts/diagnostics/NativeBlockedProbe.lua").read_text(encoding="utf-8")
-    assert "mission.aiSystem.activeJobVehicles" in source
-    assert "spec_aiFieldWorker.isBlocked" in source
-    assert "INTERVAL_MS=500" in source
-    assert "c:isDebugEnabled()==true" in source
-    for forbidden in (
-        "startAIJob(", "stopAIJob(", "setIsBlockedCallback(",
-        "skipCurrentSubSegment(", "getDriveData(", "AIVehicleUtil.drive",
-        "setBlockingRegionState(", "getCanAIFieldWorkerContinueWork(",
-    ):
-        assert forbidden not in source
+
+def test_every_production_script_is_reachable_from_the_shell():
+    actual = {path.relative_to(ROOT).as_posix() for path in (ROOT / "scripts").rglob("*.lua")}
+    assert actual == set(SHELL_MODULES) | {"scripts/main.lua"}
+    assert "scripts/diagnostics/NativeBlockedProbe.lua" not in actual

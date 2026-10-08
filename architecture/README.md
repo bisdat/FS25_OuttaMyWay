@@ -1,66 +1,18 @@
 # System Architecture
 
-Architecture describes **what the system should achieve**: its current
-responsibilities, concepts, boundaries and intended behaviour. It is distinct
-from implementation placement, engineering chronology and validation evidence.
+This is the **current** authority for the small 0.5 OuttaMyWay shell and its accepted design direction. Architecture describes what the system should achieve; Specifications define implementation-facing obligations; source implements those contracts; tests and GIANTS Reality challenge all three.
 
-`/architecture` is a first-class engineering surface alongside `/spec`, `/scripts` and `/tests`. Their repository addressability is peer-level; their authority is not: Architecture owns current system meaning, Specification owns implementation-facing contract, source owns current mechanism, and tests provide evidence.
+## Current boundaries
 
-> **First-Class Authority Deserves First-Class Addressability.**
+- [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. Worker intervention is **not yet implemented**.
+- [Configuration](CONFIGURATION.md) — durable player choices and consent to the current product shell.
+- [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
+- [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.
 
-A future engineer should be able to reconstruct the present architecture
-directly from this live tree. Phase/tranche migration history belongs in Git,
-pull requests, Issues, the Engineering Journal and other authorised
-evidence/history surfaces; it must not be replayed as a sequence of live
-architecture deltas.
+The running shell does **not** observe, assess, regulate, hold, steer, stop, restart or relocate GIANTS workers. Its Enabled state is not a claim that AI coordination exists. No worker Observation, Situation Assessment, Recovery or Control responsibility is implemented or currently made normative by this index.
 
-## Current 0.5 rewrite boundary
+## Deliberately unresolved
 
-**Active product:** the 0.5 product shell alone: persistent player Configuration, Log Publication, a labelled status indicator, and the disabled-startup reminder. It does not hold, regulate, reposition, stop, restart or otherwise control any GIANTS worker. A bounded DEBUG/DIAGNOSTIC-only passive blocked-state instrument is research evidence production, not Situation Assessment or Recovery authority. Enabled Configuration is shell consent, **not** a claim that AI coordination is operational.
+The 0.5 worker-cooperation architecture will be established through evidence before new implementation is authorised. [Blocked Progress Qualification #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440) examines transient blocked assertions and useful native continuation. [Standards reconciliation #441](https://github.com/bisdat/FS25_OuttaMyWay/issues/441) owns unresolved cross-surface questions.
 
-**Accepted redesign direction:** react to positive native GIANTS worker-blocked evidence rather than proactively predicting worker collisions. Explore one bounded stop / local relocation / native FIELDWORK restart intervention that allows GIANTS to replan and continue; do not require OMW axis return. The TS015 no-mod player experiment supports investigating this pattern but does not prove automatic participant choice, clearance, agronomic completion or all vehicle classes. GIANTS' native recovery and the API proposals in Issue #420 remain unvalidated for this replacement.
-
-The detailed 0.4 Spatial Negotiation, Regulation, Passage, Candidate and Control architecture below is retained as engineering knowledge during discovery, **not as an implemented or approved new 0.5 runtime control pipeline**. Its future responsibilities will be reassessed rather than re-enabled merely because source exists.
-
-## Current architecture breadcrumb
-
-Start with the
-[Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md)
-for the former 0.4 end-to-end lifecycle and Control model (currently dormant).
-
-Follow its responsibility routes to:
-
-- [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md) — active
-  spatial-coordination policy, Regulation, Cooperative Passage, Bounded Bypass,
-  Passage Legs, Bubble lifecycle and third-worker protection;
-- [Physical Representation Architecture](PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
-  — physical identity resolution, assessment representation, scoped geometry
-  authority, coverage and evidence quality;
-- [Candidate Support, Constraint and Decision Architecture](CANDIDATE_SUPPORT_PROJECTION.md)
-  — fresh prospective Candidate support, mandatory Constraint Evaluation and
-  Decision before Responsibility Transition.
-
-Other direct live Architecture responsibilities are:
-
-- [Project Vision](PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity,
-  scope, and product-level direction;
-- [Configuration Architecture](CONFIGURATION.md) — supported player-choice and
-  consent surface, admission rules, defaults, persistence, and authority boundaries;
-- [Log Publication Architecture](LOG_PUBLICATION.md) — controlled projection of
-  already-established runtime/engineering facts into NORMAL, DEBUG and DIAGNOSTIC
-  GIANTS-log publication without acquiring semantic authority;
-- [GUI Architecture](GUI.md) — player-facing interface architecture; the General Settings Configuration Section is reconciled while remaining communication responsibilities are still open.
-
-Phase/tranche closure audits do not own current architecture after their durable
-findings have been harvested. Historical Phase-13 closure evidence remains
-available through Git history and PR #71 rather than as a live architecture
-child.
-
-Current implementation placement is reached through the governing primary
-Specifications under [`/spec`](../spec/README.md) and their implementation
-traceability into `/scripts`. Substantial unresolved engineering work is owned
-by the responsible GitHub Issue where one exists; Issues provide work-item
-context but do not become Architecture or accepted implementation authority.
-
-Architecture may describe intended behaviour that is not yet implemented. Read
-it as the system's current responsibility model, not as implementation chronology.
+Old predictive/regulation/passage/recovery designs are **not current architectural contracts**. Their history, code and original contracts are recoverable from [archive/0.4.11.0](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). This is a historical reference, not a breadcrumb to a live architecture document.
