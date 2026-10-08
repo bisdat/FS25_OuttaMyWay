@@ -5,12 +5,12 @@ This is the **current** authority for the small 0.5 OuttaMyWay shell and its acc
 ## Current boundaries
 
 - [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. Worker intervention is **not yet implemented**.
-- [Blocked-First Situation Assessment](BLOCKED_PROGRESS_QUALIFICATION.md) — GIANTS native isBlocked and nearest eligible worker within 30 m after ≥1 s; [Spatial Pair Inference](../spec/SPATIAL_PAIR_INFERENCE.md) implements only a pure evaluator, not worker Observation or Control.
+- [Blocked-First Situation Assessment](BLOCKED_PROGRESS_QUALIFICATION.md) — GIANTS native isBlocked, ≥1 s and nearest eligible worker within 30 m; [Native Blockage Observation](../spec/NATIVE_BLOCKAGE_OBSERVATION.md) passively reads GIANTS, feeding [Spatial Pair Inference](../spec/SPATIAL_PAIR_INFERENCE.md), with no worker Control.
 - [Configuration](CONFIGURATION.md) — durable player choices and consent to the current product shell.
 - [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
 - [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.
 
-The running shell does **not** observe, live-assess, regulate, hold, steer, stop, restart or relocate GIANTS workers. It loads a pure, uninvoked candidate evaluator for later integration. The experimental [native blocked-event tap](../docs/research/NATIVE_BLOCKED_EVENT_TAP.md) served its research purpose and was retired in TEST 0.5.0.6. Its Enabled state is not a claim that AI coordination exists. No worker Observation, Situation Assessment, Recovery or Control responsibility is implemented or currently made normative by this index.
+The running shell observes native blocked state **read-only** and uses a pure candidate evaluator, but does **not** regulate, hold, steer, stop, restart or relocate GIANTS workers. The observer performs no independent collision detection, and its diagnostic candidate is not Control authority. The experimental [native blocked-event tap](../docs/research/NATIVE_BLOCKED_EVENT_TAP.md) served its research purpose and was retired in TEST 0.5.0.6. Its Enabled state is not a claim that AI coordination exists. Passive Native Blockage Observation and Spatial Pair Inference are implemented as narrow Specifications; broader Situation Assessment, Recovery or Control is not.
 
 ## Deliberately unresolved
 

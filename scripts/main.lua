@@ -1,6 +1,6 @@
 -- OuttaMyWay product-shell entry point. Build identity lives in scripts/config.lua and modDesc.xml.
 -- Specification Jurisdictions: `CONFIGURATION`
--- 0.5 shell provides no AI observation or Control. Pure candidate logic is loaded but not used.
+-- Passive GIANTS blocked-state Observation is enabled, with no AI Control.
 local modDirectory=g_currentModDirectory or ""
 local modules={
     "scripts/config.lua",
@@ -8,6 +8,7 @@ local modules={
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/observation/NativeBlockageObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -49,10 +50,12 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
     end)
 end)
 
--- Current shell contains no GIANTS AI observation, pair-evaluator caller or worker-control listener.
+-- Passive blocked-state observation may log candidates, but never acquires worker Control.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
+OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
 if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
+    addModEventListener(OuttaMyWay.nativeBlockageObservation)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end

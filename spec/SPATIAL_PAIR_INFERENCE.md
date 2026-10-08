@@ -21,7 +21,7 @@ The evaluator MUST:
 - Return a **candidate identity and approximate root-to-root distance only**, without conferring causal attribution or authorization. Equidistant ties may retain the first record in the supplied plain array.
 - Never inspect GIANTS vehicles, discover eligible assemblies, control jobs, create native hooks, predict trajectories, model implement widths or classify A8 passage.
 
-The accepted radius is a pragmatic **owner choice**, not a physical-collision claim. The upstream observer/continuity/eligibility contracts and downstream settlement responsibilities remain separate and unimplemented; a successful result is **not** permission to relocate or hold.
+The accepted radius is a pragmatic **owner choice**, not a physical-collision claim. The upstream native sampler now supplies single-pulse inputs, but broader multi-pulse continuity and Operation membership remain unimplemented; downstream settlement responsibilities remain separate and unimplemented; a successful result is **not** permission to relocate or hold.
 
 ## Contract participants
 
@@ -37,4 +37,4 @@ The accepted radius is a pragmatic **owner choice**, not a physical-collision cl
 
 ## Implementation traceability and limits
 
-[`scripts/main.lua`](../scripts/main.lua) loads the pure evaluator, but no live source calls it in TEST 0.5.0.7. The offline Lua test challenges the numeric input gate, nearest candidate, 30 m radius, exclusion, and non-authority. It does not validate GIANTS event timing, worker root evidence, blocked pulse continuity, real-world causation, or vehicle behaviour. No in-game test claim follows from offline CI. The previously waived TEST 0.5.0.6 smoke remains a waiver, not a PASS.
+[`scripts/main.lua`](../scripts/main.lua) loads the pure evaluator. The passive [Native Blockage Observation](../scripts/observation/NativeBlockageObservation.lua) now calls it when an observed continuous native `isBlocked` pulse reaches one second; this is candidate evidence, not vehicle Control. The offline Lua test challenges the numeric input gate, nearest candidate, 30 m radius, exclusion, and non-authority. It does not validate GIANTS event timing, worker root evidence, blocked pulse continuity, real-world causation, or vehicle behaviour. No in-game test claim follows from offline CI. The previously waived TEST 0.5.0.6 smoke remains a waiver, not a PASS.

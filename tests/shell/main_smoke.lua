@@ -6,6 +6,7 @@ local expected={
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/observation/NativeBlockageObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -50,7 +51,8 @@ source=function(path)
                 }
             end
         }
-    elseif path=="scripts/diagnostics/VersionHud.lua"
+    elseif path=="scripts/observation/NativeBlockageObservation.lua"
+        or path=="scripts/diagnostics/VersionHud.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then
         dofile(path)
@@ -62,10 +64,12 @@ dofile("scripts/main.lua")
 assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
-assert(#registered==2 and registered[1]==OuttaMyWay.versionHud
-    and registered[2]==OuttaMyWay.disabledStartupReminder)
+assert(#registered==3 and registered[1]==OuttaMyWay.versionHud
+    and registered[2]==OuttaMyWay.nativeBlockageObservation
+    and registered[3]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(OuttaMyWay.nativeBlockedEventTap==nil)
+assert(type(OuttaMyWay.nativeBlockageObservation.update)=="function")
 assert(type(OuttaMyWay.SpatialPairInference.evaluate)=="function")
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
@@ -85,4 +89,4 @@ for _,listener in ipairs(listeners) do listener({name="enabled",value=true,durab
 OuttaMyWay.versionHud:draw()
 assert(#renders==4 and renders[3]==expectedHud and renders[4]==expectedHud)
 assert(events[#events].code=="OUTTAMYWAY_SHELL_ENABLED")
-print("Product shell bootstrap / no AI runtime / HUD toggle: PASS")
+print("Product shell bootstrap / read-only observer / no AI Control / HUD toggle: PASS")
