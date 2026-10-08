@@ -32,6 +32,22 @@ No OMW actuation, GIANTS collision callback installation, job replacement, field
 
 **Falsification criteria:** absent active-job registry, strategy never visible on known native field-course workers, native flags disagree unexpectedly, sample cadence misses material blocked messages, or noticeable frame-time regression.
 
+## TS015 0.5.0.2 GIANTS Reality observation — 8 October 2026
+
+Source: user-supplied game `log(1).txt`, FS25 **1.24.0.0**, Build-Id **b41780**, revision **83220**. The engine logs OuttaMyWay `0.5.0.2` as `aiControl=false enabled=true` at **12:14:02.878**; probe samples are DEBUG and require opt-in Configuration. This observation is from the **0.5.0.2** executable, not the later version-only HUD correction.
+
+**Initial positive applicability:** Condor (12:14:40.237), Patriot (12:14:41.256) and S416 (12:14:50.365) each expose a reachable field-course strategy after an initial first sample with `courseBlocked=unavailable`. Both native blocked flags are false, with `staticCollision=false` on those samples.
+
+**First opposed block:** at **12:16:40.410**, Condor and Patriot both have `fieldBlocked=true` and `courseBlocked=true`, while `staticCollision=false` and `staticTimerMs=0`. Patriot remains blocked at **12:16:45.451**, is reported false at **12:16:47.964**, then toggles true at **12:16:52.490** and false at **12:16:52.994**. Condor is next sampled at **12:16:57.023** with `fieldBlocked=false` but strategy `unavailable`, returning to a visible strategy with both flags false at **12:16:57.527**. The absence of periodic Condor samples in between cannot prove it remained a member of the active-job registry, or why the transition occurred.
+
+**Second opposed block:** Condor at **12:18:04.641** and S416 at **12:18:06.654** both show `fieldBlocked=true`, `courseBlocked=true`, `staticCollision=false`, `staticTimerMs=0`. Condor is still reported blocked at **12:18:09.679**; the player exits the save at **12:18:09.868**, so neither worker has an observed native release in the supplied trace.
+
+**Supported findings:** the field-course state was accessible in three different active workers, and both blocked flags agreed at all captured positive samples. Every available static-collision reading was false, so this test does not exercise the native static-obstacle recovery path.
+
+**Not established:** the in-game blocked HUD messages are not independently timestamped in the log, the exact blocker or cause is unknown, a native subsegment skip is not observed, and the clearing of a blocked flag is not proof of physical or agronomic recovery. Changes involving manual player actions are not independently labelled in this log.
+
+**Disposition:** partial in-game PASS for passive field-course blocked-state visibility and native-flag correlation; do not promote to an automatic Recovery admission rule. The absence of independent state-transition provenance and movement outcome remains open.
+
 ## Disposition
 
 Until the in-game comparison is complete, these signals are **candidate native evidence**, not recovery admission, worker-selection, task management, transport readiness, clearance or native Blocking Region support. Record positive and negative Reality evidence before proposing any authority upgrade.

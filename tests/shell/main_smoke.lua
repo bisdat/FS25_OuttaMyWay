@@ -73,7 +73,9 @@ assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)
 assert(type(changed)=="function")
 OuttaMyWay.versionHud:draw()
-assert(#renders==2 and string.find(renders[1],"shell only",1,true))
+assert(#renders==2)
+local expectedHud="OuttaMyWay "..OuttaMyWay.VERSION
+assert(renders[1]==expectedHud and renders[2]==expectedHud)
 enabled=false
 changed({name="enabled",value=false,durable=true})
 OuttaMyWay.versionHud:draw()
@@ -82,6 +84,6 @@ assert(events[#events].code=="OUTTAMYWAY_SHELL_DISABLED")
 enabled=true
 changed({name="enabled",value=true,durable=true})
 OuttaMyWay.versionHud:draw()
-assert(#renders==4)
+assert(#renders==4 and renders[3]==expectedHud and renders[4]==expectedHud)
 assert(events[#events].code=="OUTTAMYWAY_SHELL_ENABLED")
 print("Product shell bootstrap / no AI runtime / HUD toggle: PASS")

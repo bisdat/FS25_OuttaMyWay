@@ -48,9 +48,10 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     assert "OuttaMyWay.nativeBlockedProbe=OuttaMyWay.NativeBlockedProbe.new(" in text
 
 
-def test_hud_is_truthful_and_requires_enabled_resolved_config():
+def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
     hud = (ROOT / "scripts/diagnostics/VersionHud.lua").read_text(encoding="utf-8")
-    assert 'shell only' in hud
+    assert 'local text=string.format("OuttaMyWay %s",tostring(OuttaMyWay.VERSION or "?"))' in hud
+    assert 'shell only' not in hud
     assert "configuration:isResolved()~=true" in hud
     assert "configuration:isEnabled()~=true" in hud
     assert "OuttaMyWay.runtime" not in hud
