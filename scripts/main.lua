@@ -1,5 +1,5 @@
 -- OuttaMyWay product-shell entry point. Build identity lives in scripts/config.lua and modDesc.xml.
--- Specification Jurisdictions: `CONFIGURATION`, `LOG_PUBLICATION`
+-- Specification Jurisdictions: `CONFIGURATION`
 -- 0.5 shell deliberately provides no AI worker coordination, GIANTS hooks or vehicle control.
 local modDirectory=g_currentModDirectory or ""
 local modules={

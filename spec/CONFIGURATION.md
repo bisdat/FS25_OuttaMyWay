@@ -293,25 +293,22 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 | --- | --- |
 | [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) | `REALISES` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
-| [`scripts/lifecycle/ProductLifecycle.lua`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/scripts/lifecycle/ProductLifecycle.lua) | `REALISES` |
-| [`scripts/runtime/Runtime.lua`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/scripts/runtime/Runtime.lua) | `SUPPORTS` |
 | [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) | `REALISES` |
 | [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) | `REALISES` |
 
 ## Implementation traceability
 
-The current implementation establishes the supported local-profile state/persistence boundary:
+The active 0.5 implementation consists only of the persistent product shell:
 
-- [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) owns schema-1 path construction, first-use materialisation, persisted validation/recovery, semantic getters, persistence-aware setters and change notification;
-- [`scripts/main.lua`](../scripts/main.lua) resolves Configuration in the product shell before Runtime bootstrap, blocks Runtime when persistence is unresolved or `enabled=false`, and composes Log Publication so the engineering DIAGNOSTIC sidecar remains independent while player `debug` resolves NORMAL/DEBUG.
-- [`scripts/lifecycle/ProductLifecycle.lua`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/scripts/lifecycle/ProductLifecycle.lua) subscribes to semantic Configuration changes and implements live `enabled -> false` consent withdrawal by stopping Runtime listener participation, invoking universal authority-reducing relinquishment, discarding the current Runtime graph, and issuing the bounded player hand-back notification.
-- [`scripts/runtime/Runtime.lua`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/scripts/runtime/Runtime.lua) supports that withdrawal by ceasing live coordination first, terminating current semantic responsibility through its existing authorities, and invoking authority-reducing relinquishment across current Regulation, Bubble Bullet Time, Cooperative Passage, Obstruction Relocation and residual Bounded Authority without settling the interrupted objective.
-- [`scripts/gui/ConfigurationSettingsExtension.lua`](../scripts/gui/ConfigurationSettingsExtension.lua) injects exactly the three supported semantic choices into GIANTS `InGameMenuSettingsFrame.generalSettingsLayout` and writes changes only through Configuration setters. It owns no persistence, Runtime, top-level menu page or map-lifecycle authority.
-- [`scripts/gui/DisabledStartupReminder.lua`](../scripts/gui/DisabledStartupReminder.lua) is a product-shell mission listener that consumes resolved `enabled=false` at mission load, waits for the GIANTS warning surface, presents the localized 5000 ms Disabled Startup Reminder once, and then becomes inert for that mission. It does not consume `hudVisible` and does not require Runtime.
+- [Configuration.lua](../scripts/configuration/Configuration.lua) owns profile-scoped persistence, first-use defaults, schema validation, recovery, getters/setters and durable change notifications;
+- [main.lua](../scripts/main.lua) resolves Configuration during startup, composes the NORMAL/DEBUG/DIAGNOSTIC publication policy, and publishes the shell's enabled/disabled status. There is **no AI Runtime or worker-control re-bootstrap**;
+- [ConfigurationSettingsExtension.lua](../scripts/gui/ConfigurationSettingsExtension.lua) exposes the supported player choices through GIANTS' General Settings and saves them through Configuration;
+- [DisabledStartupReminder.lua](../scripts/gui/DisabledStartupReminder.lua) displays the bounded disabled reminder at mission startup;
+- [VersionHud.lua](../scripts/diagnostics/VersionHud.lua) consumes the enabled/disabled state to display the dynamic version-only product status. It is a GUI consumer, not an additional `CONFIGURATION` contract participant.
 
-The General Settings Configuration Section provides the supported player interaction surface and master enablement is symmetric: durable `enabled -> true` triggers a fresh Runtime bootstrap from current GIANTS Reality. `hudVisible` remains intentionally without the full Operational Player Message consumer; GUI Architecture owns that responsibility and Issue #89 tracks the unresolved design and implementation work.
+The product `enabled` flag controls the supported shell experience. Enabling cannot imply worker coordination when no AI Runtime exists. Operational Player Messages and the full HUD remain deferred to [GUI Architecture](../architecture/GUI.md).
 
-The existing `scripts/config.lua` file is not a Configuration implementation. It continues to own root product identity only and MUST NOT be repopulated as a generic player-settings/constants surface.
+`scripts/config.lua` continues to own product identity and version, not player settings or mixed runtime constants.
 
 ## Engine dependency
 
@@ -319,11 +316,7 @@ The persistence mechanism relies on the FS25 user-profile/XML surfaces recorded 
 
 Those engine surfaces supply mechanics only. They do not own Configuration semantics.
 
-The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. Live re-enable MUST initialise freshly registered Runtime listeners for the already-loaded map because `addModEventListener()` only registers future event delivery and does not replay `loadMap()`.
-
-Live re-enable creates fresh semantic Runtime state but MUST NOT repeatedly install equivalent mechanical interception wrappers. Current Hold and Native Drive mechanisms leave transparent engine/vehicle interception wrappers installed intentionally so other-mod overwrite chains are not broken. Their owned transient control state is cleared on disablement and the same subordinate mechanism instances are reused by the next fresh Runtime graph.
-
-> **Fresh Runtime State != Reinstalled Mechanical Interception**
+The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. Because the current shell has no GIANTS worker Runtime and no Control interceptors, toggling enabled only changes the shell's supported status and messaging behaviour. No worker reinitialisation, AI interception, Regulation or Control relinquishment is performed by Configuration in the current implementation.
 
 ## Repository validation participants
 
