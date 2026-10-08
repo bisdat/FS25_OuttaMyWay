@@ -1,3 +1,13 @@
+# v0.5.0.2 TEST — Native Blocked-State Evidence Probe
+
+**Baseline:** accepted shell 0.5.0.1 on merge commit 055a5fc8310f879489be9b50e9e4508c70a4cd69. Canonical 0.5.0.0 and immutable archive/0.4.11.0 remain unchanged.
+
+Add one bounded, non-actuating **DEBUG/DIAGNOSTIC-only** listener that passively observes current native active-job field workers at 500 ms intervals. Log first/change samples of field-worker and available field-course blockage plus static collision, with a five-second reminder while positive. Registry loss is not interpreted as native clearance. Under NORMAL logging or while disabled the probe does not scan workers.
+
+Preserve all previous Configuration, Log Publication, HUD and no-Control commitments. No prediction, AI job change, movement, collision callback installation, GIANTS recovery manipulation or temporary Blocking Region is implemented. Legacy 0.4 traffic code remains dormant.
+
+Expand active-shell structural and offline Lua contracts to include a native blocked-state fixture. Document the narrow evidence hypothesis, absence limits and TS015 in-game qualification. **GIANTS Reality and performance are not established by offline CI.**
+
 # v0.5.0.1 TEST — Control-Free Rewrite Shell
 
 **Baseline:** canonical `0.5.0.0` main commit `c6c832e7d1ef7b77ec45a0e0e6a17e94b68e1de4`. `archive/0.4.11.0` is the owner-designated immutable working reference and is untouched.

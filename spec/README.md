@@ -30,7 +30,7 @@ This README is the entrance and navigation surface for `/spec`; it is not a seco
 
 ## Active 0.5 shell contract
 
-Only the Configuration and Log Publication implementations and basic product-status/disabled reminder presentation are loaded in the 0.5 shell. They are the active implementation-facing contracts for this increment. All existing 0.4 worker-control, Observation, Situation, Regulation, Passage, Recovery, physical representation, Candidate, Constraint, Decision and Runtime Specifications remain available as **legacy design evidence**, not a promise that any of those source modules are currently loaded. Their applicability to the reactive blocked-evidence architecture is under reconsideration. Their contracts must not be reintroduced through CI without an explicit architectural decision.
+Only Configuration, Log Publication, basic product-status/disabled reminder presentation and an opt-in passive native-blocked diagnostic instrument are loaded in the 0.5 shell. The instrument is bounded [research evidence production](../docs/research/NATIVE_BLOCKED_STATE_PROBE.md), not implementation of the legacy Observation or Recovery jurisdictions. They are the active implementation-facing contracts for this increment. All existing 0.4 worker-control, Observation, Situation, Regulation, Passage, Recovery, physical representation, Candidate, Constraint, Decision and Runtime Specifications remain available as **legacy design evidence**, not a promise that any of those source modules are currently loaded. Their applicability to the reactive blocked-evidence architecture is under reconsideration. Their contracts must not be reintroduced through CI without an explicit architectural decision.
 
 ## Current primary Specifications
 

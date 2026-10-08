@@ -214,6 +214,12 @@ remain distinct mechanisms.
 **Evidence:** current FS25 `AIDriveStrategyFieldCourse:getDriveData()` reverse
 path and Issue #336 S416/Condor comparison.
 
+### Field-worker and field-course blockage: separate candidate source signals
+
+In the [GIANTS field-course scripting source](https://gdn.giants-software.com/documentation_scripting_fs25.php?category=3&class=151&version=script), AIDriveStrategyFieldCourse holds isBlocked and hasStaticCollision values populated by its collision handler. Separately, the AIFieldWorker specialization exposes its own native blocked flag. Neither source proves that the flags match within a live update, that they identify a particular blocker, or that GIANTS native static-collision recovery has failed. The published source is labelled v1.20. The current test game is FS25 1.24.0.0, so installed-runtime correspondence needs Reality confirmation.
+
+The opt-in [0.5 probe study](../research/NATIVE_BLOCKED_STATE_PROBE.md) compares these passive fields without invoking strategy updates or drive methods. It is a diagnostic experiment, not recovered authority to use the old Prediction/Regulation pipeline.
+
 ### Native zero and blocked states are ambiguous and reactive
 
 **Finding:** GIANTS can hold an active field worker at zero without ending its

@@ -8,6 +8,7 @@ local modules={
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/diagnostics/VersionHud.lua",
+    "scripts/diagnostics/NativeBlockedProbe.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
 }
@@ -48,10 +49,13 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
     end)
 end)
 
--- The only map listeners are product-status presentation and the disabled reminder.
+-- Opt-in Debug observation reads native state only; there is no worker Control.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
+OuttaMyWay.nativeBlockedProbe=OuttaMyWay.NativeBlockedProbe.new(
+    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
 if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
+    addModEventListener(OuttaMyWay.nativeBlockedProbe)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end
