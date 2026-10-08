@@ -236,6 +236,14 @@ path and Issue #336 S416/Condor comparison.
 
 **Not established:** any `false` edge, comprehensive transition coverage, a guaranteed mod-safe callback/subscription, correct Job Episode continuity, or GIANTS behavioural equivalence. Source-event creation is not proof of blockage persistence, pair causation or OMW intervention necessity. **Evidence:** [TEST event-tap study](../research/NATIVE_BLOCKED_EVENT_TAP.md), [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
 
+### Native blocked/unblocked event edges and short retry episodes — FS25 1.24.0.0
+
+**Observed Reality:** TEST 0.5.0.5 `log(5).txt` (8 October 2026) with Build-Id **b41780** / revision **83220** shows successful single diagnostic installation and Patriot 4450 native `true → false` constructor-event episodes lasting **5.343 s**, **0.848 s**, **0.174 s** and **0.825 s** by `engineTimeMs`. Condor Endurance II emitted `true` without a matching `false` before map exit; its episode remains **open**, not certified persistent. The 174 ms completed episode demonstrates event-construction observation of a pulse shorter than 500 ms.
+
+**Safe inference:** a future **Native Blockage Episode** may be delimited by the same worker's native true/false event edges. Its **1-second Native Blockage Persistence Gate** must measure uninterrupted time per episode; separate retries must not accumulate. Among the four completed Patriot episodes here, only the 5.343 s one passes the time prerequisite. A timely `false` event closes an episode; it does not certify meaningful resumed progress.
+
+**Do not infer:** complete delivery of all engine state changes, persistent blockage when a false edge is absent at map exit, worker-to-worker causality, field-course coverage outside tested jobs, AI behavioural equivalence with no instrumentation, or OMW intervention necessity. Event constructor interception remains a global method wrapper, not a public multi-listener callback. **Evidence:** [native event-tap study](../research/NATIVE_BLOCKED_EVENT_TAP.md), [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
+
 ### Native zero and blocked states are ambiguous and reactive
 
 **Finding:** GIANTS can hold an active field worker at zero without ending its

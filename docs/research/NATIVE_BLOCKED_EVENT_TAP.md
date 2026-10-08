@@ -36,6 +36,31 @@ Only native constructor events are logged. This probe does **not** establish all
 
 **Still unproven:** unblocked/false edge path, end-to-end completeness versus all GIANTS blocked-state changes, native HUD event timing, whether one-second continuous native blockage occurred, whether GIANTS was behaviourally unaffected, and safe coexistence with other callback/event hooks. No OMW Blocked Progress Qualification or native intervention evidence was generated. **Do not merge as a fully validated event subscriber based on this log alone.**
 
+## Follow-up GIANTS Reality — TEST 0.5.0.5, log(5).txt, 8 October 2026
+
+**Result: PASS for both directions of native event-construction observation (narrowly scoped); broader non-interference still pending.** Runtime again FS25 **1.24.0.0**, Build-Id **b41780**, Build-Revision **83220**; shell declared `aiControl=false enabled=true version=0.5.0.5` at **16:20:55.830** and installed the observer once at **16:21:15.518**.
+
+At **16:23:32.055**, Condor Endurance II (`vehicleNode=396380`) constructed a `nativeBlocked=true` event. No matching Condor false event was observed before savegame exit at **16:23:56.814**; it is an *open interval*, not evidence of certified persistent state across mission lifecycle or evidence of effective intervention.
+
+Patriot 4450 (`vehicleNode=398649`) constructed four complete blocked-event intervals:
+
+| Blocked true | Blocked false | Native engine-time duration | Threshold ≥1 s |
+| --- | --- | ---: | --- |
+| 16:23:32.374 | 16:23:37.717 | **5.343 s** | Yes, if independently qualified as one continuous active Job Episode |
+| 16:23:40.417 | 16:23:41.265 | **0.848 s** | No |
+| 16:23:44.238 | 16:23:44.412 | **0.174 s** | No |
+| 16:23:45.022 | 16:23:45.848 | **0.825 s** | No |
+
+Durations are from the event payload's `engineTimeMs` rather than rounded wall-clock stamps. The observed native false edges demonstrate GIANTS event-constructor access on *unblocking*. The **174 ms** complete true/false sequence establishes visibility into a blockage pulse shorter than the former **500 ms** periodic sampler; the old sampler might miss it. **This does not prove complete coverage of every internal native state transition.**
+
+**Newly named distinction: Native Blockage Episode** — a worker-scoped interval between observed true and false edges, bounded by a specific active Job Episode in any future formal Observation contract. A missing false edge requires lifecycle disambiguation; it must not silently imply indefinite obstruction, useful lack of progress or a causal neighbour.
+
+**Implication for prospective 1-second Native Blockage Persistence Gate:** elapsed time is measured *per Native Blockage Episode*, and a false event ends that episode; retry episodes must not be summed to reach 1 s. A worker blocked for 5.343 seconds passes only this *time prerequisite* for further assessment. No causal pair, proximity, realised progress or OMW authority follows from passing. The selected future implementation could maintain a targeted deadline per active true episode instead of scanning all workers every 500 ms. This gate is **not implemented in TEST 0.5.0.5**.
+
+**Other observation:** no OMW Lua error was logged. The same four map `FieldManager` warnings/errors were emitted before gameplay events; their presence is not evidence of OMW malfunction. There is no controlled demonstration that the observer never perturbs GIANTS' AI, nor Debug-off/Enabled-off teardown evidence in this run. No assertion about the visual course continuation is supported without player observation.
+
+**Disposition:** event construction is now Reality-demonstrated in both directions for Patriot, and positive direction for Condor, on this game build. Retain the test-only experiment while closing remaining non-interference/lifecycle questions; no new operational worker authority or control code is warranted by this diagnostic alone.
+
 ## Reality validation — falsifiable TS015 protocol
 
 Test on **FS25 1.24.0.0** (record actual Game-Version, Build-Id, Build-Revision) using 0.5.0.5 TEST with OuttaMyWay Enabled and **Debug ON**:
