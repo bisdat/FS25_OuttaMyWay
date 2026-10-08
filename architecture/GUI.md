@@ -67,7 +67,7 @@ The initial section exposes exactly the three accepted player choices:
 
 | Player-facing label | Configuration value | Meaning |
 | --- | --- | --- |
-| **Enabled** | `enabled` | Master OuttaMyWay consent. Off immediately relinquishes all OuttaMyWay control. On requests fresh Runtime bootstrap after durable persistence succeeds. |
+| **Enabled** | `enabled` | Master OuttaMyWay consent. Off hides the status indicator and withdraws consent; on restores shell status only after successful persistence. The current product has no AI worker Control to relinquish or re-bootstrap. |
 | **Operational messages** | `hudVisible` | Shows or hides Operational Player Messages only. It does not hide the Product Status Indicator. |
 | **Debug** | `debug` | Adds bounded troubleshooting detail to the normal operational log. It does not expose engineering DIAGNOSTIC mode. |
 

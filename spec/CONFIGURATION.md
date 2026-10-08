@@ -90,7 +90,7 @@ A product version change MUST NOT invalidate persisted Configuration unless the 
 
 ## Startup lifecycle
 
-Configuration persistence MUST resolve during the product-shell startup path before normal Runtime bootstrap is considered.
+Configuration persistence MUST resolve during product-shell startup before consumers use the supported Configuration state.
 
 The ordered contract is:
 
@@ -121,11 +121,11 @@ does configuration.xml exist?
                           -> expose default semantic state
         |
         v
-resolved enabled value decides whether normal Runtime may bootstrap
+resolved enabled value determines shell status presentation
         |
-        +-- enabled=true --> Runtime may bootstrap
+        +-- enabled=true --> version-only Product Status Indicator may render
         |
-        `-- enabled=false -> Runtime remains absent
+        `-- enabled=false -> indicator absent
                             -> arm one Disabled Startup Reminder
 ```
 
@@ -153,7 +153,7 @@ If `configuration.xml` does not exist:
 2. all three supported values MUST be initialised to their accepted defaults;
 3. the schema-1 representation MUST be created and saved;
 4. only after successful persistence may the default semantic state be exposed to normal consumers; and
-5. Runtime bootstrap may then proceed only if the resolved `enabled` value permits it.
+5. shell consumers may then use the resolved semantic state, subject to their own responsibilities.
 
 Defaults MUST NOT remain only as volatile in-memory state after a successful first-use startup.
 
@@ -188,27 +188,27 @@ A storage failure includes inability to establish the required directory, inabil
 
 When Configuration cannot establish its durable persisted representation:
 
-- normal Runtime bootstrap MUST NOT proceed;
+- consumers MUST NOT treat unresolved Configuration as valid enabled consent;
 - Configuration MUST NOT report the new/recovered state as successfully persisted;
 - the product shell MAY remain available;
-- an operational error MUST be surfaced through a product-shell-safe error path that does not require normal Runtime bootstrap or successful Configuration persistence; and
+- an operational error MUST be surfaced through the product-shell-safe logging path without requiring successful Configuration persistence; and
 - no persisted setting may be silently treated as authoritative merely because an in-memory fallback exists.
 
 > **Configuration Invalidity Is Recoverable; Configuration Storage Failure Is Not**
 
 The exact user-facing HUD treatment of this failure remains GUI/HUD responsibility.
 
-## Runtime change contract
+## Live change contract
 
 ### Enabled
 
 A deliberate player change to `enabled=false` applies immediately as product-consent withdrawal.
 
-Configuration owns the value change and notification. Product lifecycle / Responsibility Transition / Control own the resulting termination of OuttaMyWay functional responsibility and bounded release/neutralisation of already-owned effects.
+Configuration owns the value change and notification. The current shell owns no worker physical effects; its consumers only update supported product-status presentation. Future worker Control, if ever implemented, requires a separately established release contract.
 
 Consent withdrawal takes effect immediately even if persisting `enabled=false` fails. A storage failure MUST NOT keep OuttaMyWay active merely to preserve consistency with the old persisted value. The current session remains disabled, the failure is surfaced, and durable success MUST NOT be claimed.
 
-A deliberate change to `enabled=true` requests immediate re-enablement, but fresh Runtime bootstrap MUST NOT occur until the new enabled state has been persisted successfully. If persistence fails, the product remains disabled and the failure is surfaced. Successful re-enablement MUST bootstrap from current GIANTS Reality and MUST NOT resume pre-disable Situation, Operation, Responsibility, Commitment or Authority state.
+A deliberate change to `enabled=true` requests shell re-enablement only after the new value has been persisted successfully. If persistence fails, the current session remains disabled and the failure is surfaced. Re-enabling does not create GIANTS AI Runtime or worker coordination.
 
 ### HUD visibility
 
@@ -339,7 +339,7 @@ Current offline validation SHOULD challenge at least:
 - consumers receiving semantic state without direct storage access;
 - Debug mapping only to NORMAL/DEBUG;
 - DIAGNOSTIC sidecar remaining outside Configuration;
-- storage failure preventing normal Runtime bootstrap;
+- storage failure preventing consumers from claiming valid persisted Configuration;
 - disable/re-enable change semantics;
 - persistence failure not being reported as committed success.
 
