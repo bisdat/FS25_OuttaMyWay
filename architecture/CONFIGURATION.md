@@ -25,6 +25,10 @@ The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md
 
 Configuration is not a generic value-ownership jurisdiction. Internal policy, calibration, diagnostics, safety bounds, build identity and validation parameters remain owned by the responsibilities that give them meaning.
 
+### 0.5 rewrite shell interpretation
+
+During the control-free rewrite shell, the existing `enabled` choice enables only product-shell status presentation and future consent, not any currently available worker-coordination capability. `enabled=false` hides the status indicator; no traffic-control release is required because the shell has never acquired any. Normal logging and Configuration management remain available. The durable profile schema and accepted defaults do not change. Restoring any autonomy is a separate engineering and Reality-validation decision.
+
 ## 1. Configuration and other value responsibilities
 
 A value belongs to Configuration because it represents a supported player choice, not because it is numeric, editable, global, easy to expose, or stored in a file whose name suggests configuration.

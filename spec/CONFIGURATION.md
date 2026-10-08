@@ -11,6 +11,10 @@ This Specification owns the implementation-facing contract for the supported loc
 
 It does not own GUI layout, player-message lifecycle, Log Publication internals, Runtime authority, diagnostic engineering controls, savegame state or multiplayer Configuration semantics.
 
+## Rewrite-shell consumer contract
+
+While the 0.5 no-control shell is the active product, the persisted `enabled` value gates the labelled shell status indicator and future product consent, but MUST NOT construct a traffic Runtime or trigger GIANTS AI actuation. A durable enabled-change notification updates shell status only. Disabling requires no physical hand-back because the shell owns no physical controls. `hudVisible` remains persisted for future Operational Player Messages and MUST NOT hide the Product Status Indicator; `debug` continues to select Log Publication policy. Existing storage and Settings UI behaviour is retained.
+
 ## Supported semantic state
 
 Configuration exposes exactly three supported player values:

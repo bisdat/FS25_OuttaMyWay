@@ -1,5 +1,7 @@
 # OuttaMyWay Runtime Responsibility Architecture
 
+> **0.5 rewrite boundary:** This document records the prior 0.4 responsibility model for evidence and re-evaluation. The active 0.5 implementation is only the configuration/log/status shell. Predictive Regulation, controlled Passage and related mechanisms are dormant and **not** obligations to restore in the new design. See [Architecture entry](README.md#current-05-rewrite-boundary).
+
 ## Purpose and architectural boundary
 
 This document defines OuttaMyWay's end-to-end runtime responsibility architecture: how GIANTS Job Episodes enter and leave cooperative context, how current evidence becomes semantic meaning, when OuttaMyWay may acquire responsibility, how physical permission is bounded, how authorised action is realised, and when responsibility returns to GIANTS AI.

@@ -14,11 +14,19 @@ pull requests, Issues, the Engineering Journal and other authorised
 evidence/history surfaces; it must not be replayed as a sequence of live
 architecture deltas.
 
+## Current 0.5 rewrite boundary
+
+**Active product:** the 0.5 product shell alone: persistent player Configuration, Log Publication, a labelled status indicator, and the disabled-startup reminder. It does not observe, hold, regulate, reposition, stop, restart or otherwise control any GIANTS worker. Enabled Configuration is shell consent, **not** a claim that AI coordination is operational.
+
+**Accepted redesign direction:** react to positive native GIANTS worker-blocked evidence rather than proactively predicting worker collisions. Explore one bounded stop / local relocation / native FIELDWORK restart intervention that allows GIANTS to replan and continue; do not require OMW axis return. The TS015 no-mod player experiment supports investigating this pattern but does not prove automatic participant choice, clearance, agronomic completion or all vehicle classes. GIANTS' native recovery and the API proposals in Issue #420 remain unvalidated for this replacement.
+
+The detailed 0.4 Spatial Negotiation, Regulation, Passage, Candidate and Control architecture below is retained as engineering knowledge during discovery, **not as an implemented or approved new 0.5 runtime control pipeline**. Its future responsibilities will be reassessed rather than re-enabled merely because source exists.
+
 ## Current architecture breadcrumb
 
 Start with the
 [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md)
-for the end-to-end lifecycle, authority and Control model.
+for the former 0.4 end-to-end lifecycle and Control model (currently dormant).
 
 Follow its responsibility routes to:
 

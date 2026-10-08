@@ -26,10 +26,15 @@ space involving its own fieldwork and course coordination, while OuttaMyWay
 deliberately leaves normal job and navigation ownership with GIANTS AI and
 negotiates only temporary competition for space.
 
-The v0.3.0.0 Spatial Negotiation architecture is the current intended operating
-model, but parts of it are not yet implemented. Existing runtime behaviour is
-inherited from the earlier validated implementation; architectural intent must
-not be read as a claim of current runtime capability.
+The canonical v0.5.0.0 commit preserves the last accepted pre-rewrite baseline.
+The next TEST build, v0.5.0.1, deliberately runs **only** Configuration, Log
+Publication and a small labelled HUD/status shell. It does not load any AI
+coordination, observation, assessment, regulation, passage, recovery or vehicle
+actuation module. Existing 0.4 Lua files are retained but not sourced.
+
+The 0.5 design direction is reactive native GIANTS blocked evidence followed,
+when justified, by bounded stop/relocation/restart and GIANTS-native replanning.
+This is future architectural work, not a capability of the current shell.
 
 Development / engineering documentation:
 

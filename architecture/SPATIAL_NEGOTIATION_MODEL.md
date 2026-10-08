@@ -1,5 +1,7 @@
 # Spatial Negotiation Architecture
 
+> **0.5 rewrite boundary:** This document records the prior 0.4 responsibility model for evidence and re-evaluation. The active 0.5 implementation is only the configuration/log/status shell. Predictive Regulation, controlled Passage and related mechanisms are dormant and **not** obligations to restore in the new design. See [Architecture entry](README.md#current-05-rewrite-boundary).
+
 ## Purpose and architectural boundary
 
 This document specialises the [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) for temporary competition for space among active supported GIANTS AI workers inside one Local Operation.
