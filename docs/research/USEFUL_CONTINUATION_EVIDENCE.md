@@ -1,6 +1,8 @@
 # Useful Continuation Evidence — Native Course Advancement Source Study
 
-**Status:** Source-and-existing-Reality investigation for [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). **Not a validated progress-detector contract, current Architecture decision, or implementation authority.** The governing [Blocked Progress Qualification Architecture](../../architecture/BLOCKED_PROGRESS_QUALIFICATION.md) is already on main through PR #444. TEST 0.5.0.6 remains an eight-script **control-free shell**, with no worker Observation and with owner-waived smoke (not an in-game PASS).
+**Disposition (owner decision, 8 October 2026):** Research retained, but **Native Course Advancement is removed from the critical path for physical obstruction detection and resolution**. OuttaMyWay need not measure GIANTS route/segment advancement to determine whether a physical obstruction persists. The study remains historical/optional corroborating source knowledge, not a requirement, gate, Specification, or implementation instruction.
+
+**Research status:** Source-and-existing-Reality investigation for [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). **Not a validated progress-detector contract, current Architecture decision, or implementation authority.** The governing [Blocked Progress Qualification Architecture](../../architecture/BLOCKED_PROGRESS_QUALIFICATION.md) is already on main through PR #444. TEST 0.5.0.6 remains an eight-script **control-free shell**, with no worker Observation and with owner-waived smoke (not an in-game PASS).
 
 ## Question and scope
 

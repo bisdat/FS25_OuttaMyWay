@@ -1,136 +1,130 @@
-# Blocked Progress Qualification — 0.5 Architecture
+# Native Blockage and Physical Obstruction Assessment — 0.5 Architecture
 
-**Status:** accepted conceptual boundaries and open architectural questions, developed under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). **No worker Observation, assessment or Control is implemented by TEST 0.5.0.6.** This document establishes what OuttaMyWay must understand before seeking control; it is **not yet a declared Specification Jurisdiction** or permission to implement a GIANTS hook.
+**Status:** accepted architectural direction and remaining evidence questions under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document supersedes the earlier proposal to make *failed GIANTS course/useful-work advancement* a prerequisite for intervention. **The TEST 0.5.0.6 shell does not implement worker Observation, Situation Assessment or Control.** No worker Specification Jurisdiction or GIANTS hook is authorised by this document.
 
 ## Purpose and governing principle
 
-GIANTS owns autonomous fieldwork and may encounter native blocked assertions while it continues its own attempts to work or manoeuvre. OuttaMyWay should intervene only when evidence justifies helping autonomous work continue; it must not interpret a momentary GIANTS blocked assertion as a command to take over.
+OuttaMyWay exists to resolve **local physical obstructions** to GIANTS-owned autonomous work through the **least disruptive justified intervention**. It does **not** have to know how GIANTS advances through its planned fieldwork route, nor prove agronomic or course progress before examining a physical obstruction. [Native Replanning Ownership](PROJECT_VISION.md) remains GIANTS' responsibility.
 
-The [Project Vision](PROJECT_VISION.md) requires the *least disruptive justified intervention* and preserves **Native Replanning Ownership**. For the blocked-first rewrite, the key distinction is:
+> **Native Blocked Assertion ≠ Persistent Physical Obstruction ≠ Authority to Intervene.**
 
-> **Native Blocked Assertion ≠ Failed Useful Continuation ≠ Responsibility to Intervene.**
+GIANTS may report native blockage during safe adjacent passage or manoeuvre around a hedge/tree, briefly unblock as a moving worker passes, or turn/reverse to negotiate an obstruction. Legitimate native manoeuvring is welcome. OMW's question is not whether GIANTS has completed the next course segment, but **whether a relevant physical obstruction remains and warrants cooperative intervention**.
 
-**Useful Continuation** includes legitimate GIANTS manoeuvring that advances the job toward completion, even when that movement temporarily performs no productive agronomy. Pure physical displacement does not prove useful continuation; nor does a low speed, temporary work interruption or native unblocked event prove its absence or success.
+The completed [Native Course Advancement research](../docs/research/USEFUL_CONTINUATION_EVIDENCE.md) is retained as historical/optional corroborating knowledge. **It is not a prerequisite, admission gate, timer reset rule or critical-path subsystem.** Do not reconstruct GIANTS trajectories, segment identities, work quality, route advancement or progress percentages for this purpose.
 
-## Named evidence concepts
+## Named concepts and boundaries
 
-| Concept | Architectural meaning | Does not establish |
+| Concept | Architectural meaning | Does not prove |
 | --- | --- | --- |
-| **Native Blockage Edge** | GIANTS-produced observation of the blocked state changing to true or false for an identifiable worker | A causal obstacle, failed continuation, or OMW authority |
-| **Native Blockage Pulse** | A worker's positively observed blocked=true interval, bounded by a matching false edge when available | A standalone unresolved obstruction or permanent failure |
-| **Unresolved Obstruction Episode** | A continuity hypothesis that a *specific active GIANTS Job Episode* still faces an unrelieved obstruction, potentially across multiple native pulses and GIANTS retry manoeuvres | That every pulse in the Job Episode is the same obstruction |
-| **Native Blockage Persistence Gate** | At least **1.000 s** of accumulated **confirmed blocked time** within the *same unresolved obstruction*, excluding observed unblocked periods | Immediate intervention; a specific blocker; failed useful continuation |
-| **Blocked Progress Qualification** | Assessment of whether GIANTS has failed to achieve *useful continuation* despite its own efforts | Control of the worker or confirmation of who is responsible |
-| **Spatial Pair Inference** | A candidate worker-to-worker causal relationship inferred from physical proximity to a qualifying blocked worker | Collision identity or responsibility certainty |
-| **Pair Commitment** | A later, explicit cooperative resolution in which one worker is held while the other relocates and GIANTS resumes | An activity of native-state Observation or an obligation implied by a blocked flag alone |
+| **Native Blockage Edge** | GIANTS-produced change in a particular worker's blocked state to true or false | Cause, duration by itself, physical relationship, or OMW responsibility |
+| **Native Blockage Pulse** | A known blocked=true interval for that worker, bounded by a matching false edge where observed | A distinct obstruction; failure of native self-recovery |
+| **Unresolved Obstruction Episode** | Evidence-bound continuity of the **same suspected physical obstruction** for the same active GIANTS Job Episode, possibly over repeated blocked/unblocked pulses | All pulses in a job are necessarily related |
+| **Native Blockage Persistence Gate** | At least **1.000 s accumulated positively confirmed blocked time** for that unresolved obstruction, excluding time known unblocked | Physical cause, automatic intervention or a required course-progress measurement |
+| **Spatial Pair Inference** | From a qualifying blocked worker, use known worker positions/proximity to identify plausible neighbouring worker blockers | Collision attribution or certainty that a neighbour caused the problem |
+| **Physical Obstruction Assessment** | Determine whether a **current, relevant physical obstruction** is supported and whether it still obstructs the worker, distinguishing plausible worker-pair and single-worker obstruction contexts | Permission to hold, stop, relocate or restart |
+| **Pair Commitment** | **Downstream** coordinated responsibility: once justified, hold one participant while the other relocates, then verify physical clearance and relinquish control to GIANTS | An automatic consequence of the native blocked flag or the 1-second gate |
 
-A worker may be blocking another without itself reporting blocked. Conversely, two workers reporting blocked simultaneously need not be blocking each other. A nearby worker may be incidental to a hedge or other static obstruction.
+A blocking worker may itself be moving and never report blocked. Two simultaneous native blocked flags do not prove a blocking pair. A nearby worker may be entirely incidental to a hedge/tree obstruction.
 
-## Architectural separation of responsibilities
+## Architectural flow
 
 ```text
-GIANTS-owned job and native blocked/unblocked evidence
-        |
-        v
-Observation: worker identity + current Job Episode + native edges
-        |
-        v
-Native Blockage Pulses
-        |
-        v
-Unresolved Obstruction Episode (only while evidentially supportable)
-        |
-        v
->= 1.000 s confirmed-blocked-time gate
-        |
-        v
-Blocked Progress Qualification: failed useful continuation?
-        |
-        +---- Positive useful continuation ------> retire concern; GIANTS continues
-        |
-        +---- Evidence insufficient -------------> WAITING_FOR_EVIDENCE
-        |
-        +---- Qualification supported
-                        |
-                        v
-              Situation Assessment
-               /             \
-     Spatial Pair Inference   Single-worker obstruction
-               |              (allow native retry while useful)
-               v
-     possible Pair Commitment
-        (one held; one relocated)
-               |
-               v
-     verify clearance / release / GIANTS-owned continuation
+GIANTS-owned active Job Episode + blocked/unblocked evidence
+                             |
+                             v
+       Native Blockage Pulses / Unresolved Obstruction Episode
+                             |
+                             v
+  >= 1.000 s confirmed blocked time in that unresolved obstruction
+                             |
+                             v
+                 Spatial Pair Inference
+              (nearby candidate workers)
+                             |
+                             v
+                Physical Obstruction Assessment
+                   /         |         \
+      physically clear?   uncertain?   relevant obstruction supported?
+            |                |                 |
+            v                v                 v
+  retire obstruction   WAITING_FOR_EVIDENCE   consider responsibility
+   GIANTS continues       GIANTS owns         without auto-actuation
+                           continuation            |
+                                                   v
+                                     Pair Commitment (future)
+                                    hold one / relocate other
+                                                   |
+                                                   v
+                                  verify physical clearance
+                                  release to GIANTS continuation
 ```
 
-The ordering establishes distinct **evidence**, **interpretation** and **authority** boundaries, not mandatory sequential code execution. A later implementation may observe native progress concurrently, but may not collapse the gate, qualification and responsibility into one boolean. Any downstream Control action requires its own Architecture and Specification.
+These are **responsibilities and evidence/authority separations**, not a mandatory sequential update loop. Single-worker encounters with static obstacles may require their own Situation/Responsibility analysis rather than pair commitment. Passing the gate and being near another worker do **not** together prove the pair caused the obstruction.
 
-### 1. Observe without governing GIANTS
+### 1. Observe native blockage without taking control
 
-The preferred *candidate input direction* is **event-driven native blocked/unblocked observation**, not continuous fleet-wide 500 ms blocked-state polling. The historic [0.5.0.5 event-construction research](../docs/research/NATIVE_BLOCKED_EVENT_TAP.md) observed true and false GIANTS events (including one 174 ms pulse) in FS25 1.24.0.0. Its global constructor wrapper was retired in TEST 0.5.0.6.
+Prefer native blocked/unblocked **edges** to continuous 500 ms fleet-wide blocked-state polling. The retired TEST 0.5.0.5 [event-construction experiment](../docs/research/NATIVE_BLOCKED_EVENT_TAP.md) demonstrated true and false edges in FS25 1.24.0.0, including a 174 ms pulse. Its global event-constructor wrapper is **retired** and was not validated as a general safe public subscription API. Do not restore it automatically.
 
-**Architecture does not make that wrapper a public subscription API.** The exact non-invasive Observation interface, complete edge coverage and coexistence with other mods have not been established. Missing or out-of-order edges invalidate duration assumptions rather than authorise reconstruction of unobserved intervals.
+Observation must respect worker identity, active Job Episode, source authority and uncertain/missed events. A continuing blocked=true state may have no further edge, so future assessment may require **targeted elapsed-time evaluation of that known pulse**, not repeated sampling of every worker. Unknown intervals must not be credited as confirmed blocked time.
 
-A continuing true edge may produce no further notifications. A future observer therefore requires some **targeted time evaluation** of pending evidence; this need does *not* imply scanning all workers every 500 ms. Observation remains passive and must not call GIANTS strategy computation to 'discover' the next instruction.
+### 2. Keep physical obstruction continuity separate from signal pulses
 
-### 2. Persist the right thing, for no longer than justified
+A native false edge **ends one pulse**, not necessarily the **Unresolved Obstruction Episode**. If the same physical obstruction credibly persists while GIANTS briefly retries, retain that episode. Accumulate **only positively confirmed blocked time** within it and exclude known unblocked intervals. Native fluctuations do not reset the concern by themselves.
 
-A true edge begins or confirms a **Native Blockage Pulse**; a matching false edge ends the *pulse* and stops accruing blocked time. The false edge **alone** does not prove useful continuation or end the higher-level **Unresolved Obstruction Episode**.
+Do not join unrelated A8 passes, different worker identities, different Job Episodes, unrelated physical sites, or time under later OMW-imposed Hold. Positive physical separation/clearance, worker departure from the obstructed context, verified cessation of the relevant Job Episode or player takeover can terminate or invalidate an obstruction concern. Mere distance travelled, a false edge, or course progress percentage do not independently certify clearance.
 
-When successive pulses are sufficiently evidenced as belonging to the **same unresolved obstruction**, only their positively observed blocked durations may accumulate. No time spent known unblocked counts toward the gate. **The 1-second limit is an owner-accepted minimum admissibility condition**, never an expiry timeout or automatic Intervention trigger.
+**Unresolved evidence question:** what *minimum positive physical evidence* is enough to link pulses to the same obstruction or establish that it has cleared? The current research does not justify a universal metre, time or footprint literal; uncertainty remains **WAITING_FOR_EVIDENCE**, not manufactured continuity or premature clearance.
 
-Do **not** accumulate unrelated transient A8 encounters, different Job Episodes, worker identity changes, unobserved time, stale observation after player takeover, or time caused by a later OMW-imposed hold. **Job Episode succession** or positive termination invalidates inherited admission state. Positive resumed useful continuation retires the concern, even if a prior pulse satisfied the gate. When linkage/identity/progress evidence is insufficient, preserve **WAITING_FOR_EVIDENCE** rather than either resetting all history by convenience or carrying it forward as unquestioned truth.
+### 3. Assess the physical relationship, not GIANTS route advancement
 
-**Still unresolved:** the minimal positive evidence that establishes *same unresolved obstruction* across pulses, and the minimal positive evidence that GIANTS has independently resumed useful continuation. These cannot be derived from edges alone.
+Once the owner-agreed one-second **consideration gate** is met, use **Spatial Pair Inference** to find nearby worker candidates. Then **Physical Obstruction Assessment** distinguishes:
 
-### 3. Qualify failed continuation independently of the timer
+- **Plausible continuing worker-to-worker obstruction:** a nearby worker may be physically blocking another; the blocking worker need not report blocked.
+- **Transient safe passage/clearing:** workers may be in proximity while already passing, moving clear or physically separated, even if a blocked edge occurred.
+- **Single-worker obstruction and native manoeuvring:** GIANTS may legitimately reverse, turn, raise an implement or seek its own route past a static obstacle. Do not treat those behaviours as failures simply because there is no productive agronomy or course advancement.
+- **Incidental proximity / incomplete evidence:** a worker beside a hedge-blocked tractor is not automatically its blocker. Missing geometry, uncertain cause or stale positions prevent confident attribution.
 
-The accepted question is whether GIANTS is **actually failing to progress toward completion**, not whether it is stationary, reports blocked, or has ceased agronomy for an arbitrary interval. Native turns, reverses, temporary manoeuvres and obstacle avoidance are eligible forms of legitimate continuation.
+Current relative **physical position, proximity, separation and clearance** are the relevant evidence questions. The exact reliable observation surfaces and threshold/assembly representation policy require subsequent implementation investigation and Reality validation. No predicted course intersection, GIANTS route model or fixed clearance rule is adopted here.
 
-Assess useful continuation using **positively interpretable current-job evidence**. Position and movement are available in principle; GIANTS field-course segment progress and work state are possible corroborators, but their representativeness for all manoeuvres and worker types is not proven. No invented universal metre, speed, time or course-progress threshold belongs to this Architecture.
+### 4. Separate assessment from Pair Commitment
 
-Until the evidence is qualified, even a 1-second-gated worker remains in **WAITING_FOR_EVIDENCE**, or is classified as native continuation when positive continuation is seen; it is not automatically 'failed'.
+Only after an obstruction is supported and the downstream Responsibility decision is justified may a **Pair Commitment** impose temporary coordination: **one worker held while the other relocates**. Who moves, who holds, how far, how GIANTS hands back, third-worker protection, fail-safe exits and physical clearance verification remain separate unimplemented responsibilities.
 
-### 4. Infer situation before any resolution
+The one-second gate is **not** permission to actuate. OMW-caused zero movement during any later Hold is not evidence of native failure. Clearance and legitimate release must be verified, with GIANTS retaining productive route and replanning ownership.
 
-Once a blocked worker passes the gate and its lack of useful continuation is supported, **Spatial Pair Inference** considers other in-scope worker positions. Proximity is the owner's agreed starting point; no predictive route stack, collision-geometry reconstruction or GIANTS course ownership is required to name a **candidate pair**.
+## Evidence/lifecycle invariants
 
-Proximity does not alone prove causation. A nearby unrelated worker can coincide with a hedge-blocked worker. If a pair cannot be supported, maintain uncertainty or consider single-worker obstruction on its own evidence. For a positively established pair that justifies cooperative intervention, the owner-agreed downstream architectural intent is: **hold one participant while the other relocates**; verify clearance and relinquish authority to GIANTS. The hold is *part of Pair Commitment*, not part of the blocked-evidence detector.
-
-Which worker holds, how it relocates, bounded authority, third-party interaction, actual clearance and return-to-GIANTS settlement remain distinct unanswered design questions. They must not be implemented opportunistically in Blocked Progress Qualification.
-
-## Evidence and lifecycle invariants
-
-- A native blocked signal is **evidence**, not a GIANTS-requested instruction for OMW.
-- The **1.000 s** gate admits *further assessment* only; it is not an intervention deadline or proof of useful-progress failure.
-- Positive, known-unblocked periods contribute **zero** blocked time.
-- Same-worker and same-active-Job-Episode identity are necessary but **not sufficient** to assert that separated pulses belong to the same obstruction.
-- A false edge closes a blockage pulse; it does **not** alone prove independent continuation.
-- Any evidence generated by OMW's own later Hold must be causally isolated from GIANTS' original obstruction.
-- Player intervention, job stop/restart, lost observations, changed authority and uncertain episode identity must **not silently preserve an actionable conclusion**.
-- No current shell module may install a native hook, scan workers or control GIANTS merely because these concepts are documented.
+- A native blocked message is an observation, never an instruction to OMW.
+- **≥1.000 s accumulated confirmed blocked time** admits *assessment*, not intervention. Unblocked intervals add zero.
+- Separate pulses belong to one obstruction only when that link has support; **same Job Episode alone is not sufficient**.
+- A native false event is not sufficient physical-clearance evidence. Positive physical clearance can dissolve concern without a native course-progress witness.
+- Nearby worker proximity does not prove causation; neither worker must necessarily report blocked simultaneously.
+- Physical movement, turning/reversing, work-line activity, native segment percentage and agronomic progress are **not mandatory evidence** for this responsibility.
+- GIANTS remains entitled to attempt self-recovery; do not force OMW intervention during legitimate clearing.
+- Missing/ambiguous evidence, stale identities, source-job changes, player intervention and control-caused effects preserve uncertainty or invalidate prior authority; never fabricate certainty.
+- No current shell source installs native hooks, scans workers, claims Control or performs any of these proposed responsibilities.
 
 ## Adversarial Reality discriminators
 
-| Scenario | Evidence interpretation required | Premature conclusion prohibited |
+| Scenario | Assessment question | Prohibited shortcut |
 | --- | --- | --- |
-| TS015 opposed adjacent A8 passes without intervention | Brief native blocked assertions followed by useful autonomous continuation | 'Blocked = relocate'; timed passage alone proves deadlock |
-| TS015 Condor/Patriot blocking pair | Repeated native pulses, deficit of useful continuation, proximate candidate pair | 'Two blocked flags prove one must hold' |
-| Single worker navigating a hedge or static obstacle | Native oscillation can coexist with legitimate self-recovery | 'Oscillation proves a pair or failure' |
-| Another worker is near the hedge-blocked worker | Possible coincidental proximity | 'Closest worker caused blocked state' |
-| GIANTS legitimately reverses/turns, then resumes | Temporary non-productive motion can be useful continuation | 'No current agronomy = failure' |
-| Job ends/restarts or player takes control during a pulse | Invalidate or quarantine stale evidence and responsibility assumptions | 'Old blocked time transfers to new authority' |
-| False edge never arrives, observation hook unavailable | Bounded epistemic uncertainty and lifecycle verification | 'Worker remains blocked indefinitely' |
-| OMW later holds one member of an authorised pair | OMW-generated quiescence is a Control effect | 'Held vehicle confirms native deadlock' |
+| TS015 adjacent opposed A8 workers pass safely | Have they physically separated / cleared without OMW? | "Native blocked=true requires relocation" |
+| TS015 opposed Condor/Patriot repeatedly obstruct one another | Is there still a physically relevant worker pair after repeated pulses? | "Both blocked flags prove causality" |
+| A worker reverses/turns around a hedge | Is native self-recovery clearing the physical obstacle? | "No work/course progress means recovery failed" |
+| A worker happens to be near a hedge-blocked worker | Is the neighbour actually physically implicated? | "Closest worker caused the obstruction" |
+| Worker moves briefly, native blocked clears, and the same blockage recurs | Does the original physical relationship remain? | "One false edge proves resolution" |
+| Same worker encounters two different obstacles in one Job Episode | Is this a **new** physical obstruction episode? | "Accumulate all blocked time for the whole job" |
+| Player enters, native job restarts or a blocked edge is lost | Is evidence still valid under current ownership? | "Retain a previous actionable verdict" |
+| Future OMW Hold creates zero worker motion | Is OMW itself imposing that state? | "Stationary means GIANTS was blocked" |
 
-## Implementation / validation disposition
+## Authority Triad and remaining questions
 
-**Current source:** TEST 0.5.0.6 is a **control-free shell**. The former native event tap was deliberately retired after research. This document adds no source file and no periodic worker scan.
+**Architecture (this document):** the critical path is now **native blockage persistence → spatial pair inference → physical obstruction assessment → separate Responsibility/Pair Commitment**, not GIANTS course advancement. The broader [Project Vision](PROJECT_VISION.md) is unchanged.
 
-**Specification:** no worker Observation, Blocked Progress Qualification, Situation Assessment or Pair Commitment **Specification Jurisdiction** is yet mature enough to declare a primary normative contract. The eventual contracts must wait for a minimal positive useful-continuation evidence model and a safe native event-observation seam. Existing Configuration and Log Publication Jurisdictions are not changed.
+**Specification:** current 0.5 Configuration and Log Publication Specifications remain unchanged. No primary worker-Observation, physical-obstruction, Pair Commitment or Control Specification is yet authorised; do not author a placeholder simply because a concept has been named.
 
-**Testing:** these discriminators are architectural bench cases. Historical 0.5.0.5 logs support true/false event-construction evidence in one GIANTS game build, not end-to-end coverage, job continuity, safe hook interoperability or the validity of any future intervention. An eventual implementation requires separate offline and GIANTS Reality tests. The owner explicitly **waived the 0.5.0.6 retirement smoke**, which is not an in-game PASS and does not waive future tests for new worker features.
+**Source:** TEST **0.5.0.6** remains the control-free product shell; the event tap, worker scanner, course-progress tracker, Pair Commitment and worker movement are absent. No runtime changes accompany this Architecture decision.
 
-**Open decisions for #440:** how to positively recognise useful continuation without reconstructing GIANTS routes; how to corroborate same-obstruction continuity across retry pulses; what positional proximity evidence makes a pair merely plausible versus sufficient to commit; and how to establish a safe source of native edges without reintroducing the retired experiment as a permanent observer.
+**Testing:** the previous 0.5.0.6 post-retirement smoke was **waived by the owner**, not recorded as a PASS; no new executable behaviour arises from this document. Any eventual worker observation/decision/control requires its own offline and GIANTS Reality tests.
+
+**Open questions in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** what establishes positive *physical obstruction and clearance*, how to associate blocked pulses with the same physical obstruction, what proximity/representation is sufficient to identify a plausible pair without confusing incidental neighbours, and how to receive GIANTS native blocked edges safely. **Native course-segment identity/progression is not on the critical path.**
