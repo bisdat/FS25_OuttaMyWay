@@ -6,6 +6,10 @@
 
 This document is the authoritative live home for player-facing GUI, HUD, messaging and interaction architecture.
 
+## Rewrite-shell Product Status
+
+While the 0.5 product is a no-control shell, the visible Product Status Indicator MUST explicitly say **shell only** so the Enabled checkbox cannot be misread as active AI coordination. The indicator is absent when disabled. Operational Player Messages and the full HUD remain deferred; the existing disabled-startup reminder remains appropriate. The shell must not display an intervention-completed or control-handback message because it has never taken control.
+
 ## Current observation and boundaries
 
 The repository has multiple HUD and message surfaces, many of which are diagnostic or test instrumentation rather than product GUI. Current test HUD existence must not be treated as the desired player interface. Diagnostic/test HUDs remain instrumentation unless deliberately promoted later; GUI architecture does not grant diagnostics architectural authority.

@@ -1,3 +1,15 @@
+# v0.5.0.1 TEST — Control-Free Rewrite Shell
+
+**Baseline:** canonical `0.5.0.0` main commit `c6c832e7d1ef7b77ec45a0e0e6a17e94b68e1de4`. `archive/0.4.11.0` is the owner-designated immutable working reference and is untouched.
+
+**Intent:** deliberately deactivate the 0.4 worker-coordination implementation while preserving Configuration persistence and General Settings, Log Publication with its engineering DIAGNOSTIC sidecar, the minimal visible "shell only" status indicator, and the disabled-startup reminder. `scripts/main.lua` now sources just seven product-shell modules and registers just two presentational map listeners. No runtime graph, prediction, Regulation, Passage, Recovery, physical representation or GIANTS vehicle-control interception is constructed. Historical Lua modules are retained on disk but inert because they are never sourced.
+
+**Architecture:** adopt blocked-evidence-first recovery as the direction for investigation: bounded temporary stop / relocation / FIELDWORK restart, with GIANTS owning replanning. This increment does not implement that recovery and does not treat Issue #420 candidate APIs as validated. The previous 0.4 traffic architecture and specs remain accessible as re-evaluation evidence, not a current runtime requirement.
+
+**Validation scope:** replace legacy live-control CI gates with shell-specific structural checks, active-module Lua syntax checks and retained Configuration / Log Publication Lua contracts. Preserve all former offline tests for later reconciliation rather than making them pass by restoring dormant behaviour. CI does not prove in-game GIANTS shell or frame-time performance. Verify in game that Configuration, logging and HUD function and that no OMW AI intervention occurs.
+
+**Authority:** non-canonical TEST BUILD `0.5.0.1`; the canonical `0.5.0.0` checkpoint remains immutable.
+
 # v0.5.0.0 RELEASE DECLARATION — Accepted Pre-Rewrite Baseline
 
 **Accepted source baseline before declaration:** `main` after merged PR #436, commit `7734e01d2fd82ddafbc654ea67efc235afd68fe2`, with product identity `0.4.11.0`. This is the last accepted repository state before the proposed major rewrite; it includes the previously accepted Regulation Composition and Passage Continuity plateau.

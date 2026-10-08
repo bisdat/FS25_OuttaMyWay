@@ -8,6 +8,12 @@ Enable players to trust autonomous workers to complete their work without superv
 
 Preserve autonomous continuity through the least disruptive justified intervention.
 
+## Blocked-evidence-first recovery direction
+
+For the 0.5 rewrite, prefer positive native GIANTS worker-blocked evidence over continuous OMW collision prediction and anticipatory Regulation. The intended intervention is to free local space through a bounded temporary stop/relocation and then let GIANTS restart and replan productive fieldwork. **Native Replanning Ownership** means OMW does not reconstruct the productive route or insist on an OMW axis-return manoeuvre.
+
+This is a design direction, not an assertion that GIANTS blocked messages identify which worker should yield or that native transport, recovery, collision or blocking-region APIs have been validated. The initial 0.5 implementation deliberately performs **no** AI intervention while those questions are investigated. Future temporary Blocking Regions are hypotheses, not active protection.
+
 ## Success Criterion
 
 > A successful autonomous worker is one the player stops thinking about.
