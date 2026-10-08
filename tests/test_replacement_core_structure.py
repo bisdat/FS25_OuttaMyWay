@@ -1299,7 +1299,7 @@ def test_v0100_pre_1_0_versioning_epoch_contract():
         '0.MINOR.PATCH.BUILD',
         'PATCH = Validated Plateau Within An Epoch; Accepted, Not Canonical',
         'MINOR = Architectural/Capability Epoch; Canonical-Candidate Level',
-        'next Canonical Merge would be an owner-selected MINOR epoch checkpoint, therefore `0.5.0.0`',
+        'Only an owner-selected MINOR candidate may be prepared as a behaviour-neutral Release Declaration',
     ):
         assert token in decision
     for token in (
