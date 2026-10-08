@@ -1,6 +1,6 @@
-# Native Blocked Event Tap — Source-Level Candidate and Reality Plan
+# Native Blocked Event Tap — Completed Experiment and Retired Instrument
 
-**Status:** TEST 0.5.0.5 experimental, **not yet GIANTS-validated**. This diagnostic is temporary research equipment for [Blocked Progress Qualification #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440), not production Observation or Recovery. Accepted control-free baseline remains TEST 0.5.0.4 until separate merge.
+**Status:** Historical TEST 0.5.0.5 research, retired in TEST **0.5.0.6**. GIANTS FS25 1.24.0.0 Reality confirms both positive and negative native event-construction edges (including 174 ms pulse). The instrument, its listener, fixture and CI gate are no longer active. Git history retains the exact test implementation. [Blocked Progress Qualification #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440) remains architecture work, not production Observation or Recovery. TEST 0.5.0.4 is the last owner-smoke-accepted control-free baseline until the retirement change passes its own acceptance.
 
 ## Research question
 
@@ -53,17 +53,17 @@ Patriot 4450 (`vehicleNode=398649`) constructed four complete blocked-event inte
 
 Durations are from the event payload's `engineTimeMs` rather than rounded wall-clock stamps. The observed native false edges demonstrate GIANTS event-constructor access on *unblocking*. The **174 ms** complete true/false sequence establishes visibility into a blockage pulse shorter than the former **500 ms** periodic sampler; the old sampler might miss it. **This does not prove complete coverage of every internal native state transition.**
 
-**Newly named distinction: Native Blockage Episode** — a worker-scoped interval between observed true and false edges, bounded by a specific active Job Episode in any future formal Observation contract. A missing false edge requires lifecycle disambiguation; it must not silently imply indefinite obstruction, useful lack of progress or a causal neighbour.
+**Named discovery — Native Blockage Pulse:** a worker-scoped interval between observed `true` and `false` edges. **Unresolved Obstruction Episode** is a separate, higher-level concept which may span multiple true/false pulses while GIANTS retries; only positively confirmed blocked time accumulates, with false intervals excluded. A missing false edge requires lifecycle disambiguation; it must not silently imply indefinite obstruction, lack of useful progress or a causal neighbour.
 
-**Implication for prospective 1-second Native Blockage Persistence Gate:** elapsed time is measured *per Native Blockage Episode*, and a false event ends that episode; retry episodes must not be summed to reach 1 s. A worker blocked for 5.343 seconds passes only this *time prerequisite* for further assessment. No causal pair, proximity, realised progress or OMW authority follows from passing. The selected future implementation could maintain a targeted deadline per active true episode instead of scanning all workers every 500 ms. This gate is **not implemented in TEST 0.5.0.5**.
+**Implication for the agreed 1-second Native Blockage Persistence Gate:** confirmed blocked durations may accumulate across multiple pulses **within the same unresolved obstruction**, excluding unblocked time. A `false` edge ends one *pulse*, not necessarily the higher-level unresolved episode; evidence of legitimate continuation or Job Episode termination resolves/ends the higher-level assessment. The 5.343 s Patriot pulse exceeds the prerequisite on its own; the 0.848/0.174/0.825 s pulses individually do not, but cannot be declared ineligible for accumulation without knowing whether they belong to the same unresolved obstruction. Whether useful continuation occurred is not established by event edges alone. A future implementation could maintain targeted deadlines rather than scan all workers every 500 ms. **No gate or state tracker was implemented in TEST 0.5.0.5**.
 
 **Other observation:** no OMW Lua error was logged. The same four map `FieldManager` warnings/errors were emitted before gameplay events; their presence is not evidence of OMW malfunction. There is no controlled demonstration that the observer never perturbs GIANTS' AI, nor Debug-off/Enabled-off teardown evidence in this run. No assertion about the visual course continuation is supported without player observation.
 
-**Disposition:** event construction is now Reality-demonstrated in both directions for Patriot, and positive direction for Condor, on this game build. Retain the test-only experiment while closing remaining non-interference/lifecycle questions; no new operational worker authority or control code is warranted by this diagnostic alone.
+**Disposition:** event construction was Reality-demonstrated in both directions for Patriot and positive for Condor on this game build. **The instrument has served its purpose and is retired.** Non-interference against a control group, lifecycle loss and interoperability remain unproven and become prerequisites should production Observation later adopt this global hook. No new operational worker authority or control code follows.
 
-## Reality validation — falsifiable TS015 protocol
+## Historical Reality protocol and unclosed limitations (not an active test assignment)
 
-Test on **FS25 1.24.0.0** (record actual Game-Version, Build-Id, Build-Revision) using 0.5.0.5 TEST with OuttaMyWay Enabled and **Debug ON**:
+Historical 0.5.0.5 protocol on **FS25 1.24.0.0** (Game-Version, Build-Id, Build-Revision recorded). These steps describe what was planned, **not** what was all completed:
 
 1. Verify exactly one installation message on mission load; with Debug OFF or mod disabled, no tap installation and no edge log. Validate toggling Debug OFF and Enabled OFF removes the hook; re-enable reinstalls only when requested.
 2. Run Condor and Patriot in a normal field job; deliberately observe a genuine GIANTS native blocked/unblocked transition and correlate event timestamp and worker identity with native UI/behaviour. Record whether any expected edge is missing, duplicated or late.
@@ -71,8 +71,8 @@ Test on **FS25 1.24.0.0** (record actual Game-Version, Build-Id, Build-Revision)
 4. Confirm that a GIANTS job can start, stop, and (where naturally applicable) restart with the same behaviour as the control-free 0.5.0.4 plateau. Verify no job-control commands, worker movement by OMW, errors or abnormal events. Repeat with disabled mod or Debug OFF as comparison.
 5. Verify client/server operation separately if multiplayer claims are later required; present experiment only asserts server-side construction.
 
-**Acceptance/disproof:** a constructor tap is viable only if it delivers timely, correctly identified native transitions without altering GIANTS continuation and cleans up safely. If transitions are absent, incorrect or the interception changes behaviour, **retire it and update engine knowledge**. A successful result supports a future input contract; it does not automatically approve Blocked Progress Qualification implementation.
+**Evidence boundary:** native event-construction observation in both directions was proven for tested workers. The uncompleted comparative non-interference, all-edge coverage and disablement tests remain explicitly unresolved; retiring the experimental code avoids retaining a global hook merely to chase future capabilities. A later production Observer requires its own approved Architecture/Specification and in-game validation, not restoration by convenience.
 
 ## Authority-triad disposition
 
-Architecture: current Project Vision and control-free Rewrite Shell remain unchanged; #440 holds prospective semantic decisions. Specification: no new production Observation jurisdiction or actuation contract is established. Source: one opt-in diagnostic module, isolated from worker control. Tests: offline constructor-delegation and lifecycle checks only; in-game Reality is required.
+Architecture: current Project Vision and control-free Rewrite Shell remain unchanged; #440 holds prospective semantic decisions. Specification: no new production Observation jurisdiction or actuation contract is established. Source: diagnostic module and fixture retired in TEST 0.5.0.6; source implementation retained in historical Git commit 0.5.0.5. Tests: offline lifecycle checks passed at that time and FS25 Reality established positive/negative native event creation; not full non-interference or subscriptions.

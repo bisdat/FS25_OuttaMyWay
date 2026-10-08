@@ -1,3 +1,11 @@
+# v0.5.0.6 TEST — Retire completed native event-construction research tap
+
+**Owner instruction:** the TEST 0.5.0.5 blocked-event tap has served its research purpose. Its TS015 logs confirmed GIANTS `AIVehicleIsBlockedEvent.new` construction for both blocked/unblocked transitions, including a complete **174 ms** Patriot pulse. This is evidence of an observation seam, not an authorised production Observer.
+
+Remove `scripts/diagnostics/NativeBlockedEventTap.lua`, its product-shell module/listener, its one-off offline fixture and CI gates. Restore the exact control-free eight-Lua-file shell and its two presentation listeners. Preserve the historical TEST 0.5.0.5 implementation through Git history rather than adding a permanent archive directory. The 0.5.0.5 research record and GIANTS Engine Knowledge retain qualified findings and non-interference/coverage limitations. Correct a prior documentation mismatch: the owner-agreed **one-second gate accumulates confirmed blocked time across pulses within the same unresolved obstruction**, excluding unblocked intervals; a native `false` edge ends a pulse, not necessarily an unresolved episode. No Blocked Progress Qualification, Spatial Pair Inference, GIANTS hook, AI control, recovery or relocation is shipped.
+
+**Authority Triad:** Architecture unchanged (control-free shell); Specification unchanged (no worker Observation jurisdiction); Source returns to presentation/configuration/publication only. Offline structural and Lua shell checks must pass; in-game smoke of TEST 0.5.0.6 is still required before accepting the retired-instrument build.
+
 # v0.5.0.5 TEST — Native Blocked Event-Edge Observation Experiment
 
 **Baseline:** owner-validated TEST 0.5.0.4, merged PR #442, smoke PASS on FS25 1.24.0.0; no change to canonical release. **Purpose:** test whether GIANTS blocked/unblocked transitions can be passively observed at the outbound `AIVehicleIsBlockedEvent.new` constructor, avoiding recurrent 500 ms fleet scanning and preserving GIANTS' own collision callback.

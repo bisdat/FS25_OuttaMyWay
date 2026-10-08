@@ -12,7 +12,6 @@ SHELL_MODULES = [
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
-    "scripts/diagnostics/NativeBlockedEventTap.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
@@ -44,9 +43,9 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 3
+    assert text.count("addModEventListener(") == 2
     assert "NativeBlockedProbe" not in text
-    assert "NativeBlockedEventTap" in text
+    assert "NativeBlockedEventTap" not in text
 
 
 def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
@@ -80,7 +79,7 @@ def test_settings_and_disabled_reminder_are_retained():
     assert "OUTTAMYWAY_SHELL_STARTED" in main
     assert "OUTTAMYWAY_SHELL_ENABLED" in main
     assert "OUTTAMYWAY_SHELL_DISABLED" in main
-    assert "OuttaMyWay.nativeBlockedEventTap" in main
+    assert "OuttaMyWay.nativeBlockedEventTap" not in main
 
 
 def test_manifest_does_not_promise_active_ai_control():
@@ -93,3 +92,4 @@ def test_every_production_script_is_reachable_from_the_shell():
     actual = {path.relative_to(ROOT).as_posix() for path in (ROOT / "scripts").rglob("*.lua")}
     assert actual == set(SHELL_MODULES) | {"scripts/main.lua"}
     assert "scripts/diagnostics/NativeBlockedProbe.lua" not in actual
+    assert "scripts/diagnostics/NativeBlockedEventTap.lua" not in actual

@@ -9,7 +9,7 @@ This is the **current** authority for the small 0.5 OuttaMyWay shell and its acc
 - [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
 - [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.
 
-The running shell does **not** perform operational worker Observation, assessment, Regulation, holding, steering, stopping, restarting or relocation. TEST 0.5.0.5 carries a strictly opt-in [research event-construction tap](../docs/research/NATIVE_BLOCKED_EVENT_TAP.md) that logs native transitions only; it has no production Observation authority. Its Enabled state is not a claim that AI coordination exists. No worker Observation, Situation Assessment, Recovery or Control responsibility is implemented or currently made normative by this index.
+The running shell does **not** observe, assess, regulate, hold, steer, stop, restart or relocate GIANTS workers. The experimental [native blocked-event tap](../docs/research/NATIVE_BLOCKED_EVENT_TAP.md) served its research purpose and was retired in TEST 0.5.0.6. Its Enabled state is not a claim that AI coordination exists. No worker Observation, Situation Assessment, Recovery or Control responsibility is implemented or currently made normative by this index.
 
 ## Deliberately unresolved
 

@@ -5,7 +5,6 @@ local expected={
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
-    "scripts/diagnostics/NativeBlockedEventTap.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -52,8 +51,7 @@ source=function(path)
         }
     elseif path=="scripts/diagnostics/VersionHud.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
-        or path=="scripts/gui/DisabledStartupReminder.lua"
-        or path=="scripts/diagnostics/NativeBlockedEventTap.lua" then
+        or path=="scripts/gui/DisabledStartupReminder.lua" then
         dofile(path)
     else
         error("Unexpected Lua module sourced: "..path)
@@ -63,15 +61,14 @@ dofile("scripts/main.lua")
 assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
-assert(#registered==3 and registered[1]==OuttaMyWay.versionHud
-    and registered[2]==OuttaMyWay.disabledStartupReminder
-    and registered[3]==OuttaMyWay.nativeBlockedEventTap)
+assert(#registered==2 and registered[1]==OuttaMyWay.versionHud
+    and registered[2]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
-assert(OuttaMyWay.nativeBlockedEventTap~=nil and OuttaMyWay.nativeBlockedEventTap.active==false)
+assert(OuttaMyWay.nativeBlockedEventTap==nil)
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)
-assert(#listeners==2)
+assert(#listeners==1)
 OuttaMyWay.versionHud:draw()
 assert(#renders==2)
 local expectedHud="OuttaMyWay "..OuttaMyWay.VERSION
