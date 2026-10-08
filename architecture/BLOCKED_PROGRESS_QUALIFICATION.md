@@ -10,7 +10,7 @@ OuttaMyWay exists to help a worker resume its GIANTS-owned autonomous activity w
 >
 > **Blocked-state evidence ≠ identity of blocking partner ≠ automatic authority to intervene.**
 
-This is the architectural separation we need. GIANTS can transiently assert blocked during otherwise successful opposed A8 passage, or alternate blocked and unblocked as it attempts to manoeuvre around a moving worker or static obstacle. These observations are **authentic native states** even when OMW intervention is unnecessary.
+This is the architectural separation we need. Ordinary opposed A8 passing is expected to produce **less than one second of confirmed GIANTS blockage**, so the existing persistence gate filters it **without an A8 classifier**. GIANTS can also alternate blocked/unblocked while attempting to manoeuvre around a moving worker or static obstacle. These are authentic native states, not automatic intervention requests. The A8 duration is a working scenario assumption, not a universally demonstrated bound.
 
 [Native Course Advancement](../docs/research/USEFUL_CONTINUATION_EVIDENCE.md) remains completed source research, **not** a required signal, dependency or gate. The physical-obstruction proof step proposed in the initial PR #446 draft is likewise **withdrawn**. **Native Replanning Ownership** remains with GIANTS ([Project Vision](PROJECT_VISION.md)).
 
@@ -40,24 +40,28 @@ GIANTS native isBlocked (worker and Job Episode)
                  v
  >= 1.000 s accumulated confirmed blocked time?
                  |
-          yes    v
-       Spatial Pair Inference
-       (nearby candidate worker)
-                 |
-                 v
-          Situation Assessment
-           /       |       \
-       no pair   uncertain   plausible pair requiring response?
-          |         |               |
-          v         v               v
-     GIANTS native  WAITING_     separate
-      recovery      FOR_        Responsibility /
-      remains       EVIDENCE    Pair Commitment
-       possible                  (future only)
-                                    |
-                                    v
-                        hold one / relocate other
-                        relinquish to GIANTS
+          +------+------+
+          |             |
+        NO (<1 s)      YES
+          |             |
+          v             v
+      No OMW       Spatial Pair Inference
+      candidate     (nearby worker)
+      GIANTS owns        |
+      continuation       v
+                   Situation Assessment
+                    /      |       \
+                no pair  uncertain  plausible pair?
+                   |       |              |
+                   v       v              v
+                GIANTS  WAITING_FOR_   separate
+                continues EVIDENCE     Responsibility /
+                                       Pair Commitment
+                                       (future only)
+                                            |
+                                            v
+                                  hold one / relocate other
+                                  relinquish to GIANTS
 ```
 
 The diagram names separate responsibilities, **not** obligatory serial code or an invitation to implement a second obstruction detector. A single-worker obstruction to a tree/hedge remains a different situation from a worker-to-worker pair; a pair cannot be invented from the blocked flag alone.
@@ -72,11 +76,11 @@ The preferred *candidate observation direction* is native **blocked/unblocked ed
 
 ## 2. Filter transient native blockage with the accepted persistence gate
 
-The owner-accepted gate is **≥1 second of accumulated positively confirmed native blocked time** within one unresolved obstruction episode. A false edge closes a *pulse* and prevents time accruing while unblocked; it does **not necessarily** close the unresolved concern. Repeated true/false retries may contribute to the same concern **only while episode continuity is supportable**.
+The owner-accepted gate is **≥1 second of accumulated positively confirmed native blocked time** within one unresolved obstruction episode. **Below 1 second, OMW ignores the blockage for intervention purposes: no Spatial Pair Inference, Situation Assessment or resolution candidate.** A false edge closes a *pulse* and prevents time accruing while unblocked; it does **not necessarily** close the unresolved concern. Repeated true/false retries may contribute to the same concern **only while episode continuity is supportable**.
 
-Do not accumulate blocked time across unrelated A8 pass-by events, distinct encounters at different places, new Job Episodes, player takeover, missing/unknown observations or time imposed by OMW's later Control. Positive cessation of the encounter or Job Episode ends its eligibility. Targeted time evaluation may be needed after a true edge with no further notification, but does not imply a continuous all-worker scan.
+Do not accumulate blocked time across unrelated passing encounters, distinct obstacles at different places, new Job Episodes, player takeover, missing/unknown observations or time imposed by OMW's later Control. Positive cessation of the encounter or Job Episode ends its eligibility. Targeted time evaluation may be needed after a true edge with no further notification, but does not imply a continuous all-worker scan.
 
-**The gate is not a physical-obstruction proof step.** It is the agreed safeguard against reacting to fleeting GIANTS native blockage assertions. Reaching it allows a Situation Assessment; it never grants movement authority.
+**The gate is not a physical-obstruction proof step.** It already filters the expected short native assertions during ordinary opposed A8 passing; **no A8 recognition, classification, special distance, or dedicated exemption is required**. If ordinary successful passing later proves to generate ≥1 second of accumulated confirmed blockage, that challenges the duration assumption and should be recorded as Reality evidence—not pre-emptively patched with A8 logic. Reaching the gate allows generic Situation Assessment; it never grants movement authority.
 
 ## 3. Infer candidate worker pairs from positions
 
@@ -99,7 +103,7 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 - Separate pulses can belong to one unresolved concern; a false edge does not alone mean durable recovery.
 - The worker that GIANTS reports blocked is known; **the identity of its blocker is not**.
 - Proximity supplies a candidate partner; simultaneous blocked flags are neither necessary nor sufficient for causal identification.
-- Transient opposed A8 passing and legitimate GIANTS self-recovery must not automatically trigger pair control.
+- Native blockage below the one-second gate produces **no OMW intervention candidate**, regardless of the encounter type; no A8-specific filter or classifier exists.
 - No observed physical separation distance, course progression, agronomic output, predicted trajectory or obstacle reconstruction is an extra mandatory prerequisite to trusting the native blocked flag.
 - Worker/Job Episode changes, player intervention and OMW-imposed control effects invalidate or quarantine prior evidence as appropriate.
 - Missing or contradictory evidence remains **WAITING_FOR_EVIDENCE**, not permission to act.
@@ -109,7 +113,7 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 
 | Case | Expected interpretation | Forbidden assumption |
 | --- | --- | --- |
-| Adjacent opposed A8 workers briefly report blocked and pass safely | Native transient pulse; no automatic response before the gate | Every native blocked assertion means OMW must move someone |
+| Ordinary opposed A8 passage with <1 s accumulated confirmed native blockage | Ignore for OMW intervention; no pair inference or special A8 classification | Brief native blocked assertion triggers an A8-specific detection/resolution branch |
 | TS015 Condor/Patriot repeatedly report blocked while close | If the one-second gate and pair assessment support it, **consider** a coordinated pair response | Both workers must be blocked or extra collision geometry is required |
 | Worker reports blocked beside a hedge with another worker nearby | GIANTS confirms blockage; pair attribution may be uncertain | Closest worker is necessarily its blocker |
 | One moving worker blocks another but never reports blocked itself | A candidate pair remains possible by proximity | Both require blocked=true |
@@ -128,4 +132,4 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 
 **Testing:** this is an Architecture correction, not executable behaviour. TEST 0.5.0.6's owner-waived smoke is not an in-game PASS. Any eventual new worker Observation or Control needs independent Reality validation.
 
-**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, the appropriate proximity policy for candidate pairs, uncertainty when a nearby worker is incidental, and the separate authority/settlement contract for Pair Commitment. **Independent physical-collision proof and native course advancement are not required work packages.**
+**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, the appropriate proximity policy for candidates *after* the gate, uncertainty when a nearby worker is incidental, and the separate authority/settlement contract for Pair Commitment. **Independent physical-collision proof and native course advancement are not required work packages.**
