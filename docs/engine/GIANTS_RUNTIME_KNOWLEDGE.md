@@ -226,6 +226,16 @@ path and Issue #336 S416/Condor comparison.
 
 **Evidence:** completed [Native Blocked-State Probe research](../research/NATIVE_BLOCKED_STATE_PROBE.md). The diagnostic module has been retired from production after answering this narrow question; the subsequent qualification question is tracked under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
 
+### Native outgoing blocked-event construction — limited FS25 1.24.0.0 Reality
+
+**Source hypothesis:** the GIANTS field-course collision callback constructs `AIVehicleIsBlockedEvent.new(vehicle, isBlocked)` when its blocked state changes. Observing the original server-side event constructor should avoid replacing GIANTS' field-course callback; it is nevertheless a global Lua interception, not a public subscription contract.
+
+**Initial observed Reality:** TEST **0.5.0.5** `log(4).txt` (8 October 2026; FS25 **1.24.0.0**, Build-Id **b41780**, revision **83220**) logged a successful diagnostic installation at **16:13:27.380**, then two positive native event-construction observations at **16:15:44.949** (Condor Endurance II) and **16:15:45.246** (Patriot 4450). The constructor events have separate vehicle IDs and approximately **297.5 ms** engine-time separation. No OuttaMyWay Lua exceptions were observed.
+
+**Safe use:** the constructor boundary is an in-game-observed source of **positive native blocked event-creation evidence** for two tested workers, without a standing 500 ms polling loop. It supports further controlled testing.
+
+**Not established:** any `false` edge, comprehensive transition coverage, a guaranteed mod-safe callback/subscription, correct Job Episode continuity, or GIANTS behavioural equivalence. Source-event creation is not proof of blockage persistence, pair causation or OMW intervention necessity. **Evidence:** [TEST event-tap study](../research/NATIVE_BLOCKED_EVENT_TAP.md), [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
+
 ### Native zero and blocked states are ambiguous and reactive
 
 **Finding:** GIANTS can hold an active field worker at zero without ending its

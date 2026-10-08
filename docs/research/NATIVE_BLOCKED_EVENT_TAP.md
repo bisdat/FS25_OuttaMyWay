@@ -22,6 +22,20 @@ The **Native Blocked Event Tap** experimentally wraps the *outgoing event constr
 
 Only native constructor events are logged. This probe does **not** establish all changes in `spec_aiFieldWorker.isBlocked`, a completed blocked interval, a one-second gate, proximity, progress, causal interaction, intervention permission, or pair selection. No timer or worker scans are implemented. All emitted lines are DEBUG class; NORMAL performs no instrumentation.
 
+## Initial GIANTS Reality — TEST 0.5.0.5, 8 October 2026
+
+**Result: PARTIAL PASS — positive event-construction observation.** Owner supplied `log(4).txt` from FS25 **1.24.0.0**, Build-Id **b41780**, revision **83220**. The game declared OuttaMyWay **0.5.0.5**, and shell startup at **16:13:07.350** logged `aiControl=false enabled=true`.
+
+- **16:13:27.380:** the diagnostic registered `NATIVE_BLOCKED_TAP_INSTALLED` once.
+- **16:15:44.949:** `NATIVE_BLOCKED_EVENT_CONSTRUCTED nativeBlocked=true` for **Condor Endurance II**, `vehicleNode=396258`, `engineTimeMs=144551.86264371872`.
+- **16:15:45.246:** a separate `nativeBlocked=true` event for **Patriot 4450**, `vehicleNode=399829`, `engineTimeMs=144849.3655424118`. Approximate event separation: **297.5 ms** of engine time.
+- **16:15:51.263:** `quit savegame`; engine soft-restarted. The log includes **no nativeBlocked=false** event before exit, and no OMW Lua exception. The four logged `FieldManager` map/farmland-boundary errors predate the observed events and are not attributable to this experiment.
+- The session does **not** exercise Debug-off, mod-disable, or explicit teardown comparison; the initial `aiControl=false` declaration does not independently prove that GIANTS' trajectory was unchanged.
+
+**New supported fact:** in this particular GIANTS v1.24 runtime, the guarded constructor wrapper installed successfully and was invoked for two distinct field-worker-capable vehicles producing **positive blocked** events. These are two event creations separated by less than 500 ms, **not** a demonstrated sub-500 ms blocked/unblocked pulse.
+
+**Still unproven:** unblocked/false edge path, end-to-end completeness versus all GIANTS blocked-state changes, native HUD event timing, whether one-second continuous native blockage occurred, whether GIANTS was behaviourally unaffected, and safe coexistence with other callback/event hooks. No OMW Blocked Progress Qualification or native intervention evidence was generated. **Do not merge as a fully validated event subscriber based on this log alone.**
+
 ## Reality validation — falsifiable TS015 protocol
 
 Test on **FS25 1.24.0.0** (record actual Game-Version, Build-Id, Build-Revision) using 0.5.0.5 TEST with OuttaMyWay Enabled and **Debug ON**:
