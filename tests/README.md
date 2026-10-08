@@ -6,10 +6,11 @@ This directory contains current CI contracts and retained **historical** tests. 
 
 - [Shell structural contracts](test_product_shell_structure.py) — exact explicit `scripts/main.lua` module inventory, no orphan production Lua, two presentation listeners and no AI observer, dynamic version-only HUD, and coherent TEST identity.
 - [Shell bootstrap smoke](shell/main_smoke.lua) — no GIANTS runtime or vehicle Control; enabled/disabled status behaviour.
+- [Spatial Pair Inference](shell/spatial_pair_inference.lua) — offline pure 1000 ms input gate and nearest eligible root within 30 m; no GIANTS event capture or AI Control.
 - [Configuration](shell/configuration_persistence.lua), [diagnostic publication policy](replacement_core/diagnostic_publication_policy_source.lua) and [Log Publication](replacement_core/log_publication.lua) — independently retained supporting runtime contracts.
 - [GitHub Actions](../.github/workflows/offline-validation.yml) — runs the blocking shell structural and Lua suites. Generated LDoc is a derived non-authoritative reference.
 
-The completed `NativeBlockedProbe` and `NativeBlockedEventTap` fixtures and instruments are retired. The 0.5.0.5 experiment remains reconstructable from Git history; no diagnostic observer remains in current source.
+The pure Spatial Pair Inference evaluator is loaded but not invoked with GIANTS workers by the 0.5.0.7 shell. The completed `NativeBlockedProbe` and `NativeBlockedEventTap` fixtures and instruments are retired. The 0.5.0.5 experiment remains reconstructable from Git history; no diagnostic observer remains in current source.
 
 ## Historical evidence — not active CI
 

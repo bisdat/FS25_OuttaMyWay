@@ -2,6 +2,7 @@
 -- Subsystems outside the product shell must not be sourced or registered.
 local expected={
     "scripts/config.lua",
+    "scripts/assessment/SpatialPairInference.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
@@ -29,7 +30,7 @@ renderText=function(_,_,_,text) renders[#renders+1]=text end
 addModEventListener=function(listener) registered[#registered+1]=listener end
 source=function(path)
     loaded[#loaded+1]=path
-    if path=="scripts/config.lua" then
+    if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua" then
         dofile(path)
     elseif path=="scripts/configuration/Configuration.lua" then
         OuttaMyWay.Configuration={new=function() return configuration end}
@@ -65,6 +66,7 @@ assert(#registered==2 and registered[1]==OuttaMyWay.versionHud
     and registered[2]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(OuttaMyWay.nativeBlockedEventTap==nil)
+assert(type(OuttaMyWay.SpatialPairInference.evaluate)=="function")
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)

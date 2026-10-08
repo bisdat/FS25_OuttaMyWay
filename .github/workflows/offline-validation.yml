@@ -66,6 +66,7 @@ jobs:
           for file in \
             scripts/main.lua \
             scripts/config.lua \
+            scripts/assessment/SpatialPairInference.lua \
             scripts/configuration/Configuration.lua \
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
             scripts/publication/LogPublication.lua \
@@ -79,6 +80,7 @@ jobs:
       - name: Run shell bootstrap and retained supporting contracts
         run: |
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
+          "$LUAJIT_BIN" tests/shell/spatial_pair_inference.lua
           "$LUAJIT_BIN" tests/shell/configuration_persistence.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua

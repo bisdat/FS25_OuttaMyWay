@@ -90,6 +90,13 @@ After a worker satisfies the gate, **choose the nearest other eligible local wor
 
 **The 30 m radius is the owner-selected locality policy**, not an empirical physical-clearance or causal-contact threshold. No implement-width correction, vehicle-specific radius, collision hull, trajectory prediction or geometric precision is required. An in-radius worker is a *possible* blocker, not a proven one. If there is no candidate, do not invent a worker pair; where eligibility or attribution is uncertain, Situation Assessment may remain **WAITING_FOR_EVIDENCE**. Re-evaluate current positions/authority before any later Pair Commitment.
 
+## Specification Jurisdiction — Spatial Pair Inference
+
+**Jurisdiction ID:** `SPATIAL_PAIR_INFERENCE`  
+**Primary Specification:** [`spec/SPATIAL_PAIR_INFERENCE.md`](../spec/SPATIAL_PAIR_INFERENCE.md)
+
+Only the accepted **≥1 s confirmed blocked input and nearest eligible worker within 30 m** belong to this narrow evaluator contract. It does not capture GIANTS events, accumulate retry pulses, determine causal obstruction, assess the full Situation or authorize/control workers. Those responsibilities remain distinct.
+
 ## 4. Keep Situation Assessment and Pair Commitment distinct
 
 **Situation Assessment** examines native blockage persistence, present candidate pair proximity and whether a paired response is justified. It can decline intervention when GIANTS is evidently recovering or the blocking pair is unsupported, but **does not require an independently measured physical overlap or GIANTS course advancement**.
@@ -127,10 +134,10 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 
 **Architecture:** blocked-first Situation Assessment uses GIANTS native blocked signals, persistence and spatial pair inference; no separate physical-obstruction proof stage or GIANTS course-progress gate.
 
-**Specification:** current Configuration and Log Publication contracts remain unchanged. No worker Observation, Situation Assessment, Pair Commitment or Control primary Specification has yet been authorised.
+**Specification:** Configuration and Log Publication remain unchanged. The narrow Spatial Pair Inference Specification covers only a pure candidate evaluator. Worker Observation, broader Situation Assessment, Pair Commitment and Control are still unimplemented.
 
-**Source:** TEST 0.5.0.6 remains a control-free eight-file shell. `NativeBlockedEventTap.lua` remains retired. No worker scan, native hook, course-progress tracker or actuation is introduced here.
+**Source:** TEST 0.5.0.7 includes an inert, pure Spatial Pair Inference evaluator. No GIANTS worker observation, event hook, caller, scan, pair actuation or course-progress tracker is introduced; the native event tap stays retired.
 
-**Testing:** this is an Architecture correction, not executable behaviour. TEST 0.5.0.6's owner-waived smoke is not an in-game PASS. Any eventual new worker Observation or Control needs independent Reality validation.
+**Testing:** Offline evidence can validate pure numeric gate/selection logic only. TEST 0.5.0.6's owner-waived smoke is not an in-game PASS. Any eventual native Observation or Control needs separate GIANTS Reality validation.
 
 **Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, candidate eligibility and uncertainty when the nearest in-radius worker is incidental, and separate Pair Commitment authority/settlement. **The proximity radius is settled by owner decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**
