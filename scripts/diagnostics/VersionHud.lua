@@ -19,7 +19,7 @@ function Hud:draw()
     if VERSION_HUD_ENABLED~=true or configuration==nil or configuration:isResolved()~=true
         or configuration:isEnabled()~=true or g_currentMission==nil or renderText==nil then return end
     local x=VERSION_HUD_X; local y=VERSION_HUD_Y; local size=VERSION_HUD_TEXT_SIZE
-    local text=string.format("OuttaMyWay %s - shell only",tostring(OuttaMyWay.VERSION or "?"))
+    local text=string.format("OuttaMyWay %s",tostring(OuttaMyWay.VERSION or "?"))
     if setTextAlignment~=nil then setTextAlignment((RenderText and RenderText.ALIGN_RIGHT) or 2) end
     if setTextColor~=nil then setTextColor(0,0,0,0.85) end
     renderText(x+0.001,y-0.001,size,text)

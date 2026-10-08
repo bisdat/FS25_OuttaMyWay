@@ -6,6 +6,7 @@ local expected={
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/diagnostics/VersionHud.lua",
+    "scripts/diagnostics/NativeBlockedProbe.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
 }
@@ -50,6 +51,7 @@ source=function(path)
             end
         }
     elseif path=="scripts/diagnostics/VersionHud.lua"
+        or path=="scripts/diagnostics/NativeBlockedProbe.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then
         dofile(path)
@@ -61,13 +63,19 @@ dofile("scripts/main.lua")
 assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
-assert(#registered==2 and registered[1]==OuttaMyWay.versionHud
-    and registered[2]==OuttaMyWay.disabledStartupReminder)
+assert(#registered==3 and registered[1]==OuttaMyWay.versionHud
+    and registered[2]==OuttaMyWay.nativeBlockedProbe
+    and registered[3]==OuttaMyWay.disabledStartupReminder)
+-- Default NORMAL logging is dormant: no worker registry scan or AI runtime.
+OuttaMyWay.nativeBlockedProbe:update(1000)
+assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)
 assert(type(changed)=="function")
 OuttaMyWay.versionHud:draw()
-assert(#renders==2 and string.find(renders[1],"shell only",1,true))
+assert(#renders==2)
+local expectedHud="OuttaMyWay "..OuttaMyWay.VERSION
+assert(renders[1]==expectedHud and renders[2]==expectedHud)
 enabled=false
 changed({name="enabled",value=false,durable=true})
 OuttaMyWay.versionHud:draw()
@@ -76,6 +84,6 @@ assert(events[#events].code=="OUTTAMYWAY_SHELL_DISABLED")
 enabled=true
 changed({name="enabled",value=true,durable=true})
 OuttaMyWay.versionHud:draw()
-assert(#renders==4)
+assert(#renders==4 and renders[3]==expectedHud and renders[4]==expectedHud)
 assert(events[#events].code=="OUTTAMYWAY_SHELL_ENABLED")
 print("Product shell bootstrap / no AI runtime / HUD toggle: PASS")

@@ -7,6 +7,8 @@ authority.
 
 ## Breadcrumbs
 
+- [Native Blocked-State Evidence Probe](NATIVE_BLOCKED_STATE_PROBE.md) — current 0.5 passive blocked-signal experiment, hypotheses and TS015 Reality discriminator.
+
 - [Architecture Compliance Audit v4.6.49](ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) — bounded historical conformance audit and evidence.
 - [Architecture Compliance Audit v4.6.77](ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.77.md) — later bounded historical conformance audit and evidence.
 - [Canonical Knowledge and Constraint Recovery](CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md) — recovery matrix and investigative conclusions.

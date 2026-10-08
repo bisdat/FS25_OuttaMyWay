@@ -27,9 +27,10 @@ deliberately leaves normal job and navigation ownership with GIANTS AI and
 negotiates only temporary competition for space.
 
 The canonical v0.5.0.0 commit preserves the last accepted pre-rewrite baseline.
-The next TEST build, v0.5.0.1, deliberately runs **only** Configuration, Log
-Publication and a small labelled HUD/status shell. It does not load any AI
-coordination, observation, assessment, regulation, passage, recovery or vehicle
+The 0.5 TEST build retains Configuration, Log Publication and the labelled
+HUD/status shell. From TEST 0.5.0.2, Debug/DIAGNOSTIC optionally activates a
+read-only blocked-state diagnostic probe. It does not load AI coordination,
+semantic Situation Assessment, Regulation, Passage, Recovery or any vehicle
 actuation module. Existing 0.4 Lua files are retained but not sourced.
 
 The 0.5 design direction is reactive native GIANTS blocked evidence followed,

@@ -16,7 +16,7 @@ architecture deltas.
 
 ## Current 0.5 rewrite boundary
 
-**Active product:** the 0.5 product shell alone: persistent player Configuration, Log Publication, a labelled status indicator, and the disabled-startup reminder. It does not observe, hold, regulate, reposition, stop, restart or otherwise control any GIANTS worker. Enabled Configuration is shell consent, **not** a claim that AI coordination is operational.
+**Active product:** the 0.5 product shell alone: persistent player Configuration, Log Publication, a labelled status indicator, and the disabled-startup reminder. It does not hold, regulate, reposition, stop, restart or otherwise control any GIANTS worker. A bounded DEBUG/DIAGNOSTIC-only passive blocked-state instrument is research evidence production, not Situation Assessment or Recovery authority. Enabled Configuration is shell consent, **not** a claim that AI coordination is operational.
 
 **Accepted redesign direction:** react to positive native GIANTS worker-blocked evidence rather than proactively predicting worker collisions. Explore one bounded stop / local relocation / native FIELDWORK restart intervention that allows GIANTS to replan and continue; do not require OMW axis return. The TS015 no-mod player experiment supports investigating this pattern but does not prove automatic participant choice, clearance, agronomic completion or all vehicle classes. GIANTS' native recovery and the API proposals in Issue #420 remain unvalidated for this replacement.
 

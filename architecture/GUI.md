@@ -8,7 +8,7 @@ This document is the authoritative live home for player-facing GUI, HUD, messagi
 
 ## Rewrite-shell Product Status
 
-While the 0.5 product is a no-control shell, the visible Product Status Indicator MUST explicitly say **shell only** so the Enabled checkbox cannot be misread as active AI coordination. The indicator is absent when disabled. Operational Player Messages and the full HUD remain deferred; the existing disabled-startup reminder remains appropriate. The shell must not display an intervention-completed or control-handback message because it has never taken control.
+The persistent Product Status Indicator displays **only `OuttaMyWay` and the dynamically resolved version string**, without a mode suffix, diagnosis, or operational message. This applies in the 0.5 no-control shell and remains the standing presentation contract. The indicator is absent when Configuration is disabled; its visibility does not assert that AI coordination is implemented. Actual capability status belongs in the mod description, product logging and documentation, not as invented HUD text. Operational Player Messages and the full HUD remain deferred; the disabled-startup reminder remains appropriate. The shell must not display an intervention-completed or control-handback message because it has never taken control.
 
 ## Current observation and boundaries
 

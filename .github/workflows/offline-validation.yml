@@ -66,6 +66,7 @@ jobs:
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
             scripts/publication/LogPublication.lua \
             scripts/diagnostics/VersionHud.lua \
+            scripts/diagnostics/NativeBlockedProbe.lua \
             scripts/gui/ConfigurationSettingsExtension.lua \
             scripts/gui/DisabledStartupReminder.lua
           do
@@ -75,6 +76,7 @@ jobs:
       - name: Run shell bootstrap and retained supporting contracts
         run: |
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
+          "$LUAJIT_BIN" tests/shell/native_blocked_probe.lua
           "$LUAJIT_BIN" tests/replacement_core/configuration.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua

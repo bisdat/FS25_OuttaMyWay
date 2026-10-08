@@ -1,3 +1,19 @@
+# v0.5.0.3 TEST — Version-Only HUD Contract Correction
+
+Correct the user-confirmed standing GUI contract: the persistent status HUD must show exactly `OuttaMyWay <dynamic version>`, with no `- shell only` or other explanatory suffix. The no-control status remains documented and logged, not inserted into the HUD. Tighten structural and runtime smoke assertions to enforce the exact dynamic text; restore architecture/GUI.md to the corresponding presentation authority. No change to the opt-in native blocked probe or worker control boundaries.
+
+Record the observed FS25 1.24 TS015 DEBUG trace from the preceding TEST 0.5.0.2, including Condor/Patriot and Condor/S416 blocked assertions and the evidence limits. The log validates *the previous executable's probe*, not this untested HUD correction. Advance both version owners once because executable HUD bytes changed. PR #439 remains non-canonical and unmerged.
+
+# v0.5.0.2 TEST — Native Blocked-State Evidence Probe
+
+**Baseline:** accepted shell 0.5.0.1 on merge commit 055a5fc8310f879489be9b50e9e4508c70a4cd69. Canonical 0.5.0.0 and immutable archive/0.4.11.0 remain unchanged.
+
+Add one bounded, non-actuating **DEBUG/DIAGNOSTIC-only** listener that passively observes current native active-job field workers at 500 ms intervals. Log first/change samples of field-worker and available field-course blockage plus static collision, with a five-second reminder while positive. Registry loss is not interpreted as native clearance. Under NORMAL logging or while disabled the probe does not scan workers.
+
+Preserve all previous Configuration, Log Publication, HUD and no-Control commitments. No prediction, AI job change, movement, collision callback installation, GIANTS recovery manipulation or temporary Blocking Region is implemented. Legacy 0.4 traffic code remains dormant.
+
+Expand active-shell structural and offline Lua contracts to include a native blocked-state fixture. Document the narrow evidence hypothesis, absence limits and TS015 in-game qualification. **GIANTS Reality and performance are not established by offline CI.**
+
 # v0.5.0.1 TEST — Control-Free Rewrite Shell
 
 **Baseline:** canonical `0.5.0.0` main commit `c6c832e7d1ef7b77ec45a0e0e6a17e94b68e1de4`. `archive/0.4.11.0` is the owner-designated immutable working reference and is untouched.

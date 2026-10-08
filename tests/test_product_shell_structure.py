@@ -13,6 +13,7 @@ SHELL_MODULES = [
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/diagnostics/VersionHud.lua",
+    "scripts/diagnostics/NativeBlockedProbe.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
 ]
@@ -43,12 +44,14 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 2
+    assert text.count("addModEventListener(") == 3
+    assert "OuttaMyWay.nativeBlockedProbe=OuttaMyWay.NativeBlockedProbe.new(" in text
 
 
-def test_hud_is_truthful_and_requires_enabled_resolved_config():
+def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
     hud = (ROOT / "scripts/diagnostics/VersionHud.lua").read_text(encoding="utf-8")
-    assert 'shell only' in hud
+    assert 'local text=string.format("OuttaMyWay %s",tostring(OuttaMyWay.VERSION or "?"))' in hud
+    assert 'shell only' not in hud
     assert "configuration:isResolved()~=true" in hud
     assert "configuration:isEnabled()~=true" in hud
     assert "OuttaMyWay.runtime" not in hud
@@ -82,3 +85,16 @@ def test_manifest_does_not_promise_active_ai_control():
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
     assert "This build does not control AI workers." in moddesc
     assert "AI worker coordination is inactive." in moddesc
+
+def test_probe_remains_opt_in_and_has_no_worker_actuation():
+    source = (ROOT / "scripts/diagnostics/NativeBlockedProbe.lua").read_text(encoding="utf-8")
+    assert "mission.aiSystem.activeJobVehicles" in source
+    assert "spec_aiFieldWorker.isBlocked" in source
+    assert "INTERVAL_MS=500" in source
+    assert "c:isDebugEnabled()==true" in source
+    for forbidden in (
+        "startAIJob(", "stopAIJob(", "setIsBlockedCallback(",
+        "skipCurrentSubSegment(", "getDriveData(", "AIVehicleUtil.drive",
+        "setBlockingRegionState(", "getCanAIFieldWorkerContinueWork(",
+    ):
+        assert forbidden not in source
