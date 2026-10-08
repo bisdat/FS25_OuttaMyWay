@@ -5,6 +5,7 @@ This is the **current** authority for the small 0.5 OuttaMyWay shell and its acc
 ## Current boundaries
 
 - [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. Worker intervention is **not yet implemented**.
+- [Blocked Progress Qualification](BLOCKED_PROGRESS_QUALIFICATION.md) — accepted native blockage, useful-continuation and candidate-pair distinctions; still architecture/discovery, not an implemented Specification.
 - [Configuration](CONFIGURATION.md) — durable player choices and consent to the current product shell.
 - [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
 - [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.
