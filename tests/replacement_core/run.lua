@@ -10229,6 +10229,7 @@ dofile(root.."/tests/replacement_core/BlockedProgressAssessment.lua")(test,equal
 dofile(root.."/tests/replacement_core/RealisedMotionDemandAssessment.lua")(test,equal)
 dofile(root.."/tests/replacement_core/BoundedBypass.lua")(test,equal)
 dofile(root.."/tests/replacement_core/BlockedWorkerRecovery.lua")(test,equal)
+dofile(root.."/tests/replacement_core/SharedCategory2IncumbentComposition.lua")(test,equal)
 
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

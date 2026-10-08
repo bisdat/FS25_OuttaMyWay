@@ -72,15 +72,6 @@ local function incumbentContext(commitmentContext,identity)
         local basis=context and context.governingBasis or nil
         if type(basis)=="table" and basis.responsibilityKey==requirement then
             if match~=nil then return nil,"MULTIPLE_SHARED_CATEGORY_2_COMMITMENTS" end
-            local regulated=nil
-            for _,ownership in OuttaMyWay.ValueRecord.ipairs(context.progressActuationOwnership or {}) do
-                if type(ownership.assemblyId)=="string" then
-                    if regulated~=nil and regulated~=ownership.assemblyId then
-                        return nil,"SHARED_CATEGORY_2_MULTIPLE_PROGRESS_OWNERS"
-                    end
-                    regulated=ownership.assemblyId
-                end
-            end
             local obligationBasis=nil
             for _,obligation in OuttaMyWay.ValueRecord.ipairs(context.openObligations or {}) do
                 local candidate=obligation and obligation.basis or nil
@@ -88,6 +79,24 @@ local function incumbentContext(commitmentContext,identity)
                     and candidate.conflictIdentity==identity then
                     obligationBasis=candidate
                     break
+                end
+            end
+
+            -- Shared Protected Demand Composition may legitimately add another
+            -- controlled follower to the same Regulation responsibility.  That
+            -- makes progressActuationOwnership multi-subject, so it cannot be
+            -- used to recover the pair-specific Shared Category-2 allocation.
+            -- The exact Category-2 obligation remains the semantic owner of its
+            -- regulated/protected roles and survives such composition.
+            local regulated=obligationBasis and obligationBasis.regulatedAssemblyId or nil
+            if type(regulated)~="string" then
+                for _,ownership in OuttaMyWay.ValueRecord.ipairs(context.progressActuationOwnership or {}) do
+                    if type(ownership.assemblyId)=="string" then
+                        if regulated~=nil and regulated~=ownership.assemblyId then
+                            return nil,"SHARED_CATEGORY_2_MULTIPLE_PROGRESS_OWNERS_WITHOUT_EXACT_ALLOCATION"
+                        end
+                        regulated=ownership.assemblyId
+                    end
                 end
             end
             match={
