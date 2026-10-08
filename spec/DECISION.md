@@ -262,6 +262,14 @@ A preferred support group whose Candidates fail or remain unresolved does not, b
 
 If Architecture needs such a stronger exclusion relationship, that relationship must be stated explicitly at the proper authority level rather than inferred from implementation ordering.
 
+### Independent Regulation coexistence
+
+A retained Regulation remains current through its own Responsibility lifecycle; it does not require prospective re-selection on every Decision Picture. When Candidate Support positively proves that one fresh pairwise Regulation is compatible with one retained Regulation, including distinct controlled Physical Assemblies and an acyclic Regulation Ordering Chain where applicable, Decision MAY select the fresh establishment while the retained Responsibility persists independently.
+
+Decision MUST NOT generalise this into a preference for fresh work. Unrelated tactical purposes, multiple fresh extensions, same-subject authority competition or cyclic ordering remain explicit non-selection unless another accepted comparator/composition contract exists.
+
+> **Responsibility Persistence != Prospective Reselection.**
+
 ### Unselected support remains true support
 
 Choosing one group/Candidate does not retroactively make independently supported alternatives unsupported. Decision records choice; it does not rewrite the support universe.

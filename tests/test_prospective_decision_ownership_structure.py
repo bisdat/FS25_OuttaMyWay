@@ -33,6 +33,8 @@ def test_phase13_fresh_portfolio_enumerates_support_groups_without_control_autho
         "OBSTRUCTION_RELOCATION",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
         "ACTION_SPACE_FAIL_CLOSED",
+        '"PASSAGE_APPROACH"',
+        '"passage-approach:"',
         "ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION",
     ):
         assert token in support
@@ -52,7 +54,10 @@ def test_phase13_decision_owns_admissibility_aware_inter_group_compatibility():
         "Policy:selectGroup(inventory,admissibleCandidates)",
         'family(groups,"OBSTRUCTION_RELOCATION")',
         'family(groups,"PASSAGE")',
+        'family(groups,"PASSAGE_APPROACH")',
         "SPATIAL_NEGOTIATION_STAGE_TRANSITION",
+        "PASSAGE_APPROACH_ACQUISITION",
+        "MULTIPLE_SUPPORTED_PASSAGE_APPROACHES_REQUIRE_COMPARATOR",
         "SUPPORTED_ADMISSIBLE_PASSAGE_ENDS_TACTICAL_REGULATION",
         "MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR",
         "TACTICAL_REGULATION_SINGLE_PURPOSE",

@@ -996,9 +996,9 @@ test("Corner Right-of-Way initial Regulation applies fixed creep without Resolut
     })
     equal(result.status,"ACCEPTED")
     equal(result.cornerRightOfWay,true)
-    equal(dispatcher.actionSpaceRegulationLease.currentCapKmh,1.0)
-    equal(dispatcher.actionSpaceRegulationLease.progressionEnvelope,nil)
-    equal(dispatcher.actionSpaceRegulationLease.fixedCornerRightOfWay,true)
+    equal(dispatcher:getActionSpaceRegulationStatus(commitment.identity).currentCapKmh,1.0)
+    equal(dispatcher:getActionSpaceRegulationStatus(commitment.identity).progressionEnvelope,nil)
+    equal(dispatcher:_actionSpaceRegulationLease(commitment.identity).fixedCornerRightOfWay,true)
 end)
 
 test("Rejected fresh Bounded Authority grant is released before return",function()
@@ -1017,7 +1017,7 @@ test("Rejected fresh Bounded Authority grant is released before return",function
     equal(result.status,"REJECTED")
     equal(runtime.boundedAuthority:isCurrent(rejectedGrantId),false)
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitment.identity).identity,current.identity)
-    equal(dispatcher.actionSpaceRegulationLease,nil)
+    equal(dispatcher:getActionSpaceRegulationStatus(commitment.identity).active,false)
 end)
 
 test("Rejected Bounded Authority update removes successor while predecessor remains current",function()
@@ -1497,6 +1497,18 @@ test("Prospective Decision: multiple unrelated tactical Regulation purposes do n
     local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
     equal(choice,nil)
     equal(reason,"MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR")
+end)
+
+test("Prospective Decision: fresh disjoint Regulation may establish while retained Regulation persists",function()
+    local retained=prospectiveGroup("retained-category-2","CATEGORY_2_BOUNDARY_DEMAND",1,{existingCommitmentId="CM-A"})
+    local fresh=prospectiveGroup("fresh-composed","COMPOSED_REGULATION",1,{
+        independentRegulationExtension=true,coexistsWithCommitmentId="CM-A",regulationOrderingChain=true
+    })
+    local inventory,candidates=prospectivePortfolioPolicyFixture({retained,fresh})
+    local choice,reason=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(inventory,candidates)
+    equal(reason,nil)
+    equal(choice.groupKey,"fresh-composed")
+    equal(choice.rule,"INDEPENDENT_REGULATION_COEXISTENCE")
 end)
 
 test("Prospective Decision: one tactical Regulation purpose remains selectable before Passage support exists",function()
@@ -3494,6 +3506,48 @@ local function findOpenObligationByKind(runtime,commitmentId,kind)
     end
 end
 
+test("TS015 same-pair composition ignores directional Follower pair-key ordering", function()
+    local runtime=autonomousHeadOnRuntime()
+    local follower=buildFollowerBoundaryRecord(16.2,nil,nil)
+    follower.pairKey="AS-P|AS-C"
+    local picture=buildComposedRegulationPicture(runtime,follower,"SUPPORTED",nil,nil)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(picture,headOnTestSnapshot())
+    local groups=supported.candidateSupportEvidence.supportBoundary.groups
+    equal(#groups,1)
+    equal(groups[1].family,"COMPOSED_REGULATION")
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"CREATE")
+end)
+
+test("TS015 reversed Follower key can target an existing same-pair Regulation commitment", function()
+    local runtime=autonomousHeadOnRuntime()
+    local capability={}
+    function capability:executeControlRequest(request,candidate) return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    local followerOnly=buildFollowerBoundaryRecord(16.2,nil,nil)
+    followerOnly.pairKey="AS-P|AS-C"
+    local firstPicture=buildFollowerBoundaryPicture(followerOnly,nil)
+    local firstSupported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(firstPicture,headOnTestSnapshot())
+    local firstEval=runtime:evaluateSealedOperationalPicture(firstSupported)
+    local firstResult=runtime:dispatchEvaluatedOperationalPicture(firstSupported,firstEval)
+    local commitmentId=firstResult.commitment.identity
+
+    local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
+    local retained=buildFollowerBoundaryRecord(16.2,commitmentId,followerObligation.identity)
+    retained.pairKey="AS-P|AS-C"
+    local composed=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        buildComposedRegulationPicture(runtime,retained,"SUPPORTED",commitmentId,nil),headOnTestSnapshot())
+    local groups=composed.candidateSupportEvidence.supportBoundary.groups
+    local composedGroup=nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(groups) do
+        if group.family=="COMPOSED_REGULATION" then composedGroup=group break end
+    end
+    equal(composedGroup~=nil,true)
+    equal(composedGroup.existingCommitmentId,commitmentId)
+end)
+
 test("TS015 same-pair Follower and Shared Category-2 compose one Regulation and retire independently", function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
@@ -3638,8 +3692,8 @@ local function threeWorkerCategory2Situation(identity,subjectId,subjectRef,other
         currentEvidenceState="SUPPORTED",competingDemand=true,positiveDissolution=false,regulationSpeedKmh=1,
         incumbentCommitmentId=commitmentId,incumbentRegulatedAssemblyId=incumbentRegulatedId,
         participants={
-            {assemblyId=subjectId,assemblyReferenceKey=subjectRef,nativeBoundaryArrivalSeconds=subjectArrival or 6,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"},
-            {assemblyId=otherId,assemblyReferenceKey=otherRef,nativeBoundaryArrivalSeconds=otherArrival or 7,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"}
+            {assemblyId=subjectId,assemblyReferenceKey=subjectRef,nativeTimeToBoundarySec=subjectArrival or 6,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"},
+            {assemblyId=otherId,assemblyReferenceKey=otherRef,nativeTimeToBoundarySec=otherArrival or 7,boundaryOptionSpaceRatio=0.5,currentMotionIntent="SETTLED_CONTINUATION"}
         },
         provenance={source="TS015-SHARED-PROTECTED-DEMAND-FIXTURE"}
     }
@@ -3749,7 +3803,9 @@ test("TS015 Shared Protected Demand composes Condor Follower into incumbent Patr
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().currentCapKmh,1)
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().pairKey,"AS-C|AS-S")
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().followerReferenceKey,"vehicle-root:C")
-    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,1)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().elasticCapKmh,16.2)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().sharedProtectiveCapKmh,1)
 
     local followerObligation=findOpenObligationByKind(runtime,commitmentId,"FOLLOWER_BOUNDARY_PROTECTION")
     local retainedFollower=threeWorkerFollowerRecord(14,commitmentId,followerObligation.identity)
@@ -3775,6 +3831,115 @@ test("TS015 Shared Protected Demand composes Condor Follower into incumbent Patr
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
     equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
+end)
+
+test("TS015 regulated leader establishes independent same-pair Regulation ordering chain", function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setRegulationControl(capability)
+
+    -- Patriot arrives first; S416 is therefore the initial regulated participant.
+    local incumbentFresh=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",nil,nil,4,7)
+    local initial=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,nil,{incumbentFresh},nil),headOnTestSnapshot())
+    local initialEval=runtime:evaluateSealedOperationalPicture(initial)
+    local first=runtime:dispatchEvaluatedOperationalPicture(initial,initialEval)
+    equal(first.status=="ACCEPTED" or first.status=="MAINTAINED",true)
+    local incumbentCommitmentId=first.commitment.identity
+    local incumbentResponsibility=runtime.responsibilityTransitionAuthority:getCurrentRegulation(incumbentCommitmentId)
+    equal(incumbentResponsibility.provenance.regulatedAssemblyId,"AS-S")
+    equal(incumbentResponsibility.provenance.protectedAssemblyId,"AS-P")
+
+    local incumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",incumbentCommitmentId,"AS-S",4,7)
+    local condorS416=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-S",
+        "AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,8,7)
+    local condorPatriot=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-P",
+        "AS-C","vehicle-root:C","AS-P","vehicle-root:P",nil,nil,8,4)
+    local follower=threeWorkerFollowerRecord(1.5,nil,nil)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        threeWorkerRegulationPicture(runtime,follower,{incumbent,condorS416,condorPatriot},incumbentCommitmentId),
+        headOnTestSnapshot())
+
+    local retainedGroup,freshGroup,failClosed=nil,nil,nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(supported.candidateSupportEvidence.supportBoundary.groups) do
+        if group.existingCommitmentId==incumbentCommitmentId then retainedGroup=group end
+        if group.independentRegulationExtension==true then freshGroup=group end
+        if group.family=="CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED" then failClosed=group end
+    end
+    equal(retainedGroup~=nil,true)
+    equal(freshGroup~=nil,true)
+    equal(freshGroup.coexistsWithCommitmentId,incumbentCommitmentId)
+    equal(freshGroup.regulationOrderingChain,true)
+    equal(failClosed,nil)
+
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"CREATE")
+    local selected=nil
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates) do
+        if candidate.identity==evaluated.decision.selectedCandidateId then selected=candidate break end
+    end
+    equal(selected~=nil,true)
+    equal(selected.evidenceBasis.regulationOrderingChain.outerTemporalDemandSatisfied,true)
+    equal(selected.evidenceBasis.regulationOrderingChain.createsThirdResponsibility,false)
+
+    local second=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(second.status=="ACCEPTED" or second.status=="MAINTAINED",true)
+    equal(second.commitment.identity~=incumbentCommitmentId,true)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(incumbentCommitmentId).identity,incumbentResponsibility.identity)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(second.commitment.identity)~=nil,true)
+    equal(runtime.authorities:ownerOf("AS-S"),incumbentCommitmentId)
+    equal(runtime.authorities:ownerOf("AS-C"),second.commitment.identity)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(incumbentCommitmentId).regulatedAssemblyId,"AS-S")
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(second.commitment.identity).regulatedAssemblyId,"AS-C")
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(second.commitment.identity).followerAssemblyId,"AS-C")
+end)
+
+test("TS015 Regulation Ordering Chain fails closed when outer pair is already incumbent", function()
+    local runtime=autonomousHeadOnRuntime()
+    local inner=runtime.commitments:create({
+        objective={kind="ACTION_SPACE_REGULATION"},
+        governingBasis={responsibilityKey="pairwise-regulation:OR-1:AS-P|AS-S"}
+    })
+    local outer=runtime.commitments:create({
+        objective={kind="ACTION_SPACE_REGULATION"},
+        governingBasis={responsibilityKey="pairwise-regulation:OR-1:AS-C|AS-P"}
+    })
+    local incumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-P:AS-S",
+        "AS-P","vehicle-root:P","AS-S","vehicle-root:S",inner.identity,"AS-S",4,7)
+    local condorS416=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-S",
+        "AS-C","vehicle-root:C","AS-S","vehicle-root:S",nil,nil,8,7)
+    local outerIncumbent=threeWorkerCategory2Situation(
+        "shared-category-2:OR-1:EDGE-1:AS-C:AS-P",
+        "AS-C","vehicle-root:C","AS-P","vehicle-root:P",outer.identity,"AS-P",8,4)
+    local follower=threeWorkerFollowerRecord(1.5,nil,nil)
+    local picture=threeWorkerRegulationPicture(
+        runtime,follower,{incumbent,condorS416,outerIncumbent},inner.identity)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.commitmentContext[#values.commitmentContext+1]=composedRegulationContext(runtime,outer.identity)[1]
+    picture=OuttaMyWay.OperationalPicture.new(values)
+    local supported=runtime.prospectiveDecisionPortfolioSupport:publishDecisionPicture(
+        picture,headOnTestSnapshot())
+
+    local extension=nil
+    local failClosed=nil
+    for _,group in OuttaMyWay.ValueRecord.ipairs(supported.candidateSupportEvidence.supportBoundary.groups) do
+        if group.independentRegulationExtension==true then extension=group end
+        if group.family=="CATEGORY_2_BOUNDARY_DEMAND_FAIL_CLOSED" then failClosed=group end
+    end
+    equal(extension,nil)
+    equal(failClosed~=nil,true)
+    equal(failClosed.failClosedReason,"MULTIPLE_INCUMBENT_SHARED_CATEGORY_2_SITUATIONS")
 end)
 
 test("Prospective portfolio fail-closed projections namespace passive Candidate reference keys", function()
@@ -4412,6 +4577,58 @@ local function classifyTestTrajectoryConflict(trajectories,motions,spaces,physic
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
 end
+
+test("Trajectory Conflict: coherent 1 kmh travel accumulates across sub-threshold observation samples",function()
+    local tracks={
+        ["AS-B"]={
+            assemblyId="AS-B",assemblyReferenceKey="REF-AS-B",jobToken="JE-B",
+            established=true,establishedDirectionX=-1,establishedDirectionZ=0,
+            anchorX=0,anchorZ=0,currentAlignedDistanceM=0,totalAlignedDistanceM=12,
+            formationDistanceM=0,excursionDistanceM=0,lastTransition="TEST_STALE_TRAJECTORY"
+        }
+    }
+    local spaces={buildTrajectoryCurrentSpace("AS-B",0,0)}
+    local productive={buildTrajectoryProductiveEvidence("AS-B",true,"NON_TURN_LINE_ACTIVE")}
+    local speedMps=1/3.6
+    local trajectories=nil
+
+    -- At the production 250 ms cadence, 1 km/h advances only ~0.069 m per
+    -- observation: below the 0.10 m noise floor.  Coherent physical travel
+    -- must accumulate rather than becoming permanently invisible.
+    for index=1,56 do
+        trajectories=updateTestTrajectories(
+            tracks,{buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,speedMps,0.25)},
+            spaces,index,productive)
+    end
+    equal(trajectories[1].establishedDirectionX,-1)
+    equal(trajectories[1].establishedDirectionZ,0)
+    equal(trajectories[1].excursionDistanceM<4,true)
+
+    for index=57,58 do
+        trajectories=updateTestTrajectories(
+            tracks,{buildTrajectoryMotionEvidence("AS-B","JE-B",0,-1,speedMps,0.25)},
+            spaces,index,productive)
+    end
+    equal(trajectories[1].lastTransition,"ESTABLISHED_TRAJECTORY_SUPERSEDED_BY_SUSTAINED_CONTRADICTORY_MOTION")
+    equal(math.abs(trajectories[1].establishedDirectionX)<0.000001,true)
+    equal(trajectories[1].establishedDirectionZ<-0.999,true)
+end)
+
+test("Trajectory Conflict: incoherent sub-threshold jitter does not accumulate into trajectory evidence",function()
+    local tracks={}
+    local spaces={buildTrajectoryCurrentSpace("AS-A",0,0)}
+    local productive={buildTrajectoryProductiveEvidence("AS-A",true,"NON_TURN_LINE_ACTIVE")}
+    local speedMps=0.2
+    local trajectories=nil
+    for index=1,20 do
+        local dx=index%2==0 and 1 or -1
+        trajectories=updateTestTrajectories(
+            tracks,{buildTrajectoryMotionEvidence("AS-A","JE-A",dx,0,speedMps,0.25)},
+            spaces,index,productive)
+    end
+    equal(trajectories[1].established,false)
+    equal(trajectories[1].formationDistanceM,0)
+end)
 
 test("Trajectory Conflict: fresh settled opposed motion reacquires Passage concern before stale trajectory supersession",function()
     local trajectories={
@@ -5887,7 +6104,7 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
         if failure=="TARGET" then
             local values=OuttaMyWay.ValueRecord.toTable(picture); values.commitmentContext={}
             picture=OuttaMyWay.OperationalPicture.new(values)
-        elseif failure=="LEASE" then runtime.regulationBoundedAuthority.followerBoundaryLease=nil
+        elseif failure=="LEASE" then runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId={}
         elseif failure=="OBLIGATION" then
             local obligation=runtime.obligations:openForOwner(commitmentId)[1]
             runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",{kind="TEST_PREFLIGHT_ABSENT_OBLIGATION"})
@@ -5929,7 +6146,7 @@ end
 test("Follower terminal settlement removes semantic Regulation even without a physical lease",function()
     local runtime,admitted=followerResponsibilityFixture()
     local id=admitted.commitment.identity
-    runtime.regulationBoundedAuthority.followerBoundaryLease=nil
+    runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId={}
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(id)) do
         runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",{kind="TEST_DEPENDENCY_COLLAPSE"})
     end
@@ -5949,12 +6166,12 @@ test("Job Episode dependency collapse ends follower Regulation on eligible retai
     values.governingBasis={responsibilityKey="cooperative-passage:DEPENDENT",dependentJobEpisodeIds={"JE-END","JE-KEEP"}}
     values.revision=values.revision+1; values.epoch=runtime.epochs:next()
     runtime.commitments:save(OuttaMyWay.CommitmentRecord.new(values))
-    runtime.regulationBoundedAuthority.followerBoundaryLease.actuationActive=false
+    runtime.regulationBoundedAuthority.followerBoundaryLeasesByCommitmentId[id].actuationActive=false
     local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"}},{identity="OBS-END"})
     equal(#collapsed,1)
     equal(runtime.commitments:get(id).state,"SUCCEEDED")
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(id),nil)
-    equal(runtime.regulationBoundedAuthority.followerBoundaryLease,nil)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus(id).retainedPurpose,false)
     equal(events[1],"FALLBACK_CLEAR")
 end)
 
@@ -8242,11 +8459,11 @@ test("Job-Episode Dependency Collapse: ended Job Episode collapses dependent qui
     local unrelated=runtime.commitments:create({objective={kind="ACTION_SPACE_REGULATION"},governingBasis={responsibilityKey="cooperative-passage:REL-OTHER",dependentPairReferenceKey="pair:REL-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"SITUATION-OTHER"}})
     local cleared=0
     runtime.regulationBoundedAuthority.regulationControl={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1; return true end}
-    runtime.regulationBoundedAuthority.actionSpaceRegulationLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
+    runtime.regulationBoundedAuthority.actionSpaceRegulationLeasesByCommitmentId[dependent.identity]={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
     local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"},observationSnapshotId="OBS-END"},{identity="OBS-END"})
     equal(#result,1); equal(result[1].commitmentId,dependent.identity); equal(runtime.commitments:get(dependent.identity).state,"SUCCEEDED")
     equal(runtime.obligations:get(obligation.identity).status,"SETTLED"); equal(runtime.obligations:get(obligation.identity).settlementDisposition.mode,"BASIS_CESSATION")
-    equal(runtime.regulationBoundedAuthority.actionSpaceRegulationLease,nil); equal(cleared,1)
+    equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(dependent.identity).active,false); equal(cleared,1)
     equal(runtime.commitments:get(unrelated.identity).state,"ACTIVE")
 end)
 
@@ -8289,7 +8506,7 @@ test("Job-Episode Dependency Collapse: purpose-specific Regulation owner lease i
                 return true,"CONTROL_CLEANUP_RELEASED"
             end
         }
-        runtime.regulationBoundedAuthority.actionSpaceRegulationLease={
+        runtime.regulationBoundedAuthority.actionSpaceRegulationLeasesByCommitmentId[dependent.identity]={
             commitmentId=dependent.identity,
             conflictIdentity="OWNER-CLEANUP-"..tostring(index),
             regulatedAssemblyId="AS-A",
@@ -8307,7 +8524,7 @@ test("Job-Episode Dependency Collapse: purpose-specific Regulation owner lease i
         equal(clearedReferenceKey,"REF-A")
         equal(clearedOwnerTag,ownerTag)
         equal(physicalLeases[ownerTag],nil)
-        equal(runtime.regulationBoundedAuthority.actionSpaceRegulationLease,nil)
+        equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus(dependent.identity).active,false)
     end
 end)
 
@@ -9103,7 +9320,7 @@ test("Follower Boundary Regulation quiesces when the follower becomes a Corner i
         leaderAssemblyId="AS-LEAD",leaderReferenceKey="vehicle-root:leader",
         governingPurpose="FOLLOWER_BOUNDARY_PROTECTION",actuationActive=true,currentCapKmh=4
     }
-    authority.followerBoundaryLease=lease
+    authority.followerBoundaryLeasesByCommitmentId[lease.commitmentId]=lease
     local picture={
         spatialConstraintKnowledge={{
             cornerKnowledge={engagements={{assemblyId="AS-FOLLOW",cornerIncumbent=true,cornerKey="C1"}}}
@@ -9127,7 +9344,7 @@ test("Corner Right-of-Way migrates Regulation away from a current Corner incumbe
         governingPurpose="PRESERVE_SHARED_CORNER_TEMPORARY_RIGHT_OF_WAY",
         ownerTag="CORNER_RIGHT_OF_WAY",actuationActive=true,fixedCornerRightOfWay=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="shared-corner:test",classification="SHARED_CORNER_COMPETING_DEMAND",relationshipStatus="POSITIVE",
         actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true}
@@ -9179,7 +9396,7 @@ test("Forward Intersection regulated Corner incumbent is quiesced for native eva
         ownerTag="FORWARD_INTERSECTION_INTENT_REVELATION",
         actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="FI-INCUMBENT",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
         actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
@@ -9212,7 +9429,7 @@ test("Forward Intersection Corner engagement blocks role migration onto the prot
         governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
         actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="FI-CORNER",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",actionable=true,
         actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true},
@@ -9252,7 +9469,7 @@ test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-k
         governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
         actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity="FI-WAIT",classification="UNRESOLVED",relationshipStatus="UNRESOLVED",
         actionable=false,reason="FORWARD_CONTINUATION_UNRESOLVED"
@@ -9283,7 +9500,7 @@ test("Claimed Obstruction quiescent lease reactivates from fresh Causal Obstruct
         ownerTag="PLAYER_CONTROLLED_OBSTRUCTION_INTENT_REVELATION",
         actuationActive=false,fixedClaimedObstruction=true
     }
-    authority.actionSpaceRegulationLease=lease
+    authority.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=lease
     local relation={
         identity=lease.conflictIdentity,
         blockerAssemblyId="AS-BLOCKER",beneficiaryAssemblyId="AS-BENEFICIARY",
@@ -10012,6 +10229,7 @@ dofile(root.."/tests/replacement_core/BlockedProgressAssessment.lua")(test,equal
 dofile(root.."/tests/replacement_core/RealisedMotionDemandAssessment.lua")(test,equal)
 dofile(root.."/tests/replacement_core/BoundedBypass.lua")(test,equal)
 dofile(root.."/tests/replacement_core/BlockedWorkerRecovery.lua")(test,equal)
+dofile(root.."/tests/replacement_core/SharedCategory2IncumbentComposition.lua")(test,equal)
 
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

@@ -1906,12 +1906,12 @@ def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_contro
     action_supersede=transition[transition.index("function Authority:supersedeActionSpaceRegulationForCooperativePassage"):transition.index("function Authority:preflightFollowerRegulationForCooperativePassage")]
     assert "COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION" in action_supersede
     neutralize=regulation_authority[regulation_authority.index("function Authority:neutralizeActionSpaceRegulationPhysical"):regulation_authority.index("local function actionSpaceRegulationToken")]
-    assert neutralize.index("_releaseBoundedAuthority") < neutralize.index("self.actionSpaceRegulationLease=nil")
+    assert neutralize.index("_releaseBoundedAuthority") < neutralize.index("self.actionSpaceRegulationLeasesByCommitmentId[lease.commitmentId]=nil")
 
     follower_supersede=transition[transition.index("function Authority:supersedeFollowerRegulationForCooperativePassage"):]
     assert "COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" in follower_supersede
     follower_neutralize=regulation_authority[regulation_authority.index("function Authority:neutralizeFollowerBoundaryPhysical"):regulation_authority.index("function Authority:_quiesceFollowerBoundaryActuation")]
-    assert follower_neutralize.index("_releaseBoundedAuthority") < follower_neutralize.index("self.followerBoundaryLease=nil")
+    assert follower_neutralize.index("_releaseBoundedAuthority") < follower_neutralize.index("self.followerBoundaryLeasesByCommitmentId[lease.commitmentId]=nil")
 
     replacement=transition[transition.index("function Authority:replaceRegulationWithCooperativePassage"):transition.index("function Authority:matchesActionSpacePassage")]
     assert replacement.index("cleanupMethod") < replacement.index("self.regulationsByCommitmentId[preflight.commitmentId]=nil")

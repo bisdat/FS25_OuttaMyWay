@@ -131,4 +131,81 @@ equal(allFail.commitmentAction,"SETTLE")
 equal(allFail.nonIntervention.classification,"COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED")
 equal(allFail.comparisonBasis.selection,"NO_MANDATORY_ADMISSIBLE_GROUP")
 
+-- TEST 0.4.10.14 Reality regression: a complete Passage was positively
+-- supported outside Capture, but its Passage-Approach ceiling was represented
+-- as an ordinary ACTION_SPACE peer and starved by fresh tactical alternatives.
+local approachBoundary={mode="PASSAGE_APPROACH_FIXTURE"}
+local category2Boundary={mode="CATEGORY_2_FIXTURE"}
+
+local passageApproach=OuttaMyWay.CandidateAction.new({
+    identity="CA-PASSAGE-APPROACH",epoch=176,
+    purpose={kind="PASSAGE_APPROACH_REGULATION"},subject={assemblyId="AS-F"},
+    capability="REGULATE_SPEED",expectedEffect={kind="REGULATE_SPEED"},
+    evidenceBasis={candidateSupportGroup={
+        groupKey="passage-approach:REL-PROSPECTIVE-ADMISSIBILITY",family="PASSAGE_APPROACH",
+        enumerationOrdinal=1,supportBoundary=approachBoundary,
+        conflictIdentity="REL-PROSPECTIVE-ADMISSIBILITY",admissionKind="PASSAGE_APPROACH",
+        assemblyIds={"AS-F","AS-P"}
+    }},
+    representationFitness={requirements={}},preconditions={},invalidationConditions={},
+    reversibility={reversible=true},obligationsCreated={},releaseImplications={required=false},
+    uncertainty={},comparisonCost=0
+})
+
+local category2=OuttaMyWay.CandidateAction.new({
+    identity="CA-CATEGORY2",epoch=177,
+    purpose={kind="SHARED_CATEGORY_2_DEMAND_REGULATION"},subject={assemblyId="AS-P"},
+    capability="REGULATE_SPEED",expectedEffect={kind="REGULATE_SPEED"},
+    evidenceBasis={candidateSupportGroup={
+        groupKey="category-2-boundary-demand:REL-CATEGORY2",family="CATEGORY_2_BOUNDARY_DEMAND",
+        enumerationOrdinal=1,supportBoundary=category2Boundary,conflictIdentity="REL-CATEGORY2"
+    }},
+    representationFitness={requirements={}},preconditions={},invalidationConditions={},
+    reversibility={reversible=true},obligationsCreated={},releaseImplications={required=false},
+    uncertainty={},comparisonCost=1
+})
+
+local approachInventory=OuttaMyWay.CandidateInventory.new({
+    identity="CI-PASSAGE-APPROACH-REGRESSION",epoch=178,operationalPictureId=picture.identity,
+    candidateIds={forward.identity,category2.identity,passageApproach.identity},complete=true,
+    supportBoundary={mode="PROSPECTIVE_DECISION_PORTFOLIO",groups={
+        {groupKey="forward-intersection",family="FORWARD_INTERSECTION",enumerationOrdinal=1,supportBoundary=forwardBoundary},
+        {groupKey="category-2-boundary-demand:REL-CATEGORY2",family="CATEGORY_2_BOUNDARY_DEMAND",enumerationOrdinal=1,supportBoundary=category2Boundary,conflictIdentity="REL-CATEGORY2"},
+        {groupKey="passage-approach:REL-PROSPECTIVE-ADMISSIBILITY",family="PASSAGE_APPROACH",enumerationOrdinal=1,supportBoundary=approachBoundary,conflictIdentity="REL-PROSPECTIVE-ADMISSIBILITY",admissionKind="PASSAGE_APPROACH",assemblyIds={"AS-F","AS-P"}}
+    }},
+    provenance={source="prospective-decision-admissibility"}
+})
+
+local function runApproachCase(label,approachResult)
+    local forwardVerdict=verdict("CV-APPROACH-FORWARD-"..label,forward.identity,"PASS")
+    local category2Verdict=verdict("CV-APPROACH-CATEGORY2-"..label,category2.identity,"PASS")
+    local approachVerdict=verdict("CV-APPROACH-"..label,passageApproach.identity,approachResult)
+    local set=OuttaMyWay.ConstraintVerdictSet.new({
+        identity="CVS-APPROACH-"..label,epoch=179,operationalPictureId=picture.identity,
+        candidateInventoryId=approachInventory.identity,
+        verdictIds={forwardVerdict.identity,category2Verdict.identity,approachVerdict.identity},
+        mandatoryConstraintIds={"MANDATORY_FIXTURE"},complete=true,
+        provenance={source="prospective-decision-admissibility"}
+    })
+    local selector=OuttaMyWay.DecisionSelector.new(OuttaMyWay.IdentityRegistry.new(),OuttaMyWay.EpochSequence.new())
+    return selector:select(picture,
+        {inventory=approachInventory,candidates={forward,category2,passageApproach}},
+        {set=set,verdicts={forwardVerdict,category2Verdict,approachVerdict}})
+end
+
+local approachPass=runApproachCase("PASS","PASS")
+equal(approachPass.selectedCandidateId,passageApproach.identity,
+    "confirmed Passage Approach must acquire its pairwise ceiling before ordinary tactical peers can starve Capture")
+equal(approachPass.comparisonBasis.selectedGroupKey,"passage-approach:REL-PROSPECTIVE-ADMISSIBILITY")
+equal(approachPass.comparisonBasis.compatibilityRule,"PASSAGE_APPROACH_ACQUISITION")
+equal(approachPass.comparisonBasis.compatibilityDetail,
+    "CONFIRMED_PASSAGE_OUTSIDE_CAPTURE_REQUIRES_PAIRWISE_APPROACH_CEILING")
+
+local approachFail=runApproachCase("FAIL","FAIL")
+equal(approachFail.selectedCandidateId,nil,
+    "inadmissible Passage Approach must not invent a generic comparator between ordinary tactical purposes")
+equal(approachFail.commitmentAction,"WAIT")
+equal(approachFail.nonIntervention.classification,"PROSPECTIVE_PORTFOLIO_POLICY_UNRESOLVED")
+equal(approachFail.comparisonBasis.reason,"MULTIPLE_TACTICAL_REGULATION_PURPOSES_REQUIRE_COMPARATOR")
+
 print("prospective decision admissibility PASS")

@@ -166,6 +166,16 @@ The resulting semantic support is OR-composed: any admitted current trigger can 
 
 > **Semantic Support OR; Physical Constraint AND.**
 
+#### Independent Regulation coexistence and ordering chains
+
+When one incumbent pairwise Regulation remains current and a fresh Follower/same-pair Category-2 purpose controls a different Physical Assembly, Candidate Support MAY publish the fresh purpose as an **Independent Regulation Coexistence** extension rather than forcing both purposes into one Responsibility.
+
+If the supported three-worker picture also contains an outer Shared Category-2 demand between the endpoints, Candidate Support MAY treat that outer demand as satisfied by a **Regulation Ordering Chain** only when the incumbent direction plus the fresh proposed direction form one complete acyclic order in the same Local Operation / Field World. The outer demand remains preserved as evidence/provenance; it is not converted into a third Responsibility or a direct Follower relationship.
+
+Incomplete, cyclic, multiple-incumbent or same-subject cases MUST remain fail-closed.
+
+> **Acyclic Pairwise Ordering Can Satisfy Outer Temporal Demand.**
+
 #### Shared Category-2 Demand
 
 When Situation Assessment publishes one positive **Shared Category-2 Demand**, Candidate Support MUST treat the pairwise need for temporal coordination as already established.

@@ -210,7 +210,7 @@ Reality also establishes a narrower cross-pair case: two pairwise triggers may e
 - P is exactly the current protected participant and exactly the Follower Boundary leader;
 - F is a different regulated/follower participant from the incumbent regulated participant;
 - the new trigger does not re-arbitrate the incumbent protected participant or manufacture a relationship between the two followers; and
-- the physical constraints remain participant-specific and mutually compatible.
+- physical permissions remain participant-scoped, but every controlled participant that can consume P's same current constrained demand must remain inside the least-permissive compatible protective magnitude while that shared-demand trigger is current.
 
 The additional trigger extends the same temporal-coordination responsibility because both reasons answer the same world question: **preserve P's current constrained demand by bounding workers that can consume it first**. It does not create a three-worker Resolution Commitment or a coupled three-worker movement plan.
 
@@ -222,7 +222,33 @@ The additional trigger extends the same temporal-coordination responsibility bec
 
 The semantic responsibility remains current while any admitted trigger remains positively current or legitimately waiting for evidence. Each trigger may retire independently; retirement of one trigger does not terminate the Regulation while another still supports the same temporal-coordination responsibility. For Shared Protected Demand Composition, retirement of the incumbent Category-2 trigger may therefore leave the Follower Boundary trigger current under the same Regulation identity, and the converse is equally valid.
 
-The physical effect must satisfy all current trigger constraints. Where Follower Boundary supplies an elastic maximum and Shared Category-2 simultaneously requires exact Intent-Revelation Creep, the current authorised effect may be no less restrictive than either requirement. Magnitude remains Bounded Authority, not Situation or Decision, authority.
+The physical effect must satisfy all current trigger constraints. Where Follower Boundary supplies an elastic maximum and Shared Category-2 simultaneously requires exact Intent-Revelation Creep, the current authorised effect may be no less restrictive than either requirement. Under Shared Protected Demand Composition, that exact protective creep constrains every controlled follower admitted to preserve the same protected demand while the Shared Category-2 trigger remains current; it is not limited to whichever pair happened to establish incumbency first. When the Shared Category-2 trigger positively retires, a surviving Follower trigger returns to its own current elastic magnitude through fresh Bounded-Authority continuation.
+
+> **Incumbency Order Must Not Weaken Shared Protection.**
+
+Equivalent Shared Protected Demand geometry must not receive a looser physical result merely because pairwise evidence arrived in a different order. This preserves one semantic Regulation responsibility without manufacturing a traffic relationship between the controlled followers.
+
+A different three-worker topology exists when the participant protected by a fresh Follower trigger is itself already the **regulated** participant of another pairwise Regulation. That is not Shared Protected Demand: the two purposes protect different pairwise demands and retain independent Responsibility identities.
+
+> **Independent Regulation Coexistence**
+
+> **Current Responsibility Scope != Local Operation Scope**
+
+Within one Local Operation, weaker purpose-bound pairwise Regulations may coexist when their semantic purposes remain independently current and their physical actuation ownership is compatible. The exclusive one-Resolution rule does not turn Regulation into an Operation-global singleton. In the currently supported bounded case, a fresh Regulation may establish alongside an incumbent when they control distinct Physical Assemblies; same-subject competing actuation ownership remains unresolved unless another explicit composition contract exists.
+
+Two such Regulations may form a **Regulation Ordering Chain**. For example:
+
+```text
+A -> B -> C
+```
+
+means A is temporally bounded behind B and B is temporally bounded behind C by independently justified pairwise responsibilities. If A/C also have current Shared Category-2 Demand in the same exact boundary domain, that outer temporal demand is already ordered by the acyclic chain and does not require manufacturing a third direct Regulation merely to restate the same ordering.
+
+> **Acyclic Pairwise Ordering Can Satisfy Outer Temporal Demand.**
+
+Regulation Ordering Chain is evidence about current temporal ordering only. It does not create a three-worker Responsibility, infer a direct Follower relationship between A and C, grant route authority, or permit cyclic/contradictory ordering. Any cycle, same-subject authority collision or incomplete chain remains unresolved and fails closed.
+
+Magnitude remains Bounded Authority, not Situation or Decision, authority.
 
 This is the original temporal purpose of Category 2:
 
@@ -402,6 +428,10 @@ An individual worker's retained Established Trajectory may legitimately lag a fr
 The reacquired conclusion MUST publish the exact participant-specific fresh direction basis that supported it. Cooperative Passage Candidate planning MUST consume that pair-specific basis instead of a contradictory retained Established Trajectory while the reacquisition remains current.
 
 Current Opposed Reacquisition is deliberately narrower than Trajectory Supersession. It does not rewrite either participant's general Established Trajectory, create persistent pair history, predict a post-horizon route, or make a TURNING / unresolved direction Passage-ready. Loss of any required fresh evidence returns the pair to ordinary current assessment.
+
+Distance-based persistence MUST remain distance-based across Observation cadence. A noise-rejection minimum for one Observation increment may defer interpretation of that increment, but coherent sub-threshold realised travel MUST remain accumulable toward the relevant persistence/supersession distance. Sampling granularity MUST NOT manufacture a hidden minimum speed below which sustained physical travel becomes permanently invisible to Situation Assessment.
+
+> **Sample Granularity != Motion Persistence.**
 
 > **Current Opposed Reacquisition != Trajectory Supersession.**
 

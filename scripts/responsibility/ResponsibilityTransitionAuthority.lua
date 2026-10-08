@@ -191,7 +191,13 @@ function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
     if context=="INITIAL" then
         for _,item in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
             local retained=self:getCurrentRegulation(item.commitmentId)
-            if retained~=nil and retained~=current then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_ALREADY_CURRENT" end
+            if retained~=nil and retained~=current then
+                local provenance=retained.provenance or {}
+                local controlled=provenance.regulatedAssemblyId or provenance.followerAssemblyId
+                if controlled==bridge.regulatedAssemblyId then
+                    return nil,"ACTION_SPACE_REGULATION_ACTUATION_SUBJECT_ALREADY_OWNED"
+                end
+            end
         end
         if current~=nil then
             local targeted=false
@@ -895,7 +901,13 @@ function Authority:preflightFollowerRegulation(picture,evaluated)
     local current=self:findRegulation("pairKey",bridge.pairKey)
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         local targeted=self:getCurrentRegulation(context.commitmentId)
-        if targeted~=nil and targeted~=current then return nil,"FOLLOWER_REGULATION_PREFLIGHT_SUBSTRATE_MISMATCH" end
+        if targeted~=nil and targeted~=current then
+            local provenance=targeted.provenance or {}
+            local controlled=provenance.regulatedAssemblyId or provenance.followerAssemblyId
+            if controlled==bridge.followerAssemblyId then
+                return nil,"FOLLOWER_REGULATION_ACTUATION_SUBJECT_ALREADY_OWNED"
+            end
+        end
     end
     local retained=bridge.existingCommitmentId and self:getCurrentRegulation(bridge.existingCommitmentId) or nil
     if retained~=nil and retained~=current then return nil,"FOLLOWER_REGULATION_PREFLIGHT_SUBSTRATE_MISMATCH" end
