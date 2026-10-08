@@ -4,12 +4,12 @@ This directory contains current CI contracts and retained **historical** tests. 
 
 ## Current active shell contracts
 
-- [Shell structural contracts](test_product_shell_structure.py) — exact explicit `scripts/main.lua` module inventory, no orphan production Lua, two presentation listeners, dynamic version-only HUD, and coherent TEST identity.
+- [Shell structural contracts](test_product_shell_structure.py) — exact explicit `scripts/main.lua` module inventory, no orphan production Lua, two presentation listeners and no AI observer, dynamic version-only HUD, and coherent TEST identity.
 - [Shell bootstrap smoke](shell/main_smoke.lua) — no GIANTS runtime or vehicle Control; enabled/disabled status behaviour.
 - [Configuration](shell/configuration_persistence.lua), [diagnostic publication policy](replacement_core/diagnostic_publication_policy_source.lua) and [Log Publication](replacement_core/log_publication.lua) — independently retained supporting runtime contracts.
 - [GitHub Actions](../.github/workflows/offline-validation.yml) — runs the blocking shell structural and Lua suites. Generated LDoc is a derived non-authoritative reference.
 
-The completed `NativeBlockedProbe` fixture is retired together with the production listener.
+The completed `NativeBlockedProbe` and `NativeBlockedEventTap` fixtures and instruments are retired. The 0.5.0.5 experiment remains reconstructable from Git history; no diagnostic observer remains in current source.
 
 ## Historical evidence — not active CI
 

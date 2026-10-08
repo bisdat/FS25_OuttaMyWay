@@ -13,14 +13,14 @@ local loaded={}
 local registered={}
 local events={}
 local enabled=true
-local changed=nil
+local listeners={}
 local renders={}
 local configuration={
     resolvePersistedState=function() return true,nil end,
     isResolved=function() return true end,
     isEnabled=function() return enabled end,
     isDebugEnabled=function() return false end,
-    addChangeListener=function(_,callback) changed=callback; return true end
+    addChangeListener=function(_,callback) listeners[#listeners+1]=callback; return true end
 }
 g_currentModDirectory=""
 g_currentModName="FS25_OuttaMyWay"
@@ -64,21 +64,22 @@ assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
 assert(#registered==2 and registered[1]==OuttaMyWay.versionHud
     and registered[2]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
+assert(OuttaMyWay.nativeBlockedEventTap==nil)
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)
-assert(type(changed)=="function")
+assert(#listeners==1)
 OuttaMyWay.versionHud:draw()
 assert(#renders==2)
 local expectedHud="OuttaMyWay "..OuttaMyWay.VERSION
 assert(renders[1]==expectedHud and renders[2]==expectedHud)
 enabled=false
-changed({name="enabled",value=false,durable=true})
+for _,listener in ipairs(listeners) do listener({name="enabled",value=false,durable=true}) end
 OuttaMyWay.versionHud:draw()
 assert(#renders==2)
 assert(events[#events].code=="OUTTAMYWAY_SHELL_DISABLED")
 enabled=true
-changed({name="enabled",value=true,durable=true})
+for _,listener in ipairs(listeners) do listener({name="enabled",value=true,durable=true}) end
 OuttaMyWay.versionHud:draw()
 assert(#renders==4 and renders[3]==expectedHud and renders[4]==expectedHud)
 assert(events[#events].code=="OUTTAMYWAY_SHELL_ENABLED")

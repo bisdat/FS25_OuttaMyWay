@@ -1,3 +1,19 @@
+# v0.5.0.6 TEST — Retire completed native event-construction research tap
+
+**Owner instruction:** the TEST 0.5.0.5 blocked-event tap has served its research purpose. Its TS015 logs confirmed GIANTS `AIVehicleIsBlockedEvent.new` construction for both blocked/unblocked transitions, including a complete **174 ms** Patriot pulse. This is evidence of an observation seam, not an authorised production Observer.
+
+Remove `scripts/diagnostics/NativeBlockedEventTap.lua`, its product-shell module/listener, its one-off offline fixture and CI gates. Restore the exact control-free eight-Lua-file shell and its two presentation listeners. Preserve the historical TEST 0.5.0.5 implementation through Git history rather than adding a permanent archive directory. The 0.5.0.5 research record and GIANTS Engine Knowledge retain qualified findings and non-interference/coverage limitations. Correct a prior documentation mismatch: the owner-agreed **one-second gate accumulates confirmed blocked time across pulses within the same unresolved obstruction**, excluding unblocked intervals; a native `false` edge ends a pulse, not necessarily an unresolved episode. No Blocked Progress Qualification, Spatial Pair Inference, GIANTS hook, AI control, recovery or relocation is shipped.
+
+**Authority Triad:** Architecture unchanged (control-free shell); Specification unchanged (no worker Observation jurisdiction); Source returns to presentation/configuration/publication only. Offline structural and Lua shell checks must pass; in-game smoke of TEST 0.5.0.6 is still required before accepting the retired-instrument build.
+
+# v0.5.0.5 TEST — Native Blocked Event-Edge Observation Experiment
+
+**Baseline:** owner-validated TEST 0.5.0.4, merged PR #442, smoke PASS on FS25 1.24.0.0; no change to canonical release. **Purpose:** test whether GIANTS blocked/unblocked transitions can be passively observed at the outbound `AIVehicleIsBlockedEvent.new` constructor, avoiding recurrent 500 ms fleet scanning and preserving GIANTS' own collision callback.
+
+Add one opt-in, server-side, DEBUG/DIAGNOSTIC-only research tap that forwards native event construction unchanged, publishes raw vehicle/state/time evidence, and detaches on disabled/Debug-off/map teardown without clobbering later foreign wrappers. No one-second timer, useful-progress qualification, spatial pair inference, AI command, worker hold or relocation is introduced. Extend shell bootstrap and Lua structural/behavioural CI for the extra research-only module and third listener. Source-level GIANTS v1.20 provenance and pending v1.24 Reality discriminators live in the [Native Blocked Event Tap study](docs/research/NATIVE_BLOCKED_EVENT_TAP.md). All claims requiring GIANTS Reality remain unvalidated until the owner supplies a game log.
+
+**Authority Triad:** Architecture unchanged (research only); Specifications unchanged (no implemented Worker Observation contract); Source adds isolated diagnostic instrument under existing Log Publication eligibility.
+
 # v0.5.0.4 TEST — Retire completed probe and orphaned 0.4 runtime
 
 **Owner instruction:** keep the working-tree runtime minimal and mature Authority Triad and breadcrumbs before further blocked-progress implementation. Retire the one-off native blocked-state diagnostic probe, its listener, fixture and CI syntax gate; its TS015 results remain as a completed research record and as version-qualified GIANTS Engine Knowledge.

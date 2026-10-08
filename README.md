@@ -6,7 +6,7 @@ OuttaMyWay is a work-in-progress Farming Simulator 25 mod intended to preserve a
 
 The accepted **0.5 rewrite shell** contains only persistent Configuration, Log Publication, the version-only HUD/status presentation and the disabled-startup reminder. **It neither observes nor controls GIANTS workers.** It does not predict encounters, regulate speed, hold vehicles, relocate obstacles or stop/restart AI jobs.
 
-The completed native blocked-state probe has been retired. Its evidence remains in [Research](docs/research/NATIVE_BLOCKED_STATE_PROBE.md) and the version-qualified [GIANTS Engine Knowledge](docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md). Experimental findings are not runtime capabilities.
+Both the completed 500 ms native-state sampler and the [TEST 0.5.0.5 blocked-event tap](docs/research/NATIVE_BLOCKED_EVENT_TAP.md) are retired. Their evidence remains in [Research](docs/research/NATIVE_BLOCKED_STATE_PROBE.md) and version-qualified [GIANTS Engine Knowledge](docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md); historical findings are not runtime capabilities.
 
 ## Engineering breadcrumbs
 

@@ -226,6 +226,24 @@ path and Issue #336 S416/Condor comparison.
 
 **Evidence:** completed [Native Blocked-State Probe research](../research/NATIVE_BLOCKED_STATE_PROBE.md). The diagnostic module has been retired from production after answering this narrow question; the subsequent qualification question is tracked under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
 
+### Native outgoing blocked-event construction — limited FS25 1.24.0.0 Reality
+
+**Source hypothesis:** the GIANTS field-course collision callback constructs `AIVehicleIsBlockedEvent.new(vehicle, isBlocked)` when its blocked state changes. Observing the original server-side event constructor should avoid replacing GIANTS' field-course callback; it is nevertheless a global Lua interception, not a public subscription contract.
+
+**Initial observed Reality:** TEST **0.5.0.5** `log(4).txt` (8 October 2026; FS25 **1.24.0.0**, Build-Id **b41780**, revision **83220**) logged a successful diagnostic installation at **16:13:27.380**, then two positive native event-construction observations at **16:15:44.949** (Condor Endurance II) and **16:15:45.246** (Patriot 4450). The constructor events have separate vehicle IDs and approximately **297.5 ms** engine-time separation. No OuttaMyWay Lua exceptions were observed.
+
+**Safe use:** the constructor boundary is an in-game-observed source of **positive native blocked event-creation evidence** for two tested workers, without a standing 500 ms polling loop. This is historical research; the tap was retired in TEST 0.5.0.6.
+
+**Not established:** any `false` edge, comprehensive transition coverage, a guaranteed mod-safe callback/subscription, correct Job Episode continuity, or GIANTS behavioural equivalence. Source-event creation is not proof of blockage persistence, pair causation or OMW intervention necessity. **Evidence:** [TEST event-tap study](../research/NATIVE_BLOCKED_EVENT_TAP.md), [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
+
+### Native blocked/unblocked event edges and short retry episodes — FS25 1.24.0.0
+
+**Observed Reality:** TEST 0.5.0.5 `log(5).txt` (8 October 2026) with Build-Id **b41780** / revision **83220** shows successful single diagnostic installation and Patriot 4450 native `true → false` constructor-event episodes lasting **5.343 s**, **0.848 s**, **0.174 s** and **0.825 s** by `engineTimeMs`. Condor Endurance II emitted `true` without a matching `false` before map exit; its episode remains **open**, not certified persistent. The 174 ms completed episode demonstrates event-construction observation of a pulse shorter than 500 ms.
+
+**Safe inference:** a **Native Blockage Pulse** is delimited by observed native true/false edges. The approved **1-second Native Blockage Persistence Gate** accumulates positively observed blocked time across multiple pulses **only while a higher-level obstruction remains unresolved**, excluding unblocked intervals. The observed 5.343 s Patriot pulse individually meets that temporal prerequisite; the shorter 0.848/0.174/0.825 s pulses do not individually meet it but may contribute to the same unresolved obstruction, if independently qualified. A timely `false` edge ends a pulse but does not, by itself, certify useful continuation or resolve the obstruction. This is architectural intent, **not implemented source**.
+
+**Do not infer:** complete delivery of all engine state changes, persistent blockage when a false edge is absent at map exit, worker-to-worker causality, field-course coverage outside tested jobs, AI behavioural equivalence with no instrumentation, or OMW intervention necessity. Event constructor interception is a global method wrapper, not a public multi-listener callback; the research hook was removed from the active shell in TEST 0.5.0.6. **Evidence:** [native event-tap study](../research/NATIVE_BLOCKED_EVENT_TAP.md), [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
+
 ### Native zero and blocked states are ambiguous and reactive
 
 **Finding:** GIANTS can hold an active field worker at zero without ending its
