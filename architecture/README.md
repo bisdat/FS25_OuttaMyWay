@@ -5,7 +5,7 @@ This is the **current** authority for the small 0.5 OuttaMyWay shell and its acc
 ## Current boundaries
 
 - [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. Worker intervention is **not yet implemented**.
-- [Blocked-First Situation Assessment](BLOCKED_PROGRESS_QUALIFICATION.md) — GIANTS native isBlocked authority, ≥1 s persistence, proximity-based candidate-pair inference and downstream responsibility; no independent physical-obstruction proof, worker Specification or source is implemented.
+- [Blocked-First Situation Assessment](BLOCKED_PROGRESS_QUALIFICATION.md) — GIANTS native isBlocked, ≥1 s persistence and nearest eligible worker within 30 m horizontal root-position radius; no independent collision proof, worker Specification or source is implemented.
 - [Configuration](CONFIGURATION.md) — durable player choices and consent to the current product shell.
 - [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
 - [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.

@@ -1,6 +1,8 @@
 # Spatial Pair Inference — Minimal Proximity Candidate Study
 
-**Status:** research candidate for [blocked-first Situation Assessment #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440), **not** an adopted proximity threshold, implemented detector, normative Specification, or permission to control GIANTS. Governing [Architecture](../../architecture/BLOCKED_PROGRESS_QUALIFICATION.md) is on main following PR #446. TEST **0.5.0.6** remains the control-free product shell.
+**Owner decision (8 October 2026):** The locality policy is now **nearest other eligible worker within 30 m horizontal X/Z assembly-root radius** of the blocked worker, without further geometric precision. See [accepted Architecture](../../architecture/BLOCKED_PROGRESS_QUALIFICATION.md) and [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). The threshold is an owner-selected pragmatic rule, **not an experimentally calibrated collision distance**. The historical investigation below predates this decision: claims that *no numeric radius has been chosen* describe prior uncertainty, **not the current policy**.
+
+**Research status:** original source/bench study retained, not a working observer or permission to control GIANTS. TEST **0.5.0.6** remains control-free.
 
 ## Question
 
@@ -30,7 +32,7 @@ A simple, deliberately **provisional** pair-inference policy could be:
 
 The policy does **not** require both workers to report `isBlocked`, coincident timestamps, matching headings, predicted course intersection, a collision-trigger query, assembly geometry enumeration, or GIANTS route-progress measurement.
 
-## Why a distance parameter cannot yet be declared
+## Historical distance uncertainty — resolved by owner policy
 
 We can rank roots by distance, but cannot legitimately assert which root-to-root distance is 'near enough' across all supported assemblies:
 
@@ -39,7 +41,7 @@ We can rank roots by distance, but cannot legitimately assert which root-to-root
 - The nearest worker can still be too far away to cause the blockage. Therefore **'pick the nearest worker in the field' is not a sufficient rule**.
 - Root/worker positions may be stale, identities superseded, or several neighbours similarly placed. Ranking does not resolve these evidential uncertainties.
 
-**Recommendation for the next decision:** adopt **nearest eligible local worker** as the candidate-ranking policy *subject to a locality guard*, but do **not** select a numerical guard or mandate geometry modelling until representative blocked pairs and unrelated-neighbour cases have been measured. If the simple root position proves inadequate, update the spatial evidence concept only to the extent demanded by Reality, rather than prebuilding a collision detector.
+**Earlier research recommendation (superseded):** originally leave the radius unselected. **Accepted owner decision:** select the closest eligible worker within **30 m** of the blocked worker's assembly root; do not add implement-width adjustments or collision geometry. Any later mismatch is Reality evidence to revisit, not a reason to prebuild a complex detector.
 
 ## Adversarial bench cases (positions schematic, NOT calibrated metres)
 
@@ -59,7 +61,7 @@ We can rank roots by distance, but cannot legitimately assert which root-to-root
 
 A narrow future **source/Reality validation**, if independently agreed, should check whether simple current X/Z root distance actually ranks the true obstruction partner in representative TS015 Condor/Patriot and other differently-sized worker cases. Record the blocked worker's Job Episode, confirmed native blocked duration, each candidate's root identity/position, relative separation, and **owner-identified physical context** (true pair / hedge or other non-worker obstacle / incidental neighbour). Include completed and player-controlled nearby assemblies where applicable. Do not retrospectively claim those observations exist in the earlier 0.5.0.5 event logs.
 
-The first test should discriminate the **usefulness of nearest-root ranking** and reveal a suitable bounded locality policy, **not** reconstruct collision geometry or implement movement. A negative result is actionable architectural evidence: revise or retire root-only proximity rather than add scenario-specific code.
+Any later test should challenge the **accepted 30 m root-radius rule** when Reality warrants it, **not** attempt to invent another geometry subsystem. A negative result is actionable architectural evidence: revise or retire root-only proximity rather than add scenario-specific code.
 
 ## Authority Triad and disposition
 
@@ -71,4 +73,4 @@ The first test should discriminate the **usefulness of nearest-root ranking** an
 
 **Validation:** this is a *source-grounded research/bench study*, not an in-game PASS. The owner waived 0.5.0.6's diagnostic-removal smoke, not subsequent GIANTS-dependent worker-observation validation. Structural documentation checks are appropriate. Before approving production pair selection or movement, validate candidate locality and mistaken-neighbour cases in Reality.
 
-**Open question in #440:** is a simple, bounded root-position neighbourhood adequate for identifying relevant workers across the supported physical assemblies, and what empirical locality boundary avoids both missing wide assemblies and selecting remote neighbours? **No value is justified yet.**
+**Accepted policy in #440:** 30 m root-to-root horizontal radius, nominate nearest eligible worker. The bound is **decided**, though not yet GIANTS-Reality-validated. Unresolved: candidate eligibility/attribution and behaviour if the simple approximation fails in practice.
