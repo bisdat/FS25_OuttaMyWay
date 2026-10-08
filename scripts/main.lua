@@ -1,9 +1,10 @@
 -- OuttaMyWay product-shell entry point. Build identity lives in scripts/config.lua and modDesc.xml.
 -- Specification Jurisdictions: `CONFIGURATION`
--- 0.5 shell deliberately provides no AI observation, worker coordination or vehicle control.
+-- 0.5 shell provides no AI observation or Control. Pure candidate logic is loaded but not used.
 local modDirectory=g_currentModDirectory or ""
 local modules={
     "scripts/config.lua",
+    "scripts/assessment/SpatialPairInference.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
@@ -48,7 +49,7 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
     end)
 end)
 
--- Current shell contains no AI observation or worker-control listener.
+-- Current shell contains no GIANTS AI observation, pair-evaluator caller or worker-control listener.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
 if type(addModEventListener)=="function" then

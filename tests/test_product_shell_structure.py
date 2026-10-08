@@ -1,4 +1,4 @@
-"""Contracts for the deliberately control-free 0.5 product shell.
+"""Contracts for the no-GIANTS-observation shell and its inert pure evaluator.
 
 The 0.4 behavioural contracts remain in the repository as historic evidence;
 they do not describe the presently loaded product.
@@ -9,6 +9,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 SHELL_MODULES = [
     "scripts/config.lua",
+    "scripts/assessment/SpatialPairInference.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",

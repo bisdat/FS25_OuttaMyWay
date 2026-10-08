@@ -8,10 +8,11 @@ Specifications define implementation-facing obligations for responsibilities acc
 | --- | --- | --- |
 | Configuration | [Configuration Specification](CONFIGURATION.md) | [Configuration.lua](../scripts/configuration/Configuration.lua) and the current shell/GUI consumers |
 | Log Publication | [Log Publication Specification](LOG_PUBLICATION.md) | [LogPublication.lua](../scripts/publication/LogPublication.lua) and the shell publisher |
+| Spatial Pair Inference | [Spatial Pair Inference Specification](SPATIAL_PAIR_INFERENCE.md) | [SpatialPairInference.lua](../scripts/assessment/SpatialPairInference.lua), pure and not yet called with GIANTS data |
 
 [Current code](../scripts/main.lua) also composes the version-only HUD and disabled reminder according to [GUI Architecture](../architecture/GUI.md).
 
-There is **no active worker-Observation, Situation Assessment, Regulation, Passage, Recovery, Decision, Bounded Authority or Control implementation or current 0.5 normative primary Specification**. Retired research signals do not establish a new Jurisdiction.
+There is **no active worker Observation, full Situation Assessment, Regulation, Passage, Recovery, Decision, Bounded Authority or Control implementation**. Spatial Pair Inference implements only a pure numeric candidate rule, without GIANTS inputs. Retired research signals do not establish a new Jurisdiction.
 
 The pre-rewrite contracts and source remain recoverable from the immutable [archive/0.4.11.0 Git branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Their former implementations were removed from the 0.5 working tree; do not treat historical participant lists as current source traceability.
 
