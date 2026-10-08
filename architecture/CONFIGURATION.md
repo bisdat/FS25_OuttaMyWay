@@ -12,7 +12,7 @@ This document defines the current accepted Configuration responsibility and its 
 
 Implementation-facing detail and current source traceability belong to the primary Configuration Specification rather than this Architecture.
 
-The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Log Publication Architecture](LOG_PUBLICATION.md) owns runtime log-publication classes, eligibility and publication boundaries. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
+The [Runtime Responsibility Architecture](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Log Publication Architecture](LOG_PUBLICATION.md) owns runtime log-publication classes, eligibility and publication boundaries. The [GUI/HUD architecture](GUI.md) owns player-facing presentation and interaction architecture. [Localisation](../docs/LOCALISATION.md) owns user-facing localisation policy.
 
 ## Specification Jurisdiction — Configuration
 

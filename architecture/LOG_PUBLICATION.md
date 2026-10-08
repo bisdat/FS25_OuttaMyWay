@@ -266,7 +266,7 @@ Any publication-failure reporting mechanism must avoid recursion through the sam
 
 [GUI Architecture](GUI.md) owns player-facing operational communication. Log Publication does not provide a second HUD/message channel.
 
-[Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md) and their Specifications own the semantic events that NORMAL and DEBUG may publish.
+[Runtime Responsibility Architecture](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation Architecture](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/architecture/SPATIAL_NEGOTIATION_MODEL.md) and their Specifications own the semantic events that NORMAL and DEBUG may publish.
 
 Diagnostic instruments own the engineering questions and evidence they produce. Log Publication owns only whether and how eligible evidence reaches the GIANTS log.
 

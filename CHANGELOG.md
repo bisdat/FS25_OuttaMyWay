@@ -1,3 +1,11 @@
+# v0.5.0.4 TEST — Retire completed probe and orphaned 0.4 runtime
+
+**Owner instruction:** keep the working-tree runtime minimal and mature Authority Triad and breadcrumbs before further blocked-progress implementation. Retire the one-off native blocked-state diagnostic probe, its listener, fixture and CI syntax gate; its TS015 results remain as a completed research record and as version-qualified GIANTS Engine Knowledge.
+
+Delete **126 dormant 0.4 Lua source modules** and the **one probe**, retaining only eight live Lua files including the explicit main entry. The 126 predecessor scripts and their historic Architecture/Specification contracts are preserved in immutable Git branch `archive/0.4.11.0` (SHA `7734e01d2fd82ddafbc654ea67efc235afd68fe2`); the probe remains recoverable through accepted PR #439/Git history. No second code archive is created. Retire four outdated runtime Architecture files and 17 obsolete worker-control Specifications from the live normative surface. Current responsibilities remain Configuration, Log Publication, version-only HUD and disabled reminder; proactive or reactive worker control remains absent.
+
+Reconcile root/Architecture/Specification breadcrumbs and the current Concept Register and Scope/Validation Envelope with the active shell. Retain historical test fixtures without treating their prior outcomes as current CI contracts. Restore truthful navigation to the archived baseline and remove active source links that no longer resolve. Archive branch and canonical release history are untouched. **No new worker coordination capability.** This is a changed executable TEST identity because sourced module/listener composition changed.
+
 # v0.5.0.3 TEST — Version-Only HUD Contract Correction
 
 Correct the user-confirmed standing GUI contract: the persistent status HUD must show exactly `OuttaMyWay <dynamic version>`, with no `- shell only` or other explanatory suffix. The no-control status remains documented and logged, not inserted into the HUD. Tighten structural and runtime smoke assertions to enforce the exact dynamic text; restore architecture/GUI.md to the corresponding presentation authority. No change to the opt-in native blocked probe or worker control boundaries.

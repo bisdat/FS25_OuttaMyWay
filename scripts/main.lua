@@ -8,7 +8,6 @@ local modules={
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/diagnostics/VersionHud.lua",
-    "scripts/diagnostics/NativeBlockedProbe.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
 }
@@ -49,13 +48,10 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
     end)
 end)
 
--- Opt-in Debug observation reads native state only; there is no worker Control.
+-- Current shell contains no AI observation or worker-control listener.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
-OuttaMyWay.nativeBlockedProbe=OuttaMyWay.NativeBlockedProbe.new(
-    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
 if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
-    addModEventListener(OuttaMyWay.nativeBlockedProbe)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end

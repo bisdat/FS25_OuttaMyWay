@@ -1,96 +1,18 @@
-# Specification surface
+# Specification
 
-## Purpose
+Specifications define implementation-facing obligations for responsibilities accepted by [current Architecture](../architecture/README.md), without deriving contracts from a historical source tree.
 
-`/spec` is OuttaMyWay's implementation-facing contract surface.
+## Active primary contracts
 
-Architecture under `/architecture` defines **what the system should achieve and why its responsibilities exist**. A primary Specification defines **what an implementation of one declared Specification Jurisdiction must preserve, expose, reject, sequence or report in order to realise that Architecture**. Source under `/scripts` defines the current mechanism that attempts to satisfy that contract. Tests and Reality provide evidence about the contract; they do not own it.
+| Jurisdiction | Primary Specification | Current implementation route |
+| --- | --- | --- |
+| Configuration | [Configuration Specification](CONFIGURATION.md) | [Configuration.lua](../scripts/configuration/Configuration.lua) and the current shell/GUI consumers |
+| Log Publication | [Log Publication Specification](LOG_PUBLICATION.md) | [LogPublication.lua](../scripts/publication/LogPublication.lua) and the shell publisher |
 
-```text
-/architecture
-Architecture — what / why
-        ⇅
-/spec
-Specification — implementation-facing contract
-        ⇅
-/scripts
-Implementation — current mechanism
+[Current code](../scripts/main.lua) also composes the version-only HUD and disabled reminder according to [GUI Architecture](../architecture/GUI.md).
 
-/tests and Reality
-Validation evidence that challenges the contracts and implementation
-```
+There is **no active worker-Observation, Situation Assessment, Regulation, Passage, Recovery, Decision, Bounded Authority or Control implementation or current 0.5 normative primary Specification**. A research signal does not establish a new Jurisdiction.
 
-Normative Specification authoring, ownership, traceability and conformance rules are owned by [`docs/DOCUMENT_STANDARDS.md`](../docs/DOCUMENT_STANDARDS.md), including the Authority Triad rule:
+The pre-rewrite contracts and source remain recoverable from the immutable [archive/0.4.11.0 Git branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Their former implementations were removed from the 0.5 working tree; do not treat historical participant lists as current source traceability.
 
-> **Touch One; Validate Three.**
-
-This README is the entrance and navigation surface for `/spec`; it is not a second standards authority.
-
-> **Specification Operationalises Architecture; It Does Not Paraphrase It.**
-
-## Active 0.5 shell contract
-
-Only Configuration, Log Publication, basic product-status/disabled reminder presentation and an opt-in passive native-blocked diagnostic instrument are loaded in the 0.5 shell. The instrument is bounded [research evidence production](../docs/research/NATIVE_BLOCKED_STATE_PROBE.md), not implementation of the legacy Observation or Recovery jurisdictions. They are the active implementation-facing contracts for this increment. All existing 0.4 worker-control, Observation, Situation, Regulation, Passage, Recovery, physical representation, Candidate, Constraint, Decision and Runtime Specifications remain available as **legacy design evidence**, not a promise that any of those source modules are currently loaded. Their applicability to the reactive blocked-evidence architecture is under reconsideration. Their contracts must not be reintroduced through CI without an explicit architectural decision.
-
-## Current primary Specifications
-
-The currently migrated primary Specifications are:
-
-| Specification Jurisdiction | Primary Specification |
-| --- | --- |
-| **Operation Lifecycle** | [`OPERATION_LIFECYCLE.md`](OPERATION_LIFECYCLE.md) |
-| **Observation** | [`OBSERVATION.md`](OBSERVATION.md) |
-| **Situation Assessment** | [`SITUATION_ASSESSMENT.md`](SITUATION_ASSESSMENT.md) |
-| **Responsibility Transition** | [`RESPONSIBILITY_TRANSITION.md`](RESPONSIBILITY_TRANSITION.md) |
-| **Regulation** | [`REGULATION.md`](REGULATION.md) |
-| **Resolution Lifecycle** | [`RESOLUTION_LIFECYCLE.md`](RESOLUTION_LIFECYCLE.md) |
-| **Obstruction Relocation** | [`OBSTRUCTION_RELOCATION.md`](OBSTRUCTION_RELOCATION.md) |
-| **Blocked Worker Recovery** | [`BLOCKED_WORKER_RECOVERY.md`](BLOCKED_WORKER_RECOVERY.md) |
-| **Bounded Bypass** | [`BOUNDED_BYPASS.md`](BOUNDED_BYPASS.md) |
-| **Cooperative Passage** | [`COOPERATIVE_PASSAGE.md`](COOPERATIVE_PASSAGE.md) |
-| **Physical Identity Resolution** | [`PHYSICAL_IDENTITY_RESOLUTION.md`](PHYSICAL_IDENTITY_RESOLUTION.md) |
-| **Assessment Representation** | [`ASSESSMENT_REPRESENTATION.md`](ASSESSMENT_REPRESENTATION.md) |
-| **Candidate Support** | [`CANDIDATE_SUPPORT.md`](CANDIDATE_SUPPORT.md) |
-| **Constraint Evaluation** | [`CONSTRAINT_EVALUATION.md`](CONSTRAINT_EVALUATION.md) |
-| **Decision** | [`DECISION.md`](DECISION.md) |
-| **Bounded Authority** | [`BOUNDED_AUTHORITY.md`](BOUNDED_AUTHORITY.md) |
-| **Control** | [`CONTROL.md`](CONTROL.md) |
-| **Log Publication** | [`LOG_PUBLICATION.md`](LOG_PUBLICATION.md) |
-| **Configuration** | [`CONFIGURATION.md`](CONFIGURATION.md) |
-
-All currently implemented Specification Jurisdictions declared by accepted Architecture have primary Specifications. **Blocked Worker Recovery** and **Configuration** both have mature primary Specifications and production implementation participants. **Bounded Bypass** has a mature primary Specification but is deliberately `NOT_IMPLEMENTED`; it has no production participants until a later implementation increment is separately accepted.
-
-A genuine Jurisdiction whose implementation-facing contract is mature before production source exists may have a primary Specification carrying the exact declaration `**Implementation Status:** \`NOT_IMPLEMENTED\``. That state is distinct from a Deferred Responsibility: the contract is already normative, but no production mechanism yet realises it. Such a Specification has no production participant rows until implementation is accepted.
-
-This table is navigation, not a second Jurisdiction catalogue. Architecture remains authoritative for the complete Jurisdiction inventory and ownership relationships.
-
-## Reading a Specification
-
-Primary Specifications intentionally need not use one rigid heading template. A reader should expect to find the contract information required by `DOCUMENT_STANDARDS.md`, including:
-
-- Jurisdiction identity and primary Architecture authority;
-- implementation-facing responsibility and ownership boundary;
-- boundary contracts and durable invariants;
-- failure and uncertainty semantics;
-- implementation traceability; and
-- validation route.
-
-Lifecycle, ordered-flow, semantic-data or cross-Jurisdiction material appears when the contract actually owns those semantics.
-
-The Specification should remain meaningful if its internal implementation mechanism changes substantially, unless Reality or architectural change proves that the contract itself was wrong.
-
-## Navigating downward into source
-
-An implemented primary Specification provides the route into the production source that materially participates in its contract. An unimplemented primary Specification explicitly declares `NOT_IMPLEMENTED` and has no production participants until the first implementation increment. That route or explicit absence is implementation traceability, not contract ownership by source topology.
-
-> **Primary Specification != Primary Source Module.**
-
-Once the correct source module is reached, production source documentation owns the local explanation needed to descend through runtime/public operations, internal semantic operations and non-obvious local mechanisms. The normative source-documentation rules are in [`docs/DOCUMENT_STANDARDS.md`](../docs/DOCUMENT_STANDARDS.md).
-
-## Validation
-
-Specifications route to the evidence appropriate to their contracts. Tests are evidence surfaces, not Specification authority.
-
-> **Tests Are Contract Evidence, Not Contract Authority.**
-
-Rolling pass/fail history, CI chronology and scenario history remain in their responsible validation or historical surfaces rather than this README.
+Normative Specification authoring, source participation, and **Touch One; Validate Three** are governed by [Documentation Standards](../docs/DOCUMENT_STANDARDS.md). Broader worker contracts will be added only after Architecture has established their meaning.

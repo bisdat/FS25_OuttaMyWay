@@ -1,53 +1,22 @@
 # Executable Offline Validation
 
-This directory describes the executable offline validation mechanisms and fixtures under `/tests`, how they are run and maintained, and what they can and cannot prove. Project testing philosophy belongs to [`docs/TESTING_METHODOLOGY.md`](../docs/TESTING_METHODOLOGY.md).
+This directory contains current CI contracts and retained **historical** tests. Testing methodology is owned by [Testing Methodology](../docs/TESTING_METHODOLOGY.md); passing a test never creates Architecture or a Specification.
 
-## Current structure
+## Current active shell contracts
 
-```text
-tests/
-├── README.md
-├── test_*_structure.py
-├── replacement_core/
-│   ├── README.md
-│   └── run.lua
-└── replay/
-    ├── ConformanceAssertions.lua
-    ├── HistoricalFixtures.lua
-    ├── ReplayFixture.lua
-    ├── ReplayRunResult.lua
-    └── ReplayRunner.lua
-```
+- [Shell structural contracts](test_product_shell_structure.py) — exact explicit `scripts/main.lua` module inventory, no orphan production Lua, two presentation listeners, dynamic version-only HUD, and coherent TEST identity.
+- [Shell bootstrap smoke](shell/main_smoke.lua) — no GIANTS runtime or vehicle Control; enabled/disabled status behaviour.
+- [Configuration](replacement_core/configuration.lua), [diagnostic publication policy](replacement_core/diagnostic_publication_policy_source.lua) and [Log Publication](replacement_core/log_publication.lua) — independently retained supporting runtime contracts.
+- [GitHub Actions](../.github/workflows/offline-validation.yml) — runs the blocking shell structural and Lua suites. Generated LDoc is a derived non-authoritative reference.
 
-## Python structural and source-contract suite
+The completed `NativeBlockedProbe` fixture is retired together with the production listener.
 
-Responsibility-named `test_*_structure.py` modules validate repository and source contracts: module placement, loading and dependencies; selected forbidden paths, literals and authority boundaries; and legitimate dependencies on live Research evidence. Test module names describe the durable contract they protect rather than the engineering phase, Issue or migration that introduced them.
+## Historical evidence — not active CI
 
-`pytest` runs this suite in GitHub Actions and may also be used locally. These assertions do not prove GIANTS runtime behaviour.
+`replacement_core/` and `replay/` retain pre-rewrite offline fixtures and former traffic-contract structure tests. Most reference sources retired from the current `scripts/` tree. Their prior passing results are **historical evidence only**; these suites are no longer runnable against the current shell and must not be described as current regression gates.
 
-## Lua offline conformance and behavioural harness
-
-[`replacement_core/run.lua`](replacement_core/run.lua) loads a broad implementation surface into a stubbed non-game environment. It exercises contracts, lifecycle, authority, assessment, candidate, decision, control and selected behaviour. See its [local README](replacement_core/README.md) for the validated command and limits.
-
-Issue #67 reconciled the harness with accepted production topology and Issue #78 removed the sole remaining production failure. The accepted clean baseline is therefore **337 passed / 0 failed** for the main replacement-core harness and **9 passed / 0 failed** for the focused obstruction-relocation harness. GitHub Actions now treats those Lua suites as **blocking behavioural contracts**. No failure-count threshold is accepted.
-
-The harness also has a demonstrated **Validation Runtime Contract** for sealed collections: `pairs()` must honour `__pairs`, and `rawlen()` must be available. PR #24 isolated this from operating-system and LuaJIT source-version differences: stock Ubuntu LuaJIT from upstream commit `c525bcb9024510cad9e170e12b6209aedb330f83` produced **239 passed / 40 failed**, while the same source revision built with `LUAJIT_ENABLE_LUA52COMPAT` produced **266 passed / 13 failed**, matching the local Fedora baseline. CI therefore builds that pinned revision with Lua 5.2 compatibility enabled and reports the semantic profile before running the harness.
-
-## Replay fixtures
-
-[`replay/`](replay/) owns the replay validation driver, its validation-only value records/assertions, and executable historical reconstruction inputs. `ReplayRunner` exercises production Runtime seams from the offline harness; none of this machinery is part of shipped Runtime. The historical fixtures are current test evidence, and their provenance does not grant them current architectural authority.
-
-## Continuous integration
-
-[`.github/workflows/offline-validation.yml`](../.github/workflows/offline-validation.yml) runs on pull requests targeting `main`, pushes to `main`, and manual dispatch.
-
-- **Structural contracts** are blocking because the structural/source-contract suite has a clean accepted baseline.
-- **Lua offline behavioural contracts** are blocking because their reconciled accepted baseline is clean. The workflow still lets both inner harnesses run even if one fails, then fails the final enforcement gate if either outcome is non-success.
-- **Evidence Collection != CI Enforcement**: complete failure evidence and a blocking CI verdict are compatible.
-- CI executes and reports repeatable repository/offline validation; it does not interpret evidence, define architecture, or replace in-game Reality testing.
-
-This lets implementation work push a commit and receive independent repeatable validation without requiring the implementation agent to spend time rerunning the complete offline suite itself.
+The preserved prior-era implementation and its valid corresponding contracts live at [archive/0.4.11.0](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). A future reintroduction requires a distinct architectural decision and new Specification/validation applicability, **not** opportunistic restoration of old tests.
 
 ## Maintenance boundary
 
-Tests follow current contracts rather than historical topology, and legitimate retained-evidence dependencies follow their responsible live locations. Agent-side static or offline PASS remains distinct from in-game Reality validation.
+Active validation protects only currently accepted implemented contracts. GIANTS-dependent claims need in-game Reality tests; offline assertions cannot establish native blockage semantics, worker clearance or useful autonomous fieldwork.

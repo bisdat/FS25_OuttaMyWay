@@ -1,11 +1,9 @@
-# Replacement-Core Offline Conformance Harness
+# Replacement-Core Historical Validation Fixtures
 
-`run.lua` loads a broad implementation surface into a stubbed, non-game Lua environment and exercises contracts, lifecycle, authority, assessment, candidate, decision, control, and selected behavioural relationships. It is executable offline implementation validation; it cannot prove that GIANTS supplies equivalent evidence or behaves equivalently in-game.
+This directory retains pre-rewrite Lua offline conformance fixtures, including `run.lua`. They refer to much of the retired 0.4 worker-control source graph.
 
-Run from the repository root with the locally validated LuaJIT interpreter:
+**Status:** historical evidence only. The 0.5 shell does not load these traffic modules. The full legacy fixture harness is not a current CI gate and is **not expected to run** against today's minimal `scripts/` directory.
 
-```bash
-luajit tests/replacement_core/run.lua
-```
+Current supported offline scripts in this directory are `configuration.lua`, `diagnostic_publication_policy_source.lua`, and `log_publication.lua`; they run individually under [current CI](../../.github/workflows/offline-validation.yml) and depend on retained active source.
 
-The harness is currently a monolithic file of approximately 407 KB. This increment documents its responsibility and does not modularise it. Git retains earlier version-specific suite claims and chronology.
+For reproducible original traffic-era implementation and tests, use the immutable [archive/0.4.11.0 Git branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Historical Lua fixtures cannot dictate future 0.5 architecture.

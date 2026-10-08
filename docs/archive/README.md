@@ -1,21 +1,9 @@
 # Documentation archive
 
-Archived material has no current architectural or engineering authority. Current
-accepted system architecture is routed through
-[`docs/architecture/README.md`](../architecture/README.md).
+Archived material has **no current architectural authority**. The current model is in [Architecture](../../architecture/README.md); the implementation-facing contracts are in [Specification](../../spec/README.md).
 
 ## Archive Is a Transition, Not a Cemetery
 
-A document enters this archive only after it has lost its present-tense
-responsibility but the file itself is still needed for knowledge harvesting,
-dependency closure or reference repair. Archive is therefore a temporary
-reconciliation state, not a permanent historical cemetery.
+Temporary archive content supports bounded knowledge harvesting and reference repair. Git history and the immutable [0.4.11.0 branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0) preserve original historical files without requiring duplicate live copies.
 
-Once those reconciliation needs are exhausted, remove the archived file from
-the working tree. Git history is the permanent historical record.
-
-Current transitional reconciliation staging:
-
-→ [Stale authority surface](reconciliation/stale-authority-surface/README.md)
-
-→ [Replacement-core lineage](replacement-core/README.md)
+Existing historical subfolders are transitional or prior-era records; do not use them as current contracts.

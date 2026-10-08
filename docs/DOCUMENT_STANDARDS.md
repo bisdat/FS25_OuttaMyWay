@@ -241,7 +241,7 @@ Every authoritative Architecture declaration for a Specification Jurisdiction MU
 
 ```markdown
 **Jurisdiction ID:** `COOPERATIVE_PASSAGE`
-**Primary Specification:** [`spec/COOPERATIVE_PASSAGE.md`](../spec/COOPERATIVE_PASSAGE.md)
+**Primary Specification:** [`spec/COOPERATIVE_PASSAGE.md`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/spec/COOPERATIVE_PASSAGE.md)
 ```
 
 A distinct specialised Jurisdiction MUST additionally declare its parent contract where applicable:
@@ -279,8 +279,8 @@ The authoritative machine participant set is owned by the primary Specification 
 
 | Production source | Participation |
 | --- | --- |
-| [`scripts/authority/BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua) | `REALISES` |
-| [`scripts/authority/AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua) | `SUPPORTS` |
+| [`scripts/authority/BoundedAuthority.lua`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/scripts/authority/BoundedAuthority.lua) | `REALISES` |
+| [`scripts/authority/AuthorityRegistry.lua`](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/scripts/authority/AuthorityRegistry.lua) | `SUPPORTS` |
 ```
 
 The example paths illustrate the `BOUNDED_AUTHORITY` relationship shape; the owning Specification determines the truthful participant set for every Jurisdiction.
