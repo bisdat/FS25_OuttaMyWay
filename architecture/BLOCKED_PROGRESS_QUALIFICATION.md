@@ -22,7 +22,7 @@ This is the architectural separation we need. Ordinary opposed A8 passing is exp
 | **Native Blockage Pulse** | An interval of positively observed native blocked=true, ending on its known false edge | Not necessarily a distinct obstruction |
 | **Unresolved Obstruction Episode** | An evidence-bound blocked/retry concern within one active GIANTS Job Episode, possibly across several pulses associated with the same unresolved encounter | Must not merge unrelated blocked encounters merely because worker/job identity matches |
 | **Native Blockage Persistence Gate** | At least **1.000 second of accumulated confirmed blocked time** in one unresolved episode, excluding periods positively observed unblocked | Admits *consideration* only, never automatic hold/relocation |
-| **Spatial Pair Inference** | Given a qualifying blocked worker, use current worker positions/proximity to identify a **candidate blocking partner** | The nearby worker need not report blocked; proximity is inference, not cause proof |
+| **Spatial Pair Inference** | After the native one-second gate, nominate the **nearest other eligible worker within 30 m horizontal X/Z root-to-root distance** | This approximate position-based candidate need not report blocked and is not proven causal |
 | **Situation Assessment** | Decide whether the native blocked condition and plausible worker relationship justify **considering a cooperative response**, or whether to leave GIANTS to recover / await evidence | Does **not** independently prove GIANTS' collision or blocked state |
 | **Pair Commitment** | Separate downstream responsibility, when justified: **hold one participant while the other relocates**, then hand back to GIANTS | Does not follow automatically from the gate or proximity |
 
@@ -46,7 +46,7 @@ GIANTS native isBlocked (worker and Job Episode)
           |             |
           v             v
       No OMW       Spatial Pair Inference
-      candidate     (nearby worker)
+      candidate     (nearest ≤30 m)
       GIANTS owns        |
       continuation       v
                    Situation Assessment
@@ -84,11 +84,11 @@ Do not accumulate blocked time across unrelated passing encounters, distinct obs
 
 ## 3. Infer candidate worker pairs from positions
 
-After a worker satisfies the gate, proximity among in-scope workers is the agreed simple starting point for identifying a candidate blocking partner. **Both workers do not need to report blocked.** There is no need to predict their future courses, invent a collision-geometry stack, measure agronomic progress, or infer how GIANTS would steer next.
+After a worker satisfies the gate, **choose the nearest other eligible local worker with a current assembly-root position within a 30-metre radius of the blocked worker's assembly root**, comparing horizontal **X/Z** coordinates. Deduplicate the root assemblies and exclude the blocked assembly itself. **The threshold is radius 30 m (distance ≤30 m), not diameter.** If there is no eligible worker in that radius, **there is no worker-pair candidate**; do not select a remote worker because it is the nearest available. **The candidate blocker need not report blocked.** The owner accepts this deliberately approximate root-position rule without implement geometry, clearance or route reconstruction.
 
 `isBlocked` reports the **affected worker**, not the blocker. A nearby worker might be incidental to a hedge/tree blockage. That uncertainty belongs in **Situation Assessment and responsibility selection**, not in an additional physical-collision proof system.
 
-The appropriate spatial proximity boundary and worker/assembly positional representation are still subject to implementation exploration and Reality testing; no universal distance literal or complete geometric collision model is adopted. When a candidate cannot be identified reliably, remain **WAITING_FOR_EVIDENCE** or leave GIANTS to self-recover rather than inventing attribution.
+**The 30 m radius is the owner-selected locality policy**, not an empirical physical-clearance or causal-contact threshold. No implement-width correction, vehicle-specific radius, collision hull, trajectory prediction or geometric precision is required. An in-radius worker is a *possible* blocker, not a proven one. If there is no candidate, do not invent a worker pair; where eligibility or attribution is uncertain, Situation Assessment may remain **WAITING_FOR_EVIDENCE**. Re-evaluate current positions/authority before any later Pair Commitment.
 
 ## 4. Keep Situation Assessment and Pair Commitment distinct
 
@@ -102,9 +102,9 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 - **1 second confirmed blocked time** is a consideration gate; known unblocked time contributes zero.
 - Separate pulses can belong to one unresolved concern; a false edge does not alone mean durable recovery.
 - The worker that GIANTS reports blocked is known; **the identity of its blocker is not**.
-- Proximity supplies a candidate partner; simultaneous blocked flags are neither necessary nor sufficient for causal identification.
+- After the ≥1 s gate, **the nearest eligible worker at current horizontal assembly-root distance ≤30 m** is the candidate; a worker beyond the radius is not. Simultaneous blocked flags are neither necessary nor sufficient for causal identification.
 - Native blockage below the one-second gate produces **no OMW intervention candidate**, regardless of the encounter type; no A8-specific filter or classifier exists.
-- No observed physical separation distance, course progression, agronomic output, predicted trajectory or obstacle reconstruction is an extra mandatory prerequisite to trusting the native blocked flag.
+- The **30 m root-position radius is only for candidate selection**, not an independent physical-clearance or blockage proof. Implement geometry, course progression, agronomic output and trajectory reconstruction are not required.
 - Worker/Job Episode changes, player intervention and OMW-imposed control effects invalidate or quarantine prior evidence as appropriate.
 - Missing or contradictory evidence remains **WAITING_FOR_EVIDENCE**, not permission to act.
 - Current TEST 0.5.0.6 source still provides **no worker observation or control**.
@@ -114,9 +114,10 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 | Case | Expected interpretation | Forbidden assumption |
 | --- | --- | --- |
 | Ordinary opposed A8 passage with <1 s accumulated confirmed native blockage | Ignore for OMW intervention; no pair inference or special A8 classification | Brief native blocked assertion triggers an A8-specific detection/resolution branch |
-| TS015 Condor/Patriot repeatedly report blocked while close | If the one-second gate and pair assessment support it, **consider** a coordinated pair response | Both workers must be blocked or extra collision geometry is required |
-| Worker reports blocked beside a hedge with another worker nearby | GIANTS confirms blockage; pair attribution may be uncertain | Closest worker is necessarily its blocker |
-| One moving worker blocks another but never reports blocked itself | A candidate pair remains possible by proximity | Both require blocked=true |
+| TS015 Condor/Patriot repeatedly report blocked with assembly roots ≤30 m apart | After the one-second gate, nominate the nearest eligible in-radius worker for Situation Assessment | Both workers must be blocked or extra collision geometry is required |
+| Worker reports blocked beside a hedge, with an unrelated worker ≤30 m away | The nearest worker is a candidate, not causal proof; Situation Assessment may remain uncertain | Nearest in-radius worker necessarily caused the blockage |
+| An in-radius moving worker blocks another but never reports blocked itself | The moving worker can be nominated by proximity | Both require blocked=true |
+| Nearest eligible other worker is >30 m away | No worker-pair candidate; do not expand the fixed radius | Choose a remote worker merely because it is nearest |
 | Native blocked true/false repeats while one encounter remains unresolved | Count confirmed true intervals, exclude false intervals | Every false edge resets the concern or automatically proves recovery |
 | A worker encounters a second distinct obstacle during the same Job Episode | New encounter must not inherit unrelated blocked time | Accumulate every pulse from the entire job indiscriminately |
 | GIANTS job stops/restarts, player takes over or evidence is lost | Do not carry stale admission or attribute blocked time without support | Old timer and pair remain authoritative |
@@ -132,4 +133,4 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 
 **Testing:** this is an Architecture correction, not executable behaviour. TEST 0.5.0.6's owner-waived smoke is not an in-game PASS. Any eventual new worker Observation or Control needs independent Reality validation.
 
-**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, the appropriate proximity policy for candidates *after* the gate, uncertainty when a nearby worker is incidental, and the separate authority/settlement contract for Pair Commitment. **Independent physical-collision proof and native course advancement are not required work packages.**
+**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, candidate eligibility and uncertainty when the nearest in-radius worker is incidental, and separate Pair Commitment authority/settlement. **The proximity radius is settled by owner decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**
