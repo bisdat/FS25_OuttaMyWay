@@ -1,3 +1,31 @@
+# v0.4.11.0 PATCH CHECKPOINT — Regulation Composition and Passage Continuity Plateau
+
+**Accepted source baseline before checkpoint:** current `main` after merged PR #435 (`ed5efe9129e9a29e85f72af2cdcc7eeae5967f4f`), carrying TEST `0.4.10.17`. This checkpoint captures the accepted 0.4.10.x correction lineage after the previous `0.4.10.0` plateau.
+
+**Version rationale:** owner-selected PATCH checkpoint under the current pre-1.0 policy. The accepted delta since `0.4.10.0` strengthens existing Control, Regulation and Cooperative Passage responsibilities without introducing a new supported capability epoch. It closes defects in temporary propulsion ownership, same-pair and shared-protected-demand Regulation composition, opposed-corridor reacquisition, low-speed trajectory evidence, Passage-Approach preservation and composed Category-2 lifecycle identity.
+
+**PATCH checkpoint boundary:** this increment changes product version identity and release history only. It intentionally introduces no new Observation, Situation Assessment, Responsibility Transition, Resolution, Bounded Authority, Control, Operation Lifecycle, Configuration, HUD or player-facing behaviour beyond the already accepted `0.4.10.17` source baseline.
+
+**Validated plateau summary:**
+- PRs #425/#426 / Issue #417 established and implemented **Temporary Propulsion Ownership** for authorised non-job actuation. OuttaMyWay now waits for positively running propulsion before movement, reverses only propulsion it started, preserves pre-existing/player-owned motor state, and relinquishes cleanly when Player Control or renewed GIANTS AI authority supersedes OMW control.
+- PRs #428/#430 / Issue #404 established **Trigger Multiplicity != Responsibility Multiplicity** and **Semantic Support OR; Physical Constraint AND**. Same-pair Follower Boundary and Shared Category-2 evidence now compose beneath one Regulation responsibility rather than deadlocking as peer tactical purposes, while contradictory allocations continue to fail closed.
+- PR #431 / Issue #429 introduced **Current Opposed Reacquisition**, allowing fresh persistent settled opposed motion to restore the current Passage question before general retained-trajectory supersession. This removed the TS015 alternating-BWR failure mode without adding a BWR special case.
+- PR #433 / Issue #432 established **Shared Protected Demand Composition** for the bounded three-worker topology where different pairwise triggers protect the same participant's same constrained demand. It also separated fail-closed meaning multiplicity from Candidate identity multiplicity.
+- PR #435 completed the #404 correction lineage: canonical unordered pair identity for composition, order-invariant least-permissive Shared Protected Demand magnitude, compatible independent pairwise Regulation coexistence, Regulation Ordering Chain support, commitment-scoped Regulation authority/lifecycle targeting, and exact composed-subpurpose provenance.
+- Reality during PR #435 exposed and corrected **Sample Granularity != Motion Persistence**: coherent sub-threshold realised motion now accumulates across Observation cycles, preventing the 0.10 m per-sample noise floor from becoming an accidental minimum observable speed below the 1 km/h Intent-Revelation Creep.
+- The same Reality programme restored the required **Passage Approach** ceiling before Capture when a confirmed Passage coexists with ordinary tactical candidates. This preserves longitudinal development space rather than allowing latest-safe Capture at unrestricted native closing speed.
+- Final TEST `0.4.10.17` corrected composed Shared Category-2 incumbent recovery through **Governing Responsibility Identity != Composed Sub-purpose Identity**. The exact open Category-2 obligation remains authoritative for its regulated/protected allocation even when the enclosing Commitment is governed by a broader pairwise Regulation identity.
+
+**Validation basis:** the accepted lineage remained green under repository Offline Validation through PR #435 final TEST `0.4.10.17` (run #1359). GIANTS Reality on `0.4.10.17` positively demonstrated Category-2 dissolution when the protected S416 entered TURNING, immediate release of Patriot's 1 km/h Category-2 authority, independent survival and later retirement of a still-current composed Follower purpose, and terminalisation of the composed Commitment with zero obligations. Earlier in the same run, the Condor/Patriot Cooperative Passage completed and handed control back cleanly.
+
+**Reality validation boundary:** the final `0.4.10.17` run ended while a later Patriot/S416 opposed pair was still approximately 370 m outside local Passage action space. Therefore the stale-1-km/h/composed-lifecycle regression is field-validated, but that run did not independently re-exercise the later local Patriot/S416 Cooperative Passage that had collided in `0.4.10.16`. This limitation remains recorded rather than being promoted to evidence of a full later-Passage replay.
+
+**Closed work captured by this checkpoint:** Issues #417, #404, #429 and #432 are closed as completed.
+
+**Known separable work:** remaining open work continues independently, including player-facing HUD/status lifecycle, undocumented/community AI API review, adversarial lifecycle/cold-start stress validation, physical-representation bootstrap refresh cost, in-game Help/product reference, performance/frame-pacing evidence and LDoc/source-reference portability.
+
+**Canonical authority:** this PATCH checkpoint is accepted and non-canonical. Canonical remains **v0.4.0.0**. A future owner-selected materially changed architecture/capability epoch would advance to a MINOR candidate, therefore **v0.5.0.0**.
+
 # v0.4.10.0 PATCH CHECKPOINT — Player Control Interlock and Repository Conformance Plateau
 
 **Accepted source baseline before checkpoint:** current `main` after merged PR #423 (`6cd5a9486c700fcc22be41e191417e9c37403340`), carrying offline-validated TEST `0.4.9.9`. The last behaviour-changing head in this lineage was field-validated TEST `0.4.9.8`; `0.4.9.9` then reconciled current naming and validation topology without changing Decision or GIANTS-facing behaviour.
