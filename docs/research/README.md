@@ -7,6 +7,7 @@ authority.
 
 ## Breadcrumbs
 
+- [Native Blocked Event Tap](NATIVE_BLOCKED_EVENT_TAP.md) — prospective TEST 0.5.0.5 event-edge diagnostic, isolated from GIANTS callback ownership and subject to Reality validation.
 - [Native Blocked-State Evidence Probe](NATIVE_BLOCKED_STATE_PROBE.md) — completed, historical 0.5 native-state experiment with dated TS015 observations, qualified findings and limits.
 
 - [Architecture Compliance Audit v4.6.49](ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) — bounded historical conformance audit and evidence.

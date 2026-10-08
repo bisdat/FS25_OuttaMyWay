@@ -68,6 +68,7 @@ jobs:
             scripts/config.lua \
             scripts/configuration/Configuration.lua \
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
+            scripts/diagnostics/NativeBlockedEventTap.lua \
             scripts/publication/LogPublication.lua \
             scripts/diagnostics/VersionHud.lua \
             scripts/gui/ConfigurationSettingsExtension.lua \
@@ -79,6 +80,7 @@ jobs:
       - name: Run shell bootstrap and retained supporting contracts
         run: |
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
+          "$LUAJIT_BIN" tests/shell/native_blocked_event_tap.lua
           "$LUAJIT_BIN" tests/shell/configuration_persistence.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua

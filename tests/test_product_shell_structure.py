@@ -12,6 +12,7 @@ SHELL_MODULES = [
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/diagnostics/NativeBlockedEventTap.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
@@ -43,8 +44,9 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 2
+    assert text.count("addModEventListener(") == 3
     assert "NativeBlockedProbe" not in text
+    assert "NativeBlockedEventTap" in text
 
 
 def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
@@ -78,6 +80,7 @@ def test_settings_and_disabled_reminder_are_retained():
     assert "OUTTAMYWAY_SHELL_STARTED" in main
     assert "OUTTAMYWAY_SHELL_ENABLED" in main
     assert "OUTTAMYWAY_SHELL_DISABLED" in main
+    assert "OuttaMyWay.nativeBlockedEventTap" in main
 
 
 def test_manifest_does_not_promise_active_ai_control():

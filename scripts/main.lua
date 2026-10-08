@@ -1,12 +1,14 @@
 -- OuttaMyWay product-shell entry point. Build identity lives in scripts/config.lua and modDesc.xml.
 -- Specification Jurisdictions: `CONFIGURATION`
--- 0.5 shell deliberately provides no AI worker coordination, GIANTS hooks or vehicle control.
+-- 0.5 shell deliberately provides no AI worker coordination or vehicle control.
+-- TEST-only opt-in diagnostics can observe native outbound event construction.
 local modDirectory=g_currentModDirectory or ""
 local modules={
     "scripts/config.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/diagnostics/NativeBlockedEventTap.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -48,10 +50,16 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
     end)
 end)
 
--- Current shell contains no AI observation or worker-control listener.
+-- No worker-control listener; the third listener is a DEBUG-only research tap.
+OuttaMyWay.nativeBlockedEventTap=OuttaMyWay.NativeBlockedEventTap.new(
+    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
+OuttaMyWay.configuration:addChangeListener(function(notification)
+    OuttaMyWay.nativeBlockedEventTap:onConfigurationChange(notification)
+end)
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
 if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
+    addModEventListener(OuttaMyWay.nativeBlockedEventTap)
 end
