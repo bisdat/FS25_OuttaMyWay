@@ -48,6 +48,16 @@ Source: user-supplied game `log(1).txt`, FS25 **1.24.0.0**, Build-Id **b41780**,
 
 **Disposition:** partial in-game PASS for passive field-course blocked-state visibility and native-flag correlation; do not promote to an automatic Recovery admission rule. The absence of independent state-transition provenance and movement outcome remains open.
 
+## TS015 v0.5.0.3 field observation — 8 October 2026
+
+Source: owner-provided `log(2).txt`, GIANTS FS25 1.24.0.0, OMW 0.5.0.3. Owner confirms persistent HUD is now the normal version string (PASS). Startup reports `aiControl=false`; there are no OuttaMyWay Lua errors in this run.
+
+- 12:33:01.915 Condor blocked; 12:33:02.415 Patriot blocked. Both native blocked flags true, with staticCollision false.
+- Patriot becomes unblocked at 12:33:05.953 and alternates blocked/unblocked three further times before 12:33:12.008. A single blocked assertion is not proof of enduring obstruction.
+- Condor appears with the same vehicleNode 396377 but a different jobRef at 12:33:16.544; the field-course strategy is briefly unavailable, then recovers visibility. The log does not say who or what changed the job.
+- At 12:33:39.231 S416 has `staticCollision=true` while `fieldBlocked=false` and `courseBlocked=false`; at 12:33:40.739 staticCollision is false again with blocked flags still false. Static timer is zero in both samples.
+
+**Finding — Native Static Collision Detection is not Native Blocked Assertion.** Separate native signals must not be conflated. No physical contact, native recovery, or intervention need is proven by these diagnostic samples. The probe remains read-only.
 ## Disposition
 
 Until the in-game comparison is complete, these signals are **candidate native evidence**, not recovery admission, worker-selection, task management, transport readiness, clearance or native Blocking Region support. Record positive and negative Reality evidence before proposing any authority upgrade.
