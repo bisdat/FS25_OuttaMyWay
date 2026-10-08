@@ -322,8 +322,9 @@ The Configuration Section relies on the current GIANTS General Settings extensio
 
 | Validation surface | Relationship |
 | --- | --- |
-| [`tests/replacement_core/configuration.lua`](../tests/replacement_core/configuration.lua) | `CHALLENGES` |
-| [`tests/test_configuration_structure.py`](../tests/test_configuration_structure.py) | `CHALLENGES` |
+| [`tests/shell/configuration_persistence.lua`](../tests/shell/configuration_persistence.lua) | `CHALLENGES` |
+| [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
+| [`tests/test_product_shell_structure.py`](../tests/test_product_shell_structure.py) | `CHALLENGES` |
 
 ## Validation route
 

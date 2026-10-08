@@ -79,7 +79,7 @@ jobs:
       - name: Run shell bootstrap and retained supporting contracts
         run: |
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
-          "$LUAJIT_BIN" tests/replacement_core/configuration.lua
+          "$LUAJIT_BIN" tests/shell/configuration_persistence.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua
 
