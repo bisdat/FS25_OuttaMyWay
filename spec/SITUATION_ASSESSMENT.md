@@ -512,6 +512,8 @@ Situation Assessment MUST therefore publish positive dissolution when all of the
 - retained predecessor evidence for that same protected participant is the settled A8 / terminating Category-2 domain that admitted the incumbent purpose; and
 - current GIANTS intent for that protected participant is `TURNING`.
 
+When Shared Category-2 is composed into a broader pairwise Regulation Responsibility, the exact open `SHARED_CATEGORY_2_DEMAND_REGULATION` obligation remains authoritative for that pair's regulated/protected allocation. Situation Assessment MUST NOT require the Commitment's governing Responsibility key to remain the standalone Shared Category-2 key in order to recover that incumbent purpose.
+
 A generic TURNING observation without such incumbent predecessor provenance MUST NOT manufacture Category-2 completion.
 
 Control-induced separation and temporary evidence loss MUST NOT manufacture positive purpose completion.

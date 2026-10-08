@@ -65,29 +65,34 @@ local function refreshParticipantIntent(relation,motionByAssembly)
     end
 end
 
+local function category2ObligationBasis(context,identity)
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(context and context.openObligations or {}) do
+        local candidate=obligation and obligation.basis or nil
+        if type(candidate)=="table" and candidate.kind=="SHARED_CATEGORY_2_DEMAND_REGULATION"
+            and candidate.conflictIdentity==identity then
+            return candidate
+        end
+    end
+    return nil
+end
+
 local function incumbentContext(commitmentContext,identity)
     local requirement=governingRequirement(identity)
     local match=nil
     for _,context in OuttaMyWay.ValueRecord.ipairs(commitmentContext or {}) do
         local basis=context and context.governingBasis or nil
-        if type(basis)=="table" and basis.responsibilityKey==requirement then
-            if match~=nil then return nil,"MULTIPLE_SHARED_CATEGORY_2_COMMITMENTS" end
-            local obligationBasis=nil
-            for _,obligation in OuttaMyWay.ValueRecord.ipairs(context.openObligations or {}) do
-                local candidate=obligation and obligation.basis or nil
-                if type(candidate)=="table" and candidate.kind=="SHARED_CATEGORY_2_DEMAND_REGULATION"
-                    and candidate.conflictIdentity==identity then
-                    obligationBasis=candidate
-                    break
-                end
-            end
+        local obligationBasis=category2ObligationBasis(context,identity)
 
-            -- Shared Protected Demand Composition may legitimately add another
-            -- controlled follower to the same Regulation responsibility.  That
-            -- makes progressActuationOwnership multi-subject, so it cannot be
-            -- used to recover the pair-specific Shared Category-2 allocation.
-            -- The exact Category-2 obligation remains the semantic owner of its
-            -- regulated/protected roles and survives such composition.
+        -- Composition may promote the Commitment's governing requirement to a
+        -- broader pairwise Regulation identity.  The exact open Category-2
+        -- obligation therefore owns pair-specific incumbent membership; the
+        -- governing Responsibility key is only a legacy fallback when that
+        -- obligation has not carried explicit roles.
+        local ownsCategory2=obligationBasis~=nil
+            or (type(basis)=="table" and basis.responsibilityKey==requirement)
+        if ownsCategory2 then
+            if match~=nil then return nil,"MULTIPLE_SHARED_CATEGORY_2_COMMITMENTS" end
+
             local regulated=obligationBasis and obligationBasis.regulatedAssemblyId or nil
             if type(regulated)~="string" then
                 for _,ownership in OuttaMyWay.ValueRecord.ipairs(context.progressActuationOwnership or {}) do

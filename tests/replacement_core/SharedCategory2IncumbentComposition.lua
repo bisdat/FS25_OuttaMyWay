@@ -1,11 +1,13 @@
--- Regression for TEST 0.4.10.15: Shared Protected Demand composition must
--- not erase the exact Shared Category-2 incumbent allocation needed to observe
+-- Regression for TEST 0.4.10.16: Shared Protected Demand composition may
+-- replace the Commitment governing key with pairwise Regulation identity, but
+-- must not erase the exact Shared Category-2 incumbent allocation needed to observe
 -- protected-participant native boundary-turn dissolution.
 return function(test,equal)
     test("Shared Category-2 incumbent survives multi-subject composed Regulation ownership",function()
         local assessment=OuttaMyWay.BoundaryDemandAssessment.new()
         local identity="shared-category-2:OR-1:AS-P:AS-S"
         local requirement="shared-category-2-regulation:"..identity
+        local composedRequirement="pairwise-regulation:OR-1:AS-S|AS-P"
 
         assessment.retained[identity]={
             relation={
@@ -46,7 +48,9 @@ return function(test,equal)
             },
             commitmentContext={{
                 commitmentId="CM-COMPOSED",
-                governingBasis={responsibilityKey=requirement},
+                -- Reality in 0.4.10.16: #404 composition promotes the
+                -- Commitment governing key away from the Category-2 key.
+                governingBasis={responsibilityKey=composedRequirement},
                 -- Patriot owns the Category-2 1 km/h regulation while a second
                 -- controlled follower has been composed into the same responsibility.
                 progressActuationOwnership={
