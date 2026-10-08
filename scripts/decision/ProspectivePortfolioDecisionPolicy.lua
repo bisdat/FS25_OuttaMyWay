@@ -135,6 +135,40 @@ function Policy:selectGroup(inventory,admissibleCandidates)
         return nil,"MULTIPLE_SUPPORTED_ADMISSIBLE_PASSAGES_REQUIRE_COMPARATOR"
     end
 
+    -- Passage Approach is not a generic tactical preference. Candidate Support
+    -- can publish it only after one complete Passage is already supported while
+    -- disposable approach margin remains. The accepted Passage contract requires
+    -- this pairwise ceiling to be acquired before Capture. Ordinary fresh traffic
+    -- alternatives therefore cannot starve the acquisition and allow the pair to
+    -- reach latest-safe Capture at unrestricted closing speed.
+    --
+    -- Higher-order cross-purpose families above retain their existing policy.
+    -- Corner and fail-closed domains below are deliberately not included in the
+    -- ordinary-tactical compatibility set and therefore keep their current rules.
+    local passageApproaches=family(groups,"PASSAGE_APPROACH")
+    if #passageApproaches>1 then
+        return nil,"MULTIPLE_SUPPORTED_PASSAGE_APPROACHES_REQUIRE_COMPARATOR"
+    end
+    if #passageApproaches==1 then
+        local approach=passageApproaches[1]
+        local ordinaryPeers={
+            FOLLOWER_RETIRE=true,FOLLOWER=true,COMPOSED_REGULATION=true,
+            CATEGORY_2_BOUNDARY_DEMAND=true,FORWARD_INTERSECTION=true,
+            ACTION_SPACE=true,PASSIVE_FALLBACK=true
+        }
+        local ordinaryOnly=true
+        for _,group in ipairs(groups) do
+            if group~=approach and ordinaryPeers[group.family]~=true then
+                ordinaryOnly=false
+                break
+            end
+        end
+        if ordinaryOnly then
+            return choose(approach,"PASSAGE_APPROACH_ACQUISITION",
+                "CONFIRMED_PASSAGE_OUTSIDE_CAPTURE_REQUIRES_PAIRWISE_APPROACH_CEILING")
+        end
+    end
+
     -- Responsibility persistence does not require prospective re-selection.
     -- A proven fresh disjoint Regulation may establish while its retained peer
     -- continues independently.

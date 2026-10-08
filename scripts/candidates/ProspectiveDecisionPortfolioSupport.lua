@@ -674,8 +674,23 @@ function Support:publishDecisionPicture(picture,snapshot)
         if mode=="COOPERATIVE_PASSAGE" then
             appendGroup(state,group,"PASSAGE","passage:"..tostring(relation.identity),relationOrdinal)
         elseif mode=="ACTION_SPACE_REGULATION" then
-            actionSpaceGroups=actionSpaceGroups+1
-            appendGroup(state,group,"ACTION_SPACE","action-space:"..tostring(relation.identity),relationOrdinal)
+            local specification=group.candidateSpecifications and group.candidateSpecifications[1] or nil
+            local actionBridge=specification and specification.evidenceBasis
+                and specification.evidenceBasis.actionSpaceRegulationBridge or nil
+            if type(actionBridge)=="table" and actionBridge.admissionKind=="PASSAGE_APPROACH" then
+                -- A complete Passage has already been positively supported and
+                -- disposable approach margin still exists. This is the accepted
+                -- pre-Capture acquisition stage for that Passage, not a generic
+                -- Action-Space purpose competing for an invented tactical comparator.
+                appendGroup(state,group,"PASSAGE_APPROACH",
+                    "passage-approach:"..tostring(relation.identity),relationOrdinal,{
+                        confirmedPassageApproach=true,
+                        conflictIdentity=relation.identity
+                    })
+            else
+                actionSpaceGroups=actionSpaceGroups+1
+                appendGroup(state,group,"ACTION_SPACE","action-space:"..tostring(relation.identity),relationOrdinal)
+            end
         end
     end
     if actionSpaceGroups>1 then
