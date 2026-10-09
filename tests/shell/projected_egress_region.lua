@@ -90,12 +90,16 @@ assert(confinedSolo.vectorDistanceM==40
 -- known field, but do not require it. Endpoint, not initial root, is sampled.
 g_fieldManager={fields={{densityMapPolygon={
     pointsX=field.xs,pointsZ=field.zs}}}}
-local outside=worker(210,100,0,1)
-local inwardSolo=assert(Plan.planSingle({singleRegionDistanceM=40},outside))
-assert(inwardSolo.egressSide==1 and inwardSolo.targetInField==true,
-    "prefer an inward endpoint even though origin is outside the polygon")
+local outsideRight=worker(210,100,0,1)
+local inwardRight=assert(Plan.planSingle({singleRegionDistanceM=40},outsideRight))
+assert(inwardRight.egressSide==-1 and inwardRight.targetInField==true,
+    "right-edge exterior origin selects left-rear inward endpoint")
+local outsideLeft=worker(-10,100,0,1)
+local inwardLeft=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft))
+assert(inwardLeft.egressSide==1 and inwardLeft.targetInField==true,
+    "left-edge exterior origin selects right-rear inward endpoint")
 g_fieldManager.fields={}
-local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outside))
+local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft))
 assert(unassociated.egressSide==-1 and unassociated.targetInField==false,
     "missing field membership must not inhibit reverse to a 40 m region")
 print("Pairwise cross-track and solo 40 m projected return region: PASS")
