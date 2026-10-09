@@ -3,7 +3,7 @@
 local expected={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
-    "scripts/control/HoldRelocateSequence.lua",
+    "scripts/control/HoldRelocateCoordinator.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
@@ -33,7 +33,7 @@ addModEventListener=function(listener) registered[#registered+1]=listener end
 source=function(path)
     loaded[#loaded+1]=path
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
-        or path=="scripts/control/HoldRelocateSequence.lua" then
+        or path=="scripts/control/HoldRelocateCoordinator.lua" then
         dofile(path)
     elseif path=="scripts/configuration/Configuration.lua" then
         OuttaMyWay.Configuration={new=function() return configuration end}
@@ -73,7 +73,7 @@ assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(OuttaMyWay.nativeBlockedEventTap==nil)
 assert(type(OuttaMyWay.nativeBlockageObservation.update)=="function")
 assert(type(OuttaMyWay.SpatialPairInference.evaluate)=="function")
-assert(type(OuttaMyWay.HoldRelocateSequence.begin)=="function")
+assert(type(OuttaMyWay.HoldRelocateCoordinator.begin)=="function")
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)

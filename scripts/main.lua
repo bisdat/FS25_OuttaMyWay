@@ -5,7 +5,7 @@ local modDirectory=g_currentModDirectory or ""
 local modules={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
-    "scripts/control/HoldRelocateSequence.lua",
+    "scripts/control/HoldRelocateCoordinator.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
