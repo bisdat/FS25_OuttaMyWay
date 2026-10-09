@@ -5,7 +5,7 @@ This is the **current** authority for the small 0.5 OuttaMyWay shell and its acc
 ## Current boundaries
 
 - [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. Worker intervention is **not yet implemented**.
-- [Blocked-First Situation Assessment](BLOCKED_PROGRESS_QUALIFICATION.md) — GIANTS native isBlocked, ≥1 s and nearest eligible worker within 30 m; [Native Blockage Observation](../spec/NATIVE_BLOCKAGE_OBSERVATION.md) passively reads GIANTS, feeding [Spatial Pair Inference](../spec/SPATIAL_PAIR_INFERENCE.md), with no worker Control.
+- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — the GIANTS native ≥1 s blocked trigger and nearest eligible worker within 30 m are implemented for candidate identification; the **accepted six-stage Hold & Relocate operating sequence** (5 s blocker hold, TRANSIT centroid-directed reverse ≤30 m + offset, 10 s relocated-worker hold, immediate native AI stop/restart) is an **unimplemented architecture direction**.
 - [Configuration](CONFIGURATION.md) — durable player choices and consent to the current product shell.
 - [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
 - [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.
@@ -14,6 +14,6 @@ The running shell observes native blocked state **read-only** and uses a pure ca
 
 ## Deliberately unresolved
 
-The 0.5 worker-cooperation architecture will be established through evidence before new implementation is authorised. [Blocked-First Situation Assessment #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440) uses GIANTS native isBlocked and spatial pair inference; no independent collision-proof or course-progress prerequisite. [Standards reconciliation #441](https://github.com/bisdat/FS25_OuttaMyWay/issues/441) owns unresolved cross-surface questions.
+The six-stage Hold & Relocate direction is accepted, but its implementation-facing details and runtime mechanisms must still be established through evidence. [Blocked-First Situation Assessment #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440) uses GIANTS native isBlocked and spatial pair inference; no independent collision-proof or course-progress prerequisite. [Standards reconciliation #441](https://github.com/bisdat/FS25_OuttaMyWay/issues/441) owns unresolved cross-surface questions.
 
 Old predictive/regulation/passage/recovery designs are **not current architectural contracts**. Their history, code and original contracts are recoverable from [archive/0.4.11.0](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). This is a historical reference, not a breadcrumb to a live architecture document.
