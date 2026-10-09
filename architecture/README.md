@@ -5,7 +5,7 @@ This is the **current** authority for the small 0.5 OuttaMyWay shell and its acc
 ## Current boundaries
 
 - [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. Worker intervention is **not yet implemented**.
-- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — the GIANTS native ≥1 s blocked trigger and nearest eligible worker within 30 m are implemented for candidate identification; the **accepted six-stage Hold & Relocate operating sequence** (5 s blocker hold, TRANSIT centroid-directed reverse ≤30 m + offset, 10 s relocated-worker hold, immediate native AI stop/restart) is an **unimplemented architecture direction**.
+- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — the GIANTS native ≥1 s blocked trigger and nearest eligible worker within 30 m are implemented for candidate identification; the **accepted six-stage Hold & Relocate operating sequence** chooses the worker nearest the field centroid, uses a **5 s nearby-blocker Hold and a separate 10 s relocated-worker Hold released only by timers**, requires established GIANTS-native BWR reverse steering for the TRANSIT centroid-directed reverse ≤30 m + offset, and immediately stops/restarts the AI job. It is an **unimplemented architecture direction**.
 - [Configuration](CONFIGURATION.md) — durable player choices and consent to the current product shell.
 - [Log Publication](LOG_PUBLICATION.md) — controlled publication of established product/engineering facts, not Observation or runtime decision authority.
 - [GUI](GUI.md) — settings, version-only status indicator and disabled reminder; full operational messages remain deferred.
