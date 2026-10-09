@@ -197,6 +197,7 @@ function Mechanism:observeDisplacement(state)
         state.isFailed=true;state.reason="REVERSE_REGION_EVIDENCE_UNAVAILABLE";return
     end
     state.regionProgressM=progress.progressM
+    state.regionCrossTrackM=progress.crossTrackM
     state.regionLateralOffsetM=progress.lateralOffsetM
     state.regionRemainingM=progress.remainingM
     if state.commandedDriveCount>0 and progress.isInRegion then
@@ -273,6 +274,12 @@ function Mechanism:startReverse(vehicle,objective)
         or not finite(objective.returnRegion.directionZ)
         or not finite(objective.returnRegion.requiredProgressM)
         or objective.returnRegion.requiredProgressM<=0
+        or not finite(objective.returnRegion.requiredCrossTrackM)
+        or not finite(objective.returnRegion.blockerOriginX)
+        or not finite(objective.returnRegion.blockerOriginZ)
+        or not finite(objective.returnRegion.corridorNormalX)
+        or not finite(objective.returnRegion.corridorNormalZ)
+        or not finite(objective.returnRegion.sideSign)
         or not finite(objective.steeringHorizonM)
         or objective.steeringHorizonM<=0 then
         return false,"REVERSE_REQUEST_INVALID"
@@ -346,6 +353,7 @@ function Mechanism:reverseStatus(vehicle)
         isFailed=state.isFailed,reason=state.reason,
         regionProgressM=state.regionProgressM,
         regionRemainingM=state.regionRemainingM,
+        regionCrossTrackM=state.regionCrossTrackM,
         regionLateralOffsetM=state.regionLateralOffsetM,
         initialMotionDeviationDeg=state.initialMotionDeviationDeg,
         initialMotionRelativeToReverseDeg=state.initialMotionRelativeToReverseDeg,

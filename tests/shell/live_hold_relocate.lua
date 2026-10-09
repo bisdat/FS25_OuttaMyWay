@@ -36,6 +36,8 @@ local function nativeWorker(x,z,blocked)
     local root={rootNode=node,job=job,spec_aiFieldWorker={
         isActive=true,driveStrategies={strategy}}}
     root.getAIReverserNode=function(self)return self.rootNode end
+    root.getAISteeringNode=function(self)return self.rootNode end
+    root.getAIWorkAreaWidth=function()return 36 end
     root.getJob=function(self)return self.job end
     root.getAttachedImplements=function()return {} end
     root.getIsTurnedOn=function()return true end
@@ -51,7 +53,7 @@ local accepted,reason=authority:admitCandidate(first,second,first,999)
 assert(accepted==nil,"persistence gate must reject a short pulse")
 local issued=assert(authority:admitCandidate(first,second,first,1000))
 assert(issued.fieldCentroid.x==50 and issued.fieldCentroid.z==50)
-assert(issued.offsetM==0 and issued.pairWorkingWidthM==nil and #issued.nearbyBlockers==1)
+assert(issued.offsetM==0 and issued.blockerWorkingWidthM==36 and #issued.nearbyBlockers==1)
 assert(type(issued.fieldPolygon)=="table")
 assert(issued.nearbyBlockers[1].vehicle==first,
     "closer-to-centroid worker B relocates; A is blocker")
@@ -102,9 +104,10 @@ local reverse={travelledM=0,isComplete=false}
 physical.reverseMechanism={
     startReverse=function(_,v,objective)
         events[#events+1]="REVERSE"
-        assert(objective.maxTravelM==nil and objective.steeringHorizonM==40)
-        assert(objective.returnRegion.requiredProgressM==20)
-        assert(objective.targetX>coords[v.rootNode].x)
+        assert(objective.maxTravelM==nil and objective.steeringHorizonM==81)
+        assert(objective.returnRegion.requiredProgressM>38)
+        assert(objective.vectorDistanceM==41 and objective.marginM==5)
+        assert(objective.targetInField and objective.directionSource=='OBLIQUE_REVERSE')
         return true
     end,
     reverseStatus=function()return reverse end,
@@ -125,8 +128,8 @@ physical.jobMechanism.getStatus=function()return nativeHandbackStatus end
 local coordinator=Coordinator.new(authority,physical)
 local ok,entry=coordinator:begin(issued,1000)
 assert(ok and entry.relocatingAssemblyReferenceKey==issued.participants[2].assemblyReferenceKey)
-assert(entry.objective.returnRegion.requiredProgressM==20
-    and entry.directionSource~=nil)
+assert(entry.objective.returnRegion.requiredProgressM>38
+    and entry.vectorDistanceM==41 and entry.blockerWorkingWidthM==36)
 assert(events[1]=="REGULATE:EGRESS" and events[2]=="TRANSIT" and events[3]=="REVERSE")
 assert(coordinator:getStatus().phase=="REVERSING")
 coordinator:advance(5999)
@@ -162,7 +165,7 @@ g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,30,30,0},pointsZ={0,0,30,30}}}}
 local restricted=assert(authority:admitCandidate(first,second,first,1000))
 local rejected,geoReason=coordinator:begin(restricted,30000)
-assert(not rejected and geoReason=="NO_SUPPORTED_EGRESS_DIRECTION")
+assert(not rejected and geoReason=="NO_SUPPORTED_INFIELD_EGRESS_REGION")
 assert(authority:release(restricted))
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}

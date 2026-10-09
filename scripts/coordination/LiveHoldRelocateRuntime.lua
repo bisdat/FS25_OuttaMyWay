@@ -144,9 +144,15 @@ function Runtime:update(dt)
                             tostring(why.requestedReverseSpeedKmh)
                     end
                     if type(why)=="table" and why.regionRequiredProgressM~=nil then
-                        details=details.." returnRegionProgressM="..
+                        details=details.." requiredLateralM="..
                             tostring(why.regionRequiredProgressM)
                             .." directionSource="..tostring(why.directionSource)
+                            .." blockerWidthM="..tostring(why.blockerWorkingWidthM)
+                            .." marginM="..tostring(why.marginM)
+                            .." vectorDistanceM="..tostring(why.vectorDistanceM)
+                            .." obliqueDeg="..tostring(why.nominalBearingOffsetDeg)
+                            .." egressSide="..tostring(why.egressSide)
+                            .." regionInField="..tostring(why.targetInField)
                     end
                     issue(self,"INFO","HOLD_RELOCATE_STARTED",details)
                 elseif coordinator:isActive() then

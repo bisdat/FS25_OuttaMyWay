@@ -40,6 +40,46 @@ local function currentStrategy(vehicle)
     return nil
 end
 
+-- At pair admission, capture the OTHER (regulated) assembly's productive
+-- working span while still in its native FIELDWORK configuration. This is a
+-- corridor-planning scale, not a claim about physical folded collision shape.
+local function blockerWorkingWidth(vehicle)
+    local seen,count,maxWidth={},0,0
+    local function visit(object)
+        if type(object)~="table" or object.isDeleted==true then
+            return false,"BLOCKER_ASSEMBLY_UNAVAILABLE"
+        end
+        if seen[object] then return true end
+        seen[object]=true
+        count=count+1
+        if count>16 then return false,"BLOCKER_ASSEMBLY_BUDGET_EXCEEDED" end
+        if type(object.getAIWorkAreaWidth)=="function" then
+            local ok,w=pcall(object.getAIWorkAreaWidth,object)
+            if not ok or not finite(w) or w<0 then
+                return false,"BLOCKER_WORK_WIDTH_INVALID"
+            end
+            maxWidth=math.max(maxWidth,w)
+        end
+        if type(object.getAttachedImplements)=="function" then
+            local ok,attached=pcall(object.getAttachedImplements,object)
+            if not ok or type(attached)~="table" then
+                return false,"BLOCKER_ATTACHMENTS_UNAVAILABLE"
+            end
+            for _,descriptor in pairs(attached) do
+                local child=type(descriptor)=="table"
+                    and (descriptor.object or descriptor) or nil
+                local allowed,reason=visit(child)
+                if not allowed then return false,reason end
+            end
+        end
+        return true
+    end
+    local ok,reason=visit(vehicle)
+    if not ok then return nil,reason end
+    if maxWidth<=0 then return nil,"BLOCKER_WORK_WIDTH_UNAVAILABLE" end
+    return maxWidth
+end
+
 local function inside(poly,x,z)
     local result=false
     local xs,zs=poly.xs,poly.zs
@@ -125,8 +165,8 @@ end
 
 -- The candidate is mere nomination; admission re-reads both native jobs,
 -- strategies, current positions, common polygon and duration.
--- The region is constructed from current pair pose, native reverse heading
--- and the field polygon. No working-width or fabricated physical envelope.
+-- The blocker working width is a vector scale, not a collision envelope or
+-- physical observation of the TRANSIT assembly.
 function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     if self.active~=nil or not self:enabled()
         or type(first)~="table" or type(second)~="table"
@@ -168,6 +208,9 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     local relocator=(da<db or (da==db
         and a.assemblyReferenceKey<b.assemblyReferenceKey)) and a or b
     commitment.nearbyBlockers[1]=relocator==a and b or a
+    local width,widthReason=blockerWorkingWidth(commitment.nearbyBlockers[1].vehicle)
+    if width==nil then return nil,widthReason end
+    commitment.blockerWorkingWidthM=width
     self.active=commitment
     return commitment
 end

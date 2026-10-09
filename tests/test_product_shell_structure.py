@@ -80,7 +80,12 @@ def test_region_based_egress_and_native_regulation():
     assert "REVERSE_BOUND_EXCEEDED" not in reverse
     assert "BOUND_REACHED_WITHOUT_TARGET" not in reverse
     assert "ProjectedEgressRegion.progress" in reverse
-    assert "requiredProgressM" in region and "REQUIRED_RETREAT_M=20" in region
+    assert "requiredProgressM" in region and "requiredCrossTrackM" in region
+    assert "EGRESS_MARGIN_M=5" in region
+    assert "OBLIQUE_REVERSE_DEG=70" in region
+    assert "blockerWorkingWidthM" in authority
+    assert "SIGNED_CROSS_TRACK_REGION" in region
+    assert "REQUIRED_RETREAT_M=20" not in region
     assert "HOLD_RELOCATE_EGRESS_REGULATION_EVIDENCE" in runtime
     assert "EGRESS_SPEED_KMH=1" in regulation
     assert "physicalDisplacementM" in regulation

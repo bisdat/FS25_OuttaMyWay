@@ -43,6 +43,9 @@ local vehicle={
 }
 local objective={targetX=0,targetZ=-40,steeringHorizonM=40,isReverse=true,
     returnRegion={originX=0,originZ=0,directionX=0,directionZ=-1,
+        blockerOriginX=0,blockerOriginZ=0,
+        corridorNormalX=0,corridorNormalZ=-1,sideSign=1,
+        initialCrossTrackM=0,requiredCrossTrackM=9,
         requiredProgressM=9}}
 local mechanism=Mechanism.new()
 local ok,armed=mechanism:startReverse(vehicle,objective)

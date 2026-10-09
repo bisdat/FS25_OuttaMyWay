@@ -1,48 +1,51 @@
--- Archived-BWR projected retreat, with no width-derived target or point arrival.
+-- TEST .30: blocker width 36 + margin 5 -> 41 m oblique vector.
 OuttaMyWay={}
 dofile("scripts/coordination/ProjectedEgressRegion.lua")
 local Plan=OuttaMyWay.ProjectedEgressRegion
-local polygon={xs={0,100,100,0},zs={0,0,100,100}}
-local locations={}
-localDirectionToWorld=function(node,x,y,z)
-    local p=locations[node];assert(p)
-    return p.dx*x+p.fx*z,y,p.dz*x+p.fz*z
+local field={xs={0,200,200,0},zs={0,0,200,200}}
+local dirs={}
+localDirectionToWorld=function(n,x,y,z)
+    local a=assert(dirs[n]);return a.x*z,y,a.z*z
 end
-local function participant(x,z,fx,fz)
-    local node={}
-    locations[node]={fx=fx,fz=fz,dx=fz,dz=-fx}
-    return {vehicle={getAIReverserNode=function()return node end},
-        x=x,z=z,assemblyReferenceKey=tostring(node)}
+local function worker(x,z,fx,fz)
+    local node={};dirs[node]={x=fx,z=fz}
+    return {x=x,z=z,vehicle={
+        getAIReverserNode=function()return node end,
+        getAISteeringNode=function()return node end
+    }}
 end
-local blocker=participant(20,20,1,0)
-local mover=participant(23,20,-1,0)
-local commitment={fieldCentroid={x=50,z=50},fieldPolygon=polygon}
-local objective,reason=Plan.plan(commitment,mover,blocker)
-assert(objective,reason)
-assert(objective.directionSource~=nil and objective.returnRegion.requiredProgressM==20)
-assert(objective.steeringHorizonM==40 and objective.maxTravelM==nil)
-assert(objective.targetX>mover.x)
-local r=objective.returnRegion
-local p=Plan.progress(r,mover.x+19*r.directionX,mover.z+19*r.directionZ)
-assert(not p.isInRegion and math.abs(p.remainingM-1)<0.0001)
-p=Plan.progress(r,mover.x+20*r.directionX+5*r.directionZ,
-    mover.z+20*r.directionZ-5*r.directionX)
-assert(p.isInRegion and math.abs(p.progressM-20)<0.0001
-    and math.abs(p.lateralOffsetM-5)<0.0001,
-    "region admission is projected progress, not proximity to steering point")
-assert(math.sqrt((objective.targetX-mover.x)^2+(objective.targetZ-mover.z)^2)>20,
-    "steering reference deliberately beyond completion region")
-assert(not Plan.progress(r,nil,0))
--- Unsupported native direction or an unavailable field route prevents admission,
--- but no speculative point-distance abort is introduced after successful start.
-local saved=localDirectionToWorld
-localDirectionToWorld=nil
-local none,why=Plan.plan(commitment,mover,blocker)
-assert(none==nil and why=="NATIVE_REVERSE_HEADING_UNAVAILABLE")
-localDirectionToWorld=saved
-local small={fieldCentroid={x=5,z=5},fieldPolygon={
-    xs={0,15,15,0},zs={0,0,15,15}}}
-none,why=Plan.plan(small,mover,blocker)
-assert(none==nil and why=="NO_SUPPORTED_EGRESS_DIRECTION")
-assert(Plan.progress(r,mover.x,mover.z).progressM==0)
-print("Projected Return Region / separate 40 m steering / no chord-abort: PASS")
+local mover=worker(100,100,0,1)
+local blocker=worker(100,108,0,-1)
+local c={fieldCentroid={x=50,z=100},fieldPolygon=field,blockerWorkingWidthM=36}
+local a,why=Plan.plan(c,mover,blocker)
+assert(a,why)
+assert(a.directionSource=="OBLIQUE_REVERSE" and a.vectorDistanceM==41
+    and a.blockerWorkingWidthM==36 and a.marginM==5)
+assert(a.egressSide==-1 and a.targetInField)
+assert(math.abs(a.returnRegion.requiredProgressM-41*math.sin(math.rad(70)))<0.0001)
+assert(a.steeringHorizonM==81 and a.targetX<100 and a.targetZ<100)
+local region=a.returnRegion
+assert(not Plan.progress(region,100,20).isInRegion,
+    "axial reverse must not satisfy lateral region")
+assert(not Plan.progress(region,100+40*region.directionX,
+    100+40*region.directionZ).isInRegion)
+assert(Plan.progress(region,100+41*region.directionX,
+    100+41*region.directionZ).isInRegion)
+assert(Plan.progress(region,55,100).isInRegion,
+    "lateral region is not a fixed arrival waypoint")
+local near=worker(18,100,0,1)
+local nearBlocker=worker(18,108,0,-1)
+local opposite=assert(Plan.plan({fieldCentroid={x=1,z=100},
+    fieldPolygon=field,blockerWorkingWidthM=36},near,nearBlocker))
+assert(opposite.egressSide==1 and opposite.targetInField,
+    "prefer reachable in-field region to left-rear preference")
+local noWidth,code=Plan.plan({fieldCentroid={x=50,z=100},
+    fieldPolygon=field},mover,blocker)
+assert(noWidth==nil and code=="BLOCKER_WORK_WIDTH_UNAVAILABLE")
+local small={xs={0,30,30,0},zs={0,0,30,30}}
+local confined=worker(15,10,0,1)
+local confinedBlocker=worker(15,18,0,-1)
+local none,reason=Plan.plan({fieldCentroid={x=15,z=15},
+    fieldPolygon=small,blockerWorkingWidthM=36},confined,confinedBlocker)
+assert(none==nil and reason=="NO_SUPPORTED_INFIELD_EGRESS_REGION")
+print("Cross-track egress, 41 m vector, in-field side and region: PASS")

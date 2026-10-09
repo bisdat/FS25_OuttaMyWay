@@ -151,6 +151,8 @@ function Coordinator:begin(commitment,nowMs)
         or type(commitment.fieldCentroid)~="table"
         or not finite(commitment.fieldCentroid.x) or not finite(commitment.fieldCentroid.z)
         or not finite(commitment.offsetM) or commitment.offsetM<0
+        or not finite(commitment.blockerWorkingWidthM)
+        or commitment.blockerWorkingWidthM<=0
         or type(commitment.fieldPolygon)~="table"
         or type(commitment.nearbyBlockers)~="table" or #commitment.nearbyBlockers==0 then
         return false,"COMMITMENT_EVIDENCE_UNAVAILABLE"
@@ -228,6 +230,12 @@ function Coordinator:begin(commitment,nowMs)
         objective=objective,
         directionSource=objective.directionSource,
         regionRequiredProgressM=objective.returnRegion.requiredProgressM,
+        blockerWorkingWidthM=objective.blockerWorkingWidthM,
+        marginM=objective.marginM,
+        vectorDistanceM=objective.vectorDistanceM,
+        egressSide=objective.egressSide,
+        nominalBearingOffsetDeg=objective.nominalBearingOffsetDeg,
+        targetInField=objective.targetInField,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
             and reverseEvidence.requestedReverseSpeedKmh or nil}
 end
