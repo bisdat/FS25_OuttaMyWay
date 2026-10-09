@@ -150,21 +150,37 @@ function Region.plan(commitment,relocator,blocker)
 end
 
 
--- No solo field-membership requirement. A documented native FIELDWORK worker
--- can be blocked outside the polygon; region destination membership is only
--- an inexpensive direction *preference*, never a veto.
-local function soloEndpointInField(x,z)
-    local manager=g_fieldManager
-    local fields=manager and manager.fields
-    if type(fields)~="table" then return false end
-    for _,field in pairs(fields) do
-        local native=type(field)=="table" and field.densityMapPolygon
-        local xs=native and native.pointsX
-        local zs=native and native.pointsZ
-        if type(xs)=="table" and type(zs)=="table"
-            and inside({xs=xs,zs=zs},x,z) then return true end
+-- The worker's generated GIANTS field course, not an arbitrary neighbouring
+-- field in g_fieldManager, defines OUR field. Read it once when admitting
+-- the 40 m solo objective; missing geometry never vetoes native recovery.
+local function ownCourseField(commitment)
+    local participant=type(commitment.participants)=="table"
+        and commitment.participants[1] or nil
+    local strategy=type(participant)=="table"
+        and participant.sourceStrategyReference or nil
+    local aiCourse=type(strategy)=="table" and strategy.aiFieldCourse or nil
+    local fieldCourse=type(aiCourse)=="table" and aiCourse.fieldCourse or nil
+    local courseField=type(fieldCourse)=="table" and fieldCourse.courseField or nil
+    local points=type(courseField)=="table" and courseField.boundaryPositions or nil
+    if type(points)~="table" or #points<3 then return nil,nil end
+    local poly={xs={},zs={}}
+    local area2,cx,cz=0,0,0
+    for i=1,#points do
+        local p=points[i]
+        local x=type(p)=="table" and (p.x or p[1]) or nil
+        local z=type(p)=="table" and (p.z or p[2]) or nil
+        if not finite(x) or not finite(z) then return nil,nil end
+        poly.xs[i],poly.zs[i]=x,z
     end
-    return false
+    for i=1,#points do
+        local j=i==#points and 1 or i+1
+        local a=poly.xs[i]*poly.zs[j]-poly.xs[j]*poly.zs[i]
+        area2=area2+a
+        cx=cx+(poly.xs[i]+poly.xs[j])*a
+        cz=cz+(poly.zs[i]+poly.zs[j])*a
+    end
+    if math.abs(area2)<0.000001 then return nil,nil end
+    return poly,{x=cx/(3*area2),z=cz/(3*area2)}
 end
 
 function Region.planSingle(commitment,relocator)
@@ -176,16 +192,27 @@ function Region.planSingle(commitment,relocator)
     local backX,backZ,reason=heading(relocator.vehicle,"getAIReverserNode",true)
     if backX==nil then return nil,reason end
     local perpX,perpZ=-backZ,backX
+    local ownPolygon,ownCentroid=ownCourseField(commitment)
     local chosen=nil
     for _,side in ipairs({-1,1}) do
         local dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX
         local dz=COS_OBLIQUE*backZ+side*SIN_OBLIQUE*perpZ
-        local endpointInField=soloEndpointInField(
-            relocator.x+dx*40,relocator.z+dz*40)
-        -- Prefer an endpoint in a known field; absent such evidence, the
-        -- established left-rear candidate is deterministic and still valid.
-        if chosen==nil or (endpointInField and not chosen.endpointInField) then
-            chosen={side=side,dx=dx,dz=dz,endpointInField=endpointInField}
+        local endpointInOwnField=ownPolygon~=nil and inside(ownPolygon,
+            relocator.x+dx*40,relocator.z+dz*40) or false
+        local towardOwnCentre=ownCentroid~=nil
+            and (dx*(ownCentroid.x-relocator.x)
+                +dz*(ownCentroid.z-relocator.z)) or nil
+        -- Both directions remain eligible. Use only the current worker's
+        -- GIANTS course field: prefer its interior endpoint, then the vector
+        -- toward its centroid. No field data -> stable left-rear direction.
+        if chosen==nil
+            or (endpointInOwnField and not chosen.endpointInOwnField)
+            or (endpointInOwnField==chosen.endpointInOwnField
+                and towardOwnCentre~=nil
+                and towardOwnCentre>chosen.centreScore+0.001) then
+            chosen={side=side,dx=dx,dz=dz,
+                endpointInOwnField=endpointInOwnField,
+                centreScore=towardOwnCentre}
         end
     end
     local horizon=40+STEERING_LOOKAHEAD_M
@@ -202,7 +229,10 @@ function Region.planSingle(commitment,relocator)
         directionSource="SINGLE_OBLIQUE_REVERSE",
         egressSide=chosen.side,vectorDistanceM=40,
         nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
-        targetInField=chosen.endpointInField,
+        targetInField=chosen.endpointInOwnField,
+        fieldInteriorScore=chosen.centreScore,
+        fieldIdentitySource=ownPolygon~=nil and "GIANTS_ACTIVE_COURSE_FIELD"
+            or "NO_COURSE_FIELD_AVAILABLE",
         nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ
     }
 end
