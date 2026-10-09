@@ -6206,3 +6206,17 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Validation contract:** Confirm a blocked worker beyond all field polygons can be admitted and complete TRANSIT → 40 m region → STOP/START, even when no polygon data exists. Verify paired TS015 contracts remain unchanged. Offline evidence is not GIANTS physical success; TEST .1.2 requires a TS003 Reality replay. No new collision detector, movement timeout or retained job uncertainty has been introduced.
 
+## 2026-10-09 — #461 TEST 0.5.1.2 TS003 GIANTS Reality FAIL: Adjacent-Field Relocation
+
+**Field observation:** TEST `0.5.1.2` began single-worker recovery more successfully than .1.1, but relocation went to an **adjacent field** instead of **the blocked worker's own field**. Evidence artefact: `0.5.1.2_TS003.zip`; local ZIP inspection was attempted but the file runtime was unavailable. The exact field labels, vehicle coordinates and sequence timing are therefore not independently asserted.
+
+**Confirmed source cause:** The .1.2 planner used `soloEndpointInField` to scan **every** `g_fieldManager.fields` polygon and preferred an oblique 40 m endpoint in any one. Field proximity was incorrectly treated as native job field ownership. This permitted an adjacent field's polygon to select the relocation side.
+
+**Named discovery:** **Field Ownership Is Not Field Proximity.** For a native solo blocked worker, "towards the middle of the field" refers to **the current GIANTS worker's OWN field**, regardless of whether the assembly is temporarily outside its boundary.
+
+**Design correction — TEST `0.5.1.3`:** The active `AIDriveStrategyFieldCourse.aiFieldCourse.fieldCourse.courseField.boundaryPositions` identifies the worker's actual generated course field. Calculate its polygon and area centroid once during solo region planning, select the oblique reverse candidate ending inside *that same* field where possible, otherwise prefer the candidate aligned toward its centroid. If the generated boundary is unavailable, use the strategy's own GIANTS `fieldDetectionX/Z` as an inward directional reference. Do not consult other fields for solo side selection. Without native field identity, retain deterministic native reverse rather than inventing field association or refusing recovery. None of these direction inputs is a new admission requirement.
+
+**Preserved contract:** TRANSIT → 40 m projected oblique reverse REGION → immediate native FIELDWORK STOP/START, **without solo Hold**. Pairwise TS015 selection, blocker-width vector, 5 s Regulation, 7 s Hold, and native handback are unchanged.
+
+**Validation challenge:** Use two adjacent field polygons and a blocked worker initially outside its own boundary; change only its GIANTS active course field and prove reverse-side selection follows that identity, not proximity. Test the GIANTS fieldDetection coordinate and missing-course permissive case. CI proves source contracts only; TS003 GIANTS Reality remains required to establish physical return to the worker's own field.
+

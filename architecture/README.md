@@ -11,7 +11,7 @@ Architecture describes what the system should achieve; Specifications provide ex
 - [Log Publication](LOG_PUBLICATION.md) — bounded runtime/engineering fact publication.
 - [GUI](GUI.md) — current settings and status indication; full operational messaging deferred.
 
-TEST 0.5.1.2 (#461) allows native single-worker BWR **outside** field polygons, using the same TRANSIT / 40 m oblique-reverse-region / immediate FIELDWORK STOP/START mechanisms. The solo path has no Hold timer, artificial partner or pairwise Regulation; in-field destinations are a preference only. Native blocked Observation nominates candidates only. Independent commitment checks current GIANTS FIELDWORK jobs, field polygon and physical references before Control begins. The active shell does not invent native blockage or rebuild historic predictive Passage responsibilities.
+TEST 0.5.1.3 (#461) retains solo BWR **outside** field polygons and TRANSIT / 40 m oblique region / immediate FIELDWORK STOP/START, with no solo Hold timer. The preferred inward direction uses the **worker's native active course field**, never an adjacent field in the global registry. Paired mechanisms are unchanged. Native blocked Observation nominates candidates only. Independent commitment checks current GIANTS FIELDWORK jobs, field polygon and physical references before Control begins. The active shell does not invent native blockage or rebuild historic predictive Passage responsibilities.
 
 ## Deliberately unresolved
 
