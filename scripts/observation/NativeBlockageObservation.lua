@@ -132,17 +132,19 @@ local function pairStillCurrent(pair,present)
 end
 
 function Observer.new(configuration)
-    return setmetatable({configuration=configuration,states={},pairs={}},Observer)
+    return setmetatable({configuration=configuration,states={},pairs={},singles={}},Observer)
 end
 
 function Observer:loadMap()
     self.states={}
     self.pairs={}
+    self.singles={}
 end
 
 function Observer:deleteMap()
     self.states={}
     self.pairs={}
+    self.singles={}
 end
 
 -- Delivers a copy of currently live candidate evidence to the separate
@@ -157,6 +159,21 @@ function Observer:getCurrentPairCandidates()
             firstWorker=pair.firstWorker,secondWorker=pair.secondWorker,
             blockedWorker=pair.blockedWorker,
             confirmedBlockedMs=pair.confirmedBlockedMs
+        }
+    end
+    return results
+end
+
+
+-- Native solo concern identity is scoped to the current positive blocked pulse.
+-- It is not a retained stop/start attempt history or a fabricated pair.
+function Observer:getCurrentSingleCandidates()
+    local results={}
+    if not self:isEnabled() then return results end
+    for _,entry in pairs(self.singles) do
+        results[#results+1]={
+            candidateIdentity=entry,worker=entry.worker,
+            confirmedBlockedMs=entry.confirmedBlockedMs
         }
     end
     return results
@@ -178,6 +195,7 @@ function Observer:update(dt)
     if not self:isEnabled() then
         self.states={}
         self.pairs={}
+        self.singles={}
         return
     end
 
@@ -186,11 +204,20 @@ function Observer:update(dt)
     if not finite(nowMs) or workers==nil then
         self.states={}
         self.pairs={}
+        self.singles={}
         return
     end
 
     local present={}
     for i=1,#workers do present[workers[i]]=true end
+    for worker,entry in pairs(self.singles) do
+        if not present[worker]
+            or jobReference(worker)~=entry.job
+            or fieldCourseStrategy(worker)~=entry.strategy
+            or entry.strategy.isBlocked~=true then
+            self.singles[worker]=nil
+        end
+    end
     for key,pair in pairs(self.pairs) do
         if not pairStillCurrent(pair,present) then self.pairs[key]=nil end
     end
@@ -201,11 +228,13 @@ function Observer:update(dt)
         local job=jobReference(worker)
         if strategy==nil or job==nil then
             self.states[worker]=nil
+            self.singles[worker]=nil
         else
             local isBlocked=strategy.isBlocked
             local state=self.states[worker]
             if state==nil or state.job~=job or state.strategy~=strategy
                 or nowMs<state.lastSampleMs then
+                self.singles[worker]=nil
                 state={job=job,strategy=strategy,lastSampleMs=nowMs,
                     wasBlocked=false,confirmedBlockedMs=0,reported=false}
             end
@@ -227,6 +256,7 @@ function Observer:update(dt)
                         local pairIdentity=nil
                         local shouldPublish=true
                         if result~=nil then
+                            self.singles[worker]=nil
                             pairIdentity=pairKey(subject.rootId,result.rootId)
                             if self.pairs[pairIdentity]~=nil then
                                 -- A reciprocal blocked signal describes the same pair.
@@ -246,6 +276,12 @@ function Observer:update(dt)
                                 end
                             end
                         end
+                        if result==nil then
+                            self.singles[worker]={
+                                worker=worker,job=job,strategy=strategy,
+                                confirmedBlockedMs=state.confirmedBlockedMs
+                            }
+                        end
                         if shouldPublish then
                             local code=result~=nil and "NATIVE_BLOCKAGE_PAIR_CANDIDATE"
                                 or "NATIVE_BLOCKAGE_NO_LOCAL_WORKER"
@@ -263,6 +299,7 @@ function Observer:update(dt)
                     end
                 end
             else
+                self.singles[worker]=nil
                 state.confirmedBlockedMs=0
                 state.reported=false
             end
@@ -273,6 +310,9 @@ function Observer:update(dt)
     end
     -- Leaving GIANTS' active-job registry is not native unblock evidence.
     for worker in pairs(self.states) do
-        if not present[worker] then self.states[worker]=nil end
+        if not present[worker] then
+            self.states[worker]=nil
+            self.singles[worker]=nil
+        end
     end
 end
