@@ -20,10 +20,12 @@ SHELL_MODULES = [
     "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
     "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
+    "scripts/control/mechanisms/NonJobActuationMechanism.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/observation/NativeBlockageObservation.lua",
+    "scripts/observation/CurrentPlayerControlObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
@@ -103,7 +105,8 @@ def test_reverse_speed_is_native_and_has_scoped_cruise_restoration():
 
 
 def test_player_control_takeover_is_not_a_live_authority_predicate():
-    assert not (ROOT / "scripts/observation/CurrentPlayerControlObservation.lua").exists()
+    assert (ROOT / "scripts/observation/CurrentPlayerControlObservation.lua").is_file()
+    assert "NonJobActuationMechanism.lua" in main_text()
     for consumer in (
         "scripts/coordination/NativePairCommitmentAuthority.lua",
         "scripts/coordination/LiveHoldRelocateRuntime.lua",

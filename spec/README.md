@@ -11,10 +11,11 @@ Specifications define implementation-facing obligations for responsibilities acc
 | Spatial Pair Inference | [Spatial Pair Inference Specification](SPATIAL_PAIR_INFERENCE.md) | [SpatialPairInference.lua](../scripts/assessment/SpatialPairInference.lua), pure; native observer now supplies candidate inputs |
 | Hold & Relocate | [Hold & Relocate Specification](HOLD_RELOCATE.md) | [HoldRelocateCoordinator.lua](../scripts/coordination/HoldRelocateCoordinator.lua), coordination logic only; no physical adapter or active commitment source |
 | Native Blockage Observation | [Native Blockage Observation Specification](NATIVE_BLOCKAGE_OBSERVATION.md) | [NativeBlockageObservation.lua](../scripts/observation/NativeBlockageObservation.lua), server-side read-only samples |
+| Obstruction Relocation (partial port) | [Obstruction Relocation Specification](OBSTRUCTION_RELOCATION.md) | [NonJobActuationMechanism.lua](../scripts/control/mechanisms/NonJobActuationMechanism.lua), **mechanism loaded; no active relocation admission** |
 
 [Current code](../scripts/main.lua) also composes the version-only HUD and disabled reminder according to [GUI Architecture](../architecture/GUI.md).
 
-There is **no full Situation Assessment, Regulation, Passage, Recovery, Decision, Bounded Authority or worker Control implementation**. Hold & Relocate coordination is implemented as a dormant module within the accepted responsibility; no physical GIANTS adapter or admission is wired. Native Blockage Observation now supplies sampled GIANTS blocked-state input for **single full ≥1 s pulses**; more complex episode continuity is still absent. Retired research signals do not establish a new Jurisdiction.
+The 0.5.1.3 shell has **live single-worker and paired Hold & Relocate**, but no archived full Situation Assessment, Passage, global Decision or non-active Obstruction Relocation Resolution. The ported non-job mechanism is **loaded but inactive**. A completed worker does not yet relocate automatically. Native blocked evidence does not identify a specific non-active blocker; the restored semantic admission is a separate task under #463.
 
 The pre-rewrite contracts and source remain recoverable from the immutable [archive/0.4.11.0 Git branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Their former implementations were removed from the 0.5 working tree; do not treat historical participant lists as current source traceability.
 

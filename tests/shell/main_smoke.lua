@@ -13,10 +13,12 @@ local expected={
     "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
     "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
+    "scripts/control/mechanisms/NonJobActuationMechanism.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
     "scripts/observation/NativeBlockageObservation.lua",
+    "scripts/observation/CurrentPlayerControlObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -51,7 +53,9 @@ source=function(path)
         or path=="scripts/control/mechanisms/NativeTranslationHoldMechanism.lua"
         or path=="scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"
-        or path=="scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua" then
+        or path=="scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua"
+        or path=="scripts/control/mechanisms/NonJobActuationMechanism.lua"
+        or path=="scripts/observation/CurrentPlayerControlObservation.lua" then
         dofile(path)
     elseif path=="scripts/configuration/Configuration.lua" then
         OuttaMyWay.Configuration={new=function() return configuration end}
@@ -85,7 +89,9 @@ assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
 assert(type(OuttaMyWay.liveHoldRelocateRuntime.update)=="function")
-assert(OuttaMyWay.CurrentPlayerControlObservation==nil)
+assert(type(OuttaMyWay.CurrentPlayerControlObservation.isControlled)=="function")
+assert(type(OuttaMyWay.NonJobActuationMechanism.driveInWorldDirection)=="function")
+assert(OuttaMyWay.obstructionRelocationRuntime==nil)
 assert(OuttaMyWay.liveHoldRelocateRuntime.authority~=nil)
 assert(OuttaMyWay.liveHoldRelocateRuntime.physicalControl~=nil)
 assert(not OuttaMyWay.liveHoldRelocateRuntime.authority:enabled(),
