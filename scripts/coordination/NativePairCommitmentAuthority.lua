@@ -40,11 +40,18 @@ local function currentStrategy(vehicle)
     return nil
 end
 
+-- Existing Player Control Interlock contract: each GIANTS surface is a
+-- positive takeover witness, not a requirement for an explicit false value.
+-- Active native field-work and current Job Episode checks provide separate
+-- affirmative AI-role evidence before this clearance is used.
 local function notPlayer(vehicle)
-    if type(vehicle.getIsControlled)~="function" then return false end
-    local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
-    if not ok or type(controlled)~="boolean" or controlled then return false end
-    return g_currentMission==nil or g_currentMission.controlledVehicle~=vehicle
+    if type(vehicle.getIsControlled)=="function" then
+        local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
+        if not ok then return false end -- unknown native call: fail closed
+        if controlled==true then return false end
+    end
+    local mission=g_currentMission
+    return mission==nil or mission.controlledVehicle~=vehicle
 end
 
 local function inside(poly,x,z)

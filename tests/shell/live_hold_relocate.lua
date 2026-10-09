@@ -152,6 +152,25 @@ second.getIsControlled=function()return true end
 accepted,reason=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
 second.getIsControlled=originalControl
+-- A missing/unspecified native negative flag is not positive player control.
+-- Both active GIANTS FIELDWORK jobs and strategies remain independently
+-- mandatory; no player-positive witness may be ignored.
+second.getIsControlled=nil
+local cleared=assert(authority:admitCandidate(first,second,first,1000))
+assert(authority:release(cleared))
+second.getIsControlled=function()return nil end
+cleared=assert(authority:admitCandidate(first,second,first,1000))
+assert(authority:release(cleared))
+second.getIsControlled=function()error("NATIVE_CONTROL_EXCEPTION") end
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",
+    "native control call exceptions must remain fail-closed")
+second.getIsControlled=originalControl
+g_currentMission.controlledVehicle=second
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",
+    "mission player control witness must veto independently")
+g_currentMission.controlledVehicle=nil
 enabled=false
 accepted=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil)
@@ -159,7 +178,7 @@ enabled=true
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.0.21"
+OuttaMyWay.VERSION="0.5.0.22"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}
