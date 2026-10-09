@@ -1,4 +1,4 @@
-"""Contracts for the no-GIANTS-observation shell and its inert pure evaluator.
+"""Contracts for the passive native observer shell with no vehicle Control.
 
 The 0.4 behavioural contracts remain in the repository as historic evidence;
 they do not describe the presently loaded product.
@@ -13,6 +13,7 @@ SHELL_MODULES = [
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/observation/NativeBlockageObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
@@ -44,7 +45,8 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 2
+    assert text.count("addModEventListener(") == 3
+    assert "OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new" in text
     assert "NativeBlockedProbe" not in text
     assert "NativeBlockedEventTap" not in text
 

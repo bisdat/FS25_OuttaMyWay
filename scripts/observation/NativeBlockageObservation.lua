@@ -1,0 +1,187 @@
+-- Passive, server-side native field-course isBlocked sampler for eligible AI workers.
+-- Specification Jurisdictions: `NATIVE_BLOCKAGE_OBSERVATION`
+-- GIANTS owns this state. Never replace callbacks, create native events or command vehicles.
+OuttaMyWay=OuttaMyWay or {}
+OuttaMyWay.NativeBlockageObservation={}
+local Observer=OuttaMyWay.NativeBlockageObservation
+Observer.__index=Observer
+local publication=OuttaMyWay.LogPublication.origin("NATIVE_BLOCKAGE_OBSERVATION")
+
+local function finite(n)
+    return type(n)=="number" and n==n and n~=math.huge and n~=-math.huge
+end
+
+-- This is GIANTS' ordinary activeJobVehicles table, proven in the earlier
+-- passive field-worker experiment, not an OMW sealed-proxy collection.
+local function activeFieldWorkers()
+    local mission=g_currentMission
+    local registry=mission and mission.aiSystem and mission.aiSystem.activeJobVehicles
+    if type(registry)~="table" then return nil end
+
+    local result,seen={},{}
+    local function include(worker)
+        if type(worker)~="table" or seen[worker] then return end
+        local spec=worker.spec_aiFieldWorker
+        if type(spec)~="table" or spec.isActive~=true then return end
+        seen[worker]=true
+        result[#result+1]=worker
+    end
+    for key,value in pairs(registry) do
+        include(key)
+        include(value)
+        if type(value)=="table" then
+            include(value.vehicle)
+            include(value.object)
+            include(value.rootVehicle)
+            include(value[1])
+        end
+    end
+    return result
+end
+
+local function fieldCourseStrategy(worker)
+    local spec=worker.spec_aiFieldWorker
+    local strategies=spec and spec.driveStrategies
+    if type(strategies)~="table" then return nil end
+    for _,strategy in pairs(strategies) do
+        if type(strategy)=="table" and type(strategy.isBlocked)=="boolean" then
+            local name=strategy.className
+                or (type(strategy.class)=="table" and strategy.class.className)
+            if strategy.aiFieldCourse~=nil
+                or (type(name)=="string" and string.find(name,"FieldCourse",1,true)~=nil) then
+                return strategy
+            end
+        end
+    end
+    return nil
+end
+
+local function jobReference(worker)
+    local jobSpec=worker.spec_aiJobVehicle
+    return (jobSpec and jobSpec.job)
+        or (worker.spec_aiFieldWorker and worker.spec_aiFieldWorker.fieldJob)
+end
+
+local function rootVehicle(worker)
+    if type(worker.getRootVehicle)=="function" then
+        local ok,root=pcall(worker.getRootVehicle,worker)
+        if ok and type(root)=="table" then return root end
+    end
+    return worker.rootVehicle or worker
+end
+
+local function rootRecord(worker)
+    local root=rootVehicle(worker)
+    if type(root)~="table" or root.rootNode==nil
+        or type(getWorldTranslation)~="function" then return nil end
+    local ok,x,_,z=pcall(getWorldTranslation,root.rootNode)
+    if not ok or not finite(x) or not finite(z) then return nil end
+    return {rootId=root.rootNode,x=x,z=z,eligible=true}
+end
+
+local function eligibleRoots(workers)
+    local roots,seen={},{}
+    for i=1,#workers do
+        local record=rootRecord(workers[i])
+        if record~=nil and not seen[record.rootId] then
+            seen[record.rootId]=true
+            roots[#roots+1]=record
+        end
+    end
+    return roots
+end
+
+function Observer.new(configuration)
+    return setmetatable({configuration=configuration,states={}},Observer)
+end
+
+function Observer:loadMap()
+    self.states={}
+end
+
+function Observer:deleteMap()
+    self.states={}
+end
+
+function Observer:isEnabled()
+    local c=self.configuration
+    return g_server~=nil and c~=nil
+        and c:isResolved()==true and c:isEnabled()==true
+end
+
+-- Sample only active native field-course workers, using GIANTS' *own* updated
+-- strategy.isBlocked field. Only adjacent positive samples accrue time; a
+-- false/unknown reading or job/strategy change closes the current pulse.
+-- Cross-pulse episode association remains a separate, unimplemented concern:
+-- a full ≥1 s native pulse is already sufficient evidence for the existing gate.
+function Observer:update(dt)
+    if not self:isEnabled() then
+        self.states={}
+        return
+    end
+
+    local nowMs=tonumber(g_time)
+    local workers=activeFieldWorkers()
+    if not finite(nowMs) or workers==nil then
+        self.states={}
+        return
+    end
+
+    local present={}
+    for i=1,#workers do
+        local worker=workers[i]
+        present[worker]=true
+        local strategy=fieldCourseStrategy(worker)
+        local job=jobReference(worker)
+        if strategy==nil or job==nil then
+            self.states[worker]=nil
+        else
+            local isBlocked=strategy.isBlocked
+            local state=self.states[worker]
+            if state==nil or state.job~=job or state.strategy~=strategy
+                or nowMs<state.lastSampleMs then
+                state={job=job,strategy=strategy,lastSampleMs=nowMs,
+                    wasBlocked=false,confirmedBlockedMs=0,reported=false}
+            end
+
+            if isBlocked then
+                if state.wasBlocked and nowMs>=state.lastSampleMs then
+                    state.confirmedBlockedMs=state.confirmedBlockedMs
+                        +(nowMs-state.lastSampleMs)
+                else
+                    state.confirmedBlockedMs=0
+                    state.reported=false
+                end
+                if not state.reported and state.confirmedBlockedMs>=1000 then
+                    local subject=rootRecord(worker)
+                    if subject~=nil then
+                        local result=OuttaMyWay.SpatialPairInference.evaluate(
+                            state.confirmedBlockedMs,subject,eligibleRoots(workers))
+                        state.reported=true
+                        local code=result~=nil and "NATIVE_BLOCKAGE_PAIR_CANDIDATE"
+                            or "NATIVE_BLOCKAGE_NO_LOCAL_WORKER"
+                        publication:publish("DEBUG","INFO",code,function()
+                            return {
+                                blockedRootId=tostring(subject.rootId),
+                                partnerRootId=result and tostring(result.rootId) or "none",
+                                distanceM=result and result.distanceMetres or "unavailable",
+                                confirmedBlockedMs=math.floor(state.confirmedBlockedMs),
+                                authority="OBSERVATION_ONLY"
+                            }
+                        end)
+                    end
+                end
+            else
+                state.confirmedBlockedMs=0
+                state.reported=false
+            end
+            state.wasBlocked=isBlocked
+            state.lastSampleMs=nowMs
+            self.states[worker]=state
+        end
+    end
+    -- Leaving GIANTS' active-job registry is not native unblock evidence.
+    for worker in pairs(self.states) do
+        if not present[worker] then self.states[worker]=nil end
+    end
+end

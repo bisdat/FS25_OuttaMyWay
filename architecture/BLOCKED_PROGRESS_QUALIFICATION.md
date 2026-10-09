@@ -1,6 +1,6 @@
 # Blocked-First Situation Assessment — 0.5 Architecture
 
-**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the owner correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. **TEST 0.5.0.6 remains a control-free shell.** No worker Observation, Situation Assessment, or Control is implemented by this document, and no new Specification Jurisdiction or GIANTS hook is authorised.
+**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the owner correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The current product remains **control-free**. Passive native Observation is now limited to reading existing GIANTS blocked-state fields, with no AI modification or event hook.
 
 ## Purpose
 
@@ -90,6 +90,15 @@ After a worker satisfies the gate, **choose the nearest other eligible local wor
 
 **The 30 m radius is the owner-selected locality policy**, not an empirical physical-clearance or causal-contact threshold. No implement-width correction, vehicle-specific radius, collision hull, trajectory prediction or geometric precision is required. An in-radius worker is a *possible* blocker, not a proven one. If there is no candidate, do not invent a worker pair; where eligibility or attribution is uncertain, Situation Assessment may remain **WAITING_FOR_EVIDENCE**. Re-evaluate current positions/authority before any later Pair Commitment.
 
+## Specification Jurisdiction — Native Blockage Observation
+
+**Jurisdiction ID:** `NATIVE_BLOCKAGE_OBSERVATION`  
+**Primary Specification:** [`spec/NATIVE_BLOCKAGE_OBSERVATION.md`](../spec/NATIVE_BLOCKAGE_OBSERVATION.md)
+
+This read-only jurisdiction observes the **GIANTS-owned field-course `isBlocked` state** for active native AI field jobs and feeds the already accepted one-second/30 m candidate evaluator. It does not replace GIANTS callbacks, intercept event constructors, modify vehicles, reconstruct collision geometry, or establish a Pair Commitment.
+
+Initial source counts **one continuous positively sampled native blocked pulse** toward the gate. This is sufficient to exercise candidate selection after a full one-second pulse. The accepted broader **multi-pulse Unresolved Obstruction Episode** remains a separately unimplemented continuity capability; do not substitute uncontrolled job-lifetime accumulation for episode evidence or invent a new duration/progress test.
+
 ## Specification Jurisdiction — Spatial Pair Inference
 
 **Jurisdiction ID:** `SPATIAL_PAIR_INFERENCE`  
@@ -134,10 +143,10 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 
 **Architecture:** blocked-first Situation Assessment uses GIANTS native blocked signals, persistence and spatial pair inference; no separate physical-obstruction proof stage or GIANTS course-progress gate.
 
-**Specification:** Configuration and Log Publication remain unchanged. The narrow Spatial Pair Inference Specification covers only a pure candidate evaluator. Worker Observation, broader Situation Assessment, Pair Commitment and Control are still unimplemented.
+**Specification:** Configuration and Log Publication remain unchanged. Native Blockage Observation owns passive in-game evidence sampling, and Spatial Pair Inference owns its pure 1 s/30 m decision. Multi-pulse continuity, broader Situation Assessment, Pair Commitment and Control are not implemented.
 
-**Source:** TEST 0.5.0.7 includes an inert, pure Spatial Pair Inference evaluator. No GIANTS worker observation, event hook, caller, scan, pair actuation or course-progress tracker is introduced; the native event tap stays retired.
+**Source:** The current shell loads a passive `NativeBlockageObservation` listener that reads the native field-course blocked state and calls the existing Spatial Pair Inference evaluator when a single observed pulse reaches one second. No global GIANTS hook, worker Control, active recovery or course-progress tracking; the retired event tap stays retired.
 
-**Testing:** Offline evidence can validate pure numeric gate/selection logic only. TEST 0.5.0.6's owner-waived smoke is not an in-game PASS. Any eventual native Observation or Control needs separate GIANTS Reality validation.
+**Testing:** Offline tests validate sampling/lifecycle and 1 s/30 m handoff only with mock GIANTS values. In-game Reality must validate passive observation and temporal fidelity separately. The TEST 0.5.0.6 smoke waiver and 0.5.0.7 shell-smoke PASS are not evidence of this new observer's live correctness.
 
 **Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, candidate eligibility and uncertainty when the nearest in-radius worker is incidental, and separate Pair Commitment authority/settlement. **The proximity radius is settled by owner decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**
