@@ -1,6 +1,6 @@
 -- The coordinator is dormant in production; these interfaces are independent mocked contracts.
 OuttaMyWay={}
-dofile("scripts/control/HoldRelocateCoordinator.lua")
+dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 local a={assemblyReferenceKey="A",x=10,z=0,vehicle={name="A"}}
 local b={assemblyReferenceKey="B",x=15,z=0,vehicle={name="B"}}

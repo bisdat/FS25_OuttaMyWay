@@ -42,7 +42,7 @@ An external call can fail **after** partly changing GIANTS state. The coordinato
 
 | Production source | Participation |
 | --- | --- |
-| [`scripts/control/HoldRelocateCoordinator.lua`](../scripts/control/HoldRelocateCoordinator.lua) | `REALISES` |
+| [`scripts/coordination/HoldRelocateCoordinator.lua`](../scripts/coordination/HoldRelocateCoordinator.lua) | `REALISES` |
 
 ## Repository validation participants
 
@@ -52,4 +52,4 @@ An external call can fail **after** partly changing GIANTS state. The coordinato
 
 ## Implementation traceability and validation scope
 
-The [coordinator](../scripts/control/HoldRelocateCoordinator.lua) currently realises role selection, coordination sequencing and conservative unresolved-effect retention. [Product entry](../scripts/main.lua) sources the module without instantiating it; no production physical adapter exists. The [offline behaviour challenge](../tests/shell/hold_relocate.lua) covers timing, role selection, independent authority, failure recovery and uncertain native hand-back. GIANTS in-game tests, not offline mocks, must validate physical hold, reverse steering, Transit's realised state and job continuation.
+The [coordinator](../scripts/coordination/HoldRelocateCoordinator.lua) currently realises role selection, coordination sequencing and conservative unresolved-effect retention. [Product entry](../scripts/main.lua) sources the module without instantiating it; no production physical adapter exists. The [offline behaviour challenge](../tests/shell/hold_relocate.lua) covers timing, role selection, independent authority, failure recovery and uncertain native hand-back. GIANTS in-game tests, not offline mocks, must validate physical hold, reverse steering, Transit's realised state and job continuation.

@@ -67,7 +67,7 @@ jobs:
             scripts/main.lua \
             scripts/config.lua \
             scripts/assessment/SpatialPairInference.lua \
-            scripts/control/HoldRelocateCoordinator.lua \
+            scripts/coordination/HoldRelocateCoordinator.lua \
             scripts/observation/NativeBlockageObservation.lua \
             scripts/configuration/Configuration.lua \
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \

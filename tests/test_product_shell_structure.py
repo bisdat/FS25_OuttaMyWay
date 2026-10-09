@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHELL_MODULES = [
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
-    "scripts/control/HoldRelocateCoordinator.lua",
+    "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
