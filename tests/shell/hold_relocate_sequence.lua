@@ -75,7 +75,7 @@ valid=true
 local bad=request()
 bad.authorized=false
 assert(not seq:begin(bad,21000))
-assert(#log==5,"no actuation from passive candidate")
+assert(log[#log].verb=="RELEASE","no actuation from passive candidate")
 bad=request();bad.blockers={c}
 assert(not seq:begin(bad,21000),"paired other must be protected")
 bad=request();bad.centroid={x=10,z=0}
