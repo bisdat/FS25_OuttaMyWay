@@ -66,7 +66,6 @@ jobs:
           for file in \
             scripts/main.lua \
             scripts/config.lua \
-            scripts/observation/CurrentPlayerControlObservation.lua \
             scripts/assessment/SpatialPairInference.lua \
             scripts/coordination/HoldRelocateCoordinator.lua \
             scripts/coordination/NativePairCommitmentAuthority.lua \
@@ -93,7 +92,6 @@ jobs:
           "$LUAJIT_BIN" tests/shell/spatial_pair_inference.lua
           "$LUAJIT_BIN" tests/shell/hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/live_hold_relocate.lua
-          "$LUAJIT_BIN" tests/shell/current_player_control_observation.lua
           "$LUAJIT_BIN" tests/shell/native_reverse_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_translation_hold_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_transit_request_mechanism.lua

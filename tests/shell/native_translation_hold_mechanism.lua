@@ -1,6 +1,5 @@
 -- Dormant GIANTS translation gate challenged against an explicit mocked native drive.
 OuttaMyWay={}
-dofile("scripts/observation/CurrentPlayerControlObservation.lua")
 dofile("scripts/control/mechanisms/NativeTranslationHoldMechanism.lua")
 local Mechanism=OuttaMyWay.NativeTranslationHoldMechanism
 local events={}
@@ -62,46 +61,26 @@ assert(releaseOk and evidence.isNativeFunctionRestored)
 assert(AIVehicleUtil.driveToPoint==native,"restore direct native function after last release")
 releaseOk,evidence=mechanism:releaseHold(bravo,"EGRESS")
 assert(releaseOk and not evidence.wasHeld,"idempotent cleanup after uncertain command")
--- Player entry must refuse admission before installing a global wrapper.
-g_currentMission.controlledVehicle=alpha
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
-assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
-assert(AIVehicleUtil.driveToPoint==native)
-g_currentMission.controlledVehicle=nil
--- The archived terminal-relocation interlock resolves mission/player seats
--- through the physical root instead of requiring the same Lua object.
-local playerSeat={rootNode=9904}
-playerSeat.getRootVehicle=function() return alpha end
-g_currentMission.controlledVehicle=playerSeat
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
-assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
-g_currentMission.controlledVehicle=nil
-alpha.isControlled=true
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
-assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
-alpha.isControlled=false
--- A native control getter exception is not, by itself, a positive takeover
--- under the archived predicate; actual native job continuity still matters.
+-- No player-control / takeover judgement belongs to this mechanism.
+-- Even a mission-controlled root and throwing getter must not be queried.
+-- The independent native job and server lifecycle still own release.
 local originalControlGetter=alpha.getIsControlled
-alpha.getIsControlled=function() error("NATIVE_QUERY_UNAVAILABLE") end
-assert(mechanism:hold(alpha,"EGRESS"))
-assert(mechanism:releaseHold(alpha,"EGRESS"))
+alpha.getIsControlled=function()error("FORBIDDEN_PLAYER_QUERY") end
+g_currentMission.controlledVehicle=alpha
+assert(mechanism:hold(alpha,"RELOCATED_WORKER"))
+AIVehicleUtil.driveToPoint(alpha,16,1,true,true,1,2,9,nil)
+assert(events[#events].allowed==false and events[#events].speed==0)
+assert(mechanism:isHolding(alpha),"no takeover-triggered Hold release")
+g_currentMission.controlledVehicle=nil
+AIVehicleUtil.driveToPoint(alpha,16,1,true,true,1,2,9,nil)
+assert(events[#events].allowed==false and events[#events].speed==0)
+assert(mechanism:releaseHold(alpha,"RELOCATED_WORKER"))
+assert(AIVehicleUtil.driveToPoint==native)
 alpha.getIsControlled=originalControlGetter
 alpha.job=nil
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
+local releaseOk,reason=mechanism:hold(alpha,"EGRESS")
 assert(not releaseOk and reason=="NATIVE_JOB_UNAVAILABLE")
 alpha.job={}
--- Player takeover while Held is a positive interlock and revokes restriction
--- on the next native drive command, independent of an OMW clock gate.
-assert(mechanism:hold(alpha,"RELOCATED_WORKER"))
-alpha.isControlled=true
-AIVehicleUtil.driveToPoint(alpha,16,1,true,true,1,2,9,nil)
-assert(events[#events].allowed==true and events[#events].speed==9)
-assert(not mechanism:isHolding(alpha))
-assert(mechanism:releaseHold(alpha,"RELOCATED_WORKER"))
-alpha.isControlled=false
-assert(AIVehicleUtil.driveToPoint==native,
-    "automatic player-control relinquishment restores the native drive entry point")
 -- A different non-null GIANTS job is a new episode, not continued permission
 -- to suppress the original job's native translation commands.
 assert(mechanism:hold(alpha,"EGRESS"))

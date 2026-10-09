@@ -40,16 +40,6 @@ local function currentJob(vehicle)
     return job
 end
 
-local function playerControlClear(vehicle)
-    -- Use the same root-aware transient predicate as admission and Hold.
-    -- This is checked both during preparation and immediately before stop.
-    if OuttaMyWay.CurrentPlayerControlObservation.isControlled(
-        g_currentMission,vehicle) then
-        return false,"PLAYER_CONTROL_ACTIVE"
-    end
-    return true
-end
-
 local function discardBeforeStop(replacement)
     if type(replacement)~="table" or type(replacement.delete)~="function" then
         return false,"REPLACEMENT_DISPOSAL_UNAVAILABLE"
@@ -95,8 +85,6 @@ local function prepare(vehicle)
     if type(aiSystem.stopJob)~="function" or type(aiSystem.startJob)~="function" then
         return nil,"NATIVE_JOB_LIFECYCLE_UNAVAILABLE"
     end
-    local clear,playerReason=playerControlClear(vehicle)
-    if not clear then return nil,playerReason end
     local job,jobReason=currentJob(vehicle)
     if job==nil then return nil,jobReason end
 
@@ -162,11 +150,10 @@ function Mechanism:restartNativeFieldwork(vehicle)
     -- Preparation can trigger native lifecycle callbacks, so recheck once
     -- immediately before crossing the stop commitment point.
     local current=currentJob(vehicle)
-    local clear,controlReason=playerControlClear(vehicle)
-    if current~=expected or not clear then
+    if current~=expected then
         local disposed=discardBeforeStop(state.replacement)
         if not disposed then return fail("PRE_STOP_CLEANUP_UNCONFIRMED",true) end
-        return fail(not clear and controlReason or "ORIGINAL_JOB_EPISODE_REPLACED",false)
+        return fail("ORIGINAL_JOB_EPISODE_REPLACED",false)
     end
     self.attempts[vehicle]={
         status="STOP_INVOCATION_ENTERED",oldJobId=state.oldJobId,

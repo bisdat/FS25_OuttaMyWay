@@ -40,31 +40,6 @@ local function currentStrategy(vehicle)
     return nil
 end
 
--- The archived terminal/obstruction-relocation Player Control Interlock is
--- the single authority for current takeover. The predicate normalises the
--- root vehicle and tests root, supplied object and mission-controlled root.
--- Do not reconstruct an object-local or strict-negative clearance here.
-local function playerControlWitness(vehicle)
-    if OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle) then
-        return "ARCHIVED_ROOT_AWARE_PLAYER_CONTROL"
-    end
-    return nil
-end
-
-local function notPlayer(vehicle)
-    return not OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle)
-end
-
--- Diagnostics only; no entry evidence may relax the archived player veto.
-local function playerEntryEvidence(vehicle)
-    if type(vehicle.getIsEntered)~="function" then return "UNAVAILABLE" end
-    local ok,entered=pcall(vehicle.getIsEntered,vehicle)
-    if not ok then return "QUERY_EXCEPTION" end
-    if entered==true then return "TRUE" end
-    if entered==false then return "FALSE" end
-    return "UNKNOWN"
-end
-
 local function inside(poly,x,z)
     local result=false
     local xs,zs=poly.xs,poly.zs
@@ -149,7 +124,7 @@ local function participant(vehicle,strategy,job,point)
 end
 
 -- The candidate is mere nomination; admission re-reads both native jobs,
--- strategies, current positions, player control, common polygon and duration.
+-- strategies, current positions, common polygon and duration.
 -- A zero-metre offset is an explicit conservative live policy: the relocation
 -- bound is 30m, never an invented positive allowance beyond that.
 function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
@@ -163,17 +138,7 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     if as==nil or bs==nil then return nil,"NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE" end
     if aj==nil or bj==nil then return nil,"NATIVE_JOB_REFERENCE_UNAVAILABLE" end
     if ap==nil or bp==nil then return nil,"ASSEMBLY_ROOT_POSE_UNAVAILABLE" end
-    local firstClaim=playerControlWitness(first)
-    local secondClaim=playerControlWitness(second)
-    if firstClaim~=nil or secondClaim~=nil then
-        local participant=firstClaim~=nil and first or second
-        return nil,"PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",{
-            participant=firstClaim~=nil and "FIRST" or "SECOND",
-            rootId=tostring(participant.rootNode),
-            witness=firstClaim or secondClaim,
-            nativeEntered=playerEntryEvidence(participant)
-        }
-    end
+
     if first.rootNode==second.rootNode then return nil,"ROOT_IDENTITIES_NOT_DISTINCT" end
     if blockedWorker~=first and blockedWorker~=second then
         return nil,"BLOCKED_SUBJECT_UNVERIFIED"
@@ -222,7 +187,7 @@ function Authority:isCommitmentCurrent(commitment)
         local p=commitment.participants[i]
         if currentJob(p.vehicle)~=p.sourceJobReference
             or currentStrategy(p.vehicle)~=p.sourceStrategyReference
-            or not notPlayer(p.vehicle) or pose(p.vehicle)==nil then
+            or pose(p.vehicle)==nil then
             return false,"GIANTS_JOB_EPISODE_CHANGED"
         end
     end

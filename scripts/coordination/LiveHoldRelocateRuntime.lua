@@ -17,7 +17,7 @@ end
 -- Admission rejection is a meaningful outcome of a qualifying native pair
 -- candidate. Emit once per candidate occurrence; do not silently consume
 -- the only evidence that can explain why no physical intervention followed.
-local function reportRejectedAdmission(runtime,evidence,reason,diagnostic)
+local function reportRejectedAdmission(runtime,evidence,reason)
     local publication=runtime.publication
     if publication==nil then return end
     publication:publish("NORMAL","WARNING","HOLD_RELOCATE_ADMISSION_REJECTED",function()
@@ -25,10 +25,6 @@ local function reportRejectedAdmission(runtime,evidence,reason,diagnostic)
             pairKey=tostring(evidence.pairKey or "unknown"),
             reason=tostring(reason or "UNSPECIFIED_ADMISSION_REJECTION"),
             confirmedBlockedMs=evidence.confirmedBlockedMs,
-            participant=diagnostic and diagnostic.participant,
-            rootId=diagnostic and diagnostic.rootId,
-            playerWitness=diagnostic and diagnostic.witness,
-            playerEntered=diagnostic and diagnostic.nativeEntered,
             version=OuttaMyWay.VERSION
         }
     end)
@@ -105,14 +101,14 @@ function Runtime:update(dt)
         local evidence=candidates[i]
         if type(evidence)=="table" and evidence.candidateIdentity~=nil
             and not self.attempted[evidence.candidateIdentity] then
-            local commitment,reason,diagnostic=self.authority:admitCandidate(
+            local commitment,reason=self.authority:admitCandidate(
                 evidence.firstWorker,evidence.secondWorker,
                 evidence.blockedWorker,evidence.confirmedBlockedMs)
             -- An admission attempt is single-shot per native pair occurrence,
             -- including rejection. A later native occurrence is a new key.
             self.attempted[evidence.candidateIdentity]=true
             if commitment==nil then
-                reportRejectedAdmission(self,evidence,reason,diagnostic)
+                reportRejectedAdmission(self,evidence,reason)
             else
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then

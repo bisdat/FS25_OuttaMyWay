@@ -9,7 +9,6 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 SHELL_MODULES = [
     "scripts/config.lua",
-    "scripts/observation/CurrentPlayerControlObservation.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
@@ -63,24 +62,21 @@ def test_shell_wires_only_admitted_hold_relocate_without_legacy_control():
     assert "NativeBlockedEventTap" not in text
 
 
-def test_single_archived_root_aware_player_control_interlock():
-    """One imported archived predicate, not three divergent live predicates."""
-    path = "scripts/observation/CurrentPlayerControlObservation.lua"
-    archive = (ROOT / path).read_text(encoding="utf-8")
-    assert "function Observation.isControlled(mission,object)" in archive
-    assert 'safeCall(object,"getRootVehicle")' in archive
-    assert 'safeCall(target,"getIsControlled")' in archive
-    assert 'safeCall(object,"getIsControlled")' in archive
-    assert "rootVehicle(mission and mission.controlledVehicle or nil)" in archive
+def test_player_control_takeover_is_not_a_live_authority_predicate():
+    assert not (ROOT / "scripts/observation/CurrentPlayerControlObservation.lua").exists()
     for consumer in (
         "scripts/coordination/NativePairCommitmentAuthority.lua",
+        "scripts/coordination/LiveHoldRelocateRuntime.lua",
         "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
         "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
     ):
         content = (ROOT / consumer).read_text(encoding="utf-8")
-        assert "OuttaMyWay.CurrentPlayerControlObservation.isControlled" in content
-        assert "pcall(vehicle.getIsControlled" not in content
-        assert "mission.controlledVehicle==vehicle" not in content
+        assert "CurrentPlayerControlObservation" not in content
+        assert "getIsControlled" not in content
+        assert "getIsEntered" not in content
+        assert "controlledVehicle" not in content
+        assert "PLAYER_CONTROL" not in content
+        assert "PLAYER_TAKEOVER" not in content
 
 
 def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():

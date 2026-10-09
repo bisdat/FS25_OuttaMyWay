@@ -11,13 +11,6 @@ local function weakKeys()
     return setmetatable({},{__mode="k"})
 end
 
--- Reuse archived root-aware transient Player Control predicate. Native query
--- failures do not themselves prove a current player takeover.
-local function isCurrentPlayerControl(vehicle)
-    return OuttaMyWay.CurrentPlayerControlObservation.isControlled(
-        g_currentMission,vehicle)
-end
-
 -- The GIANTS job object is a transient runtime reference, not stable semantic
 -- Job Episode identity. It is sufficient to detect replacement while Held.
 local function currentNativeJob(vehicle)
@@ -83,16 +76,11 @@ function Mechanism:install()
             return original(vehicle,dt,acceleration,allowedToDrive,
                 moveForwards,localTargetX,localTargetZ,maxSpeed,doNotSteer)
         end
-        local isControlled,controlReason=isCurrentPlayerControl(vehicle)
         local currentJob,jobReason=currentNativeJob(vehicle)
-        if isControlled~=false or currentJob~=state.nativeJobReference
-            or g_server==nil then
-            -- Job replacement, player takeover or server loss must never
-            -- retain an old Hold. A replacement job is not the admitted one.
+        if currentJob~=state.nativeJobReference or g_server==nil then
+            -- GIANTS job turnover or server loss revokes this Hold.
             state.isRelinquished=true
-            state.relinquishReason=controlReason
-                or (isControlled==true and "PLAYER_TAKEOVER")
-                or (currentJob~=state.nativeJobReference
+            state.relinquishReason=(currentJob~=state.nativeJobReference
                     and (jobReason or "NATIVE_JOB_REPLACED"))
                 or "SERVER_UNAVAILABLE"
             withdrawHold(mechanism,vehicle)
@@ -122,8 +110,6 @@ function Mechanism:hold(vehicle,purpose)
         return false,"HOLD_PURPOSE_REQUIRED"
     end
     if self.holds[vehicle]~=nil then return false,"HOLD_ALREADY_ACTIVE" end
-    local isControlled,reason=isCurrentPlayerControl(vehicle)
-    if isControlled~=false then return false,reason or "PLAYER_CONTROL_ACTIVE" end
     local nativeJob,jobReason=currentNativeJob(vehicle)
     if nativeJob==nil then return false,jobReason end
     local installed,why=self:install()

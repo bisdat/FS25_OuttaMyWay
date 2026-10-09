@@ -2,7 +2,6 @@
 -- The GIANTS functions here are mocked; neither admission nor work progress is
 -- claimed validated against the game.
 OuttaMyWay={}
-dofile("scripts/observation/CurrentPlayerControlObservation.lua")
 dofile("scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua")
 local Mechanism=OuttaMyWay.NativeFieldworkJobReplacementMechanism
 
@@ -91,7 +90,6 @@ local function scenario(options)
         vehicle=vehicle,original=original,events=events,mechanism=mechanism,
         replaceExpected=function(job) expected=job end,
         replaceCurrent=function(job) current=job end,
-        markPlayer=function(value) options.player=value end,
         currentJob=function() return current end
     }
 end
@@ -156,19 +154,16 @@ r=scenario({noFarm=true})
 ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
 assert(not ok and evidence.reason=="AI_JOB_FARM_UNAVAILABLE")
 assert(#r.events==0)
--- Player control interlock fails before mutation.
+-- Player-controlled/entered GIANTS surfaces are not consulted by the
+-- physical hand-back mechanism. Only admitted native FIELDWORK job and
+-- current Job Episode continuity can authorize native stop/restart.
 r=scenario({player=true})
 ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
-assert(not ok and evidence.reason=="PLAYER_CONTROL_ACTIVE")
-assert(#r.events==0)
--- Archived positive-root predicate: a different mission object resolving to
--- the same root is player takeover, even without the worker's local flag.
+assert(ok and evidence.isNewJobStarted)
+order(r.events,{"CREATE","APPLY","SET_VALUES","VALIDATE","STOP","START"})
 r=scenario({missionRootAlias=true})
 ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
-assert(not ok and evidence.reason=="PLAYER_CONTROL_ACTIVE")
-assert(#r.events==0)
--- Missing native negative evidence and getter exceptions do not constitute
--- positive player control. Job Episode and FIELDWORK checks still apply.
+assert(ok and evidence.isNewJobStarted)
 r=scenario({noControlMethod=true})
 ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
 assert(ok and evidence.isNewJobStarted)
