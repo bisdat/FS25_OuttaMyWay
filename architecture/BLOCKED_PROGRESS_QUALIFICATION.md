@@ -106,6 +106,12 @@ Initial source counts **one continuous positively sampled native blocked pulse**
 
 Only the accepted **≥1 s confirmed blocked input and nearest eligible worker within 30 m** belong to this narrow evaluator contract. It does not capture GIANTS events, accumulate retry pulses, determine causal obstruction, assess the full Situation or authorize/control workers. Those responsibilities remain distinct.
 
+## One physical worker pair, one candidate occurrence
+
+Native blockage is worker-specific, so in an opposed encounter both workers may independently nominate one another after the same one-second gate. **Those are two observations of the same unordered worker pair, not two independent pair resolutions.** Observation unifies the active pair identity from the two assembly roots; it neither adds another blockage qualification gate nor selects movement roles.
+
+The active occurrence retires when both workers are natively unblocked, either native job or strategy turns over, a participant disappears, the pair leaves the accepted 30 m neighbourhood, or OMW observation stops. A later qualifying encounter may nominate that pair again. This protects future coordinated Control from **competing reciprocal commitments**, without claiming that candidate observation itself grants Control.
+
 ## 4. Keep Situation Assessment and Pair Commitment distinct
 
 **Situation Assessment** examines native blockage persistence, present candidate pair proximity and whether a paired response is justified. It can decline intervention when GIANTS is evidently recovering or the blocking pair is unsupported, but **does not require an independently measured physical overlap or GIANTS course advancement**.
@@ -145,8 +151,8 @@ Only a later, explicitly justified **Pair Commitment** may hold one participant 
 
 **Specification:** Configuration and Log Publication remain unchanged. Native Blockage Observation owns passive in-game evidence sampling, and Spatial Pair Inference owns its pure 1 s/30 m decision. Multi-pulse continuity, broader Situation Assessment, Pair Commitment and Control are not implemented.
 
-**Source:** The current shell loads a passive `NativeBlockageObservation` listener that reads the native field-course blocked state and calls the existing Spatial Pair Inference evaluator when a single observed pulse reaches one second. No global GIANTS hook, worker Control, active recovery or course-progress tracking; the retired event tap stays retired.
+**Source:** The current shell loads a passive `NativeBlockageObservation` listener that reads the native field-course blocked state, calls Spatial Pair Inference when one observed pulse reaches one second, and unifies reciprocal reports into one active pair occurrence. No global GIANTS hook, worker Control, active recovery or course-progress tracking; the retired event tap stays retired.
 
-**Testing:** Offline tests validate sampling/lifecycle and 1 s/30 m handoff only with mock GIANTS values. In-game Reality must validate passive observation and temporal fidelity separately. The TEST 0.5.0.6 smoke waiver and 0.5.0.7 shell-smoke PASS are not evidence of this new observer's live correctness.
+**Testing:** Offline tests validate sampling/lifecycle, reciprocal pair unification and 1 s/30 m handoff with mock GIANTS values. In-game Reality must validate passive observation and temporal fidelity separately. The TEST 0.5.0.6 smoke waiver and 0.5.0.7 shell-smoke PASS are not evidence of this new observer's live correctness.
 
 **Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** stable native edge collection, bounded continuity across retries, candidate eligibility and uncertainty when the nearest in-radius worker is incidental, and separate Pair Commitment authority/settlement. **The proximity radius is settled by owner decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**

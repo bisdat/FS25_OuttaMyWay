@@ -91,16 +91,58 @@ local function eligibleRoots(workers)
     return roots
 end
 
+-- A pair is an unordered identity, irrespective of which GIANTS worker
+-- first reports blockage. This coalesces reciprocal observations; it does not
+-- decide which worker should hold, relocate or assume Control.
+local function pairKey(firstRootId,secondRootId)
+    local first=tostring(firstRootId)
+    local second=tostring(secondRootId)
+    if first>second then first,second=second,first end
+    return first.."|"..second
+end
+
+local function findRootWorker(workers,rootId)
+    for i=1,#workers do
+        local record=rootRecord(workers[i])
+        if record~=nil and record.rootId==rootId then return workers[i] end
+    end
+    return nil
+end
+
+local function pairStillCurrent(pair,present)
+    local first,second=pair.firstWorker,pair.secondWorker
+    if not present[first] or not present[second]
+        or jobReference(first)~=pair.firstJob
+        or jobReference(second)~=pair.secondJob
+        or fieldCourseStrategy(first)~=pair.firstStrategy
+        or fieldCourseStrategy(second)~=pair.secondStrategy then return false end
+
+    -- Only the GIANTS-owned field-course strategy's native blocked state
+    -- maintains this occurrence; a distinct specialization flag is not needed.
+    if pair.firstStrategy.isBlocked~=true and pair.secondStrategy.isBlocked~=true then
+        return false
+    end
+
+    local a=rootRecord(first)
+    local b=rootRecord(second)
+    if a==nil or b==nil then return false end
+    local dx=a.x-b.x
+    local dz=a.z-b.z
+    return dx*dx+dz*dz<=900 -- same already-accepted 30 m locality
+end
+
 function Observer.new(configuration)
-    return setmetatable({configuration=configuration,states={}},Observer)
+    return setmetatable({configuration=configuration,states={},pairs={}},Observer)
 end
 
 function Observer:loadMap()
     self.states={}
+    self.pairs={}
 end
 
 function Observer:deleteMap()
     self.states={}
+    self.pairs={}
 end
 
 function Observer:isEnabled()
@@ -112,11 +154,13 @@ end
 -- Sample only active native field-course workers, using GIANTS' *own* updated
 -- strategy.isBlocked field. Only adjacent positive samples accrue time; a
 -- false/unknown reading or job/strategy change closes the current pulse.
--- Cross-pulse episode association remains a separate, unimplemented concern:
--- a full ≥1 s native pulse is already sufficient evidence for the existing gate.
+-- Cross-pulse episode association remains separate from this gate; a
+-- full ≥1 s native pulse is sufficient. Reciprocal worker observations are
+-- represented by one unordered active pair identity, not two resolutions.
 function Observer:update(dt)
     if not self:isEnabled() then
         self.states={}
+        self.pairs={}
         return
     end
 
@@ -124,13 +168,18 @@ function Observer:update(dt)
     local workers=activeFieldWorkers()
     if not finite(nowMs) or workers==nil then
         self.states={}
+        self.pairs={}
         return
     end
 
     local present={}
+    for i=1,#workers do present[workers[i]]=true end
+    for key,pair in pairs(self.pairs) do
+        if not pairStillCurrent(pair,present) then self.pairs[key]=nil end
+    end
+
     for i=1,#workers do
         local worker=workers[i]
-        present[worker]=true
         local strategy=fieldCourseStrategy(worker)
         local job=jobReference(worker)
         if strategy==nil or job==nil then
@@ -158,17 +207,39 @@ function Observer:update(dt)
                         local result=OuttaMyWay.SpatialPairInference.evaluate(
                             state.confirmedBlockedMs,subject,eligibleRoots(workers))
                         state.reported=true
-                        local code=result~=nil and "NATIVE_BLOCKAGE_PAIR_CANDIDATE"
-                            or "NATIVE_BLOCKAGE_NO_LOCAL_WORKER"
-                        publication:publish("DEBUG","INFO",code,function()
-                            return {
-                                blockedRootId=tostring(subject.rootId),
-                                partnerRootId=result and tostring(result.rootId) or "none",
-                                distanceM=result and result.distanceMetres or "unavailable",
-                                confirmedBlockedMs=math.floor(state.confirmedBlockedMs),
-                                authority="OBSERVATION_ONLY"
-                            }
-                        end)
+                        local pairIdentity=nil
+                        local shouldPublish=true
+                        if result~=nil then
+                            pairIdentity=pairKey(subject.rootId,result.rootId)
+                            if self.pairs[pairIdentity]~=nil then
+                                -- A reciprocal blocked signal describes the same pair.
+                                shouldPublish=false
+                            else
+                                local other=findRootWorker(workers,result.rootId)
+                                if other~=nil then
+                                    self.pairs[pairIdentity]={
+                                        firstWorker=worker,secondWorker=other,
+                                        firstJob=job,secondJob=jobReference(other),
+                                        firstStrategy=strategy,
+                                        secondStrategy=fieldCourseStrategy(other)
+                                    }
+                                end
+                            end
+                        end
+                        if shouldPublish then
+                            local code=result~=nil and "NATIVE_BLOCKAGE_PAIR_CANDIDATE"
+                                or "NATIVE_BLOCKAGE_NO_LOCAL_WORKER"
+                            publication:publish("DEBUG","INFO",code,function()
+                                return {
+                                    blockedRootId=tostring(subject.rootId),
+                                    partnerRootId=result and tostring(result.rootId) or "none",
+                                    pairKey=pairIdentity or "none",
+                                    distanceM=result and result.distanceMetres or "unavailable",
+                                    confirmedBlockedMs=math.floor(state.confirmedBlockedMs),
+                                    authority="OBSERVATION_ONLY"
+                                }
+                            end)
+                        end
                     end
                 end
             else
