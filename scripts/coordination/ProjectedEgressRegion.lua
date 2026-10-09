@@ -162,7 +162,15 @@ local function ownCourseField(commitment)
     local fieldCourse=type(aiCourse)=="table" and aiCourse.fieldCourse or nil
     local courseField=type(fieldCourse)=="table" and fieldCourse.courseField or nil
     local points=type(courseField)=="table" and courseField.boundaryPositions or nil
-    if type(points)~="table" or #points<3 then return nil,nil end
+    -- GIANTS' native field-detection coordinate identifies the current
+    -- worker's selected field even when the generated boundary is absent.
+    local fallback=type(strategy)=="table"
+        and finite(strategy.fieldDetectionX) and finite(strategy.fieldDetectionZ)
+        and {x=strategy.fieldDetectionX,z=strategy.fieldDetectionZ} or nil
+    if type(points)~="table" or #points<3 then
+        return nil,fallback,fallback~=nil
+            and "GIANTS_FIELD_DETECTION_POSITION" or "NO_NATIVE_FIELD_REFERENCE"
+    end
     local poly={xs={},zs={}}
     local area2,cx,cz=0,0,0
     for i=1,#points do
@@ -179,8 +187,12 @@ local function ownCourseField(commitment)
         cx=cx+(poly.xs[i]+poly.xs[j])*a
         cz=cz+(poly.zs[i]+poly.zs[j])*a
     end
-    if math.abs(area2)<0.000001 then return nil,nil end
-    return poly,{x=cx/(3*area2),z=cz/(3*area2)}
+    if math.abs(area2)<0.000001 then
+        return nil,fallback,fallback~=nil
+            and "GIANTS_FIELD_DETECTION_POSITION" or "NO_NATIVE_FIELD_REFERENCE"
+    end
+    return poly,{x=cx/(3*area2),z=cz/(3*area2)},
+        "GIANTS_ACTIVE_COURSE_FIELD"
 end
 
 function Region.planSingle(commitment,relocator)
@@ -192,7 +204,7 @@ function Region.planSingle(commitment,relocator)
     local backX,backZ,reason=heading(relocator.vehicle,"getAIReverserNode",true)
     if backX==nil then return nil,reason end
     local perpX,perpZ=-backZ,backX
-    local ownPolygon,ownCentroid=ownCourseField(commitment)
+    local ownPolygon,ownCentroid,ownFieldSource=ownCourseField(commitment)
     local chosen=nil
     for _,side in ipairs({-1,1}) do
         local dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX
@@ -231,8 +243,7 @@ function Region.planSingle(commitment,relocator)
         nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
         targetInField=chosen.endpointInOwnField,
         fieldInteriorScore=chosen.centreScore,
-        fieldIdentitySource=ownPolygon~=nil and "GIANTS_ACTIVE_COURSE_FIELD"
-            or "NO_COURSE_FIELD_AVAILABLE",
+        fieldIdentitySource=ownFieldSource,
         nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ
     }
 end
