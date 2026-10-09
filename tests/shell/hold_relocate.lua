@@ -7,6 +7,7 @@ local b={assemblyReferenceKey="B",x=15,z=0,vehicle={name="B"}}
 local c={assemblyReferenceKey="C",x=11,z=10,vehicle={name="C"}}
 local events={}
 local isCurrent=true
+local isInitialJobEpisodeCurrent=true
 local isTransitReady=false
 local reverseStatus={travelledM=0,isComplete=false}
 local refuseReleaseFor=nil
@@ -17,7 +18,8 @@ end
 local authority={
     validateCommitment=function(_,commitment)
         record("VALIDATE")
-        return commitment.token=="issued-by-authority", "COMMITMENT_NOT_ISSUED"
+        return commitment.token=="issued-by-authority" and isInitialJobEpisodeCurrent,
+            "COMMITMENT_OR_JOB_EPISODE_UNVERIFIED"
     end,
     isCommitmentCurrent=function() return isCurrent,"LIFECYCLE_INVALID" end
 }
@@ -86,6 +88,12 @@ assert(coordinator:getStatus().lastOutcome.isNativeContinuationConfirmed==false)
 events={}
 local bad=admitted();bad.token="invented";assert(not coordinator:begin(bad,20000))
 assert(#events==1 and events[1].kind=="VALIDATE")
+-- A token is insufficient when GIANTS Job Episode freshness is unknown.
+isInitialJobEpisodeCurrent=false
+events={}
+assert(not coordinator:begin(admitted(),20001))
+assert(#events==1 and events[1].kind=="VALIDATE")
+isInitialJobEpisodeCurrent=true
 -- A candidate's own assertion is irrelevant to independent authority.
 bad=admitted();bad.authorized=true;bad.token=nil
 assert(not coordinator:begin(bad,20000))
