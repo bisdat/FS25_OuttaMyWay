@@ -12,7 +12,10 @@ local function scenario(options)
     local nextId=41
     local vehicle={}
     function vehicle:getJob()return job end
-    function vehicle:getAIJobFarmId()return options.noFarm and nil or 7 end
+    function vehicle:getAIJobFarmId()
+        if options.noFarm then return nil end
+        return 7
+    end
     local manager={}
     function manager:getJobTypeIndexByName(name)
         assert(name=="FIELDWORK")
