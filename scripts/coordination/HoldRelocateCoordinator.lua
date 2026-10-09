@@ -138,23 +138,38 @@ end
 function Coordinator:begin(commitment,nowMs)
     if self.active~=nil then return false,"COMMITMENT_ALREADY_ACTIVE" end
     if type(commitment)~="table" or commitment.commitmentId==nil or not finite(nowMs)
-        or type(commitment.participants)~="table" or #commitment.participants~=2
+        or type(commitment.participants)~="table"
+        or (commitment.kind=="SINGLE" and #commitment.participants~=1)
+        or (commitment.kind~="SINGLE" and #commitment.participants~=2)
         or type(commitment.fieldCentroid)~="table"
         or not finite(commitment.fieldCentroid.x) or not finite(commitment.fieldCentroid.z)
         or not finite(commitment.offsetM) or commitment.offsetM<0
-        or not finite(commitment.blockerWorkingWidthM)
-        or commitment.blockerWorkingWidthM<=0
+        or (commitment.kind=="SINGLE" and commitment.singleRegionDistanceM~=40)
+        or (commitment.kind~="SINGLE"
+            and (not finite(commitment.blockerWorkingWidthM)
+                or commitment.blockerWorkingWidthM<=0))
         or type(commitment.fieldPolygon)~="table"
-        or type(commitment.nearbyBlockers)~="table" or #commitment.nearbyBlockers==0 then
+        or type(commitment.nearbyBlockers)~="table"
+        or (commitment.kind~="SINGLE" and #commitment.nearbyBlockers==0) then
         return false,"COMMITMENT_EVIDENCE_UNAVAILABLE"
     end
+    local single=commitment.kind=="SINGLE"
     local first,second=commitment.participants[1],commitment.participants[2]
-    if not positioned(first) or not positioned(second)
-        or first.assemblyReferenceKey==second.assemblyReferenceKey
-        or first.vehicle==second.vehicle then
+    if not positioned(first) or (not single and
+        (not positioned(second)
+            or first.assemblyReferenceKey==second.assemblyReferenceKey
+            or first.vehicle==second.vehicle)) then
         return false,"PARTICIPANTS_INVALID"
     end
-    local relocator,other=selectRelocator(first,second,commitment.fieldCentroid)
+    local relocator,other
+    if single then
+        if #commitment.nearbyBlockers~=0 then
+            return false,"SINGLE_BLOCKER_MEMBERSHIP_INVALID"
+        end
+        relocator=first
+    else
+        relocator,other=selectRelocator(first,second,commitment.fieldCentroid)
+    end
     local blockers,seen,hasOther={}, {}, false
     for i=1,#commitment.nearbyBlockers do
         local participant=commitment.nearbyBlockers[i]
@@ -168,20 +183,28 @@ function Coordinator:begin(commitment,nowMs)
         if participant.assemblyReferenceKey==other.assemblyReferenceKey
             and participant.vehicle==other.vehicle then hasOther=true end
     end
-    if not hasOther then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
+    if not single and not hasOther then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
 
-    local objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.plan(
-        commitment,relocator,other)
+    local objective,geometryReason
+    if single then
+        objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.planSingle(
+            commitment,relocator)
+    else
+        objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.plan(
+            commitment,relocator,other)
+    end
     if objective==nil then return false,geometryReason end
     local state={
         commitmentId=commitment.commitmentId,commitment=commitment,
         relocator=relocator,blockers=blockers,isBlockerRegulated={},
         isRelocatorHeld=false,isReverseOutstanding=false,isTransitOutstanding=false,
         phase="REQUESTING_TRANSIT",
-        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS,relocatedHoldUntilMs=nil,
-        objective=objective
+        egressRegulationUntilMs=single and nil or nowMs+EGRESS_REGULATION_MS,
+        relocatedHoldUntilMs=nil,isSingle=single,objective=objective
     }
-    if not finite(state.egressRegulationUntilMs) then return false,"CLOCK_UNAVAILABLE" end
+    if not single and not finite(state.egressRegulationUntilMs) then
+        return false,"CLOCK_UNAVAILABLE"
+    end
     local accepted,reason=command(self.commitmentAuthority,"validateCommitment",commitment)
     if not accepted then return false,reason end
     local isReady,preflightReason=command(self.physicalControl,"preflight",state)
@@ -232,6 +255,22 @@ function Coordinator:begin(commitment,nowMs)
             and reverseEvidence.requestedReverseSpeedKmh or nil}
 end
 
+-- Complete the same native FIELDWORK handback for solo and paired recovery.
+function Coordinator:completeNativeHandback(state)
+    local restarted,evidence=command(self.physicalControl,
+        "restartNativeFieldwork",state.relocator.vehicle)
+    if not restarted then
+        local cause=type(evidence)=="table" and evidence.reason or evidence
+        self:finishWithOutcome("CONTROL_INTERRUPTED",cause)
+        return
+    end
+    -- GIANTS owns the replacement job and TRANSIT configuration.
+    state.isTransitOutstanding=false
+    self.lastOutcome={status="NATIVE_RESTART_ACCEPTED",
+        commitmentId=state.commitmentId,isNativeContinuationConfirmed=false}
+    self.active=nil
+end
+
 -- advance is a procedure step, not GIANTS' generic update callback. The
 -- admission and safety witnesses stay with the independent authority.
 function Coordinator:advance(nowMs)
@@ -242,7 +281,7 @@ function Coordinator:advance(nowMs)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
 
     -- Timer alone releases the other participant's speed regulation.
-    if nowMs>=state.egressRegulationUntilMs then
+    if not state.isSingle and nowMs>=state.egressRegulationUntilMs then
         for i=1,#state.blockers do
             if state.isBlockerRegulated[i] then
                 local released,releaseEvidence=command(
@@ -290,6 +329,10 @@ function Coordinator:advance(nowMs)
         local stopped,stopReason=command(self.physicalControl,"stopReverse",state.relocator.vehicle)
         if not stopped then self:finishWithOutcome("CONTROL_INTERRUPTED",stopReason);return end
         state.isReverseOutstanding=false
+        if state.isSingle then
+            self:completeNativeHandback(state)
+            return
+        end
         state.isRelocatorHeld=true
         local held,holdReason=command(self.physicalControl,"hold",state.relocator.vehicle,"RELOCATED_WORKER")
         if not held then self:finishWithOutcome("CONTROL_INTERRUPTED",holdReason);return end
@@ -305,22 +348,6 @@ function Coordinator:advance(nowMs)
             "releaseHold",state.relocator.vehicle,"RELOCATED_WORKER")
         if not released then self:finishWithOutcome("CONTROL_INTERRUPTED",releaseReason);return end
         state.isRelocatorHeld=false
-        -- The native stop/start is requested once for this collision only.
-        -- Do not retain uncertain job state or require an additional job
-        -- identity observation before releasing the completed commitment.
-        local restarted,evidence=command(self.physicalControl,
-            "restartNativeFieldwork",state.relocator.vehicle)
-        if not restarted then
-            local cause=type(evidence)=="table" and evidence.reason or evidence
-            self:finishWithOutcome("CONTROL_INTERRUPTED",cause)
-            return
-        end
-        -- GIANTS now controls the new native job and its configuration.
-        state.isTransitOutstanding=false
-        self.lastOutcome={
-            status="NATIVE_RESTART_ACCEPTED",commitmentId=state.commitmentId,
-            isNativeContinuationConfirmed=false
-        }
-        self.active=nil
+        self:completeNativeHandback(state)
     end
 end
