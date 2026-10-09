@@ -31,6 +31,8 @@ The blocked worker and neighbouring currently active field workers are converted
 
 **Scope limit of this tranche:** candidate enumeration covers currently active GIANTS field workers; other physical obstacles and previously completed workers are not yet represented by an Operation membership model. An absence of a local worker means **no observed active-worker candidate**, not proof there is no other physical obstacle. Candidate publication is diagnostic evidence, **not** a causality/Control Decision.
 
+**Passive candidate delivery:** `getCurrentPairCandidates()` returns copies of existing active pair-candidate references, the originating observed blocked duration and blocked worker to the separate live Pair Commitment authority. The read-only Observer does not validate independent commitment, field centroid, TRANSIT capability or any physical Control; its candidate is merely an input which downstream authority may reject. This supplements DEBUG publication without interpreting the DEBUG log as an actuation request.
+
 **Unordered pair identity:** use the two assembly-root IDs independent of nomination direction. Keep only one active candidate occurrence per pair while at least one worker remains natively blocked, both native jobs/strategies remain unchanged, both workers remain present, and root-to-root separation remains within **30 m**. On both workers unblocked, missing member, changed job/strategy, loss of root evidence, separation beyond the existing radius, map exit or disablement, retire the occurrence. A later eligible encounter may create a new occurrence. There is no new obstacle-proof test, extra distance threshold or release timeout.
 
 ## Lifecycle and authority invariants
@@ -39,7 +41,7 @@ The blocked worker and neighbouring currently active field workers are converted
 - Map load/delete and native Job Episode/strategy turnover discard stale pulses.
 - Missing root coordinates/strategy/clock fail closed; no GIANTS field is ever mutated.
 - A threshold reached with valid evidence may publish `NATIVE_BLOCKAGE_PAIR_CANDIDATE` or `NATIVE_BLOCKAGE_NO_LOCAL_WORKER` as **DEBUG**. An active pair publishes at most one candidate record even when each worker separately reaches the one-second gate. Non-pair blocked observations remain once per pulse.
-- No worker Control, OMW-induced Hold, GIANTS continuation mutation or pair commitment.
+- No worker Control, OMW-induced Hold, GIANTS continuation mutation or pair commitment **within Observation**; candidate evidence may be consumed by the independently gated live Hold & Relocate responsibility.
 - Observed candidate records do not become durable responsibility or authority; later active membership/recovery behaviour needs separate Reality validation.
 
 ## Contract participants
@@ -56,6 +58,6 @@ The blocked worker and neighbouring currently active field workers are converted
 
 ## Implementation traceability / validation scope
 
-[`scripts/main.lua`](../scripts/main.lua) explicitly constructs one observer with current Configuration and registers it as a third non-Control mod event listener. The existing [Spatial Pair Inference](../scripts/assessment/SpatialPairInference.lua) is a downstream pure evaluator, not another Native Blockage Observation participant.
+[`scripts/main.lua`](../scripts/main.lua) constructs one observer with current Configuration and registers it ahead of the separate live Control runtime. The existing [Spatial Pair Inference](../scripts/assessment/SpatialPairInference.lua) is a downstream pure evaluator, not another Native Blockage Observation participant.
 
-Offline tests verify observation gate, false-pulse reset, job/strategy turnover, root ranking, reciprocal-pair unification and release, disabled/client state and absence of vehicle commands. Only an in-game Reality test can confirm correct GIANTS source timing, no interference and representative Condor/Patriot candidate observation. This Specification establishes neither multi-pulse episode continuity nor GIANTS production-control authority.
+Offline tests verify observation gate, false-pulse reset, job/strategy turnover, root ranking, reciprocal-pair unification and release, disabled/client state and absence of vehicle commands. Only an in-game Reality test can confirm correct GIANTS source timing, no interference and representative Condor/Patriot candidate observation. This Specification establishes neither multi-pulse episode continuity nor GIANTS Control authority **for the Observer**; current production Control is a separate `HOLD_RELOCATE` responsibility.

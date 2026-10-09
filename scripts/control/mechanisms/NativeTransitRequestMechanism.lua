@@ -101,6 +101,14 @@ function Mechanism:cancelTransit(vehicle)
     return true,{isRestoreRequested=true,isRestorationVerified=false}
 end
 
+-- Successful native FIELDWORK replacement transfers configuration to GIANTS.
+-- Drop the old request record WITHOUT asking old-job implements to restore.
+function Mechanism:relinquishTransit(vehicle)
+    if type(vehicle)~="table" then return false,"VEHICLE_UNAVAILABLE" end
+    self.requests[vehicle]=nil
+    return true
+end
+
 function Mechanism:getRequestEvidence(vehicle)
     local state=type(vehicle)=="table" and self.requests[vehicle] or nil
     if state==nil then return {isActive=false,isConfigurationVerified=false} end

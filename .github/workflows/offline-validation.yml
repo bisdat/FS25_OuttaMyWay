@@ -68,8 +68,13 @@ jobs:
             scripts/config.lua \
             scripts/assessment/SpatialPairInference.lua \
             scripts/coordination/HoldRelocateCoordinator.lua \
+            scripts/coordination/ProjectedEgressRegion.lua \
+            scripts/coordination/NativePairCommitmentAuthority.lua \
+            scripts/control/HoldRelocatePhysicalControl.lua \
+            scripts/coordination/LiveHoldRelocateRuntime.lua \
             scripts/control/mechanisms/NativeReverseMechanism.lua \
             scripts/control/mechanisms/NativeTranslationHoldMechanism.lua \
+            scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua \
             scripts/control/mechanisms/NativeTransitRequestMechanism.lua \
             scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua \
             scripts/observation/NativeBlockageObservation.lua \
@@ -87,9 +92,12 @@ jobs:
         run: |
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
           "$LUAJIT_BIN" tests/shell/spatial_pair_inference.lua
+          "$LUAJIT_BIN" tests/shell/projected_egress_region.lua
           "$LUAJIT_BIN" tests/shell/hold_relocate.lua
+          "$LUAJIT_BIN" tests/shell/live_hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/native_reverse_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_translation_hold_mechanism.lua
+          "$LUAJIT_BIN" tests/shell/native_speed_regulation_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_transit_request_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_fieldwork_job_replacement.lua
           "$LUAJIT_BIN" tests/shell/native_blockage_observation.lua

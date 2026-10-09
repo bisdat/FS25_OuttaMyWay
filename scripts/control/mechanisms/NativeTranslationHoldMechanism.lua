@@ -7,19 +7,18 @@ OuttaMyWay.NativeTranslationHoldMechanism={}
 local Mechanism=OuttaMyWay.NativeTranslationHoldMechanism
 Mechanism.__index=Mechanism
 
-local function weakKeys()
-    return setmetatable({},{__mode="k"})
+local function rootXZ(vehicle)
+    if vehicle.rootNode==nil or type(getWorldTranslation)~="function" then
+        return nil,nil
+    end
+    local ok,x,_,z=pcall(getWorldTranslation,vehicle.rootNode)
+    if not ok or type(x)~="number" or type(z)~="number"
+        or x~=x or z~=z then return nil,nil end
+    return x,z
 end
 
-local function isCurrentPlayerControl(vehicle)
-    if type(vehicle.getIsControlled)=="function" then
-        local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
-        if not ok then return nil,"PLAYER_CONTROL_EVIDENCE_UNAVAILABLE" end
-        if controlled==true then return true end
-    end
-    local mission=g_currentMission
-    if type(mission)=="table" and mission.controlledVehicle==vehicle then return true end
-    return false
+local function weakKeys()
+    return setmetatable({},{__mode="k"})
 end
 
 -- The GIANTS job object is a transient runtime reference, not stable semantic
@@ -87,16 +86,11 @@ function Mechanism:install()
             return original(vehicle,dt,acceleration,allowedToDrive,
                 moveForwards,localTargetX,localTargetZ,maxSpeed,doNotSteer)
         end
-        local isControlled,controlReason=isCurrentPlayerControl(vehicle)
         local currentJob,jobReason=currentNativeJob(vehicle)
-        if isControlled~=false or currentJob~=state.nativeJobReference
-            or g_server==nil then
-            -- Job replacement, player takeover or server loss must never
-            -- retain an old Hold. A replacement job is not the admitted one.
+        if currentJob~=state.nativeJobReference or g_server==nil then
+            -- GIANTS job turnover or server loss revokes this Hold.
             state.isRelinquished=true
-            state.relinquishReason=controlReason
-                or (isControlled==true and "PLAYER_TAKEOVER")
-                or (currentJob~=state.nativeJobReference
+            state.relinquishReason=(currentJob~=state.nativeJobReference
                     and (jobReason or "NATIVE_JOB_REPLACED"))
                 or "SERVER_UNAVAILABLE"
             withdrawHold(mechanism,vehicle)
@@ -126,14 +120,14 @@ function Mechanism:hold(vehicle,purpose)
         return false,"HOLD_PURPOSE_REQUIRED"
     end
     if self.holds[vehicle]~=nil then return false,"HOLD_ALREADY_ACTIVE" end
-    local isControlled,reason=isCurrentPlayerControl(vehicle)
-    if isControlled~=false then return false,reason or "PLAYER_CONTROL_ACTIVE" end
     local nativeJob,jobReason=currentNativeJob(vehicle)
     if nativeJob==nil then return false,jobReason end
     local installed,why=self:install()
     if not installed then return false,why end
+    local initialX,initialZ=rootXZ(vehicle)
     self.holds[vehicle]={
         purpose=purpose,interceptCount=0,nativeJobReference=nativeJob,
+        initialX=initialX,initialZ=initialZ,
         isRelinquished=false,lastNativeAllowedToDrive=nil
     }
     self.heldCount=self.heldCount+1
@@ -148,13 +142,20 @@ function Mechanism:releaseHold(vehicle,purpose)
     local state=self.holds[vehicle]
     if state==nil then return true,{wasHeld=false,isRestrictionRemoved=true} end
     if purpose~=state.purpose then return false,"HOLD_PURPOSE_MISMATCH" end
+    local endingX,endingZ=rootXZ(vehicle)
+    local displacementM=nil
+    if state.initialX~=nil and endingX~=nil then
+        displacementM=math.sqrt((endingX-state.initialX)^2
+            +(endingZ-state.initialZ)^2)
+    end
     local _,nativeRestored=withdrawHold(self,vehicle)
     -- A later wrapper may have chained this one. In that case the released
     -- inner wrapper is behaviourally transparent, and we do not overwrite
     -- another mod's current native drive function.
     return true,{wasHeld=true,isRestrictionRemoved=true,
         isNativeFunctionRestored=nativeRestored,
-        interceptionCount=state.interceptCount}
+        interceptionCount=state.interceptCount,
+        physicalDisplacementM=displacementM}
 end
 
 function Mechanism:getHoldEvidence(vehicle)

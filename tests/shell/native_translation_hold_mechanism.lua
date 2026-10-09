@@ -11,11 +11,17 @@ local native=function(vehicle,dt,acceleration,allowed,forwards,x,z,speed,doNotSt
     return "GIANTS_NATIVE_RETURN"
 end
 AIVehicleUtil={driveToPoint=native}
+local coords={[9901]={x=1,z=2},[9902]={x=20,z=21}}
+getWorldTranslation=function(node)
+    local p=coords[node]
+    assert(p)
+    return p.x,0,p.z
+end
 g_server={}
 g_currentMission={controlledVehicle=nil}
-local alpha={name="A",job={}}
-local bravo={name="B",job={}}
-local charlie={name="C",job={}}
+local alpha={name="A",job={},rootNode=9901}
+local bravo={name="B",job={},rootNode=9902}
+local charlie={name="C",job={},rootNode=9903}
 for _,vehicle in ipairs({alpha,bravo,charlie}) do
     vehicle.getJob=function(self) return self.job end
     vehicle.getIsControlled=function(self) return self.isControlled==true end
@@ -49,9 +55,11 @@ assert(not mechanism:getHoldEvidence(alpha).isVehicleStoppedConfirmed)
 local releaseOk,reason=mechanism:releaseHold(alpha,"RELOCATED_WORKER")
 assert(not releaseOk and reason=="HOLD_PURPOSE_MISMATCH")
 assert(mechanism:isHolding(alpha))
+coords[9901]={x=1.5,z=2}
 releaseOk,evidence=mechanism:releaseHold(alpha,"EGRESS")
 assert(releaseOk and evidence.isRestrictionRemoved
-    and evidence.interceptionCount==1)
+    and evidence.interceptionCount==1
+    and math.abs(evidence.physicalDisplacementM-0.5)<0.001)
 assert(not mechanism:isHolding(alpha))
 assert(AIVehicleUtil.driveToPoint~=native,"B remains Held")
 AIVehicleUtil.driveToPoint(alpha,16,1,true,true,7,9,18,false)
@@ -61,31 +69,26 @@ assert(releaseOk and evidence.isNativeFunctionRestored)
 assert(AIVehicleUtil.driveToPoint==native,"restore direct native function after last release")
 releaseOk,evidence=mechanism:releaseHold(bravo,"EGRESS")
 assert(releaseOk and not evidence.wasHeld,"idempotent cleanup after uncertain command")
--- Player entry must refuse admission before installing a global wrapper.
+-- No player-control / takeover judgement belongs to this mechanism.
+-- Even a mission-controlled root and throwing getter must not be queried.
+-- The independent native job and server lifecycle still own release.
+local originalControlGetter=alpha.getIsControlled
+alpha.getIsControlled=function()error("FORBIDDEN_PLAYER_QUERY") end
 g_currentMission.controlledVehicle=alpha
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
-assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
-assert(AIVehicleUtil.driveToPoint==native)
+assert(mechanism:hold(alpha,"RELOCATED_WORKER"))
+AIVehicleUtil.driveToPoint(alpha,16,1,true,true,1,2,9,nil)
+assert(events[#events].allowed==false and events[#events].speed==0)
+assert(mechanism:isHolding(alpha),"no takeover-triggered Hold release")
 g_currentMission.controlledVehicle=nil
-alpha.isControlled=true
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
-assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
-alpha.isControlled=false
+AIVehicleUtil.driveToPoint(alpha,16,1,true,true,1,2,9,nil)
+assert(events[#events].allowed==false and events[#events].speed==0)
+assert(mechanism:releaseHold(alpha,"RELOCATED_WORKER"))
+assert(AIVehicleUtil.driveToPoint==native)
+alpha.getIsControlled=originalControlGetter
 alpha.job=nil
-releaseOk,reason=mechanism:hold(alpha,"EGRESS")
+local releaseOk,reason=mechanism:hold(alpha,"EGRESS")
 assert(not releaseOk and reason=="NATIVE_JOB_UNAVAILABLE")
 alpha.job={}
--- Player takeover while Held is a positive interlock and revokes restriction
--- on the next native drive command, independent of an OMW clock gate.
-assert(mechanism:hold(alpha,"RELOCATED_WORKER"))
-alpha.isControlled=true
-AIVehicleUtil.driveToPoint(alpha,16,1,true,true,1,2,9,nil)
-assert(events[#events].allowed==true and events[#events].speed==9)
-assert(not mechanism:isHolding(alpha))
-assert(mechanism:releaseHold(alpha,"RELOCATED_WORKER"))
-alpha.isControlled=false
-assert(AIVehicleUtil.driveToPoint==native,
-    "automatic player-control relinquishment restores the native drive entry point")
 -- A different non-null GIANTS job is a new episode, not continued permission
 -- to suppress the original job's native translation commands.
 assert(mechanism:hold(alpha,"EGRESS"))

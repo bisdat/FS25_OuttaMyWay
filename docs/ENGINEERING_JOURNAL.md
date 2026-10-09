@@ -6156,3 +6156,15 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Validation conclusion:** Player Control Interlock, Player-Controlled Obstruction classification, exact 1 km/h Regulation, positive geometric dissolution, Regulation retirement, and terminal settlement are now all demonstrated in GIANTS Reality for the #412 clear branch. Architecture and Specification remain unchanged; the defect was the implementation-local relation-copy boundary.
 
+## 2026-10-09 — #440 TEST 0.5.0.32 TS015 GIANTS Reality PASS
+
+**Reality artefact:** `0.5.0.32_TS015.zip`.
+
+**Observation and verdict:** The field test of TEST `0.5.0.32` on TS015 was explicitly declared **PASS**. A **three-way blockage near the end of the run was managed successfully**, in addition to the previously investigated repeated Condor–Patriot interaction. This is a materially useful positive test of repeated interaction handling after the removal of persistent native stop/start job uncertainty and parked commitments.
+
+**Decision:** Record TS015 `0.5.0.32` as **field-accepted PASS**. The preceding tests .30 and .31 exposed distinct geometry and job-handback assumptions; .32 is the first reported passing run after simplification of the native handback lifecycle. Retain the accepted operational policy of 1 km/h / 5 s other-worker Regulation, inward-preferred Cross-Track Egress scaled to the other worker's working width + 5 m, 7 s relocated-worker Hold, and independent GIANTS FIELDWORK stop/immediate-start for every new collision.
+
+**Interpretation limit:** Successful handling of this particular three-worker scene is **not** evidence for a general three-party arbitration or planning mechanism. The deployed Control still coordinates admitted pairs, and the complete supported envelope requires separate tests. The supplied artefact could not be independently decoded during this entry, so no event times, exact intervention counts or telemetry-derived claims are added.
+
+**Authority Triad disposition:** No architectural responsibility or Specification requirement changes are justified by this positive run; the existing Architecture and Specification receive a validation annotation only. No executable source is changed. GitHub Issue #440 and PR #459 hold the field verdict and archive provenance. PR integration remains a separate acceptance action.
+

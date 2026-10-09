@@ -145,6 +145,23 @@ function Observer:deleteMap()
     self.pairs={}
 end
 
+-- Delivers a copy of currently live candidate evidence to the separate
+-- Pair Commitment authority. Observation never grants or exercises Control.
+function Observer:getCurrentPairCandidates()
+    local results={}
+    if not self:isEnabled() then return results end
+    for _,pair in pairs(self.pairs) do
+        results[#results+1]={
+            candidateIdentity=pair,
+            pairKey=pair.pairKey,
+            firstWorker=pair.firstWorker,secondWorker=pair.secondWorker,
+            blockedWorker=pair.blockedWorker,
+            confirmedBlockedMs=pair.confirmedBlockedMs
+        }
+    end
+    return results
+end
+
 function Observer:isEnabled()
     local c=self.configuration
     return g_server~=nil and c~=nil
@@ -221,7 +238,10 @@ function Observer:update(dt)
                                         firstWorker=worker,secondWorker=other,
                                         firstJob=job,secondJob=jobReference(other),
                                         firstStrategy=strategy,
-                                        secondStrategy=fieldCourseStrategy(other)
+                                        secondStrategy=fieldCourseStrategy(other),
+                                        blockedWorker=worker,
+                                        confirmedBlockedMs=state.confirmedBlockedMs,
+                                        pairKey=pairIdentity
                                     }
                                 end
                             end
