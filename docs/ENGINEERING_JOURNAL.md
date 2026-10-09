@@ -6235,3 +6235,19 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Disposition:** Mark TEST `0.5.1.3` **field-validated TS003 PASS**. Record the outcome in Issue #461 and PR #462; PR stays open until a separate merge instruction. No source mechanics or version change is required by this acceptance record.
 
+## 2026-10-09 — #463: Obstruction Relocation Archive Port, Physical Donor First
+
+**Observation:** The accepted `0.5.1.3` implementation successfully recovers single and paired *active* GIANTS AI workers but has no live mechanism to move a completed or otherwise non-active physical blocker. Completed-worker movement in the older code was first called D-0147 Terminal Egress / Infield Retreat. Later `archive/0.4.11.0` Architecture and Specification corrected the semantic concept to **Causal Obstruction → Obstruction Relocation**.
+
+**Named discovery:** **Completion Leaves Occupancy, Not Responsibility.** A completed assembly is physical Reality, not an automatic parking obligation. **Physical Relevance != Historical Provenance.** A cold-loaded non-active blocker must not depend on prior OuttaMyWay Job Episode history.
+
+**Archive knowledge sweep:** `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` (§2/§5/§8) and `spec/OBSTRUCTION_RELOCATION.md` express blocker/beneficiary separation, positive causal evidence, geometry-bounded (not courtesy-count-bounded) inward relocation and fresh positive continuation to discharge the obligation. Historical #121 reconciled the parallel Terminal Egress responsibility; #33 recorded cold-start gaps; #219 recorded collision with another non-active assembly; #385 disproved an overly broad realised-turn demand sweep; #412 isolated player occupancy vs actual control. Archived `NonJobActuationMechanism.lua` already contains GIANTS non-job movement, propulsion/activity acquisition and restoration, native steering, cleanup and current authority predicates.
+
+**Architectural decision:** Establish one 0.5 `OBSTRUCTION_RELOCATION` Jurisdiction. Restore the archived non-job physical **mechanism** independently of live causal-obstruction admission. Do not restore the retired 0.4 general picture/commitment infrastructure just to make old modules importable; adapt future semantic evidence to the accepted compact 0.5 architecture, retaining the positive causality and discharge contracts.
+
+**Implementation — TEST `0.5.1.4`, PR #464 (draft):** Add current Architecture/Specification. Lift `CurrentPlayerControlObservation.lua` and `NonJobActuationMechanism.lua` from `archive/0.4.11.0` with only current Jurisdiction acknowledgements. Load the source definitions in the product, without creating a live Obstruction Relocation runtime or another event listener. Add a focused offline GIANTS mock challenging temporary native drive compatibility fields, propulsion, activity-state restoration, neutralisation and current control/re-activation interlocks. Shell and CI contracts are updated for the explicit new modules.
+
+**Testing and uncertainty:** Offline validation tests physical API assumptions, not a true completed-worker outcome. TEST .1.4 has **no live non-active actuation** and therefore no GIANTS field PASS for Obstruction Relocation. Causal evidence / exact blocker relation, current field/geometry references, concurrency policy and positive semantic discharge remain explicit #463 implementation obligations. No terminal tidy duty or completed-worker-specific parallel purpose is introduced.
+
+**Next engineering boundary:** Observe current non-active physical assemblies and establish positive blocker-to-beneficiary causal evidence with an ordinary-turn negative control before enabling non-job movement. The accepted TS015 paired and TS003 solo configurations remain regression witnesses.
+
