@@ -1,5 +1,8 @@
 # Causal Obstruction and Obstruction Relocation — 0.5 Architecture
 
+**Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
+**Primary Specification:** [Obstruction Relocation](../spec/OBSTRUCTION_RELOCATION.md).
+
 **Status:** accepted restoration target from archived 0.4.11.0; physical mechanism port begins under [#463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463). The current 0.5.1.3 product does **not** yet perform non-active blocker relocation. This document defines responsibility, not evidence of an implemented live Resolution.
 
 **Archive authority investigated:** [Runtime Responsibility Architecture §2, §5, §8](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Obstruction Relocation Specification](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/spec/OBSTRUCTION_RELOCATION.md). The archived current contract superseded the earlier D-0147 two-stage Terminal Egress / Double Courtesy model. Mechanical donor evidence remains useful, but completion provenance never creates an independent reason for movement.

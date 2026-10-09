@@ -2,7 +2,7 @@
 
 **Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
 
-**Primary Architecture:** [Causal Obstruction and Obstruction Relocation](../architecture/OBSTRUCTION_RELOCATION.md).
+**Primary Architecture Authority:** [Causal Obstruction and Obstruction Relocation](../architecture/OBSTRUCTION_RELOCATION.md).
 
 **Restoration status:** [Issue #463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463) is in progress. The current 0.5.1.3 live product contains active-worker Hold & Relocate, *not* completed-worker Obstruction Relocation. The first stage ports archived non-job physical actuation; no active control route is established by merely loading that subordinate mechanism. This is a future implementation contract, not a false assertion of field-tested behaviour.
 
@@ -56,3 +56,18 @@ The donor's old `ValueRecord`, `OperationalPicture`, `ResolutionCommitment` and 
 **Before live restoration:** prove positive and negative Causal Obstruction cases, current non-active inventory including cold start, no synthetic GIANTS Job, deliberate beneficiary concurrency choice, and fresh positive continuation.
 
 **GIANTS acceptance:** reproduce supported completed-worker obstruction, show physical movement of the *non-active* vehicle and useful continuation; replay irrelevant completed/parked vehicles as negative controls; replay source reactivation/player claim and third-party occupancy; rerun TS015 and TS003 for pairwise/single-worker non-regression.
+
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/observation/CurrentPlayerControlObservation.lua`](../scripts/observation/CurrentPlayerControlObservation.lua) | `SUPPORTS` |
+| [`scripts/control/mechanisms/NonJobActuationMechanism.lua`](../scripts/control/mechanisms/NonJobActuationMechanism.lua) | `REALISES` |
+
+**Partial implementation distinction:** The non-job mechanical contract is realised by a ported physical primitive. The *whole* Obstruction Relocation responsibility is not wired, admitted or exercised in live GIANTS Reality yet. Adding a source participant does not imply automatic non-active movement is enabled.
+
+## Repository validation participants
+
+| Validation surface | Participation |
+| --- | --- |
+| [`tests/shell/non_job_actuation.lua`](../tests/shell/non_job_actuation.lua) | `CHALLENGES` |
