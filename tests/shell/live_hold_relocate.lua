@@ -133,9 +133,25 @@ assert(events[#events]=="RESTORE")
 -- Missing/contradictory field polygons never justify reverse movement.
 g_fieldManager.fields={}
 accepted,reason=authority:admitCandidate(first,second,first,1000)
-assert(accepted==nil and reason=="FIELD_CENTROID_UNAVAILABLE")
+assert(accepted==nil and reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
+-- Native admission rejection has discriminating, explicit evidence.
+local originalGetJob=second.getJob
+second.getJob=nil
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="NATIVE_JOB_REFERENCE_UNAVAILABLE")
+second.getJob=originalGetJob
+local originalStrategies=second.spec_aiFieldWorker.driveStrategies
+second.spec_aiFieldWorker.driveStrategies={}
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE")
+second.spec_aiFieldWorker.driveStrategies=originalStrategies
+local originalControl=second.getIsControlled
+second.getIsControlled=function()return true end
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
+second.getIsControlled=originalControl
 enabled=false
 accepted=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil)
@@ -143,16 +159,39 @@ enabled=true
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
+OuttaMyWay.VERSION="0.5.0.21"
 OuttaMyWay.LogPublication={origin=function()return {
-    publish=function(_,_,_,code)published[#published+1]=code end
+    publish=function(_,_,_,code,payload)
+        published[#published+1]={code=code,detail=payload and payload()}
+    end
 }end}
+local occurrence={}
 local observer={getCurrentPairCandidates=function()
-    return {{candidateIdentity={},firstWorker=first,secondWorker=second,
+    return {{candidateIdentity=occurrence,pairKey="first|second",
+        firstWorker=first,secondWorker=second,
         blockedWorker=first,confirmedBlockedMs=1000}}
 end}
 local runtime=Live.new(configuration,observer)
-g_server=nil
+-- Distinguish a qualifying native Observation from independent admission.
+-- Without field geometry, no physical Control is allowed; rejection is
+-- nevertheless observable at NORMAL exactly once for this occurrence.
+g_server={}
+g_fieldManager.fields={}
 runtime:update(16)
 assert(not runtime.coordinator:isActive())
-assert(#published==0)
-print("Live Pair Commitment, common native field, bounded Control and server interlock: PASS")
+assert(#published==2 and published[1].code=="HOLD_RELOCATE_RUNTIME_ACTIVE")
+assert(published[2].code=="HOLD_RELOCATE_ADMISSION_REJECTED")
+assert(published[2].detail.pairKey=="first|second")
+assert(published[2].detail.reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
+assert(published[2].detail.confirmedBlockedMs==1000)
+runtime:update(16)
+assert(#published==2,"no rejection heartbeat or repeated admission in one occurrence")
+-- A genuinely new native pair occurrence can be considered independently.
+occurrence={}
+runtime:update(16)
+assert(#published==3 and published[3].code=="HOLD_RELOCATE_ADMISSION_REJECTED")
+assert(not runtime.coordinator:isActive())
+g_server=nil
+runtime:update(16)
+assert(#published==3 and not runtime.coordinator:isActive())
+print("Live Pair Commitment, discriminating admission rejection, once-per-occurrence publication: PASS")

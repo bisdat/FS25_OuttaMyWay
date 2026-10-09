@@ -14,6 +14,22 @@ local function issue(runtime,level,code,detail)
     end)
 end
 
+-- Admission rejection is a meaningful outcome of a qualifying native pair
+-- candidate. Emit once per candidate occurrence; do not silently consume
+-- the only evidence that can explain why no physical intervention followed.
+local function reportRejectedAdmission(runtime,evidence,reason)
+    local publication=runtime.publication
+    if publication==nil then return end
+    publication:publish("NORMAL","WARNING","HOLD_RELOCATE_ADMISSION_REJECTED",function()
+        return {
+            pairKey=tostring(evidence.pairKey or "unknown"),
+            reason=tostring(reason or "UNSPECIFIED_ADMISSION_REJECTION"),
+            confirmedBlockedMs=evidence.confirmedBlockedMs,
+            version=OuttaMyWay.VERSION
+        }
+    end)
+end
+
 function Runtime.new(configuration,observer)
     local authority=OuttaMyWay.NativePairCommitmentAuthority.new(configuration)
     local physical=OuttaMyWay.HoldRelocatePhysicalControl.new(authority)
@@ -23,12 +39,12 @@ function Runtime.new(configuration,observer)
         authority=authority,physicalControl=physical,coordinator=coordinator,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
-        lastReportedOutcome=nil
+        lastReportedOutcome=nil,isRuntimeReported=false
     },Runtime)
 end
 
 function Runtime:loadMap()
-    -- Already constructed after the current Configuration was resolved.
+    self.isRuntimeReported=false
     -- Candidate evidence belongs to the native Observer's map lifecycle.
 end
 
@@ -50,6 +66,10 @@ function Runtime:update(dt)
     if not self.authority:enabled() then
         self:relinquish("DISABLED_OR_SERVER_LOST")
         return
+    end
+    if not self.isRuntimeReported then
+        self.isRuntimeReported=true
+        issue(self,"INFO","HOLD_RELOCATE_RUNTIME_ACTIVE","SERVER_LISTENER_RUNNING")
     end
     local nowMs=tonumber(g_time)
     if type(nowMs)~="number" or nowMs~=nowMs then
@@ -81,11 +101,15 @@ function Runtime:update(dt)
         local evidence=candidates[i]
         if type(evidence)=="table" and evidence.candidateIdentity~=nil
             and not self.attempted[evidence.candidateIdentity] then
-            self.attempted[evidence.candidateIdentity]=true
             local commitment,reason=self.authority:admitCandidate(
                 evidence.firstWorker,evidence.secondWorker,
                 evidence.blockedWorker,evidence.confirmedBlockedMs)
-            if commitment~=nil then
+            -- An admission attempt is single-shot per native pair occurrence,
+            -- including rejection. A later native occurrence is a new key.
+            self.attempted[evidence.candidateIdentity]=true
+            if commitment==nil then
+                reportRejectedAdmission(self,evidence,reason)
+            else
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then
                     issue(self,"INFO","HOLD_RELOCATE_STARTED",commitment.commitmentId)

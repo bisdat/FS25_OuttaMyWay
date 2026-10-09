@@ -92,14 +92,26 @@ end
 local function commonField(a,b)
     local manager=g_fieldManager
     local fields=manager and manager.fields
-    if type(fields)~="table" then return nil end
+    if type(fields)~="table" then return nil,nil,"FIELD_REGISTRY_UNAVAILABLE" end
+    local validPolygons=0
+    local firstWithin=false
+    local secondWithin=false
     for _,field in pairs(fields) do
         local poly=polygonFor(field)
-        if poly~=nil and inside(poly,a.x,a.z) and inside(poly,b.x,b.z) then
-            return poly,field
+        if poly~=nil then
+            validPolygons=validPolygons+1
+            local firstInside=inside(poly,a.x,a.z)
+            local secondInside=inside(poly,b.x,b.z)
+            if firstInside then firstWithin=true end
+            if secondInside then secondWithin=true end
+            if firstInside and secondInside then return poly,field end
         end
     end
-    return nil
+    if validPolygons==0 then return nil,nil,"FIELD_POLYGON_EVIDENCE_UNAVAILABLE" end
+    if firstWithin and secondWithin then
+        return nil,nil,"PAIR_NOT_IN_COMMON_FIELD_POLYGON"
+    end
+    return nil,nil,"PAIR_OUTSIDE_KNOWN_FIELD_POLYGONS"
 end
 
 function Authority.new(configuration)
@@ -130,22 +142,26 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     local as,bs=currentStrategy(first),currentStrategy(second)
     local aj,bj=currentJob(first),currentJob(second)
     local ap,bp=pose(first),pose(second)
-    if as==nil or bs==nil or aj==nil or bj==nil
-        or ap==nil or bp==nil or not notPlayer(first)
-        or not notPlayer(second) or first.rootNode==second.rootNode then
-        return nil,"NATIVE_EPISODE_EVIDENCE_UNAVAILABLE"
+    if as==nil or bs==nil then return nil,"NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE" end
+    if aj==nil or bj==nil then return nil,"NATIVE_JOB_REFERENCE_UNAVAILABLE" end
+    if ap==nil or bp==nil then return nil,"ASSEMBLY_ROOT_POSE_UNAVAILABLE" end
+    if not notPlayer(first) or not notPlayer(second) then
+        return nil,"PLAYER_CONTROL_CLEARANCE_UNAVAILABLE"
     end
+    if first.rootNode==second.rootNode then return nil,"ROOT_IDENTITIES_NOT_DISTINCT" end
     if blockedWorker~=first and blockedWorker~=second then
         return nil,"BLOCKED_SUBJECT_UNVERIFIED"
     end
-    if currentStrategy(blockedWorker).isBlocked~=true then
+    local blockedStrategy=blockedWorker==first and as or bs
+    if blockedStrategy.isBlocked~=true then
         return nil,"NATIVE_BLOCKAGE_NO_LONGER_POSITIVE"
     end
     local dx,dz=ap.x-bp.x,ap.z-bp.z
     if dx*dx+dz*dz>900 then return nil,"PAIR_OUTSIDE_LOCALITY" end
-    local poly,field=commonField(ap,bp)
-    if poly==nil or not inside(poly,poly.centroid.x,poly.centroid.z) then
-        return nil,"FIELD_CENTROID_UNAVAILABLE"
+    local poly,field,fieldReason=commonField(ap,bp)
+    if poly==nil then return nil,fieldReason or "FIELD_CENTROID_UNAVAILABLE" end
+    if not inside(poly,poly.centroid.x,poly.centroid.z) then
+        return nil,"FIELD_CENTROID_OUTSIDE_FIELD_POLYGON"
     end
     self.sequence=self.sequence+1
     local commitment={
