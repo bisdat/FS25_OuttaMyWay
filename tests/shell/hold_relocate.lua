@@ -70,7 +70,7 @@ local function admitted()
     return {token="issued-by-authority",commitmentId="PAIR1",
         participants={b,a},fieldCentroid={x=0,z=0},
         fieldPolygon={xs={-200,200,200,-200},zs={-200,-200,200,200}},
-        nearbyBlockers={b,c},offsetM=0}
+        nearbyBlockers={b,c},blockerWorkingWidthM=10,offsetM=0}
 end
 local function contains(kind,vehicle)
     for i=1,#events do
