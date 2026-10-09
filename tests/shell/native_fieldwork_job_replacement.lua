@@ -15,7 +15,10 @@ local function scenario(options)
     local farm=7
     local vehicle={}
     function vehicle:getJob() return current end
-    function vehicle:getAIJobFarmId() return options.noFarm and nil or farm end
+    function vehicle:getAIJobFarmId()
+        if options.noFarm then return nil end
+        return farm
+    end
     function vehicle:getIsControlled() return options.player==true end
     local manager={}
     function manager:getJobTypeIndexByName(name)
