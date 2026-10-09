@@ -59,9 +59,12 @@ local confinedBlocker=worker(15,18,0,-1)
 local none,reason=Plan.plan({fieldCentroid={x=15,z=15},
     fieldPolygon=small,blockerWorkingWidthM=36},confined,confinedBlocker)
 assert(none==nil and reason=="NO_SUPPORTED_INFIELD_EGRESS_REGION")
--- Solo objective uses its own 40 m region, not a manufactured blocker.
-local solo=assert(Plan.planSingle({fieldCentroid={x=50,z=100},
-    fieldPolygon=field,singleRegionDistanceM=40},mover))
+-- Solo objective needs only native pose and reverse heading. Field membership
+-- is never an admission or relocation requirement.
+g_fieldManager=nil
+local solo=assert(Plan.planSingle({singleRegionDistanceM=40},mover))
+assert(solo.egressSide==-1 and solo.targetInField==false,
+    "no field evidence cannot prevent fixed solo recovery")
 assert(solo.vectorDistanceM==40 and solo.steeringHorizonM==80)
 assert(solo.directionSource=="SINGLE_OBLIQUE_REVERSE"
     and solo.blockerWorkingWidthM==nil and solo.marginM==nil)
@@ -78,7 +81,21 @@ assert(Plan.progress(rr,initialX+40*rr.directionX,
 assert(Plan.progress(rr,initialX+41*rr.directionX+2*rr.directionZ,
     initialZ+41*rr.directionZ-2*rr.directionX).isInRegion,
     "entering the region is not an exact steering-point arrival")
-local tooSmall=Plan.planSingle({fieldCentroid={x=15,z=15},
-    fieldPolygon=small,singleRegionDistanceM=40},confined)
-assert(tooSmall==nil,"no field-supported 40 m solo region => no physical command")
+local confinedSolo=assert(Plan.planSingle({singleRegionDistanceM=40},confined))
+assert(confinedSolo.vectorDistanceM==40
+    and confinedSolo.returnRegion.requiredProgressM==40,
+    "small fields cannot veto native solo BWR")
+
+-- Outside-field blockage is normal; prefer the option returning to a
+-- known field, but do not require it. Endpoint, not initial root, is sampled.
+g_fieldManager={fields={{densityMapPolygon={
+    pointsX=field.xs,pointsZ=field.zs}}}}
+local outside=worker(210,100,0,1)
+local inwardSolo=assert(Plan.planSingle({singleRegionDistanceM=40},outside))
+assert(inwardSolo.egressSide==1 and inwardSolo.targetInField==true,
+    "prefer an inward endpoint even though origin is outside the polygon")
+g_fieldManager.fields={}
+local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outside))
+assert(unassociated.egressSide==-1 and unassociated.targetInField==false,
+    "missing field membership must not inhibit reverse to a 40 m region")
 print("Pairwise cross-track and solo 40 m projected return region: PASS")

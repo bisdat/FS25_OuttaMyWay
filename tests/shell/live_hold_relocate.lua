@@ -216,6 +216,8 @@ assert(soloCommitment.kind=="SINGLE"
     and soloCommitment.singleRegionDistanceM==40)
 assert(authority:validateCommitment(soloCommitment))
 assert(authority:getExpectedNativeJob(second)==second.job)
+assert(soloCommitment.fieldPolygon==nil and soloCommitment.fieldCentroid==nil,
+    "solo BWR must not require a field polygon")
 local before=#events
 reverse={travelledM=0,isComplete=false}
 local soloOk,soloDetails=coordinator:begin(soloCommitment,20000)
@@ -237,6 +239,27 @@ assert(authority:release(soloCommitment))
 local freshSolo=assert(authority:admitSingleCandidate(second,1000))
 assert(freshSolo~=soloCommitment and authority:release(freshSolo),
     "later solo blockage remains independently admissible")
+-- Reproduce the real TS003 failure mode: a currently blocked FIELDWORK
+-- assembly is outside every registered polygon. Admission and physical
+-- 40 m relocation must proceed with no field association.
+g_fieldManager.fields={}
+coords[second.rootNode]={x=300,z=300}
+local exterior=assert(authority:admitSingleCandidate(second,1000))
+assert(exterior.kind=="SINGLE" and exterior.fieldPolygon==nil)
+reverse={travelledM=0,isComplete=false}
+before=#events
+assert(coordinator:begin(exterior,30000))
+assert(events[before+1]=="TRANSIT" and events[before+2]=="REVERSE")
+reverse={travelledM=40,isComplete=true}
+coordinator:advance(30001)
+assert(events[before+3]=="REVERSE_STOP"
+    and events[before+4]=="NATIVE_STOP_START"
+    and events[before+5]=="HANDOFF_TRANSIT")
+assert(#events==before+5,"outside-field solo recovery has no Hold timer")
+assert(authority:release(exterior))
+coords[second.rootNode]={x=23,z=20}
+g_fieldManager.fields={{densityMapPolygon={
+    pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
 g_currentMission.aiSystem.activeJobVehicles[first]=true
 coords[first.rootNode]={x=24,z=20}
 under,reason=authority:admitSingleCandidate(second,1000)
@@ -248,7 +271,7 @@ coords[first.rootNode]={x=20,z=20}
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.0.29"
+OuttaMyWay.VERSION="0.5.1.2"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}
@@ -286,8 +309,8 @@ assert(not runtime.coordinator:isActive())
 g_server=nil
 runtime:update(16)
 assert(#published==3 and not runtime.coordinator:isActive())
--- A solo native occurrence reaches independent current-job/field admission
--- without inventing a pair. Rejection remains observable once.
+-- A solo native occurrence is admitted without field-polygon evidence.
+-- Runtime publication must report the started intervention, not rejection.
 observer.getCurrentPairCandidates=function()return {} end
 local soloOccurrence={}
 observer.getCurrentSingleCandidates=function()return {
@@ -296,11 +319,20 @@ observer.getCurrentSingleCandidates=function()return {
 runtime:update(16)
 assert(#published==3,"client cannot admit solo candidates")
 g_server={}
+local startedSolo=0
+runtime.coordinator.begin=function(_,commitment)
+    assert(commitment.kind=="SINGLE"
+        and commitment.singleRegionDistanceM==40
+        and commitment.fieldPolygon==nil)
+    startedSolo=startedSolo+1
+    return true,{regionRequiredProgressM=40,vectorDistanceM=40,
+        directionSource="SINGLE_OBLIQUE_REVERSE"}
+end
 runtime:update(16)
-assert(#published==4 and published[4].code=="HOLD_RELOCATE_ADMISSION_REJECTED"
-    and published[4].detail.candidateKind=="SINGLE"
-    and published[4].detail.reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
+assert(startedSolo==1 and #published==4
+    and published[4].code=="HOLD_RELOCATE_STARTED")
 runtime:update(16)
-assert(#published==4,"one NORMAL rejection per solo occurrence")
+assert(startedSolo==1 and #published==4,
+    "one intervention admission per solo blocked occurrence")
 -- No player-control veto or diagnostic fields remain in live admission.
 print("Live Pair Commitment with GIANTS job and field evidence, no player-control gate: PASS")
