@@ -6220,3 +6220,18 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Validation challenge:** Use two adjacent field polygons and a blocked worker initially outside its own boundary; change only its GIANTS active course field and prove reverse-side selection follows that identity, not proximity. Test the GIANTS fieldDetection coordinate and missing-course permissive case. CI proves source contracts only; TS003 GIANTS Reality remains required to establish physical return to the worker's own field.
 
+## 2026-10-09 — #461 TEST 0.5.1.3: GIANTS TS003 Reality PASS, Single-Worker BWR
+
+**Field verdict:** **PASS** for TS003 under TEST `0.5.1.3`, supported by `log(20261009-163634).txt`. The field verdict validates this observed physical single-worker recovery, including returning toward the worker's **own field**, after the erroneous adjacent-field direction selection in TEST .1.2. It does not automatically validate every field or obstacle geometry.
+
+**Independently logged Control sequence (local game time):**
+- **17:35:00.912:** Native `isBlocked` qualified after `confirmedBlockedMs=1000`, root `396123`, with no eligible nearby pair.
+- **17:35:00.913:** `HOLD_RELOCATE_STARTED` for `native-single-1`; requested reverse speed **15 km/h**, oblique bearing **70°**, reverse side **1**, required projected return-region progress **40 m**, `regionInField=true`, `fieldInteriorScore=68.55106332813611`, and `fieldIdentitySource=GIANTS_ACTIVE_COURSE_FIELD`.
+- **17:35:14.082:** `HOLD_RELOCATE_OUTCOME` reported `NATIVE_RESTART_ACCEPTED`. The logged interval from start to accepted restart is **13.169 s**.
+
+**Evidence boundary:** The log establishes the current native blockage, solo admission, choice of the blocked worker's active course-field reference, and acceptance of the job handback. Actual physical relocation into the correct field and effective recovery are grounded in the separate **TS003 field PASS verdict**, not deduced solely from `NATIVE_RESTART_ACCEPTED`. No distance telemetry or subsequent useful-work metrics were present to quantify beyond that verdict.
+
+**Confirmed learning:** **Field Ownership Is Not Field Proximity.** The first admission model incorrectly rejected an out-of-field root (.1.1 FAIL); the second allowed adjacent-field proximity to set direction (.1.2 FAIL); the corrected model (.1.3 PASS) takes inward direction only from the blocked worker's own active GIANTS course field. The current single-worker choreography remains **TRANSIT → 40 m region RELOCATE → immediate FIELDWORK STOP/START**, with **no solo Hold timer**, synthetic blocker, or new collision detector. Pairwise TS015 remains unchanged.
+
+**Disposition:** Mark TEST `0.5.1.3` **field-validated TS003 PASS**. Record the outcome in Issue #461 and PR #462; PR stays open until a separate merge instruction. No source mechanics or version change is required by this acceptance record.
+
