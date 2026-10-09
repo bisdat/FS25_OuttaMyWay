@@ -1,0 +1,204 @@
+-- Admits one evidenced native worker pair independently of candidate publication.
+-- Specification Jurisdictions: `HOLD_RELOCATE`
+-- Uses current GIANTS Job Episode, field polygon and root evidence, not a
+-- candidate's claimed authority or a second native blockage detector.
+OuttaMyWay=OuttaMyWay or {}
+OuttaMyWay.NativePairCommitmentAuthority={}
+local Authority=OuttaMyWay.NativePairCommitmentAuthority
+Authority.__index=Authority
+
+local function finite(n)
+    return type(n)=="number" and n==n and n~=math.huge and n~=-math.huge
+end
+
+local function pose(vehicle)
+    if type(vehicle)~="table" or vehicle.rootNode==nil
+        or type(getWorldTranslation)~="function" then return nil end
+    local ok,x,_,z=pcall(getWorldTranslation,vehicle.rootNode)
+    if not ok or not finite(x) or not finite(z) then return nil end
+    return {x=x,z=z}
+end
+
+local function currentJob(vehicle)
+    if type(vehicle)~="table" or type(vehicle.getJob)~="function" then return nil end
+    local ok,job=pcall(vehicle.getJob,vehicle)
+    return ok and type(job)=="table" and job or nil
+end
+
+local function currentStrategy(vehicle)
+    local spec=vehicle and vehicle.spec_aiFieldWorker
+    if type(spec)~="table" or spec.isActive~=true
+        or type(spec.driveStrategies)~="table" then return nil end
+    for _,strategy in pairs(spec.driveStrategies) do
+        if type(strategy)=="table" and type(strategy.isBlocked)=="boolean"
+            and (strategy.aiFieldCourse~=nil
+                or (type(strategy.className)=="string"
+                    and string.find(strategy.className,"FieldCourse",1,true))) then
+            return strategy
+        end
+    end
+    return nil
+end
+
+local function notPlayer(vehicle)
+    if type(vehicle.getIsControlled)~="function" then return false end
+    local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
+    if not ok or type(controlled)~="boolean" or controlled then return false end
+    return g_currentMission==nil or g_currentMission.controlledVehicle~=vehicle
+end
+
+local function inside(poly,x,z)
+    local result=false
+    local xs,zs=poly.xs,poly.zs
+    local n=#xs
+    for i=1,n do
+        local j=i==1 and n or i-1
+        local xi,zi,xj,zj=xs[i],zs[i],xs[j],zs[j]
+        if (zi>z)~=(zj>z) then
+            local crossing=xj+(xi-xj)*(zj-z)/(zj-zi)
+            if x<crossing then result=not result end
+        end
+    end
+    return result
+end
+
+local function polygonFor(field)
+    local polygon=field and field.densityMapPolygon
+    local xs=polygon and polygon.pointsX
+    local zs=polygon and polygon.pointsZ
+    if type(xs)~="table" or type(zs)~="table"
+        or #xs<3 or #xs~=#zs then return nil end
+    local record={xs={},zs={}}
+    local twiceArea,cx,cz=0,0,0
+    for i=1,#xs do
+        local x,z=xs[i],zs[i]
+        if not finite(x) or not finite(z) then return nil end
+        record.xs[i],record.zs[i]=x,z
+    end
+    for i=1,#xs do
+        local j=i==#xs and 1 or i+1
+        local cross=record.xs[i]*record.zs[j]-record.xs[j]*record.zs[i]
+        twiceArea=twiceArea+cross
+        cx=cx+(record.xs[i]+record.xs[j])*cross
+        cz=cz+(record.zs[i]+record.zs[j])*cross
+    end
+    if not finite(twiceArea) or math.abs(twiceArea)<0.000001 then return nil end
+    cx,cz=cx/(3*twiceArea),cz/(3*twiceArea)
+    if not finite(cx) or not finite(cz) then return nil end
+    record.centroid={x=cx,z=cz}
+    return record
+end
+
+local function commonField(a,b)
+    local manager=g_fieldManager
+    local fields=manager and manager.fields
+    if type(fields)~="table" then return nil end
+    for _,field in pairs(fields) do
+        local poly=polygonFor(field)
+        if poly~=nil and inside(poly,a.x,a.z) and inside(poly,b.x,b.z) then
+            return poly,field
+        end
+    end
+    return nil
+end
+
+function Authority.new(configuration)
+    return setmetatable({configuration=configuration,active=nil,sequence=0},Authority)
+end
+
+function Authority:enabled()
+    return g_server~=nil and self.configuration~=nil
+        and self.configuration:isResolved()==true
+        and self.configuration:isEnabled()==true
+end
+
+local function participant(vehicle,strategy,job,point)
+    return {vehicle=vehicle,assemblyReferenceKey=tostring(vehicle.rootNode),
+        x=point.x,z=point.z,sourceJobReference=job,
+        sourceStrategyReference=strategy}
+end
+
+-- The candidate is mere nomination; admission re-reads both native jobs,
+-- strategies, current positions, player control, common polygon and duration.
+-- A zero-metre offset is an explicit conservative live policy: the relocation
+-- bound is 30m, never an invented positive allowance beyond that.
+function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
+    if self.active~=nil or not self:enabled()
+        or type(first)~="table" or type(second)~="table"
+        or first==second or not finite(confirmedBlockedMs)
+        or confirmedBlockedMs<1000 then return nil,"PAIR_ADMISSION_UNAVAILABLE" end
+    local as,bs=currentStrategy(first),currentStrategy(second)
+    local aj,bj=currentJob(first),currentJob(second)
+    local ap,bp=pose(first),pose(second)
+    if as==nil or bs==nil or aj==nil or bj==nil
+        or ap==nil or bp==nil or not notPlayer(first)
+        or not notPlayer(second) or first.rootNode==second.rootNode then
+        return nil,"NATIVE_EPISODE_EVIDENCE_UNAVAILABLE"
+    end
+    if blockedWorker~=first and blockedWorker~=second then
+        return nil,"BLOCKED_SUBJECT_UNVERIFIED"
+    end
+    if currentStrategy(blockedWorker).isBlocked~=true then
+        return nil,"NATIVE_BLOCKAGE_NO_LONGER_POSITIVE"
+    end
+    local dx,dz=ap.x-bp.x,ap.z-bp.z
+    if dx*dx+dz*dz>900 then return nil,"PAIR_OUTSIDE_LOCALITY" end
+    local poly,field=commonField(ap,bp)
+    if poly==nil or not inside(poly,poly.centroid.x,poly.centroid.z) then
+        return nil,"FIELD_CENTROID_UNAVAILABLE"
+    end
+    self.sequence=self.sequence+1
+    local commitment={
+        commitmentId="native-pair-"..tostring(self.sequence),
+        participants={participant(first,as,aj,ap),participant(second,bs,bj,bp)},
+        fieldCentroid=poly.centroid,offsetM=0,
+        nearbyBlockers={},nativeFieldReference=field,
+        wasIndependentlyAdmitted=true
+    }
+    local a,b=commitment.participants[1],commitment.participants[2]
+    local da=(a.x-poly.centroid.x)^2+(a.z-poly.centroid.z)^2
+    local db=(b.x-poly.centroid.x)^2+(b.z-poly.centroid.z)^2
+    local relocator=(da<db or (da==db
+        and a.assemblyReferenceKey<b.assemblyReferenceKey)) and a or b
+    commitment.nearbyBlockers[1]=relocator==a and b or a
+    self.active=commitment
+    return commitment
+end
+
+function Authority:validateCommitment(commitment)
+    if self.active~=commitment or commitment==nil then
+        return false,"COMMITMENT_NOT_ISSUED"
+    end
+    return self:isCommitmentCurrent(commitment)
+end
+
+function Authority:isCommitmentCurrent(commitment)
+    if not self:enabled() or self.active~=commitment then
+        return false,"COMMITMENT_REVOKED"
+    end
+    for i=1,#commitment.participants do
+        local p=commitment.participants[i]
+        if currentJob(p.vehicle)~=p.sourceJobReference
+            or currentStrategy(p.vehicle)~=p.sourceStrategyReference
+            or not notPlayer(p.vehicle) or pose(p.vehicle)==nil then
+            return false,"GIANTS_JOB_EPISODE_CHANGED"
+        end
+    end
+    return true
+end
+
+function Authority:getExpectedNativeJob(vehicle)
+    local commitment=self.active
+    if commitment==nil then return nil end
+    for i=1,#commitment.participants do
+        local p=commitment.participants[i]
+        if p.vehicle==vehicle then return p.sourceJobReference end
+    end
+    return nil
+end
+
+function Authority:release(commitment)
+    if self.active~=commitment then return false end
+    self.active=nil
+    return true
+end

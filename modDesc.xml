@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="0.5.0.18">0.5.0.18</version>
+    <version value="0.5.0.19">0.5.0.19</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>OuttaMyWay rewrite shell: configuration, logging and status only. AI worker coordination is inactive.</en>
-        <de>OuttaMyWay im Umbau: nur Einstellungen, Protokollierung und Status. Keine KI-Helferkoordination.</de>
-        <fr>OuttaMyWay en reconstruction : réglages, journal et état uniquement. Coordination des ouvriers IA inactive.</fr>
-        <es>OuttaMyWay en reconstrucción: solo ajustes, registro y estado. Sin coordinación de trabajadores IA.</es>
-        <it>OuttaMyWay in ricostruzione: solo impostazioni, log e stato. Coordinamento degli operatori IA inattivo.</it>
+        <en>OuttaMyWay live Hold & Relocate: GIANTS native blocked-worker cooperation; in-game validation pending.</en>
+        <de>OuttaMyWay Hold & Relocate aktiv: Zusammenarbeit blockierter GIANTS-KI-Helfer; Validierung im Spiel ausstehend.</de>
+        <fr>OuttaMyWay Hold & Relocate actif : assistance native aux ouvriers IA bloqués ; validation en jeu en attente.</fr>
+        <es>OuttaMyWay Hold & Relocate activo: asistencia nativa a trabajadores IA bloqueados; validación en el juego pendiente.</es>
+        <it>OuttaMyWay Hold & Relocate attivo: assistenza nativa agli operatori IA bloccati; verifica in gioco in sospeso.</it>
     </description>
     <l10n>
         <text name="omw_disabledHandBack">
@@ -38,11 +38,11 @@
             <en>Enabled</en><de>Aktiviert</de><fr>Activé</fr><es>Activado</es><it>Attivato</it>
         </text>
         <text name="omw_configSection_enabledTooltip">
-            <en>Enable the OuttaMyWay shell and status indicator. This build does not control AI workers.</en>
-            <de>Aktiviert die OuttaMyWay-Statusanzeige. Dieser Build steuert keine KI-Helfer.</de>
-            <fr>Active l'indicateur d'état OuttaMyWay. Cette version ne contrôle aucun ouvrier IA.</fr>
-            <es>Activa el indicador de estado de OuttaMyWay. Esta versión no controla trabajadores IA.</es>
-            <it>Attiva l'indicatore di stato OuttaMyWay. Questa versione non controlla gli operatori IA.</it>
+            <en>Enable live OuttaMyWay Hold & Relocate control and the status indicator. In-game validation is pending.</en>
+            <de>Aktiviert OuttaMyWay Hold & Relocate und die Statusanzeige. Die Validierung im Spiel steht noch aus.</de>
+            <fr>Active Hold & Relocate et l'indicateur d'état OuttaMyWay. Validation en jeu en attente.</fr>
+            <es>Activa Hold & Relocate de OuttaMyWay y el indicador de estado. Validación en juego pendiente.</es>
+            <it>Attiva Hold & Relocate e l'indicatore di stato di OuttaMyWay. Verifica in gioco in sospeso.</it>
         </text>
         <text name="omw_configSection_operationalMessages">
             <en>Operational messages</en><de>Betriebsmeldungen</de><fr>Messages opérationnels</fr><es>Mensajes operativos</es><it>Messaggi operativi</it>

@@ -1,11 +1,14 @@
 -- OuttaMyWay product-shell entry point. Build identity lives in scripts/config.lua and modDesc.xml.
 -- Specification Jurisdictions: `CONFIGURATION`
--- Passive GIANTS blocked-state Observation is enabled, with no AI Control.
+-- Native blockage Observation feeds independently admitted live Hold & Relocate Control.
 local modDirectory=g_currentModDirectory or ""
 local modules={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
+    "scripts/coordination/NativePairCommitmentAuthority.lua",
+    "scripts/control/HoldRelocatePhysicalControl.lua",
+    "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
@@ -37,7 +40,7 @@ OuttaMyWay.logPublication=OuttaMyWay.LogPublication.new(resolvedPublicationPolic
 local productPublication=OuttaMyWay.LogPublication.origin("PRODUCT_RUNTIME")
 if configurationReady then
     productPublication:publish("NORMAL","INFO","OUTTAMYWAY_SHELL_STARTED",function()
-        return {version=OuttaMyWay.VERSION,enabled=OuttaMyWay.configuration:isEnabled(),aiControl=false}
+        return {version=OuttaMyWay.VERSION,enabled=OuttaMyWay.configuration:isEnabled(),aiControl=g_server~=nil and OuttaMyWay.configuration:isEnabled()==true}
     end)
 else
     local configurationPublication=OuttaMyWay.LogPublication.origin("CONFIGURATION")
@@ -46,21 +49,30 @@ else
     end)
 end
 
--- Enabled controls this shell's status indicator, never AI worker actuation.
+-- Enabled governs current runtime admission and immediate physical relinquishment.
 OuttaMyWay.configuration:addChangeListener(function(notification)
     if notification==nil or notification.name~="enabled" or notification.durable~=true then return end
     local code=notification.value==true and "OUTTAMYWAY_SHELL_ENABLED" or "OUTTAMYWAY_SHELL_DISABLED"
     productPublication:publish("NORMAL","INFO",code,function()
-        return {version=OuttaMyWay.VERSION,aiControl=false}
+        return {version=OuttaMyWay.VERSION,aiControl=g_server~=nil and notification.value==true}
     end)
 end)
 
--- Passive blocked-state observation may log candidates, but never acquires worker Control.
+-- Observation supplies native pair evidence but never issues a Pair Commitment.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
+OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(
+    OuttaMyWay.configuration,OuttaMyWay.nativeBlockageObservation)
+OuttaMyWay.configuration:addChangeListener(function(notification)
+    if notification~=nil and notification.name=="enabled"
+        and notification.value==false then
+        OuttaMyWay.liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")
+    end
+end)
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
 if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.nativeBlockageObservation)
+    addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end

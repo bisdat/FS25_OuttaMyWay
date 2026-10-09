@@ -4,6 +4,9 @@ local expected={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
+    "scripts/coordination/NativePairCommitmentAuthority.lua",
+    "scripts/control/HoldRelocatePhysicalControl.lua",
+    "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
@@ -38,6 +41,9 @@ source=function(path)
     loaded[#loaded+1]=path
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
+        or path=="scripts/coordination/NativePairCommitmentAuthority.lua"
+        or path=="scripts/control/HoldRelocatePhysicalControl.lua"
+        or path=="scripts/coordination/LiveHoldRelocateRuntime.lua"
         or path=="scripts/control/mechanisms/NativeReverseMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTranslationHoldMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"
@@ -74,9 +80,15 @@ dofile("scripts/main.lua")
 assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
-assert(#registered==3 and registered[1]==OuttaMyWay.versionHud
+assert(type(OuttaMyWay.liveHoldRelocateRuntime.update)=="function")
+assert(OuttaMyWay.liveHoldRelocateRuntime.authority~=nil)
+assert(OuttaMyWay.liveHoldRelocateRuntime.physicalControl~=nil)
+assert(not OuttaMyWay.liveHoldRelocateRuntime.authority:enabled(),
+    "offline client fixture cannot control workers")
+assert(#registered==4 and registered[1]==OuttaMyWay.versionHud
     and registered[2]==OuttaMyWay.nativeBlockageObservation
-    and registered[3]==OuttaMyWay.disabledStartupReminder)
+    and registered[3]==OuttaMyWay.liveHoldRelocateRuntime
+    and registered[4]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(OuttaMyWay.nativeBlockedEventTap==nil)
 assert(type(OuttaMyWay.nativeBlockageObservation.update)=="function")
@@ -93,7 +105,7 @@ assert(OuttaMyWay.nativeReverseMechanism==nil)
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
 assert(events[1].payload.aiControl==false)
-assert(#listeners==1)
+assert(#listeners==2)
 OuttaMyWay.versionHud:draw()
 assert(#renders==2)
 local expectedHud="OuttaMyWay "..OuttaMyWay.VERSION
@@ -108,4 +120,4 @@ for _,listener in ipairs(listeners) do listener({name="enabled",value=true,durab
 OuttaMyWay.versionHud:draw()
 assert(#renders==4 and renders[3]==expectedHud and renders[4]==expectedHud)
 assert(events[#events].code=="OUTTAMYWAY_SHELL_ENABLED")
-print("Product shell bootstrap / read-only observer / no AI Control / HUD toggle: PASS")
+print("Product shell bootstrap / live Control server-only / HUD toggle: PASS")

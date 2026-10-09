@@ -1,6 +1,6 @@
 # Blocked-First Situation Assessment — 0.5 Architecture
 
-**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the accepted correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The current product remains **control-free**. Passive native Observation is now limited to reading existing GIANTS blocked-state fields, with no AI modification or event hook.
+**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the accepted correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The live TEST product now performs **server-gated Hold & Relocate Control** after independent Pair Commitment; passive native Observation itself still only reads GIANTS blocked-state fields, with no native event hook. This is executable implementation, **not a claim of in-game validation**.
 
 ## Purpose
 
@@ -24,7 +24,7 @@ This is the architectural separation we need. Ordinary opposed A8 passing is exp
 | **Native Blockage Persistence Gate** | At least **1.000 second of accumulated confirmed blocked time** in one unresolved episode, excluding periods positively observed unblocked | Admits *consideration* only, never automatic hold/relocation |
 | **Spatial Pair Inference** | After the native one-second gate, nominate the **nearest other eligible worker within 30 m horizontal X/Z root-to-root distance** | This approximate position-based candidate need not report blocked and is not proven causal |
 | **Situation Assessment** | Decide whether the native blocked condition and plausible worker relationship justify **considering a cooperative response**, or whether to leave GIANTS to recover / await evidence | Does **not** independently prove GIANTS' collision or blocked state |
-| **Hold & Relocate** | After selecting one worker to relocate, temporarily hold nearby blocker(s) to protect egress, reverse the selected assembly towards the field centroid in TRANSIT, hold it to allow the blocker to resume, then stop and immediately restart its GIANTS AI job | Accepted six-stage operating principle; the physical mechanism and outstanding role/offset details are not implemented |
+| **Hold & Relocate** | After selecting one worker to relocate, temporarily hold nearby blocker(s) to protect egress, reverse the selected assembly towards the field centroid in TRANSIT, hold it to allow the blocker to resume, then stop and immediately restart its GIANTS AI job | Live server-side TEST mechanism now wired behind independent Pair Commitment; in-game effects not yet validated |
 
 ## Evidence-to-responsibility flow
 
@@ -57,7 +57,7 @@ GIANTS native isBlocked (worker and Job Episode)
                 GIANTS  WAITING_FOR_   separate
                 continues EVIDENCE     Responsibility /
                                        Pair Commitment
-                                       (future only)
+                                       (live, independently admitted)
                                             |
                                             v
                                   Hold & Relocate
@@ -136,6 +136,8 @@ The active occurrence retires when both workers are natively unblocked, either n
 - BWR's demonstrated separation of **reverse steering look-ahead** from **authorised movement extent**. The archived BWR used a **40 m Reverse Steering Horizon** for articulated stability: that is a subordinate steering reference, **not** permission to travel 40 m, extend the Hold & Relocate limit of **≤30 m + offset**, or drive to a point beyond the authorised bound.
 
 This is a requirement to reuse the **verified reversing method**, not an instruction to restore the archived BWR architecture wholesale or to choose an interception mechanism before testing. The new centroid-directed target and bounded completion belong to Hold & Relocate, while native reverse geometry belongs to subordinate Control. The precise offset, steering target construction and interface composition still require implementation-facing specification and GIANTS Reality validation.
+
+**Current live admission and its limits:** the server runtime reads GIANTS' active-pair observation but never treats nomination or DEBUG publication as authority. A separate Pair Commitment validates both current native worker jobs, native field-course strategies, player control, the ≥1 s observed pulse, ≤30 m proximity and a common GIANTS field polygon. It derives its area centroid from native world polygon points and currently uses a conservative **zero-metre offset** (maximum 30 m reverse), with no inferred positive allowance. Its immediate blocker set contains the other admitted participant; a wider multi-worker blocker neighbourhood and durable field-geometry bootstrap remain outside this first live implementation. Missing field geometry or native capability means **no relocation**; there is no replacement collision detector. The live adapter binds existing reverse, translation Hold, request-only TRANSIT and immediate FIELDWORK hand-back. Runtime activation is distinct from GIANTS physical validation, which must challenge wrapper composition, reverse trajectories, configuration overlap, stop/start and safe disablement.
 
 **Outstanding implementation-facing questions, not reasons to reopen the accepted principles:** how to obtain the authoritative field centroid, break an exact equidistance tie, identify immediate-vicinity blockers, construct the reverse steering target and offset, and relinquish authority safely on native job changes, player takeover, disablement or movement failure. **Role selection and the two timed Hold releases are decided** and must not be converted into additional pairwise release gates. These require Specifications, source and GIANTS Reality validation in separate increments. Do not promote old 0.4 Passage/Regulation mechanisms to current architecture by default.
 

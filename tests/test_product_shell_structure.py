@@ -1,4 +1,4 @@
-"""Contracts for the passive native observer shell with no vehicle Control.
+"""Contracts for the admitted server-side Hold & Relocate product shell.
 
 The 0.4 behavioural contracts remain in the repository as historic evidence;
 they do not describe the presently loaded product.
@@ -11,6 +11,9 @@ SHELL_MODULES = [
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
+    "scripts/coordination/NativePairCommitmentAuthority.lua",
+    "scripts/control/HoldRelocatePhysicalControl.lua",
+    "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
@@ -39,7 +42,7 @@ def test_bootstrap_loads_only_explicit_shell_modules():
     assert "source(modDirectory..relativePath)" in text
 
 
-def test_shell_has_no_runtime_graph_or_vehicle_authority():
+def test_shell_wires_only_admitted_hold_relocate_without_legacy_control():
     text = main_text()
     for forbidden in (
         "OuttaMyWay.Runtime", "ProductLifecycle", "LiveRuntimeCoordinator",
@@ -50,7 +53,10 @@ def test_shell_has_no_runtime_graph_or_vehicle_authority():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 3
+    assert text.count("addModEventListener(") == 4
+    assert "OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new" in text
+    assert "addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)" in text
+    assert 'liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")' in text
     assert "OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new" in text
     assert "NativeBlockedProbe" not in text
     assert "NativeBlockedEventTap" not in text
@@ -74,7 +80,8 @@ def test_current_test_identity_is_owned_twice_only():
     assert re.fullmatch(r"0\.\d+\.\d+\.\d+", version.group(1))
     assert manifest.group(1) == manifest.group(2) == version.group(1)
     assert version.group(1) not in main_text()
-    assert 'aiControl=false' in main_text()
+    assert 'aiControl=false' not in main_text()
+    assert 'aiControl=g_server~=nil' in main_text()
 
 
 def test_settings_and_disabled_reminder_are_retained():
@@ -90,10 +97,11 @@ def test_settings_and_disabled_reminder_are_retained():
     assert "OuttaMyWay.nativeBlockedEventTap" not in main
 
 
-def test_manifest_does_not_promise_active_ai_control():
+def test_manifest_describes_live_ai_control():
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
-    assert "This build does not control AI workers." in moddesc
-    assert "AI worker coordination is inactive." in moddesc
+    assert "Live Hold & Relocate" in moddesc
+    assert "This build does not control AI workers." not in moddesc
+    assert "AI worker coordination is inactive." not in moddesc
 
 
 def test_every_production_script_is_reachable_from_the_shell():
