@@ -274,12 +274,13 @@ function Mechanism:startReverse(vehicle,objective)
         or not finite(objective.returnRegion.directionZ)
         or not finite(objective.returnRegion.requiredProgressM)
         or objective.returnRegion.requiredProgressM<=0
-        or not finite(objective.returnRegion.requiredCrossTrackM)
-        or not finite(objective.returnRegion.blockerOriginX)
-        or not finite(objective.returnRegion.blockerOriginZ)
-        or not finite(objective.returnRegion.corridorNormalX)
-        or not finite(objective.returnRegion.corridorNormalZ)
-        or not finite(objective.returnRegion.sideSign)
+        or (objective.returnRegion.source~="SINGLE_REVERSE_REGION"
+            and (not finite(objective.returnRegion.requiredCrossTrackM)
+                or not finite(objective.returnRegion.blockerOriginX)
+                or not finite(objective.returnRegion.blockerOriginZ)
+                or not finite(objective.returnRegion.corridorNormalX)
+                or not finite(objective.returnRegion.corridorNormalZ)
+                or not finite(objective.returnRegion.sideSign)))
         or not finite(objective.steeringHorizonM)
         or objective.steeringHorizonM<=0 then
         return false,"REVERSE_REQUEST_INVALID"

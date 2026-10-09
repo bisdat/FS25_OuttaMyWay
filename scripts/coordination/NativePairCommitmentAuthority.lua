@@ -215,6 +215,81 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     return commitment
 end
 
+
+-- A solo blockage is separately admitted from pair inference. Only one native
+-- field-course worker is present; no blocker or partner is invented.
+function Authority:admitSingleCandidate(worker,confirmedBlockedMs)
+    if self.active~=nil or not self:enabled() or type(worker)~="table"
+        or not finite(confirmedBlockedMs) or confirmedBlockedMs<1000 then
+        return nil,"SINGLE_ADMISSION_UNAVAILABLE"
+    end
+    local strategy=currentStrategy(worker)
+    local job=currentJob(worker)
+    local point=pose(worker)
+    if strategy==nil then return nil,"NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE" end
+    if job==nil then return nil,"NATIVE_JOB_REFERENCE_UNAVAILABLE" end
+    if point==nil then return nil,"ASSEMBLY_ROOT_POSE_UNAVAILABLE" end
+    if strategy.isBlocked~=true then return nil,"NATIVE_BLOCKAGE_NO_LONGER_POSITIVE" end
+
+    -- Recheck locality at admission, not only in the passive nomination.
+    local mission=g_currentMission
+    local registry=mission and mission.aiSystem and mission.aiSystem.activeJobVehicles
+    if type(registry)=="table" then
+        local seen={}
+        local function localOther(other)
+            if type(other)~="table" or seen[other] or other==worker then return false end
+            seen[other]=true
+            if currentStrategy(other)==nil or currentJob(other)==nil then return false end
+            local otherPoint=pose(other)
+            if otherPoint==nil then return false end
+            local dx,dz=otherPoint.x-point.x,otherPoint.z-point.z
+            return dx*dx+dz*dz<=900
+        end
+        for key,value in pairs(registry) do
+            if localOther(key) or localOther(value)
+                or (type(value)=="table" and (localOther(value.vehicle)
+                    or localOther(value.object) or localOther(value.rootVehicle)
+                    or localOther(value[1]))) then
+                return nil,"SINGLE_WORKER_PAIR_NOW_LOCAL"
+            end
+        end
+    end
+
+    local manager=g_fieldManager
+    if type(manager)~="table" or type(manager.fields)~="table" then
+        return nil,"FIELD_REGISTRY_UNAVAILABLE"
+    end
+    local selected,field=nil,nil
+    local valid=0
+    for _,candidate in pairs(manager.fields) do
+        local polygon=polygonFor(candidate)
+        if polygon~=nil then
+            valid=valid+1
+            if inside(polygon,point.x,point.z) then
+                selected,field=polygon,candidate
+                break
+            end
+        end
+    end
+    if selected==nil then
+        return nil,valid==0 and "FIELD_POLYGON_EVIDENCE_UNAVAILABLE"
+            or "SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS"
+    end
+    if not inside(selected,selected.centroid.x,selected.centroid.z) then
+        return nil,"FIELD_CENTROID_OUTSIDE_FIELD_POLYGON"
+    end
+    self.sequence=self.sequence+1
+    local commitment={
+        kind="SINGLE",commitmentId="native-single-"..tostring(self.sequence),
+        participants={participant(worker,strategy,job,point)},
+        fieldCentroid=selected.centroid,fieldPolygon=selected,
+        nativeFieldReference=field,offsetM=0,nearbyBlockers={},
+        singleRegionDistanceM=40
+    }
+    self.active=commitment
+    return commitment
+end
+
 function Authority:validateCommitment(commitment)
     if self.active~=commitment or commitment==nil then
         return false,"COMMITMENT_NOT_ISSUED"

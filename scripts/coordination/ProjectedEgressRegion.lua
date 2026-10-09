@@ -149,7 +149,69 @@ function Region.plan(commitment,relocator,blocker)
     }
 end
 
+
+-- Solo reverse aims at an inward-favoured REGION at 40 m projected retreat.
+-- Steering extends beyond the region as in the accepted pairwise method.
+function Region.planSingle(commitment,relocator)
+    if type(commitment)~="table" or type(relocator)~="table"
+        or not finite(relocator.x) or not finite(relocator.z)
+        or type(commitment.fieldCentroid)~="table"
+        or not finite(commitment.fieldCentroid.x)
+        or not finite(commitment.fieldCentroid.z)
+        or type(commitment.fieldPolygon)~="table"
+        or commitment.singleRegionDistanceM~=40 then
+        return nil,"SINGLE_REGION_EVIDENCE_UNAVAILABLE"
+    end
+    local backX,backZ,reason=heading(relocator.vehicle,"getAIReverserNode",true)
+    if backX==nil then return nil,reason end
+    local perpX,perpZ=-backZ,backX
+    local chosen=nil
+    for _,side in ipairs({-1,1}) do
+        local dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX
+        local dz=COS_OBLIQUE*backZ+side*SIN_OBLIQUE*perpZ
+        if segmentInField(commitment.fieldPolygon,
+            relocator.x,relocator.z,dx,dz,40) then
+            local cx=commitment.fieldCentroid.x-relocator.x
+            local cz=commitment.fieldCentroid.z-relocator.z
+            local score=dx*cx+dz*cz
+            if chosen==nil or score>chosen.centreScore then
+                chosen={side=side,dx=dx,dz=dz,centreScore=score}
+            end
+        end
+    end
+    if chosen==nil then return nil,"NO_SUPPORTED_INFIELD_EGRESS_REGION" end
+    local horizon=40+STEERING_LOOKAHEAD_M
+    return {
+        isReverse=true,steeringHorizonM=horizon,
+        targetX=relocator.x+chosen.dx*horizon,
+        targetZ=relocator.z+chosen.dz*horizon,
+        returnRegion={
+            source="SINGLE_REVERSE_REGION",
+            originX=relocator.x,originZ=relocator.z,
+            directionX=chosen.dx,directionZ=chosen.dz,
+            requiredProgressM=40
+        },
+        directionSource="SINGLE_OBLIQUE_REVERSE",
+        egressSide=chosen.side,vectorDistanceM=40,
+        nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
+        targetInField=true,fieldInteriorScore=chosen.centreScore,
+        nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ
+    }
+end
+
 function Region.progress(region,x,z)
+    if type(region)=="table" and region.source=="SINGLE_REVERSE_REGION" then
+        if not finite(x) or not finite(z)
+            or not finite(region.originX) or not finite(region.originZ)
+            or not finite(region.directionX) or not finite(region.directionZ)
+            or not finite(region.requiredProgressM) then return nil end
+        local dx,dz=x-region.originX,z-region.originZ
+        local progress=dx*region.directionX+dz*region.directionZ
+        return {progressM=progress,crossTrackM=progress,
+            lateralOffsetM=math.abs(dx*region.directionZ-dz*region.directionX),
+            remainingM=math.max(0,region.requiredProgressM-progress),
+            isInRegion=progress>=region.requiredProgressM}
+    end
     if type(region)~="table" or not finite(x) or not finite(z)
         or not finite(region.blockerOriginX)
         or not finite(region.blockerOriginZ)
