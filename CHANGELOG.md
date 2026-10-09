@@ -1,3 +1,22 @@
+# v0.5.1.0 PATCH CHECKPOINT — Native Blocked Progress and Hold & Relocate Plateau
+
+**Accepted source baseline:** `main` after merged [PR #459](https://github.com/bisdat/FS25_OuttaMyWay/pull/459), merge commit `0ec3aea4be4809e28ba0150322288600b136e16b`, carrying field-accepted TEST `0.5.0.32`.
+
+**Checkpoint rationale:** The accepted 0.5.x development establishes a coherent blocked-first Hold & Relocate implementation within the existing 0.5 epoch. [Issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440) is closed as completed after TEST `0.5.0.32` received a GIANTS TS015 **PASS** verdict. The field report additionally identifies successful handling of a late three-worker blockage. This is evidence for that run, not general three-party arbitration or coverage of every worker combination. No further correction is required to declare the accepted tranche a Validated Plateau.
+
+**Behaviour captured in the accepted baseline:**
+- Native `isBlocked` evidence qualified for at least 1 second, then nearest eligible spatial pair inference within a 30 m root-position radius and separate Pair Commitment;
+- relocation of the worker nearer the field centroid, while the other participant receives a **1 km/h** GIANTS-native speed Regulation for **5 seconds**;
+- non-blocking TRANSIT request, native BWR reverse steering, and **field-inward** oblique Cross-Track Egress using the other worker's captured working width **plus 5 m**, with Region completion rather than arrival at a steering point;
+- **7-second** relocated-worker Hold, followed by immediate GIANTS FIELDWORK stop/start handback;
+- no arbitrary relocation-distance fail-safe, no retained native stop/start attempt history, and no parked cross-collision uncertainty blocking a later independent encounter.
+
+**Validation basis:** Offline Validation passed for accepted TEST `0.5.0.32` before merge, including [GitHub Actions run #37950064195](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/37950064195). GIANTS Reality verdict: TS015 **PASS**, artefact `0.5.0.32_TS015.zip`. The late three-worker blockage was successfully managed in the observed scenario; its exact transitions and timings are not independently asserted by this checkpoint. Validation does not establish universal physical clearance or a generic three-party coordinator.
+
+**PATCH increment boundary:** This checkpoint changes only `scripts/config.lua`, `modDesc.xml`, and this release-history entry. It promotes `0.5.0.32 → 0.5.1.0`, resetting BUILD to zero, without changing runtime mechanisms, Architecture, Specification, testing logic, Configuration, or HUD behaviour. Architecture and Specification remain the accepted contracts validated by the preceding field run.
+
+**Governance:** `0.5.1.0` is an accepted **non-canonical PATCH checkpoint**, not a Release Declaration or Canonical Merge. The review and merge of this PATCH PR advances Accepted Repository State but makes no new canonical claim.
+
 # v0.5.0.6 TEST — Retire completed native event-construction research tap
 
 **Owner instruction:** the TEST 0.5.0.5 blocked-event tap has served its research purpose. Its TS015 logs confirmed GIANTS `AIVehicleIsBlockedEvent.new` construction for both blocked/unblocked transitions, including a complete **174 ms** Patriot pulse. This is evidence of an observation seam, not an authorised production Observer.
