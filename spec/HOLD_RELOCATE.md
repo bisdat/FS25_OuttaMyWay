@@ -36,20 +36,22 @@ Unavailability of a commitment, source GIANTS Job Episode, player consent, clock
 
 An external call can fail **after** partly changing GIANTS state. The coordinator MUST track possibly acquired effects before invoking it and must not discard a failed cleanup. Unverified release or job replacement is `UNRESOLVED`, with retained evidence and a supported explicit cleanup retry / player-intervention route. An uncertain native restart is not recast as GIANTS successful continuation even when physical Hold cleanup succeeds.
 
-**Current implementation boundary:** the production module is loaded but has no live commitment authority or GIANTS physical Control interface; no runtime Hold, Transit, reverse or stop/restart actuation is connected. The coordinator's verified offline behaviour cannot establish GIANTS runtime success. Any future integration MUST validate safe physical release, native reverse geometry, native job recreation, and representative lifecycle interruption in game.
+**Current implementation boundary:** the coordinator and a subordinate native reverse-driving mechanism are loaded but neither is instantiated or called by the shell. There is still no live commitment authority, complete physical Control interface or runtime Hold, Transit, reverse or stop/restart actuation. The coordinator's verified offline behaviour cannot establish GIANTS runtime success. Any future integration MUST validate safe physical release, native reverse geometry, native job recreation, and representative lifecycle interruption in game.
 
 ## Contract participants
 
 | Production source | Participation |
 | --- | --- |
 | [`scripts/coordination/HoldRelocateCoordinator.lua`](../scripts/coordination/HoldRelocateCoordinator.lua) | `REALISES` |
+| [`scripts/control/mechanisms/NativeReverseMechanism.lua`](../scripts/control/mechanisms/NativeReverseMechanism.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/hold_relocate.lua`](../tests/shell/hold_relocate.lua) | `CHALLENGES` |
+| [`tests/shell/native_reverse_mechanism.lua`](../tests/shell/native_reverse_mechanism.lua) | `CHALLENGES` |
 
 ## Implementation traceability and validation scope
 
-The [coordinator](../scripts/coordination/HoldRelocateCoordinator.lua) currently realises role selection, coordination sequencing and conservative unresolved-effect retention. [Product entry](../scripts/main.lua) sources the module without instantiating it; no production physical adapter exists. The [offline behaviour challenge](../tests/shell/hold_relocate.lua) covers timing, role selection, independent authority, failure recovery and uncertain native hand-back. GIANTS in-game tests, not offline mocks, must validate physical hold, reverse steering, Transit's realised state and job continuation.
+The [coordinator](../scripts/coordination/HoldRelocateCoordinator.lua) currently realises role selection, coordination sequencing and conservative unresolved-effect retention. The [native reverse mechanism](../scripts/control/mechanisms/NativeReverseMechanism.lua) is a dormant subordinate: when explicitly commanded, it interposes on GIANTS driveToPoint for only the selected assembly, preserves unrelated calls (including doNotSteer), uses the GIANTS reverser frame and BWR tool-relative correction, and reports cumulative X/Z displacement. Local 8 km/h reverse speed and 1 m point-approach tolerance are implementation-owned calibration. A command or sampled displacement does not prove clearance, useful continuation or exact physical stopping. [Product entry](../scripts/main.lua) sources the module without instantiating it; no production physical adapter exists. The [offline behaviour challenge](../tests/shell/hold_relocate.lua) covers timing, role selection, independent authority, failure recovery and uncertain native hand-back. The [reverse-mechanism offline challenge](../tests/shell/native_reverse_mechanism.lua) checks native call passthrough, reverser frame, available tool correction, measured travel, abort and missing APIs. GIANTS in-game tests, not offline mocks, must validate reverse geometry, physical stopping distance, Hold, Transit readiness and job continuation.
