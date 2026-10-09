@@ -7,17 +7,9 @@ OuttaMyWay.NativeFieldworkJobReplacementMechanism={}
 local Mechanism=OuttaMyWay.NativeFieldworkJobReplacementMechanism
 Mechanism.__index=Mechanism
 
-local function fail(reason,uncertain,details)
-    local result={
-        kind=uncertain and "NATIVE_FIELDWORK_HANDOFF_UNRESOLVED"
-            or "NATIVE_FIELDWORK_PREPARATION_REJECTED",
-        reason=reason,isNativeJobStateUncertain=uncertain==true,
-        isOldJobStopped=false,isNewJobStarted=false
-    }
-    if type(details)=="table" then
-        for key,value in pairs(details) do result[key]=value end
-    end
-    return false,result
+local function fail(reason)
+    return false,{kind="NATIVE_FIELDWORK_REQUEST_FAILED",reason=reason,
+        isOldJobStopped=false,isNewJobStarted=false}
 end
 
 local function invoke(target,method,...)
@@ -50,10 +42,7 @@ local function discardBeforeStop(replacement)
 end
 
 function Mechanism.new(jobEpisodeSource)
-    return setmetatable({
-        jobEpisodeSource=jobEpisodeSource,
-        attempts=setmetatable({},{__mode="k"})
-    },Mechanism)
+    return setmetatable({jobEpisodeSource=jobEpisodeSource},Mechanism)
 end
 
 -- The injected source resolves the independently admitted original GIANTS job.
@@ -127,85 +116,31 @@ local function prepare(vehicle)
         oldJobId=job.jobId,fieldworkType=fieldworkType,farmId=farmId}
 end
 
--- This port is a single synchronous native stop->start call sequence; there is
--- deliberately NO fold readiness, pause, 10-second extra wait or pair gate.
--- After the stop invocation, uncertainty cannot be repaired by replaying it.
+-- The handback is a single native stop followed immediately by native start.
+-- There is no vehicle-scoped attempt history, uncertainty state, or post-start
+-- verification gate. GIANTS governs the resulting Job Episode and configuration.
 function Mechanism:restartNativeFieldwork(vehicle)
-    if type(vehicle)~="table" then
-        return fail("VEHICLE_UNAVAILABLE",false)
-    end
-    if self.attempts[vehicle]~=nil then
-        return fail("NATIVE_HANDOFF_ALREADY_ATTEMPTED",true)
-    end
-    local expected,expectedReason=expectedJobFromSource(self.jobEpisodeSource,vehicle)
-    if expected==nil then return fail(expectedReason,false) end
+    if type(vehicle)~="table" then return fail("VEHICLE_UNAVAILABLE") end
+    local expected,reason=expectedJobFromSource(self.jobEpisodeSource,vehicle)
+    if expected==nil then return fail(reason) end
     local state,why=prepare(vehicle)
-    if state==nil then return fail(why,false) end
+    if state==nil then return fail(why) end
+    -- One current-episode check prevents stopping a different GIANTS job.
+    -- No second pre-stop query or post-start polling is introduced.
     if state.oldJob~=expected then
-        local disposed=discardBeforeStop(state.replacement)
-        if not disposed then return fail("JOB_TURNOVER_AND_DISPOSAL_UNCERTAIN",true) end
-        return fail("ORIGINAL_JOB_EPISODE_REPLACED",false)
+        discardBeforeStop(state.replacement)
+        return fail("ORIGINAL_JOB_EPISODE_REPLACED")
     end
-
-    -- Preparation can trigger native lifecycle callbacks, so recheck once
-    -- immediately before crossing the stop commitment point.
-    local current=currentJob(vehicle)
-    if current~=expected then
-        local disposed=discardBeforeStop(state.replacement)
-        if not disposed then return fail("PRE_STOP_CLEANUP_UNCONFIRMED",true) end
-        return fail("ORIGINAL_JOB_EPISODE_REPLACED",false)
-    end
-    self.attempts[vehicle]={
-        status="STOP_INVOCATION_ENTERED",oldJobId=state.oldJobId,
-        isNativeJobStateUncertain=true
-    }
-    -- GIANTS stopJob may be void. An exception or explicit false is a failure,
-    -- but absence of those signals is not yet independent cessation evidence.
     local stopped=invoke(state.aiSystem,"stopJob",state.oldJob,nil)
-    if not stopped then
-        local evidence={oldJobId=state.oldJobId,stopInvocationAccepted=false,
-            startInvocationAccepted=false}
-        self.attempts[vehicle]=evidence
-        return fail("NATIVE_FIELDWORK_STOP_UNCERTAIN",true,evidence)
-    end
-    self.attempts[vehicle].status="START_INVOCATION_ENTERED"
-    -- The first follow-up action after stop is the native replacement start.
+    if not stopped then return fail("NATIVE_FIELDWORK_STOP_FAILED") end
     local started=invoke(state.aiSystem,"startJob",state.replacement,state.farmId)
-    if not started then
-        local evidence={oldJobId=state.oldJobId,stopInvocationAccepted=true,
-            startInvocationAccepted=false}
-        self.attempts[vehicle]=evidence
-        return fail("NATIVE_FIELDWORK_START_UNCERTAIN",true,evidence)
-    end
-
-    local newJobId=state.replacement.jobId
-    local currentNew=currentJob(vehicle)
-    -- A successful protected invocation does not prove that GIANTS actually
-    -- admitted the replacement as the selected worker's current FIELDWORK job.
-    if newJobId==nil or newJobId==state.oldJobId
-        or currentNew~=state.replacement then
-        local evidence={oldJobId=state.oldJobId,newJobId=newJobId,
-            stopInvocationAccepted=true,startInvocationAccepted=true}
-        self.attempts[vehicle]=evidence
-        return fail("NATIVE_FIELDWORK_HANDOFF_NOT_OBSERVED",true,evidence)
-    end
-    local evidence={
-        kind="NATIVE_FIELDWORK_REPLACEMENT_ACCEPTED",
-        oldJobId=state.oldJobId,newJobId=newJobId,
+    if not started then return fail("NATIVE_FIELDWORK_START_FAILED") end
+    return true,{
+        kind="NATIVE_FIELDWORK_REPLACEMENT_REQUESTED",
+        oldJobId=state.oldJobId,newJobId=state.replacement.jobId,
         stopInvocationAccepted=true,startInvocationAccepted=true,
         isOldJobStopped=true,isNewJobStarted=true,
-        isNativeJobStateUncertain=false,
         isNativeProductiveContinuationConfirmed=false,
         farmId=state.farmId
     }
-    -- Successful successor-job acceptance closes this job-scoped attempt.
-    -- The vehicle is then eligible for a distinct later collision episode.
-    -- Uncertain stop/start attempts above remain retained.
-    self.attempts[vehicle]=nil
-    return true,evidence
-end
-
-function Mechanism:getStatus(vehicle)
-    local record=type(vehicle)=="table" and self.attempts[vehicle] or nil
-    return record or {status="NOT_ATTEMPTED",isNativeJobStateUncertain=false}
 end
