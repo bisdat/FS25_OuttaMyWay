@@ -47,7 +47,7 @@ local function nativeWorker(x,z,blocked)
     return root,strategy
 end
 local first,blocked=nativeWorker(20,20,true)
-local second=nativeWorker(23,20,false)
+local second,secondStrategy=nativeWorker(23,20,false)
 local authority=Authority.new(configuration)
 local accepted,reason=authority:admitCandidate(first,second,first,999)
 assert(accepted==nil,"persistence gate must reject a short pulse")
@@ -104,10 +104,18 @@ local reverse={travelledM=0,isComplete=false}
 physical.reverseMechanism={
     startReverse=function(_,v,objective)
         events[#events+1]="REVERSE"
-        assert(objective.maxTravelM==nil and objective.steeringHorizonM==81)
-        assert(objective.returnRegion.requiredProgressM>38)
-        assert(objective.vectorDistanceM==41 and objective.marginM==5)
-        assert(objective.targetInField and objective.directionSource=='OBLIQUE_REVERSE')
+        if objective.returnRegion.source=="SINGLE_REVERSE_REGION" then
+            assert(objective.maxTravelM==nil and objective.steeringHorizonM==80)
+            assert(objective.returnRegion.requiredProgressM==40
+                and objective.returnRegion.blockerOriginX==nil)
+            assert(objective.vectorDistanceM==40 and objective.marginM==nil)
+            assert(objective.directionSource=="SINGLE_OBLIQUE_REVERSE")
+        else
+            assert(objective.maxTravelM==nil and objective.steeringHorizonM==81)
+            assert(objective.returnRegion.requiredProgressM>38)
+            assert(objective.vectorDistanceM==41 and objective.marginM==5)
+            assert(objective.targetInField and objective.directionSource=='OBLIQUE_REVERSE')
+        end
         return true
     end,
     reverseStatus=function()return reverse end,
@@ -194,6 +202,49 @@ enabled=false
 accepted=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil)
 enabled=true
+
+-- Separate single-worker admission shares physical Control, not the pair
+-- blocker membership, selection, Regulation or timer-only 7s Hold phase.
+secondStrategy.isBlocked=true
+g_currentMission.aiSystem={activeJobVehicles={[second]=true}}
+local under,reason=authority:admitSingleCandidate(second,999)
+assert(under==nil and reason=="SINGLE_ADMISSION_UNAVAILABLE")
+local soloCommitment=assert(authority:admitSingleCandidate(second,1000))
+assert(soloCommitment.kind=="SINGLE"
+    and #soloCommitment.participants==1
+    and #soloCommitment.nearbyBlockers==0
+    and soloCommitment.singleRegionDistanceM==40)
+assert(authority:validateCommitment(soloCommitment))
+assert(authority:getExpectedNativeJob(second)==second.job)
+local before=#events
+reverse={travelledM=0,isComplete=false}
+local soloOk,soloDetails=coordinator:begin(soloCommitment,20000)
+assert(soloOk and soloDetails.vectorDistanceM==40)
+assert(#events==before+2 and events[before+1]=="TRANSIT"
+    and events[before+2]=="REVERSE",
+    "no other-worker Regulation during solo recovery")
+coordinator:advance(26000)
+assert(#events==before+2,"no Regulation timer or paired Hold in solo phase")
+reverse={travelledM=40,isComplete=true}
+coordinator:advance(26001)
+assert(events[before+3]=="REVERSE_STOP")
+assert(events[before+4]=="NATIVE_STOP_START"
+    and events[before+5]=="HANDOFF_TRANSIT",
+    "solo must stop/start immediately after the achieved region")
+assert(#events==before+5,"no extra Hold or invented blocker")
+assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
+assert(authority:release(soloCommitment))
+local freshSolo=assert(authority:admitSingleCandidate(second,1000))
+assert(freshSolo~=soloCommitment and authority:release(freshSolo),
+    "later solo blockage remains independently admissible")
+g_currentMission.aiSystem.activeJobVehicles[first]=true
+coords[first.rootNode]={x=24,z=20}
+under,reason=authority:admitSingleCandidate(second,1000)
+assert(under==nil and reason=="SINGLE_WORKER_PAIR_NOW_LOCAL",
+    "single admission must recheck nearby native workers")
+g_currentMission.aiSystem.activeJobVehicles[first]=nil
+coords[first.rootNode]={x=20,z=20}
+
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
@@ -235,5 +286,21 @@ assert(not runtime.coordinator:isActive())
 g_server=nil
 runtime:update(16)
 assert(#published==3 and not runtime.coordinator:isActive())
+-- A solo native occurrence reaches independent current-job/field admission
+-- without inventing a pair. Rejection remains observable once.
+observer.getCurrentPairCandidates=function()return {} end
+local soloOccurrence={}
+observer.getCurrentSingleCandidates=function()return {
+    {candidateIdentity=soloOccurrence,worker=second,confirmedBlockedMs=1000}
+} end
+runtime:update(16)
+assert(#published==3,"client cannot admit solo candidates")
+g_server={}
+runtime:update(16)
+assert(#published==4 and published[4].code=="HOLD_RELOCATE_ADMISSION_REJECTED"
+    and published[4].detail.candidateKind=="SINGLE"
+    and published[4].detail.reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
+runtime:update(16)
+assert(#published==4,"one NORMAL rejection per solo occurrence")
 -- No player-control veto or diagnostic fields remain in live admission.
 print("Live Pair Commitment with GIANTS job and field evidence, no player-control gate: PASS")

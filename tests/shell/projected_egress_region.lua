@@ -59,4 +59,26 @@ local confinedBlocker=worker(15,18,0,-1)
 local none,reason=Plan.plan({fieldCentroid={x=15,z=15},
     fieldPolygon=small,blockerWorkingWidthM=36},confined,confinedBlocker)
 assert(none==nil and reason=="NO_SUPPORTED_INFIELD_EGRESS_REGION")
-print("Cross-track egress, 41 m vector, in-field side and region: PASS")
+-- Solo objective uses its own 40 m region, not a manufactured blocker.
+local solo=assert(Plan.planSingle({fieldCentroid={x=50,z=100},
+    fieldPolygon=field,singleRegionDistanceM=40},mover))
+assert(solo.vectorDistanceM==40 and solo.steeringHorizonM==80)
+assert(solo.directionSource=="SINGLE_OBLIQUE_REVERSE"
+    and solo.blockerWorkingWidthM==nil and solo.marginM==nil)
+assert(solo.returnRegion.source=="SINGLE_REVERSE_REGION"
+    and solo.returnRegion.requiredProgressM==40)
+local rr=solo.returnRegion
+local initialX,initialZ=rr.originX,rr.originZ
+assert(not Plan.progress(rr,initialX,initialZ-40).isInRegion,
+    "axial movement is not a solo oblique return region")
+assert(not Plan.progress(rr,initialX+39*rr.directionX,
+    initialZ+39*rr.directionZ).isInRegion)
+assert(Plan.progress(rr,initialX+40*rr.directionX,
+    initialZ+40*rr.directionZ).isInRegion)
+assert(Plan.progress(rr,initialX+41*rr.directionX+2*rr.directionZ,
+    initialZ+41*rr.directionZ-2*rr.directionX).isInRegion,
+    "entering the region is not an exact steering-point arrival")
+local tooSmall=Plan.planSingle({fieldCentroid={x=15,z=15},
+    fieldPolygon=small,singleRegionDistanceM=40},confined)
+assert(tooSmall==nil,"no field-supported 40 m solo region => no physical command")
+print("Pairwise cross-track and solo 40 m projected return region: PASS")
