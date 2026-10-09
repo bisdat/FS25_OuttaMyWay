@@ -7,6 +7,7 @@ local expected={
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
+    "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
@@ -39,7 +40,8 @@ source=function(path)
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/control/mechanisms/NativeReverseMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTranslationHoldMechanism.lua"
-        or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua" then
+        or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"
+        or path=="scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua" then
         dofile(path)
     elseif path=="scripts/configuration/Configuration.lua" then
         OuttaMyWay.Configuration={new=function() return configuration end}
@@ -85,6 +87,8 @@ assert(type(OuttaMyWay.NativeTranslationHoldMechanism.hold)=="function")
 assert(OuttaMyWay.nativeTranslationHoldMechanism==nil)
 assert(type(OuttaMyWay.NativeTransitRequestMechanism.requestTransit)=="function")
 assert(OuttaMyWay.nativeTransitRequestMechanism==nil)
+assert(type(OuttaMyWay.NativeFieldworkJobReplacementMechanism.restartNativeFieldwork)=="function")
+assert(OuttaMyWay.nativeFieldworkJobReplacementMechanism==nil)
 assert(OuttaMyWay.nativeReverseMechanism==nil)
 assert(#events==1)
 assert(#events>=1 and events[1].code=="OUTTAMYWAY_SHELL_STARTED")
