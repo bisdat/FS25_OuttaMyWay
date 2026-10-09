@@ -77,6 +77,27 @@ assert(mechanism:stopReverse(vehicle))
 assert(AIVehicleUtil.driveToPoint==native,"completed lease restores original native call")
 assert(cruise.speed==8 and cruise.speedReverse==8,
     "reverse completion restores the prior native cruise speeds")
+-- The very same native reverse wrapper accepts a blocker-free solo 40 m
+-- projected region; no fake pair geometry or exact steering-point arrival.
+locations[1].z=0
+local soloObjective={targetX=0,targetZ=-80,steeringHorizonM=80,isReverse=true,
+    returnRegion={source="SINGLE_REVERSE_REGION",
+        originX=0,originZ=0,directionX=0,directionZ=-1,
+        requiredProgressM=40}}
+local soloArmed,soloEvidence=mechanism:startReverse(vehicle,soloObjective)
+assert(soloArmed and soloEvidence.kind=="REVERSE_ARMED")
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,false)
+locations[1].z=-39
+local soloStatus=mechanism:reverseStatus(vehicle)
+assert(not soloStatus.isComplete and soloStatus.regionRemainingM==1)
+locations[1].z=-40.5
+soloStatus=mechanism:reverseStatus(vehicle)
+assert(soloStatus.isComplete and not soloStatus.isFailed
+    and soloStatus.regionRemainingM==0)
+assert(mechanism:stopReverse(vehicle))
+assert(AIVehicleUtil.driveToPoint==native
+    and cruise.speed==8 and cruise.speedReverse==8)
+locations[1].z=0
 -- A second objective starts a new displacement sample and cannot borrow completion.
 locations[1].z=0
 assert(mechanism:startReverse(vehicle,objective))
