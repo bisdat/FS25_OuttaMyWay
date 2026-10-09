@@ -165,6 +165,10 @@ function Runtime:update(dt)
                             .." egressSide="..tostring(why.egressSide)
                             .." regionInField="..tostring(why.targetInField)
                             .." fieldInteriorScore="..tostring(why.fieldInteriorScore)
+                        if why.fieldIdentitySource~=nil then
+                            details=details.." fieldIdentitySource="
+                                ..tostring(why.fieldIdentitySource)
+                        end
                     end
                     issue(self,"INFO","HOLD_RELOCATE_STARTED",details)
                 elseif coordinator:isActive() then

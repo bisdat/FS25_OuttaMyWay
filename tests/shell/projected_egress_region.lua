@@ -86,20 +86,45 @@ assert(confinedSolo.vectorDistanceM==40
     and confinedSolo.returnRegion.requiredProgressM==40,
     "small fields cannot veto native solo BWR")
 
--- Outside-field blockage is normal; prefer the option returning to a
--- known field, but do not require it. Endpoint, not initial root, is sampled.
+-- Test identity, not proximity: adjacent fields can contain reverse endpoints.
+-- Only the active worker's GIANTS-generated course may identify OUR field.
+local function ownField(points)
+    return {singleRegionDistanceM=40,participants={{
+        sourceStrategyReference={aiFieldCourse={fieldCourse={
+            courseField={boundaryPositions=points}}}}
+    }}}
+end
+local sourceLeft=ownField({
+    {0,0},{200,0},{200,200},{0,200}})
+local adjacentRight=ownField({
+    {200,0},{400,0},{400,200},{200,200}})
 g_fieldManager={fields={{densityMapPolygon={
-    pointsX=field.xs,pointsZ=field.zs}}}}
+    pointsX={200,400,400,200},pointsZ={0,0,200,200}}}}}
 local outsideRight=worker(210,100,0,1)
-local inwardRight=assert(Plan.planSingle({singleRegionDistanceM=40},outsideRight))
-assert(inwardRight.egressSide==-1 and inwardRight.targetInField==true,
-    "right-edge exterior origin selects left-rear inward endpoint")
+local inwardRight=assert(Plan.planSingle(sourceLeft,outsideRight))
+assert(inwardRight.egressSide==-1 and inwardRight.targetInField==true
+    and inwardRight.fieldIdentitySource=="GIANTS_ACTIVE_COURSE_FIELD",
+    "right-side worker must return to its OWN field, not adjacent field")
+local adjacentCandidate=assert(Plan.planSingle(adjacentRight,outsideRight))
+assert(adjacentCandidate.egressSide==1
+    and adjacentCandidate.fieldIdentitySource=="GIANTS_ACTIVE_COURSE_FIELD",
+    "same position with different assigned course gives different ownership")
 local outsideLeft=worker(-10,100,0,1)
-local inwardLeft=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft))
+local inwardLeft=assert(Plan.planSingle(sourceLeft,outsideLeft))
 assert(inwardLeft.egressSide==1 and inwardLeft.targetInField==true,
-    "left-edge exterior origin selects right-rear inward endpoint")
+    "left-edge exterior origin selects own-field inward region")
+
+-- GIANTS stores the chosen field detection point even when the course
+-- boundary is unavailable. It remains a directional source, never a gate.
+local nativeDetection={singleRegionDistanceM=40,participants={{
+    sourceStrategyReference={fieldDetectionX=100,fieldDetectionZ=100}
+}}}
+local viaDetection=assert(Plan.planSingle(nativeDetection,outsideRight))
+assert(viaDetection.egressSide==-1
+    and viaDetection.fieldIdentitySource=="GIANTS_FIELD_DETECTION_POSITION")
 g_fieldManager.fields={}
 local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft))
-assert(unassociated.egressSide==-1 and unassociated.targetInField==false,
-    "missing field membership must not inhibit reverse to a 40 m region")
+assert(unassociated.egressSide==-1 and unassociated.targetInField==false
+    and unassociated.fieldIdentitySource=="NO_NATIVE_FIELD_REFERENCE",
+    "absence of native course field must not inhibit 40 m relocation")
 print("Pairwise cross-track and solo 40 m projected return region: PASS")

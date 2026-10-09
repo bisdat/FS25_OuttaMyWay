@@ -252,6 +252,7 @@ function Coordinator:begin(commitment,nowMs)
         nominalBearingOffsetDeg=objective.nominalBearingOffsetDeg,
         targetInField=objective.targetInField,
         fieldInteriorScore=objective.fieldInteriorScore,
+        fieldIdentitySource=objective.fieldIdentitySource,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
             and reverseEvidence.requestedReverseSpeedKmh or nil}
 end

@@ -243,12 +243,20 @@ assert(freshSolo~=soloCommitment and authority:release(freshSolo),
 -- assembly is outside every registered polygon. Admission and physical
 -- 40 m relocation must proceed with no field association.
 g_fieldManager.fields={}
-coords[second.rootNode]={x=300,z=300}
+coords[second.rootNode]={x=110,z=50}
+secondStrategy.aiFieldCourse={fieldCourse={courseField={
+    boundaryPositions={{0,0},{100,0},{100,100},{0,100}}
+}}}
 local exterior=assert(authority:admitSingleCandidate(second,1000))
 assert(exterior.kind=="SINGLE" and exterior.fieldPolygon==nil)
 reverse={travelledM=0,isComplete=false}
 before=#events
-assert(coordinator:begin(exterior,30000))
+local startedExterior,exteriorDetails=coordinator:begin(exterior,30000)
+assert(startedExterior
+    and exteriorDetails.objective.fieldIdentitySource=="GIANTS_ACTIVE_COURSE_FIELD"
+    and exteriorDetails.objective.egressSide==-1
+    and exteriorDetails.objective.targetInField==true,
+    "recovery selects native OWN field even with no g_fieldManager")
 assert(events[before+1]=="TRANSIT" and events[before+2]=="REVERSE")
 reverse={travelledM=40,isComplete=true}
 coordinator:advance(30001)
@@ -258,6 +266,7 @@ assert(events[before+3]=="REVERSE_STOP"
 assert(#events==before+5,"outside-field solo recovery has no Hold timer")
 assert(authority:release(exterior))
 coords[second.rootNode]={x=23,z=20}
+secondStrategy.aiFieldCourse={}
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
 g_currentMission.aiSystem.activeJobVehicles[first]=true
@@ -271,7 +280,7 @@ coords[first.rootNode]={x=20,z=20}
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.1.2"
+OuttaMyWay.VERSION="0.5.1.3"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}
