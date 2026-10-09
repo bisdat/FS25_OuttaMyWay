@@ -39,7 +39,7 @@ function Runtime.new(configuration,observer)
         authority=authority,physicalControl=physical,coordinator=coordinator,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
-        lastReportedOutcome=nil,lastReportedEgressRegulationResults=nil,
+        lastReportedEgressRegulationResults=nil,
         lastReportedInitialMotionEvidence=nil,
         isRuntimeReported=false
     },Runtime)
@@ -111,15 +111,10 @@ function Runtime:update(dt)
                         .." reason="..tostring(outcome.reason))
             end
             self.authority:release(self.authority.active)
-        elseif coordinator:getStatus().phase=="WAITING_FOR_PLAYER_INTERVENTION" then
-            local outcome=coordinator:getStatus().lastOutcome
-            if outcome~=self.lastReportedOutcome then
-                self.lastReportedOutcome=outcome
-                issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",
-                    outcome and outcome.reason)
-            end
         end
         return
+    end
+    local candidates=        return
     end
     local candidates=self.observer and self.observer:getCurrentPairCandidates() or nil
     if type(candidates)~="table" then return end

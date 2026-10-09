@@ -74,72 +74,63 @@ function Coordinator:getStatus()
         regionRequiredProgressM=state.objective.returnRegion.requiredProgressM,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
-        unresolvedEffects=state.unresolvedEffects,isNativeJobStateUncertain=state.isNativeJobStateUncertain,
-        lastOutcome=state.phase=="WAITING_FOR_PLAYER_INTERVENTION" and self.lastOutcome or nil,
         egressHoldResults=self.lastEgressRegulationResults
     }
 end
 
--- Best-effort physical neutralisation must preserve any effect whose release could
--- not be verified. A failed API call can have partially changed GIANTS state.
+-- Release the active physical commands best-effort at the end of this
+-- collision. Capture failures only as this operation's outcome; do not keep
+-- a historical job or commitment as a future admission veto.
 function Coordinator:neutralize(state)
-    local unresolved={}
+    local failures={}
     local control=self.physicalControl
     if state.isReverseOutstanding then
         local ok,reason=command(control,"cancelReverse",state.relocator.vehicle)
-        if ok then state.isReverseOutstanding=false
-        else unresolved[#unresolved+1]="REVERSE:"..tostring(reason) end
+        if not ok then failures[#failures+1]="REVERSE:"..tostring(reason) end
+        state.isReverseOutstanding=false
     end
     for i=1,#state.blockers do
         if state.isBlockerRegulated[i] then
-            local ok,reason=command(control,"releaseRegulation",state.blockers[i].vehicle,"EGRESS")
-            if ok then state.isBlockerRegulated[i]=false
-            else unresolved[#unresolved+1]="BLOCKER_HOLD:"..tostring(reason) end
+            local ok,reason=command(control,"releaseRegulation",
+                state.blockers[i].vehicle,"EGRESS")
+            if not ok then failures[#failures+1]="REGULATION:"..tostring(reason) end
+            state.isBlockerRegulated[i]=false
         end
     end
     if state.isRelocatorHeld then
-        local ok,reason=command(control,"releaseHold",state.relocator.vehicle,"RELOCATED_WORKER")
-        if ok then state.isRelocatorHeld=false
-        else unresolved[#unresolved+1]="RELOCATED_HOLD:"..tostring(reason) end
+        local ok,reason=command(control,"releaseHold",
+            state.relocator.vehicle,"RELOCATED_WORKER")
+        if not ok then failures[#failures+1]="HOLD:"..tostring(reason) end
+        state.isRelocatorHeld=false
     end
     if state.isTransitOutstanding then
         local ok,reason=command(control,"cancelTransit",state.relocator.vehicle)
-        if ok then state.isTransitOutstanding=false
-        else unresolved[#unresolved+1]="TRANSIT:"..tostring(reason) end
+        if not ok then failures[#failures+1]="TRANSIT:"..tostring(reason) end
+        state.isTransitOutstanding=false
     end
-    state.unresolvedEffects=unresolved
-    return #unresolved==0
+    return failures
 end
 
--- Cleanup failures are not represented as successful relinquishment. Preserve
--- the affected commitment for explicit retry or player intervention.
-function Coordinator:finishWithOutcome(outcome,reason,isNativeJobStateUncertain)
+function Coordinator:finishWithOutcome(outcome,reason)
     local state=self.active
     if state==nil then return end
-    if isNativeJobStateUncertain then state.isNativeJobStateUncertain=true end
-    local isNeutral=self:neutralize(state)
-    if not isNeutral or state.isNativeJobStateUncertain then
-        state.phase="WAITING_FOR_PLAYER_INTERVENTION"
-        self.lastOutcome={status="UNRESOLVED",reason=reason,
-            commitmentId=state.commitmentId,
-            isNativeJobStateUncertain=state.isNativeJobStateUncertain,
-            unresolvedEffects=state.unresolvedEffects}
-        return
+    local failures=self:neutralize(state)
+    local result=outcome
+    if #failures>0 then
+        result="CONTROL_INTERRUPTED"
+        reason=tostring(reason or "CONTROL_RELEASE_FAILED")
+            .." releaseFailures="..table.concat(failures,",")
     end
-    self.lastOutcome={status=outcome,reason=reason,commitmentId=state.commitmentId,
-        isNativeJobStateUncertain=false,unresolvedEffects={}}
+    self.lastOutcome={status=result,reason=reason,commitmentId=state.commitmentId,
+        isNativeContinuationConfirmed=false}
     self.active=nil
 end
 
 function Coordinator:relinquish(reason)
     if self.active==nil then return false,"NO_ACTIVE_COMMITMENT" end
-    local state=self.active
-    if state.phase=="WAITING_FOR_PLAYER_INTERVENTION" then
-        self:finishWithOutcome("RELINQUISHED",reason or "RETRY_NEUTRALISATION")
-    else
-        self:finishWithOutcome("RELINQUISHED",reason or "EXTERNAL_RELINQUISH")
-    end
-    return self.active==nil,self.active and "RELEASE_UNCONFIRMED" or nil
+    self:finishWithOutcome("RELINQUISHED",reason or "EXTERNAL_RELINQUISH")
+    local released=self.lastOutcome.status=="RELINQUISHED"
+    return released,released and nil or self.lastOutcome.reason
 end
 
 -- The commitment authority must independently validate a live, issued
@@ -186,7 +177,7 @@ function Coordinator:begin(commitment,nowMs)
         commitmentId=commitment.commitmentId,commitment=commitment,
         relocator=relocator,blockers=blockers,isBlockerRegulated={},
         isRelocatorHeld=false,isReverseOutstanding=false,isTransitOutstanding=false,
-        isNativeJobStateUncertain=false,unresolvedEffects={},phase="REQUESTING_TRANSIT",
+        phase="REQUESTING_TRANSIT",
         egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS,relocatedHoldUntilMs=nil,
         objective=objective
     }
@@ -245,7 +236,7 @@ end
 -- admission and safety witnesses stay with the independent authority.
 function Coordinator:advance(nowMs)
     local state=self.active
-    if state==nil or state.phase=="WAITING_FOR_PLAYER_INTERVENTION" then return end
+    if state==nil then return end
     if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
@@ -314,19 +305,14 @@ function Coordinator:advance(nowMs)
             "releaseHold",state.relocator.vehicle,"RELOCATED_WORKER")
         if not released then self:finishWithOutcome("CONTROL_INTERRUPTED",releaseReason);return end
         state.isRelocatorHeld=false
-        -- One synchronous GIANTS stop -> start operation. Both native results
-        -- must be positively reported; native productive continuation is NOT implied.
-        local restarted,evidence=command(self.physicalControl,"restartNativeFieldwork",state.relocator.vehicle)
-        if not restarted or type(evidence)~="table"
-            or evidence.isOldJobStopped~=true or evidence.isNewJobStarted~=true then
-            -- Before native stop, preparation rejection is recoverable.
-            -- Once stop may have begun, retain the native job uncertainty.
-            local uncertain=restarted==true or
-                (type(evidence)=="table" and evidence.isNativeJobStateUncertain==true)
-            local reason=type(evidence)=="table" and evidence.reason
-                or (restarted and "NATIVE_HANDOFF_EVIDENCE_UNAVAILABLE" or evidence)
-            self:finishWithOutcome(uncertain and "UNRESOLVED"
-                or "CONTROL_INTERRUPTED",reason,uncertain)
+        -- The native stop/start is requested once for this collision only.
+        -- Do not retain uncertain job state or require an additional job
+        -- identity observation before releasing the completed commitment.
+        local restarted,evidence=command(self.physicalControl,
+            "restartNativeFieldwork",state.relocator.vehicle)
+        if not restarted then
+            local cause=type(evidence)=="table" and evidence.reason or evidence
+            self:finishWithOutcome("CONTROL_INTERRUPTED",cause)
             return
         end
         -- GIANTS now controls the new native job and its configuration.
