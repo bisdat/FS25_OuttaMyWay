@@ -30,26 +30,30 @@ The governing Architecture defines the six-stage purpose and fixed policies; the
 
 The physical Control boundary must establish TRANSIT, reverse steering and displacement observation, Hold acquire/release verification, lifecycle revalidation, and native stop/restart semantics. The coordinator may order those activities but MUST NOT be their authority source.
 
+A subordinate translation-only Hold suppresses propulsion at GIANTS' `AIVehicleUtil.driveToPoint` boundary and MUST NOT deny `getCanAIFieldWorkerContinueWork()` permission: the latter also controls native field-worker progression and configuration restoration. Its actuation MUST preserve GIANTS' existing steering, local target, travel direction and optional `doNotSteer` input; unheld vehicles keep native call semantics. An accepted Hold command establishes a temporary translation restriction, not proof the vehicle is physically stationary. Release MUST remove the restriction without testing pair clearance or native blocked state. Positive player takeover or native Job Episode loss cannot justify continued OMW suppression.
+
 ## Failure and unresolved obligations
 
 Unavailability of a commitment, source GIANTS Job Episode, player consent, clock or native API must fail closed. On actuation failure, disablement or episode/strategy turnover, neutralise commanded movement and release Hold/TRANSIT using the available physical interface.
 
 An external call can fail **after** partly changing GIANTS state. The coordinator MUST track possibly acquired effects before invoking it and must not discard a failed cleanup. Unverified release or job replacement is `UNRESOLVED`, with retained evidence and a supported explicit cleanup retry / player-intervention route. An uncertain native restart is not recast as GIANTS successful continuation even when physical Hold cleanup succeeds.
 
-**Current implementation boundary:** the production module is loaded but has no live commitment authority or GIANTS physical Control interface; no runtime Hold, Transit, reverse or stop/restart actuation is connected. The coordinator's verified offline behaviour cannot establish GIANTS runtime success. Any future integration MUST validate safe physical release, native reverse geometry, native job recreation, and representative lifecycle interruption in game.
+**Current implementation boundary:** the coordinator and native translation-only Hold mechanism are loaded, but neither is instantiated or called by the product shell. There is no live commitment authority or complete GIANTS physical Control interface; no runtime Hold, Transit, reverse or stop/restart actuation is connected. The coordinator's verified offline behaviour cannot establish GIANTS runtime success. Any future integration MUST validate safe physical release, native reverse geometry, native job recreation, and representative lifecycle interruption in game.
 
 ## Contract participants
 
 | Production source | Participation |
 | --- | --- |
 | [`scripts/coordination/HoldRelocateCoordinator.lua`](../scripts/coordination/HoldRelocateCoordinator.lua) | `REALISES` |
+| [`scripts/control/mechanisms/NativeTranslationHoldMechanism.lua`](../scripts/control/mechanisms/NativeTranslationHoldMechanism.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/hold_relocate.lua`](../tests/shell/hold_relocate.lua) | `CHALLENGES` |
+| [`tests/shell/native_translation_hold_mechanism.lua`](../tests/shell/native_translation_hold_mechanism.lua) | `CHALLENGES` |
 
 ## Implementation traceability and validation scope
 
-The [coordinator](../scripts/coordination/HoldRelocateCoordinator.lua) currently realises role selection, coordination sequencing and conservative unresolved-effect retention. [Product entry](../scripts/main.lua) sources the module without instantiating it; no production physical adapter exists. The [offline behaviour challenge](../tests/shell/hold_relocate.lua) covers timing, role selection, independent authority, failure recovery and uncertain native hand-back. GIANTS in-game tests, not offline mocks, must validate physical hold, reverse steering, Transit's realised state and job continuation.
+The [coordinator](../scripts/coordination/HoldRelocateCoordinator.lua) currently realises role selection, coordination sequencing and conservative unresolved-effect retention. The [native translation Hold mechanism](../scripts/control/mechanisms/NativeTranslationHoldMechanism.lua) provides dormant per-vehicle propulsion restriction, preserving native field-worker progression and exact unheld drive-call passthrough. Successful command acceptance is not a stationary-vehicle verdict. [Product entry](../scripts/main.lua) sources the module without instantiating it; no production physical adapter exists. The [offline behaviour challenge](../tests/shell/hold_relocate.lua) covers timing, role selection, independent authority, failure recovery and uncertain native hand-back. The [translation-Hold offline challenge](../tests/shell/native_translation_hold_mechanism.lua) exercises concurrent vehicles, original native drive arguments, player interlock, Job Episode loss and immediate release without a pairwise gate. GIANTS in-game tests, not offline mocks, must validate physical Hold, reverse steering, Transit's realised state and job continuation.
