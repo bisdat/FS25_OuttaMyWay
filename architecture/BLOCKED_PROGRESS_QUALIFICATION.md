@@ -139,6 +139,13 @@ This is a requirement to reuse the **verified reversing method**, not an instruc
 
 **Outstanding implementation-facing questions, not reasons to reopen the accepted principles:** how to obtain the authoritative field centroid, break an exact equidistance tie, identify immediate-vicinity blockers, construct the reverse steering target and offset, and relinquish authority safely on native job changes, player takeover, disablement or movement failure. **Role selection and the two timed Hold releases are decided** and must not be converted into additional pairwise release gates. These require Specifications, source and GIANTS Reality validation in separate increments. Do not promote old 0.4 Passage/Regulation mechanisms to current architecture by default.
 
+## Specification Jurisdiction — Hold & Relocate
+
+**Jurisdiction ID:** `HOLD_RELOCATE`  
+**Primary Specification:** [`spec/HOLD_RELOCATE.md`](../spec/HOLD_RELOCATE.md)
+
+This is the implementation-facing boundary for the **existing Hold & Relocate responsibility as a whole**, not a separate jurisdiction inferred from a coordinator module or procedural phase. It coordinates the selected relocating assembly and bounded blocker Holds, delegates native physical actuation to Control, and hands continuation back to GIANTS AI. A candidate pair cannot authorise itself: commitment authority is independently established, then verified at the action boundary. A Control request or successfully invoked native API never alone proves the requested physical outcome; unresolved Hold, movement or job state must remain visible for intervention.
+
 ## 5. Keep Situation Assessment and Hold & Relocate responsibility distinct
 
 **Situation Assessment** examines native blockage persistence, present candidate pair proximity and whether a paired response is justified. It can decline intervention when GIANTS is evidently recovering or the blocking pair is unsupported, but **does not require an independently measured physical overlap or GIANTS course advancement**.
@@ -156,7 +163,6 @@ Only a downstream, explicitly authorised **Hold & Relocate responsibility** may 
 - The **30 m root-position radius is only for candidate selection**, not an independent physical-clearance or blockage proof. Implement geometry, course progression, agronomic output and trajectory reconstruction are not required.
 - Worker/Job Episode changes, player intervention and OMW-imposed control effects invalidate or quarantine prior evidence as appropriate.
 - Missing or contradictory evidence remains **WAITING_FOR_EVIDENCE**, not permission to act.
-- Current TEST 0.5.0.6 source still provides **no worker observation or control**.
 
 ## Reality discriminators
 
@@ -171,15 +177,3 @@ Only a downstream, explicitly authorised **Hold & Relocate responsibility** may 
 | A worker encounters a second distinct obstacle during the same Job Episode | New encounter must not inherit unrelated blocked time | Accumulate every pulse from the entire job indiscriminately |
 | GIANTS job stops/restarts, player takes over or evidence is lost | Do not carry stale admission or attribute blocked time without support | Old timer and pair remain authoritative |
 | Later authorised OMW Hold causes stationary worker | OMW-induced quiescence must be separated from native blockage | Held inactivity means fresh native blockage |
-
-## Authority Triad / current disposition
-
-**Architecture:** blocked-first Situation Assessment uses GIANTS native blocked signals, persistence and spatial pair inference; no separate physical-obstruction proof stage or GIANTS course-progress gate.
-
-**Specification:** Configuration and Log Publication remain unchanged. Native Blockage Observation owns passive in-game evidence sampling, and Spatial Pair Inference owns its pure 1 s/30 m decision. The six-stage Hold & Relocate architecture has **no implementation-facing primary Specification yet** because centroid-source/tie semantics, immediate-vicinity blocker eligibility, relocation offset and native actuation/restart mechanics still need separate specification. The centroid-nearest role, timer-only Hold release and GIANTS-native reversing method are accepted requirements. Multi-pulse continuity, broader Situation Assessment and worker Control are not implemented.
-
-**Source:** The current shell loads a passive `NativeBlockageObservation` listener that reads the native field-course blocked state, calls Spatial Pair Inference when one observed pulse reaches one second, and unifies reciprocal reports into one active pair occurrence. No global GIANTS hook, worker Control, active recovery or course-progress tracking; the retired event tap stays retired.
-
-**Testing:** Existing offline tests validate sampling/lifecycle, reciprocal pair unification and 1 s/30 m handoff with mock GIANTS values. The six-stage physical Hold & Relocate sequence has not been implemented or tested. In-game Reality must validate passive observation and temporal fidelity separately. The TEST 0.5.0.6 smoke waiver and 0.5.0.7 shell-smoke PASS are not evidence of this new observer's live correctness.
-
-**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** bounded continuity across native retry pulses, candidate eligibility/uncertainty when the nearest in-radius worker is incidental, and implementation-facing Hold & Relocate centroid-source/tie handling, blocker holding, reverse-to-centroid target/offset, bounded movement completion, native lifecycle safeguards and GIANTS job restart. **The proximity radius is settled by architectural decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**
