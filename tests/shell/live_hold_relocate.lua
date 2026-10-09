@@ -144,9 +144,9 @@ assert(coordinator.lastEgressRegulationResults[1].interceptCount==4
 reverse={travelledM=20,isComplete=true}
 coordinator:advance(6001)
 assert(events[5]=="REVERSE_STOP" and events[6]=="HOLD:RELOCATED_WORKER")
-coordinator:advance(16000)
+coordinator:advance(13000)
 assert(#events==6)
-coordinator:advance(16001)
+coordinator:advance(13001)
 assert(events[7]=="RELEASE:RELOCATED_WORKER")
 assert(events[8]=="NATIVE_STOP_START" and events[9]=="HANDOFF_TRANSIT")
 assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")

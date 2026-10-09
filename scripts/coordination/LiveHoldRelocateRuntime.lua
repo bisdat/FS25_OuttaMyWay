@@ -97,9 +97,10 @@ function Runtime:update(dt)
                 issue(self,"INFO","HOLD_RELOCATE_EGRESS_REGULATION_EVIDENCE",
                     "commitmentId="..tostring(e.commitmentId)
                     .." blockerRootId="..tostring(e.rootId)
-                    .." interceptCount="..tostring(e.interceptCount)
+                    .." nativeDriveCalls="..tostring(e.interceptCount)
                     .." displacementM="..tostring(e.displacementM)
-                    .." regulationKmh="..tostring(e.regulatedSpeedKmh))
+                    .." regulationKmh="..tostring(e.regulatedSpeedKmh)
+                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh))
             end
         end
         if not coordinator:isActive() then
@@ -153,6 +154,7 @@ function Runtime:update(dt)
                             .." obliqueDeg="..tostring(why.nominalBearingOffsetDeg)
                             .." egressSide="..tostring(why.egressSide)
                             .." regionInField="..tostring(why.targetInField)
+                            .." fieldInteriorScore="..tostring(why.fieldInteriorScore)
                     end
                     issue(self,"INFO","HOLD_RELOCATE_STARTED",details)
                 elseif coordinator:isActive() then

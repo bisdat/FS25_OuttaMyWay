@@ -198,7 +198,10 @@ function Mechanism:restartNativeFieldwork(vehicle)
         isNativeProductiveContinuationConfirmed=false,
         farmId=state.farmId
     }
-    self.attempts[vehicle]=evidence
+    -- Successful successor-job acceptance closes this job-scoped attempt.
+    -- The vehicle is then eligible for a distinct later collision episode.
+    -- Uncertain stop/start attempts above remain retained.
+    self.attempts[vehicle]=nil
     return true,evidence
 end
 

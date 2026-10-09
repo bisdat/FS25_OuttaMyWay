@@ -12,6 +12,7 @@ local function scenario(options)
     local current=original
     local expected=original
     local replacement=nil
+    local nextJobId=41
     local farm=7
     local vehicle={rootNode=7701}
     function vehicle:getJob() return current end
@@ -59,7 +60,7 @@ local function scenario(options)
     local aiSystem={isServer=true}
     function aiSystem:stopJob(job,message)
         events[#events+1]="STOP"
-        assert(job==original and message==nil)
+        assert(job==expected and message==nil)
         current=nil
         if options.stopError then error("NATIVE_STOP_ERROR_AFTER_EFFECT") end
         if options.stopRejected then return false end
@@ -67,7 +68,10 @@ local function scenario(options)
     function aiSystem:startJob(job,farmId)
         events[#events+1]="START"
         assert(job==replacement and farmId==farm)
-        if not options.missingNewId then job.jobId=41 end
+        if not options.missingNewId then
+            job.jobId=nextJobId
+            nextJobId=nextJobId+1
+        end
         if not options.unobservedNewJob then current=job end
         if options.startError then error("NATIVE_START_ERROR_AFTER_EFFECT") end
         if options.startRejected then return false end
@@ -117,8 +121,18 @@ assert(evidence.oldJobId==40 and evidence.newJobId==41)
 assert(not evidence.isNativeProductiveContinuationConfirmed)
 assert(r.currentJob().jobId==41)
 order(r.events,{"CREATE","APPLY","SET_VALUES","VALIDATE","STOP","START"})
+assert(r.mechanism:getStatus(r.vehicle).status=="NOT_ATTEMPTED",
+    "accepted successor must retire the completed attempt")
 assert(not r.mechanism:restartNativeFieldwork(r.vehicle),
-    "a replacement commitment cannot repeat on the same instance")
+    "old Job Episode must not be replayed")
+local successor=r.currentJob()
+r.replaceExpected(successor)
+ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
+assert(ok and evidence.oldJobId==41 and evidence.newJobId==42,
+    "second collision must hand back its own distinct GIANTS Job Episode")
+assert(r.mechanism:getStatus(r.vehicle).status=="NOT_ATTEMPTED")
+order(r.events,{"CREATE","APPLY","SET_VALUES","VALIDATE","STOP","START",
+    "CREATE","APPLY","SET_VALUES","VALIDATE","STOP","START"})
 -- No time, fold position, Transit readiness or pair-clearance inspection.
 assert(OuttaMyWay.nativeTransitRequestMechanism==nil)
 assert(OuttaMyWay.runtime==nil)

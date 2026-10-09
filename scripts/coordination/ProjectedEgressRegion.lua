@@ -112,12 +112,13 @@ function Region.plan(commitment,relocator,blocker)
     local chosen=nil
     for i=1,#choices do
         local option=choices[i]
-        -- The admitted permission is in-field; no unauthorised extra-field
-        -- extent is inferred from the 5 m clearance margin.
+        -- Inside-polygon eligibility does not itself establish inward intent.
+        -- Prefer the direction facing the field centroid; old-side membership
+        -- is only a tie-break. These are evaluated once at admission.
         if option.inField and (chosen==nil
-            or (option.alreadyOnSide and not chosen.alreadyOnSide)
-            or (option.alreadyOnSide==chosen.alreadyOnSide
-                and option.centreScore>chosen.centreScore+0.001)) then
+            or option.centreScore>chosen.centreScore+0.001
+            or (math.abs(option.centreScore-chosen.centreScore)<=0.001
+                and option.alreadyOnSide and not chosen.alreadyOnSide)) then
             chosen=option
         end
     end
@@ -143,7 +144,7 @@ function Region.plan(commitment,relocator,blocker)
         egressSide=chosen.side,vectorDistanceM=vectorDistanceM,
         blockerWorkingWidthM=width,marginM=EGRESS_MARGIN_M,
         nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
-        targetInField=true,
+        targetInField=true,fieldInteriorScore=chosen.centreScore,
         nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ
     }
 end

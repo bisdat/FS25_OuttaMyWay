@@ -7,7 +7,7 @@ local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
 local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
-local RELOCATED_HOLD_MS=10000 -- accepted continuation window, independent of pair distance
+local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
 local MIN_CENTROID_BEARING_M=0.01
 local BWR_STEERING_HORIZON_M=40 -- steering reference only, not authorised travel
@@ -236,6 +236,7 @@ function Coordinator:begin(commitment,nowMs)
         egressSide=objective.egressSide,
         nominalBearingOffsetDeg=objective.nominalBearingOffsetDeg,
         targetInField=objective.targetInField,
+        fieldInteriorScore=objective.fieldInteriorScore,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
             and reverseEvidence.requestedReverseSpeedKmh or nil}
 end
@@ -268,7 +269,9 @@ function Coordinator:advance(nowMs)
                         and releaseEvidence.interceptionCount or nil,
                     displacementM=type(releaseEvidence)=="table"
                         and releaseEvidence.physicalDisplacementM or nil,
-                    commitmentId=state.commitmentId,regulatedSpeedKmh=1}
+                    commitmentId=state.commitmentId,regulatedSpeedKmh=1,
+                    lastNativeSpeedKmh=type(releaseEvidence)=="table"
+                        and releaseEvidence.lastNativeSpeedKmh or nil}
                 state.isBlockerRegulated[i]=false
             end
         end
@@ -316,8 +319,14 @@ function Coordinator:advance(nowMs)
         local restarted,evidence=command(self.physicalControl,"restartNativeFieldwork",state.relocator.vehicle)
         if not restarted or type(evidence)~="table"
             or evidence.isOldJobStopped~=true or evidence.isNewJobStarted~=true then
-            self:finishWithOutcome("UNRESOLVED",
-                restarted and "NATIVE_HANDOFF_EVIDENCE_UNAVAILABLE" or evidence,true)
+            -- Before native stop, preparation rejection is recoverable.
+            -- Once stop may have begun, retain the native job uncertainty.
+            local uncertain=restarted==true or
+                (type(evidence)=="table" and evidence.isNativeJobStateUncertain==true)
+            local reason=type(evidence)=="table" and evidence.reason
+                or (restarted and "NATIVE_HANDOFF_EVIDENCE_UNAVAILABLE" or evidence)
+            self:finishWithOutcome(uncertain and "UNRESOLVED"
+                or "CONTROL_INTERRUPTED",reason,uncertain)
             return
         end
         -- GIANTS now controls the new native job and its configuration.
