@@ -1,5 +1,7 @@
 --- Acquires one current GIANTS player-control predicate for Observation and mechanical interlocks.
--- Specification Jurisdictions: `OBSERVATION`
+-- Specification Jurisdictions: `HOLD_RELOCATE`
+-- Executable predicate unchanged from archive/0.4.11.0 terminal relocation;
+-- jurisdiction header adapted to current live repository governance.
 
 -- Current Player Control is transient Reality evidence. A positive result excludes
 -- concurrent OuttaMyWay actuation over the same physical root; it does not create
