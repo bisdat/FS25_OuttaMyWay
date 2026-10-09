@@ -9,11 +9,12 @@ Specifications define implementation-facing obligations for responsibilities acc
 | Configuration | [Configuration Specification](CONFIGURATION.md) | [Configuration.lua](../scripts/configuration/Configuration.lua) and the current shell/GUI consumers |
 | Log Publication | [Log Publication Specification](LOG_PUBLICATION.md) | [LogPublication.lua](../scripts/publication/LogPublication.lua) and the shell publisher |
 | Spatial Pair Inference | [Spatial Pair Inference Specification](SPATIAL_PAIR_INFERENCE.md) | [SpatialPairInference.lua](../scripts/assessment/SpatialPairInference.lua), pure; native observer now supplies candidate inputs |
+| Hold & Relocate Sequence | [Hold & Relocate Sequence Specification](HOLD_RELOCATE_SEQUENCE.md) | [HoldRelocateSequence.lua](../scripts/control/HoldRelocateSequence.lua), coordination logic only; no physical adapter or active commitment source |
 | Native Blockage Observation | [Native Blockage Observation Specification](NATIVE_BLOCKAGE_OBSERVATION.md) | [NativeBlockageObservation.lua](../scripts/observation/NativeBlockageObservation.lua), server-side read-only samples |
 
 [Current code](../scripts/main.lua) also composes the version-only HUD and disabled reminder according to [GUI Architecture](../architecture/GUI.md).
 
-There is **no full Situation Assessment, Regulation, Passage, Recovery, Decision, Bounded Authority or worker Control implementation**. Native Blockage Observation now supplies sampled GIANTS blocked-state input for **single full ≥1 s pulses**; more complex episode continuity is still absent. Retired research signals do not establish a new Jurisdiction.
+There is **no full Situation Assessment, Regulation, Passage, Recovery, Decision, Bounded Authority or worker Control implementation**. Hold & Relocate ordering and timers are implemented as a dormant coordinator; no physical GIANTS adapter or admission is wired. Native Blockage Observation now supplies sampled GIANTS blocked-state input for **single full ≥1 s pulses**; more complex episode continuity is still absent. Retired research signals do not establish a new Jurisdiction.
 
 The pre-rewrite contracts and source remain recoverable from the immutable [archive/0.4.11.0 Git branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Their former implementations were removed from the 0.5 working tree; do not treat historical participant lists as current source traceability.
 

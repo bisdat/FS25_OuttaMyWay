@@ -139,6 +139,13 @@ This is a requirement to reuse the **verified reversing method**, not an instruc
 
 **Outstanding implementation-facing questions, not reasons to reopen the accepted principles:** how to obtain the authoritative field centroid, break an exact equidistance tie, identify immediate-vicinity blockers, construct the reverse steering target and offset, and relinquish authority safely on native job changes, player takeover, disablement or movement failure. **Role selection and the two timed Hold releases are decided** and must not be converted into additional pairwise release gates. These require Specifications, source and GIANTS Reality validation in separate increments. Do not promote old 0.4 Passage/Regulation mechanisms to current architecture by default.
 
+## Specification Jurisdiction — Hold & Relocate Sequence
+
+**Jurisdiction ID:** `HOLD_RELOCATE_SEQUENCE`  
+**Primary Specification:** [`spec/HOLD_RELOCATE_SEQUENCE.md`](../spec/HOLD_RELOCATE_SEQUENCE.md)
+
+The six-stage rule is now represented by an **isolated coordination sequence** with centroid-nearest selection and exact sampled 5 s/10 s Hold expiry. It accepts only a separately admitted pair commitment and an already-evidenced centroid, blocker set and offset. It requests native reverse and job restart only through a future physical adapter. No adapter or Pair Commitment producer is wired to production; passive candidate publication still confers no physical Control. The reverse frame and GIANTS job recreation remain pending executable mechanisms and in-game validation.
+
 ## 5. Keep Situation Assessment and Hold & Relocate responsibility distinct
 
 **Situation Assessment** examines native blockage persistence, present candidate pair proximity and whether a paired response is justified. It can decline intervention when GIANTS is evidently recovering or the blocking pair is unsupported, but **does not require an independently measured physical overlap or GIANTS course advancement**.
@@ -176,7 +183,7 @@ Only a downstream, explicitly authorised **Hold & Relocate responsibility** may 
 
 **Architecture:** blocked-first Situation Assessment uses GIANTS native blocked signals, persistence and spatial pair inference; no separate physical-obstruction proof stage or GIANTS course-progress gate.
 
-**Specification:** Configuration and Log Publication remain unchanged. Native Blockage Observation owns passive in-game evidence sampling, and Spatial Pair Inference owns its pure 1 s/30 m decision. The six-stage Hold & Relocate architecture has **no implementation-facing primary Specification yet** because centroid-source/tie semantics, immediate-vicinity blocker eligibility, relocation offset and native actuation/restart mechanics still need separate specification. The centroid-nearest role, timer-only Hold release and GIANTS-native reversing method are accepted requirements. Multi-pulse continuity, broader Situation Assessment and worker Control are not implemented.
+**Specification:** Configuration and Log Publication remain unchanged. Native Blockage Observation owns passive in-game evidence sampling, and Spatial Pair Inference owns its pure 1 s/30 m decision. The six-stage Hold & Relocate sequencing now has a narrow implementation-facing primary Specification for ordering and fixed timers. Authoritative centroid supply, immediate-vicinity blocker identification, offset selection and native physical actuation/restart remain absent and require separate validated implementation. The centroid-nearest role, timer-only Hold release and GIANTS-native reversing method are accepted requirements. Multi-pulse continuity, broader Situation Assessment and worker Control are not implemented.
 
 **Source:** The current shell loads a passive `NativeBlockageObservation` listener that reads the native field-course blocked state, calls Spatial Pair Inference when one observed pulse reaches one second, and unifies reciprocal reports into one active pair occurrence. No global GIANTS hook, worker Control, active recovery or course-progress tracking; the retired event tap stays retired.
 

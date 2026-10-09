@@ -67,6 +67,7 @@ jobs:
             scripts/main.lua \
             scripts/config.lua \
             scripts/assessment/SpatialPairInference.lua \
+            scripts/control/HoldRelocateSequence.lua \
             scripts/observation/NativeBlockageObservation.lua \
             scripts/configuration/Configuration.lua \
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
@@ -82,6 +83,7 @@ jobs:
         run: |
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
           "$LUAJIT_BIN" tests/shell/spatial_pair_inference.lua
+          "$LUAJIT_BIN" tests/shell/hold_relocate_sequence.lua
           "$LUAJIT_BIN" tests/shell/native_blockage_observation.lua
           "$LUAJIT_BIN" tests/shell/configuration_persistence.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
