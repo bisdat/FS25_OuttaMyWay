@@ -112,7 +112,13 @@ function Runtime:update(dt)
             else
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then
-                    issue(self,"INFO","HOLD_RELOCATE_STARTED",commitment.commitmentId)
+                    local details=commitment.commitmentId
+                    if type(why)=="table"
+                        and type(why.requestedReverseSpeedKmh)=="number" then
+                        details=details.." requestedReverseSpeedKmh="..
+                            tostring(why.requestedReverseSpeedKmh)
+                    end
+                    issue(self,"INFO","HOLD_RELOCATE_STARTED",details)
                 elseif coordinator:isActive() then
                     issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why)
                 else

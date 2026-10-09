@@ -167,7 +167,7 @@ enabled=true
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.0.26"
+OuttaMyWay.VERSION="0.5.0.27"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}

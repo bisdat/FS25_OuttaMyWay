@@ -218,14 +218,17 @@ function Coordinator:begin(commitment,nowMs)
     -- The TRANSIT request does not establish a configuration-readiness gate:
     -- start reverse in this same admitted operation while raise/fold continues.
     state.isReverseOutstanding=true
-    local reversing,reverseReason=command(
+    local reversing,reverseEvidence=command(
         self.physicalControl,"startReverse",relocator.vehicle,state.objective)
     if not reversing then
-        self:finishWithOutcome("FAILED_SAFE",reverseReason)
-        return false,reverseReason
+        self:finishWithOutcome("FAILED_SAFE",reverseEvidence)
+        return false,reverseEvidence
     end
     state.phase="REVERSING"
-    return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,objective=objective}
+    return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,
+        objective=objective,
+        requestedReverseSpeedKmh=type(reverseEvidence)=="table"
+            and reverseEvidence.requestedReverseSpeedKmh or nil}
 end
 
 -- advance is a procedure step, not GIANTS' generic update callback. The

@@ -62,6 +62,17 @@ def test_shell_wires_only_admitted_hold_relocate_without_legacy_control():
     assert "NativeBlockedEventTap" not in text
 
 
+def test_reverse_speed_is_native_and_has_scoped_cruise_restoration():
+    path = ROOT / "scripts/control/mechanisms/NativeReverseMechanism.lua"
+    code = path.read_text(encoding="utf-8")
+    assert "getMaximumBackwardSpeed" in code
+    assert "speedMps*3.6" in code
+    assert "setCruiseControlMaxSpeed" in code
+    assert "restoreNativeCruiseSpeed" in code
+    assert "REVERSE_SPEED_KMH=8" not in code
+    assert "state.speedLease.speedKmh" in code
+
+
 def test_player_control_takeover_is_not_a_live_authority_predicate():
     assert not (ROOT / "scripts/observation/CurrentPlayerControlObservation.lua").exists()
     for consumer in (

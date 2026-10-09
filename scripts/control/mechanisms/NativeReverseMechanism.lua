@@ -6,12 +6,79 @@ OuttaMyWay.NativeReverseMechanism={}
 local Mechanism=OuttaMyWay.NativeReverseMechanism
 Mechanism.__index=Mechanism
 
-local REVERSE_SPEED_KMH=8 -- archived BWR mechanical calibration
 local TARGET_RADIUS_M=1 -- local point approach, not traffic clearance
 local MIN_DIRECTION_M=0.0001
 
 local function finite(n)
     return type(n)=="number" and n==n and n~=math.huge and n~=-math.huge
+end
+
+-- GIANTS VehicleMotor:getMaximumBackwardSpeed() returns m/s; its native
+-- driveToPoint(maxSpeed) expects km/h. Do not substitute the vehicle's
+-- *forward* maximum or a retained BWR calibration.
+--
+-- GIANTS driveToPoint also clamps the motor to the vehicle's current cruise
+-- setting. Temporarily lease that native limit at the maximum supported
+-- reverse speed; restore the exact prior setting at release.
+local function prepareNativeReverseSpeed(vehicle)
+    if type(vehicle.getMotor)~="function" then
+        return nil,"NATIVE_REVERSE_MOTOR_UNAVAILABLE"
+    end
+    local ok,motor=pcall(vehicle.getMotor,vehicle)
+    if not ok or type(motor)~="table"
+        or type(motor.getMaximumBackwardSpeed)~="function" then
+        return nil,"NATIVE_REVERSE_SPEED_API_UNAVAILABLE"
+    end
+    local read,speedMps=pcall(motor.getMaximumBackwardSpeed,motor)
+    if not read or not finite(speedMps) or speedMps<=0 then
+        return nil,"NATIVE_REVERSE_SPEED_UNAVAILABLE"
+    end
+    local cruise=vehicle.spec_drivable and vehicle.spec_drivable.cruiseControl
+    if type(cruise)~="table"
+        or type(vehicle.setCruiseControlMaxSpeed)~="function"
+        or not finite(cruise.speed) or not finite(cruise.speedReverse)
+        or not finite(cruise.maxSpeed) or not finite(cruise.maxSpeedReverse)
+        or cruise.maxSpeed<=0 or cruise.maxSpeedReverse<=0 then
+        return nil,"NATIVE_CRUISE_LIMIT_UNAVAILABLE"
+    end
+    local requestedKmh=math.min(speedMps*3.6,cruise.maxSpeed,cruise.maxSpeedReverse)
+    if not finite(requestedKmh) or requestedKmh<=0 then
+        return nil,"NATIVE_REVERSE_SPEED_UNAVAILABLE"
+    end
+    return {speedKmh=requestedKmh,nativeMotorMaxReverseKmh=speedMps*3.6,
+        oldForwardKmh=cruise.speed,
+        oldReverseKmh=cruise.speedReverse}
+end
+
+local function restoreNativeCruiseSpeed(vehicle,lease)
+    if lease==nil or lease.isRestored then return true end
+    local cruise=vehicle.spec_drivable and vehicle.spec_drivable.cruiseControl
+    if type(cruise)~="table" or type(vehicle.setCruiseControlMaxSpeed)~="function" then
+        return false,"NATIVE_CRUISE_RESTORE_UNAVAILABLE"
+    end
+    local ok=pcall(vehicle.setCruiseControlMaxSpeed,vehicle,
+        lease.oldForwardKmh,lease.oldReverseKmh)
+    if not ok or not finite(cruise.speed) or not finite(cruise.speedReverse)
+        or math.abs(cruise.speed-lease.oldForwardKmh)>0.001
+        or math.abs(cruise.speedReverse-lease.oldReverseKmh)>0.001 then
+        return false,"NATIVE_CRUISE_RESTORE_UNCONFIRMED"
+    end
+    lease.isRestored=true
+    return true
+end
+
+local function acquireNativeCruiseSpeed(vehicle,lease)
+    local cruise=vehicle.spec_drivable.cruiseControl
+    local ok=pcall(vehicle.setCruiseControlMaxSpeed,vehicle,
+        lease.speedKmh,lease.speedKmh)
+    if not ok or not finite(cruise.speed) or not finite(cruise.speedReverse)
+        or cruise.speed+0.001<lease.speedKmh
+        or cruise.speedReverse+0.001<lease.speedKmh then
+        local restored=restoreNativeCruiseSpeed(vehicle,lease)
+        return false,restored and "NATIVE_CRUISE_SPEED_NOT_APPLIED"
+            or "NATIVE_CRUISE_SPEED_STATE_UNRESOLVED"
+    end
+    return true
 end
 
 local function pose(node)
@@ -168,7 +235,7 @@ function Mechanism:install()
         -- Native reverse uses the reverser frame, tool correction and
         -- moveForwards=false. An active objective needs doNotSteer=false.
         return original(vehicle,dt,1,true,false,
-            targetX/length,targetZ/length,REVERSE_SPEED_KMH,false)
+            targetX/length,targetZ/length,state.speedLease.speedKmh,false)
     end
     self.originalDrive=original
     self.wrapper=wrapper
@@ -211,15 +278,35 @@ function Mechanism:startReverse(vehicle,objective)
     if not finite(steeringX) or not finite(steeringZ) then
         return false,"STEERING_REFERENCE_UNAVAILABLE"
     end
+    local speedLease,speedReason=prepareNativeReverseSpeed(vehicle)
+    if speedLease==nil then return false,speedReason end
     local installed,installReason=self:install()
     if not installed then return false,installReason end
+    local accelerated,cruiseReason=acquireNativeCruiseSpeed(vehicle,speedLease)
+    if not accelerated then
+        if cruiseReason=="NATIVE_CRUISE_SPEED_STATE_UNRESOLVED" then
+            -- A native setter can have partially applied before throwing.
+            -- Keep an inert reverse lease so the coordinator's ordinary
+            -- cancellation can retry restoration and report unresolved debt.
+            self.activeVehicle=vehicle
+            self.states[vehicle]={vehicle=vehicle,speedLease=speedLease,
+                isFailed=true,reason=cruiseReason,commandedDriveCount=0,
+                travelledM=0}
+        else
+            self:uninstall()
+        end
+        return false,cruiseReason
+    end
     self.activeVehicle=vehicle
-    self.states[vehicle]={vehicle=vehicle,originX=origin.x,originZ=origin.z,
+    self.states[vehicle]={vehicle=vehicle,speedLease=speedLease,
+        originX=origin.x,originZ=origin.z,
         lastX=origin.x,lastZ=origin.z,targetX=objective.targetX,targetZ=objective.targetZ,
         steeringTargetX=steeringX,steeringTargetZ=steeringZ,
         maxTravelM=objective.maxTravelM,toolNode=toolNode,travelledM=0,
         commandedDriveCount=0,isComplete=false,isFailed=false}
     return true,{kind="REVERSE_ARMED",hasToolReverser=toolNode~=nil,
+        requestedReverseSpeedKmh=speedLease.speedKmh,
+        nativeMotorMaxReverseKmh=speedLease.nativeMotorMaxReverseKmh,
         isPhysicalMotionConfirmed=false}
 end
 
@@ -252,6 +339,8 @@ function Mechanism:stopReverse(vehicle)
     if state==nil or not state.isComplete then
         return false,"REVERSE_NOT_COMPLETE"
     end
+    local restored,restoreReason=restoreNativeCruiseSpeed(vehicle,state.speedLease)
+    if not restored then return false,restoreReason end
     self.states[vehicle]=nil
     self.activeVehicle=nil
     self:uninstall()
@@ -262,7 +351,12 @@ function Mechanism:cancelReverse(vehicle)
     if self.activeVehicle~=nil and self.activeVehicle~=vehicle then
         return false,"OTHER_REVERSE_ACTIVE"
     end
-    if vehicle~=nil then self.states[vehicle]=nil end
+    local state=vehicle~=nil and self.states[vehicle] or nil
+    if state~=nil then
+        local restored,restoreReason=restoreNativeCruiseSpeed(vehicle,state.speedLease)
+        if not restored then return false,restoreReason end
+        self.states[vehicle]=nil
+    end
     self.activeVehicle=nil
     self:uninstall()
     return true
