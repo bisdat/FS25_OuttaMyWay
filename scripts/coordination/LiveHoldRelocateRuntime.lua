@@ -40,6 +40,7 @@ function Runtime.new(configuration,observer)
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedOutcome=nil,lastReportedEgressRegulationResults=nil,
+        lastReportedInitialMotionEvidence=nil,
         isRuntimeReported=false
     },Runtime)
 end
@@ -79,6 +80,15 @@ function Runtime:update(dt)
     end
     if coordinator:isActive() then
         coordinator:advance(nowMs)
+        local motion=coordinator.lastInitialMotionEvidence
+        if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
+            self.lastReportedInitialMotionEvidence=motion
+            issue(self,"INFO","HOLD_RELOCATE_INITIAL_REVERSE_VECTOR",
+                "commitmentId="..tostring(motion.commitmentId)
+                .." angleToTargetDeg="..tostring(motion.relativeToTargetDeg)
+                .." angleToNativeReverseDeg="..
+                    tostring(motion.relativeToNativeReverseDeg))
+        end
         local results=coordinator.lastEgressRegulationResults
         if results~=nil and results~=self.lastReportedEgressRegulationResults then
             self.lastReportedEgressRegulationResults=results

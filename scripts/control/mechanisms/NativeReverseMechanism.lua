@@ -173,6 +173,19 @@ function Mechanism:observeDisplacement(state)
     local stepM=math.sqrt(dx*dx+dz*dz)
     state.lastX,state.lastZ=current.x,current.z
     state.travelledM=state.travelledM+stepM
+    if state.initialMotionDeviationDeg==nil and stepM>=0.05 then
+        local vx,vz=dx/stepM,dz/stepM
+        local region=state.returnRegion
+        local dot=vx*region.directionX+vz*region.directionZ
+        state.initialMotionDeviationDeg=math.deg(math.acos(
+            math.max(-1,math.min(1,dot))))
+        if state.nativeReverseHeadingX~=nil then
+            local reverseDot=vx*state.nativeReverseHeadingX+
+                vz*state.nativeReverseHeadingZ
+            state.initialMotionRelativeToReverseDeg=math.deg(math.acos(
+                math.max(-1,math.min(1,reverseDot))))
+        end
+    end
     if not finite(state.travelledM) then
         state.isFailed=true;state.reason="DISPLACEMENT_UNAVAILABLE";return
     end
@@ -311,6 +324,8 @@ function Mechanism:startReverse(vehicle,objective)
         lastX=origin.x,lastZ=origin.z,targetX=objective.targetX,targetZ=objective.targetZ,
         steeringTargetX=steeringX,steeringTargetZ=steeringZ,
         returnRegion=objective.returnRegion,toolNode=toolNode,travelledM=0,
+        nativeReverseHeadingX=objective.nativeReverseHeadingX,
+        nativeReverseHeadingZ=objective.nativeReverseHeadingZ,
         regionProgressM=0,regionRemainingM=objective.returnRegion.requiredProgressM,
         commandedDriveCount=0,isComplete=false,isFailed=false}
     return true,{kind="REVERSE_ARMED",hasToolReverser=toolNode~=nil,
@@ -332,6 +347,8 @@ function Mechanism:reverseStatus(vehicle)
         regionProgressM=state.regionProgressM,
         regionRemainingM=state.regionRemainingM,
         regionLateralOffsetM=state.regionLateralOffsetM,
+        initialMotionDeviationDeg=state.initialMotionDeviationDeg,
+        initialMotionRelativeToReverseDeg=state.initialMotionRelativeToReverseDeg,
         commandedDriveCount=state.commandedDriveCount}
 end
 

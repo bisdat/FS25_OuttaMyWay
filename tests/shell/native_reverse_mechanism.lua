@@ -68,6 +68,8 @@ locations[1].z=-9.5
 local status=mechanism:reverseStatus(vehicle)
 assert(status.isComplete and status.travelledM==9.5 and status.isFailed==false)
 assert(status.regionProgressM==9.5 and status.regionRemainingM==0)
+assert(math.abs(status.initialMotionDeviationDeg)<0.0001,
+    "first measured reverse vector agrees with projected Return Region")
 assert(mechanism:stopReverse(vehicle))
 assert(AIVehicleUtil.driveToPoint==native,"completed lease restores original native call")
 assert(cruise.speed==8 and cruise.speedReverse==8,
@@ -83,6 +85,8 @@ locations[1].z=11
 status=mechanism:reverseStatus(vehicle)
 assert(not status.isFailed and not status.isComplete and status.travelledM==11)
 assert(status.regionProgressM==-11)
+assert(math.abs(status.initialMotionDeviationDeg-180)<0.0001,
+    "an initially opposed physical vector is measured, not forced to 45 degrees")
 assert(not mechanism:stopReverse(vehicle))
 assert(mechanism:cancelReverse(vehicle))
 assert(AIVehicleUtil.driveToPoint==native)

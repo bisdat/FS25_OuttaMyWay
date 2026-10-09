@@ -57,7 +57,7 @@ end
 function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
-        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil
+        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,lastInitialMotionEvidence=nil
     },Coordinator)
 end
 
@@ -195,6 +195,7 @@ function Coordinator:begin(commitment,nowMs)
     if not isReady then return false,preflightReason end
     self.active=state
     self.lastEgressRegulationResults=nil
+    self.lastInitialMotionEvidence=nil
 
     -- Start 1 km/h regulation and Transit preparation together, not
     -- as serial waits. Mark possible effects before each external call.
@@ -271,6 +272,13 @@ function Coordinator:advance(nowMs)
         if type(status)~="table" then
             self:finishWithOutcome("CONTROL_INTERRUPTED",statusReason or "REVERSE_STATUS_UNAVAILABLE")
             return
+        end
+        if self.lastInitialMotionEvidence==nil
+            and finite(status.initialMotionDeviationDeg) then
+            self.lastInitialMotionEvidence={
+                commitmentId=state.commitmentId,
+                relativeToTargetDeg=status.initialMotionDeviationDeg,
+                relativeToNativeReverseDeg=status.initialMotionRelativeToReverseDeg}
         end
         if status.isFailed==true then
             self:finishWithOutcome("CONTROL_INTERRUPTED",status.reason or "REVERSE_FAILED")
