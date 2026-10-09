@@ -1,4 +1,4 @@
--- The coordinator is dormant in production; these interfaces are independent mocked contracts.
+-- Independent mocked coordinator contracts; physical GIANTS Reality is tested in-game.
 OuttaMyWay={}
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
@@ -56,6 +56,8 @@ local control={
 local function admitted()
     return {token="issued-by-authority",commitmentId="PAIR1",
         participants={b,a},fieldCentroid={x=0,z=0},
+        fieldPolygon={xs={-200,200,200,-200},zs={-200,-200,200,200}},
+        pairWorkingWidthM=10,
         nearbyBlockers={b,c},offsetM=0}
 end
 local function contains(kind,vehicle)
@@ -67,9 +69,11 @@ end
 local coordinator=Coordinator.new(authority,control)
 local ok,commitment=coordinator:begin(admitted(),1000)
 assert(ok and commitment.relocatingAssemblyReferenceKey=="A")
-assert(commitment.objective.isReverse and commitment.objective.maxTravelM==30)
+assert(commitment.objective.isReverse
+    and math.abs(commitment.objective.maxTravelM-10*math.sqrt(2))<0.001)
 assert(commitment.objective.steeringHorizonM==40)
-assert(commitment.objective.targetX==0 and commitment.objective.targetZ==0)
+assert(commitment.objective.targetX==0 and commitment.objective.targetZ==10)
+assert(commitment.objective.egressSide==-1 and commitment.objective.pairWorkingWidthM==10)
 assert(events[1].kind=="VALIDATE" and events[2].kind=="PREFLIGHT")
 assert(events[3].kind=="HOLD" and events[3].vehicle=="B")
 assert(events[4].kind=="HOLD" and events[4].vehicle=="C")
@@ -143,8 +147,8 @@ isCurrent=true
 bad=admitted();bad.fieldCentroid={x=-100,z=0};bad.offsetM=2
 reverseStatus={travelledM=0,isComplete=false};events={}
 local accepted2,bounded=coordinator:begin(bad,30000)
-assert(accepted2 and bounded.objective.maxTravelM==32)
-reverseStatus={travelledM=32.1,isComplete=false}
+assert(accepted2 and math.abs(bounded.objective.maxTravelM-(10*math.sqrt(2)+2))<0.001)
+reverseStatus={travelledM=bounded.objective.maxTravelM+0.1,isComplete=false}
 coordinator:advance(30002)
 assert(coordinator:isActive()==false)
 assert(coordinator:getStatus().lastOutcome.reason=="REVERSE_DISTANCE_EVIDENCE_INVALID")
