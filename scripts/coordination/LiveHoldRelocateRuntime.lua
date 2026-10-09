@@ -1,4 +1,4 @@
--- Runs accepted Hold & Relocate only after independently issued Pair Commitment.
+-- Runs native blocked recovery after independently admitted pair/solo commitment.
 -- Specification Jurisdictions: `HOLD_RELOCATE`
 -- Observation nominates; authority admits; Control executes; GIANTS owns jobs.
 OuttaMyWay=OuttaMyWay or {}
@@ -22,7 +22,8 @@ local function reportRejectedAdmission(runtime,evidence,reason)
     if publication==nil then return end
     publication:publish("NORMAL","WARNING","HOLD_RELOCATE_ADMISSION_REJECTED",function()
         return {
-            pairKey=tostring(evidence.pairKey or "unknown"),
+            pairKey=tostring(evidence.pairKey or "none"),
+            candidateKind=evidence.worker~=nil and "SINGLE" or "PAIR",
             reason=tostring(reason or "UNSPECIFIED_ADMISSION_REJECTION"),
             confirmedBlockedMs=evidence.confirmedBlockedMs,
             version=OuttaMyWay.VERSION
@@ -50,8 +51,8 @@ function Runtime:loadMap()
     -- Candidate evidence belongs to the native Observer's map lifecycle.
 end
 
--- Disabling is immediate. Safety/cleanup failure retains the coordinator's
--- explicit UNRESOLVED state; it must never be silently marked successful.
+-- Disabling requests immediate native Control release; completion is reported
+-- for the current episode only, without parked cross-episode job history.
 function Runtime:relinquish(reason)
     if not self.coordinator:isActive() then return true end
     local released,why=self.coordinator:relinquish(reason or "CONTROL_REVOKED")
@@ -114,17 +115,33 @@ function Runtime:update(dt)
         end
         return
     end
-    local candidates=self.observer and self.observer:getCurrentPairCandidates() or nil
-    if type(candidates)~="table" then return end
+    -- Pair concern is considered first; solo concerns are independent
+    -- blocked-worker occurrences, never forged into synthetic pairs.
+    local pairs=self.observer and self.observer:getCurrentPairCandidates() or {}
+    local singles=self.observer and self.observer.getCurrentSingleCandidates
+        and self.observer:getCurrentSingleCandidates() or {}
+    local candidates={}
+    if type(pairs)=="table" then
+        for i=1,#pairs do candidates[#candidates+1]=pairs[i] end
+    end
+    if type(singles)=="table" then
+        for i=1,#singles do candidates[#candidates+1]=singles[i] end
+    end
     for i=1,#candidates do
         local evidence=candidates[i]
         if type(evidence)=="table" and evidence.candidateIdentity~=nil
             and not self.attempted[evidence.candidateIdentity] then
-            local commitment,reason=self.authority:admitCandidate(
-                evidence.firstWorker,evidence.secondWorker,
-                evidence.blockedWorker,evidence.confirmedBlockedMs)
-            -- An admission attempt is single-shot per native pair occurrence,
-            -- including rejection. A later native occurrence is a new key.
+            local commitment,reason
+            if evidence.worker~=nil then
+                commitment,reason=self.authority:admitSingleCandidate(
+                    evidence.worker,evidence.confirmedBlockedMs)
+            else
+                commitment,reason=self.authority:admitCandidate(
+                    evidence.firstWorker,evidence.secondWorker,
+                    evidence.blockedWorker,evidence.confirmedBlockedMs)
+            end
+            -- An admission is attempted once per current native occurrence.
+            -- Later independent blocked pulses create new candidate identities.
             self.attempted[evidence.candidateIdentity]=true
             if commitment==nil then
                 reportRejectedAdmission(self,evidence,reason)
