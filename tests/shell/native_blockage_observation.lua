@@ -94,6 +94,11 @@ g_time=4100;observation:update(16)
 g_time=5100;observation:update(16)
 assert(#emissions==3 and emissions[3].code=="NATIVE_BLOCKAGE_NO_LOCAL_WORKER")
 assert(emissions[3].data.partnerRootId=="none")
+local single=observation:getCurrentSingleCandidates()
+assert(#single==1 and single[1].worker==a
+    and single[1].confirmedBlockedMs==1000)
+assert(#observation:getCurrentPairCandidates()==0,
+    "solo candidate must not create a synthetic pair")
 
 -- A changed native Job Episode cannot inherit the old positive duration.
 a.spec_aiJobVehicle.job={}
@@ -103,11 +108,16 @@ g_time=6100;observation:update(16)
 assert(#emissions==3,"job turnover must restart native evidence")
 g_time=6200;observation:update(16)
 assert(#emissions==4,"new job qualifies only after its own full pulse")
+assert(#observation:getCurrentSingleCandidates()==1
+    and observation:getCurrentSingleCandidates()[1].candidateIdentity
+        ~=single[1].candidateIdentity,
+    "new native job has a new independent solo candidate identity")
 
 -- An absent strategy or worker registry cannot keep stale evidence.
 a.spec_aiFieldWorker.driveStrategies={}
 g_time=6300;observation:update(16)
 assert(observation.states[a]==nil)
+assert(#observation:getCurrentSingleCandidates()==0)
 a.spec_aiFieldWorker.driveStrategies={courseA}
 active[a]=nil
 g_time=6400;observation:update(16)
@@ -134,6 +144,7 @@ courseA.isBlocked=false
 courseB.isBlocked=false
 g_time=10000;observation:update(16)
 assert(next(observation.pairs)==nil,"both native unblocked retires pair")
+assert(#observation:getCurrentSingleCandidates()==0)
 
 courseA.isBlocked=true
 courseB.isBlocked=true
@@ -147,6 +158,8 @@ assert(pairEvent.data.authority=="OBSERVATION_ONLY")
 local countActive=0
 for _ in pairs(observation.pairs) do countActive=countActive+1 end
 assert(countActive==1,"one active pair identity")
+assert(#observation:getCurrentSingleCandidates()==0,
+    "paired candidate cannot also command solo recovery")
 
 -- One worker briefly unblocks while the other remains blocked. The same pair
 -- is not automatically turned into another independent resolution.
@@ -176,7 +189,8 @@ assert(next(observation.pairs)==nil,"pair leaves 30 m neighbourhood")
 
 enabled=false
 g_time=13700;observation:update(16)
-assert(next(observation.pairs)==nil and next(observation.states)==nil,
+assert(next(observation.pairs)==nil and next(observation.states)==nil
+    and next(observation.singles)==nil,
     "disable drops candidate identities and samples")
 
 assert(OuttaMyWay.nativeBlockedEventTap==nil,"retired constructor hook remains absent")

@@ -6168,3 +6168,70 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Authority Triad disposition:** No architectural responsibility or Specification requirement changes are justified by this positive run; the existing Architecture and Specification receive a validation annotation only. No executable source is changed. GitHub Issue #440 and PR #459 hold the field verdict and archive provenance. PR integration remains a separate acceptance action.
 
+## 2026-10-09 — #461 TEST 0.5.1.1 Single-Worker Recovery Reuses Pairwise Physical Control
+
+**Observation:** TS003 (`0.5.1.0_TS003.zip`) was reported to show BWR not working when only one active worker remains. Code review of accepted `0.5.1.0` found that native `isBlocked` after ≥1 s publishes `NATIVE_BLOCKAGE_NO_LOCAL_WORKER` but supplies no Control candidate without a second worker. The archive was not independently decoded during this increment; precise runtime events have not been established.
+
+**Named discovery:** **No Local Worker Pair != No Native Blockage.**
+
+**Decision:** The single-worker case uses exactly the accepted native physical choreography: **TRANSIT → RELOCATE → FIELDWORK STOP → FIELDWORK START**, with **40 m projected travel to a relocation REGION**. It does not require pairwise Regulation, artificial blocker width, or seven-second paired Hold; nor does it introduce a new physical recovery implementation, historical retry veto or displacement watchdog.
+
+**Implementation hypothesis — TEST `0.5.1.1`:** Native Observation presents a single blocked-worker candidate with independent current-pulse identity. Existing native commitment authority separately admits one worker with a positive current job/strategy, blocked state, field polygon and absence of nearby eligible paired workers. The existing Hold & Relocate Coordinator selects that participant directly, delegates an inward-favoured 40 m oblique region objective to Projected Egress and the same Native Reverse/TRANSIT mechanisms, and invokes the established immediate native FIELDWORK replacement after the region is entered. Paired choreography and calibration remain unchanged.
+
+**Authority Triad:** Architecture now represents the new single-subject admission form under the existing blocked-recovery responsibility. Specification defines its separate admission and physical sequence. Source retains one physical coordination path and validates the new region kind. Offline tests challenge candidate lifetime, admission, geometry and coordinator sequencing; GIANTS physical success remains **unvalidated** pending TS003 replay. The accepted paired TS015 PASS remains the regression reference.
+
+## 2026-10-09 — #461 TEST 0.5.1.1 GIANTS Reality FAIL: solo admission lacks field association
+
+**Artefact:** `log(20261009-160528).txt` supplied with TS003 follow-up; mod identifies as TEST `0.5.1.1`, enabled server runtime.
+
+**Observed at 17:04:43.111:** The native blockage Observation qualified `blockedRootId=396274` for `confirmedBlockedMs=1008`, with `NATIVE_BLOCKAGE_NO_LOCAL_WORKER`. In the same frame, the independent admission reported `HOLD_RELOCATE_ADMISSION_REJECTED` with `candidateKind=SINGLE` and `reason=SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS`. No subsequent TRANSIT, RELOCATE, STOP or START event is published in the supplied run. **Field verdict: FAIL.**
+
+**Confirmed source explanation:** `NativePairCommitmentAuthority.admitSingleCandidate` requires `inside(polygon,rootX,rootZ)` for one registered `g_fieldManager.fields` polygon, rejecting all candidates otherwise. Thus a currently native-blocked FIELDWORK worker is blocked at the field-polygon membership test *before* the existing physical Control runs.
+
+**Named discovery — Field Association Is Not Root Containment:** An active GIANTS field job and a root strictly inside a polygon are distinct facts. The accepted Operation envelope includes the immediate field margin. The log proves strict containment rejected this instance, **not** whether the worker root was in the immediate margin, elsewhere in the world, or subject to inconsistent polygon evidence. No root coordinates, field identifier, boundary distance or supported return-region evidence was logged.
+
+**Hypothesis to challenge before changing Control:** Resolve the current native field/Operation association independently of the exact root-in-polygon predicate; confirm the starting location is within the supported field/margin and that the 40 m inward relocation region is physically admissible. Merely relaxing solo admission would be incomplete: current `ProjectedEgressRegion.planSingle` samples field containment **from the initial root**, and will also reject a start outside the polygon. Do not introduce an arbitrary margin threshold, select an unrelated closest field or remove spatial evidence without a justified contract.
+
+**Decision and disposition:** Mark TEST `0.5.1.1` **GIANTS FAIL**; PR #462 and Issue #461 remain open, with no merge. The new solo pathway is reached as far as positive native Observation and rejection reporting, but **physical recovery remains untested**, not disproven. Retain the validated `0.5.1.0` pairwise TS015 baseline. No change to executable behaviour is warranted by this log alone.
+
+## 2026-10-09 — #461 TEST 0.5.1.2: Retire Incorrect Single-Worker Polygon Gate
+
+**Reality clarification:** Blockages outside the working field occur routinely. The `SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS` veto introduced with TEST .1.1 had not been discussed or approved as a solo admission requirement. The failed TS003 log at 17:04:43.111 proved that this veto stopped a 1,008 ms GIANTS-confirmed native blockage before Physical Control. The restriction was erroneously transferred from pairwise common-field evidence.
+
+**Decision:** Remove solo root-in-polygon, mandatory field-centroid and full-path-in-field prerequisites. For solo BWR, the native active FIELDWORK job, positive native blocked evidence after ≥1 s, current root pose and absence of a local paired worker remain the relevant admission facts. A known registered field may influence the preferred oblique direction by whether the **40 m destination** lies inside it, but never prevents the operation. Without that preference, choose the established deterministic left-rear native reverse direction.
+
+**Solo Hold:** No Hold timer is justified for a single worker. TEST .1.1 already branched directly to native FIELDWORK handback after reverse completion; TEST .1.2 retains and expressly tests this, with no 5 s pair Regulation, 7 s paired Hold, or separate waiting phase.
+
+**Implementation:** Existing single-worker commitment authority no longer scans or insists on any field polygon. Shared Coordinator requires field-centroid/polygon data only for pairwise commitments. The solo Projected Egress Region planner evaluates the two 70° oblique reverse candidates with optional non-gating in-field endpoint preference, with exactly **40 m signed projected progress** defining region entry. TRANSIT, reverse actuation and native stop/start remain shared and unchanged; version advanced `0.5.1.1 → 0.5.1.2`.
+
+**Validation contract:** Confirm a blocked worker beyond all field polygons can be admitted and complete TRANSIT → 40 m region → STOP/START, even when no polygon data exists. Verify paired TS015 contracts remain unchanged. Offline evidence is not GIANTS physical success; TEST .1.2 requires a TS003 Reality replay. No new collision detector, movement timeout or retained job uncertainty has been introduced.
+
+## 2026-10-09 — #461 TEST 0.5.1.2 TS003 GIANTS Reality FAIL: Adjacent-Field Relocation
+
+**Field observation:** TEST `0.5.1.2` began single-worker recovery more successfully than .1.1, but relocation went to an **adjacent field** instead of **the blocked worker's own field**. Evidence artefact: `0.5.1.2_TS003.zip`; local ZIP inspection was attempted but the file runtime was unavailable. The exact field labels, vehicle coordinates and sequence timing are therefore not independently asserted.
+
+**Confirmed source cause:** The .1.2 planner used `soloEndpointInField` to scan **every** `g_fieldManager.fields` polygon and preferred an oblique 40 m endpoint in any one. Field proximity was incorrectly treated as native job field ownership. This permitted an adjacent field's polygon to select the relocation side.
+
+**Named discovery:** **Field Ownership Is Not Field Proximity.** For a native solo blocked worker, "towards the middle of the field" refers to **the current GIANTS worker's OWN field**, regardless of whether the assembly is temporarily outside its boundary.
+
+**Design correction — TEST `0.5.1.3`:** The active `AIDriveStrategyFieldCourse.aiFieldCourse.fieldCourse.courseField.boundaryPositions` identifies the worker's actual generated course field. Calculate its polygon and area centroid once during solo region planning, select the oblique reverse candidate ending inside *that same* field where possible, otherwise prefer the candidate aligned toward its centroid. If the generated boundary is unavailable, use the strategy's own GIANTS `fieldDetectionX/Z` as an inward directional reference. Do not consult other fields for solo side selection. Without native field identity, retain deterministic native reverse rather than inventing field association or refusing recovery. None of these direction inputs is a new admission requirement.
+
+**Preserved contract:** TRANSIT → 40 m projected oblique reverse REGION → immediate native FIELDWORK STOP/START, **without solo Hold**. Pairwise TS015 selection, blocker-width vector, 5 s Regulation, 7 s Hold, and native handback are unchanged.
+
+**Validation challenge:** Use two adjacent field polygons and a blocked worker initially outside its own boundary; change only its GIANTS active course field and prove reverse-side selection follows that identity, not proximity. Test the GIANTS fieldDetection coordinate and missing-course permissive case. CI proves source contracts only; TS003 GIANTS Reality remains required to establish physical return to the worker's own field.
+
+## 2026-10-09 — #461 TEST 0.5.1.3: GIANTS TS003 Reality PASS, Single-Worker BWR
+
+**Field verdict:** **PASS** for TS003 under TEST `0.5.1.3`, supported by `log(20261009-163634).txt`. The field verdict validates this observed physical single-worker recovery, including returning toward the worker's **own field**, after the erroneous adjacent-field direction selection in TEST .1.2. It does not automatically validate every field or obstacle geometry.
+
+**Independently logged Control sequence (local game time):**
+- **17:35:00.912:** Native `isBlocked` qualified after `confirmedBlockedMs=1000`, root `396123`, with no eligible nearby pair.
+- **17:35:00.913:** `HOLD_RELOCATE_STARTED` for `native-single-1`; requested reverse speed **15 km/h**, oblique bearing **70°**, reverse side **1**, required projected return-region progress **40 m**, `regionInField=true`, `fieldInteriorScore=68.55106332813611`, and `fieldIdentitySource=GIANTS_ACTIVE_COURSE_FIELD`.
+- **17:35:14.082:** `HOLD_RELOCATE_OUTCOME` reported `NATIVE_RESTART_ACCEPTED`. The logged interval from start to accepted restart is **13.169 s**.
+
+**Evidence boundary:** The log establishes the current native blockage, solo admission, choice of the blocked worker's active course-field reference, and acceptance of the job handback. Actual physical relocation into the correct field and effective recovery are grounded in the separate **TS003 field PASS verdict**, not deduced solely from `NATIVE_RESTART_ACCEPTED`. No distance telemetry or subsequent useful-work metrics were present to quantify beyond that verdict.
+
+**Confirmed learning:** **Field Ownership Is Not Field Proximity.** The first admission model incorrectly rejected an out-of-field root (.1.1 FAIL); the second allowed adjacent-field proximity to set direction (.1.2 FAIL); the corrected model (.1.3 PASS) takes inward direction only from the blocked worker's own active GIANTS course field. The current single-worker choreography remains **TRANSIT → 40 m region RELOCATE → immediate FIELDWORK STOP/START**, with **no solo Hold timer**, synthetic blocker, or new collision detector. Pairwise TS015 remains unchanged.
+
+**Disposition:** Mark TEST `0.5.1.3` **field-validated TS003 PASS**. Record the outcome in Issue #461 and PR #462; PR stays open until a separate merge instruction. No source mechanics or version change is required by this acceptance record.
+

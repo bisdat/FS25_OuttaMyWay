@@ -11,7 +11,7 @@ Architecture describes what the system should achieve; Specifications provide ex
 - [Log Publication](LOG_PUBLICATION.md) — bounded runtime/engineering fact publication.
 - [GUI](GUI.md) — current settings and status indication; full operational messaging deferred.
 
-Native blocked Observation nominates a candidate only. Separate Pair Commitment checks current GIANTS FIELDWORK jobs, field polygon and physical references before Control begins. The active shell does not invent native blockage or rebuild historic predictive Passage responsibilities.
+Field-validated TEST 0.5.1.3 (#461), GIANTS TS003 **PASS** on 9 October 2026, retains solo BWR **outside** field polygons and TRANSIT / 40 m oblique region / immediate FIELDWORK STOP/START, with no solo Hold timer. The preferred inward direction uses the **worker's native active course field**, never an adjacent field in the global registry. Paired mechanisms are unchanged. Native blocked Observation nominates candidates only. Independent commitment checks current GIANTS FIELDWORK jobs, field polygon and physical references before Control begins. The active shell does not invent native blockage or rebuild historic predictive Passage responsibilities.
 
 ## Deliberately unresolved
 
