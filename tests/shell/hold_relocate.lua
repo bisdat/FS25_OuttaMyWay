@@ -18,6 +18,7 @@ local isReverseRequestAccepted=true
 local reverseStatus={travelledM=0,isComplete=false}
 local refuseReleaseFor=nil
 local isNativeRestartAccepted=true
+local isNativePreparationRejected=false
 local function record(kind,vehicle,extra)
     events[#events+1]={kind=kind,vehicle=vehicle and vehicle.name,extra=extra}
 end
@@ -60,10 +61,15 @@ local control={
     cancelTransit=function(_,vehicle)record("TRANSIT_CANCEL",vehicle);return true end,
     restartNativeFieldwork=function(_,vehicle)
         record("NATIVE_STOP_THEN_START",vehicle)
+        if isNativePreparationRejected then
+            return false,{reason="NATIVE_FIELDWORK_VALIDATION_REJECTED",
+                isNativeJobStateUncertain=false}
+        end
         if isNativeRestartAccepted then
             return true,{isOldJobStopped=true,isNewJobStarted=true}
         end
-        return false,"NATIVE_START_UNCERTAIN"
+        return false,{reason="NATIVE_START_UNCERTAIN",
+            isNativeJobStateUncertain=true}
     end
 }
 local function admitted()
@@ -185,4 +191,19 @@ assert(coordinator:isActive() and coordinator:getStatus().phase=="WAITING_FOR_PL
 assert(coordinator:getStatus().isNativeJobStateUncertain==true)
 assert(coordinator:getStatus().lastOutcome.status=="UNRESOLVED")
 assert(not coordinator:relinquish("DISABLED"),"uncertain native job handback must remain visible")
+-- A native FIELDWORK rejection BEFORE stop does not imply an irreversible
+-- handback and must allow the old TRANSIT request to restore.
+isNativeRestartAccepted=true
+isNativePreparationRejected=true
+reverseStatus={travelledM=0,isComplete=false}
+events={}
+local fresh=Coordinator.new(authority,control)
+assert(fresh:begin(admitted(),70000))
+reverseStatus={travelledM=1,isComplete=true}
+fresh:advance(70001)
+fresh:advance(77001)
+assert(not fresh:isActive(),"pre-stop failure must not retain false job uncertainty")
+assert(fresh:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
+assert(fresh:getStatus().lastOutcome.reason=="NATIVE_FIELDWORK_VALIDATION_REJECTED")
+assert(contains("TRANSIT_CANCEL","A"))
 print("Hold & Relocate coordination, timer releases, commitment authority and unresolved cleanup: PASS")
