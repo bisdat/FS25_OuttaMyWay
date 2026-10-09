@@ -150,9 +150,10 @@ assert(events[#events]=="RESTORE")
 -- Missing width is not replaced with a fixed value.
 local savedWidth=second.getAIWorkAreaWidth
 second.getAIWorkAreaWidth=function()return 0 end
-local widened=assert(authority:admitCandidate(first,second,first,1000))
-assert(widened.pairWorkingWidthM==36)
-assert(authority:release(widened))
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="NATIVE_WORK_WIDTH_UNAVAILABLE",
+    "both assembly widths are required before applying the max rule")
+second.getAIWorkAreaWidth=savedWidth
 first.getAIWorkAreaWidth=function()return 0 end
 accepted,reason=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="NATIVE_WORK_WIDTH_UNAVAILABLE")
