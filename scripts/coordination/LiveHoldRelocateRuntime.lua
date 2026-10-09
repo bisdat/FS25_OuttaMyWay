@@ -39,7 +39,8 @@ function Runtime.new(configuration,observer)
         authority=authority,physicalControl=physical,coordinator=coordinator,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
-        lastReportedOutcome=nil,isRuntimeReported=false
+        lastReportedOutcome=nil,lastReportedEgressHoldResults=nil,
+        isRuntimeReported=false
     },Runtime)
 end
 
@@ -78,6 +79,18 @@ function Runtime:update(dt)
     end
     if coordinator:isActive() then
         coordinator:advance(nowMs)
+        local results=coordinator.lastEgressHoldResults
+        if results~=nil and results~=self.lastReportedEgressHoldResults then
+            self.lastReportedEgressHoldResults=results
+            for i=1,#results do
+                local e=results[i]
+                issue(self,"INFO","HOLD_RELOCATE_EGRESS_HOLD_EVIDENCE",
+                    "commitmentId="..tostring(e.commitmentId)
+                    .." blockerRootId="..tostring(e.rootId)
+                    .." interceptCount="..tostring(e.interceptCount)
+                    .." displacementM="..tostring(e.displacementM))
+            end
+        end
         if not coordinator:isActive() then
             local outcome=coordinator:getStatus().lastOutcome
             if outcome~=nil then
@@ -117,6 +130,12 @@ function Runtime:update(dt)
                         and type(why.requestedReverseSpeedKmh)=="number" then
                         details=details.." requestedReverseSpeedKmh="..
                             tostring(why.requestedReverseSpeedKmh)
+                    end
+                    if type(why)=="table" and why.pairWorkingWidthM~=nil then
+                        details=details.." workingWidthM="..
+                            tostring(why.pairWorkingWidthM)
+                            .." diagonalM="..tostring(why.objective.maxTravelM)
+                            .." egressSide="..tostring(why.egressSide)
                     end
                     issue(self,"INFO","HOLD_RELOCATE_STARTED",details)
                 elseif coordinator:isActive() then

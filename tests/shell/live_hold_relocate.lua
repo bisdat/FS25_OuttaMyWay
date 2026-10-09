@@ -31,6 +31,7 @@ local function nativeWorker(x,z,blocked)
     local strategy={className="AIDriveStrategyFieldCourse",isBlocked=blocked}
     local root={rootNode=node,job=job,spec_aiFieldWorker={
         isActive=true,driveStrategies={strategy}}}
+    root.getAIWorkAreaWidth=function()return 36 end
     root.getJob=function(self)return self.job end
     root.getAttachedImplements=function()return {} end
     root.getIsTurnedOn=function()return true end
@@ -46,7 +47,8 @@ local accepted,reason=authority:admitCandidate(first,second,first,999)
 assert(accepted==nil,"persistence gate must reject a short pulse")
 local issued=assert(authority:admitCandidate(first,second,first,1000))
 assert(issued.fieldCentroid.x==50 and issued.fieldCentroid.z==50)
-assert(issued.offsetM==0 and #issued.nearbyBlockers==1)
+assert(issued.offsetM==0 and issued.pairWorkingWidthM==36 and #issued.nearbyBlockers==1)
+assert(type(issued.fieldPolygon)=="table")
 assert(issued.nearbyBlockers[1].vehicle==first,
     "closer-to-centroid worker B relocates; A is blocker")
 assert(authority:validateCommitment(issued))
@@ -67,7 +69,10 @@ local events={}
 -- Replace subordinate native mechanisms only in this offline challenge.
 physical.holdMechanism={
     hold=function(_,v,p)events[#events+1]="HOLD:"..p;return true end,
-    releaseHold=function(_,v,p)events[#events+1]="RELEASE:"..p;return true end
+    releaseHold=function(_,v,p)
+        events[#events+1]="RELEASE:"..p
+        return true,{interceptionCount=4,physicalDisplacementM=0.75}
+    end
 }
 physical.transitMechanism={
     requestTransit=function(_,vehicle)
@@ -84,7 +89,13 @@ local reverse={travelledM=0,isComplete=false}
 physical.reverseMechanism={
     startReverse=function(_,v,objective)
         events[#events+1]="REVERSE"
-        assert(objective.maxTravelM==30 and objective.steeringHorizonM==40)
+        assert(math.abs(objective.maxTravelM-36*math.sqrt(2))<0.001
+            and objective.steeringHorizonM==40)
+        assert(objective.pairWorkingWidthM==36 and objective.egressSide==-1)
+        local origin=coords[v.rootNode]
+        assert(math.abs(math.sqrt((objective.targetX-origin.x)^2
+                +(objective.targetZ-origin.z)^2)-36*math.sqrt(2))<0.001)
+        assert(objective.targetX>origin.x and objective.targetZ>origin.z)
         return true
     end,
     reverseStatus=function()return reverse end,
@@ -105,12 +116,18 @@ physical.jobMechanism.getStatus=function()return nativeHandbackStatus end
 local coordinator=Coordinator.new(authority,physical)
 local ok,entry=coordinator:begin(issued,1000)
 assert(ok and entry.relocatingAssemblyReferenceKey==issued.participants[2].assemblyReferenceKey)
+assert(math.abs(entry.objective.maxTravelM-36*math.sqrt(2))<0.001)
+assert(entry.pairWorkingWidthM==36 and entry.egressSide==-1)
 assert(events[1]=="HOLD:EGRESS" and events[2]=="TRANSIT" and events[3]=="REVERSE")
 assert(coordinator:getStatus().phase=="REVERSING")
 coordinator:advance(5999)
 assert(#events==3,"reverse already started, blocker Hold not yet released")
 coordinator:advance(6000)
 assert(events[4]=="RELEASE:EGRESS")
+assert(#coordinator.lastEgressHoldResults==1)
+assert(coordinator.lastEgressHoldResults[1].rootId==issued.participants[1].assemblyReferenceKey)
+assert(coordinator.lastEgressHoldResults[1].interceptCount==4
+    and coordinator.lastEgressHoldResults[1].displacementM==0.75)
 reverse={travelledM=20,isComplete=true}
 coordinator:advance(6001)
 assert(events[5]=="REVERSE_STOP" and events[6]=="HOLD:RELOCATED_WORKER")
@@ -130,6 +147,26 @@ assert(events[#events]=="HANDOFF_TRANSIT",
 nativeHandbackStatus={status="NOT_ATTEMPTED"}
 assert(physical:cancelTransit(second),"a pre-stop cancellation can request restoration")
 assert(events[#events]=="RESTORE")
+-- Missing width is not replaced with a fixed value.
+local savedWidth=second.getAIWorkAreaWidth
+second.getAIWorkAreaWidth=function()return 0 end
+local widened=assert(authority:admitCandidate(first,second,first,1000))
+assert(widened.pairWorkingWidthM==36)
+assert(authority:release(widened))
+first.getAIWorkAreaWidth=function()return 0 end
+accepted,reason=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="NATIVE_WORK_WIDTH_UNAVAILABLE")
+first.getAIWorkAreaWidth=function()return 36 end
+second.getAIWorkAreaWidth=savedWidth
+-- Neither 50.91 m diagonal fits a confined 50 m square from this pair.
+g_fieldManager.fields={{densityMapPolygon={
+    pointsX={0,50,50,0},pointsZ={0,0,50,50}}}}
+local restricted=assert(authority:admitCandidate(first,second,first,1000))
+local rejected,geoReason=coordinator:begin(restricted,30000)
+assert(not rejected and geoReason=="NO_INFIELD_DIAGONAL_EGRESS_SIDE")
+assert(authority:release(restricted))
+g_fieldManager.fields={{densityMapPolygon={
+    pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
 -- Missing/contradictory field polygons never justify reverse movement.
 g_fieldManager.fields={}
 accepted,reason=authority:admitCandidate(first,second,first,1000)
@@ -137,6 +174,19 @@ assert(accepted==nil and reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
 -- Native admission rejection has discriminating, explicit evidence.
+-- Width capture traverses attached implements; source geometry remains
+-- available after their configuration changes.
+local rootGetter=first.getAIWorkAreaWidth
+local rootAttachments=first.getAttachedImplements
+first.getAIWorkAreaWidth=function()return 0 end
+first.getAttachedImplements=function()
+    return {{object={getAIWorkAreaWidth=function()return 36 end}}}
+end
+local attached=assert(authority:admitCandidate(first,second,first,1000))
+assert(attached.pairWorkingWidthM==36)
+assert(authority:release(attached))
+first.getAIWorkAreaWidth=rootGetter
+first.getAttachedImplements=rootAttachments
 local originalGetJob=second.getJob
 second.getJob=nil
 accepted,reason=authority:admitCandidate(first,second,first,1000)
@@ -167,7 +217,7 @@ enabled=true
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.0.27"
+OuttaMyWay.VERSION="0.5.0.28"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}

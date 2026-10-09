@@ -11,6 +11,12 @@ local native=function(vehicle,dt,acceleration,allowed,forwards,x,z,speed,doNotSt
     return "GIANTS_NATIVE_RETURN"
 end
 AIVehicleUtil={driveToPoint=native}
+local coords={[9901]={x=1,z=2},[9902]={x=20,z=21}}
+getWorldTranslation=function(node)
+    local p=coords[node]
+    assert(p)
+    return p.x,0,p.z
+end
 g_server={}
 g_currentMission={controlledVehicle=nil}
 local alpha={name="A",job={},rootNode=9901}
@@ -49,9 +55,11 @@ assert(not mechanism:getHoldEvidence(alpha).isVehicleStoppedConfirmed)
 local releaseOk,reason=mechanism:releaseHold(alpha,"RELOCATED_WORKER")
 assert(not releaseOk and reason=="HOLD_PURPOSE_MISMATCH")
 assert(mechanism:isHolding(alpha))
+coords[9901]={x=1.5,z=2}
 releaseOk,evidence=mechanism:releaseHold(alpha,"EGRESS")
 assert(releaseOk and evidence.isRestrictionRemoved
-    and evidence.interceptionCount==1)
+    and evidence.interceptionCount==1
+    and math.abs(evidence.physicalDisplacementM-0.5)<0.001)
 assert(not mechanism:isHolding(alpha))
 assert(AIVehicleUtil.driveToPoint~=native,"B remains Held")
 AIVehicleUtil.driveToPoint(alpha,16,1,true,true,7,9,18,false)

@@ -62,6 +62,21 @@ def test_shell_wires_only_admitted_hold_relocate_without_legacy_control():
     assert "NativeBlockedEventTap" not in text
 
 
+def test_width_scaled_single_target_egress_and_hold_evidence():
+    authority = (ROOT / "scripts/coordination/NativePairCommitmentAuthority.lua").read_text(encoding="utf-8")
+    coordinator = (ROOT / "scripts/coordination/HoldRelocateCoordinator.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts/coordination/LiveHoldRelocateRuntime.lua").read_text(encoding="utf-8")
+    hold = (ROOT / "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua").read_text(encoding="utf-8")
+    assert "getAIWorkAreaWidth" in authority
+    assert "pairWorkingWidthM=math.max(aw,bw)" in authority
+    assert "diagonalEgress(relocator,other,commitment)" in coordinator
+    assert "width*math.sqrt(2)" in coordinator
+    assert "insideTravelSegment" in coordinator
+    assert "MAX_RELOCATION_BASE_M=30" not in coordinator
+    assert "HOLD_RELOCATE_EGRESS_HOLD_EVIDENCE" in runtime
+    assert "physicalDisplacementM" in hold
+
+
 def test_reverse_speed_is_native_and_has_scoped_cruise_restoration():
     path = ROOT / "scripts/control/mechanisms/NativeReverseMechanism.lua"
     code = path.read_text(encoding="utf-8")

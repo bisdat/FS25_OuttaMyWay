@@ -8,7 +8,8 @@ Coordinator.__index=Coordinator
 
 local EGRESS_HOLD_MS=5000 -- accepted Hold & Relocate egress timer, not a clearance test
 local RELOCATED_HOLD_MS=10000 -- accepted continuation window, independent of pair distance
-local MAX_RELOCATION_BASE_M=30 -- movement bound; unrelated to Spatial Pair Inference radius
+local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
+local MIN_CENTROID_BEARING_M=0.01
 local BWR_STEERING_HORIZON_M=40 -- steering reference only, not authorised travel
 
 local function finite(value)
@@ -53,10 +54,77 @@ local function selectRelocator(first,second,centroid)
     return second,first
 end
 
+-- The right-angle legs are a virtual construction, not two drive phases.
+-- The native actuator receives a SINGLE diagonal reverse objective.
+local function insidePolygon(poly,x,z)
+    if type(poly)~="table" or type(poly.xs)~="table"
+        or type(poly.zs)~="table" or #poly.xs<3
+        or #poly.xs~=#poly.zs then return false end
+    local inside=false
+    for i=1,#poly.xs do
+        local j=i==1 and #poly.xs or i-1
+        local xi,zi,xj,zj=poly.xs[i],poly.zs[i],poly.xs[j],poly.zs[j]
+        if (zi>z)~=(zj>z) then
+            if x<xj+(xi-xj)*(zj-z)/(zj-zi) then inside=not inside end
+        end
+    end
+    return inside
+end
+
+local function insideTravelSegment(poly,x,z,tx,tz)
+    local distance=math.sqrt((tx-x)^2+(tz-z)^2)
+    local steps=math.ceil(distance/EGRESS_PATH_SAMPLE_M)
+    for i=0,steps do
+        local t=i/steps
+        if not insidePolygon(poly,x+(tx-x)*t,z+(tz-z)*t) then
+            return false
+        end
+    end
+    return true
+end
+
+local function diagonalEgress(relocator,other,commitment)
+    local width=commitment.pairWorkingWidthM
+    if not finite(width) or width<=0 then return nil,"PAIR_WORK_WIDTH_UNAVAILABLE" end
+    local dx=commitment.fieldCentroid.x-relocator.x
+    local dz=commitment.fieldCentroid.z-relocator.z
+    local d=math.sqrt(dx*dx+dz*dz)
+    if not finite(d) or d<MIN_CENTROID_BEARING_M then
+        return nil,"CENTROID_BEARING_UNAVAILABLE"
+    end
+    local ux,uz=dx/d,dz/d
+    local vx,vz=-uz,ux
+    local maxTravelM=width*math.sqrt(2)+commitment.offsetM
+    if not finite(maxTravelM) or maxTravelM<=0 then
+        return nil,"REVERSE_OBJECTIVE_UNAVAILABLE"
+    end
+    local choices={}
+    for _,side in ipairs({-1,1}) do
+        local tx=relocator.x+width*(ux+side*vx)
+        local tz=relocator.z+width*(uz+side*vz)
+        if insideTravelSegment(commitment.fieldPolygon,
+                relocator.x,relocator.z,tx,tz) then
+            local dd=(tx-other.x)^2+(tz-other.z)^2
+            choices[#choices+1]={side=side,x=tx,z=tz,score=dd}
+        end
+    end
+    if #choices==0 then return nil,"NO_INFIELD_DIAGONAL_EGRESS_SIDE" end
+    -- More separation from the other root chooses the Egress Side.
+    -- A truly symmetric encounter is indifferent; prefer negative consistently.
+    local chosen=choices[1]
+    for i=2,#choices do
+        if choices[i].score>chosen.score then chosen=choices[i] end
+    end
+    return {targetX=chosen.x,targetZ=chosen.z,
+        maxTravelM=maxTravelM,steeringHorizonM=BWR_STEERING_HORIZON_M,
+        pairWorkingWidthM=width,egressSide=chosen.side,
+        isReverse=true}
+end
+
 function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
-        active=nil,lastOutcome=nil
+        active=nil,lastOutcome=nil,lastEgressHoldResults=nil
     },Coordinator)
 end
 
@@ -73,7 +141,8 @@ function Coordinator:getStatus()
         maxTravelM=state.maxTravelM,egressHoldUntilMs=state.egressHoldUntilMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
         unresolvedEffects=state.unresolvedEffects,isNativeJobStateUncertain=state.isNativeJobStateUncertain,
-        lastOutcome=state.phase=="WAITING_FOR_PLAYER_INTERVENTION" and self.lastOutcome or nil
+        lastOutcome=state.phase=="WAITING_FOR_PLAYER_INTERVENTION" and self.lastOutcome or nil,
+        egressHoldResults=self.lastEgressHoldResults
     }
 end
 
@@ -148,6 +217,9 @@ function Coordinator:begin(commitment,nowMs)
         or type(commitment.fieldCentroid)~="table"
         or not finite(commitment.fieldCentroid.x) or not finite(commitment.fieldCentroid.z)
         or not finite(commitment.offsetM) or commitment.offsetM<0
+        or not finite(commitment.pairWorkingWidthM)
+        or commitment.pairWorkingWidthM<=0
+        or type(commitment.fieldPolygon)~="table"
         or type(commitment.nearbyBlockers)~="table" or #commitment.nearbyBlockers==0 then
         return false,"COMMITMENT_EVIDENCE_UNAVAILABLE"
     end
@@ -173,17 +245,9 @@ function Coordinator:begin(commitment,nowMs)
     end
     if not hasOther then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
 
-    local dx=commitment.fieldCentroid.x-relocator.x
-    local dz=commitment.fieldCentroid.z-relocator.z
-    local distanceM=math.sqrt(dx*dx+dz*dz)
-    local maxTravelM=MAX_RELOCATION_BASE_M+commitment.offsetM
-    if not finite(distanceM) or distanceM<=0 or not finite(maxTravelM)
-        or maxTravelM<=0 then return false,"REVERSE_OBJECTIVE_UNAVAILABLE" end
-    local travelM=math.min(distanceM,maxTravelM)
-    local objective={targetX=relocator.x+dx/distanceM*travelM,
-        targetZ=relocator.z+dz/distanceM*travelM,
-        maxTravelM=maxTravelM,steeringHorizonM=BWR_STEERING_HORIZON_M,
-        isReverse=true}
+    local objective,geometryReason=diagonalEgress(relocator,other,commitment)
+    if objective==nil then return false,geometryReason end
+    local maxTravelM=objective.maxTravelM
     local state={
         commitmentId=commitment.commitmentId,commitment=commitment,
         relocator=relocator,blockers=blockers,isBlockerHeld={},
@@ -198,6 +262,7 @@ function Coordinator:begin(commitment,nowMs)
     local isReady,preflightReason=command(self.physicalControl,"preflight",state)
     if not isReady then return false,preflightReason end
     self.active=state
+    self.lastEgressHoldResults=nil
 
     -- Start the 5 s egress protection and Transit preparation together, not
     -- as serial waits. Mark possible effects before each external call.
@@ -227,6 +292,8 @@ function Coordinator:begin(commitment,nowMs)
     state.phase="REVERSING"
     return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,
         objective=objective,
+        pairWorkingWidthM=objective.pairWorkingWidthM,
+        egressSide=objective.egressSide,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
             and reverseEvidence.requestedReverseSpeedKmh or nil}
 end
@@ -244,12 +311,22 @@ function Coordinator:advance(nowMs)
     if nowMs>=state.egressHoldUntilMs then
         for i=1,#state.blockers do
             if state.isBlockerHeld[i] then
-                local released,releaseReason=command(
+                local released,releaseEvidence=command(
                     self.physicalControl,"releaseHold",state.blockers[i].vehicle,"EGRESS")
                 if not released then
-                    self:finishWithOutcome("FAILED_SAFE",releaseReason)
+                    self:finishWithOutcome("FAILED_SAFE",releaseEvidence)
                     return
                 end
+                if self.lastEgressHoldResults==nil then
+                    self.lastEgressHoldResults={}
+                end
+                self.lastEgressHoldResults[#self.lastEgressHoldResults+1]={
+                    rootId=state.blockers[i].assemblyReferenceKey,
+                    interceptCount=type(releaseEvidence)=="table"
+                        and releaseEvidence.interceptionCount or nil,
+                    displacementM=type(releaseEvidence)=="table"
+                        and releaseEvidence.physicalDisplacementM or nil,
+                    commitmentId=state.commitmentId}
                 state.isBlockerHeld[i]=false
             end
         end

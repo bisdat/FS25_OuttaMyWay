@@ -7,6 +7,16 @@ OuttaMyWay.NativeTranslationHoldMechanism={}
 local Mechanism=OuttaMyWay.NativeTranslationHoldMechanism
 Mechanism.__index=Mechanism
 
+local function rootXZ(vehicle)
+    if vehicle.rootNode==nil or type(getWorldTranslation)~="function" then
+        return nil,nil
+    end
+    local ok,x,_,z=pcall(getWorldTranslation,vehicle.rootNode)
+    if not ok or type(x)~="number" or type(z)~="number"
+        or x~=x or z~=z then return nil,nil end
+    return x,z
+end
+
 local function weakKeys()
     return setmetatable({},{__mode="k"})
 end
@@ -114,8 +124,10 @@ function Mechanism:hold(vehicle,purpose)
     if nativeJob==nil then return false,jobReason end
     local installed,why=self:install()
     if not installed then return false,why end
+    local initialX,initialZ=rootXZ(vehicle)
     self.holds[vehicle]={
         purpose=purpose,interceptCount=0,nativeJobReference=nativeJob,
+        initialX=initialX,initialZ=initialZ,
         isRelinquished=false,lastNativeAllowedToDrive=nil
     }
     self.heldCount=self.heldCount+1
@@ -130,13 +142,20 @@ function Mechanism:releaseHold(vehicle,purpose)
     local state=self.holds[vehicle]
     if state==nil then return true,{wasHeld=false,isRestrictionRemoved=true} end
     if purpose~=state.purpose then return false,"HOLD_PURPOSE_MISMATCH" end
+    local endingX,endingZ=rootXZ(vehicle)
+    local displacementM=nil
+    if state.initialX~=nil and endingX~=nil then
+        displacementM=math.sqrt((endingX-state.initialX)^2
+            +(endingZ-state.initialZ)^2)
+    end
     local _,nativeRestored=withdrawHold(self,vehicle)
     -- A later wrapper may have chained this one. In that case the released
     -- inner wrapper is behaviourally transparent, and we do not overwrite
     -- another mod's current native drive function.
     return true,{wasHeld=true,isRestrictionRemoved=true,
         isNativeFunctionRestored=nativeRestored,
-        interceptionCount=state.interceptCount}
+        interceptionCount=state.interceptCount,
+        physicalDisplacementM=displacementM}
 end
 
 function Mechanism:getHoldEvidence(vehicle)

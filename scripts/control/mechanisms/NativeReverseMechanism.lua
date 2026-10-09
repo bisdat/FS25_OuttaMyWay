@@ -270,7 +270,7 @@ function Mechanism:startReverse(vehicle,objective)
     local dx,dz=objective.targetX-origin.x,objective.targetZ-origin.z
     local distanceM=math.sqrt(dx*dx+dz*dz)
     if not finite(distanceM) or distanceM<=MIN_DIRECTION_M
-        or distanceM>objective.maxTravelM then
+        or distanceM>objective.maxTravelM+0.001 then
         return false,"TARGET_OUTSIDE_MOVEMENT_BOUND"
     end
     local steeringX=origin.x+dx/distanceM*objective.steeringHorizonM

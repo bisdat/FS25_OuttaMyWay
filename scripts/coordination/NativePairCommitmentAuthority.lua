@@ -40,6 +40,46 @@ local function currentStrategy(vehicle)
     return nil
 end
 
+-- A native WorkArea width belongs to an assembly member, not necessarily
+-- the root vehicle. Capture it while GIANTS FIELDWORK is active, before
+-- TRANSIT folding changes geometry. Do not invent a width on missing evidence.
+local function assemblyWorkWidth(vehicle)
+    local seen,count,maxWidth={},0,0
+    local function visit(object)
+        if type(object)~="table" or object.isDeleted==true then
+            return false,"WORK_ASSEMBLY_UNAVAILABLE"
+        end
+        if seen[object] then return true end
+        seen[object]=true
+        count=count+1
+        if count>16 then return false,"WORK_ASSEMBLY_BUDGET_EXCEEDED" end
+        if type(object.getAIWorkAreaWidth)=="function" then
+            local ok,width=pcall(object.getAIWorkAreaWidth,object)
+            if not ok or not finite(width) or width<0 then
+                return false,"NATIVE_WORK_WIDTH_INVALID"
+            end
+            maxWidth=math.max(maxWidth,width)
+        end
+        if type(object.getAttachedImplements)=="function" then
+            local ok,attached=pcall(object.getAttachedImplements,object)
+            if not ok or type(attached)~="table" then
+                return false,"WORK_ATTACHMENTS_UNAVAILABLE"
+            end
+            for _,descriptor in pairs(attached) do
+                local child=type(descriptor)=="table"
+                    and (descriptor.object or descriptor) or nil
+                local accepted,why=visit(child)
+                if not accepted then return false,why end
+            end
+        end
+        return true
+    end
+    local ok,reason=visit(vehicle)
+    if not ok then return nil,reason end
+    if maxWidth<=0 then return nil,"NATIVE_WORK_WIDTH_UNAVAILABLE" end
+    return maxWidth
+end
+
 local function inside(poly,x,z)
     local result=false
     local xs,zs=poly.xs,poly.zs
@@ -138,6 +178,10 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     if as==nil or bs==nil then return nil,"NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE" end
     if aj==nil or bj==nil then return nil,"NATIVE_JOB_REFERENCE_UNAVAILABLE" end
     if ap==nil or bp==nil then return nil,"ASSEMBLY_ROOT_POSE_UNAVAILABLE" end
+    local aw,awReason=assemblyWorkWidth(first)
+    local bw,bwReason=assemblyWorkWidth(second)
+    if aw==nil then return nil,awReason end
+    if bw==nil then return nil,bwReason end
 
     if first.rootNode==second.rootNode then return nil,"ROOT_IDENTITIES_NOT_DISTINCT" end
     if blockedWorker~=first and blockedWorker~=second then
@@ -158,7 +202,8 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     local commitment={
         commitmentId="native-pair-"..tostring(self.sequence),
         participants={participant(first,as,aj,ap),participant(second,bs,bj,bp)},
-        fieldCentroid=poly.centroid,offsetM=0,
+        fieldCentroid=poly.centroid,fieldPolygon=poly,
+        pairWorkingWidthM=math.max(aw,bw),offsetM=0,
         nearbyBlockers={},nativeFieldReference=field,
         wasIndependentlyAdmitted=true
     }
