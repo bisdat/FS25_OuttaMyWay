@@ -6194,3 +6194,15 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Decision and disposition:** Mark TEST `0.5.1.1` **GIANTS FAIL**; PR #462 and Issue #461 remain open, with no merge. The new solo pathway is reached as far as positive native Observation and rejection reporting, but **physical recovery remains untested**, not disproven. Retain the validated `0.5.1.0` pairwise TS015 baseline. No change to executable behaviour is warranted by this log alone.
 
+## 2026-10-09 — #461 TEST 0.5.1.2: Retire Incorrect Single-Worker Polygon Gate
+
+**Reality clarification:** Blockages outside the working field occur routinely. The `SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS` veto introduced with TEST .1.1 had not been discussed or approved as a solo admission requirement. The failed TS003 log at 17:04:43.111 proved that this veto stopped a 1,008 ms GIANTS-confirmed native blockage before Physical Control. The restriction was erroneously transferred from pairwise common-field evidence.
+
+**Decision:** Remove solo root-in-polygon, mandatory field-centroid and full-path-in-field prerequisites. For solo BWR, the native active FIELDWORK job, positive native blocked evidence after ≥1 s, current root pose and absence of a local paired worker remain the relevant admission facts. A known registered field may influence the preferred oblique direction by whether the **40 m destination** lies inside it, but never prevents the operation. Without that preference, choose the established deterministic left-rear native reverse direction.
+
+**Solo Hold:** No Hold timer is justified for a single worker. TEST .1.1 already branched directly to native FIELDWORK handback after reverse completion; TEST .1.2 retains and expressly tests this, with no 5 s pair Regulation, 7 s paired Hold, or separate waiting phase.
+
+**Implementation:** Existing single-worker commitment authority no longer scans or insists on any field polygon. Shared Coordinator requires field-centroid/polygon data only for pairwise commitments. The solo Projected Egress Region planner evaluates the two 70° oblique reverse candidates with optional non-gating in-field endpoint preference, with exactly **40 m signed projected progress** defining region entry. TRANSIT, reverse actuation and native stop/start remain shared and unchanged; version advanced `0.5.1.1 → 0.5.1.2`.
+
+**Validation contract:** Confirm a blocked worker beyond all field polygons can be admitted and complete TRANSIT → 40 m region → STOP/START, even when no polygon data exists. Verify paired TS015 contracts remain unchanged. Offline evidence is not GIANTS physical success; TEST .1.2 requires a TS003 Reality replay. No new collision detector, movement timeout or retained job uncertainty has been introduced.
+
