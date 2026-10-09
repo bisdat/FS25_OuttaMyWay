@@ -188,7 +188,7 @@ function Coordinator:begin(commitment,nowMs)
         commitmentId=commitment.commitmentId,commitment=commitment,
         relocator=relocator,blockers=blockers,isBlockerHeld={},
         isRelocatorHeld=false,isReverseOutstanding=false,isTransitOutstanding=false,
-        isNativeJobStateUncertain=false,unresolvedEffects={},phase="PREPARING_TRANSIT",
+        isNativeJobStateUncertain=false,unresolvedEffects={},phase="REQUESTING_TRANSIT",
         egressHoldUntilMs=nowMs+EGRESS_HOLD_MS,relocatedHoldUntilMs=nil,
         maxTravelM=maxTravelM,objective=objective
     }
@@ -215,6 +215,16 @@ function Coordinator:begin(commitment,nowMs)
         self:finishWithOutcome("FAILED_SAFE",transitReason)
         return false,transitReason
     end
+    -- The TRANSIT request does not establish a configuration-readiness gate:
+    -- start reverse in this same admitted operation while raise/fold continues.
+    state.isReverseOutstanding=true
+    local reversing,reverseReason=command(
+        self.physicalControl,"startReverse",relocator.vehicle,state.objective)
+    if not reversing then
+        self:finishWithOutcome("FAILED_SAFE",reverseReason)
+        return false,reverseReason
+    end
+    state.phase="REVERSING"
     return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,objective=objective}
 end
 
@@ -241,20 +251,7 @@ function Coordinator:advance(nowMs)
             end
         end
     end
-    if state.phase=="PREPARING_TRANSIT" then
-        local transitStatus,statusReason=query(self.physicalControl,"transitStatus",state.relocator.vehicle)
-        if transitStatus=="WAITING" then return end
-        if transitStatus~="READY" then
-            self:finishWithOutcome("FAILED_SAFE",statusReason or "TRANSIT_NOT_READY")
-            return
-        end
-        state.isReverseOutstanding=true
-        local started,startReason=command(
-            self.physicalControl,"startReverse",state.relocator.vehicle,state.objective)
-        if not started then self:finishWithOutcome("FAILED_SAFE",startReason);return end
-        state.phase="REVERSING"
-        return
-    end
+  -- Reverse is already armed in begin, without a TRANSIT settlement check.
     if state.phase=="REVERSING" then
         local status,statusReason=query(self.physicalControl,"reverseStatus",
             state.relocator.vehicle,state.objective)
