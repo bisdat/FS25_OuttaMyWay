@@ -1,6 +1,6 @@
 # Blocked-First Situation Assessment — 0.5 Architecture
 
-**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the owner correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The current product remains **control-free**. Passive native Observation is now limited to reading existing GIANTS blocked-state fields, with no AI modification or event hook.
+**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the accepted correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The current product remains **control-free**. Passive native Observation is now limited to reading existing GIANTS blocked-state fields, with no AI modification or event hook.
 
 ## Purpose
 
@@ -12,7 +12,7 @@ OuttaMyWay exists to help a worker resume its GIANTS-owned autonomous activity w
 
 This is the architectural separation we need. Ordinary opposed A8 passing is expected to produce **less than one second of confirmed GIANTS blockage**, so the existing persistence gate filters it **without an A8 classifier**. GIANTS can also alternate blocked/unblocked while attempting to manoeuvre around a moving worker or static obstacle. These are authentic native states, not automatic intervention requests. The A8 duration is a working scenario assumption, not a universally demonstrated bound.
 
-[Native Course Advancement](../docs/research/USEFUL_CONTINUATION_EVIDENCE.md) remains completed source research, **not** a required signal, dependency or gate. The physical-obstruction proof step proposed in the initial PR #446 draft is likewise **withdrawn**. **Native Replanning Ownership** remains with GIANTS ([Project Vision](PROJECT_VISION.md)).
+[Native Course Advancement](../docs/research/USEFUL_CONTINUATION_EVIDENCE.md) remains completed source research, **not** a required signal, dependency or gate. The physical-obstruction proof step proposed in the initial PR #446 draft is likewise **withdrawn**. **GIANTS retains native replanning authority** ([Project Vision](PROJECT_VISION.md)).
 
 ## Named evidence and responsibility concepts
 
@@ -79,7 +79,7 @@ The preferred *candidate observation direction* is native **blocked/unblocked ed
 
 ## 2. Filter transient native blockage with the accepted persistence gate
 
-The owner-accepted gate is **≥1 second of accumulated positively confirmed native blocked time** within one unresolved obstruction episode. **Below 1 second, OMW ignores the blockage for intervention purposes: no Spatial Pair Inference, Situation Assessment or resolution candidate.** A false edge closes a *pulse* and prevents time accruing while unblocked; it does **not necessarily** close the unresolved concern. Repeated true/false retries may contribute to the same concern **only while episode continuity is supportable**.
+The accepted gate is **≥1 second of accumulated positively confirmed native blocked time** within one unresolved obstruction episode. **Below 1 second, OMW ignores the blockage for intervention purposes: no Spatial Pair Inference, Situation Assessment or resolution candidate.** A false edge closes a *pulse* and prevents time accruing while unblocked; it does **not necessarily** close the unresolved concern. Repeated true/false retries may contribute to the same concern **only while episode continuity is supportable**.
 
 Do not accumulate blocked time across unrelated passing encounters, distinct obstacles at different places, new Job Episodes, player takeover, missing/unknown observations or time imposed by OMW's later Control. Positive cessation of the encounter or Job Episode ends its eligibility. Targeted time evaluation may be needed after a true edge with no further notification, but does not imply a continuous all-worker scan.
 
@@ -87,11 +87,11 @@ Do not accumulate blocked time across unrelated passing encounters, distinct obs
 
 ## 3. Infer candidate worker pairs from positions
 
-After a worker satisfies the gate, **choose the nearest other eligible local worker with a current assembly-root position within a 30-metre radius of the blocked worker's assembly root**, comparing horizontal **X/Z** coordinates. Deduplicate the root assemblies and exclude the blocked assembly itself. **The threshold is radius 30 m (distance ≤30 m), not diameter.** If there is no eligible worker in that radius, **there is no worker-pair candidate**; do not select a remote worker because it is the nearest available. **The candidate blocker need not report blocked.** The owner accepts this deliberately approximate root-position rule without implement geometry, clearance or route reconstruction.
+After a worker satisfies the gate, **choose the nearest other eligible local worker with a current assembly-root position within a 30-metre radius of the blocked worker's assembly root**, comparing horizontal **X/Z** coordinates. Deduplicate the root assemblies and exclude the blocked assembly itself. **The threshold is radius 30 m (distance ≤30 m), not diameter.** If there is no eligible worker in that radius, **there is no worker-pair candidate**; do not select a remote worker because it is the nearest available. **The candidate blocker need not report blocked.** This deliberately approximate root-position rule is accepted without implement geometry, clearance or route reconstruction.
 
 `isBlocked` reports the **affected worker**, not the blocker. A nearby worker might be incidental to a hedge/tree blockage. That uncertainty belongs in **Situation Assessment and responsibility selection**, not in an additional physical-collision proof system.
 
-**The 30 m radius is the owner-selected locality policy**, not an empirical physical-clearance or causal-contact threshold. No implement-width correction, vehicle-specific radius, collision hull, trajectory prediction or geometric precision is required. An in-radius worker is a *possible* blocker, not a proven one. If there is no candidate, do not invent a worker pair; where eligibility or attribution is uncertain, Situation Assessment may remain **WAITING_FOR_EVIDENCE**. Re-evaluate current positions/authority before any later Pair Commitment.
+**The 30 m radius is the accepted locality policy**, not an empirical physical-clearance or causal-contact threshold. No implement-width correction, vehicle-specific radius, collision hull, trajectory prediction or geometric precision is required. An in-radius worker is a *possible* blocker, not a proven one. If there is no candidate, do not invent a worker pair; where eligibility or attribution is uncertain, Situation Assessment may remain **WAITING_FOR_EVIDENCE**. Re-evaluate current positions/authority before any later Pair Commitment.
 
 ## Specification Jurisdiction — Native Blockage Observation
 
@@ -117,11 +117,11 @@ The active occurrence retires when both workers are natively unblocked, either n
 
 ## 4. Hold & Relocate — accepted six-stage architecture
 
-**Owner decision (9 October 2026):** This is the general operational architecture for resolving a worker-to-worker physical blockage. It is the target responsibility after the verified native blocked evidence and pair-candidate identification, **not a claim that current source already controls vehicles**.
+**Architectural decision (9 October 2026):** This is the general operational architecture for resolving a worker-to-worker physical blockage. It is the target responsibility after the verified native blocked evidence and pair-candidate identification, **not a claim that current source already controls vehicles**.
 
 1. **Native blockage:** react after GIANTS reports at least **1 second** of confirmed `isBlocked` evidence. Retain the existing one-second gate and the accepted nearest eligible candidate within **30 m** as the present upstream identification policy.
 2. **Select a relocating worker:** choose **one** worker to relocate. The native-blocked worker and the selected relocating worker are not assumed to be synonymous; the selection policy remains to be established.
-3. **Protect egress:** hold **any blocker in the immediate vicinity** for **5 seconds**, allowing the selected worker to make its initial egress. This is a purpose-bound blocker hold, not a general all-worker freeze. The owner has not yet specified an independent numerical definition of *immediate vicinity*.
+3. **Protect egress:** hold **any blocker in the immediate vicinity** for **5 seconds**, allowing the selected worker to make its initial egress. This is a purpose-bound blocker hold, not a general all-worker freeze. No independent numerical definition of *immediate vicinity* has yet been specified.
 4. **Transit and relocation:** configure the chosen assembly to **TRANSIT**, then **reverse towards the field centroid** for a bounded displacement **≤30 m + offset**. The offset's interpretation and computation are not yet specified. This **movement bound is a different quantity from the 30 m pair-selection radius**; do not silently conflate the two.
 5. **Allow blocker continuation:** hold the **relocated worker** for **10 seconds** after relocation to allow the blocker to resume native GIANTS work. This is a distinct hold with a distinct beneficiary and purpose from the 5-second egress hold.
 6. **Native hand-back:** **stop the relocated worker's GIANTS AI job and immediately restart it**, returning route choice, productive configuration and continuation to GIANTS. OMW does not reconstruct a productive course or require an exact-axis return.
@@ -173,4 +173,4 @@ Only a downstream, explicitly authorised **Hold & Relocate responsibility** may 
 
 **Testing:** Existing offline tests validate sampling/lifecycle, reciprocal pair unification and 1 s/30 m handoff with mock GIANTS values. The six-stage physical Hold & Relocate sequence has not been implemented or tested. In-game Reality must validate passive observation and temporal fidelity separately. The TEST 0.5.0.6 smoke waiver and 0.5.0.7 shell-smoke PASS are not evidence of this new observer's live correctness.
 
-**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** bounded continuity across native retry pulses, candidate eligibility/uncertainty when the nearest in-radius worker is incidental, and implementation-facing Hold & Relocate role choice, blocker holding, reverse-to-centroid target/offset, end conditions and GIANTS job restart. **The proximity radius is settled by owner decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**
+**Unresolved in [#440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440):** bounded continuity across native retry pulses, candidate eligibility/uncertainty when the nearest in-radius worker is incidental, and implementation-facing Hold & Relocate role choice, blocker holding, reverse-to-centroid target/offset, end conditions and GIANTS job restart. **The proximity radius is settled by architectural decision at 30 m**, with its practical effectiveness subject to future Reality rather than speculative geometric refinement. **Independent physical-collision proof and native course advancement are not required work packages.**
