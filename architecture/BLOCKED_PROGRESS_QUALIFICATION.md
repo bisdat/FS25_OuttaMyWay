@@ -1,6 +1,6 @@
 # Blocked-First Situation Assessment — 0.5 Architecture
 
-**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the accepted correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The live TEST product now performs **server-gated Hold & Relocate Control** after independent Pair Commitment; passive native Observation itself still only reads GIANTS blocked-state fields, with no native event hook. This is executable implementation, **not a claim of in-game validation**.
+**Status:** accepted architectural direction and outstanding responsibilities under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). This document records the accepted correction that **GIANTS `isBlocked` is the blockage authority**, rather than requiring OuttaMyWay to prove native blockage independently. The live TEST product now performs **server-gated Hold & Relocate Control** after independent Pair Commitment; passive native Observation itself still only reads GIANTS blocked-state fields, with no native event hook. **TEST 0.5.0.32 received a GIANTS in-game TS015 PASS verdict on 9 October 2026**, including reported successful handling of a late three-way blockage. This validates the observed TS015 run, not every field, implement configuration, or three-party situation.
 
 ## Purpose
 
@@ -232,6 +232,14 @@ The accepted *mechanical* changes are implemented in the active test shell, supe
 **LIMITATION:** `blockerWidth+5 m` is the *length of the nominal egress vector*; an oblique 41 m direction at 70° yields approximately 38.5 m of transverse displacement if the physical path follows that direction. Neither path curvature, configuration timing nor actual physical non-overlap is proven by source. The supported in-field segment is a candidate ray rather than a certified GIANTS reverse trajectory. In-game TS015 must measure actual signed cross-track, steering behaviour, physical clearance and 1 km/h/5 s Regulation; this is a **test hypothesis**, not a proven swept-space clearance rule. No unagreed automatic travel-bound fail-safe or pairwise release gates reintroduced.
 
 **Outstanding implementation-facing questions, not reasons to reopen the accepted principles:** how to obtain the authoritative field centroid, break an exact equidistance tie, identify immediate-vicinity blockers, construct the reverse steering target and offset, and relinquish authority safely on native job changes, disablement or movement failure. **Role selection and the two timed Hold releases are decided** and must not be converted into additional pairwise release gates. These require Specifications, source and GIANTS Reality validation in separate increments. Do not promote old 0.4 Passage/Regulation mechanisms to current architecture by default.
+
+### TS015 TEST 0.5.0.32 — GIANTS Reality PASS (9 October 2026)
+
+**Evidence and verdict:** Field report declares **PASS** for `0.5.0.32_TS015.zip` using TEST `0.5.0.32` on TS015. The report also identifies a **three-way blockage near the end of the run that was managed successfully**. This supplements the earlier .30 run where repeated Condor–Patriot encounters exposed retained native FIELDWORK handback history.
+
+**Current conclusion:** The independent-collision Hold & Relocate implementation is **field-accepted for this TS015 run**. The observed three-way outcome is evidence that this particular multi-worker encounter was handled, but is **not** a claim that a new three-party coordinator, general collision-avoidance capability, or all three-worker permutations are proven. The current tactical Control remains independently admitted pairwise cooperation.
+
+**Evidence boundary:** This entry records the field PASS verdict and identified late three-way observation. The supplied ZIP could not be independently decoded in this review environment; precise times, movement traces, number of interventions, and per-vehicle configuration transitions are therefore **not** asserted from log inspection. Retain the archive reference with the [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440) and [PR #459](https://github.com/bisdat/FS25_OuttaMyWay/pull/459) validation discussion. TEST acceptance does not itself merge the PR or expand the supported envelope.
 
 ## Specification Jurisdiction — Hold & Relocate
 
