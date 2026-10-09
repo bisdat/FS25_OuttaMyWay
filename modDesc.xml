@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>OuttaMyWay live Hold & Relocate: GIANTS native blocked-worker cooperation; in-game validation pending.</en>
-        <de>OuttaMyWay Hold & Relocate aktiv: Zusammenarbeit blockierter GIANTS-KI-Helfer; Validierung im Spiel ausstehend.</de>
-        <fr>OuttaMyWay Hold & Relocate actif : assistance native aux ouvriers IA bloqués ; validation en jeu en attente.</fr>
-        <es>OuttaMyWay Hold & Relocate activo: asistencia nativa a trabajadores IA bloqueados; validación en el juego pendiente.</es>
-        <it>OuttaMyWay Hold & Relocate attivo: assistenza nativa agli operatori IA bloccati; verifica in gioco in sospeso.</it>
+        <en>OuttaMyWay live Hold &amp; Relocate: GIANTS native blocked-worker cooperation; in-game validation pending.</en>
+        <de>OuttaMyWay Hold &amp; Relocate aktiv: Zusammenarbeit blockierter GIANTS-KI-Helfer; Validierung im Spiel ausstehend.</de>
+        <fr>OuttaMyWay Hold &amp; Relocate actif : assistance native aux ouvriers IA bloqués ; validation en jeu en attente.</fr>
+        <es>OuttaMyWay Hold &amp; Relocate activo: asistencia nativa a trabajadores IA bloqueados; validación en el juego pendiente.</es>
+        <it>OuttaMyWay Hold &amp; Relocate attivo: assistenza nativa agli operatori IA bloccati; verifica in gioco in sospeso.</it>
     </description>
     <l10n>
         <text name="omw_disabledHandBack">
@@ -38,11 +38,11 @@
             <en>Enabled</en><de>Aktiviert</de><fr>Activé</fr><es>Activado</es><it>Attivato</it>
         </text>
         <text name="omw_configSection_enabledTooltip">
-            <en>Enable live OuttaMyWay Hold & Relocate control and the status indicator. In-game validation is pending.</en>
-            <de>Aktiviert OuttaMyWay Hold & Relocate und die Statusanzeige. Die Validierung im Spiel steht noch aus.</de>
-            <fr>Active Hold & Relocate et l'indicateur d'état OuttaMyWay. Validation en jeu en attente.</fr>
-            <es>Activa Hold & Relocate de OuttaMyWay y el indicador de estado. Validación en juego pendiente.</es>
-            <it>Attiva Hold & Relocate e l'indicatore di stato di OuttaMyWay. Verifica in gioco in sospeso.</it>
+            <en>Enable live OuttaMyWay Hold &amp; Relocate control and the status indicator. In-game validation is pending.</en>
+            <de>Aktiviert OuttaMyWay Hold &amp; Relocate und die Statusanzeige. Die Validierung im Spiel steht noch aus.</de>
+            <fr>Active Hold &amp; Relocate et l'indicateur d'état OuttaMyWay. Validation en jeu en attente.</fr>
+            <es>Activa Hold &amp; Relocate de OuttaMyWay y el indicador de estado. Validación en juego pendiente.</es>
+            <it>Attiva Hold &amp; Relocate e l'indicatore di stato di OuttaMyWay. Verifica in gioco in sospeso.</it>
         </text>
         <text name="omw_configSection_operationalMessages">
             <en>Operational messages</en><de>Betriebsmeldungen</de><fr>Messages opérationnels</fr><es>Mensajes operativos</es><it>Messaggi operativi</it>

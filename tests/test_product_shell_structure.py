@@ -99,7 +99,7 @@ def test_settings_and_disabled_reminder_are_retained():
 
 def test_manifest_describes_live_ai_control():
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
-    assert "Live Hold & Relocate" in moddesc
+    assert "live Hold &amp; Relocate" in moddesc
     assert "This build does not control AI workers." not in moddesc
     assert "AI worker coordination is inactive." not in moddesc
 
