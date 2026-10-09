@@ -23,7 +23,7 @@ For the initial implementation tranche, accumulate time only between **successiv
 
 This tranche is deliberately conservative: it can feed a **single observed ≥1 s blocked pulse** into the existing evaluator. The accepted broader concept—accumulating distinct blocked pulses *only when they belong to the same unresolved physical encounter*—is **not yet implemented**. Do not silently sum every true pulse in a whole job, and do not invent a reset timeout or native course-progress test.
 
-For each qualifying observed pulse, evaluate once and emit at most one source-owned DEBUG observation. There is no recurring DEBUG heartbeat and no NORMAL line claiming Pair Commitment.
+For each qualifying observed pulse, evaluate once. **Reciprocal nominations of the same active, unordered worker pair are one candidate occurrence**, so only the first nomination emits the DEBUG pair-candidate record; a second qualifying worker must not create a competing pair record. This is **unification of observations, not an additional admission gate or Pair Commitment**. There is no recurring DEBUG heartbeat and no NORMAL line claiming Control.
 
 ## Candidate inputs and output
 
@@ -31,12 +31,14 @@ The blocked worker and neighbouring currently active field workers are converted
 
 **Scope limit of this tranche:** candidate enumeration covers currently active GIANTS field workers; other physical obstacles and previously completed workers are not yet represented by an Operation membership model. An absence of a local worker means **no observed active-worker candidate**, not proof there is no other physical obstacle. Candidate publication is diagnostic evidence, **not** a causality/Control Decision.
 
+**Unordered pair identity:** use the two assembly-root IDs independent of nomination direction. Keep only one active candidate occurrence per pair while at least one worker remains natively blocked, both native jobs/strategies remain unchanged, both workers remain present, and root-to-root separation remains within **30 m**. On both workers unblocked, missing member, changed job/strategy, loss of root evidence, separation beyond the existing radius, map exit or disablement, retire the occurrence. A later eligible encounter may create a new occurrence. There is no new obstacle-proof test, extra distance threshold or release timeout.
+
 ## Lifecycle and authority invariants
 
 - Disabled or unresolved Configuration and non-server clients perform **no observation** and discard prior observations.
 - Map load/delete and native Job Episode/strategy turnover discard stale pulses.
 - Missing root coordinates/strategy/clock fail closed; no GIANTS field is ever mutated.
-- A threshold reached with valid evidence may publish `NATIVE_BLOCKAGE_PAIR_CANDIDATE` or `NATIVE_BLOCKAGE_NO_LOCAL_WORKER` as **DEBUG**, at most once per qualified pulse.
+- A threshold reached with valid evidence may publish `NATIVE_BLOCKAGE_PAIR_CANDIDATE` or `NATIVE_BLOCKAGE_NO_LOCAL_WORKER` as **DEBUG**. An active pair publishes at most one candidate record even when each worker separately reaches the one-second gate. Non-pair blocked observations remain once per pulse.
 - No worker Control, OMW-induced Hold, GIANTS continuation mutation or pair commitment.
 - Observed candidate records do not become durable responsibility or authority; later active membership/recovery behaviour needs separate Reality validation.
 
@@ -56,4 +58,4 @@ The blocked worker and neighbouring currently active field workers are converted
 
 [`scripts/main.lua`](../scripts/main.lua) explicitly constructs one observer with current Configuration and registers it as a third non-Control mod event listener. The existing [Spatial Pair Inference](../scripts/assessment/SpatialPairInference.lua) is a downstream pure evaluator, not another Native Blockage Observation participant.
 
-Offline tests verify observation gate, false-pulse reset, job/strategy turnover, root ranking, disabled/client state and absence of vehicle commands. Only an in-game Reality test can confirm correct GIANTS source timing, no interference and representative Condor/Patriot candidate observation. This Specification establishes neither multi-pulse episode continuity nor GIANTS production-control authority.
+Offline tests verify observation gate, false-pulse reset, job/strategy turnover, root ranking, reciprocal-pair unification and release, disabled/client state and absence of vehicle commands. Only an in-game Reality test can confirm correct GIANTS source timing, no interference and representative Condor/Patriot candidate observation. This Specification establishes neither multi-pulse episode continuity nor GIANTS production-control authority.
