@@ -1,5 +1,10 @@
 -- Independent mocked coordinator contracts; physical GIANTS Reality is tested in-game.
-OuttaMyWay={}
+OuttaMyWay={ProjectedEgressRegion={plan=function(_,relocator)
+    return {isReverse=true,targetX=relocator.x-40,targetZ=relocator.z,
+        steeringHorizonM=40,directionSource="NATIVE_REVERSE_AXIS",
+        returnRegion={originX=relocator.x,originZ=relocator.z,
+            directionX=-1,directionZ=0,requiredProgressM=20}}
+end}}
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 local a={assemblyReferenceKey="A",x=10,z=0,vehicle={name="A"}}
@@ -27,6 +32,14 @@ local authority={
 local control={
     preflight=function(_,state) record("PREFLIGHT",state.relocator.vehicle);return true end,
     hold=function(_,vehicle,purpose)record("HOLD",vehicle,purpose);return true end,
+    regulate=function(_,vehicle,purpose)record("REGULATE",vehicle,purpose);return true end,
+    releaseRegulation=function(_,vehicle,purpose)
+        record("REGULATE_RELEASE",vehicle,purpose)
+        if refuseReleaseFor==vehicle.name then
+            return false,"NATIVE_REGULATION_RELEASE_UNCONFIRMED"
+        end
+        return true,{interceptionCount=7,physicalDisplacementM=0.5}
+    end,
     releaseHold=function(_,vehicle,purpose)
         record("RELEASE",vehicle,purpose)
         if refuseReleaseFor==vehicle.name then return false,"PHYSICAL_RELEASE_UNCONFIRMED" end
@@ -57,7 +70,6 @@ local function admitted()
     return {token="issued-by-authority",commitmentId="PAIR1",
         participants={b,a},fieldCentroid={x=0,z=0},
         fieldPolygon={xs={-200,200,200,-200},zs={-200,-200,200,200}},
-        pairWorkingWidthM=10,
         nearbyBlockers={b,c},offsetM=0}
 end
 local function contains(kind,vehicle)
@@ -69,22 +81,21 @@ end
 local coordinator=Coordinator.new(authority,control)
 local ok,commitment=coordinator:begin(admitted(),1000)
 assert(ok and commitment.relocatingAssemblyReferenceKey=="A")
-assert(commitment.objective.isReverse
-    and math.abs(commitment.objective.maxTravelM-10*math.sqrt(2))<0.001)
+assert(commitment.objective.isReverse and commitment.objective.maxTravelM==nil)
+assert(commitment.objective.returnRegion.requiredProgressM==20)
 assert(commitment.objective.steeringHorizonM==40)
-assert(commitment.objective.targetX==0 and commitment.objective.targetZ==10)
-assert(commitment.objective.egressSide==-1 and commitment.objective.pairWorkingWidthM==10)
+assert(commitment.objective.targetX==-30 and commitment.objective.targetZ==0)
 assert(events[1].kind=="VALIDATE" and events[2].kind=="PREFLIGHT")
-assert(events[3].kind=="HOLD" and events[3].vehicle=="B")
-assert(events[4].kind=="HOLD" and events[4].vehicle=="C")
+assert(events[3].kind=="REGULATE" and events[3].vehicle=="B")
+assert(events[4].kind=="REGULATE" and events[4].vehicle=="C")
 assert(events[5].kind=="TRANSIT","Hold and TRANSIT begin without idle delay")
 assert(events[6].kind=="REVERSE","reverse starts immediately even though TRANSIT is not complete")
 assert(coordinator:getStatus().phase=="REVERSING")
 coordinator:advance(5999)
 assert(#events==6,"no early Hold release; reverse already underway")
 coordinator:advance(6000)
-assert(events[7].kind=="RELEASE" and events[8].kind=="RELEASE",
-    "5 s blocker release never waits for reverse or folding completion")
+assert(events[7].kind=="REGULATE_RELEASE" and events[8].kind=="REGULATE_RELEASE",
+    "5 s blocker Regulation release never waits for reverse or folding completion")
 reverseStatus={travelledM=9,isComplete=true}
 coordinator:advance(6100)
 assert(events[9].kind=="REVERSE_STOP" and events[10].kind=="HOLD"
@@ -131,7 +142,7 @@ assert(not coordinator:begin(bad,20000))
 -- replace the other pair participant in the explicit set.
 bad=admitted();bad.nearbyBlockers={c}
 assert(not coordinator:begin(bad,20000))
-bad=admitted();bad.fieldCentroid={x=10,z=0}
+bad=admitted();bad.fieldCentroid={x=nil,z=0}
 assert(not coordinator:begin(bad,20000))
 -- Deterministic tie by assembly reference, independent of input ordering.
 local d={assemblyReferenceKey="D",x=-10,z=0,vehicle={name="D"}}
@@ -141,18 +152,16 @@ assert(accepted and tie.relocatingAssemblyReferenceKey=="A")
 assert(not coordinator:begin(bad,22001),"one active pair commitment")
 isCurrent=false;coordinator:advance(22100)
 assert(coordinator:isActive()==false)
-assert(contains("RELEASE","D") and contains("TRANSIT_CANCEL","A"))
+assert(contains("REGULATE_RELEASE","D") and contains("TRANSIT_CANCEL","A"))
 isCurrent=true
--- Fail-closed bound, even though steering horizon is longer than movement.
-bad=admitted();bad.fieldCentroid={x=-100,z=0};bad.offsetM=2
-reverseStatus={travelledM=0,isComplete=false};events={}
-local accepted2,bounded=coordinator:begin(bad,30000)
-assert(accepted2 and math.abs(bounded.objective.maxTravelM-(10*math.sqrt(2)+2))<0.001)
-reverseStatus={travelledM=bounded.objective.maxTravelM+0.1,isComplete=false}
+-- Old point-distance abort has been explicitly withdrawn. Accumulated
+-- travel alone must not end the manoeuvre without Return Region membership.
+reverseStatus={travelledM=200,isComplete=false};events={}
+local stillActive=assert(coordinator:begin(admitted(),30000))
 coordinator:advance(30002)
-assert(coordinator:isActive()==false)
-assert(coordinator:getStatus().lastOutcome.reason=="REVERSE_DISTANCE_EVIDENCE_INVALID")
--- Failure to physically release a Hold retains explicit unresolved state.
+assert(coordinator:isActive() and coordinator:getStatus().phase=="REVERSING")
+assert(coordinator:relinquish("TEST_CLEANUP"))
+-- Failure to physically remove speed Regulation retains cleanup debt.
 reverseStatus={travelledM=0,isComplete=false}
 events={}
 assert(coordinator:begin(admitted(),40000))

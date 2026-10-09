@@ -6,7 +6,7 @@ OuttaMyWay.HoldRelocateCoordinator={}
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
-local EGRESS_HOLD_MS=5000 -- accepted Hold & Relocate egress timer, not a clearance test
+local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
 local RELOCATED_HOLD_MS=10000 -- accepted continuation window, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
 local MIN_CENTROID_BEARING_M=0.01
@@ -54,77 +54,10 @@ local function selectRelocator(first,second,centroid)
     return second,first
 end
 
--- The right-angle legs are a virtual construction, not two drive phases.
--- The native actuator receives a SINGLE diagonal reverse objective.
-local function insidePolygon(poly,x,z)
-    if type(poly)~="table" or type(poly.xs)~="table"
-        or type(poly.zs)~="table" or #poly.xs<3
-        or #poly.xs~=#poly.zs then return false end
-    local inside=false
-    for i=1,#poly.xs do
-        local j=i==1 and #poly.xs or i-1
-        local xi,zi,xj,zj=poly.xs[i],poly.zs[i],poly.xs[j],poly.zs[j]
-        if (zi>z)~=(zj>z) then
-            if x<xj+(xi-xj)*(zj-z)/(zj-zi) then inside=not inside end
-        end
-    end
-    return inside
-end
-
-local function insideTravelSegment(poly,x,z,tx,tz)
-    local distance=math.sqrt((tx-x)^2+(tz-z)^2)
-    local steps=math.ceil(distance/EGRESS_PATH_SAMPLE_M)
-    for i=0,steps do
-        local t=i/steps
-        if not insidePolygon(poly,x+(tx-x)*t,z+(tz-z)*t) then
-            return false
-        end
-    end
-    return true
-end
-
-local function diagonalEgress(relocator,other,commitment)
-    local width=commitment.pairWorkingWidthM
-    if not finite(width) or width<=0 then return nil,"PAIR_WORK_WIDTH_UNAVAILABLE" end
-    local dx=commitment.fieldCentroid.x-relocator.x
-    local dz=commitment.fieldCentroid.z-relocator.z
-    local d=math.sqrt(dx*dx+dz*dz)
-    if not finite(d) or d<MIN_CENTROID_BEARING_M then
-        return nil,"CENTROID_BEARING_UNAVAILABLE"
-    end
-    local ux,uz=dx/d,dz/d
-    local vx,vz=-uz,ux
-    local maxTravelM=width*math.sqrt(2)+commitment.offsetM
-    if not finite(maxTravelM) or maxTravelM<=0 then
-        return nil,"REVERSE_OBJECTIVE_UNAVAILABLE"
-    end
-    local choices={}
-    for _,side in ipairs({-1,1}) do
-        local tx=relocator.x+width*(ux+side*vx)
-        local tz=relocator.z+width*(uz+side*vz)
-        if insideTravelSegment(commitment.fieldPolygon,
-                relocator.x,relocator.z,tx,tz) then
-            local dd=(tx-other.x)^2+(tz-other.z)^2
-            choices[#choices+1]={side=side,x=tx,z=tz,score=dd}
-        end
-    end
-    if #choices==0 then return nil,"NO_INFIELD_DIAGONAL_EGRESS_SIDE" end
-    -- More separation from the other root chooses the Egress Side.
-    -- A truly symmetric encounter is indifferent; prefer negative consistently.
-    local chosen=choices[1]
-    for i=2,#choices do
-        if choices[i].score>chosen.score then chosen=choices[i] end
-    end
-    return {targetX=chosen.x,targetZ=chosen.z,
-        maxTravelM=maxTravelM,steeringHorizonM=BWR_STEERING_HORIZON_M,
-        pairWorkingWidthM=width,egressSide=chosen.side,
-        isReverse=true}
-end
-
 function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
-        active=nil,lastOutcome=nil,lastEgressHoldResults=nil
+        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil
     },Coordinator)
 end
 
@@ -138,11 +71,12 @@ function Coordinator:getStatus()
     return {
         isActive=true,phase=state.phase,commitmentId=state.commitmentId,
         relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
-        maxTravelM=state.maxTravelM,egressHoldUntilMs=state.egressHoldUntilMs,
+        regionRequiredProgressM=state.objective.returnRegion.requiredProgressM,
+        egressRegulationUntilMs=state.egressRegulationUntilMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
         unresolvedEffects=state.unresolvedEffects,isNativeJobStateUncertain=state.isNativeJobStateUncertain,
         lastOutcome=state.phase=="WAITING_FOR_PLAYER_INTERVENTION" and self.lastOutcome or nil,
-        egressHoldResults=self.lastEgressHoldResults
+        egressHoldResults=self.lastEgressRegulationResults
     }
 end
 
@@ -157,9 +91,9 @@ function Coordinator:neutralize(state)
         else unresolved[#unresolved+1]="REVERSE:"..tostring(reason) end
     end
     for i=1,#state.blockers do
-        if state.isBlockerHeld[i] then
-            local ok,reason=command(control,"releaseHold",state.blockers[i].vehicle,"EGRESS")
-            if ok then state.isBlockerHeld[i]=false
+        if state.isBlockerRegulated[i] then
+            local ok,reason=command(control,"releaseRegulation",state.blockers[i].vehicle,"EGRESS")
+            if ok then state.isBlockerRegulated[i]=false
             else unresolved[#unresolved+1]="BLOCKER_HOLD:"..tostring(reason) end
         end
     end
@@ -217,8 +151,6 @@ function Coordinator:begin(commitment,nowMs)
         or type(commitment.fieldCentroid)~="table"
         or not finite(commitment.fieldCentroid.x) or not finite(commitment.fieldCentroid.z)
         or not finite(commitment.offsetM) or commitment.offsetM<0
-        or not finite(commitment.pairWorkingWidthM)
-        or commitment.pairWorkingWidthM<=0
         or type(commitment.fieldPolygon)~="table"
         or type(commitment.nearbyBlockers)~="table" or #commitment.nearbyBlockers==0 then
         return false,"COMMITMENT_EVIDENCE_UNAVAILABLE"
@@ -245,39 +177,40 @@ function Coordinator:begin(commitment,nowMs)
     end
     if not hasOther then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
 
-    local objective,geometryReason=diagonalEgress(relocator,other,commitment)
+    local objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.plan(
+        commitment,relocator,other)
     if objective==nil then return false,geometryReason end
-    local maxTravelM=objective.maxTravelM
     local state={
         commitmentId=commitment.commitmentId,commitment=commitment,
-        relocator=relocator,blockers=blockers,isBlockerHeld={},
+        relocator=relocator,blockers=blockers,isBlockerRegulated={},
         isRelocatorHeld=false,isReverseOutstanding=false,isTransitOutstanding=false,
         isNativeJobStateUncertain=false,unresolvedEffects={},phase="REQUESTING_TRANSIT",
-        egressHoldUntilMs=nowMs+EGRESS_HOLD_MS,relocatedHoldUntilMs=nil,
-        maxTravelM=maxTravelM,objective=objective
+        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS,relocatedHoldUntilMs=nil,
+        objective=objective
     }
-    if not finite(state.egressHoldUntilMs) then return false,"CLOCK_UNAVAILABLE" end
+    if not finite(state.egressRegulationUntilMs) then return false,"CLOCK_UNAVAILABLE" end
     local accepted,reason=command(self.commitmentAuthority,"validateCommitment",commitment)
     if not accepted then return false,reason end
     local isReady,preflightReason=command(self.physicalControl,"preflight",state)
     if not isReady then return false,preflightReason end
     self.active=state
-    self.lastEgressHoldResults=nil
+    self.lastEgressRegulationResults=nil
 
-    -- Start the 5 s egress protection and Transit preparation together, not
+    -- Start 1 km/h regulation and Transit preparation together, not
     -- as serial waits. Mark possible effects before each external call.
     for i=1,#blockers do
-        state.isBlockerHeld[i]=true
-        local held,holdReason=command(self.physicalControl,"hold",blockers[i].vehicle,"EGRESS")
-        if not held then
-            self:finishWithOutcome("FAILED_SAFE",holdReason)
-            return false,holdReason
+        state.isBlockerRegulated[i]=true
+        local regulated,regulationReason=command(self.physicalControl,
+            "regulate",blockers[i].vehicle,"EGRESS")
+        if not regulated then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",regulationReason)
+            return false,regulationReason
         end
     end
     state.isTransitOutstanding=true
     local transitStarted,transitReason=command(self.physicalControl,"requestTransit",relocator.vehicle)
     if not transitStarted then
-        self:finishWithOutcome("FAILED_SAFE",transitReason)
+        self:finishWithOutcome("CONTROL_INTERRUPTED",transitReason)
         return false,transitReason
     end
     -- The TRANSIT request does not establish a configuration-readiness gate:
@@ -286,14 +219,14 @@ function Coordinator:begin(commitment,nowMs)
     local reversing,reverseEvidence=command(
         self.physicalControl,"startReverse",relocator.vehicle,state.objective)
     if not reversing then
-        self:finishWithOutcome("FAILED_SAFE",reverseEvidence)
+        self:finishWithOutcome("CONTROL_INTERRUPTED",reverseEvidence)
         return false,reverseEvidence
     end
     state.phase="REVERSING"
     return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,
         objective=objective,
-        pairWorkingWidthM=objective.pairWorkingWidthM,
-        egressSide=objective.egressSide,
+        directionSource=objective.directionSource,
+        regionRequiredProgressM=objective.returnRegion.requiredProgressM,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
             and reverseEvidence.requestedReverseSpeedKmh or nil}
 end
@@ -303,31 +236,31 @@ end
 function Coordinator:advance(nowMs)
     local state=self.active
     if state==nil or state.phase=="WAITING_FOR_PLAYER_INTERVENTION" then return end
-    if not finite(nowMs) then self:finishWithOutcome("FAILED_SAFE","CLOCK_UNAVAILABLE");return end
+    if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
 
-    -- Timer is the only ordinary blocker Hold release gate.
-    if nowMs>=state.egressHoldUntilMs then
+    -- Timer alone releases the other participant's speed regulation.
+    if nowMs>=state.egressRegulationUntilMs then
         for i=1,#state.blockers do
-            if state.isBlockerHeld[i] then
+            if state.isBlockerRegulated[i] then
                 local released,releaseEvidence=command(
-                    self.physicalControl,"releaseHold",state.blockers[i].vehicle,"EGRESS")
+                    self.physicalControl,"releaseRegulation",state.blockers[i].vehicle,"EGRESS")
                 if not released then
-                    self:finishWithOutcome("FAILED_SAFE",releaseEvidence)
+                    self:finishWithOutcome("CONTROL_INTERRUPTED",releaseEvidence)
                     return
                 end
-                if self.lastEgressHoldResults==nil then
-                    self.lastEgressHoldResults={}
+                if self.lastEgressRegulationResults==nil then
+                    self.lastEgressRegulationResults={}
                 end
-                self.lastEgressHoldResults[#self.lastEgressHoldResults+1]={
+                self.lastEgressRegulationResults[#self.lastEgressRegulationResults+1]={
                     rootId=state.blockers[i].assemblyReferenceKey,
                     interceptCount=type(releaseEvidence)=="table"
                         and releaseEvidence.interceptionCount or nil,
                     displacementM=type(releaseEvidence)=="table"
                         and releaseEvidence.physicalDisplacementM or nil,
-                    commitmentId=state.commitmentId}
-                state.isBlockerHeld[i]=false
+                    commitmentId=state.commitmentId,regulatedSpeedKmh=1}
+                state.isBlockerRegulated[i]=false
             end
         end
     end
@@ -336,28 +269,23 @@ function Coordinator:advance(nowMs)
         local status,statusReason=query(self.physicalControl,"reverseStatus",
             state.relocator.vehicle,state.objective)
         if type(status)~="table" then
-            self:finishWithOutcome("FAILED_SAFE",statusReason or "REVERSE_STATUS_UNAVAILABLE")
+            self:finishWithOutcome("CONTROL_INTERRUPTED",statusReason or "REVERSE_STATUS_UNAVAILABLE")
             return
         end
         if status.isFailed==true then
-            self:finishWithOutcome("FAILED_SAFE",status.reason or "REVERSE_FAILED")
-            return
-        end
-        if not finite(status.travelledM) or status.travelledM<0
-            or status.travelledM>state.maxTravelM then
-            self:finishWithOutcome("FAILED_SAFE","REVERSE_DISTANCE_EVIDENCE_INVALID")
+            self:finishWithOutcome("CONTROL_INTERRUPTED",status.reason or "REVERSE_FAILED")
             return
         end
         if status.isComplete~=true then return end
         local stopped,stopReason=command(self.physicalControl,"stopReverse",state.relocator.vehicle)
-        if not stopped then self:finishWithOutcome("FAILED_SAFE",stopReason);return end
+        if not stopped then self:finishWithOutcome("CONTROL_INTERRUPTED",stopReason);return end
         state.isReverseOutstanding=false
         state.isRelocatorHeld=true
         local held,holdReason=command(self.physicalControl,"hold",state.relocator.vehicle,"RELOCATED_WORKER")
-        if not held then self:finishWithOutcome("FAILED_SAFE",holdReason);return end
+        if not held then self:finishWithOutcome("CONTROL_INTERRUPTED",holdReason);return end
         state.relocatedHoldUntilMs=nowMs+RELOCATED_HOLD_MS
         if not finite(state.relocatedHoldUntilMs) then
-            self:finishWithOutcome("FAILED_SAFE","CLOCK_UNAVAILABLE");return
+            self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return
         end
         state.phase="HOLD_RELOCATED"
         return
@@ -365,7 +293,7 @@ function Coordinator:advance(nowMs)
     if state.phase=="HOLD_RELOCATED" and nowMs>=state.relocatedHoldUntilMs then
         local released,releaseReason=command(self.physicalControl,
             "releaseHold",state.relocator.vehicle,"RELOCATED_WORKER")
-        if not released then self:finishWithOutcome("FAILED_SAFE",releaseReason);return end
+        if not released then self:finishWithOutcome("CONTROL_INTERRUPTED",releaseReason);return end
         state.isRelocatorHeld=false
         -- One synchronous GIANTS stop -> start operation. Both native results
         -- must be positively reported; native productive continuation is NOT implied.

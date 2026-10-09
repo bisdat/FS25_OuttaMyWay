@@ -105,6 +105,7 @@ function Control.new(authority)
     local control=setmetatable({authority=authority,
         plans=setmetatable({},{__mode="k"})},Control)
     control.holdMechanism=OuttaMyWay.NativeTranslationHoldMechanism.new()
+    control.regulationMechanism=OuttaMyWay.NativeSpeedRegulationMechanism.new()
     control.reverseMechanism=OuttaMyWay.NativeReverseMechanism.new()
     control.transitMechanism=OuttaMyWay.NativeTransitRequestMechanism.new(control)
     control.jobMechanism=OuttaMyWay.NativeFieldworkJobReplacementMechanism.new(authority)
@@ -129,6 +130,14 @@ end
 
 function Control:getTransitRequests(vehicle)
     return self.plans[vehicle]
+end
+
+function Control:regulate(vehicle,purpose)
+    return self.regulationMechanism:regulate(vehicle,purpose)
+end
+
+function Control:releaseRegulation(vehicle,purpose)
+    return self.regulationMechanism:releaseRegulation(vehicle,purpose)
 end
 
 function Control:hold(vehicle,purpose)
@@ -166,11 +175,15 @@ function Control:reverseStatus(vehicle)
 end
 
 function Control:stopReverse(vehicle)
-    return self.reverseMechanism:stopReverse(vehicle)
+    local ok,evidence=self.reverseMechanism:stopReverse(vehicle)
+    if ok then self.regulationMechanism:refreshInstallation() end
+    return ok,evidence
 end
 
 function Control:cancelReverse(vehicle)
-    return self.reverseMechanism:cancelReverse(vehicle)
+    local ok,evidence=self.reverseMechanism:cancelReverse(vehicle)
+    if ok then self.regulationMechanism:refreshInstallation() end
+    return ok,evidence
 end
 
 function Control:restartNativeFieldwork(vehicle)

@@ -1,5 +1,6 @@
 -- Subordinate native reverse evidence under a mocked GIANTS drive path; not in-game validation.
 OuttaMyWay={}
+dofile("scripts/coordination/ProjectedEgressRegion.lua")
 dofile("scripts/control/mechanisms/NativeReverseMechanism.lua")
 local Mechanism=OuttaMyWay.NativeReverseMechanism
 local calls={}
@@ -40,7 +41,9 @@ local vehicle={
     getAISteeringNode=function() return 3 end,
     getAIReverserNode=function() return 2 end
 }
-local objective={targetX=0,targetZ=-10,maxTravelM=10,steeringHorizonM=40,isReverse=true}
+local objective={targetX=0,targetZ=-40,steeringHorizonM=40,isReverse=true,
+    returnRegion={originX=0,originZ=0,directionX=0,directionZ=-1,
+        requiredProgressM=9}}
 local mechanism=Mechanism.new()
 local ok,armed=mechanism:startReverse(vehicle,objective)
 assert(ok and armed.kind=="REVERSE_ARMED" and armed.isPhysicalMotionConfirmed==false)
@@ -64,6 +67,7 @@ assert(not mechanism:stopReverse(vehicle),"issuing drive must not complete movem
 locations[1].z=-9.5
 local status=mechanism:reverseStatus(vehicle)
 assert(status.isComplete and status.travelledM==9.5 and status.isFailed==false)
+assert(status.regionProgressM==9.5 and status.regionRemainingM==0)
 assert(mechanism:stopReverse(vehicle))
 assert(AIVehicleUtil.driveToPoint==native,"completed lease restores original native call")
 assert(cruise.speed==8 and cruise.speedReverse==8,
@@ -73,9 +77,12 @@ locations[1].z=0
 assert(mechanism:startReverse(vehicle,objective))
 assert(not mechanism:startReverse(vehicle,objective),"only one leased reverse movement")
 AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,false)
-locations[1].z=-11
+-- Movement beyond the former straight-line distance is no longer an abort:
+-- only projection into the Return Region completes the manoeuvre.
+locations[1].z=11
 status=mechanism:reverseStatus(vehicle)
-assert(status.isFailed and status.reason=="REVERSE_BOUND_EXCEEDED")
+assert(not status.isFailed and not status.isComplete and status.travelledM==11)
+assert(status.regionProgressM==-11)
 assert(not mechanism:stopReverse(vehicle))
 assert(mechanism:cancelReverse(vehicle))
 assert(AIVehicleUtil.driveToPoint==native)

@@ -4,11 +4,13 @@ local expected={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
+    "scripts/coordination/ProjectedEgressRegion.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
+    "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
     "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
     "scripts/configuration/Configuration.lua",
@@ -41,11 +43,13 @@ source=function(path)
     loaded[#loaded+1]=path
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
+        or path=="scripts/coordination/ProjectedEgressRegion.lua"
         or path=="scripts/coordination/NativePairCommitmentAuthority.lua"
         or path=="scripts/control/HoldRelocatePhysicalControl.lua"
         or path=="scripts/coordination/LiveHoldRelocateRuntime.lua"
         or path=="scripts/control/mechanisms/NativeReverseMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTranslationHoldMechanism.lua"
+        or path=="scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"
         or path=="scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua" then
         dofile(path)
@@ -97,6 +101,8 @@ assert(type(OuttaMyWay.SpatialPairInference.evaluate)=="function")
 assert(type(OuttaMyWay.HoldRelocateCoordinator.begin)=="function")
 assert(type(OuttaMyWay.NativeReverseMechanism.startReverse)=="function")
 assert(type(OuttaMyWay.NativeTranslationHoldMechanism.hold)=="function")
+assert(type(OuttaMyWay.NativeSpeedRegulationMechanism.regulate)=="function")
+assert(type(OuttaMyWay.ProjectedEgressRegion.progress)=="function")
 assert(OuttaMyWay.nativeTranslationHoldMechanism==nil)
 assert(type(OuttaMyWay.NativeTransitRequestMechanism.requestTransit)=="function")
 assert(OuttaMyWay.nativeTransitRequestMechanism==nil)

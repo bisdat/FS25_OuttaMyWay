@@ -6,7 +6,6 @@ OuttaMyWay.NativeReverseMechanism={}
 local Mechanism=OuttaMyWay.NativeReverseMechanism
 Mechanism.__index=Mechanism
 
-local TARGET_RADIUS_M=1 -- local point approach, not traffic clearance
 local MIN_DIRECTION_M=0.0001
 
 local function finite(n)
@@ -177,15 +176,18 @@ function Mechanism:observeDisplacement(state)
     if not finite(state.travelledM) then
         state.isFailed=true;state.reason="DISPLACEMENT_UNAVAILABLE";return
     end
-    if state.travelledM>state.maxTravelM then
-        state.isFailed=true;state.reason="REVERSE_BOUND_EXCEEDED";return
+    -- An archived-BWR-style Return Region is a projected progress predicate,
+    -- independent of the distant steering reference. No chord-length abort.
+    local progress=OuttaMyWay.ProjectedEgressRegion.progress(
+        state.returnRegion,current.x,current.z)
+    if progress==nil then
+        state.isFailed=true;state.reason="REVERSE_REGION_EVIDENCE_UNAVAILABLE";return
     end
-    local tx,tz=current.x-state.targetX,current.z-state.targetZ
-    local remainingM=math.sqrt(tx*tx+tz*tz)
-    if state.commandedDriveCount>0 and remainingM<=TARGET_RADIUS_M then
+    state.regionProgressM=progress.progressM
+    state.regionLateralOffsetM=progress.lateralOffsetM
+    state.regionRemainingM=progress.remainingM
+    if state.commandedDriveCount>0 and progress.isInRegion then
         state.isComplete=true
-    elseif state.travelledM>=state.maxTravelM then
-        state.isFailed=true;state.reason="BOUND_REACHED_WITHOUT_TARGET"
     end
 end
 
@@ -243,16 +245,23 @@ function Mechanism:install()
     return true
 end
 
--- Requires the caller's separately validated commitment/TRANSIT authority.
--- The 40 m steering point is not a destination or an extension of maxTravelM.
+-- Requires independently validated commitment/TRANSIT authority. The 40 m
+-- world steering reference guides motion; Return Region entry terminates it.
 function Mechanism:startReverse(vehicle,objective)
     if g_server==nil then return false,"SERVER_REQUIRED" end
     if self.activeVehicle~=nil then return false,"REVERSE_ALREADY_ACTIVE" end
     if type(vehicle)~="table" or vehicle.rootNode==nil
         or type(objective)~="table" or objective.isReverse~=true
         or not finite(objective.targetX) or not finite(objective.targetZ)
-        or not finite(objective.maxTravelM) or objective.maxTravelM<=0
-        or not finite(objective.steeringHorizonM) or objective.steeringHorizonM<=0 then
+        or type(objective.returnRegion)~="table"
+        or not finite(objective.returnRegion.originX)
+        or not finite(objective.returnRegion.originZ)
+        or not finite(objective.returnRegion.directionX)
+        or not finite(objective.returnRegion.directionZ)
+        or not finite(objective.returnRegion.requiredProgressM)
+        or objective.returnRegion.requiredProgressM<=0
+        or not finite(objective.steeringHorizonM)
+        or objective.steeringHorizonM<=0 then
         return false,"REVERSE_REQUEST_INVALID"
     end
     local origin,why=pose(vehicle.rootNode)
@@ -269,12 +278,11 @@ function Mechanism:startReverse(vehicle,objective)
     end
     local dx,dz=objective.targetX-origin.x,objective.targetZ-origin.z
     local distanceM=math.sqrt(dx*dx+dz*dz)
-    if not finite(distanceM) or distanceM<=MIN_DIRECTION_M
-        or distanceM>objective.maxTravelM+0.001 then
-        return false,"TARGET_OUTSIDE_MOVEMENT_BOUND"
+    if not finite(distanceM) or distanceM<=MIN_DIRECTION_M then
+        return false,"STEERING_REFERENCE_UNAVAILABLE"
     end
-    local steeringX=origin.x+dx/distanceM*objective.steeringHorizonM
-    local steeringZ=origin.z+dz/distanceM*objective.steeringHorizonM
+    local steeringX=objective.targetX
+    local steeringZ=objective.targetZ
     if not finite(steeringX) or not finite(steeringZ) then
         return false,"STEERING_REFERENCE_UNAVAILABLE"
     end
@@ -302,7 +310,8 @@ function Mechanism:startReverse(vehicle,objective)
         originX=origin.x,originZ=origin.z,
         lastX=origin.x,lastZ=origin.z,targetX=objective.targetX,targetZ=objective.targetZ,
         steeringTargetX=steeringX,steeringTargetZ=steeringZ,
-        maxTravelM=objective.maxTravelM,toolNode=toolNode,travelledM=0,
+        returnRegion=objective.returnRegion,toolNode=toolNode,travelledM=0,
+        regionProgressM=0,regionRemainingM=objective.returnRegion.requiredProgressM,
         commandedDriveCount=0,isComplete=false,isFailed=false}
     return true,{kind="REVERSE_ARMED",hasToolReverser=toolNode~=nil,
         requestedReverseSpeedKmh=speedLease.speedKmh,
@@ -320,6 +329,9 @@ function Mechanism:reverseStatus(vehicle)
     end
     return {travelledM=state.travelledM,isComplete=state.isComplete,
         isFailed=state.isFailed,reason=state.reason,
+        regionProgressM=state.regionProgressM,
+        regionRemainingM=state.regionRemainingM,
+        regionLateralOffsetM=state.regionLateralOffsetM,
         commandedDriveCount=state.commandedDriveCount}
 end
 
