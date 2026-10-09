@@ -149,8 +149,12 @@ assert(accepted==nil and reason=="NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE")
 second.spec_aiFieldWorker.driveStrategies=originalStrategies
 local originalControl=second.getIsControlled
 second.getIsControlled=function()return true end
-accepted,reason=authority:admitCandidate(first,second,first,1000)
+second.getIsEntered=function()return false end
+local diagnostic
+accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
+assert(diagnostic.participant=="SECOND" and diagnostic.rootId==tostring(second.rootNode))
+assert(diagnostic.witness=="NATIVE_CONTROL_TRUE" and diagnostic.nativeEntered=="FALSE")
 second.getIsControlled=originalControl
 -- A missing/unspecified native negative flag is not positive player control.
 -- Both active GIANTS FIELDWORK jobs and strategies remain independently
@@ -162,15 +166,26 @@ second.getIsControlled=function()return nil end
 cleared=assert(authority:admitCandidate(first,second,first,1000))
 assert(authority:release(cleared))
 second.getIsControlled=function()error("NATIVE_CONTROL_EXCEPTION") end
-accepted,reason=authority:admitCandidate(first,second,first,1000)
+accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",
     "native control call exceptions must remain fail-closed")
+assert(diagnostic.witness=="NATIVE_CONTROL_QUERY_EXCEPTION")
+assert(diagnostic.nativeEntered=="FALSE")
 second.getIsControlled=originalControl
 g_currentMission.controlledVehicle=second
-accepted,reason=authority:admitCandidate(first,second,first,1000)
+accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",
     "mission player control witness must veto independently")
+assert(diagnostic.witness=="MISSION_CONTROLLED_VEHICLE_MATCH")
+assert(diagnostic.nativeEntered=="FALSE")
 g_currentMission.controlledVehicle=nil
+second.getIsEntered=function()error("ENTRY_QUERY_EXCEPTION") end
+second.getIsControlled=function()return true end
+accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
+assert(diagnostic.nativeEntered=="QUERY_EXCEPTION")
+second.getIsEntered=nil
+second.getIsControlled=originalControl
 enabled=false
 accepted=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil)
@@ -178,7 +193,7 @@ enabled=true
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.0.22"
+OuttaMyWay.VERSION="0.5.0.23"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}
@@ -203,6 +218,8 @@ assert(published[2].code=="HOLD_RELOCATE_ADMISSION_REJECTED")
 assert(published[2].detail.pairKey=="first|second")
 assert(published[2].detail.reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
 assert(published[2].detail.confirmedBlockedMs==1000)
+assert(published[2].detail.playerWitness==nil
+    and published[2].detail.playerEntered==nil)
 runtime:update(16)
 assert(#published==2,"no rejection heartbeat or repeated admission in one occurrence")
 -- A genuinely new native pair occurrence can be considered independently.
@@ -213,4 +230,24 @@ assert(not runtime.coordinator:isActive())
 g_server=nil
 runtime:update(16)
 assert(#published==3 and not runtime.coordinator:isActive())
-print("Live Pair Commitment, discriminating admission rejection, once-per-occurrence publication: PASS")
+-- The published one-shot refusal carries native witness provenance when a
+-- qualifying candidate is rejected for player-control clearance. It never
+-- creates an admitted commitment.
+g_server={}
+second.getIsControlled=function()return true end
+second.getIsEntered=function()return false end
+g_fieldManager.fields={{densityMapPolygon={
+    pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
+occurrence={}
+runtime:update(16)
+assert(#published==4)
+assert(published[4].code=="HOLD_RELOCATE_ADMISSION_REJECTED")
+assert(published[4].detail.reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
+assert(published[4].detail.participant=="SECOND")
+assert(published[4].detail.rootId==tostring(second.rootNode))
+assert(published[4].detail.playerWitness=="NATIVE_CONTROL_TRUE")
+assert(published[4].detail.playerEntered=="FALSE")
+assert(not runtime.coordinator:isActive())
+second.getIsControlled=originalControl
+second.getIsEntered=nil
+print("Live Pair Commitment and player-control witness provenance: PASS")

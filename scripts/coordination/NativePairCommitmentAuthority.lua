@@ -44,14 +44,31 @@ end
 -- positive takeover witness, not a requirement for an explicit false value.
 -- Active native field-work and current Job Episode checks provide separate
 -- affirmative AI-role evidence before this clearance is used.
-local function notPlayer(vehicle)
+local function playerControlWitness(vehicle)
     if type(vehicle.getIsControlled)=="function" then
         local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
-        if not ok then return false end -- unknown native call: fail closed
-        if controlled==true then return false end
+        if not ok then return "NATIVE_CONTROL_QUERY_EXCEPTION" end
+        if controlled==true then return "NATIVE_CONTROL_TRUE" end
     end
     local mission=g_currentMission
-    return mission==nil or mission.controlledVehicle~=vehicle
+    if mission~=nil and mission.controlledVehicle==vehicle then
+        return "MISSION_CONTROLLED_VEHICLE_MATCH"
+    end
+    return nil
+end
+
+local function notPlayer(vehicle)
+    return playerControlWitness(vehicle)==nil
+end
+
+-- Diagnostic observation only: entry is not an alternative authority grant.
+local function playerEntryEvidence(vehicle)
+    if type(vehicle.getIsEntered)~="function" then return "UNAVAILABLE" end
+    local ok,entered=pcall(vehicle.getIsEntered,vehicle)
+    if not ok then return "QUERY_EXCEPTION" end
+    if entered==true then return "TRUE" end
+    if entered==false then return "FALSE" end
+    return "UNKNOWN"
 end
 
 local function inside(poly,x,z)
@@ -152,8 +169,16 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     if as==nil or bs==nil then return nil,"NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE" end
     if aj==nil or bj==nil then return nil,"NATIVE_JOB_REFERENCE_UNAVAILABLE" end
     if ap==nil or bp==nil then return nil,"ASSEMBLY_ROOT_POSE_UNAVAILABLE" end
-    if not notPlayer(first) or not notPlayer(second) then
-        return nil,"PLAYER_CONTROL_CLEARANCE_UNAVAILABLE"
+    local firstClaim=playerControlWitness(first)
+    local secondClaim=playerControlWitness(second)
+    if firstClaim~=nil or secondClaim~=nil then
+        local participant=firstClaim~=nil and first or second
+        return nil,"PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",{
+            participant=firstClaim~=nil and "FIRST" or "SECOND",
+            rootId=tostring(participant.rootNode),
+            witness=firstClaim or secondClaim,
+            nativeEntered=playerEntryEvidence(participant)
+        }
     end
     if first.rootNode==second.rootNode then return nil,"ROOT_IDENTITIES_NOT_DISTINCT" end
     if blockedWorker~=first and blockedWorker~=second then
