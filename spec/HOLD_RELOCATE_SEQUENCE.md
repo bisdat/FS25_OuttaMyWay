@@ -4,7 +4,6 @@
 
 **Specification Jurisdiction:** Hold & Relocate Sequence
 **Jurisdiction ID:** `HOLD_RELOCATE_SEQUENCE`
-**Implementation Status:** `IMPLEMENTED`
 
 **Primary Architecture Authority:** [Blocked-First Situation Assessment](../architecture/BLOCKED_PROGRESS_QUALIFICATION.md#specification-jurisdiction--hold--relocate-sequence)
 
