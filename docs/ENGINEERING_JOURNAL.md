@@ -6168,3 +6168,15 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Authority Triad disposition:** No architectural responsibility or Specification requirement changes are justified by this positive run; the existing Architecture and Specification receive a validation annotation only. No executable source is changed. GitHub Issue #440 and PR #459 hold the field verdict and archive provenance. PR integration remains a separate acceptance action.
 
+## 2026-10-09 — #461 TEST 0.5.1.1 Single-Worker Recovery Reuses Pairwise Physical Control
+
+**Observation:** TS003 (`0.5.1.0_TS003.zip`) was reported to show BWR not working when only one active worker remains. Code review of accepted `0.5.1.0` found that native `isBlocked` after ≥1 s publishes `NATIVE_BLOCKAGE_NO_LOCAL_WORKER` but supplies no Control candidate without a second worker. The archive was not independently decoded during this increment; precise runtime events have not been established.
+
+**Named discovery:** **No Local Worker Pair != No Native Blockage.**
+
+**Decision:** The single-worker case uses exactly the accepted native physical choreography: **TRANSIT → RELOCATE → FIELDWORK STOP → FIELDWORK START**, with **40 m projected travel to a relocation REGION**. It does not require pairwise Regulation, artificial blocker width, or seven-second paired Hold; nor does it introduce a new physical recovery implementation, historical retry veto or displacement watchdog.
+
+**Implementation hypothesis — TEST `0.5.1.1`:** Native Observation presents a single blocked-worker candidate with independent current-pulse identity. Existing native commitment authority separately admits one worker with a positive current job/strategy, blocked state, field polygon and absence of nearby eligible paired workers. The existing Hold & Relocate Coordinator selects that participant directly, delegates an inward-favoured 40 m oblique region objective to Projected Egress and the same Native Reverse/TRANSIT mechanisms, and invokes the established immediate native FIELDWORK replacement after the region is entered. Paired choreography and calibration remain unchanged.
+
+**Authority Triad:** Architecture now represents the new single-subject admission form under the existing blocked-recovery responsibility. Specification defines its separate admission and physical sequence. Source retains one physical coordination path and validates the new region kind. Offline tests challenge candidate lifetime, admission, geometry and coordinator sequencing; GIANTS physical success remains **unvalidated** pending TS003 replay. The accepted paired TS015 PASS remains the regression reference.
+

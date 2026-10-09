@@ -4,6 +4,9 @@
 
 ## Purpose
 
+**TEST 0.5.1.1 / #461 — single-worker extension:** A sustained native `isBlocked` episode may concern a single active field worker with no nearby eligible worker-pair candidate. No Local Worker Pair is not proof of no Native Blockage. After independent single-worker admission, the existing Hold & Relocate physical mechanisms execute **TRANSIT → oblique RELOCATE to a field-inward 40 m projected region → GIANTS FIELDWORK STOP → immediate START**. The pairwise Regulation of the other worker and paired relocated-worker 7-second Hold do not apply when there is no partner. This is a **TEST implementation hypothesis awaiting GIANTS Reality**, not an observed TS003 recovery success. The validated `0.5.1.0` paired behaviour remains unchanged.
+
+
 OuttaMyWay exists to help a worker resume its GIANTS-owned autonomous activity when native blockage warrants intervention, with the **least disruptive justified response**. GIANTS decides that a worker is blocked. OMW does not duplicate native collision detection or reconstruct GIANTS' fieldwork route.
 
 > **Native `isBlocked` = GIANTS' blocked-state evidence.**
