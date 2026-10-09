@@ -4,6 +4,8 @@
 
 ## Purpose
 
+**Reality qualification (TS003, TEST 0.5.1.1): FAIL.** Native Observation qualified a solo blocked worker for 1,008 ms, but strict root-in-polygon admission rejected it as `SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS` before TRANSIT or relocation. Root coordinates and boundary relationship were not recorded; field association versus polygon containment remains an architectural distinction requiring positive evidence. The field/margin contract has not been revised by this finding.
+
 **TEST 0.5.1.1 / #461 — single-worker extension:** A sustained native `isBlocked` episode may concern a single active field worker with no nearby eligible worker-pair candidate. No Local Worker Pair is not proof of no Native Blockage. After independent single-worker admission, the existing Hold & Relocate physical mechanisms execute **TRANSIT → oblique RELOCATE to a field-inward 40 m projected region → GIANTS FIELDWORK STOP → immediate START**. The pairwise Regulation of the other worker and paired relocated-worker 7-second Hold do not apply when there is no partner. This is a **TEST implementation hypothesis awaiting GIANTS Reality**, not an observed TS003 recovery success. The validated `0.5.1.0` paired behaviour remains unchanged.
 
 

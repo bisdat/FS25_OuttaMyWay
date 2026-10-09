@@ -17,6 +17,8 @@ Once admitted, **the same existing Physical Control adapter and coordinator** mu
 
 The **paired Hold & Relocate contract remains unchanged**: centroid-nearest relocator, 5 s other-worker 1 km/h Regulation, oblique vector based on blocker work width + 5 m and signed Cross-Track Egress Region, followed by 7 s relocated-worker Hold and native handback. Both intervention shapes share the same subordinate TRANSIT/reverse/FIELDWORK mechanisms and direct episode cleanup, without historical native stop/start uncertainty.
 
+**TS003 TEST 0.5.1.1 GIANTS FAIL (9 October 2026):** Observed qualified solo blockage (1,008 ms) was rejected by `SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS`, before any Control. The current source's strict `inside(polygon,root)` predicate is therefore not field-validated as sufficient admission for a working assembly. The file does not establish the actual root-to-boundary distance; distinguish current FIELDWORK-to-field association from root containment, and assess region feasibility from a possible immediate-margin start. Pairwise source and baseline are unchanged.
+
 **Validation boundary:** Source and offline contracts may establish that the 40 m region and native calls are correctly requested, but only GIANTS TS003 Reality can establish physical completion, native re-entry and useful continuation. Paired TS015 PASS on `0.5.1.0` remains a mandatory non-regression.
 
 ## Commitment and evidence boundary

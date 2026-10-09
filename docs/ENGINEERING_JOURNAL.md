@@ -6180,3 +6180,17 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Authority Triad:** Architecture now represents the new single-subject admission form under the existing blocked-recovery responsibility. Specification defines its separate admission and physical sequence. Source retains one physical coordination path and validates the new region kind. Offline tests challenge candidate lifetime, admission, geometry and coordinator sequencing; GIANTS physical success remains **unvalidated** pending TS003 replay. The accepted paired TS015 PASS remains the regression reference.
 
+## 2026-10-09 — #461 TEST 0.5.1.1 GIANTS Reality FAIL: solo admission lacks field association
+
+**Artefact:** `log(20261009-160528).txt` supplied with TS003 follow-up; mod identifies as TEST `0.5.1.1`, enabled server runtime.
+
+**Observed at 17:04:43.111:** The native blockage Observation qualified `blockedRootId=396274` for `confirmedBlockedMs=1008`, with `NATIVE_BLOCKAGE_NO_LOCAL_WORKER`. In the same frame, the independent admission reported `HOLD_RELOCATE_ADMISSION_REJECTED` with `candidateKind=SINGLE` and `reason=SINGLE_OUTSIDE_KNOWN_FIELD_POLYGONS`. No subsequent TRANSIT, RELOCATE, STOP or START event is published in the supplied run. **Field verdict: FAIL.**
+
+**Confirmed source explanation:** `NativePairCommitmentAuthority.admitSingleCandidate` requires `inside(polygon,rootX,rootZ)` for one registered `g_fieldManager.fields` polygon, rejecting all candidates otherwise. Thus a currently native-blocked FIELDWORK worker is blocked at the field-polygon membership test *before* the existing physical Control runs.
+
+**Named discovery — Field Association Is Not Root Containment:** An active GIANTS field job and a root strictly inside a polygon are distinct facts. The accepted Operation envelope includes the immediate field margin. The log proves strict containment rejected this instance, **not** whether the worker root was in the immediate margin, elsewhere in the world, or subject to inconsistent polygon evidence. No root coordinates, field identifier, boundary distance or supported return-region evidence was logged.
+
+**Hypothesis to challenge before changing Control:** Resolve the current native field/Operation association independently of the exact root-in-polygon predicate; confirm the starting location is within the supported field/margin and that the 40 m inward relocation region is physically admissible. Merely relaxing solo admission would be incomplete: current `ProjectedEgressRegion.planSingle` samples field containment **from the initial root**, and will also reject a start outside the polygon. Do not introduce an arbitrary margin threshold, select an unrelated closest field or remove spatial evidence without a justified contract.
+
+**Decision and disposition:** Mark TEST `0.5.1.1` **GIANTS FAIL**; PR #462 and Issue #461 remain open, with no merge. The new solo pathway is reached as far as positive native Observation and rejection reporting, but **physical recovery remains untested**, not disproven. Retain the validated `0.5.1.0` pairwise TS015 baseline. No change to executable behaviour is warranted by this log alone.
+
