@@ -114,8 +114,6 @@ function Runtime:update(dt)
         end
         return
     end
-    local candidates=        return
-    end
     local candidates=self.observer and self.observer:getCurrentPairCandidates() or nil
     if type(candidates)~="table" then return end
     for i=1,#candidates do
