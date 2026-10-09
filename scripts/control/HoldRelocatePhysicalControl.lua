@@ -144,6 +144,14 @@ function Control:requestTransit(vehicle)
 end
 
 function Control:cancelTransit(vehicle)
+    -- After GIANTS stopJob has been entered, a replacement may already be
+    -- current even when the API raised. Never restore old-job implements into
+    -- a potentially new native Job Episode; retain explicit unresolved debt.
+    local status=self.jobMechanism:getStatus(vehicle)
+    if self.plans[vehicle]~=nil and type(status)=="table"
+        and status.oldJobId~=nil then
+        return false,"NATIVE_JOB_HANDOFF_MAY_HAVE_STARTED"
+    end
     local ok,evidence=self.transitMechanism:cancelTransit(vehicle)
     if ok then self.plans[vehicle]=nil end
     return ok,evidence

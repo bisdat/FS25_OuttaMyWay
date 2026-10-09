@@ -98,6 +98,10 @@ physical.jobMechanism={
         return true,{isOldJobStopped=true,isNewJobStarted=true}
     end
 }
+-- A possibly committed GIANTS stop forbids replaying inverse TRANSIT
+-- commands into a replacement job, even if the native call later threw.
+local nativeHandbackStatus={status="NOT_ATTEMPTED"}
+physical.jobMechanism.getStatus=function()return nativeHandbackStatus end
 local coordinator=Coordinator.new(authority,physical)
 local ok,entry=coordinator:begin(issued,1000)
 assert(ok and entry.relocatingAssemblyReferenceKey==issued.participants[2].assemblyReferenceKey)
@@ -117,6 +121,15 @@ assert(events[7]=="RELEASE:RELOCATED_WORKER")
 assert(events[8]=="NATIVE_STOP_START" and events[9]=="HANDOFF_TRANSIT")
 assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
 assert(authority:release(issued))
+physical.plans[second]={transitActions={},restoreActions={}}
+nativeHandbackStatus={oldJobId=40,status="START_INVOCATION_ENTERED"}
+local canCancel,why=physical:cancelTransit(second)
+assert(not canCancel and why=="NATIVE_JOB_HANDOFF_MAY_HAVE_STARTED")
+assert(events[#events]=="HANDOFF_TRANSIT",
+    "do not replay old configuration after possible job hand-back")
+nativeHandbackStatus={status="NOT_ATTEMPTED"}
+assert(physical:cancelTransit(second),"a pre-stop cancellation can request restoration")
+assert(events[#events]=="RESTORE")
 -- Missing/contradictory field polygons never justify reverse movement.
 g_fieldManager.fields={}
 accepted,reason=authority:admitCandidate(first,second,first,1000)
