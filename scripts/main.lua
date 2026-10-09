@@ -6,6 +6,7 @@ local modules={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
+    "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",

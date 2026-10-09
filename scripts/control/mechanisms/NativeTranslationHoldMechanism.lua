@@ -22,10 +22,13 @@ local function isCurrentPlayerControl(vehicle)
     return false
 end
 
-local function isNativeJobCurrent(vehicle)
-    if type(vehicle.getJob)~="function" then return false end
+-- The GIANTS job object is a transient runtime reference, not stable semantic
+-- Job Episode identity. It is sufficient to detect replacement while Held.
+local function currentNativeJob(vehicle)
+    if type(vehicle.getJob)~="function" then return nil,"NATIVE_JOB_API_UNAVAILABLE" end
     local ok,job=pcall(vehicle.getJob,vehicle)
-    return ok and job~=nil
+    if not ok or job==nil then return nil,"NATIVE_JOB_UNAVAILABLE" end
+    return job
 end
 
 function Mechanism.new()
@@ -33,6 +36,28 @@ function Mechanism.new()
         holds=weakKeys(),heldCount=0,
         originalDrive=nil,wrapper=nil,isInstalled=false
     },Mechanism)
+end
+
+-- The wrapper can be restored only while it is still the visible GIANTS entry
+-- point. With an outer wrapper installed by another mod, releasing this lease
+-- leaves a transparent inner wrapper rather than clobbering the outer one.
+local function withdrawHold(mechanism,vehicle)
+    local previous=mechanism.holds[vehicle]
+    if previous~=nil then
+        mechanism.holds[vehicle]=nil
+        mechanism.heldCount=math.max(0,mechanism.heldCount-1)
+    end
+    local nativeRestored=false
+    if mechanism.heldCount==0 and mechanism.isInstalled
+        and type(AIVehicleUtil)=="table"
+        and AIVehicleUtil.driveToPoint==mechanism.wrapper then
+        AIVehicleUtil.driveToPoint=mechanism.originalDrive
+        mechanism.isInstalled=false
+        mechanism.wrapper=nil
+        mechanism.originalDrive=nil
+        nativeRestored=true
+    end
+    return previous,nativeRestored
 end
 
 -- Interpose only on the native translation command. The GIANTS field-worker
@@ -63,16 +88,18 @@ function Mechanism:install()
                 moveForwards,localTargetX,localTargetZ,maxSpeed,doNotSteer)
         end
         local isControlled,controlReason=isCurrentPlayerControl(vehicle)
-        if isControlled~=false or not isNativeJobCurrent(vehicle)
+        local currentJob,jobReason=currentNativeJob(vehicle)
+        if isControlled~=false or currentJob~=state.nativeJobReference
             or g_server==nil then
-            -- Do not apply an OMW command after player takeover or native job
-            -- turnover. The deliberate relinquishment is recorded, not silently
-            -- mistaken for an expiry of the coordinator's timer.
-            mechanism.holds[vehicle]=nil
-            mechanism.heldCount=math.max(0,mechanism.heldCount-1)
+            -- Job replacement, player takeover or server loss must never
+            -- retain an old Hold. A replacement job is not the admitted one.
             state.isRelinquished=true
-            state.relinquishReason=controlReason or
-                (isControlled and "PLAYER_TAKEOVER" or "NATIVE_JOB_UNAVAILABLE")
+            state.relinquishReason=controlReason
+                or (isControlled==true and "PLAYER_TAKEOVER")
+                or (currentJob~=state.nativeJobReference
+                    and (jobReason or "NATIVE_JOB_REPLACED"))
+                or "SERVER_UNAVAILABLE"
+            withdrawHold(mechanism,vehicle)
             return original(vehicle,dt,acceleration,allowedToDrive,
                 moveForwards,localTargetX,localTargetZ,maxSpeed,doNotSteer)
         end
@@ -101,11 +128,12 @@ function Mechanism:hold(vehicle,purpose)
     if self.holds[vehicle]~=nil then return false,"HOLD_ALREADY_ACTIVE" end
     local isControlled,reason=isCurrentPlayerControl(vehicle)
     if isControlled~=false then return false,reason or "PLAYER_CONTROL_ACTIVE" end
-    if not isNativeJobCurrent(vehicle) then return false,"NATIVE_JOB_UNAVAILABLE" end
+    local nativeJob,jobReason=currentNativeJob(vehicle)
+    if nativeJob==nil then return false,jobReason end
     local installed,why=self:install()
     if not installed then return false,why end
     self.holds[vehicle]={
-        purpose=purpose,interceptCount=0,
+        purpose=purpose,interceptCount=0,nativeJobReference=nativeJob,
         isRelinquished=false,lastNativeAllowedToDrive=nil
     }
     self.heldCount=self.heldCount+1
@@ -120,18 +148,7 @@ function Mechanism:releaseHold(vehicle,purpose)
     local state=self.holds[vehicle]
     if state==nil then return true,{wasHeld=false,isRestrictionRemoved=true} end
     if purpose~=state.purpose then return false,"HOLD_PURPOSE_MISMATCH" end
-    self.holds[vehicle]=nil
-    self.heldCount=math.max(0,self.heldCount-1)
-    local nativeRestored=false
-    if self.heldCount==0 and self.isInstalled
-        and type(AIVehicleUtil)=="table"
-        and AIVehicleUtil.driveToPoint==self.wrapper then
-        AIVehicleUtil.driveToPoint=self.originalDrive
-        self.isInstalled=false
-        self.wrapper=nil
-        self.originalDrive=nil
-        nativeRestored=true
-    end
+    local _,nativeRestored=withdrawHold(self,vehicle)
     -- A later wrapper may have chained this one. In that case the released
     -- inner wrapper is behaviourally transparent, and we do not overwrite
     -- another mod's current native drive function.

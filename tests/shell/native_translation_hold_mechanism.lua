@@ -84,6 +84,21 @@ assert(events[#events].allowed==true and events[#events].speed==9)
 assert(not mechanism:isHolding(alpha))
 assert(mechanism:releaseHold(alpha,"RELOCATED_WORKER"))
 alpha.isControlled=false
+assert(AIVehicleUtil.driveToPoint==native,
+    "automatic player-control relinquishment restores the native drive entry point")
+-- A different non-null GIANTS job is a new episode, not continued permission
+-- to suppress the original job's native translation commands.
+assert(mechanism:hold(alpha,"EGRESS"))
+local previousJob=alpha.job
+alpha.job={}
+AIVehicleUtil.driveToPoint(alpha,16,1,true,true,3,4,12,true)
+assert(events[#events].allowed==true and events[#events].speed==12
+    and events[#events].doNotSteer==true)
+assert(not mechanism:isHolding(alpha),"job replacement revokes old Hold")
+assert(AIVehicleUtil.driveToPoint==native,
+    "job-replacement relinquishment restores the original native drive entry")
+assert(mechanism:releaseHold(alpha,"EGRESS"))
+alpha.job=previousJob
 -- The mechanism must never replace a different outer wrapper during release.
 assert(mechanism:hold(alpha,"EGRESS"))
 local active=AIVehicleUtil.driveToPoint
