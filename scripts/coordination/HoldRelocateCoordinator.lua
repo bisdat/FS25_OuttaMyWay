@@ -141,14 +141,15 @@ function Coordinator:begin(commitment,nowMs)
         or type(commitment.participants)~="table"
         or (commitment.kind=="SINGLE" and #commitment.participants~=1)
         or (commitment.kind~="SINGLE" and #commitment.participants~=2)
-        or type(commitment.fieldCentroid)~="table"
-        or not finite(commitment.fieldCentroid.x) or not finite(commitment.fieldCentroid.z)
-        or not finite(commitment.offsetM) or commitment.offsetM<0
         or (commitment.kind=="SINGLE" and commitment.singleRegionDistanceM~=40)
         or (commitment.kind~="SINGLE"
-            and (not finite(commitment.blockerWorkingWidthM)
-                or commitment.blockerWorkingWidthM<=0))
-        or type(commitment.fieldPolygon)~="table"
+            and (type(commitment.fieldCentroid)~="table"
+                or not finite(commitment.fieldCentroid.x)
+                or not finite(commitment.fieldCentroid.z)
+                or not finite(commitment.offsetM) or commitment.offsetM<0
+                or not finite(commitment.blockerWorkingWidthM)
+                or commitment.blockerWorkingWidthM<=0
+                or type(commitment.fieldPolygon)~="table"))
         or type(commitment.nearbyBlockers)~="table"
         or (commitment.kind~="SINGLE" and #commitment.nearbyBlockers==0) then
         return false,"COMMITMENT_EVIDENCE_UNAVAILABLE"
@@ -330,6 +331,8 @@ function Coordinator:advance(nowMs)
         if not stopped then self:finishWithOutcome("CONTROL_INTERRUPTED",stopReason);return end
         state.isReverseOutstanding=false
         if state.isSingle then
+            -- Solo: region reached -> GIANTS STOP/START immediately.
+            -- No additional Hold state, Hold timer, or other-worker Regulation.
             self:completeNativeHandback(state)
             return
         end

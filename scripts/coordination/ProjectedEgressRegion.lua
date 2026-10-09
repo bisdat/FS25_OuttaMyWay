@@ -150,15 +150,26 @@ function Region.plan(commitment,relocator,blocker)
 end
 
 
--- Solo reverse aims at an inward-favoured REGION at 40 m projected retreat.
--- Steering extends beyond the region as in the accepted pairwise method.
+-- No solo field-membership requirement. A documented native FIELDWORK worker
+-- can be blocked outside the polygon; region destination membership is only
+-- an inexpensive direction *preference*, never a veto.
+local function soloEndpointInField(x,z)
+    local manager=g_fieldManager
+    local fields=manager and manager.fields
+    if type(fields)~="table" then return false end
+    for _,field in pairs(fields) do
+        local native=type(field)=="table" and field.densityMapPolygon
+        local xs=native and native.pointsX
+        local zs=native and native.pointsZ
+        if type(xs)=="table" and type(zs)=="table"
+            and inside({xs=xs,zs=zs},x,z) then return true end
+    end
+    return false
+end
+
 function Region.planSingle(commitment,relocator)
     if type(commitment)~="table" or type(relocator)~="table"
         or not finite(relocator.x) or not finite(relocator.z)
-        or type(commitment.fieldCentroid)~="table"
-        or not finite(commitment.fieldCentroid.x)
-        or not finite(commitment.fieldCentroid.z)
-        or type(commitment.fieldPolygon)~="table"
         or commitment.singleRegionDistanceM~=40 then
         return nil,"SINGLE_REGION_EVIDENCE_UNAVAILABLE"
     end
@@ -169,17 +180,14 @@ function Region.planSingle(commitment,relocator)
     for _,side in ipairs({-1,1}) do
         local dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX
         local dz=COS_OBLIQUE*backZ+side*SIN_OBLIQUE*perpZ
-        if segmentInField(commitment.fieldPolygon,
-            relocator.x,relocator.z,dx,dz,40) then
-            local cx=commitment.fieldCentroid.x-relocator.x
-            local cz=commitment.fieldCentroid.z-relocator.z
-            local score=dx*cx+dz*cz
-            if chosen==nil or score>chosen.centreScore then
-                chosen={side=side,dx=dx,dz=dz,centreScore=score}
-            end
+        local endpointInField=soloEndpointInField(
+            relocator.x+dx*40,relocator.z+dz*40)
+        -- Prefer an endpoint in a known field; absent such evidence, the
+        -- established left-rear candidate is deterministic and still valid.
+        if chosen==nil or (endpointInField and not chosen.endpointInField) then
+            chosen={side=side,dx=dx,dz=dz,endpointInField=endpointInField}
         end
     end
-    if chosen==nil then return nil,"NO_SUPPORTED_INFIELD_EGRESS_REGION" end
     local horizon=40+STEERING_LOOKAHEAD_M
     return {
         isReverse=true,steeringHorizonM=horizon,
@@ -194,7 +202,7 @@ function Region.planSingle(commitment,relocator)
         directionSource="SINGLE_OBLIQUE_REVERSE",
         egressSide=chosen.side,vectorDistanceM=40,
         nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
-        targetInField=true,fieldInteriorScore=chosen.centreScore,
+        targetInField=chosen.endpointInField,
         nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ
     }
 end
