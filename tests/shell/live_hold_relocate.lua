@@ -244,6 +244,14 @@ assert(freshSolo~=soloCommitment and authority:release(freshSolo),
 -- 40 m relocation must proceed with no field association.
 g_fieldManager.fields={}
 coords[second.rootNode]={x=110,z=50}
+-- This exterior fixture faces north: its 70-degree native reverse can
+-- actually aim westward back into the native course field. Earlier
+-- eastward-backward orientation could not support that inward objective.
+local previousDirection=localDirectionToWorld
+localDirectionToWorld=function(node,x,y,z)
+    if node==second.rootNode then return 0,y,z end
+    return previousDirection(node,x,y,z)
+end
 secondStrategy.aiFieldCourse={fieldCourse={courseField={
     boundaryPositions={{0,0},{100,0},{100,100},{0,100}}
 }}}
@@ -265,6 +273,7 @@ assert(events[before+3]=="REVERSE_STOP"
     and events[before+5]=="HANDOFF_TRANSIT")
 assert(#events==before+5,"outside-field solo recovery has no Hold timer")
 assert(authority:release(exterior))
+localDirectionToWorld=previousDirection
 coords[second.rootNode]={x=23,z=20}
 secondStrategy.aiFieldCourse={}
 g_fieldManager.fields={{densityMapPolygon={
