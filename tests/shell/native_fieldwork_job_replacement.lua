@@ -132,6 +132,7 @@ assert(ok and evidence.oldJobId==41 and evidence.newJobId==42,
     "second collision must hand back its own distinct GIANTS Job Episode")
 assert(r.mechanism:getStatus(r.vehicle).status=="NOT_ATTEMPTED")
 order(r.events,{"CREATE","APPLY","SET_VALUES","VALIDATE","STOP","START",
+    "CREATE","APPLY","SET_VALUES","VALIDATE",
     "CREATE","APPLY","SET_VALUES","VALIDATE","STOP","START"})
 -- No time, fold position, Transit readiness or pair-clearance inspection.
 assert(OuttaMyWay.nativeTransitRequestMechanism==nil)
