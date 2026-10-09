@@ -72,7 +72,8 @@ function Coordinator:getStatus()
         relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
         maxTravelM=state.maxTravelM,egressHoldUntilMs=state.egressHoldUntilMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
-        unresolvedEffects=state.unresolvedEffects,isNativeJobStateUncertain=state.isNativeJobStateUncertain
+        unresolvedEffects=state.unresolvedEffects,isNativeJobStateUncertain=state.isNativeJobStateUncertain,
+        lastOutcome=state.phase=="WAITING_FOR_PLAYER_INTERVENTION" and self.lastOutcome or nil
     }
 end
 
