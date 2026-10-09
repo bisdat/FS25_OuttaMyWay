@@ -41,17 +41,12 @@ local function currentJob(vehicle)
 end
 
 local function playerControlClear(vehicle)
-    local mission=g_currentMission
-    if type(mission)~="table" then return false,"MISSION_UNAVAILABLE" end
-    if mission.controlledVehicle==vehicle then return false,"PLAYER_CONTROL_ACTIVE" end
-    if type(vehicle.getIsControlled)~="function" then
-        return false,"PLAYER_CONTROL_EVIDENCE_UNAVAILABLE"
+    -- Use the same root-aware transient predicate as admission and Hold.
+    -- This is checked both during preparation and immediately before stop.
+    if OuttaMyWay.CurrentPlayerControlObservation.isControlled(
+        g_currentMission,vehicle) then
+        return false,"PLAYER_CONTROL_ACTIVE"
     end
-    local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
-    if not ok or type(controlled)~="boolean" then
-        return false,"PLAYER_CONTROL_EVIDENCE_UNAVAILABLE"
-    end
-    if controlled then return false,"PLAYER_CONTROL_ACTIVE" end
     return true
 end
 

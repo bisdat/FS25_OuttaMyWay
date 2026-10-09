@@ -2,6 +2,7 @@
 -- Subsystems outside the product shell must not be sourced or registered.
 local expected={
     "scripts/config.lua",
+    "scripts/observation/CurrentPlayerControlObservation.lua",
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
@@ -39,7 +40,7 @@ renderText=function(_,_,_,text) renders[#renders+1]=text end
 addModEventListener=function(listener) registered[#registered+1]=listener end
 source=function(path)
     loaded[#loaded+1]=path
-    if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
+    if path=="scripts/config.lua" or path=="scripts/observation/CurrentPlayerControlObservation.lua" or path=="scripts/assessment/SpatialPairInference.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/coordination/NativePairCommitmentAuthority.lua"
         or path=="scripts/control/HoldRelocatePhysicalControl.lua"
@@ -81,6 +82,7 @@ assert(#loaded==#expected)
 for i=1,#expected do assert(loaded[i]==expected[i],tostring(loaded[i])) end
 assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
 assert(type(OuttaMyWay.liveHoldRelocateRuntime.update)=="function")
+assert(type(OuttaMyWay.CurrentPlayerControlObservation.isControlled)=="function")
 assert(OuttaMyWay.liveHoldRelocateRuntime.authority~=nil)
 assert(OuttaMyWay.liveHoldRelocateRuntime.physicalControl~=nil)
 assert(not OuttaMyWay.liveHoldRelocateRuntime.authority:enabled(),

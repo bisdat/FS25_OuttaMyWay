@@ -1,5 +1,6 @@
 -- Dormant GIANTS translation gate challenged against an explicit mocked native drive.
 OuttaMyWay={}
+dofile("scripts/observation/CurrentPlayerControlObservation.lua")
 dofile("scripts/control/mechanisms/NativeTranslationHoldMechanism.lua")
 local Mechanism=OuttaMyWay.NativeTranslationHoldMechanism
 local events={}
@@ -13,9 +14,9 @@ end
 AIVehicleUtil={driveToPoint=native}
 g_server={}
 g_currentMission={controlledVehicle=nil}
-local alpha={name="A",job={}}
-local bravo={name="B",job={}}
-local charlie={name="C",job={}}
+local alpha={name="A",job={},rootNode=9901}
+local bravo={name="B",job={},rootNode=9902}
+local charlie={name="C",job={},rootNode=9903}
 for _,vehicle in ipairs({alpha,bravo,charlie}) do
     vehicle.getJob=function(self) return self.job end
     vehicle.getIsControlled=function(self) return self.isControlled==true end
@@ -67,10 +68,25 @@ releaseOk,reason=mechanism:hold(alpha,"EGRESS")
 assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
 assert(AIVehicleUtil.driveToPoint==native)
 g_currentMission.controlledVehicle=nil
+-- The archived terminal-relocation interlock resolves mission/player seats
+-- through the physical root instead of requiring the same Lua object.
+local playerSeat={rootNode=9904}
+playerSeat.getRootVehicle=function() return alpha end
+g_currentMission.controlledVehicle=playerSeat
+releaseOk,reason=mechanism:hold(alpha,"EGRESS")
+assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
+g_currentMission.controlledVehicle=nil
 alpha.isControlled=true
 releaseOk,reason=mechanism:hold(alpha,"EGRESS")
 assert(not releaseOk and reason=="PLAYER_CONTROL_ACTIVE")
 alpha.isControlled=false
+-- A native control getter exception is not, by itself, a positive takeover
+-- under the archived predicate; actual native job continuity still matters.
+local originalControlGetter=alpha.getIsControlled
+alpha.getIsControlled=function() error("NATIVE_QUERY_UNAVAILABLE") end
+assert(mechanism:hold(alpha,"EGRESS"))
+assert(mechanism:releaseHold(alpha,"EGRESS"))
+alpha.getIsControlled=originalControlGetter
 alpha.job=nil
 releaseOk,reason=mechanism:hold(alpha,"EGRESS")
 assert(not releaseOk and reason=="NATIVE_JOB_UNAVAILABLE")

@@ -40,28 +40,22 @@ local function currentStrategy(vehicle)
     return nil
 end
 
--- Existing Player Control Interlock contract: each GIANTS surface is a
--- positive takeover witness, not a requirement for an explicit false value.
--- Active native field-work and current Job Episode checks provide separate
--- affirmative AI-role evidence before this clearance is used.
+-- The archived terminal/obstruction-relocation Player Control Interlock is
+-- the single authority for current takeover. The predicate normalises the
+-- root vehicle and tests root, supplied object and mission-controlled root.
+-- Do not reconstruct an object-local or strict-negative clearance here.
 local function playerControlWitness(vehicle)
-    if type(vehicle.getIsControlled)=="function" then
-        local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
-        if not ok then return "NATIVE_CONTROL_QUERY_EXCEPTION" end
-        if controlled==true then return "NATIVE_CONTROL_TRUE" end
-    end
-    local mission=g_currentMission
-    if mission~=nil and mission.controlledVehicle==vehicle then
-        return "MISSION_CONTROLLED_VEHICLE_MATCH"
+    if OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle) then
+        return "ARCHIVED_ROOT_AWARE_PLAYER_CONTROL"
     end
     return nil
 end
 
 local function notPlayer(vehicle)
-    return playerControlWitness(vehicle)==nil
+    return not OuttaMyWay.CurrentPlayerControlObservation.isControlled(g_currentMission,vehicle)
 end
 
--- Diagnostic observation only: entry is not an alternative authority grant.
+-- Diagnostics only; no entry evidence may relax the archived player veto.
 local function playerEntryEvidence(vehicle)
     if type(vehicle.getIsEntered)~="function" then return "UNAVAILABLE" end
     local ok,entered=pcall(vehicle.getIsEntered,vehicle)

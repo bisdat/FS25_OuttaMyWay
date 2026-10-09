@@ -2,6 +2,7 @@
 -- The GIANTS functions here are mocked; neither admission nor work progress is
 -- claimed validated against the game.
 OuttaMyWay={}
+dofile("scripts/observation/CurrentPlayerControlObservation.lua")
 dofile("scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua")
 local Mechanism=OuttaMyWay.NativeFieldworkJobReplacementMechanism
 
@@ -13,13 +14,18 @@ local function scenario(options)
     local expected=original
     local replacement=nil
     local farm=7
-    local vehicle={}
+    local vehicle={rootNode=7701}
     function vehicle:getJob() return current end
     function vehicle:getAIJobFarmId()
         if options.noFarm then return nil end
         return farm
     end
-    function vehicle:getIsControlled() return options.player==true end
+    function vehicle:getIsControlled()
+        if options.getterError then error("NATIVE_CONTROL_UNAVAILABLE") end
+        return options.player==true
+    end
+    if options.noControlMethod then vehicle.getIsControlled=nil end
+    vehicle.getRootVehicle=function(self)return self end
     local manager={}
     function manager:getJobTypeIndexByName(name)
         assert(name=="FIELDWORK")
@@ -69,6 +75,11 @@ local function scenario(options)
     end
     g_server={}
     g_currentMission={aiSystem=aiSystem,aiJobTypeManager=manager}
+    if options.missionRootAlias then
+        g_currentMission.controlledVehicle={
+            rootNode=7702,getRootVehicle=function()return vehicle end
+        }
+    end
     local source={
         getExpectedNativeJob=function(_,subject)
             assert(subject==vehicle)
@@ -150,6 +161,20 @@ r=scenario({player=true})
 ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
 assert(not ok and evidence.reason=="PLAYER_CONTROL_ACTIVE")
 assert(#r.events==0)
+-- Archived positive-root predicate: a different mission object resolving to
+-- the same root is player takeover, even without the worker's local flag.
+r=scenario({missionRootAlias=true})
+ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
+assert(not ok and evidence.reason=="PLAYER_CONTROL_ACTIVE")
+assert(#r.events==0)
+-- Missing native negative evidence and getter exceptions do not constitute
+-- positive player control. Job Episode and FIELDWORK checks still apply.
+r=scenario({noControlMethod=true})
+ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
+assert(ok and evidence.isNewJobStarted)
+r=scenario({getterError=true})
+ok,evidence=r.mechanism:restartNativeFieldwork(r.vehicle)
+assert(ok and evidence.isNewJobStarted)
 -- Missing independent job-episode source can never self-authorise a job.
 r=scenario()
 local withoutSource=Mechanism.new(nil)

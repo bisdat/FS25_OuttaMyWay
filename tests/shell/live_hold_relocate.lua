@@ -1,6 +1,7 @@
 -- Contract challenge for the live observation -> Pair Commitment -> physical path.
 -- GIANTS job, field polygon, fold and drive operations are mocked; Reality untested.
 OuttaMyWay={}
+dofile("scripts/observation/CurrentPlayerControlObservation.lua")
 dofile("scripts/coordination/NativePairCommitmentAuthority.lua")
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
@@ -154,7 +155,7 @@ local diagnostic
 accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
 assert(diagnostic.participant=="SECOND" and diagnostic.rootId==tostring(second.rootNode))
-assert(diagnostic.witness=="NATIVE_CONTROL_TRUE" and diagnostic.nativeEntered=="FALSE")
+assert(diagnostic.witness=="ARCHIVED_ROOT_AWARE_PLAYER_CONTROL" and diagnostic.nativeEntered=="FALSE")
 second.getIsControlled=originalControl
 -- A missing/unspecified native negative flag is not positive player control.
 -- Both active GIANTS FIELDWORK jobs and strategies remain independently
@@ -166,18 +167,26 @@ second.getIsControlled=function()return nil end
 cleared=assert(authority:admitCandidate(first,second,first,1000))
 assert(authority:release(cleared))
 second.getIsControlled=function()error("NATIVE_CONTROL_EXCEPTION") end
-accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
-assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",
-    "native control call exceptions must remain fail-closed")
-assert(diagnostic.witness=="NATIVE_CONTROL_QUERY_EXCEPTION")
-assert(diagnostic.nativeEntered=="FALSE")
+cleared=assert(authority:admitCandidate(first,second,first,1000))
+assert(authority:release(cleared),
+    "archived semantics do not turn getter exceptions into player takeover")
 second.getIsControlled=originalControl
 g_currentMission.controlledVehicle=second
 accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE",
     "mission player control witness must veto independently")
-assert(diagnostic.witness=="MISSION_CONTROLLED_VEHICLE_MATCH")
+assert(diagnostic.witness=="ARCHIVED_ROOT_AWARE_PLAYER_CONTROL")
 assert(diagnostic.nativeEntered=="FALSE")
+g_currentMission.controlledVehicle=nil
+-- Archive compares mission's physically resolved root, not the object
+-- supplied by Observation. A controlled attached object with a shared root
+-- must be treated as the same physical assembly.
+local missionAlias={rootNode=8881}
+missionAlias.getRootVehicle=function()return second end
+g_currentMission.controlledVehicle=missionAlias
+accepted,reason,diagnostic=authority:admitCandidate(first,second,first,1000)
+assert(accepted==nil and reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
+assert(diagnostic.participant=="SECOND")
 g_currentMission.controlledVehicle=nil
 second.getIsEntered=function()error("ENTRY_QUERY_EXCEPTION") end
 second.getIsControlled=function()return true end
@@ -193,7 +202,7 @@ enabled=true
 -- Product live runtime uses the independent interfaces and does not command
 -- when the server is absent, regardless of a supplied candidate object.
 local published={}
-OuttaMyWay.VERSION="0.5.0.23"
+OuttaMyWay.VERSION="0.5.0.24"
 OuttaMyWay.LogPublication={origin=function()return {
     publish=function(_,_,_,code,payload)
         published[#published+1]={code=code,detail=payload and payload()}
@@ -245,7 +254,7 @@ assert(published[4].code=="HOLD_RELOCATE_ADMISSION_REJECTED")
 assert(published[4].detail.reason=="PLAYER_CONTROL_CLEARANCE_UNAVAILABLE")
 assert(published[4].detail.participant=="SECOND")
 assert(published[4].detail.rootId==tostring(second.rootNode))
-assert(published[4].detail.playerWitness=="NATIVE_CONTROL_TRUE")
+assert(published[4].detail.playerWitness=="ARCHIVED_ROOT_AWARE_PLAYER_CONTROL")
 assert(published[4].detail.playerEntered=="FALSE")
 assert(not runtime.coordinator:isActive())
 second.getIsControlled=originalControl

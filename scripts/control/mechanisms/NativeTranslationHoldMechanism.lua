@@ -11,15 +11,11 @@ local function weakKeys()
     return setmetatable({},{__mode="k"})
 end
 
+-- Reuse archived root-aware transient Player Control predicate. Native query
+-- failures do not themselves prove a current player takeover.
 local function isCurrentPlayerControl(vehicle)
-    if type(vehicle.getIsControlled)=="function" then
-        local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
-        if not ok then return nil,"PLAYER_CONTROL_EVIDENCE_UNAVAILABLE" end
-        if controlled==true then return true end
-    end
-    local mission=g_currentMission
-    if type(mission)=="table" and mission.controlledVehicle==vehicle then return true end
-    return false
+    return OuttaMyWay.CurrentPlayerControlObservation.isControlled(
+        g_currentMission,vehicle)
 end
 
 -- The GIANTS job object is a transient runtime reference, not stable semantic
