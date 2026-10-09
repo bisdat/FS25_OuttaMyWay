@@ -1,7 +1,7 @@
 # Causal Obstruction and Obstruction Relocation — 0.5 Architecture
 
 **Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
-**Primary Specification:** [Obstruction Relocation](../spec/OBSTRUCTION_RELOCATION.md).
+**Primary Specification:** [Obstruction Relocation](../spec/OBSTRUCTION_RELOCATION.md)
 
 **Status:** accepted restoration target from archived 0.4.11.0; physical mechanism port begins under [#463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463). The current 0.5.1.3 product does **not** yet perform non-active blocker relocation. This document defines responsibility, not evidence of an implemented live Resolution.
 
@@ -74,4 +74,4 @@ Mechanically proven non-job actuation is imported in the first restoration incre
 5. Another non-active completed vehicle near the move: a beneficiary-clear target is not proven clear of third-party occupancy.
 6. GIANTS TS015 pairwise PASS (0.5.1.0) and TS003 solo PASS (0.5.1.3) remain non-regressions.
 
-**Primary Specification:** [Obstruction Relocation](../spec/OBSTRUCTION_RELOCATION.md).
+

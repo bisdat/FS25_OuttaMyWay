@@ -2,7 +2,7 @@
 
 **Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
 
-**Primary Architecture Authority:** [Causal Obstruction and Obstruction Relocation](../architecture/OBSTRUCTION_RELOCATION.md).
+**Primary Architecture Authority:** [Causal Obstruction and Obstruction Relocation](../architecture/OBSTRUCTION_RELOCATION.md)
 
 **Restoration status:** [Issue #463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463) is in progress. The current 0.5.1.3 live product contains active-worker Hold & Relocate, *not* completed-worker Obstruction Relocation. The first stage ports archived non-job physical actuation; no active control route is established by merely loading that subordinate mechanism. This is a future implementation contract, not a false assertion of field-tested behaviour.
 
