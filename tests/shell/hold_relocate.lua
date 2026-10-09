@@ -167,43 +167,38 @@ local stillActive=assert(coordinator:begin(admitted(),30000))
 coordinator:advance(30002)
 assert(coordinator:isActive() and coordinator:getStatus().phase=="REVERSING")
 assert(coordinator:relinquish("TEST_CLEANUP"))
--- Failure to physically remove speed Regulation retains cleanup debt.
+-- Cleanup failure is reported for this collision only: no parked
+-- commitment or historical job record may obstruct the next encounter.
 reverseStatus={travelledM=0,isComplete=false}
 events={}
 assert(coordinator:begin(admitted(),40000))
 refuseReleaseFor="B"
 coordinator:advance(45000)
-assert(coordinator:isActive() and coordinator:getStatus().phase=="WAITING_FOR_PLAYER_INTERVENTION")
-assert(coordinator:getStatus().unresolvedEffects[1]~=nil)
-assert(coordinator:getStatus().lastOutcome.status=="UNRESOLVED")
-assert(not coordinator:relinquish("DISABLED"),"cannot report relinquished while Hold remains")
+assert(not coordinator:isActive())
+assert(coordinator:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
+assert(not coordinator:relinquish("DISABLED"))
 refuseReleaseFor=nil
-assert(coordinator:relinquish("EXPLICIT_RETRY"),"verified cleanup permits relinquishment")
-assert(coordinator:isActive()==false)
--- Native stop/start failure is explicitly unresolved even if physical cleanup works.
-isNativeRestartAccepted=false;events={}
+-- A fresh independent collision can start without manual clearance of an
+-- unrelated previous job outcome.
+isNativeRestartAccepted=false
+events={}
 assert(coordinator:begin(admitted(),50000))
-coordinator:advance(50001)
 reverseStatus={travelledM=1,isComplete=true}
-coordinator:advance(50002)
-coordinator:advance(57002)
-assert(coordinator:isActive() and coordinator:getStatus().phase=="WAITING_FOR_PLAYER_INTERVENTION")
-assert(coordinator:getStatus().isNativeJobStateUncertain==true)
-assert(coordinator:getStatus().lastOutcome.status=="UNRESOLVED")
-assert(not coordinator:relinquish("DISABLED"),"uncertain native job handback must remain visible")
--- A native FIELDWORK rejection BEFORE stop does not imply an irreversible
--- handback and must allow the old TRANSIT request to restore.
+coordinator:advance(50001)
+coordinator:advance(57001)
+assert(not coordinator:isActive())
+assert(coordinator:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
+assert(coordinator:getStatus().lastOutcome.reason=="NATIVE_START_UNCERTAIN")
+-- A rejected handback does not create a persistent job-history veto.
 isNativeRestartAccepted=true
 isNativePreparationRejected=true
 reverseStatus={travelledM=0,isComplete=false}
 events={}
-local fresh=Coordinator.new(authority,control)
-assert(fresh:begin(admitted(),70000))
+assert(coordinator:begin(admitted(),70000))
 reverseStatus={travelledM=1,isComplete=true}
-fresh:advance(70001)
-fresh:advance(77001)
-assert(not fresh:isActive(),"pre-stop failure must not retain false job uncertainty")
-assert(fresh:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
-assert(fresh:getStatus().lastOutcome.reason=="NATIVE_FIELDWORK_VALIDATION_REJECTED")
+coordinator:advance(70001)
+coordinator:advance(77001)
+assert(not coordinator:isActive())
+assert(coordinator:getStatus().lastOutcome.reason=="NATIVE_FIELDWORK_VALIDATION_REJECTED")
 assert(contains("TRANSIT_CANCEL","A"))
-print("Hold & Relocate coordination, timer releases, commitment authority and unresolved cleanup: PASS")
+print("Hold & Relocate independent collisions, timed release and direct cleanup: PASS")
