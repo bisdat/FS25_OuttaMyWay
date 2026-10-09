@@ -13,6 +13,8 @@ Architecture describes what the system should achieve; Specifications provide ex
 
 Field-validated TEST 0.5.1.3 (#461), GIANTS TS003 **PASS** on 9 October 2026, retains solo BWR **outside** field polygons and TRANSIT / 40 m oblique region / immediate FIELDWORK STOP/START, with no solo Hold timer. The preferred inward direction uses the **worker's native active course field**, never an adjacent field in the global registry. Paired mechanisms are unchanged. Native blocked Observation nominates candidates only. Independent commitment checks current GIANTS FIELDWORK jobs, field polygon and physical references before Control begins. The active shell does not invent native blockage or rebuild historic predictive Passage responsibilities.
 
+- [Causal Obstruction / Obstruction Relocation](OBSTRUCTION_RELOCATION.md) — separate non-active physical blocker responsibility sourced from the archived 0.4.11.0 design. Its first 0.5 restoration stage ports GIANTS non-job actuation with no current live automatic relocation admission; see [#463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463).
+
 ## Deliberately unresolved
 
 The GIANTS physical consequences of repeated Cross-Track Egress, fold configuration and FIELDWORK handback still require Reality validation under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). [Standards reconciliation #441](https://github.com/bisdat/FS25_OuttaMyWay/issues/441) remains a separate responsibility.
