@@ -8,7 +8,8 @@ local c={assemblyReferenceKey="C",x=11,z=10,vehicle={name="C"}}
 local events={}
 local isCurrent=true
 local isInitialJobEpisodeCurrent=true
-local isTransitReady=false
+local isTransitRequestAccepted=true
+local isReverseRequestAccepted=true
 local reverseStatus={travelledM=0,isComplete=false}
 local refuseReleaseFor=nil
 local isNativeRestartAccepted=true
@@ -31,9 +32,15 @@ local control={
         if refuseReleaseFor==vehicle.name then return false,"PHYSICAL_RELEASE_UNCONFIRMED" end
         return true
     end,
-    requestTransit=function(_,vehicle)record("TRANSIT",vehicle);return true end,
-    transitStatus=function() return isTransitReady and "READY" or "WAITING" end,
-    startReverse=function(_,vehicle,objective)record("REVERSE",vehicle,objective);return true end,
+    requestTransit=function(_,vehicle)
+        record("TRANSIT",vehicle)
+        return isTransitRequestAccepted,"NATIVE_TRANSIT_REQUEST_FAILED"
+    end,
+    transitStatus=function() error("TRANSIT_READINESS_MUST_NOT_BE_QUERIED") end,
+    startReverse=function(_,vehicle,objective)
+        record("REVERSE",vehicle,objective)
+        return isReverseRequestAccepted,"NATIVE_REVERSE_REQUEST_FAILED"
+    end,
     reverseStatus=function() return reverseStatus end,
     stopReverse=function(_,vehicle)record("REVERSE_STOP",vehicle);return true end,
     cancelReverse=function(_,vehicle)record("REVERSE_CANCEL",vehicle);return true end,
@@ -67,12 +74,13 @@ assert(events[1].kind=="VALIDATE" and events[2].kind=="PREFLIGHT")
 assert(events[3].kind=="HOLD" and events[3].vehicle=="B")
 assert(events[4].kind=="HOLD" and events[4].vehicle=="C")
 assert(events[5].kind=="TRANSIT","Hold and TRANSIT begin without idle delay")
+assert(events[6].kind=="REVERSE","reverse starts immediately even though TRANSIT is not complete")
+assert(coordinator:getStatus().phase=="REVERSING")
 coordinator:advance(5999)
-assert(#events==5,"no early Hold release")
-isTransitReady=true
+assert(#events==6,"no early Hold release; reverse already underway")
 coordinator:advance(6000)
-assert(events[6].kind=="RELEASE" and events[7].kind=="RELEASE")
-assert(events[8].kind=="REVERSE","5 s release independent of egress completion")
+assert(events[7].kind=="RELEASE" and events[8].kind=="RELEASE",
+    "5 s blocker release never waits for reverse or folding completion")
 reverseStatus={travelledM=9,isComplete=true}
 coordinator:advance(6100)
 assert(events[9].kind=="REVERSE_STOP" and events[10].kind=="HOLD"
@@ -84,6 +92,24 @@ assert(events[11].kind=="RELEASE" and events[12].kind=="NATIVE_STOP_THEN_START")
 assert(coordinator:isActive()==false)
 assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
 assert(coordinator:getStatus().lastOutcome.isNativeContinuationConfirmed==false)
+-- Rejected native request must not start reverse; cleanup retains prior effects.
+events={}
+isTransitRequestAccepted=false
+local rejected,transitFailure=coordinator:begin(admitted(),17500)
+assert(not rejected and transitFailure=="NATIVE_TRANSIT_REQUEST_FAILED")
+assert(not contains("REVERSE","A"))
+assert(contains("TRANSIT_CANCEL","A"))
+assert(not coordinator:isActive())
+isTransitRequestAccepted=true
+-- A failed reverse request after TRANSIT must cancel that configuration request.
+events={}
+isReverseRequestAccepted=false
+local reverseRejected,reverseFailure=coordinator:begin(admitted(),18000)
+assert(not reverseRejected and reverseFailure=="NATIVE_REVERSE_REQUEST_FAILED")
+assert(contains("TRANSIT","A") and contains("REVERSE","A"))
+assert(contains("REVERSE_CANCEL","A") and contains("TRANSIT_CANCEL","A"))
+assert(not coordinator:isActive())
+isReverseRequestAccepted=true
 -- Absence of issued commitment provenance prevents any physical action.
 events={}
 local bad=admitted();bad.token="invented";assert(not coordinator:begin(bad,20000))
@@ -115,16 +141,14 @@ assert(contains("RELEASE","D") and contains("TRANSIT_CANCEL","A"))
 isCurrent=true
 -- Fail-closed bound, even though steering horizon is longer than movement.
 bad=admitted();bad.fieldCentroid={x=-100,z=0};bad.offsetM=2
-isTransitReady=true;events={}
+reverseStatus={travelledM=0,isComplete=false};events={}
 local accepted2,bounded=coordinator:begin(bad,30000)
 assert(accepted2 and bounded.objective.maxTravelM==32)
-coordinator:advance(30001)
 reverseStatus={travelledM=32.1,isComplete=false}
 coordinator:advance(30002)
 assert(coordinator:isActive()==false)
 assert(coordinator:getStatus().lastOutcome.reason=="REVERSE_DISTANCE_EVIDENCE_INVALID")
 -- Failure to physically release a Hold retains explicit unresolved state.
-isTransitReady=false
 reverseStatus={travelledM=0,isComplete=false}
 events={}
 assert(coordinator:begin(admitted(),40000))
@@ -138,7 +162,7 @@ refuseReleaseFor=nil
 assert(coordinator:relinquish("EXPLICIT_RETRY"),"verified cleanup permits relinquishment")
 assert(coordinator:isActive()==false)
 -- Native stop/start failure is explicitly unresolved even if physical cleanup works.
-isTransitReady=true;isNativeRestartAccepted=false;events={}
+isNativeRestartAccepted=false;events={}
 assert(coordinator:begin(admitted(),50000))
 coordinator:advance(50001)
 reverseStatus={travelledM=1,isComplete=true}
