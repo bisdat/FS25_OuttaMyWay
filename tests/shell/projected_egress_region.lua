@@ -39,13 +39,16 @@ local opposite=assert(Plan.plan({fieldCentroid={x=1,z=100},
     fieldPolygon=field,blockerWorkingWidthM=36},near,nearBlocker))
 assert(opposite.egressSide==1 and opposite.targetInField,
     "prefer reachable in-field region to left-rear preference")
--- Both sides fit the polygon: prioritize field-inward direction even if
--- the historical same-side preference would choose the outward one.
+-- Both sides fit the polygon, but the field-inward side approaches
+-- the opposing assembly. Conflict withdrawal outranks centroid scoring.
 local inwardMover=worker(100,100,0,1)
 local offsetBlocker=worker(110,108,0,-1)
 local inward=assert(Plan.plan({fieldCentroid={x=170,z=100},
     fieldPolygon=field,blockerWorkingWidthM=36},inwardMover,offsetBlocker))
-assert(inward.egressSide==1 and inward.fieldInteriorScore>0)
+assert(inward.egressSide==-1 and inward.fieldInteriorScore<0
+    and inward.returnRegion.directionX*(offsetBlocker.x-inwardMover.x)
+        +inward.returnRegion.directionZ*(offsetBlocker.z-inwardMover.z)<=0,
+    "retreat from the other worker outranks the centroid")
 -- Nominal 41 m is not a literal. Only the 5 m margin is fixed.
 local narrower=assert(Plan.plan({fieldCentroid={x=50,z=100},
     fieldPolygon=field,blockerWorkingWidthM=24},mover,blocker))
