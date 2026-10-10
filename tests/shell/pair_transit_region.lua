@@ -116,7 +116,7 @@ assert(partial~=nil and partialMover==a and partialRemaining==b
 a.workingWidthM=nil
 b.workingWidthM=nil
 local absent,_,__,missing=Plan.planPairCascade(c,a,b)
-assert(absent==nil and missing=="NO_FEASIBLE_PAIR_EGRESS")
+assert(absent==nil and missing=="NO_SAFE_PAIR_EGRESS_REGION")
 a.workingWidthM=36
 b.workingWidthM=36
 -- An enclosed 20 m pocket may offer a short but useful FIRST relocation.
