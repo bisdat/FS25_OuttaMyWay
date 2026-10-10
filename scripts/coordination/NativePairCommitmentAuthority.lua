@@ -293,12 +293,9 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
         if type(c)=="table" and type(c.vehicle)=="table"
             and c.vehicle~=worker and c.vehicle.isDeleted~=true
             and c.vehicle.rootNode==c.rootId
-            and c.aiActive==false and c.playerControlled==false
+            and c.aiActive==false
             and finite(c.reportedSpeedMps) and c.reportedSpeedMps<=0.25
             and finite(c.distanceM) and c.distanceM<=30
-            and finite(c.relativeForwardM) and c.relativeForwardM>0
-            and finite(c.relativeCrossTrackM)
-            and math.abs(c.relativeCrossTrackM)<=5
             and finite(c.forwardX) and finite(c.forwardZ) then
             selection=c
             break
@@ -317,21 +314,17 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
         return nil,widthReason or "STATIC_BENEFICIARY_WIDTH_UNAVAILABLE"
     end
     local subject=selection.vehicle
+    -- Root proximity is sufficient for this inferred reactive relocation:
+    -- root-axis alignment and which side of the worker the assembly is on
+    -- cannot prove (or disprove) blocking by its wide physical footprint.
     -- Identity and root pose are revalidated once, with no new census.
     local current=pose(subject)
     if current==nil then return nil,"STATIC_SUBJECT_POSE_UNAVAILABLE" end
     local dx,dz=current.x-beneficiary.x,current.z-beneficiary.z
     if dx*dx+dz*dz>900 then return nil,"STATIC_SUBJECT_NO_LONGER_LOCAL" end
-    local mission=g_currentMission
-    if mission~=nil and mission.controlledVehicle==subject then
-        return nil,"STATIC_SUBJECT_CURRENTLY_CONTROLLED"
-    end
-    if type(subject.getIsControlled)=="function" then
-        local ok,controlled=pcall(subject.getIsControlled,subject)
-        if not ok or controlled==true then
-            return nil,"STATIC_SUBJECT_CURRENTLY_CONTROLLED"
-        end
-    end
+    -- Vehicle tab-selection is not evidence of an active driving action.
+    -- Historical BWR removed player-entry/takeover authority checks; the
+    -- static path must not reintroduce them as a relocation veto.
     if type(subject.getIsAIActive)=="function" then
         local ok,active=pcall(subject.getIsAIActive,subject)
         if not ok or active~=false then

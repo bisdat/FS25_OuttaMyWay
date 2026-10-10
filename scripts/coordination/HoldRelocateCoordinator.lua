@@ -7,6 +7,7 @@ local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
 local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
+local STATIC_EGRESS_FAILSAFE_MS=25000 -- cancel static movement after 25 seconds
 local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
 local MIN_CENTROID_BEARING_M=0.01
@@ -73,6 +74,7 @@ function Coordinator:getStatus()
         relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
         regionRequiredProgressM=state.objective.returnRegion.requiredProgressM,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
+        staticEgressDeadlineMs=state.staticEgressDeadlineMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
         egressHoldResults=self.lastEgressRegulationResults
     }
@@ -173,11 +175,13 @@ function Coordinator:beginStatic(commitment,nowMs)
         isTransitOutstanding=false,isRelocatorHeld=false,
         isStatic=true,staticTransitRequested=false,
         phase="STATIC_REQUESTING_TRANSIT",objective=objective,
-        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
+        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS,
+        staticEgressDeadlineMs=nowMs+STATIC_EGRESS_FAILSAFE_MS
     }
     local ready,preflightReason=command(self.physicalControl,"preflight",state)
     if not ready then return false,preflightReason end
-    if not finite(state.egressRegulationUntilMs) then
+    if not finite(state.egressRegulationUntilMs)
+        or not finite(state.staticEgressDeadlineMs) then
         return false,"STATIC_EGRESS_CLOCK_UNAVAILABLE"
     end
     self.active=state
@@ -402,6 +406,16 @@ function Coordinator:advance(nowMs,dt)
     end
 
     if state.isStatic then
+        -- This deadline cancels only an unfinished static relocation. It is
+        -- not a new eligibility gate, a repeat cooldown or a steering target.
+        -- Existing cleanup stops the drive, releases Regulation, retains
+        -- issued TRANSIT and frees authority for a later native encounter.
+        if state.isStaticMovementOutstanding
+            and nowMs>=state.staticEgressDeadlineMs then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",
+                "STATIC_EGRESS_FAILSAFE_25S")
+            return
+        end
         if state.phase=="STATIC_WAIT_EGRESS_TIMER" then
             if nowMs<state.egressRegulationUntilMs then return end
             self.lastOutcome={status="STATIC_BLOCKER_MOVED",

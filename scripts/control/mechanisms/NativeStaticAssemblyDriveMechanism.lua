@@ -22,13 +22,9 @@ local function pose(node)
         and {x=x,y=y,z=z} or nil
 end
 
-local function controlled(vehicle)
-    local mission=g_currentMission
-    if mission~=nil and mission.controlledVehicle==vehicle then return true end
-    if type(vehicle.getIsControlled)=="function" then
-        local ok,result=pcall(vehicle.getIsControlled,vehicle)
-        if not ok or result==true then return true end
-    end
+local function newlyAIActive(vehicle)
+    -- A new native AI job can legitimately supersede direct static movement.
+    -- Merely tabbing into the assembly is not a motion command or veto.
     if type(vehicle.getIsAIActive)=="function" then
         local ok,active=pcall(vehicle.getIsAIActive,vehicle)
         if not ok or active~=false then return true end
@@ -59,7 +55,7 @@ function M:startMovement(vehicle,objective)
         or type(vehicle.getIsMotorStarted)~="function"
         or type(vehicle.startMotor)~="function"
         or type(vehicle.stopMotor)~="function"
-        or controlled(vehicle) then
+        or newlyAIActive(vehicle) then
         return false,"STATIC_DRIVE_NATIVE_PRECONDITION_MISSING"
     end
     local origin=pose(vehicle.rootNode)
@@ -151,8 +147,8 @@ function M:movementStatus(vehicle,dt)
         return {isFailed=true,reason="STATIC_DRIVE_NOT_ACTIVE"}
     end
     if s.isFailed then return {isFailed=true,reason=s.reason or "STATIC_DRIVE_FAILED"} end
-    if controlled(vehicle) then
-        s.isFailed=true;s.reason="STATIC_SUBJECT_CLAIMED"
+    if newlyAIActive(vehicle) then
+        s.isFailed=true;s.reason="STATIC_SUBJECT_AI_RECLAIMED"
         return {isFailed=true,reason=s.reason}
     end
     local p=pose(vehicle.rootNode)

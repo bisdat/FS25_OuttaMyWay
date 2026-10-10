@@ -171,8 +171,38 @@ moving.nearestPhysicalAssemblies[1].aiActive=true
 assert(authority:admitStaticBlockerCandidate(worker,1000,moving)==nil)
 moving.nearestPhysicalAssemblies[1].aiActive=false
 moving.nearestPhysicalAssemblies[1].playerControlled=true
-assert(authority:admitStaticBlockerCandidate(worker,1000,moving)==nil)
+local enteredSubject=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,moving))
+assert(enteredSubject.kind=="STATIC_BLOCKER",
+    "tab-selected inactive static subject is still eligible")
+assert(authority:release(enteredSubject))
 moving.nearestPhysicalAssemblies[1].playerControlled=false
+
+-- Reproduce TS018's second encounter: the same parked assembly remains
+-- within 30 m but is 22 m off the beneficiary's centre axis and tab-selected.
+coords[22].x,coords[22].z=8,-22
+subject.getIsControlled=function()return true end
+g_currentMission.controlledVehicle=subject
+local broad=OuttaMyWay.StaticBlockageEncounterObservation.capture(
+    worker,g_currentMission,250)
+assert(broad.nearestPhysicalAssemblies[1].distanceM<30
+    and math.abs(broad.nearestPhysicalAssemblies[1].relativeCrossTrackM)>20
+    and broad.nearestPhysicalAssemblies[1].playerControlled==true)
+local broadAdmission=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,broad))
+assert(broadAdmission.relocator.vehicle==subject,
+    "static nearby must take priority over solo even after lateral egress")
+assert(authority:release(broadAdmission))
+-- Root-axis sign is not a new static attribution gate, either.
+coords[22].x=-8
+local behind=OuttaMyWay.StaticBlockageEncounterObservation.capture(
+    worker,g_currentMission,255)
+assert(behind.nearestPhysicalAssemblies[1].relativeForwardM<0)
+assert(authority:release(assert(authority:admitStaticBlockerCandidate(
+    worker,1000,behind))))
+coords[22].x,coords[22].z=10,0
+g_currentMission.controlledVehicle=nil
+subject.getIsControlled=function()return false end
 
 -- Coordinator moves the non-job subject rather than the beneficiary.
 local events={}
@@ -240,17 +270,34 @@ assert(#coordinator.lastEgressRegulationResults==1
     and coordinator.lastEgressRegulationResults[1].rootId
         ==c.participants[1].assemblyReferenceKey)
 assert(authority:release(c))
--- A future player claim interrupts direct motion and releases the lease.
+-- Tabbing into Condor during native egress is not a drive request and
+-- cannot terminate or veto the selected static actuator.
 local fresh=assert(authority:admitStaticBlockerCandidate(worker,1000,snapshot))
 local objective=assert(OuttaMyWay.ProjectedEgressRegion.planStatic(
     fresh,fresh.relocator))
-assert(actuator:startMovement(subject,objective))
+subject.getIsControlled=function()return true end
 g_currentMission.controlledVehicle=subject
+assert(actuator:startMovement(subject,objective))
 status=actuator:movementStatus(subject,16)
-assert(status.isFailed and status.reason=="STATIC_SUBJECT_CLAIMED")
+assert(status.isFailed~=true
+    and status.reason~="STATIC_SUBJECT_CLAIMED",
+    "tab-selection must not interrupt a native static relocation")
 assert(actuator:cancelMovement(subject))
 g_currentMission.controlledVehicle=nil
+subject.getIsControlled=function()return false end
 assert(authority:release(fresh))
+
+-- A genuinely new native AI job still supersedes OMW's direct non-job drive.
+local reclaimed=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,snapshot))
+assert(actuator:startMovement(subject,assert(
+    OuttaMyWay.ProjectedEgressRegion.planStatic(reclaimed,reclaimed.relocator))))
+subject.getIsAIActive=function()return true end
+status=actuator:movementStatus(subject,16)
+assert(status.isFailed and status.reason=="STATIC_SUBJECT_AI_RECLAIMED")
+assert(actuator:cancelMovement(subject))
+subject.getIsAIActive=function()return false end
+assert(authority:release(reclaimed))
 
 -- Explicit shell disable relinquishes the coordinator AND commitment authority.
 -- A later occurrence involving exactly the same two roots is a NEW recovery,
@@ -301,6 +348,48 @@ assert(table.concat(events,",",priorReleaseEvents+1)==
     "GIANTS job turnover cannot restore a static subject to working pose")
 worker.getJob=originalGetJob
 assert(authority:release(interrupted))
+
+-- Static-only 25 s fail-safe: cancel the still-unfinished subject drive,
+-- leave issued TRANSIT, and do not set sticky cooldown or redirect the same
+-- pulse into solo BWR. The next distinct encounter may target this root again.
+local pendingStatus=physical.staticMovementStatus
+physical.staticMovementStatus=function(_,v,dt)
+    assert(v==subject and dt==16)
+    events[#events+1]="STATUS_PENDING"
+    return {isComplete=false}
+end
+local timeoutCommitment=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
+        worker,g_currentMission,560)))
+local t0=30000
+assert(coordinator:begin(timeoutCommitment,t0))
+assert(coordinator:getStatus().staticEgressDeadlineMs==t0+25000)
+coordinator:advance(t0+5000,16)
+assert(coordinator:isActive(),"5s Regulation release cannot end movement")
+local beforeDeadline=#events
+coordinator:advance(t0+24999,16)
+assert(coordinator:isActive() and #events==beforeDeadline+1
+    and events[#events]=="STATUS_PENDING",
+    "no static timeout before 25s")
+local beforeTimeout=#events
+coordinator:advance(t0+25000,16)
+local timeoutResult=coordinator:getStatus().lastOutcome
+assert(not coordinator:isActive()
+    and timeoutResult.status=="CONTROL_INTERRUPTED"
+    and timeoutResult.reason=="STATIC_EGRESS_FAILSAFE_25S")
+assert(table.concat(events,",",beforeTimeout+1)==
+    "CANCEL,RETAIN_TRANSIT",
+    "timer cancels native movement and retains static TRANSIT")
+assert(authority:release(timeoutCommitment))
+physical.staticMovementStatus=pendingStatus
+local afterTimer=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
+        worker,g_currentMission,570)))
+assert(afterTimer.commitmentId~=timeoutCommitment.commitmentId)
+assert(coordinator:begin(afterTimer,t0+26000),
+    "expired static relocation cannot veto later native blockage")
+assert(stubRuntime:relinquish("MAP_DELETE"))
+assert(authority.active==nil and not coordinator:isActive())
 
 -- A failed Regulation after successful TRANSIT preflight must release the
 -- cached (never dispatched) plan. Otherwise the subsequent static incident
