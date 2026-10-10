@@ -8,12 +8,20 @@ dofile("scripts/control/HoldRelocatePhysicalControl.lua")
 OuttaMyWay.NonActiveRelocationControl={
     new=function() return {
         isActive=function() return false end,
-        relinquish=function() return true end
+        relinquish=function() return true end,
+        discardOnMapDelete=function()end
     } end
 }
+local prospective=nil
 OuttaMyWay.NonActiveObstructionAssessment={
-    find=function() return nil end,
-    isStillCurrent=function() return false end
+    new=function()
+        return {
+            reset=function()end,
+            advance=function()end,
+            findProspective=function()return prospective end
+        }
+    end,
+    isStillCurrent=function() return true end
 }
 dofile("scripts/coordination/LiveHoldRelocateRuntime.lua")
 local Authority=OuttaMyWay.NativePairCommitmentAuthority
@@ -362,31 +370,30 @@ assert(startedSolo==1 and #published==4
 runtime:update(16)
 assert(startedSolo==1 and #published==4,
     "one intervention admission per solo blocked occurrence")
--- Positive non-active obstruction gets priority over solo BWR, once per
--- native occurrence. No synthetic partner or separate listener is needed.
-local blockerOccurrence={}
-observer.getCurrentSingleCandidates=function()return {
-    {candidateIdentity=blockerOccurrence,worker=second,confirmedBlockedMs=1000}
-} end
+-- Archive Causal Obstruction is independent of native isBlocked.
+-- Positive prospective evidence precedes the next native stalled occurrence.
+observer.getCurrentSingleCandidates=function()return {} end
+local specificBlocker={rootNode=444}
+prospective={positive=true,beneficiary=second,blocker=specificBlocker,
+    evidenceSource="REALISED_MOTION_DEMAND",realisedMotionReachM=12}
 local seenBlocker=false
-OuttaMyWay.NonActiveObstructionAssessment.find=function(worker)
-    assert(worker==second)
-    return {positive=true,beneficiary=second,blocker={rootNode=444}}
-end
 runtime.nonActiveControl.begin=function(_,candidate)
-    assert(candidate.positive==true and candidate.beneficiary==second)
+    assert(candidate==prospective and candidate.beneficiary==second)
     seenBlocker=true
     return true,{targetProgressM=60,
+        relocationCentreKind="FIELD_WORLD_CENTROID",
         fieldIdentitySource="GIANTS_ACTIVE_COURSE_FIELD",
         sourceStrategy=secondStrategy}
 end
 runtime:update(16)
 assert(seenBlocker and startedSolo==1
-    and published[5].code=="OBSTRUCTION_RELOCATION_STARTED")
--- The mocked non-active blocker remains physically present and unclaimed.
-OuttaMyWay.NonActiveObstructionAssessment.isStillCurrent=function() return true end
+    and published[5].code=="OBSTRUCTION_RELOCATION_STARTED"
+    and published[5].payload.detail:find("REALISED_MOTION_DEMAND"))
 runtime:update(16)
-assert(startedSolo==1
-    and #published==5,"one non-job actuation admission per native occurrence")
+assert(startedSolo==1 and #published==5,
+    "no duplicate actuation for unchanged causal obstruction")
+prospective=nil
+runtime:update(16)
+assert(#published==5,"absence of causal relationship does not invent a new duty")
 -- No player-control veto or diagnostic fields remain in active pair/solo admission.
-print("Live pair / solo fallback / non-active-blocker priority: PASS")
+print("Live pair / solo fallback / pre-stall archived Causal Obstruction: PASS")
