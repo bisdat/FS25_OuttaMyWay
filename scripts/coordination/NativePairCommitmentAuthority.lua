@@ -391,6 +391,24 @@ function Authority:isCommitmentCurrent(commitment)
             return false,"STATIC_SUBJECT_UNAVAILABLE"
         end
     end
+    -- Admission validates BOTH parties. Once a paired movement has been
+    -- selected, only the actual mover's job and strategy can revoke that
+    -- mover's physical Control. The nonmover's separate 5 s Regulation lease
+    -- already manages its own native job supersession.
+    local selected=commitment.selectedMover
+    if selected~=nil then
+        if #commitment.participants~=2
+            or (selected~=commitment.participants[1]
+                and selected~=commitment.participants[2]) then
+            return false,"PAIR_MOVER_AUTHORITY_INVALID"
+        end
+        if currentJob(selected.vehicle)~=selected.sourceJobReference
+            or currentStrategy(selected.vehicle)~=selected.sourceStrategyReference
+            or pose(selected.vehicle)==nil then
+            return false,"GIANTS_JOB_EPISODE_CHANGED"
+        end
+        return true
+    end
     for i=1,#commitment.participants do
         local p=commitment.participants[i]
         if currentJob(p.vehicle)~=p.sourceJobReference
