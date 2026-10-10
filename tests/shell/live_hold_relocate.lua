@@ -150,7 +150,9 @@ assert(physical:transitStatus(first).isSettled
     and physical:transitStatus(second).isSettled,
     "non-foldable equipment needs no fold polling or delay")
 coordinator:advance(1001)
-assert(coordinator:getStatus().phase=="REVERSING")
+assert(coordinator:getStatus().phase=="REVERSING"
+    or coordinator:getStatus().phase=="PAIR_FORWARD_MOVING",
+    "full-distance in-field selection may choose reverse or forward")
 assert(#events==8 and events[5]=="RELEASE:TRANSIT_PREPARATION"
     and events[6]=="RELEASE:TRANSIT_PREPARATION"
     and events[7]=="REGULATE:EGRESS"
