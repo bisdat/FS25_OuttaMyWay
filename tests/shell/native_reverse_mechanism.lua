@@ -282,4 +282,52 @@ broken=pairedTravel(false)
 broken.returnRegion.directionZ=nil
 allowed,brokenReason=mechanism:startReverse(vehicle,broken)
 assert(not allowed and brokenReason=="REVERSE_REQUEST_INVALID")
+-- Issue #470: DIAGNOSTIC publication must never change the exact GIANTS
+-- drive parameters, even when sampled tool/heading evidence is unavailable.
+locations[1].x=0;locations[1].z=0
+selectedTool=nil
+local baseline=pairedTravel(false)
+assert(mechanism:startReverse(vehicle,baseline))
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,true)
+local previous=calls[#calls]
+assert(mechanism:cancelReverse(vehicle))
+local reported={}
+local diagnosticEnabled=true
+OuttaMyWay.LogPublication={origin=function()
+    return {isEligible=function()return diagnosticEnabled end,
+        publish=function(_,class,severity,code,payload)
+            reported[#reported+1]={code=code,payload=payload()}
+            return true
+        end}
+end}
+dofile("scripts/diagnostics/ReverseKinematicsProbe.lua")
+g_time=30000
+locations[1].x=0;locations[1].z=0
+assert(mechanism:startReverse(vehicle,baseline))
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,true)
+local diagnosticCall=calls[#calls]
+assert(diagnosticCall.forwards==previous.forwards
+    and diagnosticCall.allowed==previous.allowed
+    and diagnosticCall.speed==previous.speed
+    and diagnosticCall.doNotSteer==previous.doNotSteer
+    and diagnosticCall.lx==previous.lx and diagnosticCall.lz==previous.lz,
+    "diagnostic cannot modify GIANTS native drive request")
+assert(#reported==2 and reported[1].code=="REVERSE_KINEMATICS_START"
+    and reported[2].code=="REVERSE_KINEMATICS_SAMPLE")
+-- An instrument error must not revoke or change physical Control.
+local savedSample=OuttaMyWay.ReverseKinematicsProbe.sample
+OuttaMyWay.ReverseKinematicsProbe.sample=function()error("SENSOR_FAILED")end
+g_time=30500
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,true)
+assert(calls[#calls].allowed==true and calls[#calls].speed==previous.speed)
+OuttaMyWay.ReverseKinematicsProbe.sample=savedSample
+assert(mechanism:cancelReverse(vehicle))
+assert(reported[#reported].code=="REVERSE_KINEMATICS_END")
+reported={}
+diagnosticEnabled=false
+assert(mechanism:startReverse(vehicle,baseline))
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,true)
+assert(#reported==0,"NORMAL mode must suppress all diagnostic construction")
+assert(mechanism:cancelReverse(vehicle))
+assert(#reported==0)
 print("Native directional pair egress and reverse restoration: PASS")
