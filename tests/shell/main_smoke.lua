@@ -3,6 +3,10 @@
 local expected={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
+    "scripts/representation/PlanViewFootprint.lua",
+    "scripts/representation/EntityLocalShapeEvidence.lua",
+    "scripts/representation/CurrentPhysicalConflictRepresentation.lua",
+    "scripts/assessment/CausalObstructionAssessment.lua",
     "scripts/assessment/NonActiveObstructionAssessment.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
@@ -46,6 +50,10 @@ addModEventListener=function(listener) registered[#registered+1]=listener end
 source=function(path)
     loaded[#loaded+1]=path
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
+        or path=="scripts/representation/PlanViewFootprint.lua"
+        or path=="scripts/representation/EntityLocalShapeEvidence.lua"
+        or path=="scripts/representation/CurrentPhysicalConflictRepresentation.lua"
+        or path=="scripts/assessment/CausalObstructionAssessment.lua"
         or path=="scripts/assessment/NonActiveObstructionAssessment.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/coordination/ProjectedEgressRegion.lua"
