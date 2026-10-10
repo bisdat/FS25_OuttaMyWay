@@ -143,10 +143,10 @@ end
 -- Preserve archived BWR's GIANTS-equivalent tool-relative rotation. If a tool
 -- reverser is present but this geometry is missing, do not silently revert to
 -- vehicle-only steering and claim native reversing equivalence.
-local function adjustToolTarget(reverseNode,toolNode,targetX,targetZ)
+local function adjustToolTarget(reverseNode,toolNode,targetX,targetZ,captureOperands)
     if toolNode==nil then return targetX,targetZ end
     if not toolGeometryReady() then return nil,nil,"TOOL_GEOMETRY_UNAVAILABLE" end
-    local ok,x,z=pcall(function()
+    local ok,x,z,operands=pcall(function()
         local tx,_,tz=getWorldTranslation(toolNode)
         local dx1,_,dz1=localDirectionToWorld(reverseNode,0,0,1)
         local dx2,_,dz2=localDirectionToWorld(toolNode,0,0,1)
@@ -167,12 +167,27 @@ local function adjustToolTarget(reverseNode,toolNode,targetX,targetZ)
         local localZ=math.sin(angle)*lateral+math.cos(angle)*longitudinal
         if MathUtil.isNan(localX) or MathUtil.isNan(localZ) then return nil,nil end
         local worldX,_,worldZ=localToWorld(reverseNode,-localX,0,localZ)
-        return worldX,worldZ
+        -- Additional return values are read ONLY by the engineering diagnostic
+        -- sampler. The actual GIANTS actuator still receives worldX/worldZ.
+        local operands
+        if captureOperands==true then
+            local rx,_,rz=getWorldTranslation(reverseNode)
+            operands={reverseNodeX=rx,reverseNodeZ=rz,
+                toolNodeX=tx,toolNodeZ=tz,
+                reverseHeadingX=dx1,reverseHeadingZ=dz1,
+                toolHeadingX=dx2,toolHeadingZ=dz2,
+                toolDistanceToTargetM=distance,
+                toolLongitudinalM=longitudinal,
+                toolSignedLateralM=lateral,
+                signedToolFrameRotationDeg=math.deg(angle),
+                rotatedLateralM=localX,rotatedLongitudinalM=localZ}
+        end
+        return worldX,worldZ,operands
     end)
     if not ok or not finite(x) or not finite(z) then
         return nil,nil,"TOOL_GEOMETRY_INVALID"
     end
-    return x,z
+    return x,z,nil,operands
 end
 
 -- Shared native tool-relative transform for reverse movements that must
@@ -280,7 +295,7 @@ function Mechanism:install()
             pcall(OuttaMyWay.ReverseKinematicsProbe.sample,
                 state.kinematicsProbe,targetX/length,targetZ/length,
                 worldX,worldZ,dt,state.regionProgressM,
-                state.regionLateralOffsetM)
+                state.regionLateralOffsetM,adjustToolTarget)
         end
         -- Reverse keeps GIANTS' reverser frame and tool-relative target.
         -- Forward uses its native AI steering frame, without reverse tool
