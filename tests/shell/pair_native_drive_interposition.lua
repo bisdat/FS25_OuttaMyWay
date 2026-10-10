@@ -1,6 +1,6 @@
 -- TS001 0.5.2.9 regression: the two real native-drive wrappers must compose
 -- even when a synthetic paired 41 m Return Region completes before the
--- separate 5 s Regulation. This fixture tests wrapper order, not speed.
+-- separate 8 s pair Regulation. This fixture tests wrapper order, not speed.
 -- This is a shell contract, not a GIANTS physical clearance claim.
 OuttaMyWay={ProjectedEgressRegion={}}
 local events={}
@@ -139,11 +139,18 @@ assert(coordinator:getStatus().phase=="HOLD_RELOCATED"
     "fast region entry must reacquire the 7-second relocated Hold")
 AIVehicleUtil.driveToPoint(b,16,1,true,false,0,1,20,false)
 assert(events[#events].allowed==false and events[#events].speed==0)
--- The counterpart speed restriction still has its independent 5 s timer.
+-- The counterpart has its independent 8 s timer; native wrappers
+-- must retain Regulation at the old 5 s boundary, then release at 8 s.
 coordinator:advance(5999)
 assert(reg.count==1)
 coordinator:advance(6000)
-assert(reg.count==0 and hold:isHolding(b))
+assert(reg.count==1 and hold:isHolding(b),
+    "5 s may no longer release pair Regulation")
+coordinator:advance(8999)
+assert(reg.count==1)
+coordinator:advance(9000)
+assert(reg.count==0 and hold:isHolding(b),
+    "8 s Regulation release must leave mover's 7 s Hold intact")
 AIVehicleUtil.driveToPoint(a,16,1,true,true,0,1,20,false)
 assert(events[#events].vehicle==a and events[#events].speed==20)
 -- When 7 s Hold finishes the last transparent native wrapper unwinds.

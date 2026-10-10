@@ -170,20 +170,25 @@ assert(authority:isCommitmentCurrent(issued),
 coordinator:advance(3000)
 assert(coordinator:isActive(),"nonmover job change must not abort movement")
 coordinator:advance(5999)
-assert(#events==3,"five seconds is measured from initial movement start")
+assert(#events==3,"pair Regulation remains active before 8 s")
 coordinator:advance(6000)
-assert(events[4]=="REGULATION_RELEASE:EGRESS")
-assert(coordinator.lastEgressRegulationResults[1].rootId==other)
+assert(#events==3,"old 5 s deadline may not release pair Regulation")
 local oldStrategyList=remainingVehicle.spec_aiFieldWorker.driveStrategies
 remainingVehicle.spec_aiFieldWorker.driveStrategies={}
 assert(authority:isCommitmentCurrent(issued),
-    "post-Regulation nonmover strategy turnover must not revoke mover")
+    "nonmover strategy turnover before Regulation release must not revoke mover")
 coordinator:advance(6001)
 assert(coordinator:isActive())
 reverse={travelledM=41,isComplete=true}
 coordinator:advance(6001)
-assert(events[5]=="REVERSE_STOP"
-    and events[6]=="HOLD:RELOCATED_WORKER")
+assert(events[4]=="REVERSE_STOP"
+    and events[5]=="HOLD:RELOCATED_WORKER")
+coordinator:advance(8999)
+assert(#events==5)
+coordinator:advance(9000)
+assert(events[6]=="REGULATION_RELEASE:EGRESS"
+    and coordinator.lastEgressRegulationResults[1].rootId==other,
+    "pair nonmover's native Regulation expires at 8 s independently")
 coordinator:advance(13000)
 assert(#events==6)
 coordinator:advance(13001)
