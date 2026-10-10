@@ -397,7 +397,7 @@ assert(seenBlocker and startedSolo==1
     and published[5].code=="OBSTRUCTION_RELOCATION_STARTED"
     and published[5].detail.detail:find("REALISED_MOTION_DEMAND"))
 local snapshotCount=physicalAssessmentLookups
-for _=1,28 do runtime:update(16) end
+for _=1,30 do runtime:update(16) end
 assert(startedSolo==1 and #published==5,
     "no duplicate actuation for unchanged causal obstruction")
 assert(physicalAssessmentLookups==snapshotCount,
