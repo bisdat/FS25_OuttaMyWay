@@ -38,8 +38,31 @@ local objective={isReverse=true,targetX=goalX*53,targetZ=goalZ*53,
     returnRegion={originX=0,originZ=0,directionX=goalX,
         directionZ=goalZ,requiredProgressM=13}}
 local vehicle={rootNode=1}
+-- Absence of publication is insufficient evidence: disabled mode must
+-- perform ZERO diagnostic scene reads, angle calculations or shadow runs.
+local geometryReads=0
+local shadowExecutions=0
+local originalTranslation=getWorldTranslation
+local originalDirection=localDirectionToWorld
+getWorldTranslation=function(...)
+    geometryReads=geometryReads+1
+    return originalTranslation(...)
+end
+localDirectionToWorld=function(...)
+    geometryReads=geometryReads+1
+    return originalDirection(...)
+end
+local function unavailableShadow()
+    shadowExecutions=shadowExecutions+1
+    return 0,0
+end
 assert(Probe.begin(vehicle,2,3,objective,22)==nil and #events==0,
-    "NORMAL/DEBUG cannot create probe or sample frame geometry")
+    "NORMAL/DEBUG must never acquire a diagnostic sample state")
+Probe.sample(nil,0,-1,10,-10,16,0,0,unavailableShadow)
+assert(geometryReads==0 and shadowExecutions==0 and #events==0,
+    "diagnostics OFF must perform no sensor reads or hypothetical calculations")
+getWorldTranslation=originalTranslation
+localDirectionToWorld=originalDirection
 enabled=true
 local p=assert(Probe.begin(vehicle,2,3,objective,22))
 assert(#events==1 and events[1].code=="REVERSE_KINEMATICS_START")
