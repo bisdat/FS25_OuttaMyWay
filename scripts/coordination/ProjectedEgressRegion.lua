@@ -60,6 +60,10 @@ local function heading(vehicle,methodName,reverse)
     return reverse and -ux or ux,reverse and -uz or uz
 end
 
+local function lateralDominates(dx,dz,fx,fz)
+    return math.abs(dx*(-fz)+dz*fx)>math.abs(dx*fx+dz*fz)+0.000001
+end
+
 function Region.plan(commitment,relocator,blocker,routeMode)
     if type(commitment)~="table" or type(relocator)~="table"
         or type(blocker)~="table"
@@ -80,8 +84,7 @@ function Region.plan(commitment,relocator,blocker,routeMode)
     end
     local vectorDistanceM=width+EGRESS_MARGIN_M
     local mode=routeMode or "OBLIQUE_REVERSE"
-    if mode~="OBLIQUE_REVERSE" and mode~="FORWARD"
-        and mode~="CENTROID" then
+    if mode~="OBLIQUE_REVERSE" and mode~="CENTROID" then
         return nil,"PAIR_EGRESS_MODE_UNSUPPORTED"
     end
     local backX,backZ,reverseReason
@@ -92,7 +95,7 @@ function Region.plan(commitment,relocator,blocker,routeMode)
     end
     local frontX,frontZ,frontReason=heading(
         relocator.vehicle,"getAISteeringNode",false)
-    if mode~="OBLIQUE_REVERSE" and frontX==nil then
+    if frontX==nil then
         return nil,frontReason
     end
     local forwardX,forwardZ,blockerReason=heading(
@@ -116,8 +119,6 @@ function Region.plan(commitment,relocator,blocker,routeMode)
                 dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX,
                 dz=COS_OBLIQUE*backZ+side*SIN_OBLIQUE*perpZ}
         end
-    elseif mode=="FORWARD" then
-        rays[1]={side=0,dx=frontX,dz=frontZ}
     elseif finite(centreDistance) and centreDistance>0.0001 then
         rays[1]={side=0,dx=centreX/centreDistance,
             dz=centreZ/centreDistance}
@@ -130,7 +131,14 @@ function Region.plan(commitment,relocator,blocker,routeMode)
         local progress=vectorDistanceM*math.abs(lateralRate)
         -- All options must demonstrably clear the other worker's course.
         -- A root heading without useful cross-track travel is not an exit.
-        if progress>=vectorDistanceM*0.5 then
+        if progress>=vectorDistanceM*0.5
+            and lateralDominates(dx,dz,frontX,frontZ)
+            and lateralDominates(dx,dz,forwardX,forwardZ)
+            and dx*(blocker.x-relocator.x)
+                +dz*(blocker.z-relocator.z)<=0.001
+            and (mode=="OBLIQUE_REVERSE"
+                or frontX*(blocker.x-relocator.x)
+                    +frontZ*(blocker.z-relocator.z)<=0.001) then
             local signedStart=lateralSign*startCross
             local requiredCross=math.max(0,signedStart)+progress
             local reachM=(requiredCross-signedStart)/math.abs(lateralRate)
@@ -188,7 +196,7 @@ function Region.plan(commitment,relocator,blocker,routeMode)
             isPhysicalPairClearanceConfirmed=false
         },
         directionSource=mode=="OBLIQUE_REVERSE" and "OBLIQUE_REVERSE"
-            or (mode=="FORWARD" and "PAIR_FORWARD" or "PAIR_CENTROID"),
+            or "PAIR_CENTROID",
         egressSide=chosen.side,vectorDistanceM=vectorDistanceM,
         blockerWorkingWidthM=width,marginM=EGRESS_MARGIN_M,
         nominalBearingOffsetDeg=mode=="OBLIQUE_REVERSE"
@@ -199,10 +207,8 @@ function Region.plan(commitment,relocator,blocker,routeMode)
     }
 end
 
--- Assess all bounded pair options once before any physical movement:
--- reverse 70-degree (both sides, both assignments); forward (both);
--- then directly toward the field centroid (both). Return no solution
--- only after all assignments and directions have been assessed.
+-- Reverse 70 degrees for both mover assignments precedes any non-axial,
+-- partner-withdrawing centroid option. Pure axial travel is never an exit.
 function Region.planPairCascade(commitment,preferred,alternative)
     -- A prepared pair uses selected-runtime assembly envelopes, not the
     -- legacy productive-width ray scale.
@@ -212,7 +218,7 @@ function Region.planPairCascade(commitment,preferred,alternative)
             commitment,preferred,alternative)
     end
     local attempts=0
-    for _,mode in ipairs({"OBLIQUE_REVERSE","FORWARD","CENTROID"}) do
+    for _,mode in ipairs({"OBLIQUE_REVERSE","CENTROID"}) do
         for _,mover in ipairs({preferred,alternative}) do
             local other=mover==preferred and alternative or preferred
             attempts=attempts+1
