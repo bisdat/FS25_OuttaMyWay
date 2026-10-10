@@ -1,3 +1,22 @@
+# v0.5.2.0 PATCH CHECKPOINT — Reactive Static-Blocker Hold & Relocate Plateau
+
+**Accepted source baseline:** `main` after merged [PR #466](https://github.com/bisdat/FS25_OuttaMyWay/pull/466), merge commit `ca592844d4256a54b712ce6be8a1252948d6845b`, containing field-accepted TEST `0.5.1.15`. [Issue #465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) is closed as completed.
+
+**Checkpoint rationale:** The accepted 0.5.1 TEST tranche has reached a **Validated Plateau within the 0.5 architectural/capability epoch**. The reactive native static-blocker path has two GIANTS TS018 **PASS** runs. The field-edge direction concern was consciously retained as an observation rather than a mandatory defect: current **Conflict Clearance** is accepted, whereas any future **Static In-Field Settlement** policy will be driven by subsequent Reality. No new capability epoch or additional implementation is declared.
+
+**Behaviour captured in the accepted baseline:**
+- Native blocked evidence at least **1 second**, one-shot physical-root proximity within **30 m**, and stationary AI-inactive static-blocker priority ahead of solo recovery when no active-worker pair applies; a later independently qualified blocked pulse may nominate the same static assembly again.
+- Vehicle tab selection is **not a player-driving or static-admission veto**. GIANTS can suppress actual motion while a vehicle is selected even when the motor is started and native point-drive calls are issued; the existing commitment can progress after tab-out without a fresh admission.
+- Direct non-job native static egress uses maximum available **directional motor/cruise speed**, a forward/reverse **70° oblique** direction, and a signed lateral Return Region scaled from beneficiary working width **plus 5 m**. The field polygon is an **in-field direction preference**, not a guaranteed physical-footprint boundary clearance or final interior settlement.
+- The blocked beneficiary receives native **1 km/h Regulation for 5 seconds**; an **unfinished static move is cancelled at 25 seconds** while preserving requested TRANSIT and releasing temporary Control. The 25-second expiry is supported by offline contracts but was **not exercised in these GIANTS field runs**.
+- Map-delete cleanup discards the static actuator's scoped state without sending drive, motor or cruise commands to already deleted GIANTS vehicle entities. One-shot five-second actuation evidence distinguishes drive requests from realised displacement.
+
+**Validation basis:** TEST `0.5.1.15` TS018 Run #1, Patriot tab-selected, **PASS**: Condor showed 497 native drive calls and **6.587 m** physical displacement at 5 seconds, then `STATIC_BLOCKER_MOVED` at **10.337 s**. Run #2, Condor tab-selected then tabbed out, **PASS**: 514 native drive calls and just **0.0022 m** displacement at 5 seconds while selected; the same relocation completed `STATIC_BLOCKER_MOVED` at **19.489 s** after tab-out. Field footage and native logs support these bounded verdicts, not universal physical clearance or player-selected continuous motion. Accepted executable commit `d61abc6d57bc2558b9d47d49027501ffb7ae34da` passed [CI #38033346431](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38033346431) **3/3**; the final documentation-only PR head `d0661e782e24a6ea9b3c2ae02a3d7d85ac1ae268` passed [CI #38035041581](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38035041581) **3/3**.
+
+**PATCH increment boundary:** Promote accepted `0.5.1.15 → 0.5.2.0`, resetting BUILD to zero. This checkpoint changes **only** `scripts/config.lua`, `modDesc.xml`, and this release-history entry. No relocation, geometry, AI Control, Configuration, HUD, Architecture, Specification, or testing behaviour is modified. Under the Authority Triad, source identity changes while Architecture and Specification contracts remain valid as field-accepted.
+
+**Governance:** `0.5.2.0` is an accepted **non-canonical PATCH checkpoint** when this PR is merged, not a Release Declaration or Canonical Merge. The review and merge advance Accepted Repository State without declaring a new canonical MINOR epoch.
+
 # v0.5.1.0 PATCH CHECKPOINT — Native Blocked Progress and Hold & Relocate Plateau
 
 **Accepted source baseline:** `main` after merged [PR #459](https://github.com/bisdat/FS25_OuttaMyWay/pull/459), merge commit `0ec3aea4be4809e28ba0150322288600b136e16b`, carrying field-accepted TEST `0.5.0.32`.
