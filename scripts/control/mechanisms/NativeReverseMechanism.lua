@@ -374,12 +374,21 @@ function Mechanism:startReverse(vehicle,objective)
         nativeReverseHeadingZ=objective.nativeReverseHeadingZ,
         regionProgressM=0,regionRemainingM=objective.returnRegion.requiredProgressM,
         commandedDriveCount=0,isComplete=false,isFailed=false}
-    return true,{kind=moveForwards and "PAIR_FORWARD_ARMED" or "REVERSE_ARMED",
+    -- In Lua, `condition and nil or value` cannot encode an absent
+    -- field: it falls through to value. Publish one truthful direction
+    -- label, not a reverse request on a forward-driven worker.
+    local evidence={kind=moveForwards and "PAIR_FORWARD_ARMED" or "REVERSE_ARMED",
         hasToolReverser=toolNode~=nil,
-        requestedReverseSpeedKmh=moveForwards and nil or speedLease.speedKmh,
-        requestedDriveSpeedKmh=moveForwards and speedLease.speedKmh or nil,
-        nativeMotorMaxReverseKmh=speedLease.nativeMotorMaxReverseKmh,
+        nativeMotorMaxReverseKmh=moveForwards and nil
+            or speedLease.nativeMotorMaxReverseKmh,
         isPhysicalMotionConfirmed=false}
+    if moveForwards then
+        evidence.requestedDriveSpeedKmh=speedLease.speedKmh
+        evidence.nativeMotorMaxReverseKmh=nil
+    else
+        evidence.requestedReverseSpeedKmh=speedLease.speedKmh
+    end
+    return true,evidence
 end
 
 function Mechanism:reverseStatus(vehicle)
