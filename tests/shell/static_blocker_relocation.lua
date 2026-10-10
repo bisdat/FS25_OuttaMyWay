@@ -255,7 +255,11 @@ local laterSnapshot=OuttaMyWay.StaticBlockageEncounterObservation.capture(
 local later=assert(authority:admitStaticBlockerCandidate(
     worker,1000,laterSnapshot))
 assert(coordinator:begin(later,10000))
+local priorReleaseEvents=#events
 assert(stubRuntime:relinquish("DISABLED_OR_SERVER_LOST"))
+assert(table.concat(events,",",priorReleaseEvents+1)==
+    "CANCEL,REGULATION_RELEASE,RETAIN_TRANSIT",
+    "interrupted static recovery releases motion and Regulation but NEVER restores working pose")
 assert(authority.active==nil and not coordinator:isActive())
 local subsequent=assert(authority:admitStaticBlockerCandidate(
     worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
@@ -264,8 +268,31 @@ assert(subsequent.commitmentId~=later.commitmentId,
     "later encounter must receive a new commitment identity")
 assert(coordinator:begin(subsequent,15000),
     "no prior relocation may gate a later native blocked occurrence")
+priorReleaseEvents=#events
 assert(stubRuntime:relinquish("MAP_DELETE"))
+assert(table.concat(events,",",priorReleaseEvents+1)==
+    "CANCEL,REGULATION_RELEASE,RETAIN_TRANSIT",
+    "map teardown preserves TRANSIT for the static subject only")
 assert(authority.active==nil and not coordinator:isActive())
+
+-- The exact TS018 interruption: native beneficiary Job Episode turns over
+-- during physical static movement. Preserve TRANSIT, but release native
+-- speed Regulation, the direct movement lease and the commitment.
+local interrupted=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
+        worker,g_currentMission,550)))
+assert(coordinator:begin(interrupted,16000))
+priorReleaseEvents=#events
+local originalGetJob=worker.getJob
+worker.getJob=function()return {} end
+coordinator:advance(16016,16)
+assert(not coordinator:isActive()
+    and coordinator:getStatus().lastOutcome.status=="RELINQUISHED")
+assert(table.concat(events,",",priorReleaseEvents+1)==
+    "CANCEL,REGULATION_RELEASE,RETAIN_TRANSIT",
+    "GIANTS job turnover cannot restore a static subject to working pose")
+worker.getJob=originalGetJob
+assert(authority:release(interrupted))
 
 -- A failed Regulation after successful TRANSIT preflight must release the
 -- cached (never dispatched) plan. Otherwise the subsequent static incident

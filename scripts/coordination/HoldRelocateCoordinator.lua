@@ -109,7 +109,15 @@ function Coordinator:neutralize(state)
         state.isRelocatorHeld=false
     end
     if state.isTransitOutstanding then
-        local ok,reason=command(control,"cancelTransit",state.relocator.vehicle)
+        -- A static assembly is intentionally left in TRANSIT once the
+        -- request was issued, even if GIANTS changes the beneficiary job
+        -- before the lateral region is reached. Relinquish the request
+        -- record only; do NOT send the cached working-pose inverses.
+        -- A preflight-only plan (no request yet) still needs cancellation.
+        -- Paired and solo recoveries retain their existing restore path.
+        local verb=state.isStatic and state.staticTransitRequested
+            and "retainStaticTransit" or "cancelTransit"
+        local ok,reason=command(control,verb,state.relocator.vehicle)
         if not ok then failures[#failures+1]="TRANSIT:"..tostring(reason) end
         state.isTransitOutstanding=false
     end
@@ -163,7 +171,8 @@ function Coordinator:beginStatic(commitment,nowMs)
         blockers={commitment.participants[1]},isBlockerRegulated={},
         isReverseOutstanding=false,isStaticMovementOutstanding=false,
         isTransitOutstanding=false,isRelocatorHeld=false,
-        isStatic=true,phase="STATIC_REQUESTING_TRANSIT",objective=objective,
+        isStatic=true,staticTransitRequested=false,
+        phase="STATIC_REQUESTING_TRANSIT",objective=objective,
         egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
     }
     local ready,preflightReason=command(self.physicalControl,"preflight",state)
@@ -187,6 +196,10 @@ function Coordinator:beginStatic(commitment,nowMs)
         self:finishWithOutcome("CONTROL_INTERRUPTED",regulationReason)
         return false,regulationReason
     end
+    -- The GIANTS request can apply some TRANSIT actions before returning a
+    -- rejection. From first attempted dispatch, retain the TRANSIT posture
+    -- even on interruption; motor, steering and speed Control still release.
+    state.staticTransitRequested=true
     local transit,transitReason=command(self.physicalControl,
         "requestTransit",state.relocator.vehicle)
     if not transit then
