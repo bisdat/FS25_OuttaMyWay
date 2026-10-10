@@ -172,7 +172,7 @@ end
 -- A polygon edge bounds the reachable region; it does NOT veto a useful
 -- shorter movement merely because WORKING width + 5 m will not fit.
 -- This is nominal translation evidence, not a predicted steering/folding sweep.
-local MIN_USEFUL_TRAVEL_M=3
+local MIN_USEFUL_TRAVEL_M=STEP_M -- one fully sampled safe movement, not 41 m
 local AXIAL_COS_LIMIT=math.cos(math.rad(12))
 local STEERING_COS_LIMIT=math.cos(math.rad(80))
 local DISCOVERY_DIRECTIONS=32
@@ -394,16 +394,16 @@ function Region.planPair(commitment,preferred,alternative)
         if best==nil then
             best=c
         else
-            -- A complete egress outranks a staging move. Among complete
-            -- paths retain TS015's proven ±70° reverse precedence; then
-            -- prefer genuine spatial optionality before centroid position.
+            -- A complete egress outranks staging. A mover with more viable
+            -- escape sectors has greater optionality. For the chosen mover
+            -- prefer TS015's proven ±70° reverse before centroid preference.
             local better=false
             if c.isPartialEgress~=best.isPartialEgress then
                 better=not c.isPartialEgress
-            elseif c.isValidatedBearing~=best.isValidatedBearing then
-                better=c.isValidatedBearing
             elseif c.egressOptionality~=best.egressOptionality then
                 better=c.egressOptionality>best.egressOptionality
+            elseif c.isValidatedBearing~=best.isValidatedBearing then
+                better=c.isValidatedBearing
             elseif math.abs(c.regionTravelM-best.regionTravelM)>0.01 then
                 better=c.regionTravelM>best.regionTravelM
             elseif math.abs(c.localDemandSeparationGainM-
