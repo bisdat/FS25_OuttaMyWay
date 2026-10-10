@@ -26,6 +26,10 @@ local function assembly(x,z,width,length)
 end
 local a=assembly(48,50,3,6)
 local b=assembly(52,50,3,6)
+-- Snapshot productive working spans BEFORE TRANSIT. The active planning
+-- pass must not ask the vehicles for deployed spans after folding.
+a.workingWidthM=36
+b.workingWidthM=36
 -- An actual selected attachment contributes geometry even if the vehicle's
 -- work-area span is unrelated. Remote XML catalogue variants never participate.
 local toolNode={};points[toolNode]={x=45,z=50}
@@ -45,10 +49,15 @@ local field={xs={0,100,100,0},zs={0,0,100,100}}
 local c={fieldPolygon=field,fieldCentroid={x=50,z=50}}
 local choice,mover,other=Plan.planPairCascade(c,a,b)
 assert(choice and mover and other and mover~=other)
-assert(choice.targetInField and choice.regionTravelM>=2
+assert(choice.targetInField and choice.regionTravelM==41
+    and choice.vectorDistanceM==41
+    and choice.remainingWorkingWidthM==36
+    and choice.workingCorridorMarginM==5
+    and choice.returnRegion.requiredProgressM==41
     and choice.marginM==1
-    and choice.returnRegion.source=="SIGNED_CROSS_TRACK_REGION"
-    and choice.returnRegion.isPhysicalPairClearanceConfirmed==false)
+    and choice.returnRegion.source=="PAIR_WORKING_CORRIDOR_TRAVEL_REGION"
+    and choice.returnRegion.isPhysicalPairClearanceConfirmed==false,
+    "TS001: 36 m protected WORKING corridor + 5 m = 41 m travel")
 assert(choice.cascadeAttempts>=2,
     "compare multiple spatial alternatives before selecting")
 assert(choice.directionSource=="OBLIQUE_REVERSE"
@@ -56,8 +65,44 @@ assert(choice.directionSource=="OBLIQUE_REVERSE"
     or choice.directionSource=="PAIR_CENTROID")
 local r=choice.returnRegion
 assert(not Plan.progress(r,r.originX,r.originZ).isInRegion)
+assert(not Plan.progress(r,r.originX+2*r.directionX,
+    r.originZ+2*r.directionZ).isInRegion,
+    "the old 2 m movement may not complete this 41 m pair relocation")
+assert(not Plan.progress(r,r.originX+40*r.directionX,
+    r.originZ+40*r.directionZ).isInRegion)
 assert(Plan.progress(r,r.originX+r.directionX*choice.regionTravelM,
     r.originZ+r.directionZ*choice.regionTravelM).isInRegion)
+-- The distance belongs to the worker remaining in the corridor,
+-- never to the moving worker. Preserve both possible mover assignments.
+a.workingWidthM=12
+b.workingWidthM=36
+local different,moving,remaining=Plan.planPairCascade(c,a,b)
+assert(different~=nil and different.regionTravelM==
+    remaining.workingWidthM+5
+    and different.remainingWorkingWidthM==remaining.workingWidthM
+    and different.regionTravelM~=moving.workingWidthM+5,
+    "relocation distance must be recomputed for the actual nonmover")
+a.workingWidthM=36
+b.workingWidthM=36
+-- Do not veto the whole pair if one side's optional working-width capture
+-- fails; the other assignment remains possible if its remaining worker
+-- has a recorded width.
+a.workingWidthM=nil
+local partial,partialMover,partialRemaining=Plan.planPairCascade(c,a,b)
+assert(partial~=nil and partialMover==a and partialRemaining==b
+    and partial.regionTravelM==41)
+a.workingWidthM=nil
+b.workingWidthM=nil
+local absent,_,__,missing=Plan.planPairCascade(c,a,b)
+assert(absent==nil and missing=="NO_FEASIBLE_PAIR_EGRESS")
+a.workingWidthM=36
+b.workingWidthM=36
+-- A local 20 m-wide field pocket admits some nominal 2 m motions but
+-- cannot contain the prescribed 41 m path: do not shorten and declare PASS.
+local shortPocket={xs={40,60,60,40},zs={40,40,60,60}}
+local tooShort=Plan.planPairCascade({
+    fieldPolygon=shortPocket,fieldCentroid={x=50,z=50}},a,b)
+assert(tooShort==nil,"41 m obligation must not shrink to fit the field")
 -- An in-field root is NOT sufficient when any attached-member corner
 -- starts outside the polygon; reject all unsupported swept paths.
 local narrow={xs={48,52,52,48},zs={49,49,51,51}}

@@ -203,13 +203,20 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
         wasIndependentlyAdmitted=true
     }
     local a,b=commitment.participants[1],commitment.participants[2]
+    -- Capture both productive corridor widths BEFORE requesting TRANSIT.
+    -- A missing optional width is not a pair-admission veto: the region
+    -- planner can still try the other mover, whose remaining width may be
+    -- available. Never use mover width to decide its own travel.
+    a.workingWidthM,a.workingWidthReason=blockerWorkingWidth(first)
+    b.workingWidthM,b.workingWidthReason=blockerWorkingWidth(second)
     local da=(a.x-poly.centroid.x)^2+(a.z-poly.centroid.z)^2
     local db=(b.x-poly.centroid.x)^2+(b.z-poly.centroid.z)^2
     local relocator=(da<db or (da==db
         and a.assemblyReferenceKey<b.assemblyReferenceKey)) and a or b
     commitment.nearbyBlockers[1]=relocator==a and b or a
     -- Paired egress is decided after both assemblies request TRANSIT.
-    -- Productive work width has no physical-pair-clearance authority.
+    -- Each recorded WORKING width prescribes the OTHER worker's relocation
+    -- travel distance, not physical folded collision clearance.
     self.active=commitment
     return commitment
 end

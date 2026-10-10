@@ -5,7 +5,8 @@
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.PairTransitRegion={}
 local Region=OuttaMyWay.PairTransitRegion
-local MARGIN_M=1 -- nominal physical gap; not working-width displacement
+local MARGIN_M=1 -- nominal physical gap for envelope/scene intersections
+local WORK_CORRIDOR_MARGIN_M=5 -- accepted pair relocation distance addition
 local STEP_M=2
 local MAX_MEMBERS=16
 
@@ -191,20 +192,10 @@ local function pathInField(poly,foot,dx,dz,distance,scene)
     end
     return true
 end
-local function projection(foot,nx,nz,originX,originZ)
-    local low,high
-    for i=1,#foot.corners do
-        local p=foot.corners[i]
-        local value=(foot.rootX+p.x-originX)*nx+
-            (foot.rootZ+p.z-originZ)*nz
-        if low==nil or value<low then low=value end
-        if high==nil or value>high then high=value end
-    end
-    return low,high
-end
-
--- Evaluate both assignments and *all* bounded directions against the same
--- common-field polygon; prefer shorter justified region entry, not tier order.
+-- Evaluate both mover assignments and all candidate directions against the
+-- common-field polygon. Travel is prescribed by the REMAINING assembly's
+-- productive working corridor width + the accepted 5 m margin. TRANSIT
+-- geometry determines which full-distance routes are feasible, not distance.
 function Region.planPair(commitment,preferred,alternative)
     if type(commitment)~="table" or type(commitment.fieldPolygon)~="table"
         or type(commitment.fieldCentroid)~="table" then
@@ -216,16 +207,14 @@ function Region.planPair(commitment,preferred,alternative)
     for _,mover in ipairs({preferred,alternative}) do
         local other=mover==preferred and alternative or preferred
         local foot,otherFoot=mover.transitFootprint,other.transitFootprint
-        if type(foot)=="table" and type(otherFoot)=="table" then
+        local otherWorkingWidth=other.workingWidthM
+        if type(foot)=="table" and type(otherFoot)=="table"
+            and finite(otherWorkingWidth) and otherWorkingWidth>0 then
             local fx,fz=heading(other.vehicle,"getAISteeringNode",false)
             local backX,backZ=heading(mover.vehicle,"getAIReverserNode",true)
             local forwardX,forwardZ=heading(mover.vehicle,"getAISteeringNode",false)
             if fx~=nil then
                 local nx,nz=-fz,fx
-                local moverMin,moverMax=projection(foot,nx,nz,
-                    otherFoot.rootX,otherFoot.rootZ)
-                local otherMin,otherMax=projection(otherFoot,nx,nz,
-                    otherFoot.rootX,otherFoot.rootZ)
                 local centreX=commitment.fieldCentroid.x-foot.rootX
                 local centreZ=commitment.fieldCentroid.z-foot.rootZ
                 local cx,cz=direction(centreX,centreZ)
@@ -254,10 +243,7 @@ function Region.planPair(commitment,preferred,alternative)
                     local rate=ray.dx*nx+ray.dz*nz
                     if math.abs(rate)>0.1 then
                         local sign=rate>0 and 1 or -1
-                        local required=sign>0
-                            and (otherMax+MARGIN_M-moverMin)
-                            or (moverMax-otherMin+MARGIN_M)
-                        local travel=math.max(2,required/math.abs(rate))
+                        local travel=otherWorkingWidth+WORK_CORRIDOR_MARGIN_M
                         local canReach=ray.mode~="CENTROID"
                             or travel<=centreDist
                         if canReach and pathInField(commitment.fieldPolygon,
@@ -265,22 +251,22 @@ function Region.planPair(commitment,preferred,alternative)
                             local rootCross=(foot.rootX-otherFoot.rootX)*nx+
                                 (foot.rootZ-otherFoot.rootZ)*nz
                             local signedStart=sign*rootCross
-                            local progress=travel*math.abs(rate)
+                            local crossProgress=travel*math.abs(rate)
                             local centreScore=ray.dx*centreX+ray.dz*centreZ
                             local candidate={
                                 isReverse=ray.reverse,moveForwards=not ray.reverse,
                                 steeringHorizonM=ray.mode=="CENTROID"
                                     and centreDist or travel+40,
                                 returnRegion={
-                                    source="SIGNED_CROSS_TRACK_REGION",
+                                    source="PAIR_WORKING_CORRIDOR_TRAVEL_REGION",
                                     originX=foot.rootX,originZ=foot.rootZ,
                                     directionX=ray.dx,directionZ=ray.dz,
                                     blockerOriginX=otherFoot.rootX,
                                     blockerOriginZ=otherFoot.rootZ,
                                     corridorNormalX=nx,corridorNormalZ=nz,
                                     sideSign=sign,initialCrossTrackM=signedStart,
-                                    requiredCrossTrackM=signedStart+progress,
-                                    requiredProgressM=progress,
+                                    projectedCrossTrackProgressM=crossProgress,
+                                    requiredProgressM=travel,
                                     isPhysicalPairClearanceConfirmed=false},
                                 directionSource=ray.mode=="OBLIQUE_REVERSE"
                                     and "OBLIQUE_REVERSE"
@@ -288,6 +274,8 @@ function Region.planPair(commitment,preferred,alternative)
                                         or "PAIR_CENTROID"),
                                 cascadeMode=ray.mode,egressSide=ray.side,
                                 regionTravelM=travel,vectorDistanceM=travel,
+                                remainingWorkingWidthM=otherWorkingWidth,
+                                workingCorridorMarginM=WORK_CORRIDOR_MARGIN_M,
                                 marginM=MARGIN_M,targetInField=true,
                                 fieldInteriorScore=centreScore,
                                 transitGeometryBasis=foot.basis,

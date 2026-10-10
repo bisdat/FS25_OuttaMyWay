@@ -133,6 +133,10 @@ function Runtime:update(dt)
                 .." direction="..tostring(start.directionSource)
                 .." optionsAssessed="..tostring(start.cascadeAttempts)
                 .." regionTravelM="..tostring(start.regionTravelM)
+                .." remainingWorkingWidthM="..tostring(
+                    start.remainingWorkingWidthM)
+                .." workingCorridorMarginM="..tostring(
+                    start.workingCorridorMarginM)
                 .." transitWaitExhausted="..tostring(start.transitWaitExhausted)
                 .." firstFoldSettled="..tostring(start.firstFoldSettled)
                 .." secondFoldSettled="..tostring(start.secondFoldSettled)

@@ -59,6 +59,8 @@ assert(accepted==nil,"persistence gate must reject short pulse")
 local issued=assert(authority:admitCandidate(first,second,first,1000))
 assert(issued.fieldCentroid.x==50 and issued.fieldCentroid.z==50)
 assert(issued.blockerWorkingWidthM==nil
+    and issued.participants[1].workingWidthM==36
+    and issued.participants[2].workingWidthM==36
     and issued.offsetM==0 and #issued.nearbyBlockers==1,
     "paired geometry cannot use productive width")
 assert(issued.nearbyBlockers[1].vehicle==first)
@@ -115,7 +117,12 @@ physical.reverseMechanism={
             assert(objective.directionSource=="SINGLE_OBLIQUE_REVERSE")
         else
             assert(objective.returnRegion.source=="SIGNED_CROSS_TRACK_REGION")
-            assert(objective.marginM==1 and objective.regionTravelM>0)
+            assert(objective.marginM==1 and objective.regionTravelM==41
+                and objective.remainingWorkingWidthM==36
+                and objective.workingCorridorMarginM==5
+                and objective.returnRegion.requiredProgressM==41
+                and objective.returnRegion.source==
+                    "PAIR_WORKING_CORRIDOR_TRAVEL_REGION")
             assert(objective.transitGeometryBasis==
                 "GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION")
             assert(objective.returnRegion.isPhysicalPairClearanceConfirmed==false)
@@ -149,7 +156,9 @@ assert(#events==8 and events[5]=="RELEASE:TRANSIT_PREPARATION"
     and events[7]=="REGULATE:EGRESS"
     and events[8]=="REVERSE",
     "paired native Hold wrappers must unwind BEFORE Regulation is installed")
-assert(coordinator.lastPairMotionStartEvidence.regionTravelM>0
+assert(coordinator.lastPairMotionStartEvidence.regionTravelM==41
+    and coordinator.lastPairMotionStartEvidence.remainingWorkingWidthM==36
+    and coordinator.lastPairMotionStartEvidence.workingCorridorMarginM==5
     and coordinator.lastPairMotionStartEvidence.cascadeAttempts>=2)
 coordinator:advance(6000)
 assert(#events==8)

@@ -441,7 +441,8 @@ function Region.progress(region,x,z)
             remainingM=math.max(0,region.requiredProgressM-progress),
             isInRegion=progress>=region.requiredProgressM}
     end
-    if type(region)=="table" and region.source=="SINGLE_REVERSE_REGION" then
+    if type(region)=="table" and (region.source=="SINGLE_REVERSE_REGION"
+        or region.source=="PAIR_WORKING_CORRIDOR_TRAVEL_REGION") then
         if not finite(x) or not finite(z)
             or not finite(region.originX) or not finite(region.originZ)
             or not finite(region.directionX) or not finite(region.directionZ)

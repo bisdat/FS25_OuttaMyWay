@@ -419,6 +419,8 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
         directionSource=objective.directionSource,
         cascadeAttempts=objective.cascadeAttempts,
         regionTravelM=objective.regionTravelM,
+        remainingWorkingWidthM=objective.remainingWorkingWidthM,
+        workingCorridorMarginM=objective.workingCorridorMarginM,
         transitWaitExhausted=exhausted,
         firstFoldSettlement=statusA,
         secondFoldSettlement=statusB,
