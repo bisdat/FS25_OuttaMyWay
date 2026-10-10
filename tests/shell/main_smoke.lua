@@ -3,6 +3,7 @@
 local expected={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
+    "scripts/assessment/NonActiveObstructionAssessment.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
@@ -14,6 +15,7 @@ local expected={
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
     "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
     "scripts/control/mechanisms/NonJobActuationMechanism.lua",
+    "scripts/control/NonActiveRelocationControl.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
@@ -44,6 +46,7 @@ addModEventListener=function(listener) registered[#registered+1]=listener end
 source=function(path)
     loaded[#loaded+1]=path
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
+        or path=="scripts/assessment/NonActiveObstructionAssessment.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/coordination/ProjectedEgressRegion.lua"
         or path=="scripts/coordination/NativePairCommitmentAuthority.lua"
@@ -55,6 +58,7 @@ source=function(path)
         or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"
         or path=="scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua"
         or path=="scripts/control/mechanisms/NonJobActuationMechanism.lua"
+        or path=="scripts/control/NonActiveRelocationControl.lua"
         or path=="scripts/observation/CurrentPlayerControlObservation.lua" then
         dofile(path)
     elseif path=="scripts/configuration/Configuration.lua" then
@@ -91,7 +95,8 @@ assert(OuttaMyWay.runtime==nil and OuttaMyWay.productLifecycle==nil)
 assert(type(OuttaMyWay.liveHoldRelocateRuntime.update)=="function")
 assert(type(OuttaMyWay.CurrentPlayerControlObservation.isControlled)=="function")
 assert(type(OuttaMyWay.NonJobActuationMechanism.driveInWorldDirection)=="function")
-assert(OuttaMyWay.obstructionRelocationRuntime==nil)
+assert(type(OuttaMyWay.liveHoldRelocateRuntime.nonActiveControl)=="table"
+    and not OuttaMyWay.liveHoldRelocateRuntime.nonActiveControl:isActive())
 assert(OuttaMyWay.liveHoldRelocateRuntime.authority~=nil)
 assert(OuttaMyWay.liveHoldRelocateRuntime.physicalControl~=nil)
 assert(not OuttaMyWay.liveHoldRelocateRuntime.authority:enabled(),

@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHELL_MODULES = [
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
+    "scripts/assessment/NonActiveObstructionAssessment.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
@@ -21,6 +22,7 @@ SHELL_MODULES = [
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
     "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
     "scripts/control/mechanisms/NonJobActuationMechanism.lua",
+    "scripts/control/NonActiveRelocationControl.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
@@ -107,6 +109,9 @@ def test_reverse_speed_is_native_and_has_scoped_cruise_restoration():
 def test_player_control_takeover_is_not_a_live_authority_predicate():
     assert (ROOT / "scripts/observation/CurrentPlayerControlObservation.lua").is_file()
     assert "NonJobActuationMechanism.lua" in main_text()
+    assert "NonActiveObstructionAssessment.lua" in main_text()
+    assert "NonActiveRelocationControl.lua" in main_text()
+    assert "obstructionRelocationRuntime" not in main_text()
     for consumer in (
         "scripts/coordination/NativePairCommitmentAuthority.lua",
         "scripts/coordination/LiveHoldRelocateRuntime.lua",

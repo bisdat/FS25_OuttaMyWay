@@ -5,6 +5,16 @@ dofile("scripts/coordination/NativePairCommitmentAuthority.lua")
 dofile("scripts/coordination/ProjectedEgressRegion.lua")
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
+OuttaMyWay.NonActiveRelocationControl={
+    new=function() return {
+        isActive=function() return false end,
+        relinquish=function() return true end
+    } end
+}
+OuttaMyWay.NonActiveObstructionAssessment={
+    find=function() return nil end,
+    isStillCurrent=function() return false end
+}
 dofile("scripts/coordination/LiveHoldRelocateRuntime.lua")
 local Authority=OuttaMyWay.NativePairCommitmentAuthority
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
