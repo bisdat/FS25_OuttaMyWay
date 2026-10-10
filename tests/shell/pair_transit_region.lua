@@ -155,7 +155,7 @@ assert(math.abs(moveDirection.directionX*fx+
 local narrow={xs={48,52,52,48},zs={49,49,51,51}}
 local none,_,__,reason=Plan.planPairCascade({
     fieldPolygon=narrow,fieldCentroid={x=50,z=50}},a,b)
-assert(none==nil and reason=="NO_FEASIBLE_PAIR_EGRESS")
+assert(none==nil and reason=="NO_SAFE_PAIR_EGRESS_REGION")
 -- A known third vehicle's physical region must restrict candidate routes;
 -- do not treat the common field as empty merely because pair roots fit.
 local third=assembly(50,50,85,85)
