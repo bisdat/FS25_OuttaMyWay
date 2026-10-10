@@ -3,7 +3,7 @@
 **Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
 **Primary Specification:** [Obstruction Relocation](../spec/OBSTRUCTION_RELOCATION.md)
 
-**Status:** TEST `0.5.1.5`, Issue #463, **reconstructs the archived pre-stall Causal Obstruction authority** using the actual archived physical-shape, DISC-overlap, and bounded Realised Motion Demand kernels. TEST `0.5.1.4` failed GIANTS Reality: the native `isBlocked` signal arrived after collision and the non-active blocker did not move. TEST `0.5.1.5` is an **unvalidated GIANTS hypothesis**, not an accepted physical PASS. We deliberately do not import the retired 0.4 general runtime.
+**Status:** TEST `0.5.1.5` successfully **moved the non-active blocker 60.07 m in GIANTS TS018**, but **FAILED overall** due to a severe frame-rate regression (~24–25 FPS while prospective assessment is active, rising to ~104 FPS during the manoeuvre when expensive assessment is skipped). TEST `0.5.1.6` corrects the assessment execution frequency without altering the archived Causal Obstruction evidence semantics. Performance recovery remains to be established in GIANTS Reality. TEST `0.5.1.4` had failed both timing and physical actuation. The retired 0.4 runtime is still excluded.
 
 **Archive authority investigated:** [Runtime Responsibility Architecture §2, §5, §8](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Obstruction Relocation Specification](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/spec/OBSTRUCTION_RELOCATION.md). The archived current contract superseded the earlier D-0147 two-stage Terminal Egress / Double Courtesy model. Mechanical donor evidence remains useful, but completion provenance never creates an independent reason for movement.
 
@@ -70,6 +70,16 @@ positive Causal Obstruction (Situation; no movement permission)
 **Physical execution evidence:** `OBSTRUCTION_RELOCATION_STARTED` is admission only. Distinguish `PROPULSION_PENDING`, `PROPULSION_READY`, `FIRST_NATIVE_DRIVE_ACCEPTED`, `FIRST_POSITIVE_DISPLACEMENT`, measured progress, physical completion and later beneficiary continuation. GIANTS entity destruction during `deleteMap` makes native wheel/motor cleanup invalid; the archived terminal Control pattern clears mapping state with no GIANTS physics calls at that callback. No assumption that restoring code or a drive call alone proves physical movement.
 
 **Known limits:** the archived prospective Future Space producer and complete multi-beneficiary Resolution lifecycle remain unported; only **current occupancy and bounded realised-motion demand** create live positive evidence. Historic #385 false positives require a negative GIANTS turning/parked-vehicle replay. Third-party path clearance, extended assemblies in actual GIANTS physical representation and useful work resumption remain field hypotheses.
+
+## Discovery — Assessment Epoch Is Not Control Tick
+
+TS018 isolates the performance cost: the existing `LiveHoldRelocateRuntime` performed complete physical-shape conflict acquisition **on every update frame**, for every eligible active worker and non-active physical subject. The archive's `CurrentPhysicalConflictRepresentation` maintains a 5-second *candidate discovery* cache, but deliberately remeasures **current world-shape primitives** on every `observe()`. Cache existence therefore never made per-frame Situation Assessment inexpensive.
+
+The video provides a useful internal comparison: frame rate was roughly **24–25 FPS** before relocation, **104 FPS** during the ongoing 60 m non-job manoeuvre, then **25 FPS** once prospective assessment resumed. The log corroborates the 05:16:47.865–05:16:58.084 physical actuation interval. This strongly implicates repeated `findProspective()` physical geometry evaluation; it does not separately profile the cost of each GIANTS native shape API.
+
+A **Physical Assessment Epoch** is now separate from the **per-update motion observer and Control tick**. For TEST `0.5.1.6`, each eligible prospective Situation snapshot is acquired **at most once per 500 ms**. Every snapshot recomputes live physical current evidence; it is not a persistent positive-conflict cache. Inside the snapshot, a beneficiary's current shape representation is built **once**, then shared only across its current potential non-active blocker comparisons. The native blocked pair/solo BWR observer and non-job physical Control remain at the accepted per-update cadence. This is a **performance acquisition policy**, not a new 500 ms obstruction admission prerequisite, recovery hold, time-to-collision inference or Causal Obstruction predicate.
+
+The 500 ms acquisition cadence is a **test calibration**. At 25 km/h an active assembly traverses approximately 3.5 m in 500 ms, but the archived bounded demand can look ahead up to 100 m. Those facts motivate a first test; they do **not** prove all conflict timings remain acceptable. Field validation must show both recovered frame rate **and** timely relocation against the same TS018 positive/negative situations.
 
 ## Validation discriminators
 

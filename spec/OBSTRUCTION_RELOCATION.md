@@ -4,7 +4,7 @@
 
 **Primary Architecture Authority:** [Causal Obstruction and Obstruction Relocation](../architecture/OBSTRUCTION_RELOCATION.md)
 
-**Restoration status:** TEST `0.5.1.4` **failed GIANTS Reality** (no action until after collision; no blocker movement). TEST `0.5.1.5` replaces that disproven trigger with the archived positive current-physical and realised-motion Causal Obstruction kernels; the non-job physical executor is independently instrumented. This is not yet a GIANTS PASS. Archived prospective Future Space and the full 0.4 Resolution runtime are deliberately **not** imported.
+**Restoration status:** TEST `0.5.1.5` **moved the non-active blocker 60.07 m** in GIANTS TS018 and reported 996 accepted native drive calls, but **FAILED** due to a major performance regression (roughly 25 FPS outside relocation versus 104 FPS while relocation suspended expensive prospective assessment). TEST `0.5.1.6` limits expensive Situation snapshot acquisition to one **500 ms Assessment Epoch** and shares the beneficiary representation across current candidate comparisons; GIANTS FPS recovery is **unvalidated**. The full retired 0.4 runtime remains excluded.
 
 **Archived donor:** [0.4.11.0 Obstruction Relocation Specification](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/spec/OBSTRUCTION_RELOCATION.md), where `OBSTRUCTION_RELOCATION` is an admitted non-active Causal Obstruction Resolution rather than a `TERMINAL_EGRESS` job-completion courtesy. The archived spec is source material, not independently live authority after a 0.5 replacement-core simplification.
 
@@ -27,6 +27,14 @@ Admit a **single current non-active unclaimed Physical Assembly** only after pos
 Upon admission, use the archived native non-job actuator for one bounded inward actuation toward the beneficiary's own GIANTS active-course field centre; apply the original **40 m Offset Relocation Centre** when the centroid bearing is sufficiently aligned with the beneficiary's positively supported incoming approach (archived alignment threshold 0.8660). Cap any single actuation at **60 m** or the nearer relocation centre. The non-active blocker receives **no invented GIANTS AI Job**. Stop on positive native blockage recovery only when it was actually observed; do not terminate a preventive intervention immediately because GIANTS `isBlocked` is false. Distinguish motor readiness, native physical drive acceptance and actual displacement; all require GIANTS Reality. Retire non-job state without GIANTS physics on post-destruction mission deletion, following archived Control teardown. A manoeuvre outcome is not semantic beneficiary continuation.
 
 This is a falsifiable archive-derived implementation, not proof of successful physical clearance. GIANTS positive completed-worker obstruction, harmless nearby completed-worker, turning false-positive, non-job propulsion, physical displacement and useful continuation remain required. The old native-blocked admission implementation is retained only as failed historical evidence.
+
+## Physical Assessment Epoch — TEST 0.5.1.6 performance correction
+
+Keep GIANTS worker **physical progression observation** current on every update; keep independently admitted BWR and in-progress relocation physical Control on every update. The expensive `CausalObstructionAssessment` positive physical geometry evaluation is acquired only when the next **500 ms Assessment Epoch** is due and no other active control excludes a new relocation commitment.
+
+Each due epoch rebuilds current GIANTS physical world-shape evidence—never reuse a prior epoch as positive or negative clearance evidence. Within a single epoch, obtain the active beneficiary's current representation **once**, not again for every candidate blocker. Each non-active candidate is checked using its current physical representation and actual active-worker demand. The archive's `PlanViewFootprint` and native-shape evidence rules, current player/AI eligibility, bounded movement geometry and fresh semantic reassessment are **unchanged**.
+
+This schedules costly evidence acquisition; it is **not** an extra causal trigger, field gate, recovery delay, or native blocked-state substitution. The calibration is provisional until TS018 establishes a stable FPS baseline and an equally early preventive relocation, with no regression to TS003/TS015.
 
 ## Bounded movement contract
 
