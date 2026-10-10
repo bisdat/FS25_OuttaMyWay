@@ -5,6 +5,9 @@ local modDirectory=g_currentModDirectory or ""
 local modules={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
+    "scripts/representation/PlanViewFootprint.lua",
+    "scripts/representation/EntityLocalShapeEvidence.lua",
+    "scripts/representation/CurrentPhysicalConflictRepresentation.lua",
     "scripts/assessment/NonActiveObstructionAssessment.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
