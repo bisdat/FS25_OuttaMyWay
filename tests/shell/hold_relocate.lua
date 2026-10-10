@@ -210,4 +210,19 @@ assert(not c:isActive()
     and c:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED"
     and not has("TRANSIT_CANCEL","B"))
 nativeAccept=true
+
+-- Failure to clear a still-owned blocker lease during unusually early
+-- handback is NOT a successful native restart. Normal interruption cleanup
+-- must run, and never allow a silent orphaned speed cap.
+events={};completed=true;failRelease="B"
+assert(c:begin(admitted(),120000))
+c:advance(120001)
+assert(c:isActive() and has("HOLD_RELOCATED_WORKER","A")
+    and not has("REGULATE_RELEASE","B"))
+c:advance(127001)
+assert(not c:isActive()
+    and c:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED"
+    and not has("NATIVE_STOP_START","A"),
+    "failure to release early Regulation must interrupt handback")
+failRelease=nil
 print("Asymmetric paired egress: mover-only TRANSIT, independent 8s pair/5s static Regulation and 7s Hold, scoped cleanup PASS")
