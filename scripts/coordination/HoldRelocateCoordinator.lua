@@ -298,6 +298,19 @@ function Coordinator:begin(commitment,nowMs)
     -- independently captured blockers, even when the cascade swaps mover:
     -- only the actual mover is excluded from the protected parties.
     local blockers,seen={},{}
+    -- Even if the selected mover is swapped, a pair commitment must have
+    -- independently captured one actual pair partner as blocked-space
+    -- membership. An arbitrary third party cannot substitute for it.
+    local pairMemberWasCaptured=single
+    for i=1,#commitment.nearbyBlockers do
+        local p=commitment.nearbyBlockers[i]
+        if p==first or p==second then
+            pairMemberWasCaptured=true
+        end
+    end
+    if not pairMemberWasCaptured then
+        return false,"PAIR_PARTNER_NOT_IN_BLOCKERS"
+    end
     if not single then
         if not positioned(other)
             or (other~=first and other~=second)
