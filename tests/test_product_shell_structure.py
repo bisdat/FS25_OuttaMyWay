@@ -88,7 +88,11 @@ def test_region_based_egress_and_native_regulation():
     assert "OBLIQUE_REVERSE_DEG=70" in region
     pair_admission = authority.split("function Authority:admitCandidate")[1].split(
         "function Authority:admitSingleCandidate")[0]
-    assert "blockerWorkingWidth" not in pair_admission
+    assert "blockerWorkingWidthM" not in pair_admission
+    assert "a.workingWidthM" in pair_admission
+    assert "b.workingWidthM" in pair_admission
+    assert "blockerWorkingWidth(first)" in pair_admission
+    assert "blockerWorkingWidth(second)" in pair_admission
     transit = (ROOT / "scripts/coordination/PairTransitRegion.lua").read_text(
         encoding="utf-8")
     physical = (ROOT / "scripts/control/HoldRelocatePhysicalControl.lua").read_text(
@@ -96,6 +100,10 @@ def test_region_based_egress_and_native_regulation():
     assert "GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION" in transit
     assert "pathInField" in transit and "sceneOccupancy" in transit
     assert "planPair" in transit and "getAIWorkAreaWidth" not in transit
+    assert "WORK_CORRIDOR_MARGIN_M=5" in transit
+    assert "otherWorkingWidth+WORK_CORRIDOR_MARGIN_M" in transit
+    assert "math.max(2,required/math.abs(rate))" not in transit
+    assert "PAIR_WORKING_CORRIDOR_TRAVEL_REGION" in transit
     assert "PAIR_TRANSIT_WAIT_MS=15000" in coordinator
     assert "PAIR_PREPARING_TRANSIT" in coordinator
     assert '"preflightPair"' in coordinator

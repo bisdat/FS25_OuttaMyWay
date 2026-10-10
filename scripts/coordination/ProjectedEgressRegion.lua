@@ -452,7 +452,13 @@ function Region.progress(region,x,z)
         return {progressM=progress,crossTrackM=progress,
             lateralOffsetM=math.abs(dx*region.directionZ-dz*region.directionX),
             remainingM=math.max(0,region.requiredProgressM-progress),
-            isInRegion=progress>=region.requiredProgressM}
+            -- Floating point world-coordinate projection may produce
+            -- 40.99999999999999 for an exact 41 m constructed endpoint.
+            -- Epsilon is numerical precision, NOT a movement-shortening
+            -- allowance, and applies only to this paired travel objective.
+            isInRegion=progress>=region.requiredProgressM-
+                (region.source=="PAIR_WORKING_CORRIDOR_TRAVEL_REGION"
+                    and 0.000001 or 0)}
     end
     if type(region)~="table" or not finite(x) or not finite(z)
         or not finite(region.blockerOriginX)
