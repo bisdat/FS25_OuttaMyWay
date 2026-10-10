@@ -351,12 +351,33 @@ end
 assert(live.allowed and live.forwards==false
     and live.speed==previous.speed)
 assert(mechanism:cancelReverse(vehicle))
-selectedTool=nil
+selectedTool=4
 reported={}
 diagnosticEnabled=false
+-- With an actual tool reverser present, native steering still requires ONE
+-- tool projection. Disabled diagnostics must request NO extra projections.
+local realProjection=MathUtil.getProjectOnLineParameter
+local projectionCount=0
+MathUtil.getProjectOnLineParameter=function(...)
+    projectionCount=projectionCount+1
+    return realProjection(...)
+end
+local actualSample=OuttaMyWay.ReverseKinematicsProbe.sample
+local diagnosticSampleCount=0
+OuttaMyWay.ReverseKinematicsProbe.sample=function(...)
+    diagnosticSampleCount=diagnosticSampleCount+1
+    return actualSample(...)
+end
 assert(mechanism:startReverse(vehicle,baseline))
+assert(mechanism.states[vehicle].kinematicsProbe==nil,
+    "disabled DIAGNOSTIC cannot retain a sample lease")
 AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,true)
-assert(#reported==0,"NORMAL mode must suppress all diagnostic construction")
+assert(projectionCount==1 and diagnosticSampleCount==0,
+    "disabled DIAGNOSTIC must execute only the one necessary native transform")
+assert(#reported==0,"disabled DIAGNOSTIC must not publish")
 assert(mechanism:cancelReverse(vehicle))
+MathUtil.getProjectOnLineParameter=realProjection
+OuttaMyWay.ReverseKinematicsProbe.sample=actualSample
+selectedTool=nil
 assert(#reported==0)
 print("Native directional pair egress and reverse restoration: PASS")
