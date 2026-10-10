@@ -1,5 +1,5 @@
 -- #470: signed initial-state and bounded first-five-second probe, no GIANTS dependency.
-OuttaMyWay={VERSION="0.5.2.25"}
+OuttaMyWay={VERSION="0.5.2.26"}
 dofile("scripts/diagnostics/ReverseKinematicsProbe.lua")
 local Probe=OuttaMyWay.ReverseKinematicsProbe
 local events,enabled={},false
