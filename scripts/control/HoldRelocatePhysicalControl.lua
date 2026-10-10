@@ -64,13 +64,10 @@ local function buildTransitPlan(vehicle,isPair)
         if type(object.setIsTurnedOn)=="function" then
             append(object,"setIsTurnedOn",false,true)
         end
-        if type(object.getIsLowered)=="function"
-            and type(object.setLowered)=="function" then
-            local ok,value=method(object,"getIsLowered")
-            if not ok or type(value)~="boolean" then
-                return nil,"LOWERED_STATE_UNAVAILABLE"
-            end
-            if value then append(object,"setLowered",false,true) end
+        -- Raise is a TRANSIT command, not a getIsLowered() permission test.
+        -- Submit it whenever the selected member exposes the native setter.
+        if type(object.setLowered)=="function" then
+            append(object,"setLowered",false,true)
         end
         -- Only the instantiated selected Foldable configuration grants
         -- a fold-completion wait. Native work-off/raise is always requested
