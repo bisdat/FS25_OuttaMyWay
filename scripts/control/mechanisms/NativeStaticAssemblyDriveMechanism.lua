@@ -6,7 +6,8 @@ OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={}
 local M=OuttaMyWay.NativeStaticAssemblyDriveMechanism
 M.__index=M
-local SPEED_CAP_KMH=8
+-- The static subject uses its own maximum native motor/cruise capability.
+-- No arbitrary egress cap; the selected travel direction determines the limit.
 
 local function finite(x)
     return type(x)=="number" and x==x and x~=math.huge and x~=-math.huge
@@ -102,9 +103,13 @@ function M:startMovement(vehicle,objective)
         or not finite(cruise.maxSpeedReverse) then
         return false,"STATIC_NATIVE_CRUISE_UNAVAILABLE"
     end
-    local speed=math.min(SPEED_CAP_KMH,maxMps*3.6,
-        cruise.maxSpeed,cruise.maxSpeedReverse)
-    if speed<=0 then return false,"STATIC_NATIVE_DRIVE_SPEED_UNAVAILABLE" end
+    local nativeMaximumKmh=maxMps*3.6
+    local directionalCruiseMaximum=objective.moveForwards
+        and cruise.maxSpeed or cruise.maxSpeedReverse
+    local speed=math.min(nativeMaximumKmh,directionalCruiseMaximum)
+    if not finite(speed) or speed<=0 then
+        return false,"STATIC_NATIVE_DRIVE_SPEED_UNAVAILABLE"
+    end
     local wasRunning,alreadyStarted=pcall(vehicle.getIsMotorStarted,vehicle)
     if not wasRunning or type(alreadyStarted)~="boolean" then
         return false,"STATIC_MOTOR_STATE_UNKNOWN"
@@ -134,7 +139,10 @@ function M:startMovement(vehicle,objective)
         end
     end
     return true,{kind="STATIC_DIRECT_DRIVE_ARMED",
-        requestedDriveSpeedKmh=speed,moveForwards=objective.moveForwards}
+        requestedDriveSpeedKmh=speed,
+        nativeDirectionalMotorMaximumKmh=nativeMaximumKmh,
+        nativeDirectionalCruiseMaximumKmh=directionalCruiseMaximum,
+        moveForwards=objective.moveForwards}
 end
 
 function M:movementStatus(vehicle,dt)

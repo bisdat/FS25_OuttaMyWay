@@ -114,8 +114,11 @@ assert(OuttaMyWay.ProjectedEgressRegion.progress(
     plan.returnRegion,10,-41).isInRegion)
 local actuator=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new()
 local ok,started=actuator:startMovement(subject,plan)
-assert(ok and started.requestedDriveSpeedKmh==8 and running)
-assert(subject.forceIsActive==true and cruise.speed==8)
+assert(ok and started.requestedDriveSpeedKmh==35 and running,
+    "forward static egress must use native forward maximum, not 8 km/h")
+assert(started.nativeDirectionalMotorMaximumKmh==43.2
+    and started.nativeDirectionalCruiseMaximumKmh==35)
+assert(subject.forceIsActive==true and cruise.speed==35)
 local status=nil
 for i=1,12 do
     status=actuator:movementStatus(subject,16)
@@ -144,7 +147,12 @@ assert(reversePlan.isReverse and not reversePlan.moveForwards
     and reversePlan.returnRegion.requiredProgressM>38
     and reversePlan.targetX>10 and math.abs(reversePlan.targetZ)>70)
 assertTargetBeyondRegion(reversePlan)
-assert(actuator:startMovement(subject,reversePlan))
+local reverseStarted,reverseEvidence=actuator:startMovement(subject,reversePlan)
+assert(reverseStarted and reverseEvidence.requestedDriveSpeedKmh==18
+    and reverseEvidence.nativeDirectionalMotorMaximumKmh==18
+    and reverseEvidence.nativeDirectionalCruiseMaximumKmh==22,
+    "reverse static egress uses native backward maximum independently")
+assert(cruise.speedReverse==18)
 for i=1,12 do
     status=actuator:movementStatus(subject,16)
     if status.isComplete then break end
