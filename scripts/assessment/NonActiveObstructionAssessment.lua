@@ -180,10 +180,7 @@ function A:advance(dt)
     local workers=activeWorkers()
     for _,worker in ipairs(workers) do self:sample(worker,dt) end
 end
-local function evidenceFor(self,worker,blocker)
-    local now=(tonumber(g_time) or 0)*0.001
-    local activeShape=self.representations:observe(worker,
-        "active:"..tostring(worker.rootNode),now)
+local function evidenceFor(self,worker,blocker,activeShape,now)
     local parkedShape=self.representations:observe(blocker,
         "non-active:"..tostring(blocker.rootNode),now)
     if activeShape==nil or parkedShape==nil
@@ -232,9 +229,18 @@ function A:find(worker)
     if vehicles==nil or registry==nil then return nil end
     local unique,ambiguous=nil,false
     local workerRoot=rootOf(worker)
+    local now=(tonumber(g_time) or 0)*0.001
+    -- A single current Physical Assembly representation is common to every
+    -- candidate blocker comparison in this Assessment Epoch. Reacquire from
+    -- GIANTS in the next epoch; do not cache stale positive Reality as truth.
+    local activeShape=self.representations:observe(worker,
+        "active:"..tostring(worker.rootNode),now)
+    if activeShape==nil or activeShape.structurallyValid~=true then
+        return nil
+    end
     for _,vehicle in ipairs(vehicles) do
         if vehicle~=workerRoot and inactiveAndUnclaimed(vehicle,registry) then
-            local candidate=evidenceFor(self,worker,vehicle)
+            local candidate=evidenceFor(self,worker,vehicle,activeShape,now)
             if candidate~=nil then
                 if unique~=nil then ambiguous=true;break end
                 unique=candidate

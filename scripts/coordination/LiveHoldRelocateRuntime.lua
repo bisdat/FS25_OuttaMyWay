@@ -6,6 +6,12 @@ OuttaMyWay.LiveHoldRelocateRuntime={}
 local Runtime=OuttaMyWay.LiveHoldRelocateRuntime
 Runtime.__index=Runtime
 
+-- Situation Assessment snapshots are expensive GIANTS native shape queries.
+-- Motion observation remains per update; physical conflict acquisition is
+-- bounded to one fresh Assessment Epoch every 500ms. This is not an
+-- obstruction admission threshold or a relocation/worker-control delay.
+local PHYSICAL_ASSESSMENT_EPOCH_MS=500
+
 local function issue(runtime,level,code,detail)
     local publication=runtime.publication
     if publication==nil then return end
@@ -44,6 +50,7 @@ function Runtime.new(configuration,observer)
         pendingContinuation=nil,attempted=setmetatable({},{__mode="k"}),
         proactiveAttempted=setmetatable({},{__mode="k"}),
         lastReportedNonActivePhysicalEvidence=nil,
+        physicalAssessmentElapsedMs=PHYSICAL_ASSESSMENT_EPOCH_MS,
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedEgressRegulationResults=nil,
         lastReportedInitialMotionEvidence=nil,
@@ -57,6 +64,7 @@ function Runtime:loadMap()
     self.causalAssessment:reset()
     self.proactiveAttempted=setmetatable({},{__mode="k"})
     self.lastReportedNonActivePhysicalEvidence=nil
+    self.physicalAssessmentElapsedMs=PHYSICAL_ASSESSMENT_EPOCH_MS
     -- Candidate evidence belongs to the native Observer's map lifecycle.
 end
 
@@ -105,6 +113,8 @@ function Runtime:update(dt)
     -- Continuously observe current physical progression and archived positive
     -- obstruction evidence; native isBlocked is reserved for reactive BWR.
     self.causalAssessment:advance(dt)
+    self.physicalAssessmentElapsedMs=(self.physicalAssessmentElapsedMs or 0)
+        +math.max(0,tonumber(dt) or 0)
     if self.nonActiveControl:isActive() then
         self.nonActiveControl:advance(dt)
         local physical=self.nonActiveControl.lastPhysicalEvidence
@@ -197,7 +207,8 @@ function Runtime:update(dt)
     -- It is independent of native Stall, which remains the accepted BWR entry.
     local pairs=self.observer and self.observer:getCurrentPairCandidates() or {}
     if type(pairs)~="table" then pairs={} end
-    if #pairs==0 then
+    if #pairs==0 and self.physicalAssessmentElapsedMs>=PHYSICAL_ASSESSMENT_EPOCH_MS then
+        self.physicalAssessmentElapsedMs=0
         local obstruction=self.causalAssessment:findProspective()
         if obstruction~=nil then
             local last=self.proactiveAttempted[obstruction.beneficiary]
