@@ -1,5 +1,6 @@
 -- TS001 0.5.2.9 regression: the two real native-drive wrappers must compose
--- across a fast paired egress (2 m region reached before 5 s Regulation).
+-- even when a synthetic paired 41 m Return Region completes before the
+-- separate 5 s Regulation. This fixture tests wrapper order, not speed.
 -- This is a shell contract, not a GIANTS physical clearance claim.
 OuttaMyWay={ProjectedEgressRegion={}}
 local events={}
@@ -75,7 +76,7 @@ local physical={
     end,
     reverseStatus=function()
         return {isComplete=regionReached,isFailed=false,
-            travelledM=regionReached and 2 or 0}
+            travelledM=regionReached and 41 or 0}
     end,
     stopReverse=function()
         assert(AIVehicleUtil.driveToPoint==reverseWrapper)
@@ -105,9 +106,9 @@ OuttaMyWay.ProjectedEgressRegion.planPairCascade=function(_,preferred,other)
     return {
         isReverse=true,targetX=other.x-50,targetZ=other.z,
         directionSource="OBLIQUE_REVERSE",cascadeAttempts=8,
-        regionTravelM=2,
-        returnRegion={source="SIGNED_CROSS_TRACK_REGION",
-            directionX=-1,directionZ=0,requiredProgressM=2},
+        regionTravelM=41,
+        returnRegion={source="PAIR_WORKING_CORRIDOR_TRAVEL_REGION",
+            directionX=-1,directionZ=0,requiredProgressM=41},
         transitGeometryBasis="TEST_TRANSIT"
     },other,preferred
 end
@@ -132,7 +133,8 @@ assert(reg.count==1 and reverseWrapper~=nil)
 AIVehicleUtil.driveToPoint(a,16,1,true,false,0,1,20,false)
 assert(events[#events].vehicle==a and events[#events].speed==1
     and events[#events].allowed==true)
--- The Return Region is reached in less than five seconds, as in TS001.
+-- Force full synthetic Region completion before Regulation expires; this
+-- is intentionally not a claim that GIANTS can travel 41 m in this interval.
 regionReached=true
 coordinator:advance(17781)
 assert(coordinator:getStatus().phase=="HOLD_RELOCATED"

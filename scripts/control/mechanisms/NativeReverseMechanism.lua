@@ -296,8 +296,10 @@ function Mechanism:startReverse(vehicle,objective)
         or type(objective)~="table"
         or (objective.isReverse~=true
             and not (objective.isReverse==false
-                and objective.returnRegion~=nil
-                and objective.returnRegion.source=="SIGNED_CROSS_TRACK_REGION"))
+                and type(objective.returnRegion)=="table"
+                and (objective.returnRegion.source=="SIGNED_CROSS_TRACK_REGION"
+                    or objective.returnRegion.source==
+                        "PAIR_WORKING_CORRIDOR_TRAVEL_REGION")))
         or not finite(objective.targetX) or not finite(objective.targetZ)
         or type(objective.returnRegion)~="table"
         or not finite(objective.returnRegion.originX)
@@ -306,7 +308,12 @@ function Mechanism:startReverse(vehicle,objective)
         or not finite(objective.returnRegion.directionZ)
         or not finite(objective.returnRegion.requiredProgressM)
         or objective.returnRegion.requiredProgressM<=0
+        -- Solo and the full-distance paired Return Region use directional
+        -- progress. A paired travel region does not have a cross-track
+        -- completion threshold; only legacy cross-track regions require it.
         or (objective.returnRegion.source~="SINGLE_REVERSE_REGION"
+            and objective.returnRegion.source~=
+                "PAIR_WORKING_CORRIDOR_TRAVEL_REGION"
             and (not finite(objective.returnRegion.requiredCrossTrackM)
                 or not finite(objective.returnRegion.blockerOriginX)
                 or not finite(objective.returnRegion.blockerOriginZ)
