@@ -383,6 +383,8 @@ end
 runtime:update(16)
 assert(seenBlocker and startedSolo==1
     and published[5].code=="OBSTRUCTION_RELOCATION_STARTED")
+-- The mocked non-active blocker remains physically present and unclaimed.
+OuttaMyWay.NonActiveObstructionAssessment.isStillCurrent=function() return true end
 runtime:update(16)
 assert(startedSolo==1
     and #published==5,"one non-job actuation admission per native occurrence")
