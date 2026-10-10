@@ -67,9 +67,12 @@ assert(none==nil and reason=="NO_FEASIBLE_PAIR_EGRESS")
 -- A known third vehicle's physical region must restrict candidate routes;
 -- do not treat the common field as empty merely because pair roots fit.
 local third=assembly(50,50,85,85)
-g_currentMission={vehicles={a.vehicle,b.vehicle,third.vehicle}}
+g_currentMission={vehicles={a.vehicle,b.vehicle,tool,third.vehicle}}
 local occluded=Plan.planPairCascade(c,a,b)
 assert(occluded==nil,"other known vehicles must veto overlapping regions")
+g_currentMission={vehicles={a.vehicle,b.vehicle,tool}}
+assert(Plan.planPairCascade(c,a,b),
+    "an attached implement already represented in a pair must not masquerade as an independent third-party obstacle")
 g_currentMission=nil
 -- Missing complete member size is not replaced by productive width or a
 -- fabricated fallback, even if the worker root alone is valid.

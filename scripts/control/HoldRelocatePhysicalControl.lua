@@ -192,6 +192,15 @@ end
 -- Physical candidate geometry is refreshed AFTER the bounded pair fold
 -- wait. Do not use pre-fold working width as a TRANSIT footprint.
 function Control:pairTransitFootprint(vehicle)
+    -- A still-open or unobservable fold cannot use a smaller base-size
+    -- TRANSIT envelope to certify a region. This restriction applies only
+    -- to the physical representation of an option, not the 15 s wait:
+    -- candidate assessment still runs and other options remain eligible.
+    local status,why=self:transitStatus(vehicle)
+    if status==nil then return nil,why end
+    if status.isSettled~=true then
+        return nil,"PAIR_TRANSIT_FOOTPRINT_NOT_REALIZED"
+    end
     return OuttaMyWay.PairTransitRegion.capture(vehicle)
 end
 

@@ -102,6 +102,7 @@ function Region.capture(vehicle)
     local valid,reason=visit(vehicle)
     if not valid or #corners==0 then return nil,reason or "TRANSIT_ENVELOPE_UNAVAILABLE" end
     return {rootX=rootX,rootZ=rootZ,corners=corners,memberCount=count,
+        memberObjects=seen,
         basis="GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION",
         negativeClearanceAuthority=false},nil
 end
@@ -133,7 +134,12 @@ local function sceneOccupancy(first,second,poly)
         count=count+1
         if count>512 then return objects,false end
         if type(vehicle)=="table" and vehicle~=first.vehicle
-            and vehicle~=second.vehicle and vehicle.rootNode~=nil
+            and vehicle~=second.vehicle
+            and not (first.transitFootprint.memberObjects
+                and first.transitFootprint.memberObjects[vehicle])
+            and not (second.transitFootprint.memberObjects
+                and second.transitFootprint.memberObjects[vehicle])
+            and vehicle.rootNode~=nil
             and not seen[vehicle.rootNode] then
             seen[vehicle.rootNode]=true
             local ok,x,_,z=pcall(getWorldTranslation,vehicle.rootNode)
