@@ -350,6 +350,9 @@ function Coordinator:startPairEgress(state,nowMs)
         return
     end
     state.relocator,state.objective=mover,objective
+    -- Current movement authority follows the mover alone; the nonmover
+    -- retains an independently timed native Regulation lease.
+    state.commitment.selectedMover=mover
     local blockers,seen={other},{[other.assemblyReferenceKey]=true}
     for i=1,#state.commitment.nearbyBlockers do
         local p=state.commitment.nearbyBlockers[i]
