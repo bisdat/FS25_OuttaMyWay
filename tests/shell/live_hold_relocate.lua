@@ -13,12 +13,16 @@ OuttaMyWay.NonActiveRelocationControl={
     } end
 }
 local prospective=nil
+local physicalAssessmentLookups=0
 OuttaMyWay.NonActiveObstructionAssessment={
     new=function()
         return {
             reset=function()end,
             advance=function()end,
-            findProspective=function()return prospective end
+            findProspective=function()
+                physicalAssessmentLookups=physicalAssessmentLookups+1
+                return prospective
+            end
         }
     end,
     isStillCurrent=function() return true end
@@ -385,15 +389,26 @@ runtime.nonActiveControl.begin=function(_,candidate)
         fieldIdentitySource="GIANTS_ACTIVE_COURSE_FIELD",
         sourceStrategy=secondStrategy}
 end
+-- The next current snapshot is eligible because 500ms of Assessment Epoch
+-- time have passed; reactive pair/solo BWR was never subject to this cadence.
+runtime.physicalAssessmentElapsedMs=500
 runtime:update(16)
 assert(seenBlocker and startedSolo==1
     and published[5].code=="OBSTRUCTION_RELOCATION_STARTED"
     and published[5].detail.detail:find("REALISED_MOTION_DEMAND"))
-runtime:update(16)
+local snapshotCount=physicalAssessmentLookups
+for _=1,28 do runtime:update(16) end
 assert(startedSolo==1 and #published==5,
     "no duplicate actuation for unchanged causal obstruction")
+assert(physicalAssessmentLookups==snapshotCount,
+    "expensive GIANTS shape acquisition must not run every frame")
+-- A new bounded Assessment Epoch reacquires physical Reality. No stale
+-- snapshot is reused; native paired and solo BWR remained responsive.
+runtime:update(16)
+assert(physicalAssessmentLookups==snapshotCount+1,
+    "fresh assessment required after the bounded 500ms cadence")
 prospective=nil
 runtime:update(16)
-assert(#published==5,"absence of causal relationship does not invent a new duty")
+assert(#published==5,"absence of causal relationship does not invent a duty")
 -- No player-control veto or diagnostic fields remain in active pair/solo admission.
 print("Live pair / solo fallback / pre-stall archived Causal Obstruction: PASS")
