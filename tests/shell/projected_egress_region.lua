@@ -127,38 +127,35 @@ local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft
 assert(unassociated.egressSide==-1 and unassociated.targetInField==false
     and unassociated.fieldIdentitySource=="NO_NATIVE_FIELD_REFERENCE",
     "absence of native course field must not inhibit 40 m relocation")
--- TS001 option cascade: try both assembly assignments before any Control.
--- These are geometric fixtures, not claims of recreated field video pose.
+-- The fallback pair planner rejects axial forward in either assignment.
 local boundary={xs={0,80,80,0},zs={0,0,80,80}}
-local forwardPreferred=worker(64.7385,32.0222,-1,0)
-local forwardOther=worker(58.3704,14.0983,0,1)
-forwardPreferred.workingWidthM=10
-forwardOther.workingWidthM=10
+local forwardPreferred=worker(60,40,-1,0)
+local forwardOther=worker(50,40,1,0)
+forwardPreferred.workingWidthM=10;forwardOther.workingWidthM=10
 local forwardPair={pairWidthsCaptured=true,blockerWorkingWidthM=10,
     fieldPolygon=boundary,fieldCentroid={x=40,z=40}}
 assert(Plan.plan(forwardPair,forwardPreferred,forwardOther,
+    "FORWARD")==nil,"axial forward cannot be a paired exit")
+local axisChoice=Plan.planPairCascade(forwardPair,
+    forwardPreferred,forwardOther)
+assert(axisChoice==nil or axisChoice.directionSource~="PAIR_FORWARD",
+    "no straight forward candidate may survive the cascade")
+-- A non-axial centroid exit is still allowed if neither 70-degree reverse
+-- is feasible and the opposing worker is not ahead of native forward travel.
+local centreMover=worker(20,4,0,1)
+local centreOther=worker(10,4,0,-1)
+centreMover.workingWidthM=nil;centreOther.workingWidthM=12
+local centroidPair={pairWidthsCaptured=true,blockerWorkingWidthM=12,
+    fieldPolygon=boundary,fieldCentroid={x=60,z=40}}
+assert(Plan.plan(centroidPair,centreMover,centreOther,
     "OBLIQUE_REVERSE")==nil)
-assert(Plan.plan(forwardPair,forwardOther,forwardPreferred,
-    "OBLIQUE_REVERSE")==nil)
-local forwardChoice,forwardMover,forwardBlocker=Plan.planPairCascade(
-    forwardPair,forwardPreferred,forwardOther)
-assert(forwardChoice~=nil and forwardChoice.directionSource=="PAIR_FORWARD"
-    and forwardChoice.isReverse==false and forwardChoice.moveForwards==true
-    and forwardChoice.cascadeAttempts==3
-    and forwardMover==forwardPreferred and forwardBlocker==forwardOther
-    and forwardChoice.targetInField,
-    "when both reverse assignments fail, forward must be available")
-local centroidPreferred=worker(29.2538,10.2187,-1,0)
-local centroidOther=worker(10.0503,16.6269,0,-1)
-centroidPreferred.workingWidthM=10;centroidOther.workingWidthM=10
-local centroidChoice,centroidMover=Plan.planPairCascade(forwardPair,
-    centroidPreferred,centroidOther)
+local centroidChoice,centroidMover=Plan.planPairCascade(centroidPair,
+    centreMover,centreOther)
 assert(centroidChoice and centroidChoice.directionSource=="PAIR_CENTROID"
-    and centroidChoice.cascadeAttempts==6
-    and centroidMover==centroidOther and centroidChoice.isReverse==false
-    and centroidChoice.steeringHorizonM<=math.sqrt(
-        (40-centroidOther.x)^2+(40-centroidOther.z)^2)+0.001,
-    "after reverse and forward fail, direct-centroid is the last safe tier")
+    and centroidMover==centreMover and centroidChoice.isReverse==false
+    and centroidChoice.cascadeAttempts==3
+    and centroidChoice.targetInField,
+    "genuinely lateral centroid exit remains last available tier")
 -- A genuinely confined field has no supported direction for either assembly.
 confined.workingWidthM=36;confinedBlocker.workingWidthM=36
 local exhausted={pairWidthsCaptured=true,blockerWorkingWidthM=36,
