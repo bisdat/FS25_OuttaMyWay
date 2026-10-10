@@ -100,7 +100,11 @@ function Region.plan(commitment,relocator,blocker,routeMode)
     local normalX,normalZ=-forwardZ,forwardX
     local startCross=(relocator.x-blocker.x)*normalX
         +(relocator.z-blocker.z)*normalZ
-    local perpX,perpZ=-backZ,backX
+    -- The forward/centroid tiers do not use a reverse-axis normal.
+    local perpX,perpZ
+    if mode=="OBLIQUE_REVERSE" then
+        perpX,perpZ=-backZ,backX
+    end
     local centreX=commitment.fieldCentroid.x-relocator.x
     local centreZ=commitment.fieldCentroid.z-relocator.z
     local centreDistance=math.sqrt(centreX*centreX+centreZ*centreZ)
