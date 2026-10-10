@@ -59,7 +59,11 @@ local physical={
     end,
     transitStatus=function(_,v)
         event("STATUS",v)
-        return {isSettled=v.name=="A" and readyA or readyB,
+        -- Lua 'condition and false or true' cannot represent a false
+        -- branch: keep the two participant statuses explicit.
+        local settled
+        if v.name=="A" then settled=readyA else settled=readyB end
+        return {isSettled=settled,
             requiredFoldCount=1,settledFoldCount=0}
     end,
     pairTransitFootprint=function(_,v)
