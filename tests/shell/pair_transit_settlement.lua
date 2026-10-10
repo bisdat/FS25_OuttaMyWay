@@ -91,4 +91,13 @@ assert(unresolved.foldSettled==false
     and unresolved.configurationBasis=="NOMINAL_TRANSIT_AFTER_WAIT",
     "unknown selected fold actuator must not veto post-timeout planning")
 assert(control:cancelTransit(a) and control:cancelTransit(b))
-print("Paired selective fold wait and non-veto nominal TRANSIT geometry: PASS")
+-- Actual pair coordinator uses only the mover's plan; the remaining
+-- worker's fold commands/getters must not be consulted.
+local independent=Control.new(authority)
+assert(independent:preflightPairMover({commitment=commitment,
+    relocator={vehicle=a}}))
+assert(independent:getTransitRequests(a)~=nil
+    and independent:getTransitRequests(b)==nil)
+assert(independent:requestTransit(a))
+assert(independent:cancelTransit(a))
+print("Mover-only paired TRANSIT request, no protected configuration: PASS")

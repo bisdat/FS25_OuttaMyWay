@@ -7,7 +7,6 @@ local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
 local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
-local PAIR_TRANSIT_WAIT_MS=15000 -- preparation limit, NEVER recovery deadline
 local STATIC_EGRESS_FAILSAFE_MS=25000 -- cancel static movement after 25 seconds
 local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
@@ -78,7 +77,6 @@ function Coordinator:getStatus()
             and state.relocator.assemblyReferenceKey or nil,
         regionRequiredProgressM=state.objective
             and state.objective.returnRegion.requiredProgressM or nil,
-        pairTransitDeadlineMs=state.pairTransitDeadlineMs,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
         staticEgressDeadlineMs=state.staticEgressDeadlineMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
@@ -86,6 +84,8 @@ function Coordinator:getStatus()
     }
 end
 
+-- Release only commands actually owned by this intervention. In
+-- asymmetric pairs the nonmoving worker never owns a TRANSIT plan.
 -- Release the active physical commands best-effort at the end of this
 -- collision. Capture failures only as this operation's outcome; do not keep
 -- a historical job or commitment as a future admission veto.
@@ -262,8 +262,8 @@ end
 
 -- The commitment authority must independently validate a live, issued
 -- commitment. An input boolean supplied by a candidate is never authority.
--- Pair Commitment retains authority while both assemblies prepare for a
--- bounded TRANSIT wait. No single-mover geometry is selected before folding.
+-- Pair Commitment retains authority for role/direction selection. No
+-- preparation wait or nonmover configuration change is required.
 function Coordinator:beginPair(commitment,nowMs)
     if self.active~=nil or not finite(nowMs)
         or type(commitment)~="table" or commitment.commitmentId==nil
@@ -290,59 +290,45 @@ function Coordinator:beginPair(commitment,nowMs)
     local admitted,reason=command(self.commitmentAuthority,
         "validateCommitment",commitment)
     if not admitted then return false,reason end
+    -- Pair authority is established before choosing roles; no assembly
+    -- is configured merely to let the planner consider it.
     local state={
         commitment=commitment,commitmentId=commitment.commitmentId,
         relocator=nil,blockers={},isBlockerRegulated={},
         isRelocatorHeld=false,isReverseOutstanding=false,
-        isTransitOutstanding=false,pairPreparationHolds={false,false},
         pairTransitOutstanding={false,false},
-        isSingle=false,phase="PAIR_PREPARING_TRANSIT",
-        pairTransitDeadlineMs=nowMs+PAIR_TRANSIT_WAIT_MS,
+        isSingle=false,phase="PAIR_SELECTING_EGRESS",
         objective=nil,egressRegulationUntilMs=nil
     }
-    local ready,why=command(self.physicalControl,"preflightPair",state)
-    if not ready then return false,why end
     self.active=state
-    -- Both cached plans now need release, including if a later preparation
-    -- Hold or first TRANSIT request fails before the second is dispatched.
-    state.pairTransitOutstanding={true,true}
     self.lastOutcome=nil
     self.lastEgressRegulationResults=nil
     self.lastPairMotionStartEvidence=nil
     self.lastPairTransitExhaustion=nil
-    -- Keep native field-course/implement progression permitted while
-    -- suppressing only translation. Request TRANSIT on both participants.
-    for i=1,2 do
-        local p=commitment.participants[i]
-        state.pairPreparationHolds[i]=true
-        local held,holdReason=command(self.physicalControl,
-            "hold",p.vehicle,"TRANSIT_PREPARATION")
-        if not held then
-            self:finishWithOutcome("CONTROL_INTERRUPTED",holdReason)
-            return false,holdReason
-        end
+    -- Select a viable route, then request TRANSIT on that mover only.
+    -- Movement starts immediately while GIANTS folds/raises the mover.
+    -- The other worker remains in its existing WORKING configuration.
+    self:startPairEgress(state,nowMs)
+    if self.active~=state then
+        return false,self.lastOutcome and self.lastOutcome.reason
+            or (self.lastOutcome and self.lastOutcome.status)
+            or "PAIR_EGRESS_NOT_STARTED"
     end
-    for i=1,2 do
-        local p=commitment.participants[i]
-        state.pairTransitOutstanding[i]=true
-        local requested,requestReason=command(self.physicalControl,
-            "requestTransit",p.vehicle)
-        if not requested then
-            self:finishWithOutcome("CONTROL_INTERRUPTED",requestReason)
-            return false,requestReason
-        end
-    end
-    return true,{phase="PAIR_PREPARING_TRANSIT",
-        pairTransitDeadlineMs=state.pairTransitDeadlineMs}
+    return true,{phase=state.phase,
+        requestedDriveSpeedKmh=self.lastPairMotionStartEvidence
+            and self.lastPairMotionStartEvidence.requestedDriveSpeedKmh,
+        pairedEgressImmediate=true}
 end
 
--- Region-first selection: use nominal selected-runtime TRANSIT geometry
--- after the shared maximum 15 s wait even if folding remains in progress.
--- Readiness only allows an earlier start; it is never a spatial veto.
-function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
+-- Pair assesses candidate routes before modifying either worker. The
+-- selected mover alone requests TRANSIT, concurrently with native egress.
+-- Its transition envelope is an unverified Reality assumption; do not
+-- introduce a fold-readiness gate.
+function Coordinator:startPairEgress(state,nowMs)
     local first,second=state.commitment.participants[1],
         state.commitment.participants[2]
-    for _,party in ipairs({first,second}) do
+    for i=1,2 do
+        local party=state.commitment.participants[i]
         local footprint,why=query(self.physicalControl,
             "pairTransitFootprint",party.vehicle)
         if type(footprint)~="table" then
@@ -373,27 +359,21 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
         end
     end
     state.blockers=blockers
-    -- Native-drive wrapper transition is one synchronous coordinator
-    -- operation: remove both preparation Holds BEFORE installing the 1 km/h
-    -- Regulation wrapper. Otherwise the Hold wrapper remains buried below
-    -- Regulation and cannot be reacquired for the seven-second relocated Hold
-    -- when a short Return Region is achieved before Regulation expires.
-    -- No engine update is yielded between these changes; authority, leases
-    -- and failure cleanup remain scoped to this same pair commitment.
-    for i=1,2 do
-        if state.pairPreparationHolds[i] then
-            local party=state.commitment.participants[i]
-            local released,why=command(self.physicalControl,
-                "releaseHold",party.vehicle,"TRANSIT_PREPARATION")
-            if not released then
-                self:finishWithOutcome("CONTROL_INTERRUPTED",why)
-                return
-            end
-            state.pairPreparationHolds[i]=false
-        end
+    -- Preflight only the chosen mover's configuration request. No Hold,
+    -- fold status query or second participant plan is required.
+    local prepared,preflightReason=command(self.physicalControl,
+        "preflightPairMover",state)
+    if not prepared then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",preflightReason)
+        return
     end
-    -- The five-second window begins with the actual egress operation,
-    -- never during TRANSIT folding.
+    local moverIndex=mover==first and 1 or 2
+    -- Also release a preflight-only plan on partial command failure.
+    state.pairTransitOutstanding[moverIndex]=true
+    -- Regulation, request TRANSIT and drive initiation happen in one
+    -- synchronous update, with no GIANTS frame between configuration
+    -- request and physical relocation.
+    -- The five-second window begins with egress.
     state.egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
     for i=1,#blockers do
         state.isBlockerRegulated[i]=true
@@ -403,6 +383,12 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
             self:finishWithOutcome("CONTROL_INTERRUPTED",why)
             return
         end
+    end
+    local requested,requestReason=command(self.physicalControl,
+        "requestTransit",mover.vehicle)
+    if not requested then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",requestReason)
+        return
     end
     state.isReverseOutstanding=true
     local started,evidence=command(self.physicalControl,
@@ -421,12 +407,11 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
         regionTravelM=objective.regionTravelM,
         remainingWorkingWidthM=objective.remainingWorkingWidthM,
         workingCorridorMarginM=objective.workingCorridorMarginM,
-        transitWaitExhausted=exhausted,
-        firstFoldSettlement=statusA,
-        secondFoldSettlement=statusB,
+        pairedEgressImmediate=true,
+        moverTransitRequested=true,
+        remainingWorkerConfiguration="WORKING_UNCHANGED",
         geometryBasis=objective.transitGeometryBasis,
-        firstFoldSettled=first.transitFootprint.foldSettled,
-        secondFoldSettled=second.transitFootprint.foldSettled,
+        moverFoldSettled=mover.transitFootprint.foldSettled,
         isPhysicalPairClearanceConfirmed=false,
         requestedDriveSpeedKmh=type(evidence)=="table"
             and (evidence.requestedDriveSpeedKmh
@@ -612,21 +597,13 @@ function Coordinator:completeNativeHandback(state)
         self:finishWithOutcome("CONTROL_INTERRUPTED",cause)
         return
     end
-    -- GIANTS takes over the relocated worker's new fieldwork job.
-    -- The other still-active participant receives its cached configuration
-    -- inverse, not a synthetic fieldwork restart.
+    -- The mover's successful GIANTS job replacement owns its new
+    -- configuration. The nonmover was never put into TRANSIT and needs
+    -- neither a synthetic restart nor an unfolding command.
     if state.pairTransitOutstanding then
         for i=1,2 do
-            local party=state.commitment.participants[i]
-            if party.vehicle==state.relocator.vehicle then
-                state.pairTransitOutstanding[i]=false
-            elseif state.pairTransitOutstanding[i] then
-                local restored,why=command(self.physicalControl,
-                    "cancelTransit",party.vehicle)
-                if not restored then
-                    self:finishWithOutcome("CONTROL_INTERRUPTED",why)
-                    return
-                end
+            if state.commitment.participants[i].vehicle
+                ==state.relocator.vehicle then
                 state.pairTransitOutstanding[i]=false
             end
         end
@@ -645,27 +622,6 @@ function Coordinator:advance(nowMs,dt)
     if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
-    if state.phase=="PAIR_PREPARING_TRANSIT" then
-        local a,b=state.commitment.participants[1],
-            state.commitment.participants[2]
-        local first=query(self.physicalControl,"transitStatus",a.vehicle)
-        local second=query(self.physicalControl,"transitStatus",b.vehicle)
-        local settled=type(first)=="table" and first.isSettled==true
-            and type(second)=="table" and second.isSettled==true
-        local exhausted=not settled
-            and nowMs>=state.pairTransitDeadlineMs
-        if not settled and not exhausted then return end
-        if exhausted then
-            -- The 15 s bound authorises attempting egress with nominal
-            -- selected-runtime TRANSIT geometry, never cleanup on its own.
-            self.lastPairTransitExhaustion={
-                commitmentId=state.commitmentId,
-                elapsedMs=PAIR_TRANSIT_WAIT_MS,
-                first=first,second=second}
-        end
-        self:startPairEgress(state,nowMs,exhausted,first,second)
-        return
-    end
     -- Timer alone releases native speed Regulation for pair/static egress.
     if not state.isSingle and finite(state.egressRegulationUntilMs)
         and nowMs>=state.egressRegulationUntilMs then

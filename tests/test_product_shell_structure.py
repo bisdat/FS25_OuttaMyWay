@@ -104,11 +104,13 @@ def test_region_based_egress_and_native_regulation():
     assert "otherWorkingWidth+WORK_CORRIDOR_MARGIN_M" in transit
     assert "math.max(2,required/math.abs(rate))" not in transit
     assert "PAIR_WORKING_CORRIDOR_TRAVEL_REGION" in transit
-    assert "PAIR_TRANSIT_WAIT_MS=15000" in coordinator
-    assert "PAIR_PREPARING_TRANSIT" in coordinator
-    assert '"preflightPair"' in coordinator
+    assert "PAIR_TRANSIT_WAIT_MS=15000" not in coordinator
+    assert "PAIR_PREPARING_TRANSIT" not in coordinator
+    assert '"preflightPairMover"' in coordinator
     assert '"pairTransitFootprint"' in coordinator
-    assert '"transitStatus"' in coordinator
+    assert '"transitStatus"' not in coordinator
+    assert "pairedEgressImmediate=true" in coordinator
+    assert '"requestTransit",mover.vehicle' in coordinator
     assert "foldTargets" in physical and "hasActiveParts" in physical
     assert "SIGNED_CROSS_TRACK_REGION" in region
     assert "REQUIRED_RETREAT_M=20" not in region

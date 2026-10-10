@@ -6,7 +6,7 @@ Architecture describes what the system should achieve; Specifications provide ex
 ## Current boundaries
 
 - [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through minimal justified intervention.
-- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — native ≥1 s blockage and ≤30 m local pair nomination; independently committed pair preparation requests TRANSIT for both members, observes selected foldable endpoints up to a 15 s non-veto wait, then assesses in-field egress regions for both candidate movers using selected-runtime member geometry. One chosen mover receives native egress Control while the other is regulated at 1 km/h for 5 s; followed by 7 s relocated Hold and GIANTS continuation. The experimental physical envelope and native steering path remain GIANTS-validation subjects.
+- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — TEST 0.5.2.20 **Asymmetric Cooperative Egress**: admit/assess a current native blocked pair, select one mover/direction, then request TRANSIT only on that mover while native relocation begins. The other worker remains in WORKING at 1 km/h for five seconds before independent release; the mover travels the remaining worker width + 5 m, then waits seven seconds before its own GIANTS restart. No shared fold wait or nonmover reconfiguration. TS015 replay pending; TS001 route-ranking issue still open.
 - [Configuration](CONFIGURATION.md) — supported player choices and consent.
 - [Log Publication](LOG_PUBLICATION.md) — bounded runtime/engineering fact publication.
 - [GUI](GUI.md) — current settings and status indication; full operational messaging deferred.

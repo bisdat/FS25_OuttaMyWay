@@ -44,7 +44,7 @@ local hold,reg=Hold.new(),Regulation.new()
 local reverseOriginal,reverseWrapper,regionReached
 local originalFace="TRANSIT_PREPARATION"
 local physical={
-    preflightPair=function()return true end,
+    preflightPairMover=function()return true end,
     hold=function(_,vehicle,purpose)return hold:hold(vehicle,purpose)end,
     releaseHold=function(_,vehicle,purpose)
         local ok,evidence=hold:releaseHold(vehicle,purpose)
@@ -121,13 +121,10 @@ local committed={token="issued",commitmentId="PAIR",
     fieldPolygon={xs={0,100,100,0},zs={0,0,100,100}}}
 local coordinator=Coordinator.new(authority,physical)
 assert(coordinator:begin(committed,1000))
-assert(hold:isHolding(a) and hold:isHolding(b))
-assert(AIVehicleUtil.driveToPoint==hold.wrapper)
-coordinator:advance(16000)
-assert(coordinator:getStatus().phase=="REVERSING")
-assert(not hold:isHolding(a) and not hold:isHolding(b)
+assert(coordinator:getStatus().phase=="REVERSING"
+    and not hold:isHolding(a) and not hold:isHolding(b)
     and not hold.isInstalled and hold.heldCount==0,
-    "preparation Hold wrapper must be uninstalled before Regulation")
+    "pair immediate egress must not install preparation Hold wrappers")
 assert(reg.count==1 and reverseWrapper~=nil)
 -- During commanded reverse, the current blocker remains regulated.
 AIVehicleUtil.driveToPoint(a,16,1,true,false,0,1,20,false)
@@ -136,23 +133,23 @@ assert(events[#events].vehicle==a and events[#events].speed==1
 -- Force full synthetic Region completion before Regulation expires; this
 -- is intentionally not a claim that GIANTS can travel 41 m in this interval.
 regionReached=true
-coordinator:advance(17781)
+coordinator:advance(2781)
 assert(coordinator:getStatus().phase=="HOLD_RELOCATED"
     and hold:isHolding(b) and reg.count==1,
     "fast region entry must reacquire the 7-second relocated Hold")
 AIVehicleUtil.driveToPoint(b,16,1,true,false,0,1,20,false)
 assert(events[#events].allowed==false and events[#events].speed==0)
 -- The counterpart speed restriction still has its independent 5 s timer.
-coordinator:advance(20999)
+coordinator:advance(5999)
 assert(reg.count==1)
-coordinator:advance(21000)
+coordinator:advance(6000)
 assert(reg.count==0 and hold:isHolding(b))
 AIVehicleUtil.driveToPoint(a,16,1,true,true,0,1,20,false)
 assert(events[#events].vehicle==a and events[#events].speed==20)
 -- When 7 s Hold finishes the last transparent native wrapper unwinds.
-coordinator:advance(24780)
+coordinator:advance(9780)
 assert(coordinator:getStatus().phase=="HOLD_RELOCATED")
-coordinator:advance(24781)
+coordinator:advance(9781)
 assert(not coordinator:isActive()
     and coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
 assert(AIVehicleUtil.driveToPoint==native

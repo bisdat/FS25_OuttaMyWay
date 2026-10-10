@@ -180,6 +180,30 @@ function Control:preflightPair(state)
     return true
 end
 
+-- Paired egress is asymmetric: plan and request TRANSIT ONLY for the
+-- selected mover. Nonmover configuration never changes. Unlike the solo
+-- recovery preflight, this uses the pair's selected-runtime fold discovery
+-- but does not poll readiness or require configuration before driving.
+function Control:preflightPairMover(state)
+    if g_server==nil or type(state)~="table"
+        or type(state.commitment)~="table"
+        or self.authority.active~=state.commitment
+        or type(state.relocator)~="table" then
+        return false,"PAIR_MOVER_PREFLIGHT_UNAVAILABLE"
+    end
+    local vehicle=state.relocator.vehicle
+    if type(vehicle)~="table" then
+        return false,"PAIR_MOVER_UNAVAILABLE"
+    end
+    if self.plans[vehicle]~=nil then
+        return false,"TRANSIT_PLAN_ALREADY_ACTIVE"
+    end
+    local plan,why=buildTransitPlan(vehicle,true)
+    if plan==nil then return false,why end
+    self.plans[vehicle]=plan
+    return true
+end
+
 -- Read only fold targets actually discovered in the selected runtime
 -- configuration. No check occurs for non-foldable assemblies.
 function Control:transitStatus(vehicle)
@@ -205,18 +229,15 @@ function Control:transitStatus(vehicle)
         unresolvedFoldCount=plan.unknownFoldCount or 0}
 end
 
--- Pair planning uses the selected-runtime nominal TRANSIT member geometry.
--- Fold endpoints shorten preparation, never veto geometry or movement once
--- the shared 15-second maximum has elapsed. This is a planning estimate,
--- NOT proof of actual compact physical collision clearance.
+-- Planning may inspect either candidate's nominal selected-runtime member
+-- geometry BEFORE choosing the mover, without requesting TRANSIT on either.
+-- The mover may still be physically deployed during initial egress.
+-- This is a planning envelope, not proof that folding has completed.
 function Control:pairTransitFootprint(vehicle)
     local footprint,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if footprint==nil then return nil,why end
-    local status=self:transitStatus(vehicle)
-    footprint.foldSettled=type(status)=="table" and status.isSettled==true
-    footprint.configurationBasis=footprint.foldSettled
-        and "FOLD_ENDPOINTS_OBSERVED"
-        or "NOMINAL_TRANSIT_AFTER_WAIT"
+    footprint.foldSettled=false
+    footprint.configurationBasis="NOMINAL_TRANSIT_BEFORE_REQUEST"
     return footprint
 end
 

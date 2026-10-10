@@ -1,4 +1,4 @@
--- Native evidence -> exclusive pair -> both TRANSIT -> footprint region.
+-- Native evidence -> pair role selection -> mover-only TRANSIT while moving.
 -- Real production modules with GIANTS native calls mocked. No field PASS claim.
 OuttaMyWay={}
 dofile("scripts/coordination/NativePairCommitmentAuthority.lua")
@@ -141,89 +141,71 @@ physical.jobMechanism={
 }
 local coordinator=Coordinator.new(authority,physical)
 local ok,entry=coordinator:begin(issued,1000)
-assert(ok and entry.phase=="PAIR_PREPARING_TRANSIT")
-assert(#events==4 and events[1]=="HOLD:TRANSIT_PREPARATION"
-    and events[2]=="HOLD:TRANSIT_PREPARATION"
-    and events[3]=="TRANSIT" and events[4]=="TRANSIT")
-assert(physical:transitStatus(first).isSettled
-    and physical:transitStatus(second).isSettled,
-    "non-foldable equipment needs no fold polling or delay")
-coordinator:advance(1001)
+assert(ok and entry.pairedEgressImmediate==true)
 assert(coordinator:getStatus().phase=="REVERSING"
-    or coordinator:getStatus().phase=="PAIR_FORWARD_MOVING",
-    "full-distance in-field selection may choose reverse or forward")
-assert(#events==8 and events[5]=="RELEASE:TRANSIT_PREPARATION"
-    and events[6]=="RELEASE:TRANSIT_PREPARATION"
-    and events[7]=="REGULATE:EGRESS"
-    and events[8]=="REVERSE",
-    "paired native Hold wrappers must unwind BEFORE Regulation is installed")
-assert(coordinator.lastPairMotionStartEvidence.regionTravelM==41
-    and coordinator.lastPairMotionStartEvidence.remainingWorkingWidthM==36
-    and coordinator.lastPairMotionStartEvidence.workingCorridorMarginM==5
-    and coordinator.lastPairMotionStartEvidence.cascadeAttempts>=2)
+    or coordinator:getStatus().phase=="PAIR_FORWARD_MOVING")
+assert(#events==3 and events[1]=="REGULATE:EGRESS"
+    and events[2]=="TRANSIT" and events[3]=="REVERSE",
+    "the selected mover requests TRANSIT concurrently with egress")
+local motion=assert(coordinator.lastPairMotionStartEvidence)
+assert(motion.regionTravelM==41 and motion.remainingWorkingWidthM==36
+    and motion.workingCorridorMarginM==5
+    and motion.pairedEgressImmediate and motion.moverTransitRequested
+    and motion.remainingWorkerConfiguration=="WORKING_UNCHANGED")
+local mover=motion.relocatingAssemblyReferenceKey
+local other=motion.otherAssemblyReferenceKey
+local moverVehicle=mover==issued.participants[1].assemblyReferenceKey
+    and first or second
+local remainingVehicle=other==issued.participants[1].assemblyReferenceKey
+    and first or second
+assert(physical:getTransitRequests(moverVehicle)~=nil)
+assert(physical:getTransitRequests(remainingVehicle)==nil,
+    "remaining FIELDWORK worker must never have a TRANSIT plan")
+coordinator:advance(5999)
+assert(#events==3,"five seconds is measured from initial movement start")
 coordinator:advance(6000)
-assert(#events==8)
+assert(events[4]=="REGULATION_RELEASE:EGRESS")
+assert(coordinator.lastEgressRegulationResults[1].rootId==other)
+reverse={travelledM=41,isComplete=true}
 coordinator:advance(6001)
-assert(events[9]=="REGULATION_RELEASE:EGRESS")
-assert(#coordinator.lastEgressRegulationResults==1)
-assert(coordinator.lastEgressRegulationResults[1].rootId==
-    coordinator.lastPairMotionStartEvidence.otherAssemblyReferenceKey,
-    "Regulation must protect the selected nonmoving pair participant")
-reverse={travelledM=20,isComplete=true}
-coordinator:advance(6002)
-assert(events[10]=="REVERSE_STOP"
-    and events[11]=="HOLD:RELOCATED_WORKER")
+assert(events[5]=="REVERSE_STOP"
+    and events[6]=="HOLD:RELOCATED_WORKER")
+coordinator:advance(13000)
+assert(#events==6)
 coordinator:advance(13001)
-assert(#events==11)
-coordinator:advance(13002)
-assert(events[12]=="RELEASE:RELOCATED_WORKER"
-    and events[13]=="NATIVE_STOP_START"
-    and events[14]=="HANDOFF_TRANSIT"
-    and events[15]=="RESTORE","counterpart TRANSIT restored")
+assert(events[7]=="RELEASE:RELOCATED_WORKER"
+    and events[8]=="NATIVE_STOP_START"
+    and events[9]=="HANDOFF_TRANSIT"
+    and #events==9,
+    "no protected-worker TRANSIT restoration or job replacement")
 assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
 assert(authority:release(issued))
-physical.plans[second]={transitActions={},restoreActions={}}
-assert(physical:cancelTransit(second))
-assert(events[#events]=="RESTORE")
--- TS001 .7 regression: neither fold reports an endpoint at 15 seconds,
--- yet both selected-runtime TRANSIT footprints are available to planning.
--- Elapsed preparation MUST produce a movement request, not cached inverse
--- commands and NO_FEASIBLE_PAIR_EGRESS due to unsettled fold alone.
+-- Real-world unavailable fold endpoints must not delay the mover.
 local originalStatus=physical.transitStatus
 physical.transitStatus=function()
-    return {isSettled=false,requiredFoldCount=1,settledFoldCount=0}
+    error("PAIR_FOLD_STATUS_MUST_NOT_BE_QUERIED")
 end
 reverse={travelledM=0,isComplete=false}
-local timed=assert(authority:admitCandidate(first,second,first,1000))
-local previousEvents=#events
-assert(coordinator:begin(timed,16000))
-coordinator:advance(30999)
-assert(coordinator:getStatus().phase=="PAIR_PREPARING_TRANSIT"
-    and #events==previousEvents+4,
-    "neither fold is confirmed; bounded preparation is still active")
-coordinator:advance(31000)
-assert(coordinator:isActive()
-    and coordinator:getStatus().phase~="PAIR_PREPARING_TRANSIT"
-    and coordinator.lastPairMotionStartEvidence.transitWaitExhausted==true
-    and coordinator.lastPairMotionStartEvidence.firstFoldSettled==false
-    and coordinator.lastPairMotionStartEvidence.secondFoldSettled==false
-    and coordinator:getStatus().lastOutcome==nil,
-    "15-second expiry must attempt actual egress without fold veto")
-assert(events[#events]=="REVERSE",
-    "TS001 .7 must not reverse TRANSIT into WORKING at wait expiry")
+local immediate=assert(authority:admitCandidate(first,second,first,1000))
+local before=#events
+local began=assert(coordinator:begin(immediate,16000))
+assert(began and #events==before+3 and events[#events]=="REVERSE")
+assert(coordinator.lastPairMotionStartEvidence.pairedEgressImmediate)
 assert(coordinator:relinquish("TEST_CLEANUP"))
-assert(authority:release(timed))
+assert(events[#events]=="RESTORE",
+    "interrupted mover restores only its own TRANSIT request")
+assert(authority:release(immediate))
 physical.transitStatus=originalStatus
--- Confined field admits pair roots but not the complete TRANSIT
--- member-corner path. Only after the bounded search does it give up.
+-- Field too small for all full-distance options still produces a
+-- last-resort outcome without controlling either worker's configuration.
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={19,24,24,19},pointsZ={18,18,22,22}}}}
 local restricted=assert(authority:admitCandidate(first,second,first,1000))
-local admittedRestricted=assert(coordinator:begin(restricted,30000))
-assert(admittedRestricted)
-coordinator:advance(30001)
-assert(not coordinator:isActive()
-    and coordinator:getStatus().lastOutcome.status=="NO_FEASIBLE_PAIR_EGRESS")
+before=#events
+local admittedRestricted,why=coordinator:begin(restricted,30000)
+assert(not admittedRestricted and not coordinator:isActive()
+    and coordinator:getStatus().lastOutcome.status=="NO_FEASIBLE_PAIR_EGRESS"
+    and #events==before)
 assert(authority:release(restricted))
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
