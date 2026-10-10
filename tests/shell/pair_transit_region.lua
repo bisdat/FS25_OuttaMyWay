@@ -9,11 +9,12 @@ getWorldTranslation=function(n)
     local p=assert(points[n]);return p.x,0,p.z
 end
 localDirectionToWorld=function(n,x,y,z)
-    return z,y,-x
+    local facing=assert(points[n]).facing or 1
+    return facing*z,y,-facing*x
 end
 localToWorld=function(n,x,y,z)
-    local p=assert(points[n])
-    return p.x+z,y,p.z-x
+    local p=assert(points[n]);local facing=p.facing or 1
+    return p.x+facing*z,y,p.z-facing*x
 end
 local function assembly(x,z,width,length)
     local node={};points[node]={x=x,z=z}
@@ -60,9 +61,28 @@ assert(choice.targetInField and choice.regionTravelM==41
     "TS001: 36 m protected WORKING corridor + 5 m = 41 m travel")
 assert(choice.cascadeAttempts>=2,
     "compare multiple spatial alternatives before selecting")
-assert(choice.directionSource=="OBLIQUE_REVERSE"
-    or choice.directionSource=="PAIR_FORWARD"
-    or choice.directionSource=="PAIR_CENTROID")
+assert(choice.directionSource=="OBLIQUE_REVERSE",
+    "available 70-degree reverse must outrank centroid preference")
+-- TS015 head-to-head: centroid points toward the other machine,
+-- but the first permitted manoeuvre is oblique withdrawal.
+local headA=assembly(30,50,3,6)
+local headB=assembly(43,50,3,6)
+points[headB.vehicle.rootNode].facing=-1
+headA.workingWidthM=36;headB.workingWidthM=36
+headA.transitFootprint=assert(Geometry.capture(headA.vehicle))
+headB.transitFootprint=assert(Geometry.capture(headB.vehicle))
+local headChoice,headMover,headOther=Plan.planPairCascade(c,headA,headB)
+assert(headChoice and headMover==headA and headOther==headB
+    and headChoice.directionSource=="OBLIQUE_REVERSE"
+    and headChoice.isReverse and not headChoice.moveForwards,
+    "head-to-head must select 70-degree withdrawal, not forward")
+local headRegion=headChoice.returnRegion
+assert(headRegion.directionX*(headOther.x-headMover.x)
+    +headRegion.directionZ*(headOther.z-headMover.z)<=0.001,
+    "reverse direction must withdraw from the opposing assembly")
+assert(math.abs(headRegion.directionX)>0.0001
+    and math.abs(headRegion.directionZ)>0.0001,
+    "neither assembly's straight longitudinal axis is an exit")
 local r=choice.returnRegion
 assert(not Plan.progress(r,r.originX,r.originZ).isInRegion)
 assert(not Plan.progress(r,r.originX+2*r.directionX,
