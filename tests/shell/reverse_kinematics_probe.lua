@@ -46,6 +46,10 @@ assert(#events==1 and events[1].code=="REVERSE_KINEMATICS_START")
 local start=events[1].payload
 assert(start.hasToolReverser and start.regionRequiredProgressM==13
     and start.steeringHorizonM==53 and start.requestedReverseKmh==22)
+assert(start.reverseNodeX==0 and start.reverseNodeZ==0
+    and start.toolNodeX==0 and start.toolNodeZ==-2
+    and start.additionalSteeringLookthroughM==40,
+    "admission captures actual node origins and separates travel from look-through")
 assert(math.abs(math.abs(start.initialToolVsReverserNodeDeg)-45)<0.001,
     "initial implement/reverser node-frame angle must not be erased")
 assert(math.abs(math.abs(start.signedRegionFromReverseDeg)-80)<0.001,
@@ -85,6 +89,50 @@ assert(events[#events].payload.hasToolReverser==false
     "missing GIANTS tool frame must be reported as missing, not invented")
 Probe.sample(withoutTool,0,1,0,-15,16,0,0)
 assert(events[#events].payload.toolVsReverserNodeDeg==nil)
+-- #470 passive counterfactual study: no shadow value may alter the *actual*
+-- local command; changing look-through must only change diagnostic payload.
+worldToLocal=function(_,x,y,z) return x,y,z end
+toolYaw=0
+g_time=30000
+local witness=assert(Probe.begin(vehicle,2,3,objective,22))
+local count=0
+local function syntheticTransform(_,_,x,z,capture)
+    assert(capture==true)
+    count=count+1
+    return x+4,z+2,nil,{
+        toolLongitudinalM=x,toolSignedLateralM=z,
+        toolDistanceToTargetM=math.sqrt(x*x+z*z),
+        signedToolFrameRotationDeg=15,
+        rotatedLateralM=3,rotatedLongitudinalM=5}
+end
+local adjustedX=objective.targetX+4
+local adjustedZ=objective.targetZ+2
+local length=math.sqrt(adjustedX^2+adjustedZ^2)
+local sentX,sentZ=adjustedX/length,adjustedZ/length
+Probe.sample(witness,sentX,sentZ,adjustedX,adjustedZ,
+    16,0,0,syntheticTransform)
+assert(count==5,"actual transform plus four passive look-through alternatives")
+local sample=events[#events].payload
+assert(sample.reverseNodeX==0 and sample.toolNodeZ==-2)
+assert(sample.transformToolLongitudinalM==objective.targetX
+    and sample.transformToolSignedLateralM==objective.targetZ
+    and sample.transformSignedRotationDeg==15)
+assert(math.abs(sample.actualReconstructionDifferenceDeg)<0.00001,
+    "the recomputed actual command must match the GIANTS-issued command")
+for _,extra in ipairs({0,10,20,40}) do
+    local key="shadowLookthrough"..extra
+    assert(type(sample[key.."BearingDeg"])=="number"
+        and type(sample[key.."AdjustedWorldX"])=="number"
+        and type(sample[key.."AdjustedWorldZ"])=="number",
+        "each shorter look-through must publish diagnostic geometry")
+end
+assert(sample.shadowLookthrough0BearingDeg~=
+    sample.shadowLookthrough40BearingDeg,
+    "shorter look-through affects shadow steering, not actual drive")
+g_time=30100
+Probe.sample(witness,sentX,sentZ,adjustedX,adjustedZ,
+    16,0,0,syntheticTransform)
+assert(count==5,"shadow math must not run on non-sampled drive calls")
 enabled=false
 assert(Probe.begin(vehicle,2,3,objective,22)==nil)
 print("Reverse kinematics probe: signed initial axis / optional tool / 5s cap / policy: PASS")
