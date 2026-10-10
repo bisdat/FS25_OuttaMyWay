@@ -17,6 +17,7 @@ local modules={
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
     "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
     "scripts/control/mechanisms/NonJobActuationMechanism.lua",
+    "scripts/control/NonActiveRelocationControl.lua",
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",

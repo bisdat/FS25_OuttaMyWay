@@ -195,6 +195,12 @@ local function ownCourseField(commitment)
         "GIANTS_ACTIVE_COURSE_FIELD"
 end
 
+-- Reuse the exact own-course-field interpretation established by TS003.
+-- Returning nil never permits a neighbouring field to supply a direction.
+function Region.ownCourseField(strategy)
+    return ownCourseField({participants={{sourceStrategyReference=strategy}}})
+end
+
 function Region.planSingle(commitment,relocator)
     if type(commitment)~="table" or type(relocator)~="table"
         or not finite(relocator.x) or not finite(relocator.z)
