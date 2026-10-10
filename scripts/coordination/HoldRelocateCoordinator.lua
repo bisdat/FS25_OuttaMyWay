@@ -294,7 +294,10 @@ function Coordinator:begin(commitment,nowMs)
                 commitment,relocator,other)
     end
     if objective==nil then return false,geometryReason end
-    local blockers={}
+    -- The opposite worker always gets Regulation. Preserve any additional
+    -- independently captured blockers, even when the cascade swaps mover:
+    -- only the actual mover is excluded from the protected parties.
+    local blockers,seen={},{}
     if not single then
         if not positioned(other)
             or (other~=first and other~=second)
@@ -302,6 +305,23 @@ function Coordinator:begin(commitment,nowMs)
             return false,"PAIR_PARTNER_NOT_IN_BLOCKERS"
         end
         blockers[1]=other
+        seen[other.assemblyReferenceKey]=true
+    end
+    for i=1,#commitment.nearbyBlockers do
+        local party=commitment.nearbyBlockers[i]
+        if not positioned(party) then
+            return false,"BLOCKER_MEMBERSHIP_INVALID"
+        end
+        if party.assemblyReferenceKey==relocator.assemblyReferenceKey then
+            if party.vehicle~=relocator.vehicle then
+                return false,"BLOCKER_MEMBERSHIP_INVALID"
+            end
+        elseif not seen[party.assemblyReferenceKey] then
+            seen[party.assemblyReferenceKey]=true
+            blockers[#blockers+1]=party
+        elseif party~=other then
+            return false,"BLOCKER_MEMBERSHIP_INVALID"
+        end
     end
     local state={
         commitmentId=commitment.commitmentId,commitment=commitment,

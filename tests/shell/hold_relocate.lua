@@ -5,6 +5,13 @@ OuttaMyWay={ProjectedEgressRegion={plan=function(_,relocator)
         returnRegion={originX=relocator.x,originZ=relocator.z,
             directionX=-1,directionZ=0,requiredProgressM=20}}
 end}}
+-- Coordinator-level fixture: the Geometry responsibility returns a chosen
+-- feasible tuple. Exercise shared Control release and third-party Regulation,
+-- not the distinct real geometry algorithm covered in projected_egress_region.
+OuttaMyWay.ProjectedEgressRegion.planPairCascade=function(commitment,preferred,other)
+    return OuttaMyWay.ProjectedEgressRegion.plan(commitment,preferred,other),
+        preferred,other
+end
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 local a={assemblyReferenceKey="A",x=10,z=0,vehicle={name="A"}}
