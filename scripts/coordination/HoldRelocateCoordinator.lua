@@ -58,7 +58,8 @@ end
 function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
-        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,lastInitialMotionEvidence=nil
+        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,
+        lastInitialMotionEvidence=nil,lastStaticMotionEvidence=nil
     },Coordinator)
 end
 
@@ -87,7 +88,9 @@ function Coordinator:neutralize(state)
     local failures={}
     local control=self.physicalControl
     if state.isStaticMovementOutstanding then
-        local ok,reason=command(control,"cancelStaticMovement",state.relocator.vehicle)
+        local verb=state.isMapDeleting and "discardStaticMovementOnMapDelete"
+            or "cancelStaticMovement"
+        local ok,reason=command(control,verb,state.relocator.vehicle)
         if not ok then failures[#failures+1]="STATIC_MOVE:"..tostring(reason) end
         state.isStaticMovementOutstanding=false
     end
@@ -143,6 +146,9 @@ end
 
 function Coordinator:relinquish(reason)
     if self.active==nil then return false,"NO_ACTIVE_COMMITMENT" end
+    -- Native vehicle entities may already be gone when BaseMission deletes
+    -- this runtime. Never call GIANTS driveToPoint on a deleted static root.
+    self.active.isMapDeleting=reason=="MAP_DELETE"
     self:finishWithOutcome("RELINQUISHED",reason or "EXTERNAL_RELINQUISH")
     local released=self.lastOutcome.status=="RELINQUISHED"
     return released,released and nil or self.lastOutcome.reason
@@ -187,6 +193,7 @@ function Coordinator:beginStatic(commitment,nowMs)
     self.active=state
     self.lastEgressRegulationResults=nil
     self.lastInitialMotionEvidence=nil
+    self.lastStaticMotionEvidence=nil
     -- Preflight already cached the TRANSIT plan. Mark it for unconditional
     -- release even if the 1 km/h Regulation request fails before TRANSIT is
     -- sent; otherwise a later encounter sees TRANSIT_PLAN_ALREADY_ACTIVE.
@@ -436,6 +443,22 @@ function Coordinator:advance(nowMs,dt)
             self:finishWithOutcome("CONTROL_INTERRUPTED",
                 status.reason or "STATIC_MOVE_FAILED")
             return
+        end
+        -- One actuation check at the existing five-second Regulation boundary.
+        -- The movement mechanism already sampled all of these values; do
+        -- not add vehicle polls, shape reads or repeated diagnostic output.
+        if self.lastStaticMotionEvidence==nil
+            and nowMs>=state.egressRegulationUntilMs then
+            self.lastStaticMotionEvidence={
+                commitmentId=state.commitmentId,
+                subjectRootId=state.relocator.assemblyReferenceKey,
+                commandedDriveCount=status.commandedDriveCount,
+                physicalDisplacementM=status.physicalDisplacementM,
+                motorStarted=status.motorStarted,
+                progressM=status.progressM,
+                requiredProgressM=state.objective.returnRegion.requiredProgressM,
+                statusReason=status.reason
+            }
         end
         if status.isComplete~=true then return end
         local stopped,stopReason=command(self.physicalControl,

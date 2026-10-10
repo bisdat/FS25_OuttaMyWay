@@ -161,6 +161,22 @@ assert(status.isComplete and coords[22].z< -38)
 assert(actuator:stopMovement(subject))
 coords[22].x,coords[22].z=10,0
 
+-- Map deletion may destroy GIANTS vehicle entities before OMW's teardown
+-- listener executes. Discard the Lua drive lease without touching native
+-- physics/motor/cruise on a now-invalid vehicle.
+assert(actuator:startMovement(subject,reversePlan))
+local originalNativeDrive=AIVehicleUtil.driveToPoint
+local originalCruiseSetter=subject.setCruiseControlMaxSpeed
+local originalMotorStop=subject.stopMotor
+AIVehicleUtil.driveToPoint=function()error("STALE_GIANTS_ENTITY") end
+subject.setCruiseControlMaxSpeed=function()error("STALE_GIANTS_ENTITY") end
+subject.stopMotor=function()error("STALE_GIANTS_ENTITY") end
+assert(actuator:discardOnMapDelete(subject) and actuator.active==nil)
+AIVehicleUtil.driveToPoint=originalNativeDrive
+subject.setCruiseControlMaxSpeed=originalCruiseSetter
+subject.stopMotor=originalMotorStop
+running=false;cruise.speed=4;cruise.speedReverse=4
+
 -- Explicitly reject moving, active or controlled neighbours.
 local moving=OuttaMyWay.StaticBlockageEncounterObservation.capture(
     worker,g_currentMission,200)
@@ -241,6 +257,9 @@ local physical={
     end,
     cancelStaticMovement=function(_,v)
         events[#events+1]="CANCEL";return true
+    end,
+    discardStaticMovementOnMapDelete=function(_,v)
+        assert(v==subject);events[#events+1]="DISCARD";return true
     end,
     cancelTransit=function(_,v)
         events[#events+1]="RESTORE";return true
@@ -326,8 +345,8 @@ assert(coordinator:begin(subsequent,15000),
 priorReleaseEvents=#events
 assert(stubRuntime:relinquish("MAP_DELETE"))
 assert(table.concat(events,",",priorReleaseEvents+1)==
-    "CANCEL,REGULATION_RELEASE,RETAIN_TRANSIT",
-    "map teardown preserves TRANSIT for the static subject only")
+    "DISCARD,REGULATION_RELEASE,RETAIN_TRANSIT",
+    "map teardown discards defunct GIANTS physics, preserving static TRANSIT")
 assert(authority.active==nil and not coordinator:isActive())
 
 -- The exact TS018 interruption: native beneficiary Job Episode turns over
@@ -356,7 +375,8 @@ local pendingStatus=physical.staticMovementStatus
 physical.staticMovementStatus=function(_,v,dt)
     assert(v==subject and dt==16)
     events[#events+1]="STATUS_PENDING"
-    return {isComplete=false}
+    return {isComplete=false,commandedDriveCount=0,motorStarted=false,
+        physicalDisplacementM=0,progressM=0,reason="NATIVE_MOTOR_STARTING"}
 end
 local timeoutCommitment=assert(authority:admitStaticBlockerCandidate(
     worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
@@ -366,6 +386,14 @@ assert(coordinator:begin(timeoutCommitment,t0))
 assert(coordinator:getStatus().staticEgressDeadlineMs==t0+25000)
 coordinator:advance(t0+5000,16)
 assert(coordinator:isActive(),"5s Regulation release cannot end movement")
+local sampled=coordinator.lastStaticMotionEvidence
+assert(sampled~=nil and sampled.commitmentId==timeoutCommitment.commitmentId
+    and sampled.motorStarted==false and sampled.commandedDriveCount==0
+    and sampled.physicalDisplacementM==0 and sampled.progressM==0,
+    "one 5-second sample distinguishes motor-not-started from GIANTS no-motion")
+coordinator:advance(t0+5001,16)
+assert(coordinator.lastStaticMotionEvidence==sampled,
+    "no repeated, expensive progress-publication sampling")
 local beforeDeadline=#events
 coordinator:advance(t0+24999,16)
 assert(coordinator:isActive() and #events==beforeDeadline+1

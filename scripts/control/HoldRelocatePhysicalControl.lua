@@ -197,6 +197,10 @@ function Control:cancelStaticMovement(vehicle)
     return self.staticDriveMechanism:cancelMovement(vehicle)
 end
 
+function Control:discardStaticMovementOnMapDelete(vehicle)
+    return self.staticDriveMechanism:discardOnMapDelete(vehicle)
+end
+
 function Control:retainStaticTransit(vehicle)
     local ok,evidence=self.transitMechanism:relinquishTransit(vehicle)
     if ok then self.plans[vehicle]=nil end

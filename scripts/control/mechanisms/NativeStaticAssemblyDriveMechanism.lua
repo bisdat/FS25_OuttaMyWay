@@ -115,6 +115,7 @@ function M:startMovement(vehicle,objective)
     local state={
         vehicle=vehicle,objective=objective,node=node,
         nodeReferenceY=nodeReference.y,toolNode=toolNode,
+        originX=origin.x,originZ=origin.z,
         oldForceIsActive=vehicle.forceIsActive,
         oldForwardSpeed=cruise.speed,oldReverseSpeed=cruise.speedReverse,
         speedKmh=speed,startedMotor=not alreadyStarted,
@@ -158,17 +159,28 @@ function M:movementStatus(vehicle,dt)
         s.isFailed=true;s.reason="STATIC_PROGRESS_UNAVAILABLE"
         return {isFailed=true,reason=s.reason}
     end
+    -- These are already-read values; store them for a single progress report
+    -- without an additional GIANTS physics query or ongoing trace.
+    local dx,dz=p.x-s.originX,p.z-s.originZ
+    s.physicalDisplacementM=math.sqrt(dx*dx+dz*dz)
+    s.regionProgressM=progress.progressM
     if s.commanded>0 and progress.isInRegion then
         s.isComplete=true
-        return {isComplete=true,progressM=progress.progressM}
+        return {isComplete=true,progressM=progress.progressM,
+            commandedDriveCount=s.commanded,
+            physicalDisplacementM=s.physicalDisplacementM,
+            motorStarted=s.lastMotorStarted}
     end
     local read,motorOn=pcall(vehicle.getIsMotorStarted,vehicle)
     if not read then
         s.isFailed=true;s.reason="STATIC_MOTOR_STATE_UNAVAILABLE"
         return {isFailed=true,reason=s.reason}
     end
+    s.lastMotorStarted=motorOn==true
     if motorOn~=true then
         return {isComplete=false,progressM=progress.progressM,
+            physicalDisplacementM=s.physicalDisplacementM,
+            commandedDriveCount=s.commanded,motorStarted=false,
             reason="NATIVE_MOTOR_STARTING"}
     end
     local targetX,targetZ=s.objective.targetX,s.objective.targetZ
@@ -205,7 +217,21 @@ function M:movementStatus(vehicle,dt)
         return {isFailed=true,reason=s.reason}
     end
     return {isComplete=false,progressM=progress.progressM,
-        commandedDriveCount=s.commanded}
+        physicalDisplacementM=s.physicalDisplacementM,
+        commandedDriveCount=s.commanded,motorStarted=true}
+end
+
+-- During map teardown GIANTS may already have deleted the root. There is
+-- no valid physics object to neutralise: forget only the scoped Lua lease.
+-- Normal completion, expiry and disable still call stop/cancelMovement.
+function M:discardOnMapDelete(vehicle)
+    local s=self.active
+    if s==nil or s.vehicle~=vehicle then
+        return false,"STATIC_DRIVE_NOT_ACTIVE"
+    end
+    vehicle.forceIsActive=s.oldForceIsActive
+    self.active=nil
+    return true
 end
 
 local function release(self,vehicle,requireComplete)

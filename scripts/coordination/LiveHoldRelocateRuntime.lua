@@ -42,6 +42,7 @@ function Runtime.new(configuration,observer)
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedEgressRegulationResults=nil,
         lastReportedInitialMotionEvidence=nil,
+        lastReportedStaticMotionEvidence=nil,
         isRuntimeReported=false
     },Runtime)
 end
@@ -53,6 +54,7 @@ function Runtime:loadMap()
     self.attempted=setmetatable({},{__mode="k"})
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
+    self.lastReportedStaticMotionEvidence=nil
 end
 
 -- Disabling requests immediate native Control release; completion is reported
@@ -83,6 +85,7 @@ function Runtime:deleteMap()
     self.attempted=setmetatable({},{__mode="k"})
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
+    self.lastReportedStaticMotionEvidence=nil
 end
 
 function Runtime:update(dt)
@@ -102,6 +105,20 @@ function Runtime:update(dt)
     end
     if coordinator:isActive() then
         coordinator:advance(nowMs,dt)
+        local static=coordinator.lastStaticMotionEvidence
+        if static~=nil and static~=self.lastReportedStaticMotionEvidence then
+            self.lastReportedStaticMotionEvidence=static
+            issue(self,"INFO","HOLD_RELOCATE_STATIC_ACTUATION_EVIDENCE",
+                "commitmentId="..tostring(static.commitmentId)
+                .." subjectRootId="..tostring(static.subjectRootId)
+                .." motorStarted="..tostring(static.motorStarted)
+                .." nativeDriveCalls="..tostring(static.commandedDriveCount)
+                .." physicalDisplacementM="..
+                    tostring(static.physicalDisplacementM)
+                .." lateralProgressM="..tostring(static.progressM)
+                .." requiredLateralM="..tostring(static.requiredProgressM)
+                .." statusReason="..tostring(static.statusReason))
+        end
         local motion=coordinator.lastInitialMotionEvidence
         if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
             self.lastReportedInitialMotionEvidence=motion
