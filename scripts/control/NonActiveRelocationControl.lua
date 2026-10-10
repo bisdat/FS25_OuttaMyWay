@@ -222,11 +222,15 @@ function Control:advance(dt)
     if not moved then self:finish("NATIVE_DRIVE_FAILED:"..tostring(reason));return end
     s.drove=true
     s.driveCalls=s.driveCalls+1
-    if s.driveCalls==1 then
+    if s.driveCalls==1 or
+        (s.driveCalls%120==0 and progressed<1) then
+        -- Observability only: no new fail-safe, timeout or movement gate.
+        -- An accepted GIANTS command is not displacement evidence.
         self.lastPhysicalEvidence={
-            phase="FIRST_NATIVE_DRIVE_ACCEPTED",
+            phase=s.driveCalls==1 and "FIRST_NATIVE_DRIVE_ACCEPTED"
+                or "NATIVE_DRIVE_WITHOUT_MEASURED_DISPLACEMENT",
             blockerRootId=tostring(s.blocker.rootNode),
-            driveCalls=1,progressM=progressed
+            driveCalls=s.driveCalls,progressM=progressed
         }
     end
 end

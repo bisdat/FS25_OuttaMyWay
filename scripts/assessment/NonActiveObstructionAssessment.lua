@@ -162,9 +162,15 @@ function A:sample(worker,dt)
             track.established=false;track.forming=0;track.aligned=0
             track.directionX,track.directionZ=ux,uz
         else
+            -- Archive updateEstablishedDirection: stable-memory weighting
+            -- prevents a gradual headland turn from silently borrowing a
+            -- full previously straight traversal as fresh forward reach.
+            local memory=math.min(track.aligned,12.0)
+            local nx,nz=direction(
+                track.directionX*memory+ux*distance,
+                track.directionZ*memory+uz*distance)
+            track.directionX,track.directionZ=nx or ux,nz or uz
             track.aligned=track.aligned+distance
-            -- Preserve the established direction against brief steering jitter.
-            track.directionX,track.directionZ=ux,uz
         end
     end
     local dtSeconds=intervalMs and intervalMs*0.001 or nil
