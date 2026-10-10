@@ -23,7 +23,7 @@ end
 -- Capture the actual native assembly once per admitted relocation. The cached
 -- plan has no semantic capability beyond selected, reversible native commands.
 -- Unsupported or unobservable fold shapes are NOT guessed as 'already folded'.
-local function buildTransitPlan(vehicle)
+local function buildTransitPlan(vehicle,isPair)
     local members,seen={},{}
     local function include(object)
         if type(object)~="table" or object.isDeleted==true then
@@ -78,11 +78,30 @@ local function buildTransitPlan(vehicle)
         -- a fold-completion wait. Native work-off/raise is always requested
         -- where supported, including for assemblies with no active fold.
         local fold=object.spec_foldable
-        local hasActiveParts=type(fold)=="table"
+        local hasActiveParts=isPair and type(fold)=="table"
             and fold.hasFoldingParts==true
             and type(fold.foldingParts)=="table"
             and next(fold.foldingParts)~=nil
-        if hasActiveParts then
+        if not isPair and type(object.setFoldDirection)=="function"
+            and type(object.getToggledFoldDirection)=="function" then
+            -- Preserve the previously accepted request-only solo/static
+            -- contract. Only paired recovery adopts the selected-runtime
+            -- readiness and bounded non-veto preparation semantics.
+            local position=nil
+            local ok,value=method(object,"getFoldAnimTime")
+            if ok and finite(value) then position=value
+            elseif type(fold)=="table" then position=fold.foldAnimTime end
+            if not finite(position) then return nil,"FOLD_START_UNKNOWN" end
+            if position<=0.001 then
+                local known,direction=method(object,"getToggledFoldDirection")
+                if not known or not finite(direction) or direction<=0 then
+                    return nil,"FOLD_DIRECTION_UNAVAILABLE"
+                end
+                append(object,"setFoldDirection",direction,-direction)
+            elseif position<0.999 then
+                return nil,"FOLD_POSITION_AMBIGUOUS"
+            end
+        elseif isPair and hasActiveParts then
             local position=nil
             local ok,value=method(object,"getFoldAnimTime")
             if ok and finite(value) then position=value
@@ -156,9 +175,9 @@ function Control:preflightPair(state)
     if self.plans[first]~=nil or self.plans[second]~=nil then
         return false,"TRANSIT_PLAN_ALREADY_ACTIVE"
     end
-    local a,why=buildTransitPlan(first)
+    local a,why=buildTransitPlan(first,true)
     if a==nil then return false,why end
-    local b,reason=buildTransitPlan(second)
+    local b,reason=buildTransitPlan(second,true)
     if b==nil then return false,reason end
     self.plans[first],self.plans[second]=a,b
     return true

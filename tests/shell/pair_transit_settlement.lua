@@ -8,6 +8,7 @@ for _,name in ipairs(mechanisms) do
     OuttaMyWay[name]={new=function()return {} end}
 end
 dofile("scripts/control/mechanisms/NativeTransitRequestMechanism.lua")
+dofile("scripts/coordination/PairTransitRegion.lua")
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
 local Control=OuttaMyWay.HoldRelocatePhysicalControl
 g_server={}
