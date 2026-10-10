@@ -198,6 +198,9 @@ assert(next(observation.pairs)==nil and next(observation.states)==nil
 -- irrespective of the old root, native job reference or prior recovery.
 enabled=true
 active[b]=nil
+-- The earlier reciprocal-pair fixture also brought C to (20,20), inside
+-- 30 m. Restore C outside the active-pair radius for a genuine solo replay.
+poses[300]={x=31,z=0}
 courseA.isBlocked=false
 g_time=14000;observation:update(16)
 courseA.isBlocked=true
