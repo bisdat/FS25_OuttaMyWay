@@ -35,9 +35,11 @@ function Runtime.new(configuration,observer)
     local authority=OuttaMyWay.NativePairCommitmentAuthority.new(configuration)
     local physical=OuttaMyWay.HoldRelocatePhysicalControl.new(authority)
     local coordinator=OuttaMyWay.HoldRelocateCoordinator.new(authority,physical)
+    local nonActiveControl=OuttaMyWay.NonActiveRelocationControl.new()
     return setmetatable({
         configuration=configuration,observer=observer,
         authority=authority,physicalControl=physical,coordinator=coordinator,
+        nonActiveControl=nonActiveControl,pendingContinuation=nil,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedEgressRegulationResults=nil,
@@ -48,16 +50,23 @@ end
 
 function Runtime:loadMap()
     self.isRuntimeReported=false
+    self.pendingContinuation=nil
     -- Candidate evidence belongs to the native Observer's map lifecycle.
 end
 
 -- Disabling requests immediate native Control release; completion is reported
 -- for the current episode only, without parked cross-episode job history.
 function Runtime:relinquish(reason)
-    if not self.coordinator:isActive() then return true end
+    local physicalReleased=self.nonActiveControl:relinquish(
+        reason or "CONTROL_REVOKED")
+    self.pendingContinuation=nil
+    if not physicalReleased then
+        issue(self,"WARNING","OBSTRUCTION_RELOCATION_UNRESOLVED","PHYSICAL_CLEANUP")
+    end
+    if not self.coordinator:isActive() then return physicalReleased end
     local released,why=self.coordinator:relinquish(reason or "CONTROL_REVOKED")
     if not released then issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why) end
-    return released
+    return released and physicalReleased
 end
 
 function Runtime:deleteMap()
@@ -78,6 +87,36 @@ function Runtime:update(dt)
     if type(nowMs)~="number" or nowMs~=nowMs then
         self:relinquish("CLOCK_UNAVAILABLE")
         return
+    end
+    -- Non-job actuation is distinct from the active worker's BWR. It owns
+    -- only the current positively nominated single blocked occurrence.
+    if self.nonActiveControl:isActive() then
+        self.nonActiveControl:advance(dt)
+        if not self.nonActiveControl:isActive() then
+            local outcome=self.nonActiveControl.lastOutcome
+            if outcome~=nil then
+                issue(self,outcome.physicalCleanupConfirmed and "INFO" or "WARNING",
+                    "OBSTRUCTION_RELOCATION_OUTCOME",
+                    outcome.status.." blocker="..outcome.blockerRootId
+                    .." progressM="..tostring(outcome.progressM)
+                    .." field="..tostring(outcome.fieldIdentitySource))
+            end
+        end
+        return
+    end
+    if self.pendingContinuation~=nil then
+        local pending=self.pendingContinuation
+        local current=pending.strategy
+        if type(current)=="table" and current.isBlocked==false then
+            issue(self,"INFO","OBSTRUCTION_RELOCATION_DISCHARGED",
+                "NATIVE_BLOCKAGE_CLEARED")
+            self.pendingContinuation=nil
+        elseif not OuttaMyWay.NonActiveObstructionAssessment.isStillCurrent(
+                pending.evidence) then
+            issue(self,"WARNING","OBSTRUCTION_RELOCATION_UNRESOLVED",
+                "CURRENT_BENEFICIARY_OR_BLOCKER_CHANGED")
+            self.pendingContinuation=nil
+        end
     end
     if coordinator:isActive() then
         coordinator:advance(nowMs)
@@ -133,6 +172,31 @@ function Runtime:update(dt)
             and not self.attempted[evidence.candidateIdentity] then
             local commitment,reason
             if evidence.worker~=nil then
+                -- Positive current GIANTS blockage plus *one* current
+                -- non-active vehicle in the immediate occupied corridor.
+                -- Completion history and general proximity are not authority.
+                local obstruction=OuttaMyWay.NonActiveObstructionAssessment.find(
+                    evidence.worker)
+                if obstruction~=nil then
+                    local admitted,details=self.nonActiveControl:begin(obstruction)
+                    if admitted then
+                        self.attempted[evidence.candidateIdentity]=true
+                        self.pendingContinuation={
+                            evidence=obstruction,
+                            strategy=obstruction.beneficiary.spec_aiFieldWorker
+                                and obstruction.beneficiary.spec_aiFieldWorker.driveStrategies
+                                and obstruction.beneficiary.spec_aiFieldWorker.driveStrategies[1]
+                        }
+                        issue(self,"INFO","OBSTRUCTION_RELOCATION_STARTED",
+                            "blocker="..tostring(obstruction.blocker.rootNode)
+                            .." beneficiary="..tostring(evidence.worker.rootNode)
+                            .." targetProgressM="..tostring(details.targetProgressM)
+                            .." field="..tostring(details.fieldIdentitySource))
+                        return
+                    end
+                    issue(self,"WARNING","OBSTRUCTION_RELOCATION_NOT_ADMITTED",
+                        tostring(details))
+                end
                 commitment,reason=self.authority:admitSingleCandidate(
                     evidence.worker,evidence.confirmedBlockedMs)
             else
