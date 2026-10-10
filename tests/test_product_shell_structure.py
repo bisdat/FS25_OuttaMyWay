@@ -98,10 +98,13 @@ def test_region_based_egress_and_native_regulation():
     physical = (ROOT / "scripts/control/HoldRelocatePhysicalControl.lua").read_text(
         encoding="utf-8")
     assert "GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION" in transit
-    assert "pathInField" in transit and "sceneOccupancy" in transit
+    assert "reachableTravel" in transit and "sceneOccupancy" in transit
+    assert "regionStepValid" in transit and "MIN_USEFUL_TRAVEL_M=3" in transit
     assert "planPair" in transit and "getAIWorkAreaWidth" not in transit
     assert "WORK_CORRIDOR_MARGIN_M=5" in transit
-    assert "otherWorkingWidth+WORK_CORRIDOR_MARGIN_M" in transit
+    assert "width+WORK_CORRIDOR_MARGIN_M" in transit
+    assert "isPartialEgress" in transit
+    assert "DISCOVERY_DIRECTIONS=32" in transit
     assert "math.max(2,required/math.abs(rate))" not in transit
     assert "PAIR_WORKING_CORRIDOR_TRAVEL_REGION" in transit
     assert "PAIR_TRANSIT_WAIT_MS=15000" not in coordinator
