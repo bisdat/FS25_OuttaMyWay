@@ -111,6 +111,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/native_blockage_observation.lua
           "$LUAJIT_BIN" tests/shell/non_job_actuation.lua
           "$LUAJIT_BIN" tests/shell/non_active_obstruction.lua
+          "$LUAJIT_BIN" tests/shell/archived_physical_representation.lua
           "$LUAJIT_BIN" tests/shell/configuration_persistence.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua

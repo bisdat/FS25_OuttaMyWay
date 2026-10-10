@@ -87,3 +87,4 @@ The donor's old `ValueRecord`, `OperationalPicture`, `ResolutionCommitment` and 
 | --- | --- |
 | [`tests/shell/non_job_actuation.lua`](../tests/shell/non_job_actuation.lua) | `CHALLENGES` |
 | [`tests/shell/non_active_obstruction.lua`](../tests/shell/non_active_obstruction.lua) | `CHALLENGES` |
+| [`tests/shell/archived_physical_representation.lua`](../tests/shell/archived_physical_representation.lua) | `CHALLENGES` |
