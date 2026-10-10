@@ -4,7 +4,7 @@
 
 **Primary Architecture Authority:** [Causal Obstruction and Obstruction Relocation](../architecture/OBSTRUCTION_RELOCATION.md)
 
-**Restoration status:** [Issue #463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463) is in progress. The current 0.5.1.3 live product contains active-worker Hold & Relocate, *not* completed-worker Obstruction Relocation. The first stage ports archived non-job physical actuation; no active control route is established by merely loading that subordinate mechanism. This is a future implementation contract, not a false assertion of field-tested behaviour.
+**Restoration status:** TEST `0.5.1.4` now connects the archived physical donor to a narrow **native blocked + one non-active vehicle in the current immediate forward physical corridor** admission. This path is source-implemented and offline-challenged but **not yet GIANTS field-validated**. The broader archived Causal Obstruction/Resolution lifecycle is not claimed as implemented.
 
 **Archived donor:** [0.4.11.0 Obstruction Relocation Specification](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/spec/OBSTRUCTION_RELOCATION.md), where `OBSTRUCTION_RELOCATION` is an admitted non-active Causal Obstruction Resolution rather than a `TERMINAL_EGRESS` job-completion courtesy. The archived spec is source material, not independently live authority after a 0.5 replacement-core simplification.
 
@@ -19,6 +19,14 @@ A relocation decision MUST have current positive evidence for **all** of:
 5. The non-job actuator can be acquired without conflicting with an existing active-worker / non-job control lease, and the supported Situation has not changed during admission.
 
 Historical GIANTS Job completion MAY provide diagnostic provenance, but MUST NOT be required as the admission condition. Current GIANTS `isBlocked` alone does not identify a particular physical blocker. A non-active vehicle is not a fictitious second GIANTS AI worker; it does not use pair commitment or native FIELDWORK restart.
+
+## First live admission contract — TEST 0.5.1.4
+
+Use only an existing ≥1 second native single-worker blocked occurrence and a **unique** physical non-active, unclaimed blocker from the current GIANTS vehicle population. A positive causal candidate requires the blocker root to lie in the worker's immediate forward steering-aligned body envelope, established from both physical vehicle `size.width` and `size.length`, observed poses and heading. Completion history, speculative turn sweep, arbitrary closest-vehicle selection and nearest-field identity are not substitutes. Unresolved geometry or multiple matching blockers means no non-job admission; the accepted solo BWR remains available.
+
+Upon admission, use the archived native non-job actuator for **one bounded forward inward movement toward the beneficiary's own GIANTS active-course field centroid**, capped at 60 m or the nearer centre (archived calibration). Never start/stop a GIANTS AI job for the non-active blocker. Native unblock stops ongoing relocation. Neutralise physical movement and release owned contexts; do not treat movement completion as successful beneficiary continuation. Report `MANOEUVRE_COMPLETE_PENDING_CONTINUATION` and separately report later positive native unblock. No additional Hold timer, completion-triggered parking, repeated courtesy, broad future-space scanner or unrelated safety gate is introduced.
+
+This is a **limited and falsifiable implementation hypothesis**, not proof of physical clearance. Extended implements, third-party route clearance and positive subsequent useful agronomy require GIANTS Reality evidence.
 
 ## Bounded movement contract
 
@@ -43,9 +51,9 @@ If observed reactivation, player control, incomplete Reality or unsupported move
 | `CurrentPlayerControlObservation.lua` | Physical current-control predicate port | Use in the non-active admission/Control boundary |
 | `NonJobActuationMechanism.lua` | Subordinate GIANTS non-job physical actuation port | Invoke only through independently admitted non-active relocation Control |
 | `CurrentPhysicalAssemblySource.lua`, `CurrentPhysicalPoseSource.lua` | Donor identified; **not directly lifted** | Reconstruct current inventory / position evidence without archived ValueRecord dependency |
-| `CausalObstructionAssessment.lua` | Donor identified; **not directly lifted** | Reconnect genuine current causal relation to accepted 0.5 evidence, preserve negative controls |
+| `CausalObstructionAssessment.lua` | Donor identified; **not directly lifted** | `NonActiveObstructionAssessment.lua` uses the current native blocked pulse + unique forward real vehicle envelope, without the archived generic picture |
 | `ObstructionRelocationCandidateSupport.lua` and `ObstructionRelocationCommitmentLifecycle.lua` | Donors identified; **not directly lifted** | Admission, bounded direction and positive post-manoeuvre settlement |
-| `ObstructionRelocationControl.lua` | Donor identified; **not directly lifted** | Current 0.5 physical coordinator over imported non-job mechanism, tests and GIANTS Reality |
+| `ObstructionRelocationControl.lua` | Donor identified; **not directly lifted** | `NonActiveRelocationControl.lua` performs one bounded forward inward actuation using the imported non-job mechanism; GIANTS Reality remains required |
 
 The donor's old `ValueRecord`, `OperationalPicture`, `ResolutionCommitment` and `AuthorityRegistry` entire dependency graph is **not** a valid reason to reinstall the old 0.4 runtime. Any adaptation MUST preserve its semantic contracts while integrating with current 0.5 explicit authority.
 

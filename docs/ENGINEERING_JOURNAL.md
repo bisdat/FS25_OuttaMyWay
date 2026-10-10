@@ -6251,3 +6251,13 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Next engineering boundary:** Observe current non-active physical assemblies and establish positive blocker-to-beneficiary causal evidence with an ordinary-turn negative control before enabling non-job movement. The accepted TS015 paired and TS003 solo configurations remain regression witnesses.
 
+## 2026-10-10 — #463: Minimal Live Causal Obstruction Candidate and Bounded Non-Job Actuation
+
+**Named concept:** **Immediate Forward Physical Obstruction.** A native blocked worker supplies the current positive failure signal, but it does not identify the causative vehicle. The first minimal live hypothesis is a unique, currently non-active/unclaimed assembly within the native blocked worker's steering-aligned immediate body envelope, using current root pose, physical `size.width`/`size.length` and heading. Historical completion is irrelevant; lateral, rear, active, player-controlled, ambiguous or unsupported subjects do not qualify.
+
+**Implementation:** Introduced `NonActiveObstructionAssessment.lua` and `NonActiveRelocationControl.lua`, composing the already ported GIANTS non-job actuator through the **existing** `LiveHoldRelocateRuntime` listener. Arbitration: established active pair priority, then a positively identified non-active obstruction, otherwise existing solo BWR. One bounded 60 m-or-nearer forward movement uses the current active beneficiary's **own GIANTS active-course field** reference (shared with TS003's own-field rule). No generated Job Episode, automatic completed-worker parking, Hold timer, new event listener or archived generic runtime graph. The native beneficiary clearing blockage stops actuation.
+
+**Evidence and limits:** A movement result is `MANOEUVRE_COMPLETE_PENDING_CONTINUATION`, not positive useful continuation. The current native strategy later clearing `isBlocked` is separately reported. This intentionally narrow current-body test is a first Reality hypothesis; it does not reproduce the archive's extended-implement positive conflict shapes, prospective turning demand, third-party clearance, beneficiary continuation telemetry or repeated actuation. A false negative should be recorded as new evidence, not compensated by silently expanding the detection radius.
+
+**Testing:** Focused GIANTS mocks challenge causal positive/negative cases, cold loaded non-active root, current player/active claims, ambiguous blockers, outside-field start and bounded inward actuation. TS015 pairwise and TS003 solo regression contracts remain loaded. Source-level success cannot be promoted to GIANTS physical PASS without in-game replay.
+

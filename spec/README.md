@@ -11,11 +11,11 @@ Specifications define implementation-facing obligations for responsibilities acc
 | Spatial Pair Inference | [Spatial Pair Inference Specification](SPATIAL_PAIR_INFERENCE.md) | [SpatialPairInference.lua](../scripts/assessment/SpatialPairInference.lua), pure; native observer now supplies candidate inputs |
 | Hold & Relocate | [Hold & Relocate Specification](HOLD_RELOCATE.md) | [HoldRelocateCoordinator.lua](../scripts/coordination/HoldRelocateCoordinator.lua), coordination logic only; no physical adapter or active commitment source |
 | Native Blockage Observation | [Native Blockage Observation Specification](NATIVE_BLOCKAGE_OBSERVATION.md) | [NativeBlockageObservation.lua](../scripts/observation/NativeBlockageObservation.lua), server-side read-only samples |
-| Obstruction Relocation (partial port) | [Obstruction Relocation Specification](OBSTRUCTION_RELOCATION.md) | [NonJobActuationMechanism.lua](../scripts/control/mechanisms/NonJobActuationMechanism.lua), **mechanism loaded; no active relocation admission** |
+| Obstruction Relocation (partial port) | [Obstruction Relocation Specification](OBSTRUCTION_RELOCATION.md) | [NonJobActuationMechanism.lua](../scripts/control/mechanisms/NonJobActuationMechanism.lua), **limited native-blocked admission active; GIANTS Reality pending** |
 
 [Current code](../scripts/main.lua) also composes the version-only HUD and disabled reminder according to [GUI Architecture](../architecture/GUI.md).
 
-The 0.5.1.3 shell has **live single-worker and paired Hold & Relocate**, but no archived full Situation Assessment, Passage, global Decision or non-active Obstruction Relocation Resolution. The ported non-job mechanism is **loaded but inactive**. A completed worker does not yet relocate automatically. Native blocked evidence does not identify a specific non-active blocker; the restored semantic admission is a separate task under #463.
+The 0.5.1.3 shell has **live single-worker and paired Hold & Relocate**, but no archived full Situation Assessment, Passage, global Decision or non-active Obstruction Relocation Resolution. The non-job mechanism is now used when **positive current native blocked evidence and one non-active forward body-envelope obstruction** are both present. Completion alone still never authorises relocation. This remains a limited unvalidated hypothesis, not full archive restoration. The accepted pairwise/solo worker routes remain available.
 
 The pre-rewrite contracts and source remain recoverable from the immutable [archive/0.4.11.0 Git branch](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Their former implementations were removed from the 0.5 working tree; do not treat historical participant lists as current source traceability.
 

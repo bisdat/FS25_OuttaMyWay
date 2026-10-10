@@ -3,7 +3,7 @@
 **Jurisdiction ID:** `OBSTRUCTION_RELOCATION`
 **Primary Specification:** [Obstruction Relocation](../spec/OBSTRUCTION_RELOCATION.md)
 
-**Status:** accepted restoration target from archived 0.4.11.0; physical mechanism port begins under [#463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463). The current 0.5.1.3 product does **not** yet perform non-active blocker relocation. This document defines responsibility, not evidence of an implemented live Resolution.
+**Status:** TEST `0.5.1.4`, Issue #463, implements a **narrow live Causal Obstruction → non-job actuation path**. It uses ≥1 s GIANTS native blockage and exactly one currently non-active vehicle in the blocked worker's observed immediate forward body envelope. **GIANTS Reality has not validated this hypothesis.** The broader archived prospective and multi-beneficiary Resolution semantics are not yet restored.
 
 **Archive authority investigated:** [Runtime Responsibility Architecture §2, §5, §8](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Obstruction Relocation Specification](https://github.com/bisdat/FS25_OuttaMyWay/blob/archive/0.4.11.0/spec/OBSTRUCTION_RELOCATION.md). The archived current contract superseded the earlier D-0147 two-stage Terminal Egress / Double Courtesy model. Mechanical donor evidence remains useful, but completion provenance never creates an independent reason for movement.
 
@@ -63,7 +63,7 @@ positive Causal Obstruction (Situation; no movement permission)
 - **Reassessment / settlement:** fresh obstruction/continuation evidence determines semantic success or inability to continue.
 - **Concurrent action:** archival Relocation Serialization held relevant active beneficiaries at 0 km/h during non-job movement. This is **not** the pairwise 1 km/h Regulation in 0.5. Review its necessity and physical authority separately before introducing it.
 
-Mechanically proven non-job actuation is imported in the first restoration increment, but does **not** yet constitute a complete live Obstruction Relocation implementation. The current blocked-first pair and solo behaviours remain intact until a later **separately admitted** relocation responsibility is implemented and reality-tested.
+The narrow live path uses current `mission.vehicleSystem.vehicles` (including cold starts), current `getIsAIActive()==false`, native single blocked-worker Observation, and the real `size.width/length` footprint projected along the worker's live steering heading. A harmless completed assembly, laterally displaced vehicle, active worker or ambiguous pair of possible blockers cannot establish the specific current relationship. Positive admission permits **one bounded forward inward actuation** toward the beneficiary's **own GIANTS field**, capped at the archived 60 m calibration, with no generated Job Episode, no solo Hold, no new event listener and no automatic completed-worker parking. If no positive non-active relation exists, the accepted solo BWR continues unchanged; active pair handling retains priority. Physical movement completion is only `MANOEUVRE_COMPLETE_PENDING_CONTINUATION`; later positive native unblock is separately reported as a limited continuation witness. Extended implement footprints, third-party route clearance and broader native continuation remain unvalidated by this source-level hypothesis.
 
 ## Validation discriminators
 
