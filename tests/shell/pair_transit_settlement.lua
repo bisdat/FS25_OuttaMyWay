@@ -28,7 +28,9 @@ local function member(hasParts)
     return {
         rootNode=node,spec_foldable=spec,sizeWidth=3,sizeLength=6,
         getAttachedImplements=function()return {} end,
-        getIsTurnedOn=function()return true end,
+        getIsTurnedOn=function()
+            error("GET_IS_TURNED_ON_MUST_NOT_GATE_TRANSIT")
+        end,
         setIsTurnedOn=function(_,v)commands[#commands+1]={"WORK",v}end,
         getIsLowered=function()return true end,
         setLowered=function(_,v)commands[#commands+1]={"RAISE",v}end,

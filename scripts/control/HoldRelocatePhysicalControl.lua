@@ -58,13 +58,11 @@ local function buildTransitPlan(vehicle,isPair)
     end
     for i=1,#members do
         local object=members[i]
-        if type(object.getIsTurnedOn)=="function"
-            and type(object.setIsTurnedOn)=="function" then
-            local ok,value=method(object,"getIsTurnedOn")
-            if not ok or type(value)~="boolean" then
-                return nil,"WORK_STATE_UNAVAILABLE"
-            end
-            if value then append(object,"setIsTurnedOn",false,true) end
+        -- Work-off and raise are imperative TRANSIT requests. A machine
+        -- exposing a supported setter does not need a readable state getter
+        -- to receive that command. GIANTS owns the eventual configuration.
+        if type(object.setIsTurnedOn)=="function" then
+            append(object,"setIsTurnedOn",false,true)
         end
         if type(object.getIsLowered)=="function"
             and type(object.setLowered)=="function" then
@@ -125,7 +123,9 @@ local function buildTransitPlan(vehicle,isPair)
             end
         end
     end
-    -- Reverse inverse application order: fold, raise, power (no readiness wait).
+    -- Cancellation requests working pose for admitted active workers;
+    -- static subjects instead retain their requested TRANSIT configuration.
+    -- No previous work/lowered state is asserted from these requests.
     local reverseOrder={}
     for i=#reversals,1,-1 do
         reverseOrder[#reverseOrder+1]=reversals[i]

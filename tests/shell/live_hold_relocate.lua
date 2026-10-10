@@ -43,7 +43,9 @@ local function nativeWorker(x,z,blocked)
     root.getAIWorkAreaWidth=function()return 36 end
     root.getJob=function(self)return self.job end
     root.getAttachedImplements=function()return {} end
-    root.getIsTurnedOn=function()return true end
+    root.getIsTurnedOn=function()
+        error("NO_WORK_STATE_POLL_REQUIRED_FOR_TRANSIT")
+    end
     root.setIsTurnedOn=function() end
     root.getIsLowered=function()return true end
     root.setLowered=function() end

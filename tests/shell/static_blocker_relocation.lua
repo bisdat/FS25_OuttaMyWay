@@ -28,7 +28,9 @@ g_server={}
 local originalJob={}
 local worker={rootNode=11,spec_aiFieldWorker={
     isActive=true,driveStrategies={{className="AIDriveStrategyFieldCourse",
-        isBlocked=true,aiFieldCourse={}}}},
+        isBlocked=true,aiFieldCourse={fieldCourse={courseField={
+        boundaryPositions={{-50,-50},{50,-50},{50,50},{-50,50}}
+    }}}}}},
     getJob=function()return originalJob end,
     getRootVehicle=function(self)return self end,
     getAISteeringNode=function(self)return self.rootNode end,
@@ -76,6 +78,49 @@ local Authority=OuttaMyWay.NativePairCommitmentAuthority
 local authority=Authority.new(cfg)
 local short=authority:admitStaticBlockerCandidate(worker,999,snapshot)
 assert(short==nil,"native one-second gate preserved")
+-- TS003 regression: a stationary assembly within 30 m but beyond
+-- the blocked worker's OWN field boundary is not our static subject.
+-- This must preserve the independent 40 m solo response.
+coords[11].x=39
+coords[22].x=54
+local outside=OuttaMyWay.StaticBlockageEncounterObservation.capture(
+    worker,g_currentMission,150)
+assert(outside.nearestPhysicalAssemblies[1].distanceM<30)
+local excluded,why=authority:admitStaticBlockerCandidate(
+    worker,1000,outside)
+assert(excluded==nil and why=="STATIC_SUBJECT_OUTSIDE_OWN_FIELD",
+    "a nearby off-field static is outside the Control jurisdiction")
+local solo=assert(authority:admitSingleCandidate(worker,1000))
+assert(solo.kind=="SINGLE" and solo.singleRegionDistanceM==40,
+    "outside-field static must fall through to accepted solo BWR")
+assert(authority:release(solo))
+coords[11].x=0
+coords[22].x=10
+-- Missing native polygon means no out-of-scope static admission, not
+-- an invalid native blocked worker. Solo remains the continuation option.
+local strategy=worker.spec_aiFieldWorker.driveStrategies[1]
+local savedCourse=strategy.aiFieldCourse
+strategy.aiFieldCourse={}
+local noField,fieldReason=authority:admitStaticBlockerCandidate(
+    worker,1000,snapshot)
+assert(noField==nil and fieldReason=="STATIC_OWN_FIELD_POLYGON_UNAVAILABLE")
+local fallbackSolo=assert(authority:admitSingleCandidate(worker,1000))
+assert(fallbackSolo.kind=="SINGLE")
+assert(authority:release(fallbackSolo))
+strategy.aiFieldCourse=savedCourse
+-- A separate registered field cannot authorise relocation of an
+-- outside-course subject: native own-field identity takes precedence.
+local originalFieldManager=g_fieldManager
+g_fieldManager={fields={{densityMapPolygon={
+    pointsX={40,100,100,40},pointsZ={-50,-50,50,50}
+}}}}
+coords[11].x=39;coords[22].x=54
+excluded,why=authority:admitStaticBlockerCandidate(
+    worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
+        worker,g_currentMission,151))
+assert(excluded==nil and why=="STATIC_SUBJECT_OUTSIDE_OWN_FIELD")
+coords[11].x=0;coords[22].x=10
+g_fieldManager=originalFieldManager
 local admitted=assert(authority:admitStaticBlockerCandidate(worker,1000,snapshot))
 assert(admitted.kind=="STATIC_BLOCKER"
     and admitted.relocator.vehicle==subject
@@ -432,6 +477,12 @@ end}
 OuttaMyWay.NativeFieldworkJobReplacementMechanism={
     new=function()return {} end}
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
+-- A selected static member may expose a useless native getter.
+-- TRANSIT still demands raising through the setter; no readback veto.
+subject.getIsLowered=function() error("TS003_UNAVAILABLE_LOWERED_GETTER") end
+subject.setLowered=function(_,value)
+    assert(value==false or value==true)
+end
 local realControl=OuttaMyWay.HoldRelocatePhysicalControl.new(authority)
 realControl.regulationMechanism={
     regulate=function()return false,"REGULATION_REJECTED_FIXTURE" end,
@@ -450,6 +501,11 @@ local retry=assert(authority:admitStaticBlockerCandidate(
         worker,g_currentMission,600)))
 assert(realControl:preflight({relocator=retry.relocator,commitment=retry}),
     "subsequent admission must not inherit preflight cache")
+local transitPlan=assert(realControl:getTransitRequests(subject))
+assert(#transitPlan.transitActions>=1
+    and transitPlan.transitActions[1].method=="setLowered"
+    and transitPlan.transitActions[1].value==false,
+    "lowering must be demanded without getIsLowered evidence")
 assert(realControl:cancelTransit(subject))
 assert(authority:release(retry))
 print("Inferred static blocker / reverse target beyond region / fresh BWR: PASS")

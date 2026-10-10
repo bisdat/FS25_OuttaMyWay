@@ -273,6 +273,13 @@ local function ownCourseField(commitment)
         "GIANTS_ACTIVE_COURSE_FIELD"
 end
 
+-- One source of identity for OUR field. Static-subject admission may use
+-- the blocked worker's existing native course polygon without selecting a
+-- neighbouring field; solo uses precisely the same geometry as before.
+function Region.ownCourseField(commitment)
+    return ownCourseField(commitment)
+end
+
 function Region.planSingle(commitment,relocator)
     if type(commitment)~="table" or type(relocator)~="table"
         or not finite(relocator.x) or not finite(relocator.z)
