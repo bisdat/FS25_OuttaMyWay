@@ -88,8 +88,8 @@ control:advance(16)
 assert(driveCalls==1)
 local dx,dz=50-poses[2].x,50-poses[2].z
 local distance=math.sqrt(dx*dx+dz*dz)
-poses[2].x=poses[2].x+60*dx/distance
-poses[2].z=poses[2].z+60*dz/distance
+poses[2].x=poses[2].x+60.5*dx/distance
+poses[2].z=poses[2].z+60.5*dz/distance
 control:advance(16)
 assert(not control:isActive() and neutrals==1 and releases==2)
 assert(control.lastOutcome.status=="MANOEUVRE_COMPLETE_PENDING_CONTINUATION"

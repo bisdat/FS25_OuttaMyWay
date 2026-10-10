@@ -1,5 +1,5 @@
 -- Runs native blocked recovery after independently admitted pair/solo commitment.
--- Specification Jurisdictions: `HOLD_RELOCATE`
+-- Specification Jurisdictions: `HOLD_RELOCATE`, `OBSTRUCTION_RELOCATION`
 -- Observation nominates; authority admits; Control executes; GIANTS owns jobs.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.LiveHoldRelocateRuntime={}

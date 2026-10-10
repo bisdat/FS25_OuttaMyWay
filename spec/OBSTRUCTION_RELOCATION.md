@@ -63,6 +63,9 @@ The donor's old `ValueRecord`, `OperationalPicture`, `ResolutionCommitment` and 
 | --- | --- |
 | [`scripts/observation/CurrentPlayerControlObservation.lua`](../scripts/observation/CurrentPlayerControlObservation.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NonJobActuationMechanism.lua`](../scripts/control/mechanisms/NonJobActuationMechanism.lua) | `REALISES` |
+| [`scripts/assessment/NonActiveObstructionAssessment.lua`](../scripts/assessment/NonActiveObstructionAssessment.lua) | `REALISES` |
+| [`scripts/control/NonActiveRelocationControl.lua`](../scripts/control/NonActiveRelocationControl.lua) | `REALISES` |
+| [`scripts/coordination/LiveHoldRelocateRuntime.lua`](../scripts/coordination/LiveHoldRelocateRuntime.lua) | `SUPPORTS` |
 
 **Partial implementation distinction:** The non-job mechanical contract is realised by a ported physical primitive. The *whole* Obstruction Relocation responsibility is not wired, admitted or exercised in live GIANTS Reality yet. Adding a source participant does not imply automatic non-active movement is enabled.
 
@@ -71,3 +74,4 @@ The donor's old `ValueRecord`, `OperationalPicture`, `ResolutionCommitment` and 
 | Validation surface | Participation |
 | --- | --- |
 | [`tests/shell/non_job_actuation.lua`](../tests/shell/non_job_actuation.lua) | `CHALLENGES` |
+| [`tests/shell/non_active_obstruction.lua`](../tests/shell/non_active_obstruction.lua) | `CHALLENGES` |
