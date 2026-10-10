@@ -121,7 +121,19 @@ def test_player_control_takeover_is_not_a_live_authority_predicate():
     authority = (ROOT / "scripts/coordination/NativePairCommitmentAuthority.lua").read_text(
         encoding="utf-8")
     assert "admitStaticBlockerCandidate" in authority
-    assert "STATIC_SUBJECT_CURRENTLY_CONTROLLED" in authority
+    assert "STATIC_SUBJECT_CURRENTLY_CONTROLLED" not in authority
+    assert "c.playerControlled==false" not in authority
+    assert "math.abs(c.relativeCrossTrackM)<=5" not in authority
+    assert "c.relativeForwardM>0" not in authority
+    assert "c.distanceM<=30" in authority
+    actuator = (ROOT / "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua").read_text(
+        encoding="utf-8")
+    assert "STATIC_SUBJECT_CLAIMED" not in actuator
+    assert "STATIC_SUBJECT_AI_RECLAIMED" in actuator
+    coordinator = (ROOT / "scripts/coordination/HoldRelocateCoordinator.lua").read_text(
+        encoding="utf-8")
+    assert "STATIC_EGRESS_FAILSAFE_MS=25000" in coordinator
+    assert '"STATIC_EGRESS_FAILSAFE_25S"' in coordinator
 
 
 def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
