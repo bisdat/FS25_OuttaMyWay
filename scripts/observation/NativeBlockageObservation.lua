@@ -290,7 +290,8 @@ function Observer:update(dt)
                                 encounterSnapshot=state.encounterSnapshot
                             }
                         end
-                        if result==nil and state.encounterSnapshot~=nil then
+                        if result==nil and state.encounterSnapshot~=nil
+                            and state.encounterSnapshot.populationAvailable==true then
                             publication:publish("DEBUG","INFO",
                                 "NATIVE_BLOCKAGE_ENCOUNTER_SNAPSHOT",function()
                                     return {

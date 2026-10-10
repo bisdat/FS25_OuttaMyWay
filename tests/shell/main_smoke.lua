@@ -16,6 +16,7 @@ local expected={
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
@@ -71,7 +72,8 @@ source=function(path)
                 }
             end
         }
-    elseif path=="scripts/observation/NativeBlockageObservation.lua"
+    elseif path=="scripts/observation/StaticBlockageEncounterObservation.lua"
+        or path=="scripts/observation/NativeBlockageObservation.lua"
         or path=="scripts/diagnostics/VersionHud.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then

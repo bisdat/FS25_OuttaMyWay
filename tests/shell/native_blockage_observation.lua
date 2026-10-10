@@ -10,6 +10,7 @@ OuttaMyWay={
     end}
 }
 dofile("scripts/assessment/SpatialPairInference.lua")
+dofile("scripts/observation/StaticBlockageEncounterObservation.lua")
 dofile("scripts/observation/NativeBlockageObservation.lua")
 
 local enabled=true
