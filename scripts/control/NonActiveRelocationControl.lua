@@ -54,8 +54,8 @@ function Control:finish(outcome)
         beneficiaryRootId=tostring(state.beneficiary.rootNode),
         fieldIdentitySource=state.fieldIdentitySource,
         progressM=state.progressM or 0,
-        physicalCleanupConfirmed=neutralOk==true and propOk==true
-            and activityOk==true,
+        physicalCleanupConfirmed=not claimed and neutralOk==true
+            and propOk==true and activityOk==true,
         continuationConfirmed=false
     }
     self.active=nil
@@ -108,7 +108,7 @@ function Control:begin(evidence)
         fieldIdentitySource=source,progressM=0,drove=false
     }
     return true,{targetProgressM=amount,fieldIdentitySource=source,
-        speedKmh=speed}
+        speedKmh=speed,sourceStrategy=strategy}
 end
 
 function Control:advance(dt)
@@ -118,6 +118,10 @@ function Control:advance(dt)
     local m=self.actuator
     if m:isPlayerControlled(s.blocker) or m:isSourceReactivated(s.blocker) then
         self:finish("HIGHER_AUTHORITY_SUPERSEDED")
+        return
+    end
+    if s.sourceStrategy.isBlocked~=true then
+        self:finish("BENEFICIARY_NATIVE_BLOCKAGE_CLEARED")
         return
     end
     if not OuttaMyWay.NonActiveObstructionAssessment.isStillCurrent(s.evidence)

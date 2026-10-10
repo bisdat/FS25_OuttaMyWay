@@ -183,9 +183,7 @@ function Runtime:update(dt)
                         self.attempted[evidence.candidateIdentity]=true
                         self.pendingContinuation={
                             evidence=obstruction,
-                            strategy=obstruction.beneficiary.spec_aiFieldWorker
-                                and obstruction.beneficiary.spec_aiFieldWorker.driveStrategies
-                                and obstruction.beneficiary.spec_aiFieldWorker.driveStrategies[1]
+                            strategy=details.sourceStrategy
                         }
                         issue(self,"INFO","OBSTRUCTION_RELOCATION_STARTED",
                             "blocker="..tostring(obstruction.blocker.rootNode)
