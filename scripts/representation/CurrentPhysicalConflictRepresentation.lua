@@ -249,7 +249,7 @@ function Representation:observe(root,assemblyReferenceKey,nowSeconds)
         negativeClearanceAuthority=false,
         hierarchyNodesScanned=record.hierarchyNodesScanned or 0,
         currentMemberCount=currentMemberCount,
-        candidateNodeCount=_TEMP_LENGTH_(record.candidates or {}),
+        candidateNodeCount=#(record.candidates or {}),
         positivePrimitiveCount=#primitives,
         unresolvedPrimitiveCount=unresolved,
         scanTruncated=record.scanTruncated==true,
