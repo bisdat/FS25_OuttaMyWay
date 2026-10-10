@@ -13,12 +13,20 @@ dofile("scripts/control/HoldRelocatePhysicalControl.lua")
 local Control=OuttaMyWay.HoldRelocatePhysicalControl
 g_server={}
 local commands={}
+local positions=setmetatable({},{__mode="k"})
+getWorldTranslation=function(node)
+    local p=assert(positions[node]);return p.x,0,p.z
+end
+localToWorld=function(node,x,y,z)
+    local p=assert(positions[node]);return p.x+x,y,p.z+z
+end
 local function member(hasParts)
     local node={}
+    positions[node]={x=hasParts and 10 or 20,z=10}
     local spec=hasParts and {hasFoldingParts=true,
         foldingParts={{name="boom"}},foldAnimTime=0} or nil
     return {
-        rootNode=node,spec_foldable=spec,
+        rootNode=node,spec_foldable=spec,sizeWidth=3,sizeLength=6,
         getAttachedImplements=function()return {} end,
         getIsTurnedOn=function()return true end,
         setIsTurnedOn=function(_,v)commands[#commands+1]={"WORK",v}end,
@@ -53,19 +61,22 @@ assert(not sa.isSettled and sa.requiredFoldCount==1
     and sa.settledFoldCount==0)
 assert(sb.isSettled and sb.requiredFoldCount==0
     and sb.unresolvedFoldCount==0)
-local missing,unsupported=control:pairTransitFootprint(a)
-assert(missing==nil and unsupported=="PAIR_TRANSIT_FOOTPRINT_NOT_REALIZED",
-    "unfinished folding must never be interpreted as compact geometry")
+local nominal=assert(control:pairTransitFootprint(a))
+assert(nominal.memberCount==1 and #nominal.corners==4
+    and nominal.foldSettled==false
+    and nominal.configurationBasis=="NOMINAL_TRANSIT_AFTER_WAIT"
+    and nominal.negativeClearanceAuthority==false,
+    "an unfinished fold retains nominal TRANSIT planning geometry")
 a.spec_foldable.foldAnimTime=0.56
 assert(not control:transitStatus(a).isSettled,
     "intermediate fold animation is not endpoint readiness")
 a.spec_foldable.foldAnimTime=1
 assert(control:transitStatus(a).isSettled)
--- Once the actual fold endpoint is achieved, geometry can be considered.
--- Here no GIANTS transform stub exists, so the next representation layer
--- reports its own missing evidence rather than a stale-fold veto.
-local _,geometryReason=control:pairTransitFootprint(a)
-assert(geometryReason~="PAIR_TRANSIT_FOOTPRINT_NOT_REALIZED")
+-- A completed fold allows early egress, but uses the same geometry.
+local achieved=assert(control:pairTransitFootprint(a))
+assert(achieved.foldSettled==true
+    and achieved.configurationBasis=="FOLD_ENDPOINTS_OBSERVED"
+    and #achieved.corners==#nominal.corners)
 assert(control:cancelTransit(a) and control:cancelTransit(b))
 -- A discovered but unobservable fold waits only until the global
 -- coordinator's 15-second bound; no command result manufactures readiness.
@@ -73,7 +84,9 @@ a.spec_foldable.foldAnimTime=nil
 assert(control:preflightPair({commitment=commitment}))
 local unknown=assert(control:transitStatus(a))
 assert(unknown.isSettled==false and unknown.unresolvedFoldCount==1)
-local unknownFoot,unknownWhy=control:pairTransitFootprint(a)
-assert(unknownFoot==nil and unknownWhy=="PAIR_TRANSIT_FOOTPRINT_NOT_REALIZED")
+local unresolved=assert(control:pairTransitFootprint(a))
+assert(unresolved.foldSettled==false
+    and unresolved.configurationBasis=="NOMINAL_TRANSIT_AFTER_WAIT",
+    "unknown selected fold actuator must not veto post-timeout planning")
 assert(control:cancelTransit(a) and control:cancelTransit(b))
-print("Paired selective fold readiness and TRANSIT commands: PASS")
+print("Paired selective fold wait and non-veto nominal TRANSIT geometry: PASS")

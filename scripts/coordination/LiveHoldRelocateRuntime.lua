@@ -134,6 +134,8 @@ function Runtime:update(dt)
                 .." optionsAssessed="..tostring(start.cascadeAttempts)
                 .." regionTravelM="..tostring(start.regionTravelM)
                 .." transitWaitExhausted="..tostring(start.transitWaitExhausted)
+                .." firstFoldSettled="..tostring(start.firstFoldSettled)
+                .." secondFoldSettled="..tostring(start.secondFoldSettled)
                 .." representation="..tostring(start.geometryBasis)
                 .." confirmedPhysicalClearance=false"
                 .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh))

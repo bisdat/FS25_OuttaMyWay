@@ -172,6 +172,35 @@ assert(authority:release(issued))
 physical.plans[second]={transitActions={},restoreActions={}}
 assert(physical:cancelTransit(second))
 assert(events[#events]=="RESTORE")
+-- TS001 .7 regression: neither fold reports an endpoint at 15 seconds,
+-- yet both selected-runtime TRANSIT footprints are available to planning.
+-- Elapsed preparation MUST produce a movement request, not cached inverse
+-- commands and NO_FEASIBLE_PAIR_EGRESS due to unsettled fold alone.
+local originalStatus=physical.transitStatus
+physical.transitStatus=function()
+    return {isSettled=false,requiredFoldCount=1,settledFoldCount=0}
+end
+reverse={travelledM=0,isComplete=false}
+local timed=assert(authority:admitCandidate(first,second,first,1000))
+local previousEvents=#events
+assert(coordinator:begin(timed,16000))
+coordinator:advance(30999)
+assert(coordinator:getStatus().phase=="PAIR_PREPARING_TRANSIT"
+    and #events==previousEvents+4,
+    "neither fold is confirmed; bounded preparation is still active")
+coordinator:advance(31000)
+assert(coordinator:isActive()
+    and coordinator:getStatus().phase~="PAIR_PREPARING_TRANSIT"
+    and coordinator.lastPairMotionStartEvidence.transitWaitExhausted==true
+    and coordinator.lastPairMotionStartEvidence.firstFoldSettled==false
+    and coordinator.lastPairMotionStartEvidence.secondFoldSettled==false
+    and coordinator:getStatus().lastOutcome==nil,
+    "15-second expiry must attempt actual egress without fold veto")
+assert(events[#events]=="REVERSE",
+    "TS001 .7 must not reverse TRANSIT into WORKING at wait expiry")
+assert(coordinator:relinquish("TEST_CLEANUP"))
+assert(authority:release(timed))
+physical.transitStatus=originalStatus
 -- Confined field admits pair roots but not the complete TRANSIT
 -- member-corner path. Only after the bounded search does it give up.
 g_fieldManager.fields={{densityMapPolygon={

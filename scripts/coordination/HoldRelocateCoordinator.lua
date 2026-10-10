@@ -336,8 +336,9 @@ function Coordinator:beginPair(commitment,nowMs)
         pairTransitDeadlineMs=state.pairTransitDeadlineMs}
 end
 
--- Region-first selection: both current TRANSIT representations are
--- interrogated once after settlement or at 15-second exhaustion.
+-- Region-first selection: use nominal selected-runtime TRANSIT geometry
+-- after the shared maximum 15 s wait even if folding remains in progress.
+-- Readiness only allows an earlier start; it is never a spatial veto.
 function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
     local first,second=state.commitment.participants[1],
         state.commitment.participants[2]
@@ -415,6 +416,8 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
         firstFoldSettlement=statusA,
         secondFoldSettlement=statusB,
         geometryBasis=objective.transitGeometryBasis,
+        firstFoldSettled=first.transitFootprint.foldSettled,
+        secondFoldSettled=second.transitFootprint.foldSettled,
         isPhysicalPairClearanceConfirmed=false,
         requestedDriveSpeedKmh=type(evidence)=="table"
             and (evidence.requestedDriveSpeedKmh
@@ -644,8 +647,8 @@ function Coordinator:advance(nowMs,dt)
             and nowMs>=state.pairTransitDeadlineMs
         if not settled and not exhausted then return end
         if exhausted then
-            -- A preparation deadline changes geometry confidence, NEVER
-            -- ends the pair response. Try all supported physical regions.
+            -- The 15 s bound authorises attempting egress with nominal
+            -- selected-runtime TRANSIT geometry, never cleanup on its own.
             self.lastPairTransitExhaustion={
                 commitmentId=state.commitmentId,
                 elapsedMs=PAIR_TRANSIT_WAIT_MS,
