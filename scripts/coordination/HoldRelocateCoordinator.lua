@@ -159,16 +159,30 @@ function Coordinator:beginStatic(commitment,nowMs)
     if not accepted then return false,reason end
     local state={
         commitment=commitment,commitmentId=commitment.commitmentId,
-        relocator=commitment.relocator,blockers={},isBlockerRegulated={},
+        relocator=commitment.relocator,
+        blockers={commitment.participants[1]},isBlockerRegulated={},
         isReverseOutstanding=false,isStaticMovementOutstanding=false,
         isTransitOutstanding=false,isRelocatorHeld=false,
-        isStatic=true,phase="STATIC_REQUESTING_TRANSIT",objective=objective
+        isStatic=true,phase="STATIC_REQUESTING_TRANSIT",objective=objective,
+        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
     }
     local ready,preflightReason=command(self.physicalControl,"preflight",state)
     if not ready then return false,preflightReason end
+    if not finite(state.egressRegulationUntilMs) then
+        return false,"STATIC_EGRESS_CLOCK_UNAVAILABLE"
+    end
     self.active=state
     self.lastEgressRegulationResults=nil
     self.lastInitialMotionEvidence=nil
+    -- Protect the blocked worker's native steering and drive permission,
+    -- capping its current GIANTS speed at 1 km/h for a timed 5 s window.
+    state.isBlockerRegulated[1]=true
+    local regulated,regulationReason=command(self.physicalControl,
+        "regulate",state.blockers[1].vehicle,"EGRESS")
+    if not regulated then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",regulationReason)
+        return false,regulationReason
+    end
     state.isTransitOutstanding=true
     local transit,transitReason=command(self.physicalControl,
         "requestTransit",state.relocator.vehicle)
@@ -188,7 +202,8 @@ function Coordinator:beginStatic(commitment,nowMs)
         objective=objective,directionSource=objective.directionSource,
         regionRequiredProgressM=objective.returnRegion.requiredProgressM,
         vectorDistanceM=objective.vectorDistanceM,
-        requestedReverseSpeedKmh=type(movement)=="table"
+        beneficiaryWorkingWidthM=objective.beneficiaryWorkingWidthM,
+        requestedDriveSpeedKmh=type(movement)=="table"
             and movement.requestedDriveSpeedKmh or nil}
 end
 
@@ -343,7 +358,43 @@ function Coordinator:advance(nowMs,dt)
     if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
+    -- Timer alone releases native speed Regulation for pair/static egress.
+    if not state.isSingle and nowMs>=state.egressRegulationUntilMs then
+        for i=1,#state.blockers do
+            if state.isBlockerRegulated[i] then
+                local released,releaseEvidence=command(
+                    self.physicalControl,"releaseRegulation",state.blockers[i].vehicle,"EGRESS")
+                if not released then
+                    self:finishWithOutcome("CONTROL_INTERRUPTED",releaseEvidence)
+                    return
+                end
+                if self.lastEgressRegulationResults==nil then
+                    self.lastEgressRegulationResults={}
+                end
+                self.lastEgressRegulationResults[#self.lastEgressRegulationResults+1]={
+                    rootId=state.blockers[i].assemblyReferenceKey,
+                    interceptCount=type(releaseEvidence)=="table"
+                        and releaseEvidence.interceptionCount or nil,
+                    displacementM=type(releaseEvidence)=="table"
+                        and releaseEvidence.physicalDisplacementM or nil,
+                    commitmentId=state.commitmentId,regulatedSpeedKmh=1,
+                    lastNativeSpeedKmh=type(releaseEvidence)=="table"
+                        and releaseEvidence.lastNativeSpeedKmh or nil}
+                state.isBlockerRegulated[i]=false
+            end
+        end
+    end
+
     if state.isStatic then
+        if state.phase=="STATIC_WAIT_EGRESS_TIMER" then
+            if nowMs<state.egressRegulationUntilMs then return end
+            self.lastOutcome={status="STATIC_BLOCKER_MOVED",
+                commitmentId=state.commitmentId,
+                isNativeContinuationConfirmed=false,
+                reason="INFERRED_SUBJECT_MOVED_GIANTS_CONTINUATION_UNMEASURED"}
+            self.active=nil
+            return
+        end
         local status,statusReason=query(self.physicalControl,
             "staticMovementStatus",state.relocator.vehicle,dt)
         if type(status)~="table" then
@@ -371,39 +422,19 @@ function Coordinator:advance(nowMs,dt)
             return
         end
         state.isTransitOutstanding=false
-        self.lastOutcome={status="STATIC_BLOCKER_MOVED",
-            commitmentId=state.commitmentId,isNativeContinuationConfirmed=false,
-            reason="INFERRED_SUBJECT_MOVED_GIANTS_CONTINUATION_UNMEASURED"}
-        self.active=nil
+        -- If the region is reached early, wait out the promised 5 s native
+        -- Regulation window, without continuing to move the static subject.
+        state.phase="STATIC_WAIT_EGRESS_TIMER"
+        if nowMs>=state.egressRegulationUntilMs then
+            self.lastOutcome={status="STATIC_BLOCKER_MOVED",
+                commitmentId=state.commitmentId,
+                isNativeContinuationConfirmed=false,
+                reason="INFERRED_SUBJECT_MOVED_GIANTS_CONTINUATION_UNMEASURED"}
+            self.active=nil
+        end
         return
     end
 
-    -- Timer alone releases the other participant's speed regulation.
-    if not state.isSingle and nowMs>=state.egressRegulationUntilMs then
-        for i=1,#state.blockers do
-            if state.isBlockerRegulated[i] then
-                local released,releaseEvidence=command(
-                    self.physicalControl,"releaseRegulation",state.blockers[i].vehicle,"EGRESS")
-                if not released then
-                    self:finishWithOutcome("CONTROL_INTERRUPTED",releaseEvidence)
-                    return
-                end
-                if self.lastEgressRegulationResults==nil then
-                    self.lastEgressRegulationResults={}
-                end
-                self.lastEgressRegulationResults[#self.lastEgressRegulationResults+1]={
-                    rootId=state.blockers[i].assemblyReferenceKey,
-                    interceptCount=type(releaseEvidence)=="table"
-                        and releaseEvidence.interceptionCount or nil,
-                    displacementM=type(releaseEvidence)=="table"
-                        and releaseEvidence.physicalDisplacementM or nil,
-                    commitmentId=state.commitmentId,regulatedSpeedKmh=1,
-                    lastNativeSpeedKmh=type(releaseEvidence)=="table"
-                        and releaseEvidence.lastNativeSpeedKmh or nil}
-                state.isBlockerRegulated[i]=false
-            end
-        end
-    end
   -- Reverse is already armed in begin, without a TRANSIT settlement check.
     if state.phase=="REVERSING" then
         local status,statusReason=query(self.physicalControl,"reverseStatus",

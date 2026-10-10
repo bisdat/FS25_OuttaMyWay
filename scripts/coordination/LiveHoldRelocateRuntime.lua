@@ -168,6 +168,14 @@ function Runtime:update(dt)
                         details=details.." requestedReverseSpeedKmh="..
                             tostring(why.requestedReverseSpeedKmh)
                     end
+                    if type(why)=="table" and why.requestedDriveSpeedKmh~=nil then
+                        details=details.." requestedDriveSpeedKmh="
+                            ..tostring(why.requestedDriveSpeedKmh)
+                    end
+                    if type(why)=="table" and why.beneficiaryWorkingWidthM~=nil then
+                        details=details.." beneficiaryWorkingWidthM="
+                            ..tostring(why.beneficiaryWorkingWidthM)
+                    end
                     if type(why)=="table" and why.regionRequiredProgressM~=nil then
                         details=details.." requiredLateralM="..
                             tostring(why.regionRequiredProgressM)

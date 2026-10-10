@@ -27,7 +27,8 @@ local worker={rootNode=11,spec_aiFieldWorker={
         isBlocked=true,aiFieldCourse={}}}},
     getJob=function()return originalJob end,
     getRootVehicle=function(self)return self end,
-    getAISteeringNode=function(self)return self.rootNode end}
+    getAISteeringNode=function(self)return self.rootNode end,
+    getAIWorkAreaWidth=function()return 36 end}
 local cruise={speed=4,speedReverse=4,maxSpeed=35,maxSpeedReverse=22}
 local motor={getMaximumForwardSpeed=function()return 12 end,
     getMaximumBackwardSpeed=function()return 5 end}
@@ -54,7 +55,11 @@ AIVehicleUtil={
         assert(doNotSteer==false and type(speed)=="number")
         if allowed then
             assert(vehicle==subject and accel==1)
-            coords[22].x=coords[22].x+10
+            -- 2D native-local target is (world Z, world X) in this fixture.
+            -- Apply both components so straight-line motion cannot satisfy
+            -- the intended lateral egress region accidentally.
+            coords[22].x=coords[22].x+10*lz
+            coords[22].z=coords[22].z+10*lx
         end
     end
 }
@@ -74,39 +79,58 @@ assert(admitted.kind=="STATIC_BLOCKER"
 local plan=assert(OuttaMyWay.ProjectedEgressRegion.planStatic(
     admitted,admitted.relocator))
 assert(plan.moveForwards and not plan.isReverse
-    and plan.directionSource=="STATIC_FORWARD_AWAY"
-    and plan.returnRegion.requiredProgressM==30
-    and plan.targetX==80 and plan.targetZ==0)
+    and plan.directionSource=="STATIC_FORWARD_OBLIQUE"
+    and plan.returnRegion.source=="STATIC_CROSS_TRACK_REGION"
+    and plan.beneficiaryWorkingWidthM==36
+    and plan.vectorDistanceM==41 and plan.marginM==5
+    and plan.nominalBearingOffsetDeg==70
+    and plan.returnRegion.requiredProgressM>38
+    and plan.targetX>10 and math.abs(plan.targetZ)>70,
+    "forward BWR must steer sideways out of the beneficiary corridor")
+assert(not OuttaMyWay.ProjectedEgressRegion.progress(
+    plan.returnRegion,50,0).isInRegion,
+    "arbitrary straight-forward travel must not satisfy lateral completion")
+assert(OuttaMyWay.ProjectedEgressRegion.progress(
+    plan.returnRegion,10,-41).isInRegion)
 local actuator=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new()
 local ok,started=actuator:startMovement(subject,plan)
 assert(ok and started.requestedDriveSpeedKmh==8 and running)
 assert(subject.forceIsActive==true and cruise.speed==8)
 local status=nil
-for i=1,4 do
+for i=1,12 do
     status=actuator:movementStatus(subject,16)
+    if status.isComplete then break end
 end
-assert(status.isComplete and coords[22].x==40)
+assert(status.isComplete and coords[22].x>10 and coords[22].z< -38,
+    "non-job direct drive must physically produce cross-track progress")
 assert(coords[11].x==0,"the blocked beneficiary is never driven")
 assert(actuator:stopMovement(subject))
 assert(not running and subject.forceIsActive==nil
     and cruise.speed==4 and cruise.speedReverse==4)
 assert(authority:release(admitted))
 
--- Facing the blocked worker reverses the same native movement axis. No
--- arbitrary world reverse vector is substituted for GIANTS reverser frame.
-coords[22].x=10
-local reverseCommit={staticRegionDistanceM=30,
+-- Opposed facing reverses along the same oblique direction using GIANTS'
+-- native reverser frame, not a hard-coded reverse-only departure.
+coords[22].x,coords[22].z=10,0
+local reverseCommit={beneficiaryWorkingWidthM=36,
+    beneficiaryForwardX=1,beneficiaryForwardZ=0,
     participants={{x=0,z=0}}}
 local reverseSubject={x=10,z=0,forwardX=-1,forwardZ=0}
 local reversePlan=assert(OuttaMyWay.ProjectedEgressRegion.planStatic(
     reverseCommit,reverseSubject))
 assert(reversePlan.isReverse and not reversePlan.moveForwards
-    and reversePlan.directionSource=="STATIC_REVERSE_AWAY"
-    and reversePlan.returnRegion.directionX==1)
+    and reversePlan.directionSource=="STATIC_REVERSE_OBLIQUE"
+    and reversePlan.returnRegion.source=="STATIC_CROSS_TRACK_REGION"
+    and reversePlan.returnRegion.requiredProgressM>38
+    and reversePlan.targetX>10 and math.abs(reversePlan.targetZ)>70)
 assert(actuator:startMovement(subject,reversePlan))
-for i=1,4 do status=actuator:movementStatus(subject,16) end
-assert(status.isComplete and actuator:stopMovement(subject))
-coords[22].x=10
+for i=1,12 do
+    status=actuator:movementStatus(subject,16)
+    if status.isComplete then break end
+end
+assert(status.isComplete and coords[22].z< -38)
+assert(actuator:stopMovement(subject))
+coords[22].x,coords[22].z=10,0
 
 -- Explicitly reject moving, active or controlled neighbours.
 local moving=OuttaMyWay.StaticBlockageEncounterObservation.capture(
@@ -124,8 +148,19 @@ moving.nearestPhysicalAssemblies[1].playerControlled=false
 -- Coordinator moves the non-job subject rather than the beneficiary.
 local events={}
 local physical={
+    regulate=function(_,v,purpose)
+        assert(v==worker and purpose=="EGRESS")
+        events[#events+1]="REGULATE";return true
+    end,
+    releaseRegulation=function(_,v,purpose)
+        assert(v==worker and purpose=="EGRESS")
+        events[#events+1]="REGULATION_RELEASE"
+        return true,{interceptionCount=3,physicalDisplacementM=0.2,
+            lastNativeSpeedKmh=1}
+    end,
     preflight=function(_,state)
-        assert(state.relocator.vehicle==subject)
+        assert(state.relocator.vehicle==subject
+            and state.blockers[1].vehicle==worker)
         events[#events+1]="PREFLIGHT";return true
     end,
     requestTransit=function(_,v)
@@ -155,12 +190,26 @@ local physical={
 local c=assert(authority:admitStaticBlockerCandidate(worker,1000,snapshot))
 local coordinator=OuttaMyWay.HoldRelocateCoordinator.new(authority,physical)
 local began,description=coordinator:begin(c,1000)
-assert(began and description.directionSource=="STATIC_FORWARD_AWAY")
-assert(table.concat(events,",")=="PREFLIGHT,TRANSIT,MOVE_STATIC")
+assert(began and description.directionSource=="STATIC_FORWARD_OBLIQUE"
+    and coordinator:getStatus().egressRegulationUntilMs==6000)
+assert(table.concat(events,",")=="PREFLIGHT,REGULATE,TRANSIT,MOVE_STATIC")
 coordinator:advance(1016,16)
-assert(coordinator:getStatus().lastOutcome.status=="STATIC_BLOCKER_MOVED")
+assert(coordinator:isActive()
+    and coordinator:getStatus().phase=="STATIC_WAIT_EGRESS_TIMER",
+    "an early physical completion must not curtail the 5-second window")
 assert(table.concat(events,",")==
-    "PREFLIGHT,TRANSIT,MOVE_STATIC,STATUS,STOP,RETAIN_TRANSIT")
+    "PREFLIGHT,REGULATE,TRANSIT,MOVE_STATIC,STATUS,STOP,RETAIN_TRANSIT")
+coordinator:advance(5999,16)
+assert(coordinator:isActive() and #events==7,
+    "no early speed release or further static movement")
+coordinator:advance(6000,16)
+assert(not coordinator:isActive()
+    and coordinator:getStatus().lastOutcome.status=="STATIC_BLOCKER_MOVED")
+assert(events[8]=="REGULATION_RELEASE")
+assert(#coordinator.lastEgressRegulationResults==1
+    and coordinator.lastEgressRegulationResults[1].regulatedSpeedKmh==1
+    and coordinator.lastEgressRegulationResults[1].rootId
+        ==c.participants[1].assemblyReferenceKey)
 assert(authority:release(c))
 -- A future player claim interrupts direct motion and releases the lease.
 local fresh=assert(authority:admitStaticBlockerCandidate(worker,1000,snapshot))

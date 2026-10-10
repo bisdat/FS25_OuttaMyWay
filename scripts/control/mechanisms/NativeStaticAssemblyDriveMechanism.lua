@@ -46,7 +46,7 @@ function M:startMovement(vehicle,objective)
     if type(vehicle)~="table" or vehicle.rootNode==nil
         or type(objective)~="table"
         or objective.returnRegion==nil
-        or objective.returnRegion.source~="STATIC_AXIAL_REGION"
+        or objective.returnRegion.source~="STATIC_CROSS_TRACK_REGION"
         or type(objective.moveForwards)~="boolean"
         or not finite(objective.targetX)
         or not finite(objective.targetZ)

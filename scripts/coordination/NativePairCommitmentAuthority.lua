@@ -305,6 +305,17 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
         end
     end
     if selection==nil then return nil,"NO_INFERRED_STATIC_BLOCKER" end
+    local facing=snapshot.beneficiaryFacing
+    if type(facing)~="table" or not finite(facing.x)
+        or not finite(facing.z) then
+        return nil,"STATIC_BENEFICIARY_FACING_UNAVAILABLE"
+    end
+    -- Existing once-per-admission working-span read scales the lateral
+    -- relocation; it is not a physical collision footprint.
+    local width,widthReason=blockerWorkingWidth(worker)
+    if width==nil then
+        return nil,widthReason or "STATIC_BENEFICIARY_WIDTH_UNAVAILABLE"
+    end
     local subject=selection.vehicle
     -- Identity and root pose are revalidated once, with no new census.
     local current=pose(subject)
@@ -334,7 +345,8 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
         relocator={vehicle=subject,assemblyReferenceKey=tostring(subject.rootNode),
             x=current.x,z=current.z,forwardX=selection.forwardX,
             forwardZ=selection.forwardZ},
-        nearbyBlockers={},staticRegionDistanceM=30,
+        nearbyBlockers={},beneficiaryWorkingWidthM=width,
+        beneficiaryForwardX=facing.x,beneficiaryForwardZ=facing.z,
         inference="NATIVE_BLOCKED_PLUS_NEARBY_INACTIVE_ROOT"
     }
     self.active=commitment
