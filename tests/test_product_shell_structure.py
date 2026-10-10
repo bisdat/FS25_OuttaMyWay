@@ -12,6 +12,7 @@ SHELL_MODULES = [
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
+    "scripts/coordination/PairTransitRegion.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
@@ -85,7 +86,35 @@ def test_region_based_egress_and_native_regulation():
     assert "requiredProgressM" in region and "requiredCrossTrackM" in region
     assert "EGRESS_MARGIN_M=5" in region
     assert "OBLIQUE_REVERSE_DEG=70" in region
-    assert "blockerWorkingWidthM" in authority
+    pair_admission = authority.split("function Authority:admitCandidate")[1].split(
+        "function Authority:admitSingleCandidate")[0]
+    assert "blockerWorkingWidthM" not in pair_admission
+    assert "a.workingWidthM" in pair_admission
+    assert "b.workingWidthM" in pair_admission
+    assert "blockerWorkingWidth(first)" in pair_admission
+    assert "blockerWorkingWidth(second)" in pair_admission
+    transit = (ROOT / "scripts/coordination/PairTransitRegion.lua").read_text(
+        encoding="utf-8")
+    physical = (ROOT / "scripts/control/HoldRelocatePhysicalControl.lua").read_text(
+        encoding="utf-8")
+    assert "GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION" in transit
+    assert "reachableTravel" in transit and "sceneOccupancy" in transit
+    assert "regionStepValid" in transit and "MIN_USEFUL_TRAVEL_M=STEP_M" in transit
+    assert "planPair" in transit and "getAIWorkAreaWidth" not in transit
+    assert "WORK_CORRIDOR_MARGIN_M=5" in transit
+    assert "width+WORK_CORRIDOR_MARGIN_M" in transit
+    assert "isPartialEgress" in transit
+    assert "DISCOVERY_DIRECTIONS=32" in transit
+    assert "math.max(2,required/math.abs(rate))" not in transit
+    assert "PAIR_WORKING_CORRIDOR_TRAVEL_REGION" in transit
+    assert "PAIR_TRANSIT_WAIT_MS=15000" not in coordinator
+    assert "PAIR_PREPARING_TRANSIT" not in coordinator
+    assert '"preflightPairMover"' in coordinator
+    assert '"pairTransitFootprint"' in coordinator
+    assert '"transitStatus"' not in coordinator
+    assert "pairedEgressImmediate=true" in coordinator
+    assert '"requestTransit",mover.vehicle' in coordinator
+    assert "foldTargets" in physical and "hasActiveParts" in physical
     assert "SIGNED_CROSS_TRACK_REGION" in region
     assert "REQUIRED_RETREAT_M=20" not in region
     assert "HOLD_RELOCATE_EGRESS_REGULATION_EVIDENCE" in runtime

@@ -1,8 +1,9 @@
--- Contract challenge for the live observation -> Pair Commitment -> physical path.
--- GIANTS job, field polygon, fold and drive operations are mocked; Reality untested.
+-- Native evidence -> pair role selection -> mover-only TRANSIT while moving.
+-- Real production modules with GIANTS native calls mocked. No field PASS claim.
 OuttaMyWay={}
 dofile("scripts/coordination/NativePairCommitmentAuthority.lua")
 dofile("scripts/coordination/ProjectedEgressRegion.lua")
+dofile("scripts/coordination/PairTransitRegion.lua")
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
 dofile("scripts/coordination/LiveHoldRelocateRuntime.lua")
@@ -19,28 +20,32 @@ g_fieldManager={fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}
 }}}}
 g_currentMission={}
+local coords=setmetatable({},{__mode="k"})
+getWorldTranslation=function(node)
+    local p=coords[node];assert(p~=nil)
+    return p.x,0,p.z
+end
 localDirectionToWorld=function(node,x,y,z)
     return -z,y,x
 end
-local coords=setmetatable({},{__mode="k"})
-getWorldTranslation=function(node)
-    local p=coords[node]
-    assert(p~=nil)
-    return p.x,0,p.z
+localToWorld=function(node,x,y,z)
+    local p=coords[node];assert(p~=nil)
+    return p.x-z,y,p.z+x
 end
 local function nativeWorker(x,z,blocked)
-    local node={}
-    coords[node]={x=x,z=z}
+    local node={};coords[node]={x=x,z=z}
     local job={}
     local strategy={className="AIDriveStrategyFieldCourse",isBlocked=blocked}
-    local root={rootNode=node,job=job,spec_aiFieldWorker={
-        isActive=true,driveStrategies={strategy}}}
+    local root={rootNode=node,job=job,sizeWidth=3,sizeLength=6,
+        spec_aiFieldWorker={isActive=true,driveStrategies={strategy}}}
     root.getAIReverserNode=function(self)return self.rootNode end
     root.getAISteeringNode=function(self)return self.rootNode end
     root.getAIWorkAreaWidth=function()return 36 end
     root.getJob=function(self)return self.job end
     root.getAttachedImplements=function()return {} end
-    root.getIsTurnedOn=function()return true end
+    root.getIsTurnedOn=function()
+        error("NO_WORK_STATE_POLL_REQUIRED_FOR_TRANSIT")
+    end
     root.setIsTurnedOn=function() end
     root.getIsLowered=function()return true end
     root.setLowered=function() end
@@ -50,22 +55,22 @@ local first,blocked=nativeWorker(20,20,true)
 local second,secondStrategy=nativeWorker(23,20,false)
 local authority=Authority.new(configuration)
 local accepted,reason=authority:admitCandidate(first,second,first,999)
-assert(accepted==nil,"persistence gate must reject a short pulse")
+assert(accepted==nil,"persistence gate must reject short pulse")
 local issued=assert(authority:admitCandidate(first,second,first,1000))
 assert(issued.fieldCentroid.x==50 and issued.fieldCentroid.z==50)
-assert(issued.offsetM==0 and issued.blockerWorkingWidthM==36 and #issued.nearbyBlockers==1)
-assert(type(issued.fieldPolygon)=="table")
-assert(issued.nearbyBlockers[1].vehicle==first,
-    "closer-to-centroid worker B relocates; A is blocker")
+assert(issued.blockerWorkingWidthM==nil
+    and issued.participants[1].workingWidthM==36
+    and issued.participants[2].workingWidthM==36
+    and issued.offsetM==0 and #issued.nearbyBlockers==1,
+    "paired geometry cannot use productive width")
+assert(issued.nearbyBlockers[1].vehicle==first)
 assert(authority:validateCommitment(issued))
 assert(authority:getExpectedNativeJob(second)==second.job)
-assert(not authority:validateCommitment({commitmentId=issued.commitmentId}),
-    "unissued commitment is not authority")
+assert(not authority:validateCommitment({commitmentId=issued.commitmentId}))
 second.job={}
-assert(not authority:isCommitmentCurrent(issued),"native job turnover must revoke commitment")
+assert(not authority:isCommitmentCurrent(issued))
 second.job=issued.participants[2].sourceJobReference
 assert(authority:isCommitmentCurrent(issued))
--- Mock constructor surfaces only; the adapter under challenge is real.
 OuttaMyWay.NativeTranslationHoldMechanism={new=function()return {} end}
 OuttaMyWay.NativeSpeedRegulationMechanism={new=function()return {} end}
 OuttaMyWay.NativeReverseMechanism={new=function()return {} end}
@@ -74,7 +79,6 @@ OuttaMyWay.NativeTransitRequestMechanism={new=function()return {} end}
 OuttaMyWay.NativeFieldworkJobReplacementMechanism={new=function()return {} end}
 local physical=Control.new(authority)
 local events={}
--- Replace subordinate native mechanisms only in this offline challenge.
 physical.regulationMechanism={
     regulate=function(_,v,p)events[#events+1]="REGULATE:"..p;return true end,
     releaseRegulation=function(_,v,p)
@@ -94,7 +98,7 @@ physical.transitMechanism={
     requestTransit=function(_,vehicle)
         local plan=physical:getTransitRequests(vehicle)
         assert(plan~=nil and #plan.transitActions==2)
-        assert(#plan.restoreActions==2)
+        assert(#plan.restoreActions==2 and #plan.foldTargets==0)
         events[#events+1]="TRANSIT"
         return true
     end,
@@ -112,10 +116,15 @@ physical.reverseMechanism={
             assert(objective.vectorDistanceM==40 and objective.marginM==nil)
             assert(objective.directionSource=="SINGLE_OBLIQUE_REVERSE")
         else
-            assert(objective.maxTravelM==nil and objective.steeringHorizonM==81)
-            assert(objective.returnRegion.requiredProgressM>38)
-            assert(objective.vectorDistanceM==41 and objective.marginM==5)
-            assert(objective.targetInField and objective.directionSource=='OBLIQUE_REVERSE')
+            assert(objective.marginM==1 and objective.regionTravelM==41
+                and objective.remainingWorkingWidthM==36
+                and objective.workingCorridorMarginM==5
+                and objective.returnRegion.requiredProgressM==41
+                and objective.returnRegion.source==
+                    "PAIR_WORKING_CORRIDOR_TRAVEL_REGION")
+            assert(objective.transitGeometryBasis==
+                "GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION")
+            assert(objective.returnRegion.isPhysicalPairClearanceConfirmed==false)
         end
         return true
     end,
@@ -126,72 +135,123 @@ physical.reverseMechanism={
 physical.jobMechanism={
     restartNativeFieldwork=function(_,v)
         events[#events+1]="NATIVE_STOP_START"
-        assert(authority:getExpectedNativeJob(v)==second.job)
+        assert(authority:getExpectedNativeJob(v)~=nil)
         return true,{isOldJobStopped=true,isNewJobStarted=true}
     end
 }
--- No past FIELDWORK attempt state may veto current TRANSIT restoration.
 local coordinator=Coordinator.new(authority,physical)
 local ok,entry=coordinator:begin(issued,1000)
-assert(ok and entry.relocatingAssemblyReferenceKey==issued.participants[2].assemblyReferenceKey)
-assert(entry.objective.returnRegion.requiredProgressM>38
-    and entry.vectorDistanceM==41 and entry.blockerWorkingWidthM==36)
-assert(events[1]=="REGULATE:EGRESS" and events[2]=="TRANSIT" and events[3]=="REVERSE")
-assert(coordinator:getStatus().phase=="REVERSING")
+assert(ok and entry.pairedEgressImmediate==true)
+assert(coordinator:getStatus().phase=="REVERSING"
+    or coordinator:getStatus().phase=="PAIR_FORWARD_MOVING")
+assert(#events==3 and events[1]=="REGULATE:EGRESS"
+    and events[2]=="TRANSIT" and events[3]=="REVERSE",
+    "the selected mover requests TRANSIT concurrently with egress")
+local motion=assert(coordinator.lastPairMotionStartEvidence)
+assert(motion.regionTravelM==41 and motion.remainingWorkingWidthM==36
+    and motion.workingCorridorMarginM==5
+    and motion.pairedEgressImmediate and motion.moverTransitRequested
+    and motion.remainingWorkerConfiguration=="WORKING_UNCHANGED")
+local mover=motion.relocatingAssemblyReferenceKey
+local other=motion.otherAssemblyReferenceKey
+local moverVehicle=mover==issued.participants[1].assemblyReferenceKey
+    and first or second
+local remainingVehicle=other==issued.participants[1].assemblyReferenceKey
+    and first or second
+assert(physical:getTransitRequests(moverVehicle)~=nil)
+assert(physical:getTransitRequests(remainingVehicle)==nil,
+    "remaining FIELDWORK worker must never have a TRANSIT plan")
+-- The nonmover's GIANTS job can turn over while the mover travels.
+-- Ongoing pair validity belongs to the mover, not the regulated partner.
+local originalRemainingJob=remainingVehicle.job
+remainingVehicle.job={}
+assert(authority:isCommitmentCurrent(issued),
+    "nonmover job change must not revoke moving assembly authority")
+coordinator:advance(3000)
+assert(coordinator:isActive(),"nonmover job change must not abort movement")
 coordinator:advance(5999)
-assert(#events==3,"reverse already started, blocker Hold not yet released")
+assert(#events==3,"five seconds is measured from initial movement start")
 coordinator:advance(6000)
 assert(events[4]=="REGULATION_RELEASE:EGRESS")
-assert(#coordinator.lastEgressRegulationResults==1)
-assert(coordinator.lastEgressRegulationResults[1].rootId==
-    issued.participants[1].assemblyReferenceKey)
-assert(coordinator.lastEgressRegulationResults[1].interceptCount==4
-    and coordinator.lastEgressRegulationResults[1].displacementM==0.75)
-reverse={travelledM=20,isComplete=true}
+assert(coordinator.lastEgressRegulationResults[1].rootId==other)
+local oldStrategyList=remainingVehicle.spec_aiFieldWorker.driveStrategies
+remainingVehicle.spec_aiFieldWorker.driveStrategies={}
+assert(authority:isCommitmentCurrent(issued),
+    "post-Regulation nonmover strategy turnover must not revoke mover")
 coordinator:advance(6001)
-assert(events[5]=="REVERSE_STOP" and events[6]=="HOLD:RELOCATED_WORKER")
+assert(coordinator:isActive())
+reverse={travelledM=41,isComplete=true}
+coordinator:advance(6001)
+assert(events[5]=="REVERSE_STOP"
+    and events[6]=="HOLD:RELOCATED_WORKER")
 coordinator:advance(13000)
 assert(#events==6)
 coordinator:advance(13001)
-assert(events[7]=="RELEASE:RELOCATED_WORKER")
-assert(events[8]=="NATIVE_STOP_START" and events[9]=="HANDOFF_TRANSIT")
+assert(events[7]=="RELEASE:RELOCATED_WORKER"
+    and events[8]=="NATIVE_STOP_START"
+    and events[9]=="HANDOFF_TRANSIT"
+    and #events==9,
+    "no protected-worker TRANSIT restoration or job replacement")
 assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
+remainingVehicle.job=originalRemainingJob
+remainingVehicle.spec_aiFieldWorker.driveStrategies=oldStrategyList
 assert(authority:release(issued))
-physical.plans[second]={transitActions={},restoreActions={}}
-assert(physical:cancelTransit(second))
-assert(events[#events]=="RESTORE")
--- A confined field denies the Return Region before any Control.
+-- Real-world unavailable fold endpoints must not delay the mover.
+local originalStatus=physical.transitStatus
+physical.transitStatus=function()
+    error("PAIR_FOLD_STATUS_MUST_NOT_BE_QUERIED")
+end
+reverse={travelledM=0,isComplete=false}
+local immediate=assert(authority:admitCandidate(first,second,first,1000))
+local before=#events
+local began=assert(coordinator:begin(immediate,16000))
+assert(began and #events==before+3 and events[#events]=="REVERSE")
+assert(coordinator.lastPairMotionStartEvidence.pairedEgressImmediate)
+-- The mover's own GIANTS job turnover MUST revoke its authority and clean
+-- up its independent Control. Removing the pair-wide gate does not weaken it.
+local activeMover=assert(coordinator.active.relocator.vehicle)
+local activeMoverJob=activeMover.job
+activeMover.job={}
+coordinator:advance(16100)
+assert(not coordinator:isActive()
+    and coordinator.lastOutcome.status=="RELINQUISHED"
+    and coordinator.lastOutcome.reason=="GIANTS_JOB_EPISODE_CHANGED")
+assert(events[#events]=="RESTORE",
+    "mover turnover must restore only the controlled mover TRANSIT")
+activeMover.job=activeMoverJob
+assert(authority:release(immediate))
+physical.transitStatus=originalStatus
+-- Field too small for all full-distance options still produces a
+-- last-resort outcome without controlling either worker's configuration.
 g_fieldManager.fields={{densityMapPolygon={
-    pointsX={0,30,30,0},pointsZ={0,0,30,30}}}}
+    pointsX={19,24,24,19},pointsZ={18,18,22,22}}}}
 local restricted=assert(authority:admitCandidate(first,second,first,1000))
-local rejected,geoReason=coordinator:begin(restricted,30000)
-assert(not rejected and geoReason=="NO_SUPPORTED_INFIELD_EGRESS_REGION")
+before=#events
+local admittedRestricted,why=coordinator:begin(restricted,30000)
+assert(not admittedRestricted and not coordinator:isActive()
+    and coordinator:getStatus().lastOutcome.status=="NO_FEASIBLE_PAIR_EGRESS"
+    and #events==before)
 assert(authority:release(restricted))
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
--- Missing/contradictory field polygons never justify reverse movement.
+-- Missing field, job, strategy and player-control evidence contract.
 g_fieldManager.fields={}
 accepted,reason=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="FIELD_POLYGON_EVIDENCE_UNAVAILABLE")
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
--- Native admission rejection has discriminating, explicit evidence.
-local originalGetJob=second.getJob
+local oldJob=second.getJob
 second.getJob=nil
 accepted,reason=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="NATIVE_JOB_REFERENCE_UNAVAILABLE")
-second.getJob=originalGetJob
-local originalStrategies=second.spec_aiFieldWorker.driveStrategies
+second.getJob=oldJob
+local oldStrategies=second.spec_aiFieldWorker.driveStrategies
 second.spec_aiFieldWorker.driveStrategies={}
 accepted,reason=authority:admitCandidate(first,second,first,1000)
 assert(accepted==nil and reason=="NATIVE_FIELD_COURSE_STRATEGY_UNAVAILABLE")
-second.spec_aiFieldWorker.driveStrategies=originalStrategies
--- GIANTS native player-control and entry surfaces are intentionally
--- irrelevant to authority. If accidentally inspected, these probes fail.
--- Current native worker Job Episode and field-course strategy are still
--- independently required, regardless of any mission-selected vehicle.
-second.getIsControlled=function()error("FORBIDDEN_PLAYER_QUERY") end
-second.getIsEntered=function()error("FORBIDDEN_ENTRY_QUERY") end
+second.spec_aiFieldWorker.driveStrategies=oldStrategies
+second.getIsControlled=function()error("FORBIDDEN_PLAYER_QUERY")end
+second.getIsEntered=function()error("FORBIDDEN_ENTRY_QUERY")end
 g_currentMission.controlledVehicle=second
 local unguarded=assert(authority:admitCandidate(first,second,first,1000))
 assert(authority:isCommitmentCurrent(unguarded))
@@ -200,8 +260,7 @@ g_currentMission.controlledVehicle=nil
 second.getIsControlled=nil
 second.getIsEntered=nil
 enabled=false
-accepted=authority:admitCandidate(first,second,first,1000)
-assert(accepted==nil)
+assert(authority:admitCandidate(first,second,first,1000)==nil)
 enabled=true
 
 -- Separate single-worker admission shares physical Control, not the pair

@@ -37,9 +37,9 @@ local function query(port,verb,...)
     if type(port)~="table" or type(port[verb])~="function" then
         return nil,"STATUS_METHOD_UNAVAILABLE:"..verb
     end
-    local ok,value=pcall(port[verb],port,...)
+    local ok,value,reason=pcall(port[verb],port,...)
     if not ok then return nil,"STATUS_EXCEPTION:"..verb end
-    return value
+    return value,reason
 end
 
 local function selectRelocator(first,second,centroid)
@@ -59,7 +59,8 @@ function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
         active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,
-        lastInitialMotionEvidence=nil,lastStaticMotionEvidence=nil
+        lastInitialMotionEvidence=nil,lastStaticMotionEvidence=nil,
+        lastPairMotionStartEvidence=nil,lastPairTransitExhaustion=nil
     },Coordinator)
 end
 
@@ -72,8 +73,10 @@ function Coordinator:getStatus()
     if state==nil then return {isActive=false,lastOutcome=self.lastOutcome} end
     return {
         isActive=true,phase=state.phase,commitmentId=state.commitmentId,
-        relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
-        regionRequiredProgressM=state.objective.returnRegion.requiredProgressM,
+        relocatingAssemblyReferenceKey=state.relocator
+            and state.relocator.assemblyReferenceKey or nil,
+        regionRequiredProgressM=state.objective
+            and state.objective.returnRegion.requiredProgressM or nil,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
         staticEgressDeadlineMs=state.staticEgressDeadlineMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
@@ -81,6 +84,8 @@ function Coordinator:getStatus()
     }
 end
 
+-- Release only commands actually owned by this intervention. In
+-- asymmetric pairs the nonmoving worker never owns a TRANSIT plan.
 -- Release the active physical commands best-effort at the end of this
 -- collision. Capture failures only as this operation's outcome; do not keep
 -- a historical job or commitment as a future admission veto.
@@ -112,6 +117,27 @@ function Coordinator:neutralize(state)
             state.relocator.vehicle,"RELOCATED_WORKER")
         if not ok then failures[#failures+1]="HOLD:"..tostring(reason) end
         state.isRelocatorHeld=false
+    end
+    if state.pairPreparationHolds then
+        for i=1,#state.pairPreparationHolds do
+            if state.pairPreparationHolds[i] then
+                local party=state.commitment.participants[i]
+                local ok,reason=command(control,"releaseHold",
+                    party.vehicle,"TRANSIT_PREPARATION")
+                if not ok then failures[#failures+1]="PREP_HOLD:"..tostring(reason) end
+                state.pairPreparationHolds[i]=false
+            end
+        end
+    end
+    if state.pairTransitOutstanding then
+        for i=1,#state.pairTransitOutstanding do
+            if state.pairTransitOutstanding[i] then
+                local p=state.commitment.participants[i]
+                local ok,reason=command(control,"cancelTransit",p.vehicle)
+                if not ok then failures[#failures+1]="PAIR_TRANSIT:"..tostring(reason) end
+                state.pairTransitOutstanding[i]=false
+            end
+        end
     end
     if state.isTransitOutstanding then
         -- A static assembly is intentionally left in TRANSIT once the
@@ -236,7 +262,174 @@ end
 
 -- The commitment authority must independently validate a live, issued
 -- commitment. An input boolean supplied by a candidate is never authority.
+-- Pair Commitment retains authority for role/direction selection. No
+-- preparation wait or nonmover configuration change is required.
+function Coordinator:beginPair(commitment,nowMs)
+    if self.active~=nil or not finite(nowMs)
+        or type(commitment)~="table" or commitment.commitmentId==nil
+        or type(commitment.participants)~="table"
+        or #commitment.participants~=2
+        or type(commitment.fieldPolygon)~="table"
+        or type(commitment.fieldCentroid)~="table"
+        or type(commitment.nearbyBlockers)~="table" then
+        return false,"PAIR_COMMITMENT_EVIDENCE_UNAVAILABLE"
+    end
+    local a,b=commitment.participants[1],commitment.participants[2]
+    if not positioned(a) or not positioned(b) or a.vehicle==b.vehicle
+        or a.assemblyReferenceKey==b.assemblyReferenceKey then
+        return false,"PAIR_PARTICIPANTS_INVALID"
+    end
+    -- A third party cannot replace one genuinely evidenced pair member.
+    local memberCaptured=false
+    for i=1,#commitment.nearbyBlockers do
+        local p=commitment.nearbyBlockers[i]
+        if not positioned(p) then return false,"BLOCKER_MEMBERSHIP_INVALID" end
+        if p==a or p==b then memberCaptured=true end
+    end
+    if not memberCaptured then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
+    local admitted,reason=command(self.commitmentAuthority,
+        "validateCommitment",commitment)
+    if not admitted then return false,reason end
+    -- Pair authority is established before choosing roles; no assembly
+    -- is configured merely to let the planner consider it.
+    local state={
+        commitment=commitment,commitmentId=commitment.commitmentId,
+        relocator=nil,blockers={},isBlockerRegulated={},
+        isRelocatorHeld=false,isReverseOutstanding=false,
+        pairTransitOutstanding={false,false},
+        isSingle=false,phase="PAIR_SELECTING_EGRESS",
+        objective=nil,egressRegulationUntilMs=nil
+    }
+    self.active=state
+    self.lastOutcome=nil
+    self.lastEgressRegulationResults=nil
+    self.lastPairMotionStartEvidence=nil
+    self.lastPairTransitExhaustion=nil
+    -- Select a viable route, then request TRANSIT on that mover only.
+    -- Movement starts immediately while GIANTS folds/raises the mover.
+    -- The other worker remains in its existing WORKING configuration.
+    self:startPairEgress(state,nowMs)
+    if self.active~=state then
+        return false,self.lastOutcome and self.lastOutcome.reason
+            or (self.lastOutcome and self.lastOutcome.status)
+            or "PAIR_EGRESS_NOT_STARTED"
+    end
+    return true,{phase=state.phase,
+        requestedDriveSpeedKmh=self.lastPairMotionStartEvidence
+            and self.lastPairMotionStartEvidence.requestedDriveSpeedKmh,
+        pairedEgressImmediate=true}
+end
+
+-- Pair assesses candidate routes before modifying either worker. The
+-- selected mover alone requests TRANSIT, concurrently with native egress.
+-- Its transition envelope is an unverified Reality assumption; do not
+-- introduce a fold-readiness gate.
+function Coordinator:startPairEgress(state,nowMs)
+    local first,second=state.commitment.participants[1],
+        state.commitment.participants[2]
+    for i=1,2 do
+        local party=state.commitment.participants[i]
+        local footprint,why=query(self.physicalControl,
+            "pairTransitFootprint",party.vehicle)
+        if type(footprint)~="table" then
+            self:finishWithOutcome("NO_FEASIBLE_PAIR_EGRESS",
+                why or "PAIR_TRANSIT_ENVELOPE_UNAVAILABLE")
+            return
+        end
+        party.transitFootprint=footprint
+        party.x,party.z=footprint.rootX,footprint.rootZ
+    end
+    local preferred,alternative=selectRelocator(
+        first,second,state.commitment.fieldCentroid)
+    local objective,mover,other,reason=
+        OuttaMyWay.ProjectedEgressRegion.planPairCascade(
+            state.commitment,preferred,alternative)
+    if objective==nil then
+        self:finishWithOutcome("NO_FEASIBLE_PAIR_EGRESS",
+            reason or "ALL_PAIR_EGRESS_OPTIONS_EXHAUSTED")
+        return
+    end
+    state.relocator,state.objective=mover,objective
+    -- Current movement authority follows the mover alone; the nonmover
+    -- retains an independently timed native Regulation lease.
+    state.commitment.selectedMover=mover
+    local blockers,seen={other},{[other.assemblyReferenceKey]=true}
+    for i=1,#state.commitment.nearbyBlockers do
+        local p=state.commitment.nearbyBlockers[i]
+        if p~=mover and not seen[p.assemblyReferenceKey] then
+            seen[p.assemblyReferenceKey]=true
+            blockers[#blockers+1]=p
+        end
+    end
+    state.blockers=blockers
+    -- Preflight only the chosen mover's configuration request. No Hold,
+    -- fold status query or second participant plan is required.
+    local prepared,preflightReason=command(self.physicalControl,
+        "preflightPairMover",state)
+    if not prepared then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",preflightReason)
+        return
+    end
+    local moverIndex=mover==first and 1 or 2
+    -- Also release a preflight-only plan on partial command failure.
+    state.pairTransitOutstanding[moverIndex]=true
+    -- Regulation, request TRANSIT and drive initiation happen in one
+    -- synchronous update, with no GIANTS frame between configuration
+    -- request and physical relocation.
+    -- The five-second window begins with egress.
+    state.egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
+    for i=1,#blockers do
+        state.isBlockerRegulated[i]=true
+        local regulated,why=command(self.physicalControl,
+            "regulate",blockers[i].vehicle,"EGRESS")
+        if not regulated then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",why)
+            return
+        end
+    end
+    local requested,requestReason=command(self.physicalControl,
+        "requestTransit",mover.vehicle)
+    if not requested then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",requestReason)
+        return
+    end
+    state.isReverseOutstanding=true
+    local started,evidence=command(self.physicalControl,
+        "startReverse",mover.vehicle,objective)
+    if not started then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",evidence)
+        return
+    end
+    state.phase=objective.isReverse and "REVERSING" or "PAIR_FORWARD_MOVING"
+    self.lastPairMotionStartEvidence={
+        commitmentId=state.commitmentId,
+        relocatingAssemblyReferenceKey=mover.assemblyReferenceKey,
+        otherAssemblyReferenceKey=other.assemblyReferenceKey,
+        directionSource=objective.directionSource,
+        cascadeAttempts=objective.cascadeAttempts,
+        regionTravelM=objective.regionTravelM,
+        nominalFullTravelM=objective.nominalFullTravelM,
+        isPartialEgress=objective.isPartialEgress,
+        egressOptionality=objective.egressOptionality,
+        demandSeparationGainM=objective.localDemandSeparationGainM,
+        remainingWorkingWidthM=objective.remainingWorkingWidthM,
+        workingCorridorMarginM=objective.workingCorridorMarginM,
+        pairedEgressImmediate=true,
+        moverTransitRequested=true,
+        remainingWorkerConfiguration="WORKING_UNCHANGED",
+        geometryBasis=objective.transitGeometryBasis,
+        moverFoldSettled=mover.transitFootprint.foldSettled,
+        isPhysicalPairClearanceConfirmed=false,
+        requestedDriveSpeedKmh=type(evidence)=="table"
+            and (evidence.requestedDriveSpeedKmh
+                or evidence.requestedReverseSpeedKmh) or nil}
+end
+
 function Coordinator:begin(commitment,nowMs)
+    if commitment~=nil and commitment.kind~="STATIC_BLOCKER"
+        and commitment.kind~="SINGLE" then
+        return self:beginPair(commitment,nowMs)
+    end
     if commitment~=nil and commitment.kind=="STATIC_BLOCKER" then
         return self:beginStatic(commitment,nowMs)
     end
@@ -251,8 +444,15 @@ function Coordinator:begin(commitment,nowMs)
                 or not finite(commitment.fieldCentroid.x)
                 or not finite(commitment.fieldCentroid.z)
                 or not finite(commitment.offsetM) or commitment.offsetM<0
-                or not finite(commitment.blockerWorkingWidthM)
-                or commitment.blockerWorkingWidthM<=0
+                or (not (finite(commitment.blockerWorkingWidthM)
+                    and commitment.blockerWorkingWidthM>0)
+                    and not (commitment.pairWidthsCaptured
+                        and ((finite(commitment.participants[1]
+                            and commitment.participants[1].workingWidthM)
+                            and commitment.participants[1].workingWidthM>0)
+                            or (finite(commitment.participants[2]
+                            and commitment.participants[2].workingWidthM)
+                            and commitment.participants[2].workingWidthM>0))))
                 or type(commitment.fieldPolygon)~="table"))
         or type(commitment.nearbyBlockers)~="table"
         or (commitment.kind~="SINGLE" and #commitment.nearbyBlockers==0) then
@@ -275,30 +475,60 @@ function Coordinator:begin(commitment,nowMs)
     else
         relocator,other=selectRelocator(first,second,commitment.fieldCentroid)
     end
-    local blockers,seen,hasOther={}, {}, false
-    for i=1,#commitment.nearbyBlockers do
-        local participant=commitment.nearbyBlockers[i]
-        if not positioned(participant)
-            or participant.assemblyReferenceKey==relocator.assemblyReferenceKey
-            or seen[participant.assemblyReferenceKey] then
-            return false,"BLOCKER_MEMBERSHIP_INVALID"
-        end
-        seen[participant.assemblyReferenceKey]=true
-        blockers[#blockers+1]=participant
-        if participant.assemblyReferenceKey==other.assemblyReferenceKey
-            and participant.vehicle==other.vehicle then hasOther=true end
-    end
-    if not single and not hasOther then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
-
     local objective,geometryReason
     if single then
         objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.planSingle(
             commitment,relocator)
     else
-        objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.plan(
-            commitment,relocator,other)
+        -- No motion while exploring options. Assess both mover assignments
+        -- and three ordered route classes before any physical Control.
+        objective,relocator,other,geometryReason=
+            OuttaMyWay.ProjectedEgressRegion.planPairCascade(
+                commitment,relocator,other)
     end
     if objective==nil then return false,geometryReason end
+    -- The opposite worker always gets Regulation. Preserve any additional
+    -- independently captured blockers, even when the cascade swaps mover:
+    -- only the actual mover is excluded from the protected parties.
+    local blockers,seen={},{}
+    -- Even if the selected mover is swapped, a pair commitment must have
+    -- independently captured one actual pair partner as blocked-space
+    -- membership. An arbitrary third party cannot substitute for it.
+    local pairMemberWasCaptured=single
+    for i=1,#commitment.nearbyBlockers do
+        local p=commitment.nearbyBlockers[i]
+        if p==first or p==second then
+            pairMemberWasCaptured=true
+        end
+    end
+    if not pairMemberWasCaptured then
+        return false,"PAIR_PARTNER_NOT_IN_BLOCKERS"
+    end
+    if not single then
+        if not positioned(other)
+            or (other~=first and other~=second)
+            or other==relocator then
+            return false,"PAIR_PARTNER_NOT_IN_BLOCKERS"
+        end
+        blockers[1]=other
+        seen[other.assemblyReferenceKey]=true
+    end
+    for i=1,#commitment.nearbyBlockers do
+        local party=commitment.nearbyBlockers[i]
+        if not positioned(party) then
+            return false,"BLOCKER_MEMBERSHIP_INVALID"
+        end
+        if party.assemblyReferenceKey==relocator.assemblyReferenceKey then
+            if party.vehicle~=relocator.vehicle then
+                return false,"BLOCKER_MEMBERSHIP_INVALID"
+            end
+        elseif not seen[party.assemblyReferenceKey] then
+            seen[party.assemblyReferenceKey]=true
+            blockers[#blockers+1]=party
+        elseif party~=other then
+            return false,"BLOCKER_MEMBERSHIP_INVALID"
+        end
+    end
     local state={
         commitmentId=commitment.commitmentId,commitment=commitment,
         relocator=relocator,blockers=blockers,isBlockerRegulated={},
@@ -344,10 +574,12 @@ function Coordinator:begin(commitment,nowMs)
         self:finishWithOutcome("CONTROL_INTERRUPTED",reverseEvidence)
         return false,reverseEvidence
     end
-    state.phase="REVERSING"
+    state.phase=objective.isReverse and "REVERSING" or "PAIR_FORWARD_MOVING"
     return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,
         objective=objective,
         directionSource=objective.directionSource,
+        cascadeMode=objective.cascadeMode,
+        cascadeAttempts=objective.cascadeAttempts,
         regionRequiredProgressM=objective.returnRegion.requiredProgressM,
         blockerWorkingWidthM=objective.blockerWorkingWidthM,
         marginM=objective.marginM,
@@ -358,7 +590,9 @@ function Coordinator:begin(commitment,nowMs)
         fieldInteriorScore=objective.fieldInteriorScore,
         fieldIdentitySource=objective.fieldIdentitySource,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
-            and reverseEvidence.requestedReverseSpeedKmh or nil}
+            and reverseEvidence.requestedReverseSpeedKmh or nil,
+        requestedDriveSpeedKmh=type(reverseEvidence)=="table"
+            and reverseEvidence.requestedDriveSpeedKmh or nil}
 end
 
 -- Complete the same native FIELDWORK handback for solo and paired recovery.
@@ -370,7 +604,17 @@ function Coordinator:completeNativeHandback(state)
         self:finishWithOutcome("CONTROL_INTERRUPTED",cause)
         return
     end
-    -- GIANTS owns the replacement job and TRANSIT configuration.
+    -- The mover's successful GIANTS job replacement owns its new
+    -- configuration. The nonmover was never put into TRANSIT and needs
+    -- neither a synthetic restart nor an unfolding command.
+    if state.pairTransitOutstanding then
+        for i=1,2 do
+            if state.commitment.participants[i].vehicle
+                ==state.relocator.vehicle then
+                state.pairTransitOutstanding[i]=false
+            end
+        end
+    end
     state.isTransitOutstanding=false
     self.lastOutcome={status="NATIVE_RESTART_ACCEPTED",
         commitmentId=state.commitmentId,isNativeContinuationConfirmed=false}
@@ -386,7 +630,8 @@ function Coordinator:advance(nowMs,dt)
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
     -- Timer alone releases native speed Regulation for pair/static egress.
-    if not state.isSingle and nowMs>=state.egressRegulationUntilMs then
+    if not state.isSingle and finite(state.egressRegulationUntilMs)
+        and nowMs>=state.egressRegulationUntilMs then
         for i=1,#state.blockers do
             if state.isBlockerRegulated[i] then
                 local released,releaseEvidence=command(
@@ -489,7 +734,7 @@ function Coordinator:advance(nowMs,dt)
     end
 
   -- Reverse is already armed in begin, without a TRANSIT settlement check.
-    if state.phase=="REVERSING" then
+    if state.phase=="REVERSING" or state.phase=="PAIR_FORWARD_MOVING" then
         local status,statusReason=query(self.physicalControl,"reverseStatus",
             state.relocator.vehicle,state.objective)
         if type(status)~="table" then

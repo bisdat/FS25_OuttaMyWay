@@ -23,7 +23,7 @@ end
 -- Capture the actual native assembly once per admitted relocation. The cached
 -- plan has no semantic capability beyond selected, reversible native commands.
 -- Unsupported or unobservable fold shapes are NOT guessed as 'already folded'.
-local function buildTransitPlan(vehicle)
+local function buildTransitPlan(vehicle,isPair)
     local members,seen={},{}
     local function include(object)
         if type(object)~="table" or object.isDeleted==true then
@@ -49,6 +49,7 @@ local function buildTransitPlan(vehicle)
     local collected,reason=include(vehicle)
     if not collected then return nil,reason end
     local commands,reversals={},{}
+    local foldTargets,unknownFoldCount={},0
     local function append(object,name,value,restore)
         commands[#commands+1]={object=object,method=name,value=value}
         -- Native job replacement owns productive continuation on success;
@@ -57,30 +58,34 @@ local function buildTransitPlan(vehicle)
     end
     for i=1,#members do
         local object=members[i]
-        if type(object.getIsTurnedOn)=="function"
-            and type(object.setIsTurnedOn)=="function" then
-            local ok,value=method(object,"getIsTurnedOn")
-            if not ok or type(value)~="boolean" then
-                return nil,"WORK_STATE_UNAVAILABLE"
-            end
-            if value then append(object,"setIsTurnedOn",false,true) end
+        -- Work-off and raise are imperative TRANSIT requests. A machine
+        -- exposing a supported setter does not need a readable state getter
+        -- to receive that command. GIANTS owns the eventual configuration.
+        if type(object.setIsTurnedOn)=="function" then
+            append(object,"setIsTurnedOn",false,true)
         end
-        if type(object.getIsLowered)=="function"
-            and type(object.setLowered)=="function" then
-            local ok,value=method(object,"getIsLowered")
-            if not ok or type(value)~="boolean" then
-                return nil,"LOWERED_STATE_UNAVAILABLE"
-            end
-            if value then append(object,"setLowered",false,true) end
+        -- Raise is a TRANSIT command, not a getIsLowered() permission test.
+        -- Submit it whenever the selected member exposes the native setter.
+        if type(object.setLowered)=="function" then
+            append(object,"setLowered",false,true)
         end
-        if type(object.setFoldDirection)=="function"
+        -- Only the instantiated selected Foldable configuration grants
+        -- a fold-completion wait. Native work-off/raise is always requested
+        -- where supported, including for assemblies with no active fold.
+        local fold=object.spec_foldable
+        local hasActiveParts=isPair and type(fold)=="table"
+            and fold.hasFoldingParts==true
+            and type(fold.foldingParts)=="table"
+            and next(fold.foldingParts)~=nil
+        if not isPair and type(object.setFoldDirection)=="function"
             and type(object.getToggledFoldDirection)=="function" then
+            -- Preserve the previously accepted request-only solo/static
+            -- contract. Only paired recovery adopts the selected-runtime
+            -- readiness and bounded non-veto preparation semantics.
             local position=nil
             local ok,value=method(object,"getFoldAnimTime")
             if ok and finite(value) then position=value
-            elseif type(object.spec_foldable)=="table" then
-                position=object.spec_foldable.foldAnimTime
-            end
+            elseif type(fold)=="table" then position=fold.foldAnimTime end
             if not finite(position) then return nil,"FOLD_START_UNKNOWN" end
             if position<=0.001 then
                 local known,direction=method(object,"getToggledFoldDirection")
@@ -91,14 +96,39 @@ local function buildTransitPlan(vehicle)
             elseif position<0.999 then
                 return nil,"FOLD_POSITION_AMBIGUOUS"
             end
+        elseif isPair and hasActiveParts then
+            local position=nil
+            local ok,value=method(object,"getFoldAnimTime")
+            if ok and finite(value) then position=value
+            elseif finite(fold.foldAnimTime) then position=fold.foldAnimTime end
+            if not finite(position) then
+                unknownFoldCount=unknownFoldCount+1
+            elseif position<0.999 then
+                if type(object.setFoldDirection)=="function"
+                    and type(object.getToggledFoldDirection)=="function" then
+                    local known,direction=method(object,"getToggledFoldDirection")
+                    if known and finite(direction) and direction>0 then
+                        append(object,"setFoldDirection",direction,-direction)
+                        foldTargets[#foldTargets+1]={
+                            object=object,requestedEndpoint=1}
+                    else
+                        unknownFoldCount=unknownFoldCount+1
+                    end
+                else
+                    unknownFoldCount=unknownFoldCount+1
+                end
+            end
         end
     end
-    -- Reverse inverse application order: fold, raise, power (no readiness wait).
+    -- Cancellation requests working pose for admitted active workers;
+    -- static subjects instead retain their requested TRANSIT configuration.
+    -- No previous work/lowered state is asserted from these requests.
     local reverseOrder={}
     for i=#reversals,1,-1 do
         reverseOrder[#reverseOrder+1]=reversals[i]
     end
-    return {transitActions=commands,restoreActions=reverseOrder}
+    return {transitActions=commands,restoreActions=reverseOrder,
+        foldTargets=foldTargets,unknownFoldCount=unknownFoldCount}
 end
 
 function Control.new(authority)
@@ -129,6 +159,88 @@ function Control:preflight(state)
     return true
 end
 
+-- One coherent pair preflight. Do not leave the first member's cached
+-- request behind when the second member cannot be prepared.
+function Control:preflightPair(state)
+    if g_server==nil or type(state)~="table"
+        or self.authority.active~=state.commitment
+        or type(state.commitment.participants)~="table" then
+        return false,"PAIR_PREFLIGHT_UNAVAILABLE"
+    end
+    local first=state.commitment.participants[1].vehicle
+    local second=state.commitment.participants[2].vehicle
+    if self.plans[first]~=nil or self.plans[second]~=nil then
+        return false,"TRANSIT_PLAN_ALREADY_ACTIVE"
+    end
+    local a,why=buildTransitPlan(first,true)
+    if a==nil then return false,why end
+    local b,reason=buildTransitPlan(second,true)
+    if b==nil then return false,reason end
+    self.plans[first],self.plans[second]=a,b
+    return true
+end
+
+-- Paired egress is asymmetric: plan and request TRANSIT ONLY for the
+-- selected mover. Nonmover configuration never changes. Unlike the solo
+-- recovery preflight, this uses the pair's selected-runtime fold discovery
+-- but does not poll readiness or require configuration before driving.
+function Control:preflightPairMover(state)
+    if g_server==nil or type(state)~="table"
+        or type(state.commitment)~="table"
+        or self.authority.active~=state.commitment
+        or type(state.relocator)~="table" then
+        return false,"PAIR_MOVER_PREFLIGHT_UNAVAILABLE"
+    end
+    local vehicle=state.relocator.vehicle
+    if type(vehicle)~="table" then
+        return false,"PAIR_MOVER_UNAVAILABLE"
+    end
+    if self.plans[vehicle]~=nil then
+        return false,"TRANSIT_PLAN_ALREADY_ACTIVE"
+    end
+    local plan,why=buildTransitPlan(vehicle,true)
+    if plan==nil then return false,why end
+    self.plans[vehicle]=plan
+    return true
+end
+
+-- Read only fold targets actually discovered in the selected runtime
+-- configuration. No check occurs for non-foldable assemblies.
+function Control:transitStatus(vehicle)
+    local plan=self.plans[vehicle]
+    if plan==nil then return nil,"TRANSIT_PLAN_UNAVAILABLE" end
+    local targets=plan.foldTargets or {}
+    local settled=0
+    for i=1,#targets do
+        local target=targets[i]
+        local got,value=method(target.object,"getFoldAnimTime")
+        if not got or not finite(value) then
+            local spec=target.object.spec_foldable
+            value=type(spec)=="table" and spec.foldAnimTime or nil
+        end
+        if finite(value) and value>=target.requestedEndpoint-0.001 then
+            settled=settled+1
+        end
+    end
+    return {isSettled=settled==#targets
+            and (plan.unknownFoldCount or 0)==0,
+        requiredFoldCount=#targets,
+        settledFoldCount=settled,
+        unresolvedFoldCount=plan.unknownFoldCount or 0}
+end
+
+-- Planning may inspect either candidate's nominal selected-runtime member
+-- geometry BEFORE choosing the mover, without requesting TRANSIT on either.
+-- The mover may still be physically deployed during initial egress.
+-- This is a planning envelope, not proof that folding has completed.
+function Control:pairTransitFootprint(vehicle)
+    local footprint,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if footprint==nil then return nil,why end
+    footprint.foldSettled=false
+    footprint.configurationBasis="NOMINAL_TRANSIT_BEFORE_REQUEST"
+    return footprint
+end
+
 function Control:getTransitRequests(vehicle)
     return self.plans[vehicle]
 end
@@ -146,7 +258,14 @@ function Control:hold(vehicle,purpose)
 end
 
 function Control:releaseHold(vehicle,purpose)
-    return self.holdMechanism:releaseHold(vehicle,purpose)
+    local ok,evidence=self.holdMechanism:releaseHold(vehicle,purpose)
+    if ok then
+        -- When Regulation was an inner transparent wrapper while the
+        -- relocated-worker Hold was active, reveal and withdraw it once the
+        -- outer Hold is released. Never overwrite an unrelated outer hook.
+        self.regulationMechanism:refreshInstallation()
+    end
+    return ok,evidence
 end
 
 function Control:requestTransit(vehicle)

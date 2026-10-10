@@ -165,8 +165,8 @@ end
 
 -- The candidate is mere nomination; admission re-reads both native jobs,
 -- strategies, current positions, common polygon and duration.
--- The blocker working width is a vector scale, not a collision envelope or
--- physical observation of the TRANSIT assembly.
+-- The pair's available egress space is assessed from physical
+-- TRANSIT candidates only after separately authorised preparation.
 function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     if self.active~=nil or not self:enabled()
         or type(first)~="table" or type(second)~="table"
@@ -203,14 +203,20 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
         wasIndependentlyAdmitted=true
     }
     local a,b=commitment.participants[1],commitment.participants[2]
+    -- Capture both productive corridor widths BEFORE requesting TRANSIT.
+    -- A missing optional width is not a pair-admission veto: the region
+    -- planner can still try the other mover, whose remaining width may be
+    -- available. Never use mover width to decide its own travel.
+    a.workingWidthM,a.workingWidthReason=blockerWorkingWidth(first)
+    b.workingWidthM,b.workingWidthReason=blockerWorkingWidth(second)
     local da=(a.x-poly.centroid.x)^2+(a.z-poly.centroid.z)^2
     local db=(b.x-poly.centroid.x)^2+(b.z-poly.centroid.z)^2
     local relocator=(da<db or (da==db
         and a.assemblyReferenceKey<b.assemblyReferenceKey)) and a or b
     commitment.nearbyBlockers[1]=relocator==a and b or a
-    local width,widthReason=blockerWorkingWidth(commitment.nearbyBlockers[1].vehicle)
-    if width==nil then return nil,widthReason end
-    commitment.blockerWorkingWidthM=width
+    -- Paired egress is decided after both assemblies request TRANSIT.
+    -- Each recorded WORKING width prescribes the OTHER worker's relocation
+    -- travel distance, not physical folded collision clearance.
     self.active=commitment
     return commitment
 end
@@ -287,7 +293,20 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
         or snapshot.beneficiaryRootId~=worker.rootNode then
         return nil,"STATIC_SOURCE_NOT_CURRENT"
     end
-    local selection=nil
+    -- A nearby parked assembly OUTSIDE the current worker's field belongs
+    -- to the outside world, not to static relocation. The field is the
+    -- blocked worker's GIANTS generated course polygon, never any nearby
+    -- registered field or a distance-only proxy. Unknown polygon means no
+    -- static authority; the caller can continue with the accepted solo path.
+    local region=OuttaMyWay.ProjectedEgressRegion
+    local polygon=type(region)=="table"
+        and type(region.ownCourseField)=="function"
+        and region.ownCourseField({participants={{
+            sourceStrategyReference=strategy}}}) or nil
+    if type(polygon)~="table" then
+        return nil,"STATIC_OWN_FIELD_POLYGON_UNAVAILABLE"
+    end
+    local selection,current,foundOutside=nil,nil,false
     for i=1,#(snapshot.nearestPhysicalAssemblies or {}) do
         local c=snapshot.nearestPhysicalAssemblies[i]
         if type(c)=="table" and type(c.vehicle)=="table"
@@ -297,11 +316,19 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
             and finite(c.reportedSpeedMps) and c.reportedSpeedMps<=0.25
             and finite(c.distanceM) and c.distanceM<=30
             and finite(c.forwardX) and finite(c.forwardZ) then
-            selection=c
-            break
+            local point=pose(c.vehicle)
+            if point~=nil and inside(polygon,point.x,point.z) then
+                selection,current=c,point
+                break
+            elseif point~=nil then
+                foundOutside=true
+            end
         end
     end
-    if selection==nil then return nil,"NO_INFERRED_STATIC_BLOCKER" end
+    if selection==nil then
+        return nil,foundOutside and "STATIC_SUBJECT_OUTSIDE_OWN_FIELD"
+            or "NO_INFERRED_STATIC_BLOCKER"
+    end
     local facing=snapshot.beneficiaryFacing
     if type(facing)~="table" or not finite(facing.x)
         or not finite(facing.z) then
@@ -318,8 +345,8 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
     -- root-axis alignment and which side of the worker the assembly is on
     -- cannot prove (or disprove) blocking by its wide physical footprint.
     -- Identity and root pose are revalidated once, with no new census.
-    local current=pose(subject)
-    if current==nil then return nil,"STATIC_SUBJECT_POSE_UNAVAILABLE" end
+    -- This root was captured once at admission and already checked against
+    -- OUR polygon; do not invent an extra continuous geometry probe.
     local dx,dz=current.x-beneficiary.x,current.z-beneficiary.z
     if dx*dx+dz*dz>900 then return nil,"STATIC_SUBJECT_NO_LONGER_LOCAL" end
     -- Vehicle tab-selection is not evidence of an active driving action.
@@ -340,7 +367,7 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
             forwardZ=selection.forwardZ},
         nearbyBlockers={},beneficiaryWorkingWidthM=width,
         beneficiaryForwardX=facing.x,beneficiaryForwardZ=facing.z,
-        inference="NATIVE_BLOCKED_PLUS_NEARBY_INACTIVE_ROOT"
+        inference="NATIVE_BLOCKED_PLUS_INFIELD_INACTIVE_ROOT"
     }
     self.active=commitment
     return commitment
@@ -363,6 +390,24 @@ function Authority:isCommitmentCurrent(commitment)
             or subject.rootNode==nil then
             return false,"STATIC_SUBJECT_UNAVAILABLE"
         end
+    end
+    -- Admission validates BOTH parties. Once a paired movement has been
+    -- selected, only the actual mover's job and strategy can revoke that
+    -- mover's physical Control. The nonmover's separate 5 s Regulation lease
+    -- already manages its own native job supersession.
+    local selected=commitment.selectedMover
+    if selected~=nil then
+        if #commitment.participants~=2
+            or (selected~=commitment.participants[1]
+                and selected~=commitment.participants[2]) then
+            return false,"PAIR_MOVER_AUTHORITY_INVALID"
+        end
+        if currentJob(selected.vehicle)~=selected.sourceJobReference
+            or currentStrategy(selected.vehicle)~=selected.sourceStrategyReference
+            or pose(selected.vehicle)==nil then
+            return false,"GIANTS_JOB_EPISODE_CHANGED"
+        end
+        return true
     end
     for i=1,#commitment.participants do
         local p=commitment.participants[i]

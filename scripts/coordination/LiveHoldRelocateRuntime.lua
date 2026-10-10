@@ -43,6 +43,8 @@ function Runtime.new(configuration,observer)
         lastReportedEgressRegulationResults=nil,
         lastReportedInitialMotionEvidence=nil,
         lastReportedStaticMotionEvidence=nil,
+        lastReportedPairMotionStartEvidence=nil,
+        lastReportedPairTransitExhaustion=nil,
         isRuntimeReported=false
     },Runtime)
 end
@@ -55,6 +57,8 @@ function Runtime:loadMap()
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
     self.lastReportedStaticMotionEvidence=nil
+    self.lastReportedPairMotionStartEvidence=nil
+    self.lastReportedPairTransitExhaustion=nil
 end
 
 -- Disabling requests immediate native Control release; completion is reported
@@ -86,6 +90,8 @@ function Runtime:deleteMap()
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
     self.lastReportedStaticMotionEvidence=nil
+    self.lastReportedPairMotionStartEvidence=nil
+    self.lastReportedPairTransitExhaustion=nil
 end
 
 function Runtime:update(dt)
@@ -105,6 +111,44 @@ function Runtime:update(dt)
     end
     if coordinator:isActive() then
         coordinator:advance(nowMs,dt)
+        local wait=coordinator.lastPairTransitExhaustion
+        if wait~=nil and wait~=self.lastReportedPairTransitExhaustion then
+            self.lastReportedPairTransitExhaustion=wait
+            issue(self,"WARNING","PAIR_TRANSIT_SETTLEMENT_EXHAUSTED",
+                "commitmentId="..tostring(wait.commitmentId)
+                .." waitedMs="..tostring(wait.elapsedMs)
+                .." action=CONTINUE_PAIR_EGRESS_ASSESSMENT"
+                .." firstFoldStatus="..tostring(wait.first
+                    and wait.first.isSettled)
+                .." secondFoldStatus="..tostring(wait.second
+                    and wait.second.isSettled))
+        end
+        local start=coordinator.lastPairMotionStartEvidence
+        if start~=nil and start~=self.lastReportedPairMotionStartEvidence then
+            self.lastReportedPairMotionStartEvidence=start
+            issue(self,"INFO","HOLD_RELOCATE_EGRESS_STARTED",
+                "commitmentId="..tostring(start.commitmentId)
+                .." relocator="..tostring(start.relocatingAssemblyReferenceKey)
+                .." protected="..tostring(start.otherAssemblyReferenceKey)
+                .." direction="..tostring(start.directionSource)
+                .." optionsAssessed="..tostring(start.cascadeAttempts)
+                .." regionTravelM="..tostring(start.regionTravelM)
+                .." nominalFullTravelM="..tostring(start.nominalFullTravelM)
+                .." isPartialEgress="..tostring(start.isPartialEgress)
+                .." egressOptionality="..tostring(start.egressOptionality)
+                .." demandSeparationGainM="..tostring(start.demandSeparationGainM)
+                .." remainingWorkingWidthM="..tostring(
+                    start.remainingWorkingWidthM)
+                .." workingCorridorMarginM="..tostring(
+                    start.workingCorridorMarginM)
+                .." pairedEgressImmediate="..tostring(start.pairedEgressImmediate)
+                .." moverTransitRequested="..tostring(start.moverTransitRequested)
+                .." nonmoverConfiguration="..tostring(
+                    start.remainingWorkerConfiguration)
+                .." representation="..tostring(start.geometryBasis)
+                .." confirmedPhysicalClearance=false"
+                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh))
+        end
         local static=coordinator.lastStaticMotionEvidence
         if static~=nil and static~=self.lastReportedStaticMotionEvidence then
             self.lastReportedStaticMotionEvidence=static
@@ -209,6 +253,10 @@ function Runtime:update(dt)
                     if type(why)=="table" and why.requestedDriveSpeedKmh~=nil then
                         details=details.." requestedDriveSpeedKmh="
                             ..tostring(why.requestedDriveSpeedKmh)
+                    end
+                    if type(why)=="table" and why.cascadeMode~=nil then
+                        details=details.." cascadeMode="..tostring(why.cascadeMode)
+                            .." cascadeAttempts="..tostring(why.cascadeAttempts)
                     end
                     if type(why)=="table" and why.beneficiaryWorkingWidthM~=nil then
                         details=details.." beneficiaryWorkingWidthM="

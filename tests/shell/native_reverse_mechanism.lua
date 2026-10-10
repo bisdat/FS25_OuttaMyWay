@@ -209,4 +209,77 @@ assert(mechanism.activeVehicle==vehicle)
 vehicle.setCruiseControlMaxSpeed=setter
 assert(mechanism:cancelReverse(vehicle))
 assert(cruise.speed==8 and cruise.speedReverse==8)
-print("Dormant native reverse / tool correction / measured travel / passthrough: PASS")
+-- A paired forward option must use GIANTS' *forward* motor and steering
+-- frame, without reverse tool correction or a synthetic fieldwork job.
+motor.getMaximumForwardSpeed=function()return 27/3.6 end
+local forwardObjective={isReverse=false,moveForwards=true,
+    targetX=100,targetZ=140,steeringHorizonM=150,
+    returnRegion={source="SIGNED_CROSS_TRACK_REGION",
+        originX=0,originZ=0,directionX=0,directionZ=1,
+        blockerOriginX=0,blockerOriginZ=0,
+        corridorNormalX=0,corridorNormalZ=1,sideSign=1,
+        initialCrossTrackM=0,requiredCrossTrackM=9,
+        requiredProgressM=9}}
+locations[1].x=0;locations[1].z=0
+local forwardArmed,forwardEvidence=mechanism:startReverse(vehicle,forwardObjective)
+assert(forwardArmed and forwardEvidence.kind=="PAIR_FORWARD_ARMED"
+    and forwardEvidence.requestedDriveSpeedKmh==25
+    and forwardEvidence.requestedReverseSpeedKmh==nil)
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,false,1,1,0,true)
+assert(calls[#calls].forwards==true and calls[#calls].allowed==true
+    and calls[#calls].doNotSteer==false and calls[#calls].speed==25
+    and actualConversionNode==3,
+    "forward egress is not sent through the reverse node")
+locations[1].z=10
+assert(mechanism:reverseStatus(vehicle).isComplete)
+assert(mechanism:stopReverse(vehicle))
+assert(AIVehicleUtil.driveToPoint==native
+    and cruise.speed==8 and cruise.speedReverse==8)
+-- TS001 TEST 0.5.2.18: the actual actuator, not a coordinator mock,
+-- must accept the new PAIR_WORKING_CORRIDOR_TRAVEL_REGION contract.
+-- This objective intentionally has NO requiredCrossTrackM: its completion
+-- is the remaining worker's 36 m work width + 5 m directional travel.
+local function pairedTravel(forward)
+    local dz=forward and 1 or -1
+    return {isReverse=not forward,moveForwards=forward,
+        targetX=0,targetZ=dz*81,steeringHorizonM=81,
+        returnRegion={source="PAIR_WORKING_CORRIDOR_TRAVEL_REGION",
+            originX=0,originZ=0,directionX=0,directionZ=dz,
+            requiredProgressM=41}}
+end
+for _,forward in ipairs({false,true}) do
+    locations[1].x=0;locations[1].z=0
+    local candidate=pairedTravel(forward)
+    local passed,observed=mechanism:startReverse(vehicle,candidate)
+    assert(passed, "TS001 real native drive actuator rejected paired 41 m region")
+    assert(observed.kind==(forward and "PAIR_FORWARD_ARMED" or "REVERSE_ARMED"))
+    AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,false)
+    local dz=forward and 1 or -1
+    locations[1].z=dz*2
+    local progress=mechanism:reverseStatus(vehicle)
+    assert(not progress.isComplete and progress.regionRemainingM>38,
+        "2 m is not the 41 m paired Return Region")
+    locations[1].z=dz*40
+    progress=mechanism:reverseStatus(vehicle)
+    assert(not progress.isComplete and progress.regionRemainingM>0.9,
+        "40 m must not satisfy 41 m directional travel")
+    locations[1].z=dz*41
+    progress=mechanism:reverseStatus(vehicle)
+    assert(progress.isComplete and progress.regionRemainingM==0,
+        "41 m must complete the actual native directional drive")
+    assert(mechanism:stopReverse(vehicle))
+    assert(AIVehicleUtil.driveToPoint==native
+        and cruise.speed==8 and cruise.speedReverse==8,
+        "native lease restores after paired 41 m completion")
+end
+-- Preserve meaningful mandatory schema validation: do not repair the
+-- contract mismatch by accepting missing travel or direction data.
+local broken=pairedTravel(true)
+broken.returnRegion.requiredProgressM=nil
+local allowed,brokenReason=mechanism:startReverse(vehicle,broken)
+assert(not allowed and brokenReason=="REVERSE_REQUEST_INVALID")
+broken=pairedTravel(false)
+broken.returnRegion.directionZ=nil
+allowed,brokenReason=mechanism:startReverse(vehicle,broken)
+assert(not allowed and brokenReason=="REVERSE_REQUEST_INVALID")
+print("Native directional pair egress and reverse restoration: PASS")

@@ -5,6 +5,7 @@ local expected={
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
+    "scripts/coordination/PairTransitRegion.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
@@ -46,6 +47,7 @@ source=function(path)
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/coordination/ProjectedEgressRegion.lua"
+        or path=="scripts/coordination/PairTransitRegion.lua"
         or path=="scripts/coordination/NativePairCommitmentAuthority.lua"
         or path=="scripts/control/HoldRelocatePhysicalControl.lua"
         or path=="scripts/coordination/LiveHoldRelocateRuntime.lua"
@@ -107,6 +109,7 @@ assert(type(OuttaMyWay.NativeReverseMechanism.startReverse)=="function")
 assert(type(OuttaMyWay.NativeTranslationHoldMechanism.hold)=="function")
 assert(type(OuttaMyWay.NativeSpeedRegulationMechanism.regulate)=="function")
 assert(type(OuttaMyWay.ProjectedEgressRegion.progress)=="function")
+assert(type(OuttaMyWay.PairTransitRegion.planPair)=="function")
 assert(OuttaMyWay.nativeTranslationHoldMechanism==nil)
 assert(type(OuttaMyWay.NativeTransitRequestMechanism.requestTransit)=="function")
 assert(OuttaMyWay.nativeTransitRequestMechanism==nil)

@@ -39,13 +39,16 @@ local opposite=assert(Plan.plan({fieldCentroid={x=1,z=100},
     fieldPolygon=field,blockerWorkingWidthM=36},near,nearBlocker))
 assert(opposite.egressSide==1 and opposite.targetInField,
     "prefer reachable in-field region to left-rear preference")
--- Both sides fit the polygon: prioritize field-inward direction even if
--- the historical same-side preference would choose the outward one.
+-- Both sides fit the polygon, but the field-inward side approaches
+-- the opposing assembly. Conflict withdrawal outranks centroid scoring.
 local inwardMover=worker(100,100,0,1)
 local offsetBlocker=worker(110,108,0,-1)
 local inward=assert(Plan.plan({fieldCentroid={x=170,z=100},
     fieldPolygon=field,blockerWorkingWidthM=36},inwardMover,offsetBlocker))
-assert(inward.egressSide==1 and inward.fieldInteriorScore>0)
+assert(inward.egressSide==-1 and inward.fieldInteriorScore<0
+    and inward.returnRegion.directionX*(offsetBlocker.x-inwardMover.x)
+        +inward.returnRegion.directionZ*(offsetBlocker.z-inwardMover.z)<=0,
+    "retreat from the other worker outranks the centroid")
 -- Nominal 41 m is not a literal. Only the 5 m margin is fixed.
 local narrower=assert(Plan.plan({fieldCentroid={x=50,z=100},
     fieldPolygon=field,blockerWorkingWidthM=24},mover,blocker))
@@ -127,4 +130,41 @@ local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft
 assert(unassociated.egressSide==-1 and unassociated.targetInField==false
     and unassociated.fieldIdentitySource=="NO_NATIVE_FIELD_REFERENCE",
     "absence of native course field must not inhibit 40 m relocation")
-print("Pairwise cross-track and solo 40 m projected return region: PASS")
+-- The fallback pair planner rejects axial forward in either assignment.
+local boundary={xs={0,80,80,0},zs={0,0,80,80}}
+local forwardPreferred=worker(60,40,-1,0)
+local forwardOther=worker(50,40,1,0)
+forwardPreferred.workingWidthM=10;forwardOther.workingWidthM=10
+local forwardPair={pairWidthsCaptured=true,blockerWorkingWidthM=10,
+    fieldPolygon=boundary,fieldCentroid={x=40,z=40}}
+assert(Plan.plan(forwardPair,forwardPreferred,forwardOther,
+    "FORWARD")==nil,"axial forward cannot be a paired exit")
+local axisChoice=Plan.planPairCascade(forwardPair,
+    forwardPreferred,forwardOther)
+assert(axisChoice==nil or axisChoice.directionSource~="PAIR_FORWARD",
+    "no straight forward candidate may survive the cascade")
+-- A non-axial centroid exit is still allowed if neither 70-degree reverse
+-- is feasible and the opposing worker is not ahead of native forward travel.
+local centreMover=worker(20,4,0,1)
+local centreOther=worker(10,4,0,-1)
+centreMover.workingWidthM=nil;centreOther.workingWidthM=12
+local centroidPair={pairWidthsCaptured=true,blockerWorkingWidthM=12,
+    fieldPolygon=boundary,fieldCentroid={x=60,z=40}}
+assert(Plan.plan(centroidPair,centreMover,centreOther,
+    "OBLIQUE_REVERSE")==nil)
+local centroidChoice,centroidMover=Plan.planPairCascade(centroidPair,
+    centreMover,centreOther)
+assert(centroidChoice and centroidChoice.directionSource=="PAIR_CENTROID"
+    and centroidMover==centreMover and centroidChoice.isReverse==false
+    and centroidChoice.cascadeAttempts==3
+    and centroidChoice.targetInField,
+    "genuinely lateral centroid exit remains last available tier")
+-- A genuinely confined field has no supported direction for either assembly.
+confined.workingWidthM=36;confinedBlocker.workingWidthM=36
+local exhausted={pairWidthsCaptured=true,blockerWorkingWidthM=36,
+    fieldPolygon=small,fieldCentroid={x=15,z=15}}
+local noneChoice,_,__,giveUp=Plan.planPairCascade(
+    exhausted,confined,confinedBlocker)
+assert(noneChoice==nil and giveUp=="NO_FEASIBLE_PAIR_EGRESS",
+    "give up only after every bounded pair option is checked")
+print("Pair egress reverse/forward/centroid cascade + solo region: PASS")
