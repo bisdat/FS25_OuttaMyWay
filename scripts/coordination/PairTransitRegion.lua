@@ -168,38 +168,82 @@ local function sceneOccupancy(first,second,poly)
     return objects,true
 end
 
--- Translation-sweep candidate: every *represented member corner* is
--- sampled at every step. This is stronger than root containment, but native
--- steering curvature and missing collision primitives remain validation risks.
-local function pathInField(poly,foot,dx,dz,distance,scene)
-    local count=math.max(1,math.ceil(distance/STEP_M))
-    for i=0,count do
-        local t=distance*i/count
-        local lowX,highX,lowZ,highZ
-        for j=1,#foot.corners do
-            local p=foot.corners[j]
-            local x,z=foot.rootX+p.x+dx*t,foot.rootZ+p.z+dz*t
-            if not inside(poly,x,z) then return false end
-            lowX=lowX and math.min(lowX,x) or x
-            highX=highX and math.max(highX,x) or x
-            lowZ=lowZ and math.min(lowZ,z) or z
-            highZ=highZ and math.max(highZ,z) or z
-        end
-        for j=1,#scene do
-            local occupied=scene[j]
-            if lowX<occupied.maxX+MARGIN_M
-                and highX>occupied.minX-MARGIN_M
-                and lowZ<occupied.maxZ+MARGIN_M
-                and highZ>occupied.minZ-MARGIN_M then
-                return false
-            end
+-- Every candidate is sampled through the full represented member footprint.
+-- A polygon edge bounds the reachable region; it does NOT veto a useful
+-- shorter movement merely because WORKING width + 5 m will not fit.
+-- This is nominal translation evidence, not a predicted steering/folding sweep.
+local MIN_USEFUL_TRAVEL_M=3
+local AXIAL_COS_LIMIT=math.cos(math.rad(12))
+local STEERING_COS_LIMIT=math.cos(math.rad(80))
+local DISCOVERY_DIRECTIONS=32
+
+local function regionStepValid(poly,foot,dx,dz,t,scene,otherFoot)
+    local lowX,highX,lowZ,highZ
+    for j=1,#foot.corners do
+        local p=foot.corners[j]
+        local x,z=foot.rootX+p.x+dx*t,foot.rootZ+p.z+dz*t
+        if not inside(poly,x,z) then return false end
+        lowX=lowX and math.min(lowX,x) or x
+        highX=highX and math.max(highX,x) or x
+        lowZ=lowZ and math.min(lowZ,z) or z
+        highZ=highZ and math.max(highZ,z) or z
+    end
+    -- The other participant is not part of the generic third-party census.
+    -- Its nominal body/TRANSIT rectangle still constrains the mover's sweep.
+    -- The actual WORKING boom and changing fold envelope remain unknown.
+    local occupied={}
+    for j=1,#scene do occupied[#occupied+1]=scene[j] end
+    local minX,maxX,minZ,maxZ
+    for j=1,#otherFoot.corners do
+        local p=otherFoot.corners[j]
+        local x,z=otherFoot.rootX+p.x,otherFoot.rootZ+p.z
+        minX=minX and math.min(minX,x) or x
+        maxX=maxX and math.max(maxX,x) or x
+        minZ=minZ and math.min(minZ,z) or z
+        maxZ=maxZ and math.max(maxZ,z) or z
+    end
+    occupied[#occupied+1]={minX=minX,maxX=maxX,minZ=minZ,maxZ=maxZ}
+    for j=1,#occupied do
+        local o=occupied[j]
+        if lowX<o.maxX+MARGIN_M and highX>o.minX-MARGIN_M
+            and lowZ<o.maxZ+MARGIN_M and highZ>o.minZ-MARGIN_M then
+            return false
         end
     end
     return true
 end
--- Evaluate both 70-degree oblique reverse sides for each mover first,
--- then only non-axial centroid alternatives. All routes must withdraw from
--- the other assembly. Keep the remaining worker's WORKING width + 5 m travel.
+
+local function reachableTravel(poly,foot,dx,dz,desired,scene,otherFoot)
+    -- Preserve exact full travel when it fits. For boundaries/obstacles,
+    -- return the last sampled safe distance (never the first unsafe step).
+    if not regionStepValid(poly,foot,dx,dz,0,scene,otherFoot) then
+        return 0
+    end
+    local travelled=0
+    while travelled+0.0001<desired do
+        local nextM=math.min(desired,travelled+STEP_M)
+        if not regionStepValid(poly,foot,dx,dz,nextM,scene,otherFoot)
+            then break end
+        travelled=nextM
+    end
+    return travelled
+end
+
+-- Read GIANTS' already populated immediate target only as a soft preference.
+-- This is not a future-course cursor and MUST NOT veto an otherwise safe exit.
+local function immediateDemand(other)
+    local spec=other.vehicle.spec_aiFieldWorker
+    local drive=type(spec)=="table" and spec.aiDriveParams or nil
+    if type(drive)~="table" or drive.valid~=true then return nil,nil end
+    return direction(drive.tX-other.x,drive.tZ-other.z)
+end
+
+-- Spatially discover reachable sectors for BOTH possible movers. The 70°
+-- reverse is included explicitly because TS015 physically validated it.
+-- Other sectors are sampled around the current location, then assigned the
+-- native forward/reverse mechanism that can steer toward that region.
+-- Only near-AXIAL directions are excluded, not directions predominantly
+-- lateral to both workers (impossible at right-angle crossings).
 function Region.planPair(commitment,preferred,alternative)
     if type(commitment)~="table" or type(commitment.fieldPolygon)~="table"
         or type(commitment.fieldCentroid)~="table" then
@@ -207,116 +251,171 @@ function Region.planPair(commitment,preferred,alternative)
     end
     local scene,sceneAvailable=sceneOccupancy(
         preferred,alternative,commitment.fieldPolygon)
-    local best,chosenMover,chosenOther,attempts=nil,nil,nil,0
-    for _,mover in ipairs({preferred,alternative}) do
+    local candidates,optionSectors={},{{},{}}
+    local attempts=0
+    for moverIndex,mover in ipairs({preferred,alternative}) do
         local other=mover==preferred and alternative or preferred
         local foot,otherFoot=mover.transitFootprint,other.transitFootprint
-        local otherWorkingWidth=other.workingWidthM
+        local width=other.workingWidthM
         if type(foot)=="table" and type(otherFoot)=="table"
-            and finite(otherWorkingWidth) and otherWorkingWidth>0 then
-            local fx,fz=heading(other.vehicle,"getAISteeringNode",false)
+            and finite(width) and width>0 then
+            local otherX,otherZ=heading(other.vehicle,"getAISteeringNode",false)
             local backX,backZ=heading(mover.vehicle,"getAIReverserNode",true)
-            local forwardX,forwardZ=heading(mover.vehicle,"getAISteeringNode",false)
-            if fx~=nil and forwardX~=nil then
-                local nx,nz=-fz,fx
-                local centreX=commitment.fieldCentroid.x-foot.rootX
-                local centreZ=commitment.fieldCentroid.z-foot.rootZ
-                local cx,cz=direction(centreX,centreZ)
-                local centreDist=math.sqrt(centreX*centreX+centreZ*centreZ)
-                local rays={}
-                if backX~=nil then
-                    local cosine=math.cos(math.rad(70))
-                    local sine=math.sin(math.rad(70))
-                    for _,side in ipairs({-1,1}) do
-                        rays[#rays+1]={mode="OBLIQUE_REVERSE",side=side,
-                            dx=cosine*backX-side*sine*backZ,
-                            dz=cosine*backZ+side*sine*backX,
-                            reverse=true}
-                    end
-                end
-                if cx~=nil then
-                    rays[#rays+1]={mode="CENTROID",side=0,
-                        dx=cx,dz=cz,reverse=false}
-                end
+            local frontX,frontZ=heading(mover.vehicle,"getAISteeringNode",false)
+            if otherX~=nil and backX~=nil and frontX~=nil then
+                local nx,nz=-otherZ,otherX
                 local toOtherX=otherFoot.rootX-foot.rootX
                 local toOtherZ=otherFoot.rootZ-foot.rootZ
+                local startCross=(-toOtherX)*nx+(-toOtherZ)*nz
+                local centreX=commitment.fieldCentroid.x-foot.rootX
+                local centreZ=commitment.fieldCentroid.z-foot.rootZ
+                local intentX,intentZ=immediateDemand(other)
+                local rays={}
+                local cosine=math.cos(math.rad(70))
+                local sine=math.sin(math.rad(70))
+                for _,side in ipairs({-1,1}) do
+                    rays[#rays+1]={dx=cosine*backX-side*sine*backZ,
+                        dz=cosine*backZ+side*sine*backX,
+                        mode="OBLIQUE_REVERSE",side=side,reverse=true,
+                        validatedBearing=true}
+                end
+                for k=0,DISCOVERY_DIRECTIONS-1 do
+                    local radians=2*math.pi*k/DISCOVERY_DIRECTIONS
+                    local dx,dz=math.cos(radians),math.sin(radians)
+                    local forwardAlignment=dx*frontX+dz*frontZ
+                    local reverse=forwardAlignment<0
+                    rays[#rays+1]={dx=dx,dz=dz,
+                        mode=reverse and "REVERSE_REGION" or "FORWARD_REGION",
+                        side=0,reverse=reverse,validatedBearing=false}
+                end
                 for _,ray in ipairs(rays) do
                     attempts=attempts+1
-                    local rate=ray.dx*nx+ray.dz*nz
-                    -- Exclude axial paths on EITHER participant. A centroid
-                    -- request must not start forward into a head-on worker.
-                    if math.abs(rate)>0.1
-                        and lateralDominates(ray.dx,ray.dz,forwardX,forwardZ)
-                        and lateralDominates(ray.dx,ray.dz,fx,fz)
-                        and ray.dx*toOtherX+ray.dz*toOtherZ<=0.001
-                        and (ray.reverse or forwardX*toOtherX
-                            +forwardZ*toOtherZ<=0.001) then
-                        local sign=rate>0 and 1 or -1
-                        local travel=otherWorkingWidth+WORK_CORRIDOR_MARGIN_M
-                        local canReach=ray.mode~="CENTROID"
-                            or travel<=centreDist
-                        if canReach and pathInField(commitment.fieldPolygon,
-                            foot,ray.dx,ray.dz,travel,scene) then
-                            local rootCross=(foot.rootX-otherFoot.rootX)*nx+
-                                (foot.rootZ-otherFoot.rootZ)*nz
-                            local signedStart=sign*rootCross
-                            local crossProgress=travel*math.abs(rate)
-                            local centreScore=ray.dx*centreX+ray.dz*centreZ
-                            local candidate={
-                                isReverse=ray.reverse,moveForwards=not ray.reverse,
-                                steeringHorizonM=ray.mode=="CENTROID"
-                                    and centreDist or travel+40,
-                                returnRegion={
-                                    source="PAIR_WORKING_CORRIDOR_TRAVEL_REGION",
-                                    originX=foot.rootX,originZ=foot.rootZ,
-                                    directionX=ray.dx,directionZ=ray.dz,
-                                    blockerOriginX=otherFoot.rootX,
-                                    blockerOriginZ=otherFoot.rootZ,
-                                    corridorNormalX=nx,corridorNormalZ=nz,
-                                    sideSign=sign,initialCrossTrackM=signedStart,
-                                    projectedCrossTrackProgressM=crossProgress,
-                                    requiredProgressM=travel,
-                                    isPhysicalPairClearanceConfirmed=false},
-                                directionSource=ray.reverse
-                                    and "OBLIQUE_REVERSE" or "PAIR_CENTROID",
+                    local dx,dz=ray.dx,ray.dz
+                    local crossRate=dx*nx+dz*nz
+                    local alongMover=dx*frontX+dz*frontZ
+                    local alongOther=dx*otherX+dz*otherZ
+                    -- Genuine departure from the occupied area; neither
+                    -- actor's forward OR reverse longitudinal axis may be
+                    -- mistaken for an egress direction.
+                    if math.abs(alongMover)<AXIAL_COS_LIMIT
+                        and math.abs(alongOther)<AXIAL_COS_LIMIT
+                        and math.abs(alongMover)>=STEERING_COS_LIMIT
+                        and math.abs(crossRate)>=0.12
+                        and dx*toOtherX+dz*toOtherZ<=0.0001
+                        and (math.abs(startCross)<=0.5
+                            or startCross*crossRate>=0) then
+                        local fullTravel=width+WORK_CORRIDOR_MARGIN_M
+                        local travel=reachableTravel(commitment.fieldPolygon,
+                            foot,dx,dz,fullTravel,scene,otherFoot)
+                        local separationGain=math.sqrt(
+                            (toOtherX-dx*travel)^2+
+                            (toOtherZ-dz*travel)^2)
+                            -math.sqrt(toOtherX^2+toOtherZ^2)
+                        local crossGain=travel*math.abs(crossRate)
+                        if travel>=MIN_USEFUL_TRAVEL_M
+                            and separationGain>=0.5 and crossGain>=0.5 then
+                            local centreScore=dx*centreX+dz*centreZ
+                            local crossSign=crossRate<0 and -1 or 1
+                            local horizon=travel+40
+                            local demandGain=0
+                            if intentX~=nil then
+                                -- Relative to the other worker's currently
+                                -- commanded line, not an invented future pass.
+                                local start=(-toOtherX)*(-intentZ)
+                                    +(-toOtherZ)*intentX
+                                local finish=start+travel*
+                                    (dx*(-intentZ)+dz*intentX)
+                                demandGain=math.abs(finish)-math.abs(start)
+                            end
+                            local sector=math.floor(
+                                ((math.atan2 and math.atan2(dz,dx)
+                                    or math.atan(dz,dx))+2*math.pi)
+                                    /(math.pi/4))%8
+                            optionSectors[moverIndex][sector]=true
+                            local region={
+                                source="PAIR_WORKING_CORRIDOR_TRAVEL_REGION",
+                                originX=foot.rootX,originZ=foot.rootZ,
+                                directionX=dx,directionZ=dz,
+                                blockerOriginX=otherFoot.rootX,
+                                blockerOriginZ=otherFoot.rootZ,
+                                corridorNormalX=nx,corridorNormalZ=nz,
+                                sideSign=crossSign,
+                                initialCrossTrackM=crossSign*startCross,
+                                projectedCrossTrackProgressM=crossGain,
+                                requiredProgressM=travel,
+                                isPhysicalPairClearanceConfirmed=false}
+                            local c={
+                                isReverse=ray.reverse,
+                                moveForwards=not ray.reverse,
+                                isPartialEgress=travel<fullTravel-0.001,
+                                nominalFullTravelM=fullTravel,
+                                steeringHorizonM=horizon,
+                                targetX=foot.rootX+dx*horizon,
+                                targetZ=foot.rootZ+dz*horizon,
+                                returnRegion=region,
+                                directionSource=ray.mode,
                                 cascadeMode=ray.mode,egressSide=ray.side,
                                 regionTravelM=travel,vectorDistanceM=travel,
-                                remainingWorkingWidthM=otherWorkingWidth,
+                                remainingWorkingWidthM=width,
                                 workingCorridorMarginM=WORK_CORRIDOR_MARGIN_M,
                                 marginM=MARGIN_M,targetInField=true,
                                 fieldInteriorScore=centreScore,
+                                localDemandSeparationGainM=demandGain,
+                                achievedNominalSeparationGainM=separationGain,
                                 transitGeometryBasis=foot.basis,
                                 sceneOccupancyChecked=sceneAvailable,
-                                nominalBearingOffsetDeg=ray.reverse and 70 or nil,
+                                nominalBearingOffsetDeg=
+                                    ray.validatedBearing and 70 or nil,
                                 nativeReverseHeadingX=backX,
-                                nativeReverseHeadingZ=backZ}
-                            candidate.targetX=foot.rootX+
-                                ray.dx*candidate.steeringHorizonM
-                            candidate.targetZ=foot.rootZ+
-                                ray.dz*candidate.steeringHorizonM
-                            -- Actual cascade: 70-degree oblique reverse
-                            -- before centroid. Within each mode prefer the
-                            -- centroid-nearer mover, then best in-field side.
-                            local tier=ray.reverse and 1 or 2
-                            local previousTier=best and (best.isReverse and 1 or 2)
-                                or 3
-                            local firstMover=mover==preferred
-                            local previousFirst=chosenMover==preferred
-                            if best==nil or tier<previousTier
-                                or (tier==previousTier
-                                    and ((firstMover and not previousFirst)
-                                        or (firstMover==previousFirst
-                                            and centreScore>best.fieldInteriorScore
-                                                +0.01))) then
-                                best,chosenMover,chosenOther=candidate,mover,other
-                            end
+                                nativeReverseHeadingZ=backZ,
+                                isValidatedBearing=ray.validatedBearing,
+                                moverIndex=moverIndex,
+                                mover=mover,other=other}
+                            candidates[#candidates+1]=c
                         end
                     end
                 end
             end
         end
     end
-    if best==nil then return nil,nil,nil,"NO_FEASIBLE_PAIR_EGRESS" end
+    local options={0,0}
+    for i=1,2 do
+        for _ in pairs(optionSectors[i]) do options[i]=options[i]+1 end
+    end
+    local best
+    for i=1,#candidates do
+        local c=candidates[i]
+        c.egressOptionality=options[c.moverIndex]
+        if best==nil then
+            best=c
+        else
+            -- A complete egress outranks a staging move. Among complete
+            -- paths retain TS015's proven ±70° reverse precedence; then
+            -- prefer genuine spatial optionality before centroid position.
+            local better=false
+            if c.isPartialEgress~=best.isPartialEgress then
+                better=not c.isPartialEgress
+            elseif c.isValidatedBearing~=best.isValidatedBearing then
+                better=c.isValidatedBearing
+            elseif c.egressOptionality~=best.egressOptionality then
+                better=c.egressOptionality>best.egressOptionality
+            elseif math.abs(c.regionTravelM-best.regionTravelM)>0.01 then
+                better=c.regionTravelM>best.regionTravelM
+            elseif math.abs(c.localDemandSeparationGainM-
+                    best.localDemandSeparationGainM)>0.01 then
+                better=c.localDemandSeparationGainM>
+                    best.localDemandSeparationGainM
+            elseif c.moverIndex~=best.moverIndex then
+                better=c.moverIndex<best.moverIndex
+            else
+                better=c.fieldInteriorScore>best.fieldInteriorScore+0.01
+            end
+            if better then best=c end
+        end
+    end
+    if best==nil then return nil,nil,nil,"NO_SAFE_PAIR_EGRESS_REGION" end
+    local mover,other=best.mover,best.other
+    best.mover=nil;best.other=nil;best.moverIndex=nil
     best.cascadeAttempts=attempts
-    return best,chosenMover,chosenOther
+    return best,mover,other
 end
