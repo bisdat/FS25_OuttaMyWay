@@ -119,12 +119,13 @@ function Runtime:update(dt)
             local outcome=self.nonActiveControl.lastOutcome
             if outcome~=nil then
                 if outcome.status=="MANOEUVRE_COMPLETE_PENDING_CONTINUATION"
-                    and outcome.physicalCleanupConfirmed==true then
-                    -- Archive geometry-bounded succession: after an actual
-                    -- completed actuation, only fresh positive Causal
-                    -- Obstruction can permit another. No courtesy quota.
-                    self.proactiveAttempted[self.pendingContinuation
-                        and self.pendingContinuation.evidence.beneficiary]=nil
+                    and outcome.physicalCleanupConfirmed==true
+                    and self.pendingContinuation~=nil
+                    and self.pendingContinuation.evidence~=nil then
+                    -- Archive geometry-bounded succession: fresh positive
+                    -- Causal Obstruction may admit another bounded actuation.
+                    self.proactiveAttempted[
+                        self.pendingContinuation.evidence.beneficiary]=nil
                 end
                 issue(self,outcome.physicalCleanupConfirmed and "INFO" or "WARNING",
                     "OBSTRUCTION_RELOCATION_OUTCOME",
