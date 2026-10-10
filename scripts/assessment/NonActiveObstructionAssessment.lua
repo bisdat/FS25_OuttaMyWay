@@ -133,7 +133,10 @@ function A:sample(worker,dt)
     local dx,dz=current.x-track.x,current.z-track.z
     track.x,track.z=current.x,current.z
     local ux,uz,distance=direction(dx,dz)
-    if ux==nil or distance<0.10 then return end
+    if ux==nil or distance<0.10 then
+        track.speedMps=0 -- Current movement must not inherit an old speed.
+        return
+    end
     local hx,hz=heading(worker)
     if hx==nil or ux*hx+uz*hz<PERSISTENCE_DOT then
         track.forming=0;track.aligned=0;track.established=false
@@ -207,6 +210,9 @@ local function evidenceFor(self,worker,blocker)
     if relation==nil then return nil end
     return {positive=true,beneficiary=worker,blocker=blocker,
         relation=relation,evidenceSource=relation.kind,
+        motionDirectionX=track and track.established and track.directionX or nil,
+        motionDirectionZ=track and track.established and track.directionZ or nil,
+        beneficiaryPose=pose(worker),
         nativeBlockedRequired=false,
         realisedMotionReachM=demand and demand.horizonM or nil,
         physicalSource="CURRENT_GIANTS_SHAPE_WORLD_SPHERES"}
