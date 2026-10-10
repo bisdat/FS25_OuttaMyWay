@@ -133,6 +133,10 @@ function Runtime:update(dt)
                 .." direction="..tostring(start.directionSource)
                 .." optionsAssessed="..tostring(start.cascadeAttempts)
                 .." regionTravelM="..tostring(start.regionTravelM)
+                .." nominalFullTravelM="..tostring(start.nominalFullTravelM)
+                .." isPartialEgress="..tostring(start.isPartialEgress)
+                .." egressOptionality="..tostring(start.egressOptionality)
+                .." demandSeparationGainM="..tostring(start.demandSeparationGainM)
                 .." remainingWorkingWidthM="..tostring(
                     start.remainingWorkingWidthM)
                 .." workingCorridorMarginM="..tostring(
