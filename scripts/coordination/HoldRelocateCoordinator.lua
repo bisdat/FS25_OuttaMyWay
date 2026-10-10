@@ -6,7 +6,8 @@ OuttaMyWay.HoldRelocateCoordinator={}
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
-local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
+local STATIC_EGRESS_REGULATION_MS=5000 -- unchanged static-blocker beneficiary
+local PAIR_EGRESS_REGULATION_MS=8000 -- #470 test: protect mover through first egress
 local STATIC_EGRESS_FAILSAFE_MS=25000 -- cancel static movement after 25 seconds
 local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
@@ -207,7 +208,7 @@ function Coordinator:beginStatic(commitment,nowMs)
         isTransitOutstanding=false,isRelocatorHeld=false,
         isStatic=true,staticTransitRequested=false,
         phase="STATIC_REQUESTING_TRANSIT",objective=objective,
-        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS,
+        egressRegulationUntilMs=nowMs+STATIC_EGRESS_REGULATION_MS,
         staticEgressDeadlineMs=nowMs+STATIC_EGRESS_FAILSAFE_MS
     }
     local ready,preflightReason=command(self.physicalControl,"preflight",state)
@@ -377,7 +378,7 @@ function Coordinator:startPairEgress(state,nowMs)
     -- synchronous update, with no GIANTS frame between configuration
     -- request and physical relocation.
     -- The five-second window begins with egress.
-    state.egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
+    state.egressRegulationUntilMs=nowMs+PAIR_EGRESS_REGULATION_MS
     for i=1,#blockers do
         state.isBlockerRegulated[i]=true
         local regulated,why=command(self.physicalControl,
@@ -534,7 +535,7 @@ function Coordinator:begin(commitment,nowMs)
         relocator=relocator,blockers=blockers,isBlockerRegulated={},
         isRelocatorHeld=false,isReverseOutstanding=false,isTransitOutstanding=false,
         phase="REQUESTING_TRANSIT",
-        egressRegulationUntilMs=single and nil or nowMs+EGRESS_REGULATION_MS,
+        egressRegulationUntilMs=single and nil or nowMs+PAIR_EGRESS_REGULATION_MS,
         relocatedHoldUntilMs=nil,isSingle=single,objective=objective
     }
     if not single and not finite(state.egressRegulationUntilMs) then
@@ -597,6 +598,21 @@ end
 
 -- Complete the same native FIELDWORK handback for solo and paired recovery.
 function Coordinator:completeNativeHandback(state)
+    -- Usually the nonmover's 8 s lease has expired independently. If the
+    -- mover finishes almost instantly, its 7 s Hold may instead finish
+    -- before that deadline. Never orphan a Regulation lease at handback,
+    -- and never delay the mover's own GIANTS restart to await the other.
+    for i=1,#state.blockers do
+        if state.isBlockerRegulated[i] then
+            local released,why=command(self.physicalControl,
+                "releaseRegulation",state.blockers[i].vehicle,"EGRESS")
+            if not released then
+                self:finishWithOutcome("CONTROL_INTERRUPTED",why)
+                return
+            end
+            state.isBlockerRegulated[i]=false
+        end
+    end
     local restarted,evidence=command(self.physicalControl,
         "restartNativeFieldwork",state.relocator.vehicle)
     if not restarted then
