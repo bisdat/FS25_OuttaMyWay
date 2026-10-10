@@ -115,16 +115,37 @@ assert(c.lastPairMotionStartEvidence.pairedEgressImmediate
 c:advance(5999)
 assert(not has("REGULATE_RELEASE","B"))
 c:advance(6000)
+assert(not has("REGULATE_RELEASE","B") and not has("REGULATE_RELEASE","C"),
+    "the prior 5 s boundary is no longer pair Regulation release")
+c:advance(8999)
+assert(not has("REGULATE_RELEASE","B"))
+c:advance(9000)
 assert(has("REGULATE_RELEASE","B") and has("REGULATE_RELEASE","C")
-    and not has("TRANSIT_CANCEL","B"),
-    "5 s courtesy is independent of mover's unfinished 41 m motion")
-completed=true;c:advance(6001)
+    and not has("TRANSIT_CANCEL","B") and not has("REVERSE_STOP","A"),
+    "8 s courtesy releases both independent blocker leases even while mover is reversing")
+completed=true;c:advance(9001)
 assert(has("REVERSE_STOP","A") and has("HOLD_RELOCATED_WORKER","A"))
-c:advance(13000)
+c:advance(16000)
 assert(not has("NATIVE_STOP_START","A"))
-c:advance(13001)
+c:advance(16001)
 assert(has("NATIVE_STOP_START","A") and not has("TRANSIT_CANCEL","B")
     and not has("TRANSIT_CANCEL","A") and not c:isActive())
+assert(c:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
+
+-- If egress completes before one second, the unchanged seven-second mover
+-- Hold can finish before the independent eight-second Regulation deadline.
+-- That must never strand a 1 km/h cap or block the mover's native restart.
+events={};completed=true
+assert(c:begin(admitted(),20000))
+c:advance(20001)
+assert(has("REVERSE_STOP","A") and has("HOLD_RELOCATED_WORKER","A")
+    and not has("REGULATE_RELEASE","B"))
+c:advance(27000)
+assert(not has("NATIVE_STOP_START","A"))
+c:advance(27001)
+assert(has("REGULATE_RELEASE","B") and has("REGULATE_RELEASE","C")
+    and has("NATIVE_STOP_START","A") and not c:isActive(),
+    "fast mover handback releases residual leases without waiting for 8 s")
 assert(c:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
 
 -- Even an unknown folding position cannot add a preparation phase.
@@ -177,7 +198,7 @@ current=true
 
 events={};failRelease="B"
 assert(c:begin(admitted(),100000))
-c:advance(105000)
+c:advance(108000)
 assert(not c:isActive()
     and c:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
 failRelease=nil
@@ -189,4 +210,4 @@ assert(not c:isActive()
     and c:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED"
     and not has("TRANSIT_CANCEL","B"))
 nativeAccept=true
-print("Asymmetric paired egress: mover-only TRANSIT, immediate drive, independent 5s/7s, scoped cleanup PASS")
+print("Asymmetric paired egress: mover-only TRANSIT, independent 8s pair/5s static Regulation and 7s Hold, scoped cleanup PASS")
