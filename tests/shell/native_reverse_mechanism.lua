@@ -323,6 +323,35 @@ assert(calls[#calls].allowed==true and calls[#calls].speed==previous.speed)
 OuttaMyWay.ReverseKinematicsProbe.sample=savedSample
 assert(mechanism:cancelReverse(vehicle))
 assert(reported[#reported].code=="REVERSE_KINEMATICS_END")
+-- With GIANTS-equivalent mocked tool geometry, reconstruction of the
+-- ACTUAL +40 m target and the passive +40 m shadow must be identical.
+-- Neither computation is permitted to change the actual drive request.
+reported={}
+selectedTool=4
+locations[4].x=0;locations[4].z=-2
+g_time=40000
+locations[1].x=0;locations[1].z=0
+assert(mechanism:startReverse(vehicle,baseline))
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,true,1,1,0,false)
+local live=calls[#calls]
+local sampled=assert(reported[2]).payload
+assert(reported[1].code=="REVERSE_KINEMATICS_START"
+    and sampled.reverseNodeX==0 and sampled.toolNodeZ==-2)
+assert(type(sampled.transformToolLongitudinalM)=="number"
+    and type(sampled.transformToolSignedLateralM)=="number"
+    and type(sampled.transformSignedRotationDeg)=="number",
+    "diagnostic must publish actual native-equivalent operands")
+assert(math.abs(sampled.actualReconstructionDifferenceDeg)<0.00001
+    and math.abs(sampled.shadowLookthrough40BearingDeg-
+        sampled.driveLocalSignedBearingDeg)<0.00001,
+    "read-only +40 m reconstruction must reproduce issued GIANTS drive")
+for _,extra in ipairs({0,10,20,40}) do
+    assert(type(sampled["shadowLookthrough"..extra.."BearingDeg"])=="number")
+end
+assert(live.allowed and live.forwards==false
+    and live.speed==previous.speed)
+assert(mechanism:cancelReverse(vehicle))
+selectedTool=nil
 reported={}
 diagnosticEnabled=false
 assert(mechanism:startReverse(vehicle,baseline))
