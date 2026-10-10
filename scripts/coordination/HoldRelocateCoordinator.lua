@@ -373,18 +373,13 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
         end
     end
     state.blockers=blockers
-    -- Acquire speed protection before withdrawing translation holds.
-    -- The 5-second clock starts at actual egress, NOT at fold preparation.
-    state.egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
-    for i=1,#blockers do
-        state.isBlockerRegulated[i]=true
-        local regulated,why=command(self.physicalControl,
-            "regulate",blockers[i].vehicle,"EGRESS")
-        if not regulated then
-            self:finishWithOutcome("CONTROL_INTERRUPTED",why)
-            return
-        end
-    end
+    -- Native-drive wrapper transition is one synchronous coordinator
+    -- operation: remove both preparation Holds BEFORE installing the 1 km/h
+    -- Regulation wrapper. Otherwise the Hold wrapper remains buried below
+    -- Regulation and cannot be reacquired for the seven-second relocated Hold
+    -- when a short Return Region is achieved before Regulation expires.
+    -- No engine update is yielded between these changes; authority, leases
+    -- and failure cleanup remain scoped to this same pair commitment.
     for i=1,2 do
         if state.pairPreparationHolds[i] then
             local party=state.commitment.participants[i]
@@ -395,6 +390,18 @@ function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
                 return
             end
             state.pairPreparationHolds[i]=false
+        end
+    end
+    -- The five-second window begins with the actual egress operation,
+    -- never during TRANSIT folding.
+    state.egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
+    for i=1,#blockers do
+        state.isBlockerRegulated[i]=true
+        local regulated,why=command(self.physicalControl,
+            "regulate",blockers[i].vehicle,"EGRESS")
+        if not regulated then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",why)
+            return
         end
     end
     state.isReverseOutstanding=true

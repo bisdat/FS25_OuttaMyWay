@@ -240,7 +240,14 @@ function Control:hold(vehicle,purpose)
 end
 
 function Control:releaseHold(vehicle,purpose)
-    return self.holdMechanism:releaseHold(vehicle,purpose)
+    local ok,evidence=self.holdMechanism:releaseHold(vehicle,purpose)
+    if ok then
+        -- When Regulation was an inner transparent wrapper while the
+        -- relocated-worker Hold was active, reveal and withdraw it once the
+        -- outer Hold is released. Never overwrite an unrelated outer hook.
+        self.regulationMechanism:refreshInstallation()
+    end
+    return ok,evidence
 end
 
 function Control:requestTransit(vehicle)

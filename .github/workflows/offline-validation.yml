@@ -98,6 +98,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/pair_transit_region.lua
           "$LUAJIT_BIN" tests/shell/pair_transit_settlement.lua
           "$LUAJIT_BIN" tests/shell/hold_relocate.lua
+          "$LUAJIT_BIN" tests/shell/pair_native_drive_interposition.lua
           "$LUAJIT_BIN" tests/shell/live_hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/native_reverse_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_translation_hold_mechanism.lua
