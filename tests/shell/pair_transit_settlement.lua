@@ -36,10 +36,12 @@ local function member(name,foldable)
         setLowered=function(_,v)commands[#commands+1]=name..":RAISE:"..tostring(v)end,
         setFoldDirection=function(_,v)commands[#commands+1]=name..":FOLD:"..tostring(v)end,
         getToggledFoldDirection=function()
-            error("FOLD_DIRECTION_GETTER_MUST_NOT_GATE")
+            if foldable then return 1 end
+            error("NONMOVER_FOLD_DIRECTION_MUST_NOT_BE_POLLED")
         end,
         getFoldAnimTime=function()
-            error("FOLD_STATUS_MUST_NOT_GATE_PAIRED_EGRESS")
+            if foldable then return 0 end
+            error("NONMOVER_FOLD_STATUS_MUST_NOT_BE_POLLED")
         end}
 end
 local a,b=member("A",true),member("B",false)
@@ -67,6 +69,20 @@ assert(#commands==3 and commands[1]=="A:WORK:false"
 assert(control:cancelTransit(a))
 assert(control:getTransitRequests(a)==nil
     and control:getTransitRequests(b)==nil)
+-- An unreadable fold position never blocks the move. Its known native
+-- work-off/raise requests still go through without waiting for readback.
+local unknown=member("A",true)
+unknown.getFoldAnimTime=function()
+    error("FOLD_POSITION_NOT_AVAILABLE")
+end
+local unknownControl=Control.new(authority)
+assert(unknownControl:preflightPairMover({commitment=commitment,
+    relocator={vehicle=unknown}}))
+local planUnknown=assert(unknownControl:getTransitRequests(unknown))
+assert(#planUnknown.transitActions==2
+    and planUnknown.unknownFoldCount==1)
+assert(unknownControl:requestTransit(unknown))
+assert(unknownControl:cancelTransit(unknown))
 for _,command in ipairs(commands) do
     assert(command:sub(1,2)=="A:","remaining worker must never change")
 end
