@@ -99,7 +99,7 @@ def test_region_based_egress_and_native_regulation():
         encoding="utf-8")
     assert "GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION" in transit
     assert "reachableTravel" in transit and "sceneOccupancy" in transit
-    assert "regionStepValid" in transit and "MIN_USEFUL_TRAVEL_M=3" in transit
+    assert "regionStepValid" in transit and "MIN_USEFUL_TRAVEL_M=STEP_M" in transit
     assert "planPair" in transit and "getAIWorkAreaWidth" not in transit
     assert "WORK_CORRIDOR_MARGIN_M=5" in transit
     assert "width+WORK_CORRIDOR_MARGIN_M" in transit
