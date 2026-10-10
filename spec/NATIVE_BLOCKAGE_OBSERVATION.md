@@ -17,6 +17,20 @@ Only the authoritative server may observe. Source consumes the **current GIANTS 
 
 The runtime may perform passive targeted samples during its ordinary update, rather than treating old experimental 500 ms diagnostic logging as an event contract. Sampling is an approximation: an unseen native change between consecutive samples is **not asserted to be captured**. Unknown/missing strategy, job, registry or clock evidence means **no candidate**, not an invented blocked interval.
 
+## One-shot Blockage Encounter Snapshot — issue #465
+
+The new **Blockage Encounter Snapshot** captures physical evidence at the **first observed** `isBlocked=true` sample after a false/unknown native edge (or fresh job/strategy). It is not an actual GIANTS collision callback; `observedAtMs` is **not** a proven impact timestamp. One capture is allowed per native blocked pulse. There are **no shape hierarchy scans, collision-overlap computations, polygon searches or continuous extra physical census passes**.
+
+When native world-pose/facing APIs and `mission.vehicleSystem.vehicles` are available, record:
+- blocked beneficiary's current root X/Z and current forward vector from its GIANTS AI steering node (root fallback, or unresolved);
+- for current distinct physical assembly roots, one world X/Z / facing sample and, where observed, `getIsAIActive`, player-controlled state and speed;
+- for a bounded set of at most **three** nearest physical roots, relative forward/cross offsets and heading-alignment dot product against the blocked worker's facing. Three is an **evidence-size bound**, not a new causal radius or admission rule;
+- observation time, physical inventory completeness and explicit unavailable fields.
+
+The data is carried through the **existing ≥1 second single-native-pulse nomination**, as `encounterSnapshot`. A DEBUG `NATIVE_BLOCKAGE_ENCOUNTER_SNAPSHOT` line is emitted only for a qualified native single-worker concern where a physical population was available, never for every frame or every subsecond pulse. This does **not** identify a blocker, replace the current authority decision, or trigger relocation. Original pairwise and solo recovery timing and Control are unchanged. A new pulse, GIANTS job or strategy yields a new snapshot; map teardown, disabled state and actual native unblock discard the old sample.
+
+This evidence is meant to answer: *what did GIANTS show about the worker's and possible static subject's pose/facing as the blockage began?* It does not yet answer *which exact object caused it* or *whether forward or reverse motion is safe*. Those later positive decisions are [#465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) work, not prerequisites invented by Observation.
+
 ## Confirmed blocked-duration boundary
 
 For the initial implementation tranche, accumulate time only between **successive positive native strategy `isBlocked=true` samples** on the same worker, same native job reference and same strategy instance. A `false` reading ends the current **Native Blockage Pulse**; it contributes **zero** to confirmed blocked duration. Unavailable evidence or worker/job/strategy loss invalidates the interval.
@@ -49,12 +63,14 @@ The blocked worker and neighbouring currently active field workers are converted
 | Production source | Participation |
 | --- | --- |
 | [`scripts/observation/NativeBlockageObservation.lua`](../scripts/observation/NativeBlockageObservation.lua) | `REALISES` |
+| [`scripts/observation/StaticBlockageEncounterObservation.lua`](../scripts/observation/StaticBlockageEncounterObservation.lua) | `REALISES` |
 
 ## Repository validation participants
 
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/native_blockage_observation.lua`](../tests/shell/native_blockage_observation.lua) | `CHALLENGES` |
+| [`tests/shell/static_blockage_encounter.lua`](../tests/shell/static_blockage_encounter.lua) | `CHALLENGES` |
 
 ## Implementation traceability / validation scope
 

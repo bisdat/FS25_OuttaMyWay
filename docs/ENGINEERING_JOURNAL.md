@@ -6235,3 +6235,13 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Disposition:** Mark TEST `0.5.1.3` **field-validated TS003 PASS**. Record the outcome in Issue #461 and PR #462; PR stays open until a separate merge instruction. No source mechanics or version change is required by this acceptance record.
 
+## 2026-10-10 — #465: Reactive Static Blocker Recovery / First-Edge Encounter Snapshot
+
+**Decision:** Prefer reactive Option 2 to an additional job-completion relocation responsibility. The existing GIANTS native blocked edge and ≥1s BWR qualification are the trigger for considering a change of controlled subject, not a continuous Causal Obstruction/footprint service. Keep [#463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463) and its draft PR independent: TS018 demonstrated a working bounded **non-job actuator** and cost of continuous prospective geometry, but did not validate a simpler static-blocker causal selector.
+
+**Discovery:** An assembly's facing **at the first observed native blocked edge** may materially affect whether moving it forward, reverse or sideways is appropriate. GIANTS `isBlocked` does not identify a collision actor or exact contact timestamp. Name the bounded record **Blockage Encounter Snapshot**, with the explicit evidence limitation *First Observed Blocked Edge != Exact Physical Impact*. A nearest static vehicle's root position and heading alone do not prove causality.
+
+**TEST implementation:** Branch independently from accepted main `0.5.1.3` and use unique TEST build `0.5.1.7`. `StaticBlockageEncounterObservation.capture` samples the blocked worker and one ordinary GIANTS physical-vehicle population pass exactly once at the first blocked positive edge, preserving up to three nearest physical references, relative forward/cross offsets and heading alignment. The existing `NativeBlockageObservation` carries that snapshot into the single-worker ≥1s qualified occurrence, and prints one DEBUG snapshot when inventory evidence exists. No GIANTS hierarchy/shape APIs, new event listener, new blocked timer, new motor/steering Control, or commitment change. This initial PR is a **measurement stage**, not the full option-2 feature.
+
+**Validation separation:** Offline contract covers first-edge/long pulse/short pulse, new GIANTS Job, unknown population, competing physical roots and current player claim; accepted native BWR tests remain blocking. GIANTS still must demonstrate informative geometry at blockage, sustained FPS and harmless negative cases before subject/movement direction is chosen. Neither forward nor reverse is presumed correct. Issue #465 owns the follow-up; draft PR is unmerged.
+
