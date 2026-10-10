@@ -175,7 +175,7 @@ assert(events[#events]=="RESTORE")
 -- Confined field admits pair roots but not the complete TRANSIT
 -- member-corner path. Only after the bounded search does it give up.
 g_fieldManager.fields={{densityMapPolygon={
-    pointsX={0,24,24,0},pointsZ={0,0,22,22}}}}
+    pointsX={19,24,24,19},pointsZ={18,18,22,22}}}}
 local restricted=assert(authority:admitCandidate(first,second,first,1000))
 local admittedRestricted=assert(coordinator:begin(restricted,30000))
 assert(admittedRestricted)
