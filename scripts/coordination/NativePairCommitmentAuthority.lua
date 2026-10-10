@@ -295,7 +295,7 @@ function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapsho
     local polygon=type(region)=="table"
         and type(region.ownCourseField)=="function"
         and region.ownCourseField({participants={{
-            sourceStrategyReference=strategy}}) or nil
+            sourceStrategyReference=strategy}}}) or nil
     if type(polygon)~="table" then
         return nil,"STATIC_OWN_FIELD_POLYGON_UNAVAILABLE"
     end
