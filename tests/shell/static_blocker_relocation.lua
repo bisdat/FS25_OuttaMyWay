@@ -7,16 +7,20 @@ dofile("scripts/coordination/ProjectedEgressRegion.lua")
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 dofile("scripts/control/mechanisms/NativeReverseMechanism.lua")
 dofile("scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua")
-local coords={[11]={x=0,z=0},[22]={x=10,z=0}}
+dofile("scripts/coordination/LiveHoldRelocateRuntime.lua")
+local coords={[11]={x=0,z=0},[22]={x=10,z=0},[23]={x=10,y=2,z=0}}
 getWorldTranslation=function(node)
     local p=assert(coords[node])
-    return p.x,0,p.z
+    return p.x,p.y or 0,p.z
 end
 localDirectionToWorld=function(node,x,y,z)
     return z,y,x
 end
 worldToLocal=function(node,x,y,z)
     local p=assert(coords[node])
+    if node==23 then
+        assert(y==2,"GIANTS reverse target uses reverser-node reference height")
+    end
     return z-p.z,y,x-p.x
 end
 local cfg={isResolved=function()return true end,isEnabled=function()return true end}
@@ -37,7 +41,7 @@ local subject={rootNode=22,lastSpeedReal=0,forceIsActive=nil,
     spec_drivable={cruiseControl=cruise},
     getRootVehicle=function(self)return self end,
     getAISteeringNode=function(self)return self.rootNode end,
-    getAIReverserNode=function(self)return self.rootNode end,
+    getAIReverserNode=function()return 23 end,
     getIsAIActive=function()return false end,
     getIsControlled=function()return false end,
     getIsMotorStarted=function()return running end,
@@ -87,6 +91,22 @@ assert(plan.moveForwards and not plan.isReverse
     and plan.returnRegion.requiredProgressM>38
     and plan.targetX>10 and math.abs(plan.targetZ)>70,
     "forward BWR must steer sideways out of the beneficiary corridor")
+-- The steering reference is 40m beyond the signed lateral region. This
+-- is essential when GIANTS reverses: steering point must not be the finish.
+local function assertTargetBeyondRegion(objective)
+    local region=objective.returnRegion
+    local projected=OuttaMyWay.ProjectedEgressRegion.progress(
+        region,objective.targetX,objective.targetZ)
+    assert(projected~=nil
+        and projected.progressM>region.requiredProgressM,
+        "native steering target must lie beyond lateral completion region")
+    local rate=math.abs(objective.returnRegion.directionX*region.normalX
+        +objective.returnRegion.directionZ*region.normalZ)
+    assert(math.abs((projected.progressM-region.requiredProgressM)/rate-40)<0.001,
+        "steering point must provide full 40m lookahead beyond region")
+    assert(objective.steeringHorizonM>objective.vectorDistanceM)
+end
+assertTargetBeyondRegion(plan)
 assert(not OuttaMyWay.ProjectedEgressRegion.progress(
     plan.returnRegion,50,0).isInRegion,
     "arbitrary straight-forward travel must not satisfy lateral completion")
@@ -123,6 +143,7 @@ assert(reversePlan.isReverse and not reversePlan.moveForwards
     and reversePlan.returnRegion.source=="STATIC_CROSS_TRACK_REGION"
     and reversePlan.returnRegion.requiredProgressM>38
     and reversePlan.targetX>10 and math.abs(reversePlan.targetZ)>70)
+assertTargetBeyondRegion(reversePlan)
 assert(actuator:startMovement(subject,reversePlan))
 for i=1,12 do
     status=actuator:movementStatus(subject,16)
@@ -222,4 +243,61 @@ assert(status.isFailed and status.reason=="STATIC_SUBJECT_CLAIMED")
 assert(actuator:cancelMovement(subject))
 g_currentMission.controlledVehicle=nil
 assert(authority:release(fresh))
-print("Inferred static blocker / direct native drive / exclusive BWR: PASS")
+
+-- Explicit shell disable relinquishes the coordinator AND commitment authority.
+-- A later occurrence involving exactly the same two roots is a NEW recovery,
+-- not rejected by a retained commitment or prior outcome.
+local runtime=OuttaMyWay.LiveHoldRelocateRuntime
+local stubRuntime=setmetatable({
+    coordinator=coordinator,authority=authority,publication=nil},runtime)
+local laterSnapshot=OuttaMyWay.StaticBlockageEncounterObservation.capture(
+    worker,g_currentMission,300)
+local later=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,laterSnapshot))
+assert(coordinator:begin(later,10000))
+assert(stubRuntime:relinquish("DISABLED_OR_SERVER_LOST"))
+assert(authority.active==nil and not coordinator:isActive())
+local subsequent=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
+        worker,g_currentMission,500)))
+assert(subsequent.commitmentId~=later.commitmentId,
+    "later encounter must receive a new commitment identity")
+assert(coordinator:begin(subsequent,15000),
+    "no prior relocation may gate a later native blocked occurrence")
+assert(stubRuntime:relinquish("MAP_DELETE"))
+assert(authority.active==nil and not coordinator:isActive())
+
+-- A failed Regulation after successful TRANSIT preflight must release the
+-- cached (never dispatched) plan. Otherwise the subsequent static incident
+-- would incorrectly hit TRANSIT_PLAN_ALREADY_ACTIVE.
+OuttaMyWay.NativeTranslationHoldMechanism={
+    new=function()return {} end}
+OuttaMyWay.NativeSpeedRegulationMechanism={
+    new=function()return {} end}
+OuttaMyWay.NativeTransitRequestMechanism={new=function()
+    return {cancelTransit=function()return true end}
+end}
+OuttaMyWay.NativeFieldworkJobReplacementMechanism={
+    new=function()return {} end}
+dofile("scripts/control/HoldRelocatePhysicalControl.lua")
+local realControl=OuttaMyWay.HoldRelocatePhysicalControl.new(authority)
+realControl.regulationMechanism={
+    regulate=function()return false,"REGULATION_REJECTED_FIXTURE" end,
+    releaseRegulation=function()return true end
+}
+local failed=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,laterSnapshot))
+local aborted=OuttaMyWay.HoldRelocateCoordinator.new(authority,realControl)
+local startedBad,why=aborted:begin(failed,20000)
+assert(not startedBad and why=="REGULATION_REJECTED_FIXTURE")
+assert(realControl.plans[subject]==nil,
+    "preflight-only TRANSIT cache must be cleared after a failed start")
+assert(authority:release(failed))
+local retry=assert(authority:admitStaticBlockerCandidate(
+    worker,1000,OuttaMyWay.StaticBlockageEncounterObservation.capture(
+        worker,g_currentMission,600)))
+assert(realControl:preflight({relocator=retry.relocator,commitment=retry}),
+    "subsequent admission must not inherit preflight cache")
+assert(realControl:cancelTransit(subject))
+assert(authority:release(retry))
+print("Inferred static blocker / reverse target beyond region / fresh BWR: PASS")

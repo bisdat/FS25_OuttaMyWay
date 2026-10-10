@@ -48,20 +48,41 @@ end
 
 function Runtime:loadMap()
     self.isRuntimeReported=false
-    -- Candidate evidence belongs to the native Observer's map lifecycle.
+    -- A new map cannot inherit attempted native occurrences or publication
+    -- references from a previous map.
+    self.attempted=setmetatable({},{__mode="k"})
+    self.lastReportedEgressRegulationResults=nil
+    self.lastReportedInitialMotionEvidence=nil
 end
 
 -- Disabling requests immediate native Control release; completion is reported
 -- for the current episode only, without parked cross-episode job history.
 function Runtime:relinquish(reason)
-    if not self.coordinator:isActive() then return true end
+    local active=self.coordinator.active
+    if active==nil then
+        -- No physical action survives; likewise do not retain an abandoned
+        -- admission when disabling or leaving the map.
+        if self.authority.active~=nil then
+            self.authority:release(self.authority.active)
+        end
+        return true
+    end
+    local commitment=active.commitment
     local released,why=self.coordinator:relinquish(reason or "CONTROL_REVOKED")
+    -- The coordinator reports failed native cleanup separately. It always
+    -- ends this attempt; its former authority must not veto a later pulse.
+    if not self.coordinator:isActive() then
+        self.authority:release(commitment)
+    end
     if not released then issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why) end
     return released
 end
 
 function Runtime:deleteMap()
     self:relinquish("MAP_DELETE")
+    self.attempted=setmetatable({},{__mode="k"})
+    self.lastReportedEgressRegulationResults=nil
+    self.lastReportedInitialMotionEvidence=nil
 end
 
 function Runtime:update(dt)

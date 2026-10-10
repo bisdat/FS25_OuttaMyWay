@@ -194,6 +194,28 @@ assert(next(observation.pairs)==nil and next(observation.states)==nil
     and next(observation.singles)==nil,
     "disable drops candidate identities and samples")
 
+-- A later solo blockage of the same worker is a completely new occurrence,
+-- irrespective of the old root, native job reference or prior recovery.
+enabled=true
+active[b]=nil
+courseA.isBlocked=false
+g_time=14000;observation:update(16)
+courseA.isBlocked=true
+g_time=14100;observation:update(16)
+g_time=15100;observation:update(16)
+local firstSolo=observation:getCurrentSingleCandidates()
+assert(#firstSolo==1 and firstSolo[1].confirmedBlockedMs==1000)
+courseA.isBlocked=false
+g_time=15200;observation:update(16)
+assert(#observation:getCurrentSingleCandidates()==0)
+courseA.isBlocked=true
+g_time=15300;observation:update(16)
+g_time=16300;observation:update(16)
+local laterSolo=observation:getCurrentSingleCandidates()
+assert(#laterSolo==1 and laterSolo[1].confirmedBlockedMs==1000
+    and laterSolo[1].candidateIdentity~=firstSolo[1].candidateIdentity,
+    "new blocked pulse must never inherit a previous relocation's identity")
+
 assert(OuttaMyWay.nativeBlockedEventTap==nil,"retired constructor hook remains absent")
 assert(OuttaMyWay.runtime==nil,"no AI Control runtime")
 print("Passive native blocked Observation / 1s candidate handoff / lifecycle: PASS")

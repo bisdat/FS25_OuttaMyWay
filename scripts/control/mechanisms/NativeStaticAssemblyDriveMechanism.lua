@@ -69,7 +69,8 @@ function M:startMovement(vehicle,objective)
         return false,"STATIC_DRIVE_NODE_UNAVAILABLE"
     end
     local read,node=pcall(vehicle[nodeMethod],vehicle)
-    if not read or pose(node)==nil then
+    local nodeReference=read and pose(node) or nil
+    if nodeReference==nil then
         return false,"STATIC_DRIVE_NODE_UNAVAILABLE"
     end
     local toolNode=nil
@@ -111,7 +112,8 @@ function M:startMovement(vehicle,objective)
     -- Register potential effects before setters, so cancellation can restore
     -- cruise, physics activation and motor even after a partial native call.
     local state={
-        vehicle=vehicle,objective=objective,node=node,toolNode=toolNode,
+        vehicle=vehicle,objective=objective,node=node,
+        nodeReferenceY=nodeReference.y,toolNode=toolNode,
         oldForceIsActive=vehicle.forceIsActive,
         oldForwardSpeed=cruise.speed,oldReverseSpeed=cruise.speedReverse,
         speedKmh=speed,startedMotor=not alreadyStarted,
@@ -175,7 +177,10 @@ function M:movementStatus(vehicle,dt)
         end
         targetX,targetZ=x,z
     end
-    local ok,lx,_,lz=pcall(worldToLocal,s.node,targetX,p.y,targetZ)
+    -- Native reverse transforms the world target in the reverser-node
+    -- frame, using its sampled reference height, not the root-node height.
+    local ok,lx,_,lz=pcall(worldToLocal,s.node,targetX,
+        s.nodeReferenceY,targetZ)
     local length=ok and finite(lx) and finite(lz)
         and math.sqrt(lx*lx+lz*lz) or nil
     if not finite(length) or length<0.0001 then

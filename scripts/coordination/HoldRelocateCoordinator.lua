@@ -174,6 +174,10 @@ function Coordinator:beginStatic(commitment,nowMs)
     self.active=state
     self.lastEgressRegulationResults=nil
     self.lastInitialMotionEvidence=nil
+    -- Preflight already cached the TRANSIT plan. Mark it for unconditional
+    -- release even if the 1 km/h Regulation request fails before TRANSIT is
+    -- sent; otherwise a later encounter sees TRANSIT_PLAN_ALREADY_ACTIVE.
+    state.isTransitOutstanding=true
     -- Protect the blocked worker's native steering and drive permission,
     -- capping its current GIANTS speed at 1 km/h for a timed 5 s window.
     state.isBlockerRegulated[1]=true
@@ -183,7 +187,6 @@ function Coordinator:beginStatic(commitment,nowMs)
         self:finishWithOutcome("CONTROL_INTERRUPTED",regulationReason)
         return false,regulationReason
     end
-    state.isTransitOutstanding=true
     local transit,transitReason=command(self.physicalControl,
         "requestTransit",state.relocator.vehicle)
     if not transit then

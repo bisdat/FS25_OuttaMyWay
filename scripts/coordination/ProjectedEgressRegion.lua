@@ -306,6 +306,11 @@ function Region.planStatic(commitment,subject)
         end
     end
     if chosen==nil then return nil,"STATIC_LATERAL_DIRECTION_UNAVAILABLE" end
+    -- Deliberately aim beyond the Return Region. Along the selected ray,
+    -- lateral progress reaches the required region at vectorDistance;
+    -- the additional 40 m keeps a reverse steering target ahead of the
+    -- desired region until physical lateral entry ends the command.
+    -- This is steering geometry, never an extra movement or release gate.
     local horizon=vectorDistance+STEERING_LOOKAHEAD_M
     return {
         isReverse=not isForward,moveForwards=isForward,
