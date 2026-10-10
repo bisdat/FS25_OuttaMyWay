@@ -1,5 +1,5 @@
 --- Summarises claim-bearing plan-view geometry and evaluates bounded current overlap without manufacturing negative clearance.
--- Specification Jurisdictions: `ASSESSMENT_REPRESENTATION`
+-- Specification Jurisdictions: `OBSTRUCTION_RELOCATION`
 
 OuttaMyWay.PlanViewFootprint = {}
 local Footprint = OuttaMyWay.PlanViewFootprint

@@ -388,7 +388,7 @@ end
 runtime:update(16)
 assert(seenBlocker and startedSolo==1
     and published[5].code=="OBSTRUCTION_RELOCATION_STARTED"
-    and published[5].payload.detail:find("REALISED_MOTION_DEMAND"))
+    and published[5].detail.detail:find("REALISED_MOTION_DEMAND"))
 runtime:update(16)
 assert(startedSolo==1 and #published==5,
     "no duplicate actuation for unchanged causal obstruction")

@@ -1,5 +1,5 @@
 --- Admits entity-local shape correspondence by testing Geometry–World Coherence and Descendant–Root Alias Discrimination.
--- Specification Jurisdictions: `PHYSICAL_IDENTITY_RESOLUTION`
+-- Specification Jurisdictions: `OBSTRUCTION_RELOCATION`
 
 OuttaMyWay.EntityLocalShapeEvidence = {}
 local Evidence=OuttaMyWay.EntityLocalShapeEvidence

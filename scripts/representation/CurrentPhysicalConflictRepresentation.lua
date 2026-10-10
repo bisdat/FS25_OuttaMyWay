@@ -1,5 +1,5 @@
 --- Resolves current physical candidates and publishes bounded positive-conflict representation without negative-clearance authority.
--- Specification Jurisdictions: `PHYSICAL_IDENTITY_RESOLUTION`, `ASSESSMENT_REPRESENTATION`
+-- Specification Jurisdictions: `OBSTRUCTION_RELOCATION`
 
 OuttaMyWay.CurrentPhysicalConflictRepresentation = {}
 local Representation = OuttaMyWay.CurrentPhysicalConflictRepresentation

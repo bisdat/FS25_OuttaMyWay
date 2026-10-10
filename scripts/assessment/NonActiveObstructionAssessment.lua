@@ -127,16 +127,19 @@ function A:sample(worker,dt)
     local track=self.tracks[worker]
     if track==nil or track.strategy~=course then
         self.tracks[worker]={strategy=course,x=current.x,z=current.z,
-            forming=0,aligned=0,established=false}
+            forming=0,aligned=0,established=false,elapsedMs=0}
         return
     end
+    track.elapsedMs=(track.elapsedMs or 0)+(tonumber(dt) or 0)
     local dx,dz=current.x-track.x,current.z-track.z
-    track.x,track.z=current.x,current.z
     local ux,uz,distance=direction(dx,dz)
     if ux==nil or distance<0.10 then
-        track.speedMps=0 -- Current movement must not inherit an old speed.
-        return
+        if track.elapsedMs>=1000 then track.speedMps=0 end
+        return -- Archive accumulates coherent sub-0.10m samples, not noise.
     end
+    track.x,track.z=current.x,current.z
+    local intervalMs=track.elapsedMs
+    track.elapsedMs=0
     local hx,hz=heading(worker)
     if hx==nil or ux*hx+uz*hz<PERSISTENCE_DOT then
         track.forming=0;track.aligned=0;track.established=false
@@ -164,7 +167,7 @@ function A:sample(worker,dt)
             track.directionX,track.directionZ=ux,uz
         end
     end
-    local dtSeconds=tonumber(dt) and tonumber(dt)*0.001 or nil
+    local dtSeconds=intervalMs and intervalMs*0.001 or nil
     track.speedMps=dtSeconds and dtSeconds>0 and distance/dtSeconds or nil
 end
 function A:advance(dt)
