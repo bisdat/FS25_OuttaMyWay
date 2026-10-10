@@ -108,8 +108,8 @@ function Runtime:update(dt)
         local pending=self.pendingContinuation
         local current=pending.strategy
         if type(current)=="table" and current.isBlocked==false then
-            issue(self,"INFO","OBSTRUCTION_RELOCATION_DISCHARGED",
-                "NATIVE_BLOCKAGE_CLEARED")
+            issue(self,"INFO","OBSTRUCTION_RELOCATION_NATIVE_UNBLOCKED",
+                "PRODUCTIVE_CONTINUATION_NOT_INDEPENDENTLY_CONFIRMED")
             self.pendingContinuation=nil
         elseif not OuttaMyWay.NonActiveObstructionAssessment.isStillCurrent(
                 pending.evidence) then

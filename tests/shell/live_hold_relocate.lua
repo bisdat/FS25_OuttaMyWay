@@ -362,5 +362,29 @@ assert(startedSolo==1 and #published==4
 runtime:update(16)
 assert(startedSolo==1 and #published==4,
     "one intervention admission per solo blocked occurrence")
--- No player-control veto or diagnostic fields remain in live admission.
-print("Live Pair Commitment with GIANTS job and field evidence, no player-control gate: PASS")
+-- Positive non-active obstruction gets priority over solo BWR, once per
+-- native occurrence. No synthetic partner or separate listener is needed.
+local blockerOccurrence={}
+observer.getCurrentSingleCandidates=function()return {
+    {candidateIdentity=blockerOccurrence,worker=second,confirmedBlockedMs=1000}
+} end
+local seenBlocker=false
+OuttaMyWay.NonActiveObstructionAssessment.find=function(worker)
+    assert(worker==second)
+    return {positive=true,beneficiary=second,blocker={rootNode=444}}
+end
+runtime.nonActiveControl.begin=function(_,candidate)
+    assert(candidate.positive==true and candidate.beneficiary==second)
+    seenBlocker=true
+    return true,{targetProgressM=60,
+        fieldIdentitySource="GIANTS_ACTIVE_COURSE_FIELD",
+        sourceStrategy=secondStrategy}
+end
+runtime:update(16)
+assert(seenBlocker and startedSolo==1
+    and published[5].code=="OBSTRUCTION_RELOCATION_STARTED")
+runtime:update(16)
+assert(startedSolo==1
+    and #published==5,"one non-job actuation admission per native occurrence")
+-- No player-control veto or diagnostic fields remain in active pair/solo admission.
+print("Live pair / solo fallback / non-active-blocker priority: PASS")
