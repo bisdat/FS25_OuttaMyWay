@@ -142,10 +142,11 @@ assert(physical:transitStatus(first).isSettled
     "non-foldable equipment needs no fold polling or delay")
 coordinator:advance(1001)
 assert(coordinator:getStatus().phase=="REVERSING")
-assert(#events==8 and events[5]=="REGULATE:EGRESS"
+assert(#events==8 and events[5]=="RELEASE:TRANSIT_PREPARATION"
     and events[6]=="RELEASE:TRANSIT_PREPARATION"
-    and events[7]=="RELEASE:TRANSIT_PREPARATION"
-    and events[8]=="REVERSE")
+    and events[7]=="REGULATE:EGRESS"
+    and events[8]=="REVERSE",
+    "paired native Hold wrappers must unwind BEFORE Regulation is installed")
 assert(coordinator.lastPairMotionStartEvidence.regionTravelM>0
     and coordinator.lastPairMotionStartEvidence.cascadeAttempts>=2)
 coordinator:advance(6000)
