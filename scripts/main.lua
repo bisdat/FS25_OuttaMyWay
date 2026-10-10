@@ -7,6 +7,7 @@ local modules={
     "scripts/assessment/SpatialPairInference.lua",
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
+    "scripts/coordination/PairTransitRegion.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",

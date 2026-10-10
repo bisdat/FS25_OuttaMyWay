@@ -1,211 +1,203 @@
--- Independent mocked coordinator contracts; physical GIANTS Reality is tested in-game.
-OuttaMyWay={ProjectedEgressRegion={plan=function(_,relocator)
-    return {isReverse=true,targetX=relocator.x-40,targetZ=relocator.z,
-        steeringHorizonM=40,directionSource="NATIVE_REVERSE_AXIS",
-        returnRegion={originX=relocator.x,originZ=relocator.z,
-            directionX=-1,directionZ=0,requiredProgressM=20}}
-end}}
--- Coordinator-level fixture: the Geometry responsibility returns a chosen
--- feasible tuple. Exercise shared Control release and third-party Regulation,
--- not the distinct real geometry algorithm covered in projected_egress_region.
-OuttaMyWay.ProjectedEgressRegion.planPairCascade=function(commitment,preferred,other)
-    return OuttaMyWay.ProjectedEgressRegion.plan(commitment,preferred,other),
-        preferred,other
+-- Paired coordinator: dual TRANSIT, fold readiness, 15 s continuation,
+-- region selection, movement leases, cleanup and native handback.
+OuttaMyWay={ProjectedEgressRegion={}}
+local selectedMode="OBLIQUE_REVERSE"
+OuttaMyWay.ProjectedEgressRegion.planPairCascade=function(_,preferred,other)
+    if selectedMode=="NONE" then
+        return nil,nil,nil,"NO_FEASIBLE_PAIR_EGRESS"
+    end
+    local ray={source="SIGNED_CROSS_TRACK_REGION",
+        originX=preferred.x,originZ=preferred.z,
+        directionX=-1,directionZ=0,
+        requiredProgressM=5,initialCrossTrackM=0}
+    return {isReverse=true,targetX=preferred.x-45,targetZ=preferred.z,
+        steeringHorizonM=45,directionSource=selectedMode,
+        cascadeMode=selectedMode,cascadeAttempts=8,
+        returnRegion=ray,regionTravelM=5,transitGeometryBasis="GIANTS_BASE_SIZE",
+        marginM=1},preferred,other
 end
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
-local a={assemblyReferenceKey="A",x=10,z=0,vehicle={name="A"}}
-local b={assemblyReferenceKey="B",x=15,z=0,vehicle={name="B"}}
-local c={assemblyReferenceKey="C",x=11,z=10,vehicle={name="C"}}
+local a={assemblyReferenceKey="A",x=10,z=10,vehicle={name="A"}}
+local b={assemblyReferenceKey="B",x=20,z=10,vehicle={name="B"}}
+local third={assemblyReferenceKey="C",x=15,z=20,vehicle={name="C"}}
 local events={}
-local isCurrent=true
-local isInitialJobEpisodeCurrent=true
-local isTransitRequestAccepted=true
-local isReverseRequestAccepted=true
-local reverseStatus={travelledM=0,isComplete=false}
-local refuseReleaseFor=nil
-local isNativeRestartAccepted=true
-local isNativePreparationRejected=false
-local function record(kind,vehicle,extra)
-    events[#events+1]={kind=kind,vehicle=vehicle and vehicle.name,extra=extra}
+local current=true
+local valid=true
+local readyA,readyB=false,false
+local failTransit=nil
+local failReverse=false
+local failRelease=nil
+local nativeAccept=true
+local completed=false
+local function event(verb,v)
+    events[#events+1]=verb..":"..(v and v.name or "-")
 end
-local authority={
-    validateCommitment=function(_,commitment)
-        record("VALIDATE")
-        return commitment.token=="issued-by-authority" and isInitialJobEpisodeCurrent,
-            "COMMITMENT_OR_JOB_EPISODE_UNVERIFIED"
-    end,
-    isCommitmentCurrent=function() return isCurrent,"LIFECYCLE_INVALID" end
-}
-local control={
-    preflight=function(_,state) record("PREFLIGHT",state.relocator.vehicle);return true end,
-    hold=function(_,vehicle,purpose)record("HOLD",vehicle,purpose);return true end,
-    regulate=function(_,vehicle,purpose)record("REGULATE",vehicle,purpose);return true end,
-    releaseRegulation=function(_,vehicle,purpose)
-        record("REGULATE_RELEASE",vehicle,purpose)
-        if refuseReleaseFor==vehicle.name then
-            return false,"NATIVE_REGULATION_RELEASE_UNCONFIRMED"
-        end
-        return true,{interceptionCount=7,physicalDisplacementM=0.5}
-    end,
-    releaseHold=function(_,vehicle,purpose)
-        record("RELEASE",vehicle,purpose)
-        if refuseReleaseFor==vehicle.name then return false,"PHYSICAL_RELEASE_UNCONFIRMED" end
-        return true
-    end,
-    requestTransit=function(_,vehicle)
-        record("TRANSIT",vehicle)
-        return isTransitRequestAccepted,"NATIVE_TRANSIT_REQUEST_FAILED"
-    end,
-    transitStatus=function() error("TRANSIT_READINESS_MUST_NOT_BE_QUERIED") end,
-    startReverse=function(_,vehicle,objective)
-        record("REVERSE",vehicle,objective)
-        return isReverseRequestAccepted,"NATIVE_REVERSE_REQUEST_FAILED"
-    end,
-    reverseStatus=function() return reverseStatus end,
-    stopReverse=function(_,vehicle)record("REVERSE_STOP",vehicle);return true end,
-    cancelReverse=function(_,vehicle)record("REVERSE_CANCEL",vehicle);return true end,
-    cancelTransit=function(_,vehicle)record("TRANSIT_CANCEL",vehicle);return true end,
-    restartNativeFieldwork=function(_,vehicle)
-        record("NATIVE_STOP_THEN_START",vehicle)
-        if isNativePreparationRejected then
-            return false,{reason="NATIVE_FIELDWORK_VALIDATION_REJECTED",
-                isNativeJobStateUncertain=false}
-        end
-        if isNativeRestartAccepted then
-            return true,{isOldJobStopped=true,isNewJobStarted=true}
-        end
-        return false,{reason="NATIVE_START_UNCERTAIN",
-            isNativeJobStateUncertain=true}
-    end
-}
-local function admitted()
-    return {token="issued-by-authority",commitmentId="PAIR1",
-        participants={b,a},fieldCentroid={x=0,z=0},
-        fieldPolygon={xs={-200,200,200,-200},zs={-200,-200,200,200}},
-        nearbyBlockers={b,c},blockerWorkingWidthM=10,offsetM=0}
-end
-local function contains(kind,vehicle)
+local function has(verb,v)
     for i=1,#events do
-        if events[i].kind==kind and events[i].vehicle==vehicle then return true end
+        if events[i]==verb..":"..v then return true end
     end
     return false
 end
-local coordinator=Coordinator.new(authority,control)
-local ok,commitment=coordinator:begin(admitted(),1000)
-assert(ok and commitment.relocatingAssemblyReferenceKey=="A")
-assert(commitment.objective.isReverse and commitment.objective.maxTravelM==nil)
-assert(commitment.objective.returnRegion.requiredProgressM==20)
-assert(commitment.objective.steeringHorizonM==40)
-assert(commitment.objective.targetX==-30 and commitment.objective.targetZ==0)
-assert(events[1].kind=="VALIDATE" and events[2].kind=="PREFLIGHT")
-assert(events[3].kind=="REGULATE" and events[3].vehicle=="B")
-assert(events[4].kind=="REGULATE" and events[4].vehicle=="C")
-assert(events[5].kind=="TRANSIT","Hold and TRANSIT begin without idle delay")
-assert(events[6].kind=="REVERSE","reverse starts immediately even though TRANSIT is not complete")
-assert(coordinator:getStatus().phase=="REVERSING")
-coordinator:advance(5999)
-assert(#events==6,"no early Hold release; reverse already underway")
-coordinator:advance(6000)
-assert(events[7].kind=="REGULATE_RELEASE" and events[8].kind=="REGULATE_RELEASE",
-    "5 s blocker Regulation release never waits for reverse or folding completion")
-reverseStatus={travelledM=9,isComplete=true}
-coordinator:advance(6100)
-assert(events[9].kind=="REVERSE_STOP" and events[10].kind=="HOLD"
-    and events[10].vehicle=="A")
-coordinator:advance(13099)
-assert(#events==10,"no pair-clearance gate and no premature 7 s release")
-coordinator:advance(13100)
-assert(events[11].kind=="RELEASE" and events[12].kind=="NATIVE_STOP_THEN_START")
-assert(coordinator:isActive()==false)
-assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
-assert(coordinator:getStatus().lastOutcome.isNativeContinuationConfirmed==false)
--- Rejected native request must not start reverse; cleanup retains prior effects.
-events={}
-isTransitRequestAccepted=false
-local rejected,transitFailure=coordinator:begin(admitted(),17500)
-assert(not rejected and transitFailure=="NATIVE_TRANSIT_REQUEST_FAILED")
-assert(not contains("REVERSE","A"))
-assert(contains("TRANSIT_CANCEL","A"))
-assert(not coordinator:isActive())
-isTransitRequestAccepted=true
--- A failed reverse request after TRANSIT must cancel that configuration request.
-events={}
-isReverseRequestAccepted=false
-local reverseRejected,reverseFailure=coordinator:begin(admitted(),18000)
-assert(not reverseRejected and reverseFailure=="NATIVE_REVERSE_REQUEST_FAILED")
-assert(contains("TRANSIT","A") and contains("REVERSE","A"))
-assert(contains("REVERSE_CANCEL","A") and contains("TRANSIT_CANCEL","A"))
-assert(not coordinator:isActive())
-isReverseRequestAccepted=true
--- Absence of issued commitment provenance prevents any physical action.
-events={}
-local bad=admitted();bad.token="invented";assert(not coordinator:begin(bad,20000))
-assert(#events==1 and events[1].kind=="VALIDATE")
--- A token is insufficient when GIANTS Job Episode freshness is unknown.
-isInitialJobEpisodeCurrent=false
-events={}
-assert(not coordinator:begin(admitted(),20001))
-assert(#events==1 and events[1].kind=="VALIDATE")
-isInitialJobEpisodeCurrent=true
--- A candidate's own assertion is irrelevant to independent authority.
-bad=admitted();bad.authorized=true;bad.token=nil
-assert(not coordinator:begin(bad,20000))
--- A blocked worker need not be the selected relocator; no other blocker can
--- replace the other pair participant in the explicit set.
-bad=admitted();bad.nearbyBlockers={c}
-assert(not coordinator:begin(bad,20000))
-bad=admitted();bad.fieldCentroid={x=nil,z=0}
-assert(not coordinator:begin(bad,20000))
--- Deterministic tie by assembly reference, independent of input ordering.
-local d={assemblyReferenceKey="D",x=-10,z=0,vehicle={name="D"}}
-bad=admitted();bad.participants={d,a};bad.nearbyBlockers={d}
-local accepted,tie=coordinator:begin(bad,22000)
-assert(accepted and tie.relocatingAssemblyReferenceKey=="A")
-assert(not coordinator:begin(bad,22001),"one active pair commitment")
-isCurrent=false;coordinator:advance(22100)
-assert(coordinator:isActive()==false)
-assert(contains("REGULATE_RELEASE","D") and contains("TRANSIT_CANCEL","A"))
-isCurrent=true
--- Old point-distance abort has been explicitly withdrawn. Accumulated
--- travel alone must not end the manoeuvre without Return Region membership.
-reverseStatus={travelledM=200,isComplete=false};events={}
-local stillActive=assert(coordinator:begin(admitted(),30000))
-coordinator:advance(30002)
-assert(coordinator:isActive() and coordinator:getStatus().phase=="REVERSING")
-assert(coordinator:relinquish("TEST_CLEANUP"))
--- Cleanup failure is reported for this collision only: no parked
--- commitment or historical job record may obstruct the next encounter.
-reverseStatus={travelledM=0,isComplete=false}
-events={}
-assert(coordinator:begin(admitted(),40000))
-refuseReleaseFor="B"
-coordinator:advance(45000)
-assert(not coordinator:isActive())
-assert(coordinator:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
-assert(not coordinator:relinquish("DISABLED"))
-refuseReleaseFor=nil
--- A fresh independent collision can start without manual clearance of an
--- unrelated previous job outcome.
-isNativeRestartAccepted=false
-events={}
-assert(coordinator:begin(admitted(),50000))
-reverseStatus={travelledM=1,isComplete=true}
-coordinator:advance(50001)
-coordinator:advance(57001)
-assert(not coordinator:isActive())
-assert(coordinator:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
-assert(coordinator:getStatus().lastOutcome.reason=="NATIVE_START_UNCERTAIN")
--- A rejected handback does not create a persistent job-history veto.
-isNativeRestartAccepted=true
-isNativePreparationRejected=true
-reverseStatus={travelledM=0,isComplete=false}
-events={}
-assert(coordinator:begin(admitted(),70000))
-reverseStatus={travelledM=1,isComplete=true}
-coordinator:advance(70001)
-coordinator:advance(77001)
-assert(not coordinator:isActive())
-assert(coordinator:getStatus().lastOutcome.reason=="NATIVE_FIELDWORK_VALIDATION_REJECTED")
-assert(contains("TRANSIT_CANCEL","A"))
-print("Hold & Relocate independent collisions, timed release and direct cleanup: PASS")
+local authority={
+    validateCommitment=function(_,c)
+        event("VALIDATE")
+        return valid and c.token=="admitted","COMMITMENT_UNVERIFIED"
+    end,
+    isCommitmentCurrent=function()return current,"GIANTS_JOB_EPISODE_CHANGED"end
+}
+local physical={
+    preflightPair=function(_,s)event("PAIR_PREFLIGHT");return true end,
+    hold=function(_,v,p)event("HOLD_"..p,v);return true end,
+    releaseHold=function(_,v,p)
+        event("RELEASE_"..p,v)
+        return failRelease~=v.name,"HOLD_RELEASE_FAILURE"
+    end,
+    requestTransit=function(_,v)
+        event("TRANSIT",v)
+        return failTransit~=v.name,"TRANSIT_REQUEST_FAILED"
+    end,
+    transitStatus=function(_,v)
+        event("STATUS",v)
+        return {isSettled=v.name=="A" and readyA or readyB,
+            requiredFoldCount=1,settledFoldCount=0}
+    end,
+    pairTransitFootprint=function(_,v)
+        event("FOOTPRINT",v)
+        local p=v.name=="A" and a or b
+        return {rootX=p.x,rootZ=p.z,corners={{x=-1,z=-1},
+            {x=1,z=1}},basis="GIANTS_BASE_SIZE"}
+    end,
+    regulate=function(_,v)event("REGULATE",v);return true end,
+    releaseRegulation=function(_,v)
+        event("REGULATE_RELEASE",v)
+        return failRelease~=v.name,"REGULATION_RELEASE_FAILURE"
+    end,
+    startReverse=function(_,v)event("REVERSE",v)
+        return not failReverse,"REVERSE_REQUEST_FAILED"end,
+    reverseStatus=function()return {isComplete=completed,
+        isFailed=false,travelledM=completed and 5 or 0}end,
+    stopReverse=function(_,v)event("REVERSE_STOP",v);return true end,
+    cancelReverse=function(_,v)event("REVERSE_CANCEL",v);return true end,
+    cancelTransit=function(_,v)event("TRANSIT_CANCEL",v);return true end,
+    restartNativeFieldwork=function(_,v)
+        event("NATIVE_STOP_START",v)
+        return nativeAccept,{reason="NATIVE_HANDOFF_UNCERTAIN"}
+    end
+}
+local function admitted()
+    return {token="admitted",commitmentId="PAIR",
+        participants={b,a},fieldCentroid={x=0,z=0},
+        fieldPolygon={xs={-100,100,100,-100},zs={-100,-100,100,100}},
+        nearbyBlockers={b,third}}
+end
+local c=Coordinator.new(authority,physical)
+local started,info=c:begin(admitted(),1000)
+assert(started and info.phase=="PAIR_PREPARING_TRANSIT")
+assert(c:getStatus().phase=="PAIR_PREPARING_TRANSIT"
+    and c:getStatus().regionRequiredProgressM==nil)
+assert(has("HOLD_TRANSIT_PREPARATION","A")
+    and has("HOLD_TRANSIT_PREPARATION","B"))
+assert(has("TRANSIT","A") and has("TRANSIT","B"))
+assert(not has("REVERSE","A") and not has("REGULATE","B"),
+    "fold preparation has no movement or consumed egress Regulation")
+c:advance(15999)
+assert(c:isActive() and not has("REVERSE","A"))
+c:advance(16000)
+assert(c:isActive() and c:getStatus().phase=="REVERSING",
+    "15-second deadline must continue into physical egress")
+assert(c.lastPairTransitExhaustion
+    and c.lastPairMotionStartEvidence.transitWaitExhausted==true)
+assert(has("FOOTPRINT","A") and has("FOOTPRINT","B")
+    and has("REGULATE","B") and has("REGULATE","C")
+    and has("REVERSE","A"))
+assert(has("RELEASE_TRANSIT_PREPARATION","A")
+    and has("RELEASE_TRANSIT_PREPARATION","B"))
+c:advance(20999)
+assert(not has("REGULATE_RELEASE","B"))
+c:advance(21000)
+assert(has("REGULATE_RELEASE","B") and has("REGULATE_RELEASE","C"),
+    "5-second window begins at egress, not at TRANSIT request")
+completed=true
+c:advance(21001)
+assert(has("REVERSE_STOP","A") and has("HOLD_RELOCATED_WORKER","A"))
+c:advance(28000)
+assert(not has("NATIVE_STOP_START","A"))
+c:advance(28001)
+assert(has("NATIVE_STOP_START","A") and has("TRANSIT_CANCEL","B"),
+    "GIANTS owns selected new job; other worker restores configuration")
+assert(not has("TRANSIT_CANCEL","A") and not c:isActive())
+assert(c:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
+-- With both non-foldable/settled, there is no artificial 15-second delay.
+events={};completed=false;readyA=true;readyB=true
+assert(c:begin(admitted(),30000))
+c:advance(30001)
+assert(c:getStatus().phase=="REVERSING")
+assert(c.lastPairTransitExhaustion==nil)
+assert(c.lastPairMotionStartEvidence.transitWaitExhausted==false)
+assert(c:relinquish("TEST_CLEANUP"))
+assert(has("TRANSIT_CANCEL","A") and has("TRANSIT_CANCEL","B"))
+-- One foldable and one already settled: wait for the actual foldable only.
+events={};readyA=false;readyB=true
+assert(c:begin(admitted(),40000))
+c:advance(40001);assert(c:getStatus().phase=="PAIR_PREPARING_TRANSIT")
+readyA=true;c:advance(43000)
+assert(c:getStatus().phase=="REVERSING")
+assert(c:relinquish("TEST_CLEANUP"))
+-- Failure during second TRANSIT request neutralises first and both preflights.
+events={};failTransit="B"
+local ok,reason=c:begin(admitted(),50000)
+assert(not ok and reason=="TRANSIT_REQUEST_FAILED")
+assert(not c:isActive())
+assert(has("TRANSIT_CANCEL","A") and has("TRANSIT_CANCEL","B"))
+failTransit=nil
+-- Missing pair witness is not replaced by an arbitrary third party.
+events={};local bad=admitted();bad.nearbyBlockers={third}
+assert(not c:begin(bad,51000))
+assert(#events==0)
+-- Independent commitment and job-continuity checks precede commands.
+valid=false;events={}
+assert(not c:begin(admitted(),52000))
+assert(#events==1 and events[1]=="VALIDATE:-")
+valid=true;events={}
+assert(c:begin(admitted(),53000))
+current=false;c:advance(53100)
+assert(not c:isActive() and has("TRANSIT_CANCEL","A")
+    and has("TRANSIT_CANCEL","B"))
+current=true
+-- Exhaust the available regions, not the fold deadline, before last resort.
+events={};readyA=true;readyB=true;selectedMode="NONE"
+assert(c:begin(admitted(),60000))
+c:advance(60001)
+assert(not c:isActive() and not has("REVERSE","A"))
+assert(c:getStatus().lastOutcome.status=="NO_FEASIBLE_PAIR_EGRESS")
+assert(has("TRANSIT_CANCEL","A") and has("TRANSIT_CANCEL","B"))
+selectedMode="OBLIQUE_REVERSE"
+-- Reverse request failure cannot leave speed or TRANSIT leases behind.
+events={};failReverse=true
+assert(c:begin(admitted(),70000))
+c:advance(70001)
+assert(not c:isActive() and has("REVERSE_CANCEL","A")
+    and has("TRANSIT_CANCEL","A") and has("TRANSIT_CANCEL","B"))
+failReverse=false
+-- Older point-distance abort is forbidden: no completion without region.
+events={};completed=false
+assert(c:begin(admitted(),80000))
+c:advance(80001);c:advance(85001)
+assert(c:isActive() and c:getStatus().phase=="REVERSING")
+assert(c:relinquish("DISABLED"))
+assert(not c:isActive())
+-- Failed release does not poison subsequent pair admission.
+events={};failRelease="B"
+assert(c:begin(admitted(),90000))
+c:advance(90001)
+assert(not c:isActive() and c:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
+failRelease=nil
+-- Native handback remains a separate Reality claim.
+events={};nativeAccept=false;completed=false
+assert(c:begin(admitted(),100000))
+c:advance(100001)
+completed=true;c:advance(100002);c:advance(107002)
+assert(not c:isActive() and c:getStatus().lastOutcome.status=="CONTROL_INTERRUPTED")
+nativeAccept=true
+print("Paired TRANSIT settlement, timeout continuation and recovery leases: PASS")

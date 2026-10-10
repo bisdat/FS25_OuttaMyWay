@@ -49,6 +49,7 @@ local function buildTransitPlan(vehicle)
     local collected,reason=include(vehicle)
     if not collected then return nil,reason end
     local commands,reversals={},{}
+    local foldTargets,unknownFoldCount={},0
     local function append(object,name,value,restore)
         commands[#commands+1]={object=object,method=name,value=value}
         -- Native job replacement owns productive continuation on success;
@@ -73,23 +74,35 @@ local function buildTransitPlan(vehicle)
             end
             if value then append(object,"setLowered",false,true) end
         end
-        if type(object.setFoldDirection)=="function"
-            and type(object.getToggledFoldDirection)=="function" then
+        -- Only the instantiated selected Foldable configuration grants
+        -- a fold-completion wait. Native work-off/raise is always requested
+        -- where supported, including for assemblies with no active fold.
+        local fold=object.spec_foldable
+        local hasActiveParts=type(fold)=="table"
+            and fold.hasFoldingParts==true
+            and type(fold.foldingParts)=="table"
+            and next(fold.foldingParts)~=nil
+        if hasActiveParts then
             local position=nil
             local ok,value=method(object,"getFoldAnimTime")
             if ok and finite(value) then position=value
-            elseif type(object.spec_foldable)=="table" then
-                position=object.spec_foldable.foldAnimTime
-            end
-            if not finite(position) then return nil,"FOLD_START_UNKNOWN" end
-            if position<=0.001 then
-                local known,direction=method(object,"getToggledFoldDirection")
-                if not known or not finite(direction) or direction<=0 then
-                    return nil,"FOLD_DIRECTION_UNAVAILABLE"
-                end
-                append(object,"setFoldDirection",direction,-direction)
+            elseif finite(fold.foldAnimTime) then position=fold.foldAnimTime end
+            if not finite(position) then
+                unknownFoldCount=unknownFoldCount+1
             elseif position<0.999 then
-                return nil,"FOLD_POSITION_AMBIGUOUS"
+                if type(object.setFoldDirection)=="function"
+                    and type(object.getToggledFoldDirection)=="function" then
+                    local known,direction=method(object,"getToggledFoldDirection")
+                    if known and finite(direction) and direction>0 then
+                        append(object,"setFoldDirection",direction,-direction)
+                        foldTargets[#foldTargets+1]={
+                            object=object,requestedEndpoint=1}
+                    else
+                        unknownFoldCount=unknownFoldCount+1
+                    end
+                else
+                    unknownFoldCount=unknownFoldCount+1
+                end
             end
         end
     end
@@ -98,7 +111,8 @@ local function buildTransitPlan(vehicle)
     for i=#reversals,1,-1 do
         reverseOrder[#reverseOrder+1]=reversals[i]
     end
-    return {transitActions=commands,restoreActions=reverseOrder}
+    return {transitActions=commands,restoreActions=reverseOrder,
+        foldTargets=foldTargets,unknownFoldCount=unknownFoldCount}
 end
 
 function Control.new(authority)
@@ -127,6 +141,58 @@ function Control:preflight(state)
     if plan==nil then return false,why end
     self.plans[vehicle]=plan
     return true
+end
+
+-- One coherent pair preflight. Do not leave the first member's cached
+-- request behind when the second member cannot be prepared.
+function Control:preflightPair(state)
+    if g_server==nil or type(state)~="table"
+        or self.authority.active~=state.commitment
+        or type(state.commitment.participants)~="table" then
+        return false,"PAIR_PREFLIGHT_UNAVAILABLE"
+    end
+    local first=state.commitment.participants[1].vehicle
+    local second=state.commitment.participants[2].vehicle
+    if self.plans[first]~=nil or self.plans[second]~=nil then
+        return false,"TRANSIT_PLAN_ALREADY_ACTIVE"
+    end
+    local a,why=buildTransitPlan(first)
+    if a==nil then return false,why end
+    local b,reason=buildTransitPlan(second)
+    if b==nil then return false,reason end
+    self.plans[first],self.plans[second]=a,b
+    return true
+end
+
+-- Read only fold targets actually discovered in the selected runtime
+-- configuration. No check occurs for non-foldable assemblies.
+function Control:transitStatus(vehicle)
+    local plan=self.plans[vehicle]
+    if plan==nil then return nil,"TRANSIT_PLAN_UNAVAILABLE" end
+    local targets=plan.foldTargets or {}
+    local settled=0
+    for i=1,#targets do
+        local target=targets[i]
+        local got,value=method(target.object,"getFoldAnimTime")
+        if not got or not finite(value) then
+            local spec=target.object.spec_foldable
+            value=type(spec)=="table" and spec.foldAnimTime or nil
+        end
+        if finite(value) and value>=target.requestedEndpoint-0.001 then
+            settled=settled+1
+        end
+    end
+    return {isSettled=settled==#targets
+            and (plan.unknownFoldCount or 0)==0,
+        requiredFoldCount=#targets,
+        settledFoldCount=settled,
+        unresolvedFoldCount=plan.unknownFoldCount or 0}
+end
+
+-- Physical candidate geometry is refreshed AFTER the bounded pair fold
+-- wait. Do not use pre-fold working width as a TRANSIT footprint.
+function Control:pairTransitFootprint(vehicle)
+    return OuttaMyWay.PairTransitRegion.capture(vehicle)
 end
 
 function Control:getTransitRequests(vehicle)

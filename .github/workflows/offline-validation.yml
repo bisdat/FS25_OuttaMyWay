@@ -95,6 +95,8 @@ jobs:
           "$LUAJIT_BIN" tests/shell/main_smoke.lua
           "$LUAJIT_BIN" tests/shell/spatial_pair_inference.lua
           "$LUAJIT_BIN" tests/shell/projected_egress_region.lua
+          "$LUAJIT_BIN" tests/shell/pair_transit_region.lua
+          "$LUAJIT_BIN" tests/shell/pair_transit_settlement.lua
           "$LUAJIT_BIN" tests/shell/hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/live_hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/native_reverse_mechanism.lua

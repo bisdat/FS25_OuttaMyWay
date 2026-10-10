@@ -7,6 +7,7 @@ local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
 local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
+local PAIR_TRANSIT_WAIT_MS=15000 -- preparation limit, NEVER recovery deadline
 local STATIC_EGRESS_FAILSAFE_MS=25000 -- cancel static movement after 25 seconds
 local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
@@ -37,9 +38,9 @@ local function query(port,verb,...)
     if type(port)~="table" or type(port[verb])~="function" then
         return nil,"STATUS_METHOD_UNAVAILABLE:"..verb
     end
-    local ok,value=pcall(port[verb],port,...)
+    local ok,value,reason=pcall(port[verb],port,...)
     if not ok then return nil,"STATUS_EXCEPTION:"..verb end
-    return value
+    return value,reason
 end
 
 local function selectRelocator(first,second,centroid)
@@ -59,7 +60,8 @@ function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
         active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,
-        lastInitialMotionEvidence=nil,lastStaticMotionEvidence=nil
+        lastInitialMotionEvidence=nil,lastStaticMotionEvidence=nil,
+        lastPairMotionStartEvidence=nil,lastPairTransitExhaustion=nil
     },Coordinator)
 end
 
@@ -72,8 +74,11 @@ function Coordinator:getStatus()
     if state==nil then return {isActive=false,lastOutcome=self.lastOutcome} end
     return {
         isActive=true,phase=state.phase,commitmentId=state.commitmentId,
-        relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
-        regionRequiredProgressM=state.objective.returnRegion.requiredProgressM,
+        relocatingAssemblyReferenceKey=state.relocator
+            and state.relocator.assemblyReferenceKey or nil,
+        regionRequiredProgressM=state.objective
+            and state.objective.returnRegion.requiredProgressM or nil,
+        pairTransitDeadlineMs=state.pairTransitDeadlineMs,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
         staticEgressDeadlineMs=state.staticEgressDeadlineMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
@@ -112,6 +117,27 @@ function Coordinator:neutralize(state)
             state.relocator.vehicle,"RELOCATED_WORKER")
         if not ok then failures[#failures+1]="HOLD:"..tostring(reason) end
         state.isRelocatorHeld=false
+    end
+    if state.pairPreparationHolds then
+        for i=1,#state.pairPreparationHolds do
+            if state.pairPreparationHolds[i] then
+                local party=state.commitment.participants[i]
+                local ok,reason=command(control,"releaseHold",
+                    party.vehicle,"TRANSIT_PREPARATION")
+                if not ok then failures[#failures+1]="PREP_HOLD:"..tostring(reason) end
+                state.pairPreparationHolds[i]=false
+            end
+        end
+    end
+    if state.pairTransitOutstanding then
+        for i=1,#state.pairTransitOutstanding do
+            if state.pairTransitOutstanding[i] then
+                local p=state.commitment.participants[i]
+                local ok,reason=command(control,"cancelTransit",p.vehicle)
+                if not ok then failures[#failures+1]="PAIR_TRANSIT:"..tostring(reason) end
+                state.pairTransitOutstanding[i]=false
+            end
+        end
     end
     if state.isTransitOutstanding then
         -- A static assembly is intentionally left in TRANSIT once the
@@ -236,7 +262,170 @@ end
 
 -- The commitment authority must independently validate a live, issued
 -- commitment. An input boolean supplied by a candidate is never authority.
+-- Pair Commitment retains authority while both assemblies prepare for a
+-- bounded TRANSIT wait. No single-mover geometry is selected before folding.
+function Coordinator:beginPair(commitment,nowMs)
+    if self.active~=nil or not finite(nowMs)
+        or type(commitment)~="table" or commitment.commitmentId==nil
+        or type(commitment.participants)~="table"
+        or #commitment.participants~=2
+        or type(commitment.fieldPolygon)~="table"
+        or type(commitment.fieldCentroid)~="table"
+        or type(commitment.nearbyBlockers)~="table" then
+        return false,"PAIR_COMMITMENT_EVIDENCE_UNAVAILABLE"
+    end
+    local a,b=commitment.participants[1],commitment.participants[2]
+    if not positioned(a) or not positioned(b) or a.vehicle==b.vehicle
+        or a.assemblyReferenceKey==b.assemblyReferenceKey then
+        return false,"PAIR_PARTICIPANTS_INVALID"
+    end
+    -- A third party cannot replace one genuinely evidenced pair member.
+    local memberCaptured=false
+    for i=1,#commitment.nearbyBlockers do
+        local p=commitment.nearbyBlockers[i]
+        if not positioned(p) then return false,"BLOCKER_MEMBERSHIP_INVALID" end
+        if p==a or p==b then memberCaptured=true end
+    end
+    if not memberCaptured then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
+    local admitted,reason=command(self.commitmentAuthority,
+        "validateCommitment",commitment)
+    if not admitted then return false,reason end
+    local state={
+        commitment=commitment,commitmentId=commitment.commitmentId,
+        relocator=nil,blockers={},isBlockerRegulated={},
+        isRelocatorHeld=false,isReverseOutstanding=false,
+        isTransitOutstanding=false,pairPreparationHolds={false,false},
+        pairTransitOutstanding={false,false},
+        isSingle=false,phase="PAIR_PREPARING_TRANSIT",
+        pairTransitDeadlineMs=nowMs+PAIR_TRANSIT_WAIT_MS,
+        objective=nil,egressRegulationUntilMs=nil
+    }
+    local ready,why=command(self.physicalControl,"preflightPair",state)
+    if not ready then return false,why end
+    self.active=state
+    -- Both cached plans now need release, including if a later preparation
+    -- Hold or first TRANSIT request fails before the second is dispatched.
+    state.pairTransitOutstanding={true,true}
+    self.lastOutcome=nil
+    self.lastEgressRegulationResults=nil
+    self.lastPairMotionStartEvidence=nil
+    self.lastPairTransitExhaustion=nil
+    -- Keep native field-course/implement progression permitted while
+    -- suppressing only translation. Request TRANSIT on both participants.
+    for i=1,2 do
+        local p=commitment.participants[i]
+        state.pairPreparationHolds[i]=true
+        local held,holdReason=command(self.physicalControl,
+            "hold",p.vehicle,"TRANSIT_PREPARATION")
+        if not held then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",holdReason)
+            return false,holdReason
+        end
+    end
+    for i=1,2 do
+        local p=commitment.participants[i]
+        state.pairTransitOutstanding[i]=true
+        local requested,requestReason=command(self.physicalControl,
+            "requestTransit",p.vehicle)
+        if not requested then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",requestReason)
+            return false,requestReason
+        end
+    end
+    return true,{phase="PAIR_PREPARING_TRANSIT",
+        pairTransitDeadlineMs=state.pairTransitDeadlineMs}
+end
+
+-- Region-first selection: both current TRANSIT representations are
+-- interrogated once after settlement or at 15-second exhaustion.
+function Coordinator:startPairEgress(state,nowMs,exhausted,statusA,statusB)
+    local first,second=state.commitment.participants[1],
+        state.commitment.participants[2]
+    for _,party in ipairs({first,second}) do
+        local footprint,why=query(self.physicalControl,
+            "pairTransitFootprint",party.vehicle)
+        if type(footprint)~="table" then
+            self:finishWithOutcome("NO_FEASIBLE_PAIR_EGRESS",
+                why or "PAIR_TRANSIT_ENVELOPE_UNAVAILABLE")
+            return
+        end
+        party.transitFootprint=footprint
+        party.x,party.z=footprint.rootX,footprint.rootZ
+    end
+    local preferred,alternative=selectRelocator(
+        first,second,state.commitment.fieldCentroid)
+    local objective,mover,other,reason=
+        OuttaMyWay.ProjectedEgressRegion.planPairCascade(
+            state.commitment,preferred,alternative)
+    if objective==nil then
+        self:finishWithOutcome("NO_FEASIBLE_PAIR_EGRESS",
+            reason or "ALL_PAIR_EGRESS_OPTIONS_EXHAUSTED")
+        return
+    end
+    state.relocator,state.objective=mover,objective
+    local blockers,seen={other},{[other.assemblyReferenceKey]=true}
+    for i=1,#state.commitment.nearbyBlockers do
+        local p=state.commitment.nearbyBlockers[i]
+        if p~=mover and not seen[p.assemblyReferenceKey] then
+            seen[p.assemblyReferenceKey]=true
+            blockers[#blockers+1]=p
+        end
+    end
+    state.blockers=blockers
+    -- Acquire speed protection before withdrawing translation holds.
+    -- The 5-second clock starts at actual egress, NOT at fold preparation.
+    state.egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS
+    for i=1,#blockers do
+        state.isBlockerRegulated[i]=true
+        local regulated,why=command(self.physicalControl,
+            "regulate",blockers[i].vehicle,"EGRESS")
+        if not regulated then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",why)
+            return
+        end
+    end
+    for i=1,2 do
+        if state.pairPreparationHolds[i] then
+            local party=state.commitment.participants[i]
+            local released,why=command(self.physicalControl,
+                "releaseHold",party.vehicle,"TRANSIT_PREPARATION")
+            if not released then
+                self:finishWithOutcome("CONTROL_INTERRUPTED",why)
+                return
+            end
+            state.pairPreparationHolds[i]=false
+        end
+    end
+    state.isReverseOutstanding=true
+    local started,evidence=command(self.physicalControl,
+        "startReverse",mover.vehicle,objective)
+    if not started then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",evidence)
+        return
+    end
+    state.phase=objective.isReverse and "REVERSING" or "PAIR_FORWARD_MOVING"
+    self.lastPairMotionStartEvidence={
+        commitmentId=state.commitmentId,
+        relocatingAssemblyReferenceKey=mover.assemblyReferenceKey,
+        otherAssemblyReferenceKey=other.assemblyReferenceKey,
+        directionSource=objective.directionSource,
+        cascadeAttempts=objective.cascadeAttempts,
+        regionTravelM=objective.regionTravelM,
+        transitWaitExhausted=exhausted,
+        firstFoldSettlement=statusA,
+        secondFoldSettlement=statusB,
+        geometryBasis=objective.transitGeometryBasis,
+        isPhysicalPairClearanceConfirmed=false,
+        requestedDriveSpeedKmh=type(evidence)=="table"
+            and (evidence.requestedDriveSpeedKmh
+                or evidence.requestedReverseSpeedKmh) or nil}
+end
+
 function Coordinator:begin(commitment,nowMs)
+    if commitment~=nil and commitment.kind~="STATIC_BLOCKER"
+        and commitment.kind~="SINGLE" then
+        return self:beginPair(commitment,nowMs)
+    end
     if commitment~=nil and commitment.kind=="STATIC_BLOCKER" then
         return self:beginStatic(commitment,nowMs)
     end
@@ -411,7 +600,25 @@ function Coordinator:completeNativeHandback(state)
         self:finishWithOutcome("CONTROL_INTERRUPTED",cause)
         return
     end
-    -- GIANTS owns the replacement job and TRANSIT configuration.
+    -- GIANTS takes over the relocated worker's new fieldwork job.
+    -- The other still-active participant receives its cached configuration
+    -- inverse, not a synthetic fieldwork restart.
+    if state.pairTransitOutstanding then
+        for i=1,2 do
+            local party=state.commitment.participants[i]
+            if party.vehicle==state.relocator.vehicle then
+                state.pairTransitOutstanding[i]=false
+            elseif state.pairTransitOutstanding[i] then
+                local restored,why=command(self.physicalControl,
+                    "cancelTransit",party.vehicle)
+                if not restored then
+                    self:finishWithOutcome("CONTROL_INTERRUPTED",why)
+                    return
+                end
+                state.pairTransitOutstanding[i]=false
+            end
+        end
+    end
     state.isTransitOutstanding=false
     self.lastOutcome={status="NATIVE_RESTART_ACCEPTED",
         commitmentId=state.commitmentId,isNativeContinuationConfirmed=false}
@@ -426,8 +633,30 @@ function Coordinator:advance(nowMs,dt)
     if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
+    if state.phase=="PAIR_PREPARING_TRANSIT" then
+        local a,b=state.commitment.participants[1],
+            state.commitment.participants[2]
+        local first=query(self.physicalControl,"transitStatus",a.vehicle)
+        local second=query(self.physicalControl,"transitStatus",b.vehicle)
+        local settled=type(first)=="table" and first.isSettled==true
+            and type(second)=="table" and second.isSettled==true
+        local exhausted=not settled
+            and nowMs>=state.pairTransitDeadlineMs
+        if not settled and not exhausted then return end
+        if exhausted then
+            -- A preparation deadline changes geometry confidence, NEVER
+            -- ends the pair response. Try all supported physical regions.
+            self.lastPairTransitExhaustion={
+                commitmentId=state.commitmentId,
+                elapsedMs=PAIR_TRANSIT_WAIT_MS,
+                first=first,second=second}
+        end
+        self:startPairEgress(state,nowMs,exhausted,first,second)
+        return
+    end
     -- Timer alone releases native speed Regulation for pair/static egress.
-    if not state.isSingle and nowMs>=state.egressRegulationUntilMs then
+    if not state.isSingle and finite(state.egressRegulationUntilMs)
+        and nowMs>=state.egressRegulationUntilMs then
         for i=1,#state.blockers do
             if state.isBlockerRegulated[i] then
                 local released,releaseEvidence=command(

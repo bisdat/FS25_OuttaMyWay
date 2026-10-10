@@ -1,4 +1,5 @@
 -- Oblique reverse to a signed Cross-Track Egress Region.
+-- Specification Jurisdictions: `HOLD_RELOCATE`
 -- The blocker working width + 5 m scales the *vector length*, not an assumed
 -- relocator collision envelope. Completion is lateral region entry, not the
 -- steering point and not longitudinal retreat.
@@ -203,6 +204,13 @@ end
 -- then directly toward the field centroid (both). Return no solution
 -- only after all assignments and directions have been assessed.
 function Region.planPairCascade(commitment,preferred,alternative)
+    -- A prepared pair uses selected-runtime assembly envelopes, not the
+    -- legacy productive-width ray scale.
+    if type(preferred.transitFootprint)=="table"
+        or type(alternative.transitFootprint)=="table" then
+        return OuttaMyWay.PairTransitRegion.planPair(
+            commitment,preferred,alternative)
+    end
     local attempts=0
     for _,mode in ipairs({"OBLIQUE_REVERSE","FORWARD","CENTROID"}) do
         for _,mover in ipairs({preferred,alternative}) do

@@ -165,8 +165,8 @@ end
 
 -- The candidate is mere nomination; admission re-reads both native jobs,
 -- strategies, current positions, common polygon and duration.
--- The blocker working width is a vector scale, not a collision envelope or
--- physical observation of the TRANSIT assembly.
+-- The pair's available egress space is assessed from physical
+-- TRANSIT candidates only after separately authorised preparation.
 function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     if self.active~=nil or not self:enabled()
         or type(first)~="table" or type(second)~="table"
@@ -208,18 +208,8 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     local relocator=(da<db or (da==db
         and a.assemblyReferenceKey<b.assemblyReferenceKey)) and a or b
     commitment.nearbyBlockers[1]=relocator==a and b or a
-    -- Every possible mover needs the OTHER participant's native width.
-    -- Do not reject the pair merely because one assignment lacks width:
-    -- only that assignment becomes unavailable during the option cascade.
-    local widthA,whyA=blockerWorkingWidth(a.vehicle)
-    local widthB,whyB=blockerWorkingWidth(b.vehicle)
-    if widthA==nil and widthB==nil then
-        return nil,whyA or whyB or "PAIR_WORK_WIDTH_UNAVAILABLE"
-    end
-    a.workingWidthM,b.workingWidthM=widthA,widthB
-    commitment.pairWidthsCaptured=true
-    local width=relocator==a and widthB or widthA
-    commitment.blockerWorkingWidthM=width
+    -- Paired egress is decided after both assemblies request TRANSIT.
+    -- Productive work width has no physical-pair-clearance authority.
     self.active=commitment
     return commitment
 end
