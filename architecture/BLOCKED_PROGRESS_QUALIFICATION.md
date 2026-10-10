@@ -323,3 +323,55 @@ Only a downstream, explicitly authorised **Hold & Relocate responsibility** may 
 **Validation limits and decision:** Both TEST `0.5.1.15` runs are **GIANTS field PASS**, with normal 5-second blocked-beneficiary Regulation and maximum-native-speed request. Neither reached the **25-second fail-safe**, so cancellation on expiry remains offline-tested, not field-validated. The old deleted-entity teardown error was absent. The outcome reason `GIANTS_CONTINUATION_UNMEASURED` is not positive measurement of native job continuation; the PASS verdict includes the supplied footage and field observation. **No executable or version change, new gate, or additional diagnostic polling.** Keep PR #466 draft pending explicit merger decision.
 
 **Architecture distinction:** *Static relevance* is inferred from native blocked evidence plus local stationary AI-inactive root proximity. *GIANTS physical actuation* can be temporarily suppressed by selected-vehicle context. Do not elevate a tab event to Control revocation or assume `driveToPoint` success proves displacement. A single one-shot actuation report at the five-second existing Regulation boundary is sufficient to distinguish these cases.
+
+### 2026-10-10 — In-Field Preference Is Not In-Field Settlement
+
+**Observation:** An annotated TS018 screenshot places successfully
+relocated Condor close to a field edge. The two TEST 0.5.1.15
+relocations are field PASS as blockage recovery, but this does not
+independently validate their final location as a preferred field-interior
+settlement. Neither screenshot nor start-event log establishes exact
+distance to boundary or which of two oblique candidate sides was selected.
+
+**Current mechanism:** `ProjectedEgressRegion.planStatic()` generates
+70° left/right oblique rays in a forward/reverse sense chosen from the
+subject's facing relative to the blocked beneficiary. Nominal ray length
+is beneficiary working width + 5 m (**41 m** in TS018). The Return Region
+is a signed **beneficiary-axis lateral offset** (~38.53 m for this parallel
+heading), not an interior field destination. GIANTS course-polygon
+sampling at ~2 m along the *root's* initial 41 m path is used to
+**prefer** a candidate in the field, not to exclude non-infield
+candidates. When both directions fail or a polygon is unavailable,
+the planner retains a selection by centroid/detection-position score,
+or stable side order. There is no physical footprint clearance or
+minimum final distance from a boundary. Steering is aimed 40 m beyond
+the nominal region, but completion is reached upon lateral region entry.
+
+**Named missing concept — Static In-Field Settlement:** Clearing
+productive cross-track space (the present Return Region contract)
+and settling the static assembly safely within the current field with
+adequate boundary margin are distinct spatial obligations.
+Treating the former as proof of the latter would be an architectural
+category error. The screenshot supports investigating the concept;
+it does not decide its threshold or fallback. Options include a hard
+interior envelope, explicitly permitted boundary-margin exceptions,
+or an explicit unresolvable/player-intervention outcome where
+neither side provides sufficient space. This is **discussion only**:
+do not change the validated reactive movement mechanism without an
+agreed concept and a field-specific test.
+
+**Logging limitation:** In the two TS018 start events,
+`regionInField=nil` and `fieldInteriorScore=nil` are omissions
+in the public status returned from `beginStatic()`, not reliable
+evidence that `planStatic()` lacked a native polygon. The planner
+stores `targetInField`, `fieldInteriorScore`, `egressSide` and
+`fieldIdentitySource` inside `objective`, but does not forward
+them to the top-level start publication. See engineering journal.
+
+**Related GIANTS learning:** Tab-selection can claim Condor in GIANTS'
+physical execution context without an active AI job or intentional
+driver input: the motor and hundreds of requested native drive calls
+were observed before displacement resumed on tab-out. See
+`docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md`, *Selected-Assembly Motion
+Suppression*. This is a physical-realisation condition, not an
+OuttaMyWay static admission veto.

@@ -6335,3 +6335,68 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 **Validation limits and decision:** Both TEST `0.5.1.15` runs are **GIANTS field PASS**, with normal 5-second blocked-beneficiary Regulation and maximum-native-speed request. Neither reached the **25-second fail-safe**, so cancellation on expiry remains offline-tested, not field-validated. The old deleted-entity teardown error was absent. The outcome reason `GIANTS_CONTINUATION_UNMEASURED` is not positive measurement of native job continuation; the PASS verdict includes the supplied footage and field observation. **No executable or version change, new gate, or additional diagnostic polling.** Keep PR #466 draft pending explicit merger decision.
 
 **Record:** This supersedes the prior *unresolved 0.5.1.15 physical non-motion hypothesis* with field evidence of two successful relocations. It does not rewrite the actual FAIL of the earlier `0.5.1.14` run. The two field scenarios isolate selected-vehicle behaviour while the static relevance/actuator implementation stays the same. No further code change justified by the evidence.
+
+## 2026-10-10 — #465: Selected occupancy and static field-edge egress
+
+**Confirmed GIANTS concept — Selection-Claimed Occupancy:** TEST 0.5.1.15
+TS018 demonstrated that Condor could remain effectively immobile while
+tab-selected despite a started motor and 514 native point-drive calls
+(0.0022 m actual displacement by 5 s); after tab-out, the very same
+commitment realised movement and finished in 19.489 s. By comparison,
+tab-selection of Patriot instead yielded 497 Condor drive calls and 6.587 m
+displacement by 5 s, completing in 10.337 s. This is evidence of selected
+vehicle *physical control context*, not of any player's deliberate manual
+movement, nor of a formal GIANTS collision-space reservation API.
+A blocked worker's static proximity evidence and native AI-inactive
+status continue to govern OMW admission; GIANTS actual realisation of
+native Control remains separate. See `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md`
+under *Selected-Assembly Motion Suppression*.
+
+**New field-edge observation:** The supplied annotated screenshot
+`Screenshot_20261010_082736.png` places the relocated Condor visibly close
+to the field boundary. It does not supply world-coordinate distance-to-edge,
+proof of leaving the field, or an instrumented alternative inward path.
+The screenshot is nonetheless consistent with how the code ranks directions,
+and raises a real spatial-settlement quality question despite the two
+accepted movement PASS tests.
+
+**Current implementation found (not a new decision):**
+`ProjectedEgressRegion.planStatic()` chooses forward or reverse according
+to the dot product of the static subject's facing with the vector away from
+the blocked beneficiary. It evaluates the two **70° oblique** options.
+The scaling distance is **blocked beneficiary working width + 5 m**
+(36 + 5 = **41 m** for this theatre). Candidates must offer at least
+half that distance in signed lateral projection. If GIANTS' current
+beneficiary course polygon is available, the code samples the first 41 m
+of the **root path** at ~2 m steps and prefers a fully in-field sample.
+If both candidates fail that test (or the polygon is unavailable), the code
+still picks one, comparing directions toward the course centroid or a
+fallback field-detection coordinate when available; otherwise side -1 wins.
+There is **no hard in-field requirement, minimum boundary margin or
+physical-assembly boundary-clearance test**. The steering aim lies
+another **40 m beyond** the nominal region; success is the signed
+lateral Return Region, *not* reaching that steering point.
+
+**Named architectural gap — In-Field Preference Is Not In-Field Settlement:**
+A sampled preferred root path and a stopping region based on cross-track
+progress do not guarantee a field-interior final footprint. Nor is a
+nominally in-field centre-point route proof of safely deployed/folded
+clearance at the edge. No new fallback should be improvised when neither
+candidate is clearly interior until the intended hierarchy is agreed.
+
+**Observability limitation:** In both PASS runs, the
+`HOLD_RELOCATE_STARTED` log reported `regionInField=nil`,
+`fieldInteriorScore=nil`, `egressSide=nil` and `obliqueDeg=nil`.
+The planner computes these inside its `objective`, but
+`HoldRelocateCoordinator.beginStatic()` does not forward the fields to
+the outer reporting summary. Thus these `nil` values are **publication
+omissions**, not evidence of missing GIANTS polygon or failed field check.
+They prevent forensic confirmation of the chosen side/field status for
+these runs. Do not invent the selected side or an exact field-edge distance.
+
+**Decision state:** Record discovery and limitation; **no runtime change**.
+Retain TEST 0.5.1.15 as a double-pass plateau. Potential later architecture
+discussion: whether *Static In-Field Settlement* should require an interior
+region with explicit physical boundary clearance, and what to do when neither
+70° option achieves it. Avoid using a hard timeout or an additional scan
+as a substitute for defining that spatial commitment.
