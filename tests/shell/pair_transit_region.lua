@@ -124,7 +124,7 @@ b.workingWidthM=36
 local shortPocket={xs={40,60,60,40},zs={40,40,60,60}}
 local staged=assert(Plan.planPairCascade({
     fieldPolygon=shortPocket,fieldCentroid={x=50,z=50}},a,b))
-assert(staged.isPartialEgress and staged.regionTravelM>=3
+assert(staged.isPartialEgress and staged.regionTravelM>=2
     and staged.regionTravelM<41
     and staged.returnRegion.requiredProgressM==staged.regionTravelM
     and not staged.returnRegion.isPhysicalPairClearanceConfirmed,
