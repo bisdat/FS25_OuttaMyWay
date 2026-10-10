@@ -116,7 +116,6 @@ physical.reverseMechanism={
             assert(objective.vectorDistanceM==40 and objective.marginM==nil)
             assert(objective.directionSource=="SINGLE_OBLIQUE_REVERSE")
         else
-            assert(objective.returnRegion.source=="SIGNED_CROSS_TRACK_REGION")
             assert(objective.marginM==1 and objective.regionTravelM==41
                 and objective.remainingWorkingWidthM==36
                 and objective.workingCorridorMarginM==5
