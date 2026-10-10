@@ -6245,3 +6245,11 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Validation separation:** Offline contract covers first-edge/long pulse/short pulse, new GIANTS Job, unknown population, competing physical roots and current player claim; accepted native BWR tests remain blocking. GIANTS still must demonstrate informative geometry at blockage, sustained FPS and harmless negative cases before subject/movement direction is chosen. Neither forward nor reverse is presumed correct. Issue #465 owns the follow-up; draft PR is unmerged.
 
+
+## 2026-10-10 — #465: TEST 0.5.1.7 GIANTS Blockage Encounter Snapshot review
+
+**Observation (FS25 1.24.0.0, Build-Id b41780, supplied log.txt):** TEST 0.5.1.7 loaded, and at 06:31:35.244 published a one-shot first-observed blocked-edge snapshot after 1,000 ms confirmed native blocked state for beneficiary root `400127`, position X/Z `184.62/-254.04` and forward `(0.99,-0.16)`. One physical inventory reported 54 assembly roots. The nearest physical root `396410` was 10.49 m away, 10.49 m along the beneficiary's forward axis, -0.01 m cross-track, with facing alignment dot +1.00 and observed `aiActive=false` / `playerControlled=false`. The next nearest reported roots were more than 200 m distant. A normal single-worker BWR start followed; the savegame exited before recorded relocation completion or native restart.
+
+**Interpretation boundary:** This strongly nominates a geometric candidate but does not prove causal contact, exact collision time, physical stationarity, blocked-worker continuation or FPS impact. Neither forward nor reverse movement is justified by the published dot product alone.
+
+**Bounded TEST 0.5.1.8 diagnostic correction:** The snapshot already retained candidate absolute root pose, full facing vector/source and instantaneous reported speed, but the DEBUG formatter omitted those values. Publish that retained data with explicit `reportedSpeedMps`, `aiActive` and `unknown` values, without another GIANTS read, change to blocked-state qualification, candidate selection, actuation or any recurrent geometry work. CI remains independent offline evidence; the updated in-game log still requires GIANTS Reality review.

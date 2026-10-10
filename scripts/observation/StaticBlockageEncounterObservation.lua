@@ -120,11 +120,15 @@ function M.describe(e)
     }
     for i,c in ipairs(e.nearestPhysicalAssemblies or {}) do
         result[#result+1]="near"..i.."="..tostring(c.rootId)
+            .." x="..n(c.x).." z="..n(c.z)
+            .." forwardX="..n(c.forwardX).." forwardZ="..n(c.forwardZ)
+            .." facingSource="..tostring(c.facingSource or "UNAVAILABLE")
+            .." reportedSpeedMps="..n(c.reportedSpeedMps)
             .." distanceM="..n(c.distanceM)
             .." alongM="..n(c.relativeForwardM)
             .." crossM="..n(c.relativeCrossTrackM)
             .." facingDot="..n(c.facingAlignmentDot)
-            .." staticCandidateAI="..tostring(c.aiActive)
+            .." aiActive="..tostring(c.aiActive)
             .." playerControlled="..tostring(c.playerControlled)
     end
     return table.concat(result," ")

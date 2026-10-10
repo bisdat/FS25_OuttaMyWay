@@ -46,6 +46,7 @@ local job={}
 worker.spec_aiFieldWorker={isActive=true,driveStrategies={strategy}}
 worker.spec_aiJobVehicle={job=job}
 local blocker=vehicle(22,false)
+blocker.lastSpeedReal=0.0015 -- GIANTS native raw value; 1.50 m/s
 local other=vehicle(33,true)
 local distant=vehicle(44,false)
 g_server={}
@@ -75,6 +76,7 @@ assert(near.rootId==22 and near.x==0 and near.z==5
     and near.distanceM==5 and near.relativeForwardM==5
     and near.relativeCrossTrackM==0
     and near.facingAlignmentDot==0
+    and near.reportedSpeedMps==1.5
     and near.aiActive==false and near.playerControlled==false)
 -- Not physically remeasured after the first edge, even when subject moves.
 coords[22].z=9
@@ -88,8 +90,17 @@ assert(scans==firstScan and shapes==0)
 assert(#publications==2
     and publications[1].code=="NATIVE_BLOCKAGE_ENCOUNTER_SNAPSHOT"
     and publications[2].code=="NATIVE_BLOCKAGE_NO_LOCAL_WORKER")
-assert(publications[1].data.evidence:find("edgeMs=100")
-    and publications[1].data.evidence:find("near1=22"))
+local evidence=publications[1].data.evidence
+assert(evidence:find("edgeMs=100",1,true))
+assert(evidence:find(
+    "near1=22 x=0.00 z=5.00 forwardX=1.00 forwardZ=0.00"
+        .." facingSource=NATIVE_STEERING_NODE reportedSpeedMps=1.50",1,true))
+assert(evidence:find(
+    "near2=33 x=11.00 z=0.00 forwardX=0.00 forwardZ=-1.00"
+        .." facingSource=NATIVE_STEERING_NODE reportedSpeedMps=unknown",1,true))
+assert(evidence:find("aiActive=false",1,true)
+    and not evidence:find("staticCandidateAI",1,true))
+assert(scans==firstScan and shapes==0,"publication only formats captured fields")
 g_time=2100;observer:update(16)
 assert(scans==firstScan and #publications==2,"long pulse no rescan or republish")
 
