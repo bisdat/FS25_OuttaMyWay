@@ -75,7 +75,7 @@ function M.capture(worker,mission,nowMs)
         local observedPlayer=booleanMethod(other,"getIsControlled")
         result.physicalAssemblyCount=result.physicalAssemblyCount+1
         list[#list+1]={
-            rootId=other.rootNode,x=op.x,z=op.z,
+            rootId=other.rootNode,vehicle=other,x=op.x,z=op.z,
             forwardX=oh and oh.x or nil,
             forwardZ=oh and oh.z or nil,
             facingSource=oh and oh.source or "UNAVAILABLE",

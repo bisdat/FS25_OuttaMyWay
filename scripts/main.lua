@@ -11,6 +11,7 @@ local modules={
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
+    "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",

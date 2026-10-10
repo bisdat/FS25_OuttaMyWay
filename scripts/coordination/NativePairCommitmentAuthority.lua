@@ -268,6 +268,79 @@ function Authority:admitSingleCandidate(worker,confirmedBlockedMs)
     return commitment
 end
 
+-- Inferred static-subject selection. GIANTS native blocked state plus a
+-- close, inactive and nearly stationary assembly suffices for this BWR
+-- response. This is not proof of the physical collision actor.
+-- Only the original one-shot candidate snapshot is considered.
+function Authority:admitStaticBlockerCandidate(worker,confirmedBlockedMs,snapshot)
+    if self.active~=nil or not self:enabled() or type(worker)~="table"
+        or not finite(confirmedBlockedMs) or confirmedBlockedMs<1000
+        or type(snapshot)~="table"
+        or snapshot.populationAvailable~=true then
+        return nil,"STATIC_ADMISSION_UNAVAILABLE"
+    end
+    local strategy=currentStrategy(worker)
+    local job=currentJob(worker)
+    local beneficiary=pose(worker)
+    if strategy==nil or job==nil or beneficiary==nil
+        or strategy.isBlocked~=true
+        or snapshot.beneficiaryRootId~=worker.rootNode then
+        return nil,"STATIC_SOURCE_NOT_CURRENT"
+    end
+    local selection=nil
+    for i=1,#(snapshot.nearestPhysicalAssemblies or {}) do
+        local c=snapshot.nearestPhysicalAssemblies[i]
+        if type(c)=="table" and type(c.vehicle)=="table"
+            and c.vehicle~=worker and c.vehicle.isDeleted~=true
+            and c.vehicle.rootNode==c.rootId
+            and c.aiActive==false and c.playerControlled==false
+            and finite(c.reportedSpeedMps) and c.reportedSpeedMps<=0.25
+            and finite(c.distanceM) and c.distanceM<=30
+            and finite(c.relativeForwardM) and c.relativeForwardM>0
+            and finite(c.relativeCrossTrackM)
+            and math.abs(c.relativeCrossTrackM)<=5
+            and finite(c.forwardX) and finite(c.forwardZ) then
+            selection=c
+            break
+        end
+    end
+    if selection==nil then return nil,"NO_INFERRED_STATIC_BLOCKER" end
+    local subject=selection.vehicle
+    -- Identity and root pose are revalidated once, with no new census.
+    local current=pose(subject)
+    if current==nil then return nil,"STATIC_SUBJECT_POSE_UNAVAILABLE" end
+    local dx,dz=current.x-beneficiary.x,current.z-beneficiary.z
+    if dx*dx+dz*dz>900 then return nil,"STATIC_SUBJECT_NO_LONGER_LOCAL" end
+    local mission=g_currentMission
+    if mission~=nil and mission.controlledVehicle==subject then
+        return nil,"STATIC_SUBJECT_CURRENTLY_CONTROLLED"
+    end
+    if type(subject.getIsControlled)=="function" then
+        local ok,controlled=pcall(subject.getIsControlled,subject)
+        if not ok or controlled==true then
+            return nil,"STATIC_SUBJECT_CURRENTLY_CONTROLLED"
+        end
+    end
+    if type(subject.getIsAIActive)=="function" then
+        local ok,active=pcall(subject.getIsAIActive,subject)
+        if not ok or active~=false then
+            return nil,"STATIC_SUBJECT_NO_LONGER_INACTIVE"
+        end
+    end
+    self.sequence=self.sequence+1
+    local commitment={
+        kind="STATIC_BLOCKER",commitmentId="native-static-"..tostring(self.sequence),
+        participants={participant(worker,strategy,job,beneficiary)},
+        relocator={vehicle=subject,assemblyReferenceKey=tostring(subject.rootNode),
+            x=current.x,z=current.z,forwardX=selection.forwardX,
+            forwardZ=selection.forwardZ},
+        nearbyBlockers={},staticRegionDistanceM=30,
+        inference="NATIVE_BLOCKED_PLUS_NEARBY_INACTIVE_ROOT"
+    }
+    self.active=commitment
+    return commitment
+end
+
 function Authority:validateCommitment(commitment)
     if self.active~=commitment or commitment==nil then
         return false,"COMMITMENT_NOT_ISSUED"
@@ -278,6 +351,13 @@ end
 function Authority:isCommitmentCurrent(commitment)
     if not self:enabled() or self.active~=commitment then
         return false,"COMMITMENT_REVOKED"
+    end
+    if commitment.kind=="STATIC_BLOCKER" then
+        local subject=commitment.relocator and commitment.relocator.vehicle
+        if type(subject)~="table" or subject.isDeleted==true
+            or subject.rootNode==nil then
+            return false,"STATIC_SUBJECT_UNAVAILABLE"
+        end
     end
     for i=1,#commitment.participants do
         local p=commitment.participants[i]

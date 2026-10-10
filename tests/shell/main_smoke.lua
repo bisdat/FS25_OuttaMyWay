@@ -9,6 +9,7 @@ local expected={
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
+    "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
@@ -49,6 +50,7 @@ source=function(path)
         or path=="scripts/control/HoldRelocatePhysicalControl.lua"
         or path=="scripts/coordination/LiveHoldRelocateRuntime.lua"
         or path=="scripts/control/mechanisms/NativeReverseMechanism.lua"
+        or path=="scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTranslationHoldMechanism.lua"
         or path=="scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"

@@ -80,7 +80,7 @@ function Runtime:update(dt)
         return
     end
     if coordinator:isActive() then
-        coordinator:advance(nowMs)
+        coordinator:advance(nowMs,dt)
         local motion=coordinator.lastInitialMotionEvidence
         if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
             self.lastReportedInitialMotionEvidence=motion
@@ -107,7 +107,8 @@ function Runtime:update(dt)
         if not coordinator:isActive() then
             local outcome=coordinator:getStatus().lastOutcome
             if outcome~=nil then
-                issue(self,outcome.status=="NATIVE_RESTART_ACCEPTED" and "INFO" or "WARNING",
+                issue(self,(outcome.status=="NATIVE_RESTART_ACCEPTED"
+                    or outcome.status=="STATIC_BLOCKER_MOVED") and "INFO" or "WARNING",
                     "HOLD_RELOCATE_OUTCOME",outcome.status
                         .." reason="..tostring(outcome.reason))
             end
@@ -133,8 +134,15 @@ function Runtime:update(dt)
             and not self.attempted[evidence.candidateIdentity] then
             local commitment,reason
             if evidence.worker~=nil then
-                commitment,reason=self.authority:admitSingleCandidate(
-                    evidence.worker,evidence.confirmedBlockedMs)
+                -- Single native pulse: inferred inactive subject first,
+                -- established solo BWR when the one-shot snapshot lacks one.
+                commitment,reason=self.authority:admitStaticBlockerCandidate(
+                    evidence.worker,evidence.confirmedBlockedMs,
+                    evidence.encounterSnapshot)
+                if commitment==nil then
+                    commitment,reason=self.authority:admitSingleCandidate(
+                        evidence.worker,evidence.confirmedBlockedMs)
+                end
             else
                 commitment,reason=self.authority:admitCandidate(
                     evidence.firstWorker,evidence.secondWorker,
@@ -149,6 +157,12 @@ function Runtime:update(dt)
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then
                     local details=commitment.commitmentId
+                    if commitment.kind=="STATIC_BLOCKER" then
+                        details=details.." inferredStaticSubject="
+                            ..tostring(commitment.relocator.assemblyReferenceKey)
+                            .." blockedBeneficiary="
+                            ..tostring(evidence.worker.rootNode)
+                    end
                     if type(why)=="table"
                         and type(why.requestedReverseSpeedKmh)=="number" then
                         details=details.." requestedReverseSpeedKmh="..

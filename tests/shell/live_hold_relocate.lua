@@ -69,6 +69,7 @@ assert(authority:isCommitmentCurrent(issued))
 OuttaMyWay.NativeTranslationHoldMechanism={new=function()return {} end}
 OuttaMyWay.NativeSpeedRegulationMechanism={new=function()return {} end}
 OuttaMyWay.NativeReverseMechanism={new=function()return {} end}
+OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()return {} end}
 OuttaMyWay.NativeTransitRequestMechanism={new=function()return {} end}
 OuttaMyWay.NativeFieldworkJobReplacementMechanism={new=function()return {} end}
 local physical=Control.new(authority)

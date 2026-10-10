@@ -248,8 +248,42 @@ function Region.planSingle(commitment,relocator)
     }
 end
 
+-- Move the inactive assembly along its own facing axis away from the blocked
+-- worker. Facing alignment determines forward versus reverse. No area scan.
+function Region.planStatic(commitment,subject)
+    local beneficiary=commitment and commitment.participants
+        and commitment.participants[1] or nil
+    if type(subject)~="table" or type(beneficiary)~="table"
+        or commitment.staticRegionDistanceM~=30
+        or not finite(subject.x) or not finite(subject.z)
+        or not finite(subject.forwardX) or not finite(subject.forwardZ)
+        or not finite(beneficiary.x) or not finite(beneficiary.z) then
+        return nil,"STATIC_REGION_EVIDENCE_UNAVAILABLE"
+    end
+    local fx,fz=unit(subject.forwardX,subject.forwardZ)
+    if fx==nil then return nil,"STATIC_SUBJECT_FACING_UNAVAILABLE" end
+    local awayX,awayZ=subject.x-beneficiary.x,subject.z-beneficiary.z
+    local isForward=fx*awayX+fz*awayZ>=0
+    local dx,dz=isForward and fx or -fx,isForward and fz or -fz
+    local distance=commitment.staticRegionDistanceM
+    local horizon=distance+STEERING_LOOKAHEAD_M
+    return {
+        isReverse=not isForward,moveForwards=isForward,
+        targetX=subject.x+dx*horizon,targetZ=subject.z+dz*horizon,
+        steeringHorizonM=horizon,
+        returnRegion={source="STATIC_AXIAL_REGION",
+            originX=subject.x,originZ=subject.z,
+            directionX=dx,directionZ=dz,requiredProgressM=distance},
+        directionSource=isForward and "STATIC_FORWARD_AWAY"
+            or "STATIC_REVERSE_AWAY",
+        vectorDistanceM=distance,
+        staticSubjectRootId=subject.assemblyReferenceKey
+    }
+end
+
 function Region.progress(region,x,z)
-    if type(region)=="table" and region.source=="SINGLE_REVERSE_REGION" then
+    if type(region)=="table" and (region.source=="SINGLE_REVERSE_REGION"
+        or region.source=="STATIC_AXIAL_REGION") then
         if not finite(x) or not finite(z)
             or not finite(region.originX) or not finite(region.originZ)
             or not finite(region.directionX) or not finite(region.directionZ)

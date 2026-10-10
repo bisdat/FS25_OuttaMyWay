@@ -84,6 +84,11 @@ end
 function Coordinator:neutralize(state)
     local failures={}
     local control=self.physicalControl
+    if state.isStaticMovementOutstanding then
+        local ok,reason=command(control,"cancelStaticMovement",state.relocator.vehicle)
+        if not ok then failures[#failures+1]="STATIC_MOVE:"..tostring(reason) end
+        state.isStaticMovementOutstanding=false
+    end
     if state.isReverseOutstanding then
         local ok,reason=command(control,"cancelReverse",state.relocator.vehicle)
         if not ok then failures[#failures+1]="REVERSE:"..tostring(reason) end
@@ -133,9 +138,66 @@ function Coordinator:relinquish(reason)
     return released,released and nil or self.lastOutcome.reason
 end
 
+-- Inferred static subjects move under the same exclusive commitment and
+-- physical TRANSIT boundary, but without inventing a job for the subject or
+-- stopping and restarting the blocked beneficiary's GIANTS FIELDWORK.
+function Coordinator:beginStatic(commitment,nowMs)
+    if self.active~=nil or not finite(nowMs) or type(commitment)~="table"
+        or type(commitment.participants)~="table"
+        or #commitment.participants~=1
+        or not positioned(commitment.participants[1])
+        or not positioned(commitment.relocator)
+        or type(commitment.nearbyBlockers)~="table"
+        or #commitment.nearbyBlockers~=0 then
+        return false,"STATIC_COMMITMENT_INVALID"
+    end
+    local objective,why=OuttaMyWay.ProjectedEgressRegion.planStatic(
+        commitment,commitment.relocator)
+    if objective==nil then return false,why end
+    local accepted,reason=command(self.commitmentAuthority,
+        "validateCommitment",commitment)
+    if not accepted then return false,reason end
+    local state={
+        commitment=commitment,commitmentId=commitment.commitmentId,
+        relocator=commitment.relocator,blockers={},isBlockerRegulated={},
+        isReverseOutstanding=false,isStaticMovementOutstanding=false,
+        isTransitOutstanding=false,isRelocatorHeld=false,
+        isStatic=true,phase="STATIC_REQUESTING_TRANSIT",objective=objective
+    }
+    local ready,preflightReason=command(self.physicalControl,"preflight",state)
+    if not ready then return false,preflightReason end
+    self.active=state
+    self.lastEgressRegulationResults=nil
+    self.lastInitialMotionEvidence=nil
+    state.isTransitOutstanding=true
+    local transit,transitReason=command(self.physicalControl,
+        "requestTransit",state.relocator.vehicle)
+    if not transit then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",transitReason)
+        return false,transitReason
+    end
+    state.isStaticMovementOutstanding=true
+    local started,movement=command(self.physicalControl,
+        "startStaticMovement",state.relocator.vehicle,objective)
+    if not started then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",movement)
+        return false,movement
+    end
+    state.phase="STATIC_MOVING"
+    return true,{relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
+        objective=objective,directionSource=objective.directionSource,
+        regionRequiredProgressM=objective.returnRegion.requiredProgressM,
+        vectorDistanceM=objective.vectorDistanceM,
+        requestedReverseSpeedKmh=type(movement)=="table"
+            and movement.requestedDriveSpeedKmh or nil}
+end
+
 -- The commitment authority must independently validate a live, issued
 -- commitment. An input boolean supplied by a candidate is never authority.
 function Coordinator:begin(commitment,nowMs)
+    if commitment~=nil and commitment.kind=="STATIC_BLOCKER" then
+        return self:beginStatic(commitment,nowMs)
+    end
     if self.active~=nil then return false,"COMMITMENT_ALREADY_ACTIVE" end
     if type(commitment)~="table" or commitment.commitmentId==nil or not finite(nowMs)
         or type(commitment.participants)~="table"
@@ -275,12 +337,46 @@ end
 
 -- advance is a procedure step, not GIANTS' generic update callback. The
 -- admission and safety witnesses stay with the independent authority.
-function Coordinator:advance(nowMs)
+function Coordinator:advance(nowMs,dt)
     local state=self.active
     if state==nil then return end
     if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
+    if state.isStatic then
+        local status,statusReason=query(self.physicalControl,
+            "staticMovementStatus",state.relocator.vehicle,dt)
+        if type(status)~="table" then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",
+                statusReason or "STATIC_MOVE_STATUS_UNAVAILABLE")
+            return
+        end
+        if status.isFailed then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",
+                status.reason or "STATIC_MOVE_FAILED")
+            return
+        end
+        if status.isComplete~=true then return end
+        local stopped,stopReason=command(self.physicalControl,
+            "stopStaticMovement",state.relocator.vehicle)
+        if not stopped then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",stopReason)
+            return
+        end
+        state.isStaticMovementOutstanding=false
+        local retained,retainReason=command(self.physicalControl,
+            "retainStaticTransit",state.relocator.vehicle)
+        if not retained then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",retainReason)
+            return
+        end
+        state.isTransitOutstanding=false
+        self.lastOutcome={status="STATIC_BLOCKER_MOVED",
+            commitmentId=state.commitmentId,isNativeContinuationConfirmed=false,
+            reason="INFERRED_SUBJECT_MOVED_GIANTS_CONTINUATION_UNMEASURED"}
+        self.active=nil
+        return
+    end
 
     -- Timer alone releases the other participant's speed regulation.
     if not state.isSingle and nowMs>=state.egressRegulationUntilMs then

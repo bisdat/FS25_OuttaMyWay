@@ -72,7 +72,8 @@ assert(first.observedAtMs==100
 assert(first.beneficiaryFacing.x==0 and first.beneficiaryFacing.z==1)
 assert(first.physicalAssemblyCount==3 and #first.nearestPhysicalAssemblies==3)
 local near=first.nearestPhysicalAssemblies[1]
-assert(near.rootId==22 and near.x==0 and near.z==5
+assert(near.rootId==22 and near.vehicle==blocker
+    and near.x==0 and near.z==5
     and near.distanceM==5 and near.relativeForwardM==5
     and near.relativeCrossTrackM==0
     and near.facingAlignmentDot==0

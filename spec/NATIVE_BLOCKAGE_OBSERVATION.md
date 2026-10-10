@@ -23,13 +23,13 @@ The new **Blockage Encounter Snapshot** captures physical evidence at the **firs
 
 When native world-pose/facing APIs and `mission.vehicleSystem.vehicles` are available, record:
 - blocked beneficiary's current root X/Z and current forward vector from its GIANTS AI steering node (root fallback, or unresolved);
-- for current distinct physical assembly roots, one world X/Z / facing sample and, where observed, `getIsAIActive`, player-controlled state and speed;
+- for current distinct physical assembly roots, one world X/Z / facing sample and, where observed, `getIsAIActive`, player-controlled state and speed; the retained candidate also carries its actual GIANTS root-vehicle reference for downstream admission, but never publishes that object as text;
 - for a bounded set of at most **three** nearest physical roots, relative forward/cross offsets and heading-alignment dot product against the blocked worker's facing. Three is an **evidence-size bound**, not a new causal radius or admission rule;
 - observation time, physical inventory completeness and explicit unavailable fields.
 
 The data is carried through the **existing ≥1 second single-native-pulse nomination**, as `encounterSnapshot`. A DEBUG `NATIVE_BLOCKAGE_ENCOUNTER_SNAPSHOT` line is emitted only for a qualified native single-worker concern where a physical population was available, never for every frame or every subsecond pulse. For each retained candidate it publishes the already-captured X/Z, forward vector, facing source and reported speed in m/s (or `unknown`), alongside relative geometry, `aiActive` and player-control evidence. This is formatting of the retained snapshot, not a fresh GIANTS observation; one instantaneous reported speed is not proof of sustained stationarity. This does **not** identify a blocker, replace the current authority decision, or trigger relocation. Original pairwise and solo recovery timing and Control are unchanged. A new pulse, GIANTS job or strategy yields a new snapshot; map teardown, disabled state and actual native unblock discard the old sample.
 
-This evidence is meant to answer: *what did GIANTS show about the worker's and possible static subject's pose/facing as the blockage began?* It does not yet answer *which exact object caused it* or *whether forward or reverse motion is safe*. Those later positive decisions are [#465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) work, not prerequisites invented by Observation.
+This evidence is meant to answer: *what did GIANTS show about the worker's and possible static subject's pose/facing as the blockage began?* It does not yet answer *which exact object caused it* or *whether forward or reverse motion is safe*. Downstream [#465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) now deliberately permits a bounded **inference** from native blockage plus near/static root evidence to initiate non-job Control; that decision belongs entirely to the independent Hold & Relocate authority and does not turn Observation into a collision detector or direct actuator.
 
 ## Confirmed blocked-duration boundary
 

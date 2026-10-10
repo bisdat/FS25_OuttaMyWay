@@ -21,11 +21,15 @@ The **paired Hold & Relocate contract remains unchanged**: centroid-nearest relo
 
 **Validation and accepted Reality (9 October 2026):** TEST `0.5.1.3` received a **GIANTS TS003 PASS verdict** for single-worker physical recovery toward the blocked worker's own field. The supporting `log(20261009-163634).txt` records native `isBlocked` qualified for **1,000 ms** at 17:35:00.912, solo recovery started at 17:35:00.913 with a **40 m projected oblique region**, `fieldIdentitySource=GIANTS_ACTIVE_COURSE_FIELD` and `regionInField=true`, and `NATIVE_RESTART_ACCEPTED` at 17:35:14.082. The log alone proves native handback *acceptance*, not ongoing physical agricultural work; the field verdict is the separate physical evidence. Acceptance is restricted to the observed TS003 run; other obstruction types and repeated recovery still require evidence. Paired TS015 PASS on `0.5.1.0` remains the independent non-regression baseline.
 
-## Reactive static-blocker extension — proposal, NOT active Control
+## Reactive static-blocker extension — inferred Control, TEST 0.5.1.9
 
-[Issue #465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) proposes admitting a positively identified **non-active blocker** as the bounded physical subject of existing reactive BWR, with the blocked active worker as beneficiary. This would be a **different subject selection**, not a new completed-job parking duty or preventive conflict scanner. A forward, lateral or reverse manoeuvre is deliberately undecided pending one-time encounter pose/facing evidence and real GIANTS actuation validation.
+[Issue #465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) deliberately accepts **bounded physical inference**, not positive proof of GIANTS contact identity. The `STATIC_BLOCKER` commitment is exclusive with existing `SINGLE` and paired commitments. Active GIANTS worker-pair BWR takes priority; only a qualified native single-worker occurrence can nominate a non-job subject. If inference fails, the unchanged solo 40 m oblique recovery remains available.
 
-The current `0.5.1.7` increment is **passive observation only**; no additional commitment, non-job actuator, direction algorithm or fallback change has been implemented. Accepted native TS015 pair and TS003 solo BWR remain untouched. This proposal does not grant permission to move an unverified nearest stationary physical root or to treat native `isBlocked` as proof of contact identity.
+**Admission:** The native worker must retain its current FIELDWORK job, field-course strategy, positive `isBlocked` and at least 1,000 ms confirmed native pulse. The one-shot Blockage Encounter Snapshot must match that beneficiary root, and the candidate must be a retained distinct physical root with `aiActive=false`, `playerControlled=false`, finite reported speed at most 0.25 m/s, root separation at most 30 m, positive along-track displacement and absolute cross-track offset at most 5 m. Recheck the candidate identity/root pose and native current player/AI claim once at admission, without new census or physical footprint. These thresholds are **inference inputs**, not confirmed collision geometry. Missing evidence chooses the existing solo path rather than a guessed static subject.
+
+**Subject movement:** The admitted static subject receives a one-time TRANSIT command set, and its non-active motor receives a temporary native start when required, with `forceIsActive` and cruise-speed restoration. Unlike an active GIANTS worker, a completed assembly does not produce its own `AIVehicleUtil.driveToPoint` calls: `NativeStaticAssemblyDriveMechanism` explicitly issues them while the exclusive commitment is current. Use the subject's cached forward vector and beneficiary separation to choose **forward or reverse away from the worker**, with a **30 m projected axial Return Region**, an additional 40 m steering lookahead and capped 8 km/h native drive request. Reverse uses `getAIReverserNode` and the proven GIANTS tool-relative reverse-target transform; forward uses `getAISteeringNode`. Current player or AI claim interrupts the non-job actuator. No synthetic AI job is started, and the blocked beneficiary is never controlled by the static path.
+
+**Completion and release:** Completion requires actual projected root movement into the 30 m axial region after a native drive command, not steering-point arrival. Neutralize motion, restore motor/cruise/physics activity, and retain the static assembly's requested TRANSIT configuration; do not restore its productive implement state. GIANTS retains its own blocked worker job and decides whether that job resumes; `STATIC_BLOCKER_MOVED` means **physical region entry only**. Interrupted commands use the existing coordinator's release responsibility, without an invented elapsed-time fail-safe or automatic second mover. Paired TS015 and solo TS003 source contracts remain unchanged; TEST 0.5.1.9 runtime physical correctness, continuation and FPS remain unverified until GIANTS field validation.
 
 ## Commitment and evidence boundary
 
@@ -92,6 +96,7 @@ Missing initial evidence declines admission. On native-control interruption, dis
 | --- | --- |
 | [`scripts/coordination/HoldRelocateCoordinator.lua`](../scripts/coordination/HoldRelocateCoordinator.lua) | `REALISES` |
 | [`scripts/control/mechanisms/NativeReverseMechanism.lua`](../scripts/control/mechanisms/NativeReverseMechanism.lua) | `SUPPORTS` |
+| [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeTranslationHoldMechanism.lua`](../scripts/control/mechanisms/NativeTranslationHoldMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeTransitRequestMechanism.lua`](../scripts/control/mechanisms/NativeTransitRequestMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua`](../scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua) | `SUPPORTS` |
@@ -109,6 +114,7 @@ Missing initial evidence declines admission. On native-control interruption, dis
 | [`tests/shell/native_transit_request_mechanism.lua`](../tests/shell/native_transit_request_mechanism.lua) | `CHALLENGES` |
 | [`tests/shell/native_fieldwork_job_replacement.lua`](../tests/shell/native_fieldwork_job_replacement.lua) | `CHALLENGES` |
 | [`tests/shell/live_hold_relocate.lua`](../tests/shell/live_hold_relocate.lua) | `CHALLENGES` |
+| [`tests/shell/static_blocker_relocation.lua`](../tests/shell/static_blocker_relocation.lua) | `CHALLENGES` |
 
 ## Implementation traceability and validation scope
 
