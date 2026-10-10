@@ -72,6 +72,7 @@ jobs:
             scripts/coordination/NativePairCommitmentAuthority.lua \
             scripts/control/HoldRelocatePhysicalControl.lua \
             scripts/coordination/LiveHoldRelocateRuntime.lua \
+            scripts/diagnostics/ReverseKinematicsProbe.lua \
             scripts/control/mechanisms/NativeReverseMechanism.lua \
             scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua \
             scripts/control/mechanisms/NativeTranslationHoldMechanism.lua \
@@ -100,6 +101,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/pair_native_drive_interposition.lua
           "$LUAJIT_BIN" tests/shell/live_hold_relocate.lua
+          "$LUAJIT_BIN" tests/shell/reverse_kinematics_probe.lua
           "$LUAJIT_BIN" tests/shell/native_reverse_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_translation_hold_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_speed_regulation_mechanism.lua
