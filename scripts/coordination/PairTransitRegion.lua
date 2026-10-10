@@ -234,13 +234,31 @@ local function reachableTravel(poly,foot,dx,dz,desired,scene,otherFoot)
     return travelled
 end
 
--- Read GIANTS' already populated immediate target only as a soft preference.
--- This is not a future-course cursor and MUST NOT veto an otherwise safe exit.
+-- Read only native-populated local evidence as a SOFT preference, never a
+-- future-course cursor or an egress veto. A blocked job may publish zero
+-- immediate drive data, so opportunistically inspect its passive last target
+-- or measured last-position delta, without calling getDriveData().
 local function immediateDemand(other)
     local spec=other.vehicle.spec_aiFieldWorker
     local drive=type(spec)=="table" and spec.aiDriveParams or nil
-    if type(drive)~="table" or drive.valid~=true then return nil,nil end
-    return direction(drive.tX-other.x,drive.tZ-other.z)
+    if type(drive)=="table" and drive.valid==true
+        and finite(drive.tX) and finite(drive.tZ) then
+        local dx,dz=direction(drive.tX-other.x,drive.tZ-other.z)
+        if dx~=nil then return dx,dz end
+    end
+    local strategy=other.sourceStrategyReference
+    if type(strategy)~="table" then return nil,nil end
+    local target=strategy.lastTargetPosition
+    if type(target)=="table" and finite(target.x) and finite(target.z) then
+        local dx,dz=direction(target.x-other.x,target.z-other.z)
+        if dx~=nil then return dx,dz end
+    end
+    local prior=strategy.lastVehiclePosition
+    if type(prior)=="table" and finite(prior.x) and finite(prior.z) then
+        local x,z=other.x-prior.x,other.z-prior.z
+        if x*x+z*z>=0.25 then return direction(x,z) end
+    end
+    return nil,nil
 end
 
 -- Spatially discover reachable sectors for BOTH possible movers. The 70°
