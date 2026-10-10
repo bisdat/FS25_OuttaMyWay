@@ -191,8 +191,13 @@ local function regionStepValid(poly,foot,dx,dz,t,scene,otherFoot)
     -- The other participant is not part of the generic third-party census.
     -- Its nominal body/TRANSIT rectangle still constrains the mover's sweep.
     -- The actual WORKING boom and changing fold envelope remain unknown.
-    local occupied={}
-    for j=1,#scene do occupied[#occupied+1]=scene[j] end
+    for j=1,#scene do
+        local o=scene[j]
+        if lowX<o.maxX+MARGIN_M and highX>o.minX-MARGIN_M
+            and lowZ<o.maxZ+MARGIN_M and highZ>o.minZ-MARGIN_M then
+            return false
+        end
+    end
     local minX,maxX,minZ,maxZ
     for j=1,#otherFoot.corners do
         local p=otherFoot.corners[j]
@@ -202,29 +207,29 @@ local function regionStepValid(poly,foot,dx,dz,t,scene,otherFoot)
         minZ=minZ and math.min(minZ,z) or z
         maxZ=maxZ and math.max(maxZ,z) or z
     end
-    occupied[#occupied+1]={minX=minX,maxX=maxX,minZ=minZ,maxZ=maxZ}
-    for j=1,#occupied do
-        local o=occupied[j]
-        if lowX<o.maxX+MARGIN_M and highX>o.minX-MARGIN_M
-            and lowZ<o.maxZ+MARGIN_M and highZ>o.minZ-MARGIN_M then
-            return false
-        end
-    end
-    return true
+    -- Existing pair overlap at admission is not a reason to prohibit
+    -- withdrawal. Its intersection area must never INCREASE along the
+    -- sampled corridor. New overlap from a separated start is forbidden.
+    local overlapX=math.max(0,math.min(highX,maxX+MARGIN_M)
+        -math.max(lowX,minX-MARGIN_M))
+    local overlapZ=math.max(0,math.min(highZ,maxZ+MARGIN_M)
+        -math.max(lowZ,minZ-MARGIN_M))
+    return true,overlapX*overlapZ
 end
 
 local function reachableTravel(poly,foot,dx,dz,desired,scene,otherFoot)
     -- Preserve exact full travel when it fits. For boundaries/obstacles,
     -- return the last sampled safe distance (never the first unsafe step).
-    if not regionStepValid(poly,foot,dx,dz,0,scene,otherFoot) then
-        return 0
-    end
+    local valid,previousOverlap=regionStepValid(
+        poly,foot,dx,dz,0,scene,otherFoot)
+    if not valid then return 0 end
     local travelled=0
     while travelled+0.0001<desired do
         local nextM=math.min(desired,travelled+STEP_M)
-        if not regionStepValid(poly,foot,dx,dz,nextM,scene,otherFoot)
-            then break end
-        travelled=nextM
+        local allowed,overlap=regionStepValid(
+            poly,foot,dx,dz,nextM,scene,otherFoot)
+        if not allowed or overlap>previousOverlap+0.0001 then break end
+        travelled,previousOverlap=nextM,overlap
     end
     return travelled
 end
