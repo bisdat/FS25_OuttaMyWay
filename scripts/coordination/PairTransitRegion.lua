@@ -19,6 +19,11 @@ local function direction(x,z)
     if d<0.0001 then return nil,nil end
     return x/d,z/d
 end
+-- A genuine pair exit is lateral to both participants, not longitudinal.
+local function lateralDominates(dx,dz,fx,fz)
+    return math.abs(dx*(-fz)+dz*fx)>math.abs(dx*fx+dz*fz)+0.000001
+end
+
 local function heading(vehicle,name,reverse)
     if type(vehicle)~="table" or type(vehicle[name])~="function"
         or type(localDirectionToWorld)~="function" then return nil,nil end
@@ -192,10 +197,9 @@ local function pathInField(poly,foot,dx,dz,distance,scene)
     end
     return true
 end
--- Evaluate both mover assignments and all candidate directions against the
--- common-field polygon. Travel is prescribed by the REMAINING assembly's
--- productive working corridor width + the accepted 5 m margin. TRANSIT
--- geometry determines which full-distance routes are feasible, not distance.
+-- Evaluate both 70-degree oblique reverse sides for each mover first,
+-- then only non-axial centroid alternatives. All routes must withdraw from
+-- the other assembly. Keep the remaining worker's WORKING width + 5 m travel.
 function Region.planPair(commitment,preferred,alternative)
     if type(commitment)~="table" or type(commitment.fieldPolygon)~="table"
         or type(commitment.fieldCentroid)~="table" then
@@ -213,7 +217,7 @@ function Region.planPair(commitment,preferred,alternative)
             local fx,fz=heading(other.vehicle,"getAISteeringNode",false)
             local backX,backZ=heading(mover.vehicle,"getAIReverserNode",true)
             local forwardX,forwardZ=heading(mover.vehicle,"getAISteeringNode",false)
-            if fx~=nil then
+            if fx~=nil and forwardX~=nil then
                 local nx,nz=-fz,fx
                 local centreX=commitment.fieldCentroid.x-foot.rootX
                 local centreZ=commitment.fieldCentroid.z-foot.rootZ
@@ -230,18 +234,23 @@ function Region.planPair(commitment,preferred,alternative)
                             reverse=true}
                     end
                 end
-                if forwardX~=nil then
-                    rays[#rays+1]={mode="FORWARD",side=0,
-                        dx=forwardX,dz=forwardZ,reverse=false}
-                end
                 if cx~=nil then
                     rays[#rays+1]={mode="CENTROID",side=0,
                         dx=cx,dz=cz,reverse=false}
                 end
+                local toOtherX=otherFoot.rootX-foot.rootX
+                local toOtherZ=otherFoot.rootZ-foot.rootZ
                 for _,ray in ipairs(rays) do
                     attempts=attempts+1
                     local rate=ray.dx*nx+ray.dz*nz
-                    if math.abs(rate)>0.1 then
+                    -- Exclude axial paths on EITHER participant. A centroid
+                    -- request must not start forward into a head-on worker.
+                    if math.abs(rate)>0.1
+                        and lateralDominates(ray.dx,ray.dz,forwardX,forwardZ)
+                        and lateralDominates(ray.dx,ray.dz,fx,fz)
+                        and ray.dx*toOtherX+ray.dz*toOtherZ<=0.001
+                        and (ray.reverse or forwardX*toOtherX
+                            +forwardZ*toOtherZ<=0.001) then
                         local sign=rate>0 and 1 or -1
                         local travel=otherWorkingWidth+WORK_CORRIDOR_MARGIN_M
                         local canReach=ray.mode~="CENTROID"
@@ -268,10 +277,8 @@ function Region.planPair(commitment,preferred,alternative)
                                     projectedCrossTrackProgressM=crossProgress,
                                     requiredProgressM=travel,
                                     isPhysicalPairClearanceConfirmed=false},
-                                directionSource=ray.mode=="OBLIQUE_REVERSE"
-                                    and "OBLIQUE_REVERSE"
-                                    or (ray.mode=="FORWARD" and "PAIR_FORWARD"
-                                        or "PAIR_CENTROID"),
+                                directionSource=ray.reverse
+                                    and "OBLIQUE_REVERSE" or "PAIR_CENTROID",
                                 cascadeMode=ray.mode,egressSide=ray.side,
                                 regionTravelM=travel,vectorDistanceM=travel,
                                 remainingWorkingWidthM=otherWorkingWidth,
@@ -287,12 +294,20 @@ function Region.planPair(commitment,preferred,alternative)
                                 ray.dx*candidate.steeringHorizonM
                             candidate.targetZ=foot.rootZ+
                                 ray.dz*candidate.steeringHorizonM
-                            if best==nil or travel<best.regionTravelM-0.01
-                                or (math.abs(travel-best.regionTravelM)<=0.01
-                                    and (centreScore>best.fieldInteriorScore+0.01
-                                        or (math.abs(centreScore-
-                                            best.fieldInteriorScore)<=0.01
-                                            and mover==preferred))) then
+                            -- Actual cascade: 70-degree oblique reverse
+                            -- before centroid. Within each mode prefer the
+                            -- centroid-nearer mover, then best in-field side.
+                            local tier=ray.reverse and 1 or 2
+                            local previousTier=best and (best.isReverse and 1 or 2)
+                                or 3
+                            local firstMover=mover==preferred
+                            local previousFirst=chosenMover==preferred
+                            if best==nil or tier<previousTier
+                                or (tier==previousTier
+                                    and ((firstMover and not previousFirst)
+                                        or (firstMover==previousFirst
+                                            and centreScore>best.fieldInteriorScore
+                                                +0.01))) then
                                 best,chosenMover,chosenOther=candidate,mover,other
                             end
                         end
