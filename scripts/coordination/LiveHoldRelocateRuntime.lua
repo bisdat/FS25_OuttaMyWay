@@ -210,6 +210,10 @@ function Runtime:update(dt)
                         details=details.." requestedDriveSpeedKmh="
                             ..tostring(why.requestedDriveSpeedKmh)
                     end
+                    if type(why)=="table" and why.cascadeMode~=nil then
+                        details=details.." cascadeMode="..tostring(why.cascadeMode)
+                            .." cascadeAttempts="..tostring(why.cascadeAttempts)
+                    end
                     if type(why)=="table" and why.beneficiaryWorkingWidthM~=nil then
                         details=details.." beneficiaryWorkingWidthM="
                             ..tostring(why.beneficiaryWorkingWidthM)

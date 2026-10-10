@@ -251,8 +251,15 @@ function Coordinator:begin(commitment,nowMs)
                 or not finite(commitment.fieldCentroid.x)
                 or not finite(commitment.fieldCentroid.z)
                 or not finite(commitment.offsetM) or commitment.offsetM<0
-                or not finite(commitment.blockerWorkingWidthM)
-                or commitment.blockerWorkingWidthM<=0
+                or (not (finite(commitment.blockerWorkingWidthM)
+                    and commitment.blockerWorkingWidthM>0)
+                    and not (commitment.pairWidthsCaptured
+                        and ((finite(commitment.participants[1]
+                            and commitment.participants[1].workingWidthM)
+                            and commitment.participants[1].workingWidthM>0)
+                            or (finite(commitment.participants[2]
+                            and commitment.participants[2].workingWidthM)
+                            and commitment.participants[2].workingWidthM>0))))
                 or type(commitment.fieldPolygon)~="table"))
         or type(commitment.nearbyBlockers)~="table"
         or (commitment.kind~="SINGLE" and #commitment.nearbyBlockers==0) then
@@ -275,30 +282,27 @@ function Coordinator:begin(commitment,nowMs)
     else
         relocator,other=selectRelocator(first,second,commitment.fieldCentroid)
     end
-    local blockers,seen,hasOther={}, {}, false
-    for i=1,#commitment.nearbyBlockers do
-        local participant=commitment.nearbyBlockers[i]
-        if not positioned(participant)
-            or participant.assemblyReferenceKey==relocator.assemblyReferenceKey
-            or seen[participant.assemblyReferenceKey] then
-            return false,"BLOCKER_MEMBERSHIP_INVALID"
-        end
-        seen[participant.assemblyReferenceKey]=true
-        blockers[#blockers+1]=participant
-        if participant.assemblyReferenceKey==other.assemblyReferenceKey
-            and participant.vehicle==other.vehicle then hasOther=true end
-    end
-    if not single and not hasOther then return false,"PAIR_PARTNER_NOT_IN_BLOCKERS" end
-
     local objective,geometryReason
     if single then
         objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.planSingle(
             commitment,relocator)
     else
-        objective,geometryReason=OuttaMyWay.ProjectedEgressRegion.plan(
-            commitment,relocator,other)
+        -- No motion while exploring options. Assess both mover assignments
+        -- and three ordered route classes before any physical Control.
+        objective,relocator,other,geometryReason=
+            OuttaMyWay.ProjectedEgressRegion.planPairCascade(
+                commitment,relocator,other)
     end
     if objective==nil then return false,geometryReason end
+    local blockers={}
+    if not single then
+        if not positioned(other)
+            or (other~=first and other~=second)
+            or other==relocator then
+            return false,"PAIR_PARTNER_NOT_IN_BLOCKERS"
+        end
+        blockers[1]=other
+    end
     local state={
         commitmentId=commitment.commitmentId,commitment=commitment,
         relocator=relocator,blockers=blockers,isBlockerRegulated={},
@@ -344,10 +348,12 @@ function Coordinator:begin(commitment,nowMs)
         self:finishWithOutcome("CONTROL_INTERRUPTED",reverseEvidence)
         return false,reverseEvidence
     end
-    state.phase="REVERSING"
+    state.phase=objective.isReverse and "REVERSING" or "PAIR_FORWARD_MOVING"
     return true,{relocatingAssemblyReferenceKey=relocator.assemblyReferenceKey,
         objective=objective,
         directionSource=objective.directionSource,
+        cascadeMode=objective.cascadeMode,
+        cascadeAttempts=objective.cascadeAttempts,
         regionRequiredProgressM=objective.returnRegion.requiredProgressM,
         blockerWorkingWidthM=objective.blockerWorkingWidthM,
         marginM=objective.marginM,
@@ -358,7 +364,9 @@ function Coordinator:begin(commitment,nowMs)
         fieldInteriorScore=objective.fieldInteriorScore,
         fieldIdentitySource=objective.fieldIdentitySource,
         requestedReverseSpeedKmh=type(reverseEvidence)=="table"
-            and reverseEvidence.requestedReverseSpeedKmh or nil}
+            and reverseEvidence.requestedReverseSpeedKmh or nil,
+        requestedDriveSpeedKmh=type(reverseEvidence)=="table"
+            and reverseEvidence.requestedDriveSpeedKmh or nil}
 end
 
 -- Complete the same native FIELDWORK handback for solo and paired recovery.
@@ -489,7 +497,7 @@ function Coordinator:advance(nowMs,dt)
     end
 
   -- Reverse is already armed in begin, without a TRANSIT settlement check.
-    if state.phase=="REVERSING" then
+    if state.phase=="REVERSING" or state.phase=="PAIR_FORWARD_MOVING" then
         local status,statusReason=query(self.physicalControl,"reverseStatus",
             state.relocator.vehicle,state.objective)
         if type(status)~="table" then

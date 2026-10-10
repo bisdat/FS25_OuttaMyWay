@@ -209,4 +209,30 @@ assert(mechanism.activeVehicle==vehicle)
 vehicle.setCruiseControlMaxSpeed=setter
 assert(mechanism:cancelReverse(vehicle))
 assert(cruise.speed==8 and cruise.speedReverse==8)
-print("Dormant native reverse / tool correction / measured travel / passthrough: PASS")
+-- A paired forward option must use GIANTS' *forward* motor and steering
+-- frame, without reverse tool correction or a synthetic fieldwork job.
+motor.getMaximumForwardSpeed=function()return 27/3.6 end
+local forwardObjective={isReverse=false,moveForwards=true,
+    targetX=100,targetZ=140,steeringHorizonM=150,
+    returnRegion={source="SIGNED_CROSS_TRACK_REGION",
+        originX=0,originZ=0,directionX=0,directionZ=1,
+        blockerOriginX=0,blockerOriginZ=0,
+        corridorNormalX=0,corridorNormalZ=1,sideSign=1,
+        initialCrossTrackM=0,requiredCrossTrackM=9,
+        requiredProgressM=9}}
+locations[1].x=0;locations[1].z=0
+local forwardArmed,forwardEvidence=mechanism:startReverse(vehicle,forwardObjective)
+assert(forwardArmed and forwardEvidence.kind=="PAIR_FORWARD_ARMED"
+    and forwardEvidence.requestedDriveSpeedKmh==25
+    and forwardEvidence.requestedReverseSpeedKmh==nil)
+AIVehicleUtil.driveToPoint(vehicle,16,0,false,false,1,1,0,true)
+assert(calls[#calls].forwards==true and calls[#calls].allowed==true
+    and calls[#calls].doNotSteer==false and calls[#calls].speed==25
+    and actualConversionNode==3,
+    "forward egress is not sent through the reverse node")
+locations[1].z=10
+assert(mechanism:reverseStatus(vehicle).isComplete)
+assert(mechanism:stopReverse(vehicle))
+assert(AIVehicleUtil.driveToPoint==native
+    and cruise.speed==8 and cruise.speedReverse==8)
+print("Native directional pair egress and reverse restoration: PASS")

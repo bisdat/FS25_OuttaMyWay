@@ -59,7 +59,7 @@ local function heading(vehicle,methodName,reverse)
     return reverse and -ux or ux,reverse and -uz or uz
 end
 
-function Region.plan(commitment,relocator,blocker)
+function Region.plan(commitment,relocator,blocker,routeMode)
     if type(commitment)~="table" or type(relocator)~="table"
         or type(blocker)~="table"
         or not finite(relocator.x) or not finite(relocator.z)
@@ -68,14 +68,32 @@ function Region.plan(commitment,relocator,blocker)
         or type(commitment.fieldPolygon)~="table" then
         return nil,"EGRESS_REGION_EVIDENCE_UNAVAILABLE"
     end
+    -- For a pair the width always belongs to the *other* assembly,
+    -- including when the centroid-preferred mover is not feasible.
     local width=commitment.blockerWorkingWidthM
+    if commitment.pairWidthsCaptured then
+        width=blocker.workingWidthM
+    end
     if not finite(width) or width<=0 then
         return nil,"BLOCKER_WORK_WIDTH_UNAVAILABLE"
     end
     local vectorDistanceM=width+EGRESS_MARGIN_M
-    local backX,backZ,reverseReason=heading(
-        relocator.vehicle,"getAIReverserNode",true)
-    if backX==nil then return nil,reverseReason end
+    local mode=routeMode or "OBLIQUE_REVERSE"
+    if mode~="OBLIQUE_REVERSE" and mode~="FORWARD"
+        and mode~="CENTROID" then
+        return nil,"PAIR_EGRESS_MODE_UNSUPPORTED"
+    end
+    local backX,backZ,reverseReason
+    if mode=="OBLIQUE_REVERSE" then
+        backX,backZ,reverseReason=heading(
+            relocator.vehicle,"getAIReverserNode",true)
+        if backX==nil then return nil,reverseReason end
+    end
+    local frontX,frontZ,frontReason=heading(
+        relocator.vehicle,"getAISteeringNode",false)
+    if mode~="OBLIQUE_REVERSE" and frontX==nil then
+        return nil,frontReason
+    end
     local forwardX,forwardZ,blockerReason=heading(
         blocker.vehicle,"getAISteeringNode",false)
     if forwardX==nil then return nil,blockerReason end
@@ -83,28 +101,49 @@ function Region.plan(commitment,relocator,blocker)
     local startCross=(relocator.x-blocker.x)*normalX
         +(relocator.z-blocker.z)*normalZ
     local perpX,perpZ=-backZ,backX
+    local centreX=commitment.fieldCentroid.x-relocator.x
+    local centreZ=commitment.fieldCentroid.z-relocator.z
+    local centreDistance=math.sqrt(centreX*centreX+centreZ*centreZ)
+    local rays={}
+    if mode=="OBLIQUE_REVERSE" then
+        for _,side in ipairs({-1,1}) do
+            rays[#rays+1]={side=side,
+                dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX,
+                dz=COS_OBLIQUE*backZ+side*SIN_OBLIQUE*perpZ}
+        end
+    elseif mode=="FORWARD" then
+        rays[1]={side=0,dx=frontX,dz=frontZ}
+    elseif finite(centreDistance) and centreDistance>0.0001 then
+        rays[1]={side=0,dx=centreX/centreDistance,
+            dz=centreZ/centreDistance}
+    end
     local choices={}
-    for _,side in ipairs({-1,1}) do
-        local dx=COS_OBLIQUE*backX+side*SIN_OBLIQUE*perpX
-        local dz=COS_OBLIQUE*backZ+side*SIN_OBLIQUE*perpZ
+    for _,ray in ipairs(rays) do
+        local dx,dz=ray.dx,ray.dz
         local lateralRate=dx*normalX+dz*normalZ
         local lateralSign=lateralRate<0 and -1 or 1
         local progress=vectorDistanceM*math.abs(lateralRate)
-        -- A near-axial option cannot count as Cross-Track Egress.
+        -- All options must demonstrably clear the other worker's course.
+        -- A root heading without useful cross-track travel is not an exit.
         if progress>=vectorDistanceM*0.5 then
-            local isInField=segmentInField(commitment.fieldPolygon,
-                relocator.x,relocator.z,dx,dz,vectorDistanceM)
             local signedStart=lateralSign*startCross
-            local centreX=commitment.fieldCentroid.x-relocator.x
-            local centreZ=commitment.fieldCentroid.z-relocator.z
+            local requiredCross=math.max(0,signedStart)+progress
+            local reachM=(requiredCross-signedStart)/math.abs(lateralRate)
+            -- The relevant field path is to actual region entry, not a
+            -- shorter nominal ray that cannot yet complete that region.
+            local isInField=segmentInField(commitment.fieldPolygon,
+                relocator.x,relocator.z,dx,dz,reachM)
+            if mode=="CENTROID" and reachM>centreDistance then
+                isInField=false
+            end
             choices[#choices+1]={
-                side=side,dx=dx,dz=dz,sign=lateralSign,
-                inField=isInField,
+                side=ray.side,dx=dx,dz=dz,sign=lateralSign,
+                inField=isInField,reachM=reachM,
                 alreadyOnSide=signedStart>=0,
                 centreScore=dx*centreX+dz*centreZ,
                 initialCrossTrackM=signedStart,
                 requiredProgressM=progress,
-                requiredCrossTrackM=math.max(0,signedStart)+progress
+                requiredCrossTrackM=requiredCross
             }
         end
     end
@@ -123,9 +162,12 @@ function Region.plan(commitment,relocator,blocker)
         end
     end
     if chosen==nil then return nil,"NO_SUPPORTED_INFIELD_EGRESS_REGION" end
-    local steeringDistance=vectorDistanceM+STEERING_LOOKAHEAD_M
+    local steeringDistance=mode=="CENTROID" and centreDistance
+        or chosen.reachM+STEERING_LOOKAHEAD_M
     return {
-        isReverse=true,steeringHorizonM=steeringDistance,
+        isReverse=mode=="OBLIQUE_REVERSE",
+        moveForwards=mode~="OBLIQUE_REVERSE",
+        steeringHorizonM=steeringDistance,
         targetX=relocator.x+chosen.dx*steeringDistance,
         targetZ=relocator.z+chosen.dz*steeringDistance,
         returnRegion={
@@ -140,13 +182,37 @@ function Region.plan(commitment,relocator,blocker)
             source="SIGNED_CROSS_TRACK_REGION",
             isPhysicalPairClearanceConfirmed=false
         },
-        directionSource="OBLIQUE_REVERSE",
+        directionSource=mode=="OBLIQUE_REVERSE" and "OBLIQUE_REVERSE"
+            or (mode=="FORWARD" and "PAIR_FORWARD" or "PAIR_CENTROID"),
         egressSide=chosen.side,vectorDistanceM=vectorDistanceM,
         blockerWorkingWidthM=width,marginM=EGRESS_MARGIN_M,
-        nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
+        nominalBearingOffsetDeg=mode=="OBLIQUE_REVERSE"
+            and OBLIQUE_REVERSE_DEG or nil,
         targetInField=true,fieldInteriorScore=chosen.centreScore,
-        nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ
+        nativeReverseHeadingX=backX,nativeReverseHeadingZ=backZ,
+        regionTravelM=chosen.reachM
     }
+end
+
+-- Assess all bounded pair options once before any physical movement:
+-- reverse 70-degree (both sides, both assignments); forward (both);
+-- then directly toward the field centroid (both). Return no solution
+-- only after all assignments and directions have been assessed.
+function Region.planPairCascade(commitment,preferred,alternative)
+    local attempts=0
+    for _,mode in ipairs({"OBLIQUE_REVERSE","FORWARD","CENTROID"}) do
+        for _,mover in ipairs({preferred,alternative}) do
+            local other=mover==preferred and alternative or preferred
+            attempts=attempts+1
+            local objective=Region.plan(commitment,mover,other,mode)
+            if objective~=nil then
+                objective.cascadeMode=mode
+                objective.cascadeAttempts=attempts
+                return objective,mover,other
+            end
+        end
+    end
+    return nil,nil,nil,"NO_FEASIBLE_PAIR_EGRESS"
 end
 
 

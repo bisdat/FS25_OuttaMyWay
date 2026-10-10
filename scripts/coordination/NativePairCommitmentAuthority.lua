@@ -208,8 +208,17 @@ function Authority:admitCandidate(first,second,blockedWorker,confirmedBlockedMs)
     local relocator=(da<db or (da==db
         and a.assemblyReferenceKey<b.assemblyReferenceKey)) and a or b
     commitment.nearbyBlockers[1]=relocator==a and b or a
-    local width,widthReason=blockerWorkingWidth(commitment.nearbyBlockers[1].vehicle)
-    if width==nil then return nil,widthReason end
+    -- Every possible mover needs the OTHER participant's native width.
+    -- Do not reject the pair merely because one assignment lacks width:
+    -- only that assignment becomes unavailable during the option cascade.
+    local widthA,whyA=blockerWorkingWidth(a.vehicle)
+    local widthB,whyB=blockerWorkingWidth(b.vehicle)
+    if widthA==nil and widthB==nil then
+        return nil,whyA or whyB or "PAIR_WORK_WIDTH_UNAVAILABLE"
+    end
+    a.workingWidthM,b.workingWidthM=widthA,widthB
+    commitment.pairWidthsCaptured=true
+    local width=relocator==a and widthB or widthA
     commitment.blockerWorkingWidthM=width
     self.active=commitment
     return commitment

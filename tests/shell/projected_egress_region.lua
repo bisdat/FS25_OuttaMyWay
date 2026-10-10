@@ -127,4 +127,44 @@ local unassociated=assert(Plan.planSingle({singleRegionDistanceM=40},outsideLeft
 assert(unassociated.egressSide==-1 and unassociated.targetInField==false
     and unassociated.fieldIdentitySource=="NO_NATIVE_FIELD_REFERENCE",
     "absence of native course field must not inhibit 40 m relocation")
-print("Pairwise cross-track and solo 40 m projected return region: PASS")
+-- TS001 option cascade: try both assembly assignments before any Control.
+-- These are geometric fixtures, not claims of recreated field video pose.
+local boundary={xs={0,80,80,0},zs={0,0,80,80}}
+local forwardPreferred=worker(64.7385,32.0222,-1,0)
+local forwardOther=worker(58.3704,14.0983,0,1)
+forwardPreferred.workingWidthM=10
+forwardOther.workingWidthM=10
+local forwardPair={pairWidthsCaptured=true,blockerWorkingWidthM=10,
+    fieldPolygon=boundary,fieldCentroid={x=40,z=40}}
+assert(Plan.plan(forwardPair,forwardPreferred,forwardOther,
+    "OBLIQUE_REVERSE")==nil)
+assert(Plan.plan(forwardPair,forwardOther,forwardPreferred,
+    "OBLIQUE_REVERSE")==nil)
+local forwardChoice,forwardMover,forwardBlocker=Plan.planPairCascade(
+    forwardPair,forwardPreferred,forwardOther)
+assert(forwardChoice~=nil and forwardChoice.directionSource=="PAIR_FORWARD"
+    and forwardChoice.isReverse==false and forwardChoice.moveForwards==true
+    and forwardChoice.cascadeAttempts==3
+    and forwardMover==forwardPreferred and forwardBlocker==forwardOther
+    and forwardChoice.targetInField,
+    "when both reverse assignments fail, forward must be available")
+local centroidPreferred=worker(29.2538,10.2187,-1,0)
+local centroidOther=worker(10.0503,16.6269,0,-1)
+centroidPreferred.workingWidthM=10;centroidOther.workingWidthM=10
+local centroidChoice,centroidMover=Plan.planPairCascade(forwardPair,
+    centroidPreferred,centroidOther)
+assert(centroidChoice and centroidChoice.directionSource=="PAIR_CENTROID"
+    and centroidChoice.cascadeAttempts==6
+    and centroidMover==centroidOther and centroidChoice.isReverse==false
+    and centroidChoice.steeringHorizonM<=math.sqrt(
+        (40-centroidOther.x)^2+(40-centroidOther.z)^2)+0.001,
+    "after reverse and forward fail, direct-centroid is the last safe tier")
+-- A genuinely confined field has no supported direction for either assembly.
+confined.workingWidthM=36;confinedBlocker.workingWidthM=36
+local exhausted={pairWidthsCaptured=true,blockerWorkingWidthM=36,
+    fieldPolygon=small,fieldCentroid={x=15,z=15}}
+local noneChoice,_,__,giveUp=Plan.planPairCascade(
+    exhausted,confined,confinedBlocker)
+assert(noneChoice==nil and giveUp=="NO_FEASIBLE_PAIR_EGRESS",
+    "give up only after every bounded pair option is checked")
+print("Pair egress reverse/forward/centroid cascade + solo region: PASS")

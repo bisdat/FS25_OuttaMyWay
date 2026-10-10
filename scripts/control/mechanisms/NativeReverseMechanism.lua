@@ -1,4 +1,6 @@
--- Subordinate GIANTS reverse actuator for an independently admitted Hold & Relocate movement.
+-- Subordinate GIANTS directional egress actuator for admitted Hold & Relocate.
+-- Retains the native reverse path; a paired worker may instead move forward
+-- when the pre-Control option cascade has validated that route.
 -- Specification Jurisdictions: `HOLD_RELOCATE`
 -- No pair admission, TRANSIT assessment, clearance, or native job continuation authority.
 OuttaMyWay=OuttaMyWay or {}
@@ -19,16 +21,18 @@ end
 -- GIANTS driveToPoint also clamps the motor to the vehicle's current cruise
 -- setting. Temporarily lease that native limit at the maximum supported
 -- reverse speed; restore the exact prior setting at release.
-local function prepareNativeReverseSpeed(vehicle)
+local function prepareNativeReverseSpeed(vehicle,moveForwards)
     if type(vehicle.getMotor)~="function" then
         return nil,"NATIVE_REVERSE_MOTOR_UNAVAILABLE"
     end
     local ok,motor=pcall(vehicle.getMotor,vehicle)
+    local maxMethod=moveForwards and "getMaximumForwardSpeed"
+        or "getMaximumBackwardSpeed"
     if not ok or type(motor)~="table"
-        or type(motor.getMaximumBackwardSpeed)~="function" then
+        or type(motor[maxMethod])~="function" then
         return nil,"NATIVE_REVERSE_SPEED_API_UNAVAILABLE"
     end
-    local read,speedMps=pcall(motor.getMaximumBackwardSpeed,motor)
+    local read,speedMps=pcall(motor[maxMethod],motor)
     if not read or not finite(speedMps) or speedMps<=0 then
         return nil,"NATIVE_REVERSE_SPEED_UNAVAILABLE"
     end
@@ -40,7 +44,11 @@ local function prepareNativeReverseSpeed(vehicle)
         or cruise.maxSpeed<=0 or cruise.maxSpeedReverse<=0 then
         return nil,"NATIVE_CRUISE_LIMIT_UNAVAILABLE"
     end
-    local requestedKmh=math.min(speedMps*3.6,cruise.maxSpeed,cruise.maxSpeedReverse)
+    -- Lease both cruise settings because GIANTS native driveToPoint reads
+    -- native cruise state; restore both on either completion or cancellation.
+    -- Keep the reverse path's previously validated conservative cap.
+    local requestedKmh=math.min(speedMps*3.6,cruise.maxSpeed,
+        cruise.maxSpeedReverse)
     if not finite(requestedKmh) or requestedKmh<=0 then
         return nil,"NATIVE_REVERSE_SPEED_UNAVAILABLE"
     end
@@ -97,6 +105,15 @@ local function reverserNode(vehicle)
     end
     local ok,node=pcall(vehicle.getAIReverserNode,vehicle)
     if not ok or node==nil or node==0 then return nil,"AI_REVERSER_NODE_UNAVAILABLE" end
+    return node
+end
+
+local function steeringNode(vehicle)
+    if type(vehicle)~="table" or type(vehicle.getAISteeringNode)~="function" then
+        return nil,"AI_STEERING_NODE_UNAVAILABLE"
+    end
+    local ok,node=pcall(vehicle.getAISteeringNode,vehicle)
+    if not ok or node==nil or node==0 then return nil,"AI_STEERING_NODE_UNAVAILABLE" end
     return node
 end
 
@@ -232,14 +249,20 @@ function Mechanism:install()
         if state.isComplete or state.isFailed then
             return original(vehicle,dt,0,false,false,0,1,0,false)
         end
-        local node,reason=reverserNode(vehicle)
+        local node,reason=state.moveForwards
+            and steeringNode(vehicle) or reverserNode(vehicle)
         local reference=node and pose(node) or nil
         if node==nil or reference==nil or type(worldToLocal)~="function" then
             state.isFailed=true;state.reason=reason or "REVERSE_FRAME_UNAVAILABLE"
             return original(vehicle,dt,0,false,false,0,1,0,false)
         end
-        local worldX,worldZ,why=adjustToolTarget(node,state.toolNode,
-            state.steeringTargetX,state.steeringTargetZ)
+        local worldX,worldZ,why
+        if state.moveForwards then
+            worldX,worldZ=state.steeringTargetX,state.steeringTargetZ
+        else
+            worldX,worldZ,why=adjustToolTarget(node,state.toolNode,
+                state.steeringTargetX,state.steeringTargetZ)
+        end
         if worldX==nil then
             state.isFailed=true;state.reason=why
             return original(vehicle,dt,0,false,false,0,1,0,false)
@@ -252,9 +275,10 @@ function Mechanism:install()
             return original(vehicle,dt,0,false,false,0,1,0,false)
         end
         state.commandedDriveCount=state.commandedDriveCount+1
-        -- Native reverse uses the reverser frame, tool correction and
-        -- moveForwards=false. An active objective needs doNotSteer=false.
-        return original(vehicle,dt,1,true,false,
+        -- Reverse keeps GIANTS' reverser frame and tool-relative target.
+        -- Forward uses its native AI steering frame, without reverse tool
+        -- rotation; both permit steering and normal propulsion.
+        return original(vehicle,dt,1,true,state.moveForwards,
             targetX/length,targetZ/length,state.speedLease.speedKmh,false)
     end
     self.originalDrive=original
@@ -269,7 +293,11 @@ function Mechanism:startReverse(vehicle,objective)
     if g_server==nil then return false,"SERVER_REQUIRED" end
     if self.activeVehicle~=nil then return false,"REVERSE_ALREADY_ACTIVE" end
     if type(vehicle)~="table" or vehicle.rootNode==nil
-        or type(objective)~="table" or objective.isReverse~=true
+        or type(objective)~="table"
+        or (objective.isReverse~=true
+            and not (objective.isReverse==false
+                and objective.returnRegion~=nil
+                and objective.returnRegion.source=="SIGNED_CROSS_TRACK_REGION"))
         or not finite(objective.targetX) or not finite(objective.targetZ)
         or type(objective.returnRegion)~="table"
         or not finite(objective.returnRegion.originX)
@@ -291,12 +319,17 @@ function Mechanism:startReverse(vehicle,objective)
     end
     local origin,why=pose(vehicle.rootNode)
     if origin==nil then return false,why end
-    local reference,frameReason=reverserNode(vehicle)
+    local moveForwards=objective.isReverse==false
+    local reference,frameReason=moveForwards
+        and steeringNode(vehicle) or reverserNode(vehicle)
     if reference==nil then return false,frameReason end
     if pose(reference)==nil or type(worldToLocal)~="function" then
         return false,"REVERSE_FRAME_UNAVAILABLE"
     end
-    local toolNode,toolReason=toolNodeFor(vehicle)
+    local toolNode,toolReason
+    if not moveForwards then
+        toolNode,toolReason=toolNodeFor(vehicle)
+    end
     if toolReason=="TOOL_REVERSE_QUERY_FAILED" then return false,toolReason end
     if toolNode~=nil and not toolGeometryReady() then
         return false,"TOOL_GEOMETRY_UNAVAILABLE"
@@ -311,7 +344,7 @@ function Mechanism:startReverse(vehicle,objective)
     if not finite(steeringX) or not finite(steeringZ) then
         return false,"STEERING_REFERENCE_UNAVAILABLE"
     end
-    local speedLease,speedReason=prepareNativeReverseSpeed(vehicle)
+    local speedLease,speedReason=prepareNativeReverseSpeed(vehicle,moveForwards)
     if speedLease==nil then return false,speedReason end
     local installed,installReason=self:install()
     if not installed then return false,installReason end
@@ -335,13 +368,16 @@ function Mechanism:startReverse(vehicle,objective)
         originX=origin.x,originZ=origin.z,
         lastX=origin.x,lastZ=origin.z,targetX=objective.targetX,targetZ=objective.targetZ,
         steeringTargetX=steeringX,steeringTargetZ=steeringZ,
-        returnRegion=objective.returnRegion,toolNode=toolNode,travelledM=0,
+        returnRegion=objective.returnRegion,toolNode=toolNode,
+        moveForwards=moveForwards,travelledM=0,
         nativeReverseHeadingX=objective.nativeReverseHeadingX,
         nativeReverseHeadingZ=objective.nativeReverseHeadingZ,
         regionProgressM=0,regionRemainingM=objective.returnRegion.requiredProgressM,
         commandedDriveCount=0,isComplete=false,isFailed=false}
-    return true,{kind="REVERSE_ARMED",hasToolReverser=toolNode~=nil,
-        requestedReverseSpeedKmh=speedLease.speedKmh,
+    return true,{kind=moveForwards and "PAIR_FORWARD_ARMED" or "REVERSE_ARMED",
+        hasToolReverser=toolNode~=nil,
+        requestedReverseSpeedKmh=moveForwards and nil or speedLease.speedKmh,
+        requestedDriveSpeedKmh=moveForwards and speedLease.speedKmh or nil,
         nativeMotorMaxReverseKmh=speedLease.nativeMotorMaxReverseKmh,
         isPhysicalMotionConfirmed=false}
 end

@@ -165,7 +165,7 @@ g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,30,30,0},pointsZ={0,0,30,30}}}}
 local restricted=assert(authority:admitCandidate(first,second,first,1000))
 local rejected,geoReason=coordinator:begin(restricted,30000)
-assert(not rejected and geoReason=="NO_SUPPORTED_INFIELD_EGRESS_REGION")
+assert(not rejected and geoReason=="NO_FEASIBLE_PAIR_EGRESS")
 assert(authority:release(restricted))
 g_fieldManager.fields={{densityMapPolygon={
     pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
