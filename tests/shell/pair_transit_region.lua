@@ -9,12 +9,14 @@ getWorldTranslation=function(n)
     local p=assert(points[n]);return p.x,0,p.z
 end
 localDirectionToWorld=function(n,x,y,z)
-    local facing=assert(points[n]).facing or 1
-    return facing*z,y,-facing*x
+    local p=assert(points[n]);local hx=p.headingX or p.facing or 1
+    local hz=p.headingZ or 0
+    return hx*z+hz*x,y,hz*z-hx*x
 end
 localToWorld=function(n,x,y,z)
-    local p=assert(points[n]);local facing=p.facing or 1
-    return p.x+facing*z,y,p.z-facing*x
+    local p=assert(points[n]);local hx=p.headingX or p.facing or 1
+    local hz=p.headingZ or 0
+    return p.x+hx*z+hz*x,y,p.z+hz*z-hx*x
 end
 local function assembly(x,z,width,length)
     local node={};points[node]={x=x,z=z}
@@ -117,12 +119,37 @@ local absent,_,__,missing=Plan.planPairCascade(c,a,b)
 assert(absent==nil and missing=="NO_FEASIBLE_PAIR_EGRESS")
 a.workingWidthM=36
 b.workingWidthM=36
--- A local 20 m-wide field pocket admits some nominal 2 m motions but
--- cannot contain the prescribed 41 m path: do not shorten and declare PASS.
+-- An enclosed 20 m pocket may offer a short but useful FIRST relocation.
+-- It is staging, never reported as complete physical conflict clearance.
 local shortPocket={xs={40,60,60,40},zs={40,40,60,60}}
-local tooShort=Plan.planPairCascade({
-    fieldPolygon=shortPocket,fieldCentroid={x=50,z=50}},a,b)
-assert(tooShort==nil,"41 m obligation must not shrink to fit the field")
+local staged=assert(Plan.planPairCascade({
+    fieldPolygon=shortPocket,fieldCentroid={x=50,z=50}},a,b))
+assert(staged.isPartialEgress and staged.regionTravelM>=3
+    and staged.regionTravelM<41
+    and staged.returnRegion.requiredProgressM==staged.regionTravelM
+    and not staged.returnRegion.isPhysicalPairClearanceConfirmed,
+    "field limit must allow useful partial movement without claiming clearance")
+-- For perpendicular native headings, broad non-axial sectors exist. The
+-- previous 'lateral to BOTH' test admitted literally no such direction.
+local crossingA=assembly(39,42,3,6)
+local crossingB=assembly(55,58,3,6)
+points[crossingB.vehicle.rootNode].headingX=0
+points[crossingB.vehicle.rootNode].headingZ=1
+crossingA.workingWidthM=36;crossingB.workingWidthM=36
+crossingA.transitFootprint=assert(Geometry.capture(crossingA.vehicle))
+crossingB.transitFootprint=assert(Geometry.capture(crossingB.vehicle))
+local crossing,moved,remains=Plan.planPairCascade(c,crossingA,crossingB)
+assert(crossing and moved and remains and moved~=remains
+    and crossing.regionTravelM>=3,
+    "crossing-axis pair must discover usable egress rather than reject all")
+local moveDirection=crossing.returnRegion
+local otherNode=remains.vehicle.rootNode
+local otherHeading=assert(points[otherNode])
+local fx=otherHeading.headingX or otherHeading.facing or 1
+local fz=otherHeading.headingZ or 0
+assert(math.abs(moveDirection.directionX*fx+
+    moveDirection.directionZ*fz)<math.cos(math.rad(12)),
+    "discovered egress must not align with the other assembly's axis")
 -- An in-field root is NOT sufficient when any attached-member corner
 -- starts outside the polygon; reject all unsupported swept paths.
 local narrow={xs={48,52,52,48},zs={49,49,51,51}}
@@ -159,4 +186,4 @@ local actual=assert(Geometry.capture({
     getAttachedImplements=function()return {} end
 }))
 assert(actual.memberCount==1 and actual.corners[1].x~=nil)
-print("Paired TRANSIT region, member transforms and complete-field path: PASS")
+print("Paired TRANSIT region, head-on, crossing and partial egress: PASS")
