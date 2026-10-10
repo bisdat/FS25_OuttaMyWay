@@ -154,7 +154,8 @@ coordinator:advance(6001)
 assert(events[9]=="REGULATION_RELEASE:EGRESS")
 assert(#coordinator.lastEgressRegulationResults==1)
 assert(coordinator.lastEgressRegulationResults[1].rootId==
-    issued.participants[1].assemblyReferenceKey)
+    coordinator.lastPairMotionStartEvidence.otherAssemblyReferenceKey,
+    "Regulation must protect the selected nonmoving pair participant")
 reverse={travelledM=20,isComplete=true}
 coordinator:advance(6002)
 assert(events[10]=="REVERSE_STOP"
