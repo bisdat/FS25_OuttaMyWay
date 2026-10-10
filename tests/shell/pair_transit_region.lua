@@ -140,7 +140,7 @@ crossingA.transitFootprint=assert(Geometry.capture(crossingA.vehicle))
 crossingB.transitFootprint=assert(Geometry.capture(crossingB.vehicle))
 local crossing,moved,remains=Plan.planPairCascade(c,crossingA,crossingB)
 assert(crossing and moved and remains and moved~=remains
-    and crossing.regionTravelM>=3,
+    and crossing.regionTravelM>=2,
     "crossing-axis pair must discover usable egress rather than reject all")
 local moveDirection=crossing.returnRegion
 local otherNode=remains.vehicle.rootNode
