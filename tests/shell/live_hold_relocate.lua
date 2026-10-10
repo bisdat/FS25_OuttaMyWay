@@ -161,11 +161,25 @@ local remainingVehicle=other==issued.participants[1].assemblyReferenceKey
 assert(physical:getTransitRequests(moverVehicle)~=nil)
 assert(physical:getTransitRequests(remainingVehicle)==nil,
     "remaining FIELDWORK worker must never have a TRANSIT plan")
+-- The nonmover's GIANTS job can turn over while the mover travels.
+-- Ongoing pair validity belongs to the mover, not the regulated partner.
+local originalRemainingJob=remainingVehicle.job
+remainingVehicle.job={}
+assert(authority:isCommitmentCurrent(issued),
+    "nonmover job change must not revoke moving assembly authority")
+coordinator:advance(3000)
+assert(coordinator:isActive(),"nonmover job change must not abort movement")
 coordinator:advance(5999)
 assert(#events==3,"five seconds is measured from initial movement start")
 coordinator:advance(6000)
 assert(events[4]=="REGULATION_RELEASE:EGRESS")
 assert(coordinator.lastEgressRegulationResults[1].rootId==other)
+local oldStrategyList=remainingVehicle.spec_aiFieldWorker.driveStrategies
+remainingVehicle.spec_aiFieldWorker.driveStrategies={}
+assert(authority:isCommitmentCurrent(issued),
+    "post-Regulation nonmover strategy turnover must not revoke mover")
+coordinator:advance(6001)
+assert(coordinator:isActive())
 reverse={travelledM=41,isComplete=true}
 coordinator:advance(6001)
 assert(events[5]=="REVERSE_STOP"
@@ -179,6 +193,8 @@ assert(events[7]=="RELEASE:RELOCATED_WORKER"
     and #events==9,
     "no protected-worker TRANSIT restoration or job replacement")
 assert(coordinator:getStatus().lastOutcome.status=="NATIVE_RESTART_ACCEPTED")
+remainingVehicle.job=originalRemainingJob
+remainingVehicle.spec_aiFieldWorker.driveStrategies=oldStrategyList
 assert(authority:release(issued))
 -- Real-world unavailable fold endpoints must not delay the mover.
 local originalStatus=physical.transitStatus
@@ -191,9 +207,18 @@ local before=#events
 local began=assert(coordinator:begin(immediate,16000))
 assert(began and #events==before+3 and events[#events]=="REVERSE")
 assert(coordinator.lastPairMotionStartEvidence.pairedEgressImmediate)
-assert(coordinator:relinquish("TEST_CLEANUP"))
+-- The mover's own GIANTS job turnover MUST revoke its authority and clean
+-- up its independent Control. Removing the pair-wide gate does not weaken it.
+local activeMover=assert(coordinator.active.relocator.vehicle)
+local activeMoverJob=activeMover.job
+activeMover.job={}
+coordinator:advance(16100)
+assert(not coordinator:isActive()
+    and coordinator.lastOutcome.status=="RELINQUISHED"
+    and coordinator.lastOutcome.reason=="GIANTS_JOB_EPISODE_CHANGED")
 assert(events[#events]=="RESTORE",
-    "interrupted mover restores only its own TRANSIT request")
+    "mover turnover must restore only the controlled mover TRANSIT")
+activeMover.job=activeMoverJob
 assert(authority:release(immediate))
 physical.transitStatus=originalStatus
 -- Field too small for all full-distance options still produces a
