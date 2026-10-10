@@ -6235,3 +6235,168 @@ This validates TEST 0.4.9.8 against the exact Reality failure exposed by 0.4.9.7
 
 **Disposition:** Mark TEST `0.5.1.3` **field-validated TS003 PASS**. Record the outcome in Issue #461 and PR #462; PR stays open until a separate merge instruction. No source mechanics or version change is required by this acceptance record.
 
+## 2026-10-10 — #465: Reactive Static Blocker Recovery / First-Edge Encounter Snapshot
+
+**Decision:** Prefer reactive Option 2 to an additional job-completion relocation responsibility. The existing GIANTS native blocked edge and ≥1s BWR qualification are the trigger for considering a change of controlled subject, not a continuous Causal Obstruction/footprint service. Keep [#463](https://github.com/bisdat/FS25_OuttaMyWay/issues/463) and its draft PR independent: TS018 demonstrated a working bounded **non-job actuator** and cost of continuous prospective geometry, but did not validate a simpler static-blocker causal selector.
+
+**Discovery:** An assembly's facing **at the first observed native blocked edge** may materially affect whether moving it forward, reverse or sideways is appropriate. GIANTS `isBlocked` does not identify a collision actor or exact contact timestamp. Name the bounded record **Blockage Encounter Snapshot**, with the explicit evidence limitation *First Observed Blocked Edge != Exact Physical Impact*. A nearest static vehicle's root position and heading alone do not prove causality.
+
+**TEST implementation:** Branch independently from accepted main `0.5.1.3` and use unique TEST build `0.5.1.7`. `StaticBlockageEncounterObservation.capture` samples the blocked worker and one ordinary GIANTS physical-vehicle population pass exactly once at the first blocked positive edge, preserving up to three nearest physical references, relative forward/cross offsets and heading alignment. The existing `NativeBlockageObservation` carries that snapshot into the single-worker ≥1s qualified occurrence, and prints one DEBUG snapshot when inventory evidence exists. No GIANTS hierarchy/shape APIs, new event listener, new blocked timer, new motor/steering Control, or commitment change. This initial PR is a **measurement stage**, not the full option-2 feature.
+
+**Validation separation:** Offline contract covers first-edge/long pulse/short pulse, new GIANTS Job, unknown population, competing physical roots and current player claim; accepted native BWR tests remain blocking. GIANTS still must demonstrate informative geometry at blockage, sustained FPS and harmless negative cases before subject/movement direction is chosen. Neither forward nor reverse is presumed correct. Issue #465 owns the follow-up; draft PR is unmerged.
+
+
+## 2026-10-10 — #465: TEST 0.5.1.7 GIANTS Blockage Encounter Snapshot review
+
+**Observation (FS25 1.24.0.0, Build-Id b41780, supplied log.txt):** TEST 0.5.1.7 loaded, and at 06:31:35.244 published a one-shot first-observed blocked-edge snapshot after 1,000 ms confirmed native blocked state for beneficiary root `400127`, position X/Z `184.62/-254.04` and forward `(0.99,-0.16)`. One physical inventory reported 54 assembly roots. The nearest physical root `396410` was 10.49 m away, 10.49 m along the beneficiary's forward axis, -0.01 m cross-track, with facing alignment dot +1.00 and observed `aiActive=false` / `playerControlled=false`. The next nearest reported roots were more than 200 m distant. A normal single-worker BWR start followed; the savegame exited before recorded relocation completion or native restart.
+
+**Interpretation boundary:** This strongly nominates a geometric candidate but does not prove causal contact, exact collision time, physical stationarity, blocked-worker continuation or FPS impact. Neither forward nor reverse movement is justified by the published dot product alone.
+
+**Bounded TEST 0.5.1.8 diagnostic correction:** The snapshot already retained candidate absolute root pose, full facing vector/source and instantaneous reported speed, but the DEBUG formatter omitted those values. Publish that retained data with explicit `reportedSpeedMps`, `aiActive` and `unknown` values, without another GIANTS read, change to blocked-state qualification, candidate selection, actuation or any recurrent geometry work. CI remains independent offline evidence; the updated in-game log still requires GIANTS Reality review.
+
+## 2026-10-10 — #465: Inferred Static Subject, TEST 0.5.1.9
+
+**Decision revised:** After the almost identical GIANTS 0.5.1.7 and 0.5.1.8 blocked encounters (same heading, 10.49/10.54 m directly ahead; latter candidate speed reported 0.00 m/s), accept a deliberate, bounded **inference**, not causal-contact proof, to move the nearby inactive assembly. Further physical probes or recurring shape scans are rejected. Native `isBlocked` ≥1 s is still necessary; active worker-pair BWR has priority.
+
+**Implementation hypothesis:** On a single blocked occurrence, accept a retained candidate within 30 m, 5 m cross-track, directly ahead, with `aiActive=false`, no player claim and first-edge speed ≤0.25 m/s. Make it the exclusive `STATIC_BLOCKER` subject. Move along the candidate's own forward/reverse axis **away from** the blocked worker by 30 m of projected progress, requesting TRANSIT and temporarily leasing motor, cruise and active physics for direct GIANTS driving. The new non-job mechanism uses GIANTS steering/reverser nodes, including BWR tool-relative reverse correction. Leave the beneficiary's GIANTS FIELDWORK job intact. Keep the source-validated pair/solo paths unchanged and use solo recovery if no inferred subject qualifies.
+
+**Uncertainty and testing:** Inference can be wrong if a nearby parked assembly is unrelated to a hedge or other obstruction. The projected region is not verified collision clearance; no generic physical-shape causality is claimed. CI can challenge wiring, lifecycle, direction, region progression and negative fixtures; only GIANTS gameplay can validate native non-job driving, useful beneficiary continuation, acceptable FPS and false-positive cost. The previous requirement for further probes was consciously retired. TEST 0.5.1.9 is unaccepted until field validation.
+
+## 2026-10-10 — #465: TS018 0.5.1.9 partial PASS; lateral region and timed beneficiary Regulation
+
+**Observation (supplied `0.5.1.9_TS018.zip`, log + 186 s video):** At 07:05:09.162 GIANTS reported a 1,004 ms native blocked pulse at X/Z `184.48/-254.01`, with inactive nearest physical root `396330` only 10.63 m along and 0.00 m cross-track (facing alignment +1.00, speed reported 0.00 m/s). At 07:05:09.164 the exclusive `native-static-1` commitment started. Video visibly confirms the chosen inactive blocker moved, but essentially **straight forward**, consistent with `STATIC_FORWARD_AWAY` and the 30 m axial Return Region; no lateral egress was specified. The blocked native worker received no 1 km/h regulation. At 07:05:19.448 `HOLD_RELOCATE_OUTCOME=RELINQUISHED reason=GIANTS_JOB_EPISODE_CHANGED`; no region completion, useful continuation or quantified FPS result appears in the record.
+
+**Discovery — Axial Departure Is Not Corridor Egress:** Forward progress away from a blocked worker is not equivalent to vacating the worker's lateral productive corridor. Actuator motion itself passed this scenario, but its movement objective was inadequate. **Decision:** Maintain the bounded inferred static subject and non-job GIANTS actuator; correct the objective to a 70-degree forward/reverse oblique vector chosen toward in-field space where available, with length `beneficiary working width + 5 m`. The completion contract is a **signed cross-track region** relative to the beneficiary, never axial distance or a steering point.
+
+**Decision — Beneficiary Regulation Window:** During static egress regulate the *active blocked worker* to **1 km/h for the first 5 seconds**, using existing native Regulation. Release by timer only; no additional progress or clearance gate. A static subject completing before five seconds stops moving immediately while Regulation continues to its deadline. If the GIANTS Job Episode changes, preserve established immediate relinquishment and do not claim native restart success.
+
+**TEST 0.5.1.10:** Implements these two bounded corrections with a no-axial-false-success regression and independent timer/early-completion tests. No extra encounter probes, footprint sweeps, generic geometry service, synthetic GIANTS job, or change to paired/solo BWR. Field validation pending.
+
+## 2026-10-10 — #465: Return-Region lookahead and fresh-encounter lifecycle, TEST 0.5.1.11
+
+**Review:** TEST 0.5.1.10 already steers beyond its lateral region because `steeringHorizonM = beneficiaryWorkingWidthM + 5 m + 40 m`, while region entry occurs after only the signed cross-track projection of the first vector length. This is geometrically true in both forward and reverse world-space objectives; no additional movement-distance gate is needed. The non-job reverse driver now consistently converts the world steering reference through its sampled **reverser-node** height, rather than the root-node height. The engine remains responsible for actual wheel steering and realised motion.
+
+**Discovery — Preflight Cache Sticky After Failed Regulation:** Static Coordinator preflight creates a per-vehicle TRANSIT plan before the first 1 km/h Regulation request. Previously, if that request failed before `requestTransit()`, the coordinator never set `isTransitOutstanding`; neutralization skipped plan cleanup, and a later valid encounter could be blocked by `TRANSIT_PLAN_ALREADY_ACTIVE`. **Correction:** arm the plan cleanup lease immediately after preflight, so the already-supported cancellation clears the unused plan even on an early failure.
+
+**Discovery — Relinquished Control, Retained Admission:** Explicit runtime disable / deleteMap relinquished the physical coordinator but did not release `NativePairCommitmentAuthority.active`, causing subsequent admission to fail even after physical cleanup. **Correction:** release the exact current commitment alongside physical relinquishment, preserving warnings for unresolved native cleanup; reset occurrence-attempt and diagnostic references on map load/delete. No player/AI episode, subject, or physical geometry receives a permanent cooldown.
+
+**Fresh-Encounter rule:** One qualifying continuous native blocked pulse is attempted at most once. A native false edge or new GIANTS Job Episode ends that pulse; a subsequent fully qualified blocked episode with identical Physical Assembly roots receives a **new** candidate identity, new commitment, and a new relocation. Regression challenges include steering-target projection **40 m beyond the signed region** in both direction modes, failed-Regulation preflight plan release, authority release on explicit runtime relinquishment, and fresh two-pulse native nomination. No extra probes, shape reads, periodic searches, artificial distance/time gates, or fail-safes were introduced. These are TEST-contract assertions, not proof of GIANTS reverse-actuation success.
+
+## 2026-10-10 — #465: TS018 0.5.1.11 accepted PASS; static-only TRANSIT retention
+
+**Field acceptance:** TEST `0.5.1.11` TS018 was explicitly accepted as **PASS**. The supplied `0.5.1.11_TS018.zip` GIANTS log records the admitted `native-static-1` at 07:28:20.784 (blocked worker `400212`; static subject `396379`; 36 m beneficiary working width; 41 m oblique vector; requested direct-drive speed 8 km/h). At 07:28:25.789 it records the 1 km/h Regulation release after 5 seconds (641 intercepted calls); at 07:28:36.686 the current commitment relinquished following `GIANTS_JOB_EPISODE_CHANGED`. The explicit PASS is a field decision, not a claim that a `STATIC_BLOCKER_MOVED` region-completion event appeared in this particular log.
+
+**Discovery — Incomplete Static Pose Handback:** The completed-region static path already called `retainStaticTransit`, which clears the mechanism's request record without issuing inverse native commands. The *interrupted* static path instead called `cancelTransit`, which replays cached `setFoldDirection`, `setLowered` and `setIsTurnedOn` working-pose inverses. In this TS018, the beneficiary Job Episode changed while the static mover's operation was active, so that interruption path was relevant.
+
+**Decision:** In Reactive Static Blocker Recovery only, once a TRANSIT request has been **issued**, both successful completion and interruption shall leave the relocated non-active Physical Assembly in **TRANSIT**. Continue releasing temporary motor, steering and native 1 km/h Regulation Control; relinquish the TRANSIT request record and preflight cache **without restoring work/fold/lower pose**. If a preflight-only plan never issued TRANSIT, cancel it normally to prevent stale state. Paired and solo BWR remain unchanged: aborted worker relocation may restore its cached productive pose and successful worker Job replacement returns working-pose responsibility to GIANTS.
+
+**Implementation TEST 0.5.1.12:** A static-only issued-request flag selects the existing `retainStaticTransit` Control method on interruption; no new posture API, timers, readiness/clearance gates, memory of prior moves or recurring probes. Regression tests distinguish successful static handback, Job Episode-change interruption, explicit disable/map release, preflight-only cancellation, native inverse-command suppression, and a fresh request on the same assembly. GIANTS pose confirmation for 0.5.1.12 remains pending; accepted 0.5.1.11 field PASS remains recorded.
+
+## 2026-10-10 — #465: TS018 0.5.1.12 TRANSIT PASS, maximum static egress speed and repeat native blockage
+
+**Field evidence:** TEST `0.5.1.12` TS018 TRANSIT retention was explicitly accepted **PASS**. The supplied archive's GIANTS log at 07:39:11.457 records `native-static-1` moving inactive root `396365` for blocked root `400071`, `requestedDriveSpeedKmh=8`, 41 m oblique vector and ~38.53 m signed lateral target. This is a *requested* speed, not measured attained world velocity. At 07:39:16.457 the beneficiary's 5-second native Regulation ended (646 intercepted calls). At **07:39:25.329**, Control ended `CONTROL_INTERRUPTED reason=STATIC_SUBJECT_CLAIMED`. The gameplay video then displays the Condor machine selected in the player view.
+
+**New native blocked evidence and unchanged routing:** At 07:39:27.656, a newly qualified native blocked pulse admitted `native-single-2` for Patriot; inactive root `396365` was still nearby, but at 23.56 m root distance, 22.00 m cross-track and `playerControlled=true`. Another new blocked occurrence at 07:40:09.238 admitted `native-single-3`; the root remained ~22 m cross-track and `playerControlled=true`. This was **not persistent commitment stickiness**. Inferred static subject admission required current `playerControlled=false` and |cross-track| ≤5 m. The log does not prove the relocated Condor physically caused every subsequent blockage. Player control, not an earlier relocation count, also triggered the original interruption.
+
+**Decision — TEST 0.5.1.13 maximum directional speed:** Remove the arbitrary 8 km/h cap in `NativeStaticAssemblyDriveMechanism`. Use native `VehicleMotor:getMaximumForwardSpeed()` or `getMaximumBackwardSpeed()` as appropriate, convert its m/s to km/h, and request the lesser of that speed and the **same direction's** native cruise limit. Keep the temporary native motor/cruise lease and exact restoration. Tests distinguish forward 35 km/h from reverse 18 km/h for fixture motor/cruise values, verifying no reverse cap on forward motion. Paired and solo BWR retain their accepted speed contracts.
+
+**Unresolved architectural decision:** Should a player-controlled inactive subject ever be commandeered by OMW, or must explicit player control take precedence? Separately, should static attribution include a wider working-width corridor beyond the existing 5 m root-centre threshold? Neither change is authorised by this replay; do not invent a safe exception, collision proof or recurring footprint probe. Continue to treat later qualified native pulses as fresh encounters, and preserve accepted static TRANSIT handback.
+
+## 2026-10-10 — #465: TS018 0.5.1.12 re-evaluation; nearby static priority and 25-second fail-safe
+
+**Observation:** TS018 first had a valid static Condor mover, but at **07:39:25.329**, after the game view tabbed into Condor, the native direct-drive mechanism stopped with `STATIC_SUBJECT_CLAIMED`. At **07:39:27.656** a new GIANTS blocked episode for Patriot began `native-single-2`: the same inactive Condor root was **23.56 m away**, **22.00 m cross-track**, 8.42 m along track, `reportedSpeedMps=0.00`, `aiActive=false`, `playerControlled=true`. A second new episode at **07:40:09.238** began `native-single-3` under essentially identical static root evidence. The video shows the relocated Condor still occupying Patriot's working area. Prior explanations relying on the 5 m cross-track threshold and player selection as safety authority are disproven for this case.
+
+**Archive reconciliation:** The 0.5.0.25 Player Control Interlock retirement already rejected player-entry or tab-selection checks as general BWR authority. Retired 0.4.9.x Player Control Interlock investigations noted changed GIANTS physics on entry, but `getIsControlled()` and `controlledVehicle` are **not direct evidence that someone is actively driving**. They must not be recreated as a false static-blocker refusal or an immediate movement interruption. Keep the meaningful current `getIsAIActive()==false` distinction.
+
+**Decision — Static Proximity Inference:** After a ≥1,000 ms native blocked pulse, active GIANTS worker-pair commitments still take priority; in a single-worker episode, any **nearby (≤30 m) stationary (≤0.25 m/s first-edge), inactive native assembly** retained by the existing one-shot census receives static relocation ahead of fallback solo BWR. Discard player-context exclusion, front-only and 5 m cross-track root-offset gates. This intentionally broadens inference, not claims of collision-actor proof; GIANTS video establishes Condor was the obstruction in the recorded theatre. No predictive region, geometry probes, sticky prior relocation flags or automatic within-pulse repetition.
+
+**Decision — Static Egress Fail-Safe:** In static BWR only, start a **25,000 ms deadline** when egress movement is committed. If its signed lateral region is still incomplete at deadline, cancel the direct native movement, neutralize scoped motor/physics/cruise and Regulation, retain already requested TRANSIT, return `CONTROL_INTERRUPTED reason=STATIC_EGRESS_FAILSAFE_25S` and release commitment for future **new** native pulses. The existing 5-second 1 km/h beneficiary regulation still releases independently. No expiry applies after successful region completion, and no paired/solo BWR timing changes.
+
+**Implementation TEST 0.5.1.14:** Static authority and actuator player-claim gates removed, source-independent nearest inactive stationary 30 m admission retained, static-only 25-second coordinator deadline added. Offline regressions cover 22 m cross-track, behind-axis, tabbed player-context fields, continued native drive on tab, AI job supersession, deadline boundary, TRANSIT retention, no early cancellation and subsequent fresh encounter. The accepted TRANSIT retention and maximum native directional egress speed remain unchanged. GIANTS field validation pending.
+
+## 2026-10-10 — #465: 0.5.1.14 static egress FAIL; Armed Drive is not Realised Motion
+
+**Observed:** Supplied `log(2).txt` confirms loaded TEST `0.5.1.14`, then native blocked root `400131` qualified for 1,006 ms at 08:00:44.072. The one-shot census nominated Condor root `396349` 10.46 m ahead, cross-track 0.01 m, native speed 0.00 m/s and `aiActive=false`. GIANTS also labelled Condor `playerControlled=true` before the new commitment. At 08:00:44.073, `native-static-1` started with target speed **62 km/h**, 41 m vector and required signed lateral motion 38.53 m. Patriot's 5-second 1 km/h Regulation released at 08:00:49.075. Condor did **not physically move**, as reported by the field test. The log contains no `STATIC_BLOCKER_MOVED` event, no second BWR selection, and no 25-second timeout because quit began at 08:01:05.195 (21.122 s after start). The successful start means the direct drive was *armed*, not that native motor and steering actuated.
+
+**Hypotheses, not decisions:** A GIANTS selected-vehicle physics context at admission is correlated with this failure (the accepted earlier static moves began without that context). Historical TS002 0.4.9.x documented physical steering changes under GIANTS controlled-context even with neutral player inputs, whereas the later BWR architecture correctly retired player entry as an *admission veto*. These observations are compatible: remove the false gate but still test the native ability to actuate while entered. The change to maximum native speed 62 km/h is a second unisolated difference. Neither is established as the cause from this log; do not replace the stable static mechanism speculatively.
+
+**Confirmed teardown defect:** At 08:01:05.599, GIANTS logged `Script error in controlVehicle: Unknown entity id 396349` from `AIVehicleUtil.driveToPoint` in `NativeStaticAssemblyDriveMechanism.release`, invoked after mission deletion. That is not a relocation-time collision or proof of wrong egress geometry. TEST `0.5.1.15` makes `MAP_DELETE` discard the static driver's scoped Lua state without attempting native actuation of deleted entities. Other relinquishment paths continue normal physical neutralisation; the static TRANSIT pose is still retained.
+
+**Diagnostic correction:** Record at **one existing 5-second Regulation boundary**, at most once per static commitment, the already-read motor-on status, static subject root displacement, signed lateral progress and native drive-call count. This makes motor-start failure distinct from zero-motion despite actual drive requests without extra polling, active-work shape scans, new time gates or high-frequency logging. The 25-second cancellation remains unchanged. Regression coverage includes non-motor status evidence, one-shot sampling and no native interaction after MAP_DELETE. The field FAIL remains open; this is an instrumented and lifecycle-corrected test, **not** a physical relocation fix.
+
+## 2026-10-10 — #465: TEST 0.5.1.15 TS018 double field PASS
+
+**Run 1 — field PASS (tabbed into Patriot):** 08:16:54.592 native 1,005-ms blockage; stationary AI-inactive Condor root `396308`, 10.32 m away, `playerControlled=false`. Static start 08:16:54.593 requested **62 km/h** and 38.529 m signed lateral progress. At 08:16:59.594: `motorStarted=true`, **497 native drive calls**, **6.587 m actual displacement**, **4.898 m lateral progress**. `STATIC_BLOCKER_MOVED` at 08:17:04.930, **10.337 s** after start.
+
+**Run 2 — field PASS (tabbed into Condor, then out):** 08:19:35.860 native 1,005-ms blockage; equivalent initial geometry with stationary AI-inactive Condor root `939646`, 10.32 m away, `playerControlled=true`. Static start 08:19:35.862 requested **62 km/h** and 38.529 m lateral progress. At 08:19:40.865: `motorStarted=true`, **514 native calls**, but only **0.0022 m actual displacement**, **0.00018 m lateral progress**. The video shows Condor stationary while selected, then moving after tab-out, with the **same** commitment completing `STATIC_BLOCKER_MOVED` at 08:19:55.351, **19.489 s** after start.
+
+**Named discovery — Selected-Assembly Motion Suppression:** While a static assembly is tab-selected, GIANTS may report a running motor and accept native drive calls yet realise essentially no physical displacement. Movement materialises once the player tabs out, without a second admission, restart or change in OMW control. The two field runs strongly support a GIANTS selected-context effect, but do not establish the precise native physics mechanism or universal behaviour. Selection is **not deliberate driving evidence or admission veto**. Preserve static nomination and native drive commitment, instead of reviving a player-control gate.
+
+**Validation limits and decision:** Both TEST `0.5.1.15` runs are **GIANTS field PASS**, with normal 5-second blocked-beneficiary Regulation and maximum-native-speed request. Neither reached the **25-second fail-safe**, so cancellation on expiry remains offline-tested, not field-validated. The old deleted-entity teardown error was absent. The outcome reason `GIANTS_CONTINUATION_UNMEASURED` is not positive measurement of native job continuation; the PASS verdict includes the supplied footage and field observation. **No executable or version change, new gate, or additional diagnostic polling.** Keep PR #466 draft pending explicit merger decision.
+
+**Record:** This supersedes the prior *unresolved 0.5.1.15 physical non-motion hypothesis* with field evidence of two successful relocations. It does not rewrite the actual FAIL of the earlier `0.5.1.14` run. The two field scenarios isolate selected-vehicle behaviour while the static relevance/actuator implementation stays the same. No further code change justified by the evidence.
+
+## 2026-10-10 — #465: Selected occupancy and static field-edge egress
+
+**Confirmed GIANTS concept — Selection-Claimed Occupancy:** TEST 0.5.1.15
+TS018 demonstrated that Condor could remain effectively immobile while
+tab-selected despite a started motor and 514 native point-drive calls
+(0.0022 m actual displacement by 5 s); after tab-out, the very same
+commitment realised movement and finished in 19.489 s. By comparison,
+tab-selection of Patriot instead yielded 497 Condor drive calls and 6.587 m
+displacement by 5 s, completing in 10.337 s. This is evidence of selected
+vehicle *physical control context*, not of any player's deliberate manual
+movement, nor of a formal GIANTS collision-space reservation API.
+A blocked worker's static proximity evidence and native AI-inactive
+status continue to govern OMW admission; GIANTS actual realisation of
+native Control remains separate. See `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md`
+under *Selected-Assembly Motion Suppression*.
+
+**New field-edge observation:** The supplied annotated screenshot
+`Screenshot_20261010_082736.png` places the relocated Condor visibly close
+to the field boundary. It does not supply world-coordinate distance-to-edge,
+proof of leaving the field, or an instrumented alternative inward path.
+The screenshot is nonetheless consistent with how the code ranks directions,
+and raises a real spatial-settlement quality question despite the two
+accepted movement PASS tests.
+
+**Current implementation found (not a new decision):**
+`ProjectedEgressRegion.planStatic()` chooses forward or reverse according
+to the dot product of the static subject's facing with the vector away from
+the blocked beneficiary. It evaluates the two **70° oblique** options.
+The scaling distance is **blocked beneficiary working width + 5 m**
+(36 + 5 = **41 m** for this theatre). Candidates must offer at least
+half that distance in signed lateral projection. If GIANTS' current
+beneficiary course polygon is available, the code samples the first 41 m
+of the **root path** at ~2 m steps and prefers a fully in-field sample.
+If both candidates fail that test (or the polygon is unavailable), the code
+still picks one, comparing directions toward the course centroid or a
+fallback field-detection coordinate when available; otherwise side -1 wins.
+There is **no hard in-field requirement, minimum boundary margin or
+physical-assembly boundary-clearance test**. The steering aim lies
+another **40 m beyond** the nominal region; success is the signed
+lateral Return Region, *not* reaching that steering point.
+
+**Named architectural gap — In-Field Preference Is Not In-Field Settlement:**
+A sampled preferred root path and a stopping region based on cross-track
+progress do not guarantee a field-interior final footprint. Nor is a
+nominally in-field centre-point route proof of safely deployed/folded
+clearance at the edge. No new fallback should be improvised when neither
+candidate is clearly interior until the intended hierarchy is agreed.
+
+**Observability limitation:** In both PASS runs, the
+`HOLD_RELOCATE_STARTED` log reported `regionInField=nil`,
+`fieldInteriorScore=nil`, `egressSide=nil` and `obliqueDeg=nil`.
+The planner computes these inside its `objective`, but
+`HoldRelocateCoordinator.beginStatic()` does not forward the fields to
+the outer reporting summary. Thus these `nil` values are **publication
+omissions**, not evidence of missing GIANTS polygon or failed field check.
+They prevent forensic confirmation of the chosen side/field status for
+these runs. Do not invent the selected side or an exact field-edge distance.
+
+**Decision state:** Record discovery and limitation; **no runtime change**.
+Retain TEST 0.5.1.15 as a double-pass plateau. Potential later architecture
+discussion: whether *Static In-Field Settlement* should require an interior
+region with explicit physical boundary clearance, and what to do when neither
+70° option achieves it. Avoid using a hard timeout or an additional scan
+as a substitute for defining that spatial commitment.

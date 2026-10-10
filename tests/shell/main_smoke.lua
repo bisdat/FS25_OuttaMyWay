@@ -9,6 +9,7 @@ local expected={
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
+    "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
@@ -16,6 +17,7 @@ local expected={
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
@@ -48,6 +50,7 @@ source=function(path)
         or path=="scripts/control/HoldRelocatePhysicalControl.lua"
         or path=="scripts/coordination/LiveHoldRelocateRuntime.lua"
         or path=="scripts/control/mechanisms/NativeReverseMechanism.lua"
+        or path=="scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTranslationHoldMechanism.lua"
         or path=="scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua"
         or path=="scripts/control/mechanisms/NativeTransitRequestMechanism.lua"
@@ -71,7 +74,8 @@ source=function(path)
                 }
             end
         }
-    elseif path=="scripts/observation/NativeBlockageObservation.lua"
+    elseif path=="scripts/observation/StaticBlockageEncounterObservation.lua"
+        or path=="scripts/observation/NativeBlockageObservation.lua"
         or path=="scripts/diagnostics/VersionHud.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then

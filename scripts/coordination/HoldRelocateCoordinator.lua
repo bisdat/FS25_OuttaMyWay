@@ -7,6 +7,7 @@ local Coordinator=OuttaMyWay.HoldRelocateCoordinator
 Coordinator.__index=Coordinator
 
 local EGRESS_REGULATION_MS=5000 -- timed 1 km/h egress window
+local STATIC_EGRESS_FAILSAFE_MS=25000 -- cancel static movement after 25 seconds
 local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
 local MIN_CENTROID_BEARING_M=0.01
@@ -57,7 +58,8 @@ end
 function Coordinator.new(commitmentAuthority,physicalControl)
     return setmetatable({
         commitmentAuthority=commitmentAuthority,physicalControl=physicalControl,
-        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,lastInitialMotionEvidence=nil
+        active=nil,lastOutcome=nil,lastEgressRegulationResults=nil,
+        lastInitialMotionEvidence=nil,lastStaticMotionEvidence=nil
     },Coordinator)
 end
 
@@ -73,6 +75,7 @@ function Coordinator:getStatus()
         relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
         regionRequiredProgressM=state.objective.returnRegion.requiredProgressM,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
+        staticEgressDeadlineMs=state.staticEgressDeadlineMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
         egressHoldResults=self.lastEgressRegulationResults
     }
@@ -84,6 +87,13 @@ end
 function Coordinator:neutralize(state)
     local failures={}
     local control=self.physicalControl
+    if state.isStaticMovementOutstanding then
+        local verb=state.isMapDeleting and "discardStaticMovementOnMapDelete"
+            or "cancelStaticMovement"
+        local ok,reason=command(control,verb,state.relocator.vehicle)
+        if not ok then failures[#failures+1]="STATIC_MOVE:"..tostring(reason) end
+        state.isStaticMovementOutstanding=false
+    end
     if state.isReverseOutstanding then
         local ok,reason=command(control,"cancelReverse",state.relocator.vehicle)
         if not ok then failures[#failures+1]="REVERSE:"..tostring(reason) end
@@ -104,7 +114,15 @@ function Coordinator:neutralize(state)
         state.isRelocatorHeld=false
     end
     if state.isTransitOutstanding then
-        local ok,reason=command(control,"cancelTransit",state.relocator.vehicle)
+        -- A static assembly is intentionally left in TRANSIT once the
+        -- request was issued, even if GIANTS changes the beneficiary job
+        -- before the lateral region is reached. Relinquish the request
+        -- record only; do NOT send the cached working-pose inverses.
+        -- A preflight-only plan (no request yet) still needs cancellation.
+        -- Paired and solo recoveries retain their existing restore path.
+        local verb=state.isStatic and state.staticTransitRequested
+            and "retainStaticTransit" or "cancelTransit"
+        local ok,reason=command(control,verb,state.relocator.vehicle)
         if not ok then failures[#failures+1]="TRANSIT:"..tostring(reason) end
         state.isTransitOutstanding=false
     end
@@ -128,14 +146,100 @@ end
 
 function Coordinator:relinquish(reason)
     if self.active==nil then return false,"NO_ACTIVE_COMMITMENT" end
+    -- Native vehicle entities may already be gone when BaseMission deletes
+    -- this runtime. Never call GIANTS driveToPoint on a deleted static root.
+    self.active.isMapDeleting=reason=="MAP_DELETE"
     self:finishWithOutcome("RELINQUISHED",reason or "EXTERNAL_RELINQUISH")
     local released=self.lastOutcome.status=="RELINQUISHED"
     return released,released and nil or self.lastOutcome.reason
 end
 
+-- Inferred static subjects move under the same exclusive commitment and
+-- physical TRANSIT boundary, but without inventing a job for the subject or
+-- stopping and restarting the blocked beneficiary's GIANTS FIELDWORK.
+function Coordinator:beginStatic(commitment,nowMs)
+    if self.active~=nil or not finite(nowMs) or type(commitment)~="table"
+        or type(commitment.participants)~="table"
+        or #commitment.participants~=1
+        or not positioned(commitment.participants[1])
+        or not positioned(commitment.relocator)
+        or type(commitment.nearbyBlockers)~="table"
+        or #commitment.nearbyBlockers~=0 then
+        return false,"STATIC_COMMITMENT_INVALID"
+    end
+    local objective,why=OuttaMyWay.ProjectedEgressRegion.planStatic(
+        commitment,commitment.relocator)
+    if objective==nil then return false,why end
+    local accepted,reason=command(self.commitmentAuthority,
+        "validateCommitment",commitment)
+    if not accepted then return false,reason end
+    local state={
+        commitment=commitment,commitmentId=commitment.commitmentId,
+        relocator=commitment.relocator,
+        blockers={commitment.participants[1]},isBlockerRegulated={},
+        isReverseOutstanding=false,isStaticMovementOutstanding=false,
+        isTransitOutstanding=false,isRelocatorHeld=false,
+        isStatic=true,staticTransitRequested=false,
+        phase="STATIC_REQUESTING_TRANSIT",objective=objective,
+        egressRegulationUntilMs=nowMs+EGRESS_REGULATION_MS,
+        staticEgressDeadlineMs=nowMs+STATIC_EGRESS_FAILSAFE_MS
+    }
+    local ready,preflightReason=command(self.physicalControl,"preflight",state)
+    if not ready then return false,preflightReason end
+    if not finite(state.egressRegulationUntilMs)
+        or not finite(state.staticEgressDeadlineMs) then
+        return false,"STATIC_EGRESS_CLOCK_UNAVAILABLE"
+    end
+    self.active=state
+    self.lastEgressRegulationResults=nil
+    self.lastInitialMotionEvidence=nil
+    self.lastStaticMotionEvidence=nil
+    -- Preflight already cached the TRANSIT plan. Mark it for unconditional
+    -- release even if the 1 km/h Regulation request fails before TRANSIT is
+    -- sent; otherwise a later encounter sees TRANSIT_PLAN_ALREADY_ACTIVE.
+    state.isTransitOutstanding=true
+    -- Protect the blocked worker's native steering and drive permission,
+    -- capping its current GIANTS speed at 1 km/h for a timed 5 s window.
+    state.isBlockerRegulated[1]=true
+    local regulated,regulationReason=command(self.physicalControl,
+        "regulate",state.blockers[1].vehicle,"EGRESS")
+    if not regulated then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",regulationReason)
+        return false,regulationReason
+    end
+    -- The GIANTS request can apply some TRANSIT actions before returning a
+    -- rejection. From first attempted dispatch, retain the TRANSIT posture
+    -- even on interruption; motor, steering and speed Control still release.
+    state.staticTransitRequested=true
+    local transit,transitReason=command(self.physicalControl,
+        "requestTransit",state.relocator.vehicle)
+    if not transit then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",transitReason)
+        return false,transitReason
+    end
+    state.isStaticMovementOutstanding=true
+    local started,movement=command(self.physicalControl,
+        "startStaticMovement",state.relocator.vehicle,objective)
+    if not started then
+        self:finishWithOutcome("CONTROL_INTERRUPTED",movement)
+        return false,movement
+    end
+    state.phase="STATIC_MOVING"
+    return true,{relocatingAssemblyReferenceKey=state.relocator.assemblyReferenceKey,
+        objective=objective,directionSource=objective.directionSource,
+        regionRequiredProgressM=objective.returnRegion.requiredProgressM,
+        vectorDistanceM=objective.vectorDistanceM,
+        beneficiaryWorkingWidthM=objective.beneficiaryWorkingWidthM,
+        requestedDriveSpeedKmh=type(movement)=="table"
+            and movement.requestedDriveSpeedKmh or nil}
+end
+
 -- The commitment authority must independently validate a live, issued
 -- commitment. An input boolean supplied by a candidate is never authority.
 function Coordinator:begin(commitment,nowMs)
+    if commitment~=nil and commitment.kind=="STATIC_BLOCKER" then
+        return self:beginStatic(commitment,nowMs)
+    end
     if self.active~=nil then return false,"COMMITMENT_ALREADY_ACTIVE" end
     if type(commitment)~="table" or commitment.commitmentId==nil or not finite(nowMs)
         or type(commitment.participants)~="table"
@@ -275,14 +379,13 @@ end
 
 -- advance is a procedure step, not GIANTS' generic update callback. The
 -- admission and safety witnesses stay with the independent authority.
-function Coordinator:advance(nowMs)
+function Coordinator:advance(nowMs,dt)
     local state=self.active
     if state==nil then return end
     if not finite(nowMs) then self:finishWithOutcome("CONTROL_INTERRUPTED","CLOCK_UNAVAILABLE");return end
     local isCurrent,reason=command(self.commitmentAuthority,"isCommitmentCurrent",state.commitment)
     if not isCurrent then self:finishWithOutcome("RELINQUISHED",reason);return end
-
-    -- Timer alone releases the other participant's speed regulation.
+    -- Timer alone releases native speed Regulation for pair/static egress.
     if not state.isSingle and nowMs>=state.egressRegulationUntilMs then
         for i=1,#state.blockers do
             if state.isBlockerRegulated[i] then
@@ -308,6 +411,83 @@ function Coordinator:advance(nowMs)
             end
         end
     end
+
+    if state.isStatic then
+        -- This deadline cancels only an unfinished static relocation. It is
+        -- not a new eligibility gate, a repeat cooldown or a steering target.
+        -- Existing cleanup stops the drive, releases Regulation, retains
+        -- issued TRANSIT and frees authority for a later native encounter.
+        if state.isStaticMovementOutstanding
+            and nowMs>=state.staticEgressDeadlineMs then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",
+                "STATIC_EGRESS_FAILSAFE_25S")
+            return
+        end
+        if state.phase=="STATIC_WAIT_EGRESS_TIMER" then
+            if nowMs<state.egressRegulationUntilMs then return end
+            self.lastOutcome={status="STATIC_BLOCKER_MOVED",
+                commitmentId=state.commitmentId,
+                isNativeContinuationConfirmed=false,
+                reason="INFERRED_SUBJECT_MOVED_GIANTS_CONTINUATION_UNMEASURED"}
+            self.active=nil
+            return
+        end
+        local status,statusReason=query(self.physicalControl,
+            "staticMovementStatus",state.relocator.vehicle,dt)
+        if type(status)~="table" then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",
+                statusReason or "STATIC_MOVE_STATUS_UNAVAILABLE")
+            return
+        end
+        if status.isFailed then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",
+                status.reason or "STATIC_MOVE_FAILED")
+            return
+        end
+        -- One actuation check at the existing five-second Regulation boundary.
+        -- The movement mechanism already sampled all of these values; do
+        -- not add vehicle polls, shape reads or repeated diagnostic output.
+        if self.lastStaticMotionEvidence==nil
+            and nowMs>=state.egressRegulationUntilMs then
+            self.lastStaticMotionEvidence={
+                commitmentId=state.commitmentId,
+                subjectRootId=state.relocator.assemblyReferenceKey,
+                commandedDriveCount=status.commandedDriveCount,
+                physicalDisplacementM=status.physicalDisplacementM,
+                motorStarted=status.motorStarted,
+                progressM=status.progressM,
+                requiredProgressM=state.objective.returnRegion.requiredProgressM,
+                statusReason=status.reason
+            }
+        end
+        if status.isComplete~=true then return end
+        local stopped,stopReason=command(self.physicalControl,
+            "stopStaticMovement",state.relocator.vehicle)
+        if not stopped then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",stopReason)
+            return
+        end
+        state.isStaticMovementOutstanding=false
+        local retained,retainReason=command(self.physicalControl,
+            "retainStaticTransit",state.relocator.vehicle)
+        if not retained then
+            self:finishWithOutcome("CONTROL_INTERRUPTED",retainReason)
+            return
+        end
+        state.isTransitOutstanding=false
+        -- If the region is reached early, wait out the promised 5 s native
+        -- Regulation window, without continuing to move the static subject.
+        state.phase="STATIC_WAIT_EGRESS_TIMER"
+        if nowMs>=state.egressRegulationUntilMs then
+            self.lastOutcome={status="STATIC_BLOCKER_MOVED",
+                commitmentId=state.commitmentId,
+                isNativeContinuationConfirmed=false,
+                reason="INFERRED_SUBJECT_MOVED_GIANTS_CONTINUATION_UNMEASURED"}
+            self.active=nil
+        end
+        return
+    end
+
   -- Reverse is already armed in begin, without a TRANSIT settlement check.
     if state.phase=="REVERSING" then
         local status,statusReason=query(self.physicalControl,"reverseStatus",

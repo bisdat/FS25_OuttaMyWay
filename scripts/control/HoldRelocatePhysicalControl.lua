@@ -107,6 +107,7 @@ function Control.new(authority)
     control.holdMechanism=OuttaMyWay.NativeTranslationHoldMechanism.new()
     control.regulationMechanism=OuttaMyWay.NativeSpeedRegulationMechanism.new()
     control.reverseMechanism=OuttaMyWay.NativeReverseMechanism.new()
+    control.staticDriveMechanism=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new()
     control.transitMechanism=OuttaMyWay.NativeTransitRequestMechanism.new(control)
     control.jobMechanism=OuttaMyWay.NativeFieldworkJobReplacementMechanism.new(authority)
     return control
@@ -177,6 +178,32 @@ end
 function Control:cancelReverse(vehicle)
     local ok,evidence=self.reverseMechanism:cancelReverse(vehicle)
     if ok then self.regulationMechanism:refreshInstallation() end
+    return ok,evidence
+end
+
+function Control:startStaticMovement(vehicle,objective)
+    return self.staticDriveMechanism:startMovement(vehicle,objective)
+end
+
+function Control:staticMovementStatus(vehicle,dt)
+    return self.staticDriveMechanism:movementStatus(vehicle,dt)
+end
+
+function Control:stopStaticMovement(vehicle)
+    return self.staticDriveMechanism:stopMovement(vehicle)
+end
+
+function Control:cancelStaticMovement(vehicle)
+    return self.staticDriveMechanism:cancelMovement(vehicle)
+end
+
+function Control:discardStaticMovementOnMapDelete(vehicle)
+    return self.staticDriveMechanism:discardOnMapDelete(vehicle)
+end
+
+function Control:retainStaticTransit(vehicle)
+    local ok,evidence=self.transitMechanism:relinquishTransit(vehicle)
+    if ok then self.plans[vehicle]=nil end
     return ok,evidence
 end
 

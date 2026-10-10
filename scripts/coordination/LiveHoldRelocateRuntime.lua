@@ -42,26 +42,50 @@ function Runtime.new(configuration,observer)
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedEgressRegulationResults=nil,
         lastReportedInitialMotionEvidence=nil,
+        lastReportedStaticMotionEvidence=nil,
         isRuntimeReported=false
     },Runtime)
 end
 
 function Runtime:loadMap()
     self.isRuntimeReported=false
-    -- Candidate evidence belongs to the native Observer's map lifecycle.
+    -- A new map cannot inherit attempted native occurrences or publication
+    -- references from a previous map.
+    self.attempted=setmetatable({},{__mode="k"})
+    self.lastReportedEgressRegulationResults=nil
+    self.lastReportedInitialMotionEvidence=nil
+    self.lastReportedStaticMotionEvidence=nil
 end
 
 -- Disabling requests immediate native Control release; completion is reported
 -- for the current episode only, without parked cross-episode job history.
 function Runtime:relinquish(reason)
-    if not self.coordinator:isActive() then return true end
+    local active=self.coordinator.active
+    if active==nil then
+        -- No physical action survives; likewise do not retain an abandoned
+        -- admission when disabling or leaving the map.
+        if self.authority.active~=nil then
+            self.authority:release(self.authority.active)
+        end
+        return true
+    end
+    local commitment=active.commitment
     local released,why=self.coordinator:relinquish(reason or "CONTROL_REVOKED")
+    -- The coordinator reports failed native cleanup separately. It always
+    -- ends this attempt; its former authority must not veto a later pulse.
+    if not self.coordinator:isActive() then
+        self.authority:release(commitment)
+    end
     if not released then issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why) end
     return released
 end
 
 function Runtime:deleteMap()
     self:relinquish("MAP_DELETE")
+    self.attempted=setmetatable({},{__mode="k"})
+    self.lastReportedEgressRegulationResults=nil
+    self.lastReportedInitialMotionEvidence=nil
+    self.lastReportedStaticMotionEvidence=nil
 end
 
 function Runtime:update(dt)
@@ -80,7 +104,21 @@ function Runtime:update(dt)
         return
     end
     if coordinator:isActive() then
-        coordinator:advance(nowMs)
+        coordinator:advance(nowMs,dt)
+        local static=coordinator.lastStaticMotionEvidence
+        if static~=nil and static~=self.lastReportedStaticMotionEvidence then
+            self.lastReportedStaticMotionEvidence=static
+            issue(self,"INFO","HOLD_RELOCATE_STATIC_ACTUATION_EVIDENCE",
+                "commitmentId="..tostring(static.commitmentId)
+                .." subjectRootId="..tostring(static.subjectRootId)
+                .." motorStarted="..tostring(static.motorStarted)
+                .." nativeDriveCalls="..tostring(static.commandedDriveCount)
+                .." physicalDisplacementM="..
+                    tostring(static.physicalDisplacementM)
+                .." lateralProgressM="..tostring(static.progressM)
+                .." requiredLateralM="..tostring(static.requiredProgressM)
+                .." statusReason="..tostring(static.statusReason))
+        end
         local motion=coordinator.lastInitialMotionEvidence
         if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
             self.lastReportedInitialMotionEvidence=motion
@@ -107,7 +145,8 @@ function Runtime:update(dt)
         if not coordinator:isActive() then
             local outcome=coordinator:getStatus().lastOutcome
             if outcome~=nil then
-                issue(self,outcome.status=="NATIVE_RESTART_ACCEPTED" and "INFO" or "WARNING",
+                issue(self,(outcome.status=="NATIVE_RESTART_ACCEPTED"
+                    or outcome.status=="STATIC_BLOCKER_MOVED") and "INFO" or "WARNING",
                     "HOLD_RELOCATE_OUTCOME",outcome.status
                         .." reason="..tostring(outcome.reason))
             end
@@ -133,8 +172,15 @@ function Runtime:update(dt)
             and not self.attempted[evidence.candidateIdentity] then
             local commitment,reason
             if evidence.worker~=nil then
-                commitment,reason=self.authority:admitSingleCandidate(
-                    evidence.worker,evidence.confirmedBlockedMs)
+                -- Single native pulse: inferred inactive subject first,
+                -- established solo BWR when the one-shot snapshot lacks one.
+                commitment,reason=self.authority:admitStaticBlockerCandidate(
+                    evidence.worker,evidence.confirmedBlockedMs,
+                    evidence.encounterSnapshot)
+                if commitment==nil then
+                    commitment,reason=self.authority:admitSingleCandidate(
+                        evidence.worker,evidence.confirmedBlockedMs)
+                end
             else
                 commitment,reason=self.authority:admitCandidate(
                     evidence.firstWorker,evidence.secondWorker,
@@ -149,10 +195,24 @@ function Runtime:update(dt)
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then
                     local details=commitment.commitmentId
+                    if commitment.kind=="STATIC_BLOCKER" then
+                        details=details.." inferredStaticSubject="
+                            ..tostring(commitment.relocator.assemblyReferenceKey)
+                            .." blockedBeneficiary="
+                            ..tostring(evidence.worker.rootNode)
+                    end
                     if type(why)=="table"
                         and type(why.requestedReverseSpeedKmh)=="number" then
                         details=details.." requestedReverseSpeedKmh="..
                             tostring(why.requestedReverseSpeedKmh)
+                    end
+                    if type(why)=="table" and why.requestedDriveSpeedKmh~=nil then
+                        details=details.." requestedDriveSpeedKmh="
+                            ..tostring(why.requestedDriveSpeedKmh)
+                    end
+                    if type(why)=="table" and why.beneficiaryWorkingWidthM~=nil then
+                        details=details.." beneficiaryWorkingWidthM="
+                            ..tostring(why.beneficiaryWorkingWidthM)
                     end
                     if type(why)=="table" and why.regionRequiredProgressM~=nil then
                         details=details.." requiredLateralM="..

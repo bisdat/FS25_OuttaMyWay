@@ -56,6 +56,18 @@ assert(calls[5].name=="RAISE" and calls[5].value==true)
 assert(calls[6].name=="WORK" and calls[6].value==true)
 assert(mechanism:getRequestEvidence(vehicle).isActive==false)
 assert(mechanism:cancelTransit(vehicle),"idempotent cancellation")
+-- Static relocation handback is different: relinquish the cached command
+-- without sending ANY working-pose inverses. The same assembly can still
+-- receive a fresh TRANSIT request for a later blocked encounter.
+assert(mechanism:requestTransit(vehicle))
+local beforeRetain=#calls
+assert(mechanism:relinquishTransit(vehicle))
+assert(#calls==beforeRetain,"static TRANSIT must not restore working pose")
+assert(mechanism:getRequestEvidence(vehicle).isActive==false)
+assert(mechanism:requestTransit(vehicle),
+    "a retained static posture does not gate a later fresh encounter")
+assert(mechanism:cancelTransit(vehicle),
+    "ordinary cancellation remains available to pair/solo callers")
 -- No completion polling; a failed command is not ignored or misclassified as READY.
 failMethod="FOLD"
 ok,evidence=mechanism:requestTransit(vehicle)

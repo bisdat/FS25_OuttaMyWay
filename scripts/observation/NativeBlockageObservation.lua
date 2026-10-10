@@ -173,7 +173,8 @@ function Observer:getCurrentSingleCandidates()
     for _,entry in pairs(self.singles) do
         results[#results+1]={
             candidateIdentity=entry,worker=entry.worker,
-            confirmedBlockedMs=entry.confirmedBlockedMs
+            confirmedBlockedMs=entry.confirmedBlockedMs,
+            encounterSnapshot=entry.encounterSnapshot
         }
     end
     return results
@@ -236,7 +237,8 @@ function Observer:update(dt)
                 or nowMs<state.lastSampleMs then
                 self.singles[worker]=nil
                 state={job=job,strategy=strategy,lastSampleMs=nowMs,
-                    wasBlocked=false,confirmedBlockedMs=0,reported=false}
+                    wasBlocked=false,confirmedBlockedMs=0,reported=false,
+                    encounterSnapshot=nil}
             end
 
             if isBlocked then
@@ -246,6 +248,11 @@ function Observer:update(dt)
                 else
                     state.confirmedBlockedMs=0
                     state.reported=false
+                    -- One current physical observation on the FIRST sampled
+                    -- positive edge. No synthetic impact timestamp.
+                    state.encounterSnapshot=
+                        OuttaMyWay.StaticBlockageEncounterObservation.capture(
+                            worker,g_currentMission,nowMs)
                 end
                 if not state.reported and state.confirmedBlockedMs>=1000 then
                     local subject=rootRecord(worker)
@@ -279,8 +286,22 @@ function Observer:update(dt)
                         if result==nil then
                             self.singles[worker]={
                                 worker=worker,job=job,strategy=strategy,
-                                confirmedBlockedMs=state.confirmedBlockedMs
+                                confirmedBlockedMs=state.confirmedBlockedMs,
+                                encounterSnapshot=state.encounterSnapshot
                             }
+                        end
+                        if result==nil and state.encounterSnapshot~=nil
+                            and state.encounterSnapshot.populationAvailable==true then
+                            publication:publish("DEBUG","INFO",
+                                "NATIVE_BLOCKAGE_ENCOUNTER_SNAPSHOT",function()
+                                    return {
+                                        blockedRootId=tostring(subject.rootId),
+                                        confirmedBlockedMs=math.floor(state.confirmedBlockedMs),
+                                        evidence=OuttaMyWay.StaticBlockageEncounterObservation.describe(
+                                            state.encounterSnapshot),
+                                        authority="OBSERVATION_ONLY"
+                                    }
+                                end)
                         end
                         if shouldPublish then
                             local code=result~=nil and "NATIVE_BLOCKAGE_PAIR_CANDIDATE"
@@ -302,6 +323,7 @@ function Observer:update(dt)
                 self.singles[worker]=nil
                 state.confirmedBlockedMs=0
                 state.reported=false
+                state.encounterSnapshot=nil
             end
             state.wasBlocked=isBlocked
             state.lastSampleMs=nowMs

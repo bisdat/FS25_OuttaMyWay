@@ -158,6 +158,10 @@ local function adjustToolTarget(reverseNode,toolNode,targetX,targetZ)
     return x,z
 end
 
+-- Shared native tool-relative transform for reverse movements that must
+-- explicitly issue drive commands because no GIANTS AI job remains active.
+Mechanism.adjustToolTarget=adjustToolTarget
+
 function Mechanism.new()
     return setmetatable({states=setmetatable({},{__mode="k"}),
         activeVehicle=nil,originalDrive=nil,wrapper=nil},Mechanism)

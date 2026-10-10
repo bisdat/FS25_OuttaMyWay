@@ -17,6 +17,20 @@ Only the authoritative server may observe. Source consumes the **current GIANTS 
 
 The runtime may perform passive targeted samples during its ordinary update, rather than treating old experimental 500 ms diagnostic logging as an event contract. Sampling is an approximation: an unseen native change between consecutive samples is **not asserted to be captured**. Unknown/missing strategy, job, registry or clock evidence means **no candidate**, not an invented blocked interval.
 
+## One-shot Blockage Encounter Snapshot — issue #465
+
+The new **Blockage Encounter Snapshot** captures physical evidence at the **first observed** `isBlocked=true` sample after a false/unknown native edge (or fresh job/strategy). It is not an actual GIANTS collision callback; `observedAtMs` is **not** a proven impact timestamp. One capture is allowed per native blocked pulse. There are **no shape hierarchy scans, collision-overlap computations, polygon searches or continuous extra physical census passes**.
+
+When native world-pose/facing APIs and `mission.vehicleSystem.vehicles` are available, record:
+- blocked beneficiary's current root X/Z and current forward vector from its GIANTS AI steering node (root fallback, or unresolved);
+- for current distinct physical assembly roots, one world X/Z / facing sample and, where observed, `getIsAIActive`, player-controlled state and speed; the retained candidate also carries its actual GIANTS root-vehicle reference for downstream admission, but never publishes that object as text;
+- for a bounded set of at most **three** nearest physical roots, relative forward/cross offsets and heading-alignment dot product against the blocked worker's facing. Three is an **evidence-size bound**, not a new causal radius or admission rule;
+- observation time, physical inventory completeness and explicit unavailable fields.
+
+The data is carried through the **existing ≥1 second single-native-pulse nomination**, as `encounterSnapshot`. A DEBUG `NATIVE_BLOCKAGE_ENCOUNTER_SNAPSHOT` line is emitted only for a qualified native single-worker concern where a physical population was available, never for every frame or every subsecond pulse. For each retained candidate it publishes the already-captured X/Z, forward vector, facing source and reported speed in m/s (or `unknown`), alongside relative geometry, `aiActive` and player-control evidence. This is formatting of the retained snapshot, not a fresh GIANTS observation; one instantaneous reported speed is not proof of sustained stationarity. This does **not** identify a blocker, replace the current authority decision, or trigger relocation. Original pairwise and solo recovery timing and Control are unchanged. A new pulse, GIANTS job or strategy yields a new snapshot; map teardown, disabled state and actual native unblock discard the old sample.
+
+This evidence is meant to answer: *what did GIANTS show about the worker's and possible static subject's pose/facing as the blockage began?* It does not yet answer *which exact object caused it* or *whether forward or reverse motion is safe*. Downstream [#465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465) now deliberately permits a bounded **inference** from native blockage plus near/static root evidence to initiate non-job Control; that decision belongs entirely to the independent Hold & Relocate authority and does not turn Observation into a collision detector or direct actuator.
+
 ## Confirmed blocked-duration boundary
 
 For the initial implementation tranche, accumulate time only between **successive positive native strategy `isBlocked=true` samples** on the same worker, same native job reference and same strategy instance. A `false` reading ends the current **Native Blockage Pulse**; it contributes **zero** to confirmed blocked duration. Unavailable evidence or worker/job/strategy loss invalidates the interval.
@@ -49,15 +63,23 @@ The blocked worker and neighbouring currently active field workers are converted
 | Production source | Participation |
 | --- | --- |
 | [`scripts/observation/NativeBlockageObservation.lua`](../scripts/observation/NativeBlockageObservation.lua) | `REALISES` |
+| [`scripts/observation/StaticBlockageEncounterObservation.lua`](../scripts/observation/StaticBlockageEncounterObservation.lua) | `REALISES` |
 
 ## Repository validation participants
 
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/native_blockage_observation.lua`](../tests/shell/native_blockage_observation.lua) | `CHALLENGES` |
+| [`tests/shell/static_blockage_encounter.lua`](../tests/shell/static_blockage_encounter.lua) | `CHALLENGES` |
 
 ## Implementation traceability / validation scope
 
 [`scripts/main.lua`](../scripts/main.lua) constructs one observer with current Configuration and registers it ahead of the separate live Control runtime. The existing [Spatial Pair Inference](../scripts/assessment/SpatialPairInference.lua) is a downstream pure evaluator, not another Native Blockage Observation participant.
 
 Offline tests verify observation gate, false-pulse reset, job/strategy turnover, root ranking, reciprocal-pair unification and release, disabled/client state and absence of vehicle commands. Only an in-game Reality test can confirm correct GIANTS source timing, no interference and representative Condor/Patriot candidate observation. This Specification establishes neither multi-pulse episode continuity nor GIANTS Control authority **for the Observer**; current production Control is a separate `HOLD_RELOCATE` responsibility.
+
+## One-shot static-blocker inference — TEST 0.5.1.14
+
+A GIANTS field-course worker's continuously positive native `isBlocked` pulse must reach at least **1,000 ms** before any BWR candidate is admitted. A first-edge one-shot mission physical-root snapshot retains up to three nearest distinct root references. If no active GIANTS worker-pair candidate is current and an inactive, nearly stationary assembly root is **within 30 m**, it is a static-blocker candidate even when its root is behind or 22 m to the side of the active worker. No repeated physical census, footprint scan, calculated collision contact or root-axis cross-track gate is added. Each independently qualified blocked pulse is a new encounter; a previously relocated assembly is not blacklisted.
+
+Snapshot `playerControlled` remains a diagnostic observation of GIANTS player-context APIs only; **vehicle tab-selection is not a physical driving-action witness and is not static movement authority**. The former static player-claim exclusion and `relativeForwardM>0` / |cross-track| ≤5 m eligibility checks were rejected by TS018 0.5.1.12 follow-up, where Condor was 23.56 m away yet still blocked Patriot's wide sprayer. Actual newly active GIANTS AI work supersedes the dormant non-job drive. The downstream static Control mechanism carries an independent 25-second cancellation deadline; Observation does not own that timer.

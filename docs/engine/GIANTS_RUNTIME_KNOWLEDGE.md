@@ -589,6 +589,57 @@ ownership state.
 
 **Evidence:** post-job player-claim runtime probe.
 
+
+### Selected-Assembly Motion Suppression — tab context can claim physical actuation
+
+**Finding (GIANTS Reality, TEST 0.5.1.15 TS018, 10 October 2026):**
+Tab-selection is a GIANTS player-occupancy/control-context witness, even
+without a deliberate throttle or steering input. In a static-blocker
+relocation, that selected context may prevent non-job native drive requests
+from becoming physical translation while still reporting the motor as running.
+
+Two otherwise similar TS018 field tests accepted relocation:
+- **Run 1, tabbed into the beneficiary Patriot:** Condor's blocked-edge
+  `playerControlled=false`. At the existing 5-second evidence boundary, the
+  static subject had `motorStarted=true`, **497** native
+  `AIVehicleUtil.driveToPoint` calls and **6.587 m** measured displacement;
+  `STATIC_BLOCKER_MOVED` followed **10.337 s** after commitment.
+- **Run 2, tabbed into the static Condor:** Condor's blocked-edge
+  `playerControlled=true`. At 5 seconds the same actuator reported
+  `motorStarted=true`, **514** drive calls, yet only **0.0022 m** displacement
+  and **0.00018 m** signed lateral progress. Video showed motion begin after
+  tabbing out; the **same** static commitment ended `STATIC_BLOCKER_MOVED`
+  **19.489 s** after admission. Neither run reached the 25-second fail-safe.
+
+**Named concept — GIANTS Selection-Claimed Occupancy:** A player-selected
+assembly may be *claimed in GIANTS' physical control context* without evidence
+that the player actually drove it. This describes observable execution
+behaviour; it does **not** assert that GIANTS exposes a universal formal
+collision-occupancy/reservation contract. Selected context is distinct from
+a newly active GIANTS AI job, and from OuttaMyWay's authority to infer a
+stationary obstruction. In particular, `getIsControlled()` and
+`g_currentMission.controlledVehicle` may describe selection; they must not
+by themselves be interpreted as a player drive command.
+
+**Safe use:** Separate three questions: (1) Is the physical assembly relevant
+to the native blocked encounter? (2) Has OuttaMyWay issued a native Control
+request? (3) Is GIANTS *realising* that request as physical motion? Use the
+existing measured displacement and native-drive-call evidence to answer the
+third; preserve the already committed relocation across a tab transition
+rather than readmitting it.
+
+**Do not infer:** `motorStarted=true` or hundreds of drive calls proves
+movement; near-zero displacement proves OMW did not request Control; tabbing
+into the vehicle proves intentional manual driving; or the observed GIANTS
+selection physics applies to every assembly. Conversely, a 25-second fail-safe
+that was not reached is not a field-validated expiry.
+
+**Evidence:** `0.5.1.15_TS018.zip`, Run 1 08:16:54–08:17:05,
+Run 2 08:19:35–08:19:56, with in-game video and
+`HOLD_RELOCATE_STATIC_ACTUATION_EVIDENCE`; issue #465, PR #466. These
+findings qualify the earlier post-job player-entry witness above, but do
+not erase that earlier observation or revive its retired BWR interlock.
+
 ## Rendering and user-facing text
 
 ### Texture-font support is narrower than source-text validity

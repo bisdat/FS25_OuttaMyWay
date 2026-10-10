@@ -73,10 +73,12 @@ jobs:
             scripts/control/HoldRelocatePhysicalControl.lua \
             scripts/coordination/LiveHoldRelocateRuntime.lua \
             scripts/control/mechanisms/NativeReverseMechanism.lua \
+            scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua \
             scripts/control/mechanisms/NativeTranslationHoldMechanism.lua \
             scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua \
             scripts/control/mechanisms/NativeTransitRequestMechanism.lua \
             scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua \
+            scripts/observation/StaticBlockageEncounterObservation.lua \
             scripts/observation/NativeBlockageObservation.lua \
             scripts/configuration/Configuration.lua \
             scripts/diagnostics/DiagnosticPublicationPolicySource.lua \
@@ -101,6 +103,8 @@ jobs:
           "$LUAJIT_BIN" tests/shell/native_transit_request_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_fieldwork_job_replacement.lua
           "$LUAJIT_BIN" tests/shell/native_blockage_observation.lua
+          "$LUAJIT_BIN" tests/shell/static_blockage_encounter.lua
+          "$LUAJIT_BIN" tests/shell/static_blocker_relocation.lua
           "$LUAJIT_BIN" tests/shell/configuration_persistence.lua
           "$LUAJIT_BIN" tests/replacement_core/diagnostic_publication_policy_source.lua
           "$LUAJIT_BIN" tests/replacement_core/log_publication.lua

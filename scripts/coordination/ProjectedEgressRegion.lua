@@ -248,7 +248,114 @@ function Region.planSingle(commitment,relocator)
     }
 end
 
+-- An inferred static blocker must leave the blocked worker's productive
+-- cross-track corridor, not merely drive away in a straight line. Reuse the
+-- established 70-degree BWR steering angle and 5 m width allowance.
+-- Choose side once, preferring the blocked worker's own GIANTS field.
+function Region.planStatic(commitment,subject)
+    local beneficiary=commitment and commitment.participants
+        and commitment.participants[1] or nil
+    if type(subject)~="table" or type(beneficiary)~="table"
+        or not finite(subject.x) or not finite(subject.z)
+        or not finite(subject.forwardX) or not finite(subject.forwardZ)
+        or not finite(beneficiary.x) or not finite(beneficiary.z)
+        or not finite(commitment.beneficiaryForwardX)
+        or not finite(commitment.beneficiaryForwardZ)
+        or not finite(commitment.beneficiaryWorkingWidthM)
+        or commitment.beneficiaryWorkingWidthM<=0 then
+        return nil,"STATIC_REGION_EVIDENCE_UNAVAILABLE"
+    end
+    local fx,fz=unit(subject.forwardX,subject.forwardZ)
+    local bx,bz=unit(commitment.beneficiaryForwardX,
+        commitment.beneficiaryForwardZ)
+    if fx==nil or bx==nil then
+        return nil,"STATIC_FACING_UNAVAILABLE"
+    end
+    local awayX,awayZ=subject.x-beneficiary.x,subject.z-beneficiary.z
+    local isForward=fx*awayX+fz*awayZ>=0
+    local travelX,travelZ=isForward and fx or -fx,isForward and fz or -fz
+    local perpX,perpZ=-travelZ,travelX
+    local normalX,normalZ=-bz,bx
+    local vectorDistance=commitment.beneficiaryWorkingWidthM+EGRESS_MARGIN_M
+    local field,centroid,fieldSource=ownCourseField(commitment)
+    local chosen=nil
+    for _,side in ipairs({-1,1}) do
+        local dx=COS_OBLIQUE*travelX+side*SIN_OBLIQUE*perpX
+        local dz=COS_OBLIQUE*travelZ+side*SIN_OBLIQUE*perpZ
+        local lateral=dx*normalX+dz*normalZ
+        local progress=vectorDistance*math.abs(lateral)
+        if progress>=vectorDistance*0.5 then
+            local endpointInField=field~=nil and segmentInField(field,
+                subject.x,subject.z,dx,dz,vectorDistance) or false
+            local towardCentre=centroid~=nil
+                and (dx*(centroid.x-subject.x)
+                    +dz*(centroid.z-subject.z)) or nil
+            local candidate={
+                side=side,dx=dx,dz=dz,lateralSign=lateral<0 and -1 or 1,
+                requiredLateralM=progress,endpointInField=endpointInField,
+                centreScore=towardCentre
+            }
+            if chosen==nil
+                or (candidate.endpointInField and not chosen.endpointInField)
+                or (candidate.endpointInField==chosen.endpointInField
+                    and candidate.centreScore~=nil
+                    and (chosen.centreScore==nil
+                        or candidate.centreScore>chosen.centreScore+0.001)) then
+                chosen=candidate
+            end
+        end
+    end
+    if chosen==nil then return nil,"STATIC_LATERAL_DIRECTION_UNAVAILABLE" end
+    -- Deliberately aim beyond the Return Region. Along the selected ray,
+    -- lateral progress reaches the required region at vectorDistance;
+    -- the additional 40 m keeps a reverse steering target ahead of the
+    -- desired region until physical lateral entry ends the command.
+    -- This is steering geometry, never an extra movement or release gate.
+    local horizon=vectorDistance+STEERING_LOOKAHEAD_M
+    return {
+        isReverse=not isForward,moveForwards=isForward,
+        targetX=subject.x+chosen.dx*horizon,
+        targetZ=subject.z+chosen.dz*horizon,
+        steeringHorizonM=horizon,
+        returnRegion={
+            source="STATIC_CROSS_TRACK_REGION",
+            originX=subject.x,originZ=subject.z,
+            directionX=chosen.dx,directionZ=chosen.dz,
+            normalX=normalX,normalZ=normalZ,
+            sideSign=chosen.lateralSign,
+            requiredProgressM=chosen.requiredLateralM
+        },
+        directionSource=isForward and "STATIC_FORWARD_OBLIQUE"
+            or "STATIC_REVERSE_OBLIQUE",
+        vectorDistanceM=vectorDistance,marginM=EGRESS_MARGIN_M,
+        beneficiaryWorkingWidthM=commitment.beneficiaryWorkingWidthM,
+        nominalBearingOffsetDeg=OBLIQUE_REVERSE_DEG,
+        egressSide=chosen.side,targetInField=chosen.endpointInField,
+        fieldInteriorScore=chosen.centreScore,
+        fieldIdentitySource=fieldSource,
+        staticSubjectRootId=subject.assemblyReferenceKey
+    }
+end
+
 function Region.progress(region,x,z)
+    if type(region)=="table" and region.source=="STATIC_CROSS_TRACK_REGION" then
+        if not finite(x) or not finite(z)
+            or not finite(region.originX) or not finite(region.originZ)
+            or not finite(region.normalX) or not finite(region.normalZ)
+            or not finite(region.sideSign)
+            or not finite(region.requiredProgressM)
+            or not finite(region.directionX) or not finite(region.directionZ) then
+            return nil
+        end
+        local dx,dz=x-region.originX,z-region.originZ
+        local progress=region.sideSign*(dx*region.normalX
+            +dz*region.normalZ)
+        return {progressM=progress,crossTrackM=progress,
+            lateralOffsetM=math.abs(dx*region.directionZ
+                -dz*region.directionX),
+            remainingM=math.max(0,region.requiredProgressM-progress),
+            isInRegion=progress>=region.requiredProgressM}
+    end
     if type(region)=="table" and region.source=="SINGLE_REVERSE_REGION" then
         if not finite(x) or not finite(z)
             or not finite(region.originX) or not finite(region.originZ)

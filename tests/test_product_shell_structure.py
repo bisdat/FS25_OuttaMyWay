@@ -16,6 +16,7 @@ SHELL_MODULES = [
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
+    "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua",
     "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
     "scripts/control/mechanisms/NativeSpeedRegulationMechanism.lua",
     "scripts/control/mechanisms/NativeTransitRequestMechanism.lua",
@@ -23,6 +24,7 @@ SHELL_MODULES = [
     "scripts/configuration/Configuration.lua",
     "scripts/diagnostics/DiagnosticPublicationPolicySource.lua",
     "scripts/publication/LogPublication.lua",
+    "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
@@ -105,7 +107,6 @@ def test_reverse_speed_is_native_and_has_scoped_cruise_restoration():
 def test_player_control_takeover_is_not_a_live_authority_predicate():
     assert not (ROOT / "scripts/observation/CurrentPlayerControlObservation.lua").exists()
     for consumer in (
-        "scripts/coordination/NativePairCommitmentAuthority.lua",
         "scripts/coordination/LiveHoldRelocateRuntime.lua",
         "scripts/control/mechanisms/NativeTranslationHoldMechanism.lua",
         "scripts/control/mechanisms/NativeFieldworkJobReplacementMechanism.lua",
@@ -117,6 +118,22 @@ def test_player_control_takeover_is_not_a_live_authority_predicate():
         assert "controlledVehicle" not in content
         assert "PLAYER_CONTROL" not in content
         assert "PLAYER_TAKEOVER" not in content
+    authority = (ROOT / "scripts/coordination/NativePairCommitmentAuthority.lua").read_text(
+        encoding="utf-8")
+    assert "admitStaticBlockerCandidate" in authority
+    assert "STATIC_SUBJECT_CURRENTLY_CONTROLLED" not in authority
+    assert "c.playerControlled==false" not in authority
+    assert "math.abs(c.relativeCrossTrackM)<=5" not in authority
+    assert "c.relativeForwardM>0" not in authority
+    assert "c.distanceM<=30" in authority
+    actuator = (ROOT / "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua").read_text(
+        encoding="utf-8")
+    assert "STATIC_SUBJECT_CLAIMED" not in actuator
+    assert "STATIC_SUBJECT_AI_RECLAIMED" in actuator
+    coordinator = (ROOT / "scripts/coordination/HoldRelocateCoordinator.lua").read_text(
+        encoding="utf-8")
+    assert "STATIC_EGRESS_FAILSAFE_MS=25000" in coordinator
+    assert '"STATIC_EGRESS_FAILSAFE_25S"' in coordinator
 
 
 def test_hud_contains_only_dynamic_version_identity_and_requires_enabled_config():
