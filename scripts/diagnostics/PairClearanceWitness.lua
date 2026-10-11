@@ -32,19 +32,19 @@ local function heading(vehicle)
     return x/len,z/len
 end
 -- Eligibility gates *production* of geometry, not merely publication.
--- When DEBUG is off, no new member-node transform or root sample is done.
+-- When DIAGNOSTIC is off, no member-node transforms or roots are sampled.
 local function enabled(publisher)
     if type(publisher)~="table"
         or type(publisher.isEligible)~="function" then return false end
     local ok,available=pcall(publisher.isEligible,publisher,
-        "DEBUG","INFO","PAIR_CLEARANCE_OBSERVATION")
+        "DIAGNOSTIC","INFO","PAIR_CLEARANCE_OBSERVATION")
     return ok and available==true
 end
 local function publish(state,code,payload)
     local publisher=state.publisher
     if type(publisher)~="table"
         or type(publisher.publish)~="function" then return end
-    pcall(publisher.publish,publisher,"DEBUG","INFO",code,function()
+    pcall(publisher.publish,publisher,"DIAGNOSTIC","INFO",code,function()
         payload.version=OuttaMyWay.VERSION
         return payload
     end)
