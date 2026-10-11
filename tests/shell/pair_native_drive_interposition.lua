@@ -2,7 +2,12 @@
 -- even when a synthetic paired 41 m Return Region completes before the
 -- separate 8 s pair Regulation. This fixture tests wrapper order, not speed.
 -- This is a shell contract, not a GIANTS physical clearance claim.
-OuttaMyWay={ProjectedEgressRegion={}}
+OuttaMyWay={ProjectedEgressRegion={
+    isRootInField=function(poly,x,z)
+        return x>=poly.xs[1] and x<=poly.xs[2]
+            and z>=poly.zs[1] and z<=poly.zs[3]
+    end
+}}
 local events={}
 local native=function(vehicle,dt,accel,allowed,forward,x,z,speed,doNotSteer)
     events[#events+1]={vehicle=vehicle,accel=accel,allowed=allowed,
@@ -75,7 +80,7 @@ local physical={
         return true,{requestedReverseSpeedKmh=20}
     end,
     reverseStatus=function()
-        return {isComplete=regionReached,isFailed=false,
+        return {isComplete=regionReached,isFailed=false,rootX=25,rootZ=20,
             travelledM=regionReached and 41 or 0}
     end,
     stopReverse=function()
@@ -108,6 +113,7 @@ OuttaMyWay.ProjectedEgressRegion.planPairCascade=function(_,preferred,other)
         directionSource="OBLIQUE_REVERSE",cascadeAttempts=8,
         regionTravelM=41,
         returnRegion={source="PAIR_WORKING_CORRIDOR_TRAVEL_REGION",
+            originX=25,originZ=20,
             directionX=-1,directionZ=0,requiredProgressM=41},
         transitGeometryBasis="TEST_TRANSIT"
     },other,preferred

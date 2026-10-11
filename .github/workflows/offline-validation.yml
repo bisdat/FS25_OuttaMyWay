@@ -68,10 +68,13 @@ jobs:
             scripts/config.lua \
             scripts/assessment/SpatialPairInference.lua \
             scripts/coordination/HoldRelocateCoordinator.lua \
+            scripts/coordination/PairSteeringDemand.lua \
             scripts/coordination/ProjectedEgressRegion.lua \
             scripts/coordination/NativePairCommitmentAuthority.lua \
             scripts/control/HoldRelocatePhysicalControl.lua \
             scripts/coordination/LiveHoldRelocateRuntime.lua \
+            scripts/diagnostics/NativeContinuationWitness.lua \
+            scripts/diagnostics/PairClearanceWitness.lua \
             scripts/diagnostics/ReverseKinematicsProbe.lua \
             scripts/control/mechanisms/NativeReverseMechanism.lua \
             scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua \
@@ -97,10 +100,13 @@ jobs:
           "$LUAJIT_BIN" tests/shell/spatial_pair_inference.lua
           "$LUAJIT_BIN" tests/shell/projected_egress_region.lua
           "$LUAJIT_BIN" tests/shell/pair_transit_region.lua
+          "$LUAJIT_BIN" tests/shell/pair_steering_demand.lua
           "$LUAJIT_BIN" tests/shell/pair_transit_settlement.lua
           "$LUAJIT_BIN" tests/shell/hold_relocate.lua
           "$LUAJIT_BIN" tests/shell/pair_native_drive_interposition.lua
           "$LUAJIT_BIN" tests/shell/live_hold_relocate.lua
+          "$LUAJIT_BIN" tests/shell/native_continuation_witness.lua
+          "$LUAJIT_BIN" tests/shell/pair_clearance_witness.lua
           "$LUAJIT_BIN" tests/shell/reverse_kinematics_probe.lua
           "$LUAJIT_BIN" tests/shell/native_reverse_mechanism.lua
           "$LUAJIT_BIN" tests/shell/native_translation_hold_mechanism.lua

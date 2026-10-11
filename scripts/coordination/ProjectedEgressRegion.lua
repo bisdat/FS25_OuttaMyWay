@@ -36,6 +36,13 @@ local function inside(poly,x,z)
     end
     return result
 end
+-- Admission uses the same polygon definition as the paired movement guard.
+-- This is root containment, not a guarantee of implement-envelope clearance.
+function Region.isRootInField(poly,x,z)
+    if not finite(x) or not finite(z) then return false end
+    return inside(poly,x,z)
+end
+
 local function segmentInField(poly,x,z,dx,dz,length)
     local count=math.max(1,math.ceil(length/SAMPLE_STEP_M))
     for i=0,count do
@@ -209,13 +216,13 @@ end
 
 -- Reverse 70 degrees for both mover assignments precedes any non-axial,
 -- partner-withdrawing centroid option. Pure axial travel is never an exit.
-function Region.planPairCascade(commitment,preferred,alternative)
+function Region.planPairCascade(commitment,preferred,alternative,steeringAssessor)
     -- A prepared pair uses selected-runtime assembly envelopes, not the
     -- legacy productive-width ray scale.
     if type(preferred.transitFootprint)=="table"
         or type(alternative.transitFootprint)=="table" then
         return OuttaMyWay.PairTransitRegion.planPair(
-            commitment,preferred,alternative)
+            commitment,preferred,alternative,steeringAssessor)
     end
     local attempts=0
     for _,mode in ipairs({"OBLIQUE_REVERSE","CENTROID"}) do

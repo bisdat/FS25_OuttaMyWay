@@ -6,10 +6,10 @@ OuttaMyWay.LiveHoldRelocateRuntime={}
 local Runtime=OuttaMyWay.LiveHoldRelocateRuntime
 Runtime.__index=Runtime
 
-local function issue(runtime,level,code,detail)
+local function issue(runtime,level,code,detail,publicationClass)
     local publication=runtime.publication
     if publication==nil then return end
-    publication:publish("NORMAL",level,code,function()
+    publication:publish(publicationClass or "NORMAL",level,code,function()
         return {detail=tostring(detail or ""),version=OuttaMyWay.VERSION}
     end)
 end
@@ -38,6 +38,11 @@ function Runtime.new(configuration,observer)
     return setmetatable({
         configuration=configuration,observer=observer,
         authority=authority,physicalControl=physical,coordinator=coordinator,
+        continuationWitness=OuttaMyWay.NativeContinuationWitness.new(
+            OuttaMyWay.LogPublication.origin("NATIVE_CONTINUATION_WITNESS")),
+        clearanceWitness=OuttaMyWay.PairClearanceWitness.new(
+            OuttaMyWay.LogPublication.origin("PAIR_CLEARANCE_WITNESS")),
+        currentCandidateIdentity=nil,currentCandidatePairKey=nil,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedEgressRegulationResults=nil,
@@ -54,6 +59,10 @@ function Runtime:loadMap()
     -- A new map cannot inherit attempted native occurrences or publication
     -- references from a previous map.
     self.attempted=setmetatable({},{__mode="k"})
+    self.currentCandidateIdentity=nil
+    self.currentCandidatePairKey=nil
+    self.continuationWitness.active=nil
+    self.clearanceWitness:discard()
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
     self.lastReportedStaticMotionEvidence=nil
@@ -64,6 +73,9 @@ end
 -- Disabling requests immediate native Control release; completion is reported
 -- for the current episode only, without parked cross-episode job history.
 function Runtime:relinquish(reason)
+    -- Disable/delete cancels future witness sampling as well as Control.
+    self.continuationWitness.active=nil
+    if self.clearanceWitness~=nil then self.clearanceWitness:discard() end
     local active=self.coordinator.active
     if active==nil then
         -- No physical action survives; likewise do not retain an abandoned
@@ -109,8 +121,25 @@ function Runtime:update(dt)
         self:relinquish("CLOCK_UNAVAILABLE")
         return
     end
+    -- Passive witnesses have their own finite event/clock gates.
+    self.continuationWitness:advance(nowMs)
+    self.clearanceWitness:advance(nowMs)
     if coordinator:isActive() then
+        local observedMovement=coordinator.active
+        local priorPhase=observedMovement.phase
+        local priorPeerRegulated=observedMovement.isBlockerRegulated
+            and observedMovement.isBlockerRegulated[1]==true
         coordinator:advance(nowMs,dt)
+        if coordinator:isActive() then
+            if priorPhase~="HOLD_RELOCATED"
+                and observedMovement.phase=="HOLD_RELOCATED" then
+                self.clearanceWitness:milestone(nowMs,"RETURN_REGION_REACHED")
+            end
+            if priorPeerRegulated and observedMovement.isBlockerRegulated
+                and observedMovement.isBlockerRegulated[1]~=true then
+                self.clearanceWitness:milestone(nowMs,"REGULATION_ENDED")
+            end
+        end
         local wait=coordinator.lastPairTransitExhaustion
         if wait~=nil and wait~=self.lastReportedPairTransitExhaustion then
             self.lastReportedPairTransitExhaustion=wait
@@ -147,7 +176,51 @@ function Runtime:update(dt)
                     start.remainingWorkerConfiguration)
                 .." representation="..tostring(start.geometryBasis)
                 .." confirmedPhysicalClearance=false"
-                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh))
+                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh),
+                "DEBUG")
+            if start.selectedSteeringDeviationDeg~=nil then
+                issue(self,"INFO","HOLD_RELOCATE_STEERING_SELECTION",
+                    "commitmentId="..tostring(start.commitmentId)
+                    .." direction="..tostring(start.directionSource)
+                    .." initialNativeCommandDeviationDeg="
+                    ..tostring(start.selectedSteeringDeviationDeg)
+                    .." geometryOnlyPreferredDirection="
+                    ..tostring(start.previousGeometryPreferredDirection)
+                    .." geometryOnlyPreferredCommandDeviationDeg="
+                    ..tostring(start.previousGeometryPreferredDeviationDeg)
+                    .." changedGeometryPreference="
+                    ..tostring(start.steeringChangedGeometryPreference)
+                    .." viableCandidates="
+                    ..tostring(start.steeringCandidatesAssessed)
+                    .." candidatesMissingSteeringEvidence="
+                    ..tostring(start.steeringCandidatesUnavailable),
+                    "DEBUG")
+                -- High-detail alternatives are relevant to this engineering
+                -- investigation only; not a support-grade causal summary.
+                local enabled=false
+                if type(self.publication.isEligible)=="function" then
+                    local ok,eligible=pcall(self.publication.isEligible,
+                        self.publication,"DIAGNOSTIC","INFO",
+                        "HOLD_RELOCATE_STEERING_CANDIDATES")
+                    enabled=ok and eligible==true
+                end
+                if enabled and type(start.steeringShortlist)=="table" then
+                    for i=1,#start.steeringShortlist do
+                        local c=start.steeringShortlist[i]
+                        issue(self,"INFO","HOLD_RELOCATE_STEERING_CANDIDATES",
+                            "commitmentId="..tostring(start.commitmentId)
+                            .." rank="..tostring(i)
+                            .." moverIndex="..tostring(c.moverIndex)
+                            .." direction="..tostring(c.mode)
+                            .." initialNativeCommandDeviationDeg="
+                            ..tostring(c.demandDeg)
+                            .." travelM="..tostring(c.projectedTravelM)
+                            .." demandSeparationGainM="
+                            ..tostring(c.demandSeparationGainM),
+                            "DIAGNOSTIC")
+                    end
+                end
+            end
         end
         local static=coordinator.lastStaticMotionEvidence
         if static~=nil and static~=self.lastReportedStaticMotionEvidence then
@@ -161,7 +234,7 @@ function Runtime:update(dt)
                     tostring(static.physicalDisplacementM)
                 .." lateralProgressM="..tostring(static.progressM)
                 .." requiredLateralM="..tostring(static.requiredProgressM)
-                .." statusReason="..tostring(static.statusReason))
+                .." statusReason="..tostring(static.statusReason),"DEBUG")
         end
         local motion=coordinator.lastInitialMotionEvidence
         if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
@@ -170,7 +243,7 @@ function Runtime:update(dt)
                 "commitmentId="..tostring(motion.commitmentId)
                 .." angleToTargetDeg="..tostring(motion.relativeToTargetDeg)
                 .." angleToNativeReverseDeg="..
-                    tostring(motion.relativeToNativeReverseDeg))
+                    tostring(motion.relativeToNativeReverseDeg),"DEBUG")
         end
         local results=coordinator.lastEgressRegulationResults
         if results~=nil and results~=self.lastReportedEgressRegulationResults then
@@ -183,7 +256,7 @@ function Runtime:update(dt)
                     .." nativeDriveCalls="..tostring(e.interceptCount)
                     .." displacementM="..tostring(e.displacementM)
                     .." regulationKmh="..tostring(e.regulatedSpeedKmh)
-                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh))
+                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh),"DEBUG")
             end
         end
         if not coordinator:isActive() then
@@ -195,6 +268,24 @@ function Runtime:update(dt)
                         .." reason="..tostring(outcome.reason))
             end
             self.authority:release(self.authority.active)
+            if outcome~=nil then
+                if outcome.status=="NATIVE_RESTART_ACCEPTED" then
+                    self.clearanceWitness:milestone(nowMs,
+                        "NATIVE_RESTART_ACCEPTED")
+                else
+                    self.clearanceWitness:finish(nowMs,outcome.status)
+                end
+            end
+            if outcome~=nil and outcome.status=="EGRESS_INTERRUPTED" then
+                self.continuationWitness:begin(nowMs,observedMovement,outcome,
+                    self.observer,self.currentCandidateIdentity,
+                    self.currentCandidatePairKey,
+                    self.currentCandidateIdentity~=nil
+                        and self.attempted[self.currentCandidateIdentity]==true,
+                    self.physicalControl)
+            end
+            self.currentCandidateIdentity=nil
+            self.currentCandidatePairKey=nil
         end
         return
     end
@@ -238,6 +329,14 @@ function Runtime:update(dt)
             else
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then
+                    -- New OMW movement supersedes old passive attribution.
+                    self.continuationWitness:finish(nowMs,"NEW_COMMITMENT")
+                    self.clearanceWitness:finish(nowMs,"SUPERSEDED_BY_NEW_COMMITMENT")
+                    if coordinator:isActive() then
+                        self.clearanceWitness:begin(nowMs,coordinator.active)
+                    end
+                    self.currentCandidateIdentity=evidence.candidateIdentity
+                    self.currentCandidatePairKey=evidence.pairKey
                     local details=commitment.commitmentId
                     if commitment.kind=="STATIC_BLOCKER" then
                         details=details.." inferredStaticSubject="

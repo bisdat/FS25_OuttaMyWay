@@ -434,7 +434,8 @@ function Mechanism:reverseStatus(vehicle)
     else
         self:observeDisplacement(state)
     end
-    return {travelledM=state.travelledM,isComplete=state.isComplete,
+    return {rootX=state.lastX,rootZ=state.lastZ,
+        travelledM=state.travelledM,isComplete=state.isComplete,
         isFailed=state.isFailed,reason=state.reason,
         regionProgressM=state.regionProgressM,
         regionRemainingM=state.regionRemainingM,

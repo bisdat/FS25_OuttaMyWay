@@ -72,7 +72,7 @@ function Region.capture(vehicle)
     if not ok or not finite(rootX) or not finite(rootZ) then
         return nil,"TRANSIT_ROOT_EVIDENCE_UNAVAILABLE"
     end
-    local corners,seen,count={}, {},0
+    local corners,seen,members,count={}, {},{},0
     local function visit(object)
         if type(object)~="table" or object.isDeleted==true
             or object.rootNode==nil then return false,"TRANSIT_MEMBER_UNAVAILABLE" end
@@ -82,6 +82,11 @@ function Region.capture(vehicle)
         if count>MAX_MEMBERS then return false,"TRANSIT_MEMBER_BUDGET_EXCEEDED" end
         local w,l,wo,lo=memberSize(object)
         if w==nil then return false,"TRANSIT_MEMBER_SIZE_UNAVAILABLE" end
+        -- Retain the native members and their known base-size rectangles so
+        -- a finite, passive witness can reobserve current articulated poses.
+        -- The planner still uses exactly the same original corner snapshot.
+        members[#members+1]={object=object,width=w,length=l,
+            widthOffset=wo,lengthOffset=lo}
         for _,right in ipairs({-1,1}) do
             for _,forward in ipairs({-1,1}) do
                 local placed,x,_,z=pcall(localToWorld,object.rootNode,
@@ -108,7 +113,7 @@ function Region.capture(vehicle)
     local valid,reason=visit(vehicle)
     if not valid or #corners==0 then return nil,reason or "TRANSIT_ENVELOPE_UNAVAILABLE" end
     return {rootX=rootX,rootZ=rootZ,corners=corners,memberCount=count,
-        memberObjects=seen,
+        memberObjects=seen,memberGeometry=members,
         basis="GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION",
         negativeClearanceAuthority=false},nil
 end
@@ -267,7 +272,7 @@ end
 -- native forward/reverse mechanism that can steer toward that region.
 -- Only near-AXIAL directions are excluded, not directions predominantly
 -- lateral to both workers (impossible at right-angle crossings).
-function Region.planPair(commitment,preferred,alternative)
+function Region.planPair(commitment,preferred,alternative,steeringAssessor)
     if type(commitment)~="table" or type(commitment.fieldPolygon)~="table"
         or type(commitment.fieldCentroid)~="table" then
         return nil,nil,nil,"PAIR_REGION_EVIDENCE_UNAVAILABLE"
@@ -275,7 +280,9 @@ function Region.planPair(commitment,preferred,alternative)
     local scene,sceneAvailable=sceneOccupancy(
         preferred,alternative,commitment.fieldPolygon)
     local candidates,optionSectors={},{{},{}}
-    local attempts=0
+    local attempts,steeringUnavailable=0,0
+    local assessSteering=type(steeringAssessor)=="table"
+        and type(steeringAssessor.assess)=="function"
     for moverIndex,mover in ipairs({preferred,alternative}) do
         local other=mover==preferred and alternative or preferred
         local foot,otherFoot=mover.transitFootprint,other.transitFootprint
@@ -394,7 +401,24 @@ function Region.planPair(commitment,preferred,alternative)
                                 isValidatedBearing=ray.validatedBearing,
                                 moverIndex=moverIndex,
                                 mover=mover,other=other}
-                            candidates[#candidates+1]=c
+                            if assessSteering then
+                                -- Assess the *actual native local target*
+                                -- produced by the candidate's world reference.
+                                -- A spatially admitted ray is not yet an
+                                -- executable reverse steering demand.
+                                local command=steeringAssessor.assess(
+                                    mover.vehicle,c.targetX,c.targetZ,
+                                    c.moveForwards)
+                                if type(command)=="table"
+                                    and finite(command.deviationDeg) then
+                                    c.steeringDemand=command
+                                    candidates[#candidates+1]=c
+                                else
+                                    steeringUnavailable=steeringUnavailable+1
+                                end
+                            else
+                                candidates[#candidates+1]=c
+                            end
                         end
                     end
                 end
@@ -405,40 +429,184 @@ function Region.planPair(commitment,preferred,alternative)
     for i=1,2 do
         for _ in pairs(optionSectors[i]) do options[i]=options[i]+1 end
     end
-    local best
+    local function better(c,best,considerSteering)
+        if best==nil then return true end
+        if c.isPartialEgress~=best.isPartialEgress then
+            return not c.isPartialEgress
+        end
+        -- Only rank command demand among candidates already satisfying
+        -- the same spatial completeness class. No unvalidated angle veto:
+        -- a near-axial command can still be an unsafe reversing manoeuvre.
+        if considerSteering and math.abs(c.steeringDemand.deviationDeg
+            -best.steeringDemand.deviationDeg)>0.01 then
+            return c.steeringDemand.deviationDeg<
+                best.steeringDemand.deviationDeg
+        end
+        if c.egressOptionality~=best.egressOptionality then
+            return c.egressOptionality>best.egressOptionality
+        elseif c.isValidatedBearing~=best.isValidatedBearing then
+            return c.isValidatedBearing
+        elseif math.abs(c.regionTravelM-best.regionTravelM)>0.01 then
+            return c.regionTravelM>best.regionTravelM
+        elseif math.abs(c.localDemandSeparationGainM-
+                best.localDemandSeparationGainM)>0.01 then
+            return c.localDemandSeparationGainM>
+                best.localDemandSeparationGainM
+        elseif c.moverIndex~=best.moverIndex then
+            return c.moverIndex<best.moverIndex
+        end
+        return c.fieldInteriorScore>best.fieldInteriorScore+0.01
+    end
+    local best,legacyBest
     for i=1,#candidates do
         local c=candidates[i]
         c.egressOptionality=options[c.moverIndex]
-        if best==nil then
-            best=c
-        else
-            -- A complete egress outranks staging. A mover with more viable
-            -- escape sectors has greater optionality. For the chosen mover
-            -- prefer TS015's proven ±70° reverse before centroid preference.
-            local better=false
-            if c.isPartialEgress~=best.isPartialEgress then
-                better=not c.isPartialEgress
-            elseif c.egressOptionality~=best.egressOptionality then
-                better=c.egressOptionality>best.egressOptionality
-            elseif c.isValidatedBearing~=best.isValidatedBearing then
-                better=c.isValidatedBearing
-            elseif math.abs(c.regionTravelM-best.regionTravelM)>0.01 then
-                better=c.regionTravelM>best.regionTravelM
-            elseif math.abs(c.localDemandSeparationGainM-
-                    best.localDemandSeparationGainM)>0.01 then
-                better=c.localDemandSeparationGainM>
-                    best.localDemandSeparationGainM
-            elseif c.moverIndex~=best.moverIndex then
-                better=c.moverIndex<best.moverIndex
+        if better(c,best,assessSteering) then best=c end
+        if better(c,legacyBest,false) then legacyBest=c end
+    end
+    if best==nil then return nil,nil,nil,
+        steeringUnavailable>0 and "PAIR_STEERING_EVIDENCE_UNAVAILABLE"
+            or "NO_SAFE_PAIR_EGRESS_REGION" end
+    if assessSteering then
+        best.selectedSteeringDeviationDeg=best.steeringDemand.deviationDeg
+        best.selectedDriveLocalX=best.steeringDemand.driveLocalX
+        best.selectedDriveLocalZ=best.steeringDemand.driveLocalZ
+        best.previousGeometryPreferredDeviationDeg=
+            legacyBest.steeringDemand.deviationDeg
+        best.previousGeometryPreferredDirection=legacyBest.directionSource
+        best.steeringChangedGeometryPreference=best~=legacyBest
+        best.steeringCandidatesAssessed=#candidates
+        best.steeringCandidatesUnavailable=steeringUnavailable
+        -- A small finite investigation record, not a per-frame stream.
+        -- Populated from values that were required for selection anyway.
+        local shortlist={}
+        for i=1,#candidates do
+            local c=candidates[i]
+            if #shortlist<5 then
+                shortlist[#shortlist+1]=c
             else
-                better=c.fieldInteriorScore>best.fieldInteriorScore+0.01
+                local worst=1
+                for j=2,#shortlist do
+                    if better(shortlist[worst],shortlist[j],true) then
+                        worst=j
+                    end
+                end
+                if better(c,shortlist[worst],true) then
+                    shortlist[worst]=c
+                end
             end
-            if better then best=c end
+        end
+        table.sort(shortlist,function(a,b) return better(a,b,true) end)
+        best.steeringShortlist={}
+        for i=1,#shortlist do
+            local c=shortlist[i]
+            best.steeringShortlist[i]={
+                moverIndex=c.moverIndex,mode=c.directionSource,
+                demandDeg=c.steeringDemand.deviationDeg,
+                projectedTravelM=c.regionTravelM,
+                demandSeparationGainM=c.localDemandSeparationGainM}
         end
     end
-    if best==nil then return nil,nil,nil,"NO_SAFE_PAIR_EGRESS_REGION" end
     local mover,other=best.mover,best.other
     best.mover=nil;best.other=nil;best.moverIndex=nil
     best.cascadeAttempts=attempts
     return best,mover,other
+end
+
+-- Passive *current* nominal envelope separation between two previously
+-- admitted physical assemblies. Unlike the planner's translated corners,
+-- each actual selected member node is transformed again at observation time:
+-- this captures changes in heading/articulation, but not GIANTS collision
+-- shapes, moving booms, ground contact or a complete swept path. Never use
+-- this proxy as permission for Control or as proof of safe clearance.
+local function currentRectangle(member)
+    if type(member)~="table" or type(member.object)~="table"
+        or member.object.isDeleted==true or member.object.rootNode==nil
+        or type(localToWorld)~="function" then return nil end
+    local w,l=member.width,member.length
+    local wo,lo=member.widthOffset,member.lengthOffset
+    if not finite(w) or not finite(l) or not finite(wo) or not finite(lo)
+        then return nil end
+    local vertices={}
+    local positions={{-1,-1},{1,-1},{1,1},{-1,1}}
+    for i=1,4 do
+        local p=positions[i]
+        local ok,x,_,z=pcall(localToWorld,member.object.rootNode,
+            wo+p[1]*w*0.5,0,lo+p[2]*l*0.5)
+        if not ok or not finite(x) or not finite(z) then return nil end
+        vertices[i]={x=x,z=z}
+    end
+    return vertices
+end
+
+local function projectionsDisjoint(a,b)
+    for edge=1,4 do
+        local nextEdge=edge%4+1
+        local dx=a[nextEdge].x-a[edge].x
+        local dz=a[nextEdge].z-a[edge].z
+        local nx,nz=-dz,dx
+        local amin,amax,bmin,bmax
+        for j=1,4 do
+            local av=a[j].x*nx+a[j].z*nz
+            local bv=b[j].x*nx+b[j].z*nz
+            amin=amin and math.min(amin,av) or av
+            amax=amax and math.max(amax,av) or av
+            bmin=bmin and math.min(bmin,bv) or bv
+            bmax=bmax and math.max(bmax,bv) or bv
+        end
+        if amax<bmin or bmax<amin then return true end
+    end
+    return false
+end
+
+local function vertexEdgeSquared(p,a,b)
+    local dx,dz=b.x-a.x,b.z-a.z
+    local sq=dx*dx+dz*dz
+    local t=sq>0 and math.max(0,math.min(1,
+        ((p.x-a.x)*dx+(p.z-a.z)*dz)/sq)) or 0
+    local x,z=a.x+dx*t,a.z+dz*t
+    return (p.x-x)^2+(p.z-z)^2
+end
+
+local function rectangleGap(a,b)
+    if not projectionsDisjoint(a,b)
+        and not projectionsDisjoint(b,a) then return 0 end
+    local nearest=math.huge
+    for edge=1,4 do
+        local nextEdge=edge%4+1
+        for j=1,4 do
+            nearest=math.min(nearest,
+                vertexEdgeSquared(a[j],b[edge],b[nextEdge]),
+                vertexEdgeSquared(b[j],a[edge],a[nextEdge]))
+        end
+    end
+    return math.sqrt(nearest)
+end
+
+function Region.observePairNominalGap(first,second)
+    local one=type(first)=="table" and first.memberGeometry or nil
+    local two=type(second)=="table" and second.memberGeometry or nil
+    if type(one)~="table" or #one==0
+        or type(two)~="table" or #two==0 then
+        return nil,"NOMINAL_MEMBER_GEOMETRY_UNAVAILABLE"
+    end
+    local a,b={},{}
+    for i=1,#one do
+        local rect=currentRectangle(one[i])
+        if rect==nil then return nil,"CURRENT_MEMBER_POSE_UNAVAILABLE" end
+        a[#a+1]=rect
+    end
+    for i=1,#two do
+        local rect=currentRectangle(two[i])
+        if rect==nil then return nil,"CURRENT_MEMBER_POSE_UNAVAILABLE" end
+        b[#b+1]=rect
+    end
+    local gap=math.huge
+    for i=1,#a do
+        for j=1,#b do
+            gap=math.min(gap,rectangleGap(a[i],b[j]))
+            if gap==0 then return 0,nil end
+        end
+    end
+    return gap,nil
 end

@@ -41,6 +41,43 @@ The full relocation objective is the **remaining worker's captured WORKING width
 
 Pair admission validates both workers. During an already-selected mover's actuation, maintain the mover's own current native job/strategy and physical references. The nonmover's own lifecycle may supersede its speed lease without cancelling the mover merely because the other job changed.
 
+### Paired movement continuation and interruption
+
+Once paired movement starts, its authority is conditional, separate from admission:
+1. The **primary** guard samples realised mover root position at most every **250 ms**, retaining five observations (normally **1,000 ms** between first and last) and computing the actual distance travelled, projected Return Region progress and signed perpendicular corridor departure. Samples separated by more than **500 ms** reset the incomplete window. This production evidence must not depend on DIAGNOSTIC publication or tool-joint instrumentation.
+2. Provisional **Command-to-Corridor Divergence** classification requires at least **1 m** observed physical travel over a full window. **Strong divergence** is projected progress regression of at least **0.25 m**, accompanied by at least **1 m** increase in absolute lateral deviation. **Suspected divergence** is projected progress no greater than **25%** of observed travel with at least **1.5 m** increase in lateral deviation; require two consecutive overlapping suspect windows. Overlap is persistence, not independent statistical corroboration. These thresholds are an implementation hypothesis requiring TS004/TS001/TS015 field validation, not evidence of a universal safe articulation angle.
+3. An absolute **20,000 ms** deadline begins with the accepted paired movement command and cannot be extended by progress, configuration changes or sampling resets.
+4. The mover root must remain inside the **captured GIANTS field-course polygon** authorised for this paired egress; a boundary breach interrupts Control. This root-only bound does not claim that an attached implement remains within the polygon. The field-confined rule does not apply indiscriminately to solo, static or future intentionally off-field relocation.
+5. Any guard breach pre-empts normal Return Region success on that update. The outcome is **EGRESS_INTERRUPTED** with a specific cause. Cancel only the mover's OMW directional override and own TRANSIT request/restore actions, with independently scoped Regulation cleanup as required. Do **not** issue success-only relocated Hold, stop/restart the current native job, automatically choose another mover or suppress genuinely fresh native blocked evidence. GIANTS' *existing* FIELDWORK job may continue and resolve or reassert blockage. If Control release fails, report **CONTROL_INTERRUPTED** rather than claiming clean handback.
+
+This is a movement-continuation fail-safe, not a corrected steering controller or proof of collision-free physical settlement. Incomplete root evidence terminates an active paired movement conservatively.
+
+### One-shot Candidate Steering Demand — TEST hypothesis
+
+A geometric pair egress candidate must not be treated as kinematically equivalent to other viable candidates merely because it lies within the nominal reverse bearing allowance. For **both possible movers**, after current polygon/represented-corridor eligibility, make a bounded, non-actuating prediction of the actual **native steering-node local target direction** from the candidate's existing world reference. In reverse, use the same optional GIANTS tool-reverser correction and vehicle reverser frame as the subordinate actuation mechanism; for forward candidates use the native AI steering frame. Do not command `driveToPoint`, change folding/Control or ask GIANTS to reveal its future course.
+
+During TEST 0.5.3.6, rank **complete spatial egress above partial staging**, then prefer the smaller **initial effective local target deviation from straight reverse/forward** among equally complete candidate plans before established optionality, validated oblique-bearing, distance and nominal demand preferences. This is a *candidate ordering experiment*, not a claim that a small command angle guarantees a stable articulated path, or that an individual global angle cutoff is safe. A candidate without a readable native command frame/tool correction cannot become an affirmative movement choice; where all candidates lack steering evidence, no new paired Control is admitted. An evaluation is made only on pair admission, never continuously during steering. The existing movement-continuation divergence, field-boundary and 20 s guards remain authoritative throughout movement.
+
+**Logging ownership:** a bounded DEBUG selection event identifies chosen direction, effective native local command deviation, the historic geometry-only preference and whether selection changed. At DIAGNOSTIC eligibility, only a finite shortlist of candidate bearing/progress comparisons is published. The post-correction calculations used for actual candidate ranking are **production Situation Assessment** regardless of logging; only the additional publication and optional engineering witness sensors may be gated by diagnostics. No changed reverse transform, steering horizon, motion speed, mover Hold, peer Regulation or independent actor lifecycle follows from this experiment. TS004 requires in-game validation; TS001 and TS015 are explicit regression fixtures.
+
+### Clearance Sufficiency — finite Observation experiment
+
+For the current TS004 investigation, the accepted **WORKING-width-plus-5 m** movement objective remains unchanged as an admission/completion heuristic; its attainment does not establish spatial or temporal physical clearance. Preserve individual mover and peer Control lifecycles.
+
+For a live admitted pair only, capture a **finite, passive clearance witness** at initial egress, at most three intermediate moving samples (**1.5, 3.5 and 5.5 s** from start), on realised Return Region entry, at most two observations during the relocated Hold (**2 and 5 s** after region entry, only if the Hold continues), independently on the peer Regulation release, and at native successful handback. If GIANTS continuation follows without a new OMW intervention, sample at most **1, 3 and 5 s** after handback. A new commitment supersedes that witness; interruption or shutdown ends it. Expired sample times are skipped, not published as repeated synthetic measurements.
+
+Record both actor roots and observed current steering-node headings, the selected egress direction and projected root travel, horizontal **root-to-root separation**, and a **nominal current member-envelope gap** based on actual current orientation of the *already selected* GIANTS base-size member rectangles. Compare successive gap observations to report its observed closing rate and, only when positive and closing, a **straight-line time-to-zero gap proxy**. These geometric figures are **not** verified collision spacing, working implement sweep, mechanical hitch angle, or GIANTS future path. If any member shape is missing, publish unavailable instead of certifying positive clearance. Do not use readings to decide Control in this experiment.
+
+Only the accepted pair's existing captured member records are re-observed at the finite sample points. There is no extra `getDriveData()`, no per-frame shape census, native drive wrapper, relocation retry, changed movement direction, altered Regulation or Hold duration, or automatic handback gate. These high-detail time-series observations are **DIAGNOSTIC class** only. The witness checks DIAGNOSTIC eligibility **before sensor or geometry work**, so ordinary NORMAL/DEBUG runs do not take optional clearance-witness samples; disabling DIAGNOSTIC mid-witness cancels its sampling without another read. These optional observations must remain separate from steering calculations necessary for production candidate assessment. Offline fixtures validate geometry math and bounded sampling; GIANTS field runs validate physical relevance and timing sensitivity.
+
+### Post-interruption Native Continuation Witness — investigation
+
+Following a paired `EGRESS_INTERRUPTED`, a **passive, non-authorising** witness samples both actors immediately after scoped Control cleanup, then at **500 ms**, **2,000 ms** and **5,000 ms**. It retains at most one active witness. An independently admitted subsequent movement terminates the earlier witness, rather than attributing that new OMW Control to GIANTS. There is no continuing sample after the 5 s horizon.
+
+Each finite observation records native job-reference continuity, continued membership of the admitted GIANTS field-course strategy, its `isBlocked` state, native AI active flag, root displacement measured from interruption, passive `aiDriveParams.valid` and `maxSpeed`, and the presence of OMW-owned reverse, TRANSIT, Regulation and Hold leases for each participant. The original candidate is reported as the same native pair occurrence, a new one, or absent, together with whether it was already attempted. Absent/unavailable sources are labelled, not invented.
+
+The witness cannot prove a fresh `driveToPoint` call, physical clearance, successful configuration restoration, or GIANTS recoverability. It must not install drive wrappers, call `getDriveData()`, generate blocked events, reacquire Control, or retry an interrupted manoeuvre. The four observations are bounded **DIAGNOSTIC-class, INFO-severity** engineering facts for this investigation. Publication eligibility is checked before root/job/strategy/lease sampling, including after a runtime policy change; suppressed DIAGNOSTIC performs no optional witness sensor work. Inactive witness work is zero except for a lightweight active-state check.
+
 ## Reactive static Control and release
 
 After exclusive static commitment, request TRANSIT once for the non-active subject, then issue supported direct GIANTS `driveToPoint` commands under a scoped motor, physics and native cruise lease; completed/non-job machines do not independently issue periodic AI drive commands. Regulate the **blocked active beneficiary at 1 km/h for 5,000 ms**, retaining its existing GIANTS job and WORKING configuration. This is not a translation STOP or a FIELDWORK job replacement.
@@ -74,6 +111,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | --- | --- |
 | [`scripts/coordination/HoldRelocateCoordinator.lua`](../scripts/coordination/HoldRelocateCoordinator.lua) | `REALISES` |
 | [`scripts/coordination/PairTransitRegion.lua`](../scripts/coordination/PairTransitRegion.lua) | `SUPPORTS` |
+| [`scripts/coordination/PairSteeringDemand.lua`](../scripts/coordination/PairSteeringDemand.lua) | `SUPPORTS` |
 | [`scripts/coordination/ProjectedEgressRegion.lua`](../scripts/coordination/ProjectedEgressRegion.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeReverseMechanism.lua`](../scripts/control/mechanisms/NativeReverseMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
@@ -83,6 +121,8 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`scripts/coordination/NativePairCommitmentAuthority.lua`](../scripts/coordination/NativePairCommitmentAuthority.lua) | `SUPPORTS` |
 | [`scripts/control/HoldRelocatePhysicalControl.lua`](../scripts/control/HoldRelocatePhysicalControl.lua) | `SUPPORTS` |
 | [`scripts/coordination/LiveHoldRelocateRuntime.lua`](../scripts/coordination/LiveHoldRelocateRuntime.lua) | `SUPPORTS` |
+| [`scripts/diagnostics/PairClearanceWitness.lua`](../scripts/diagnostics/PairClearanceWitness.lua) | `SUPPORTS` |
+| [`scripts/diagnostics/NativeContinuationWitness.lua`](../scripts/diagnostics/NativeContinuationWitness.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 
@@ -91,12 +131,15 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`tests/shell/hold_relocate.lua`](../tests/shell/hold_relocate.lua) | `CHALLENGES` |
 | [`tests/shell/pair_native_drive_interposition.lua`](../tests/shell/pair_native_drive_interposition.lua) | `CHALLENGES` |
 | [`tests/shell/pair_transit_region.lua`](../tests/shell/pair_transit_region.lua) | `CHALLENGES` |
+| [`tests/shell/pair_steering_demand.lua`](../tests/shell/pair_steering_demand.lua) | `CHALLENGES` |
+| [`tests/shell/pair_clearance_witness.lua`](../tests/shell/pair_clearance_witness.lua) | `CHALLENGES` |
 | [`tests/shell/pair_transit_settlement.lua`](../tests/shell/pair_transit_settlement.lua) | `CHALLENGES` |
 | [`tests/shell/native_reverse_mechanism.lua`](../tests/shell/native_reverse_mechanism.lua) | `CHALLENGES` |
 | [`tests/shell/native_translation_hold_mechanism.lua`](../tests/shell/native_translation_hold_mechanism.lua) | `CHALLENGES` |
 | [`tests/shell/native_transit_request_mechanism.lua`](../tests/shell/native_transit_request_mechanism.lua) | `CHALLENGES` |
 | [`tests/shell/native_fieldwork_job_replacement.lua`](../tests/shell/native_fieldwork_job_replacement.lua) | `CHALLENGES` |
 | [`tests/shell/live_hold_relocate.lua`](../tests/shell/live_hold_relocate.lua) | `CHALLENGES` |
+| [`tests/shell/native_continuation_witness.lua`](../tests/shell/native_continuation_witness.lua) | `CHALLENGES` |
 | [`tests/shell/static_blocker_relocation.lua`](../tests/shell/static_blocker_relocation.lua) | `CHALLENGES` |
 
 ## Implementation traceability and validation scope

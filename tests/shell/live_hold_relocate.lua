@@ -6,6 +6,8 @@ dofile("scripts/coordination/ProjectedEgressRegion.lua")
 dofile("scripts/coordination/PairTransitRegion.lua")
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
+dofile("scripts/diagnostics/NativeContinuationWitness.lua")
+dofile("scripts/diagnostics/PairClearanceWitness.lua")
 dofile("scripts/coordination/LiveHoldRelocateRuntime.lua")
 local Authority=OuttaMyWay.NativePairCommitmentAuthority
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
@@ -128,7 +130,13 @@ physical.reverseMechanism={
         end
         return true
     end,
-    reverseStatus=function()return reverse end,
+    reverseStatus=function()
+        -- Root evidence belongs to the moving assembly; pair scenarios
+        -- below retain a stationary, in-field root unless noted.
+        reverse.rootX=reverse.rootX or 20
+        reverse.rootZ=reverse.rootZ or 20
+        return reverse
+    end,
     stopReverse=function()events[#events+1]="REVERSE_STOP";return true end,
     cancelReverse=function()events[#events+1]="REVERSE_CANCEL";return true end
 }
