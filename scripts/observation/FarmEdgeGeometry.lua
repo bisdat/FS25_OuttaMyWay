@@ -79,6 +79,52 @@ function G.distanceToBoundary(p,x,z)
     return closest
 end
 
+
+local function cross(ax,az,bx,bz,cx,cz)
+    return (bx-ax)*(cz-az)-(bz-az)*(cx-ax)
+end
+
+local function onSegment(ax,az,bx,bz,x,z)
+    return x>=math.min(ax,bx)-0.000001 and x<=math.max(ax,bx)+0.000001
+        and z>=math.min(az,bz)-0.000001 and z<=math.max(az,bz)+0.000001
+end
+
+function G.segmentDistance(ax,az,bx,bz,cx,cz,dx,dz)
+    local o1=cross(ax,az,bx,bz,cx,cz)
+    local o2=cross(ax,az,bx,bz,dx,dz)
+    local o3=cross(cx,cz,dx,dz,ax,az)
+    local o4=cross(cx,cz,dx,dz,bx,bz)
+    if (o1*o2<0 and o3*o4<0)
+        or (math.abs(o1)<0.000001 and onSegment(ax,az,bx,bz,cx,cz))
+        or (math.abs(o2)<0.000001 and onSegment(ax,az,bx,bz,dx,dz))
+        or (math.abs(o3)<0.000001 and onSegment(cx,cz,dx,dz,ax,az))
+        or (math.abs(o4)<0.000001 and onSegment(cx,cz,dx,dz,bx,bz)) then
+        return 0
+    end
+    return math.min(
+        G.pointSegmentDistance(ax,az,cx,cz,dx,dz),
+        G.pointSegmentDistance(bx,bz,cx,cz,dx,dz),
+        G.pointSegmentDistance(cx,cz,ax,az,bx,bz),
+        G.pointSegmentDistance(dx,dz,ax,az,bx,bz))
+end
+
+-- Exact X/Z segment-to-polygon-boundary gap for native straight-edge polygons.
+-- A positive result is geometry only, not free-space or route evidence.
+function G.edgeToPolygonGap(edge,p)
+    if p==nil then return nil end
+    local mx,mz=(edge.ax+edge.bx)/2,(edge.az+edge.bz)/2
+    if G.inside(p,mx,mz) then return 0 end
+    local nearest=math.huge
+    for i=1,p.vertexCount do
+        local j=i==p.vertexCount and 1 or i+1
+        nearest=math.min(nearest,G.segmentDistance(
+            edge.ax,edge.az,edge.bx,edge.bz,
+            p.xs[i],p.zs[i],p.xs[j],p.zs[j]))
+        if nearest==0 then break end
+    end
+    return nearest
+end
+
 local function sideOf(p,x,z)
     local dx=math.max(p.maxX-p.minX,0.001)
     local dz=math.max(p.maxZ-p.minZ,0.001)
