@@ -71,7 +71,8 @@ A non-georeferenced screenshot cannot directly validate metre offsets or world-c
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/farm_edge_geometry.lua`](../tests/shell/farm_edge_geometry.lua) | `CHALLENGES` |
-| [`tests/shell/farm_spatial_context_probe.lua`](../tests/shell/farm_spatial_context_probe.lua) | `CHALLENGES` |
+
+| [`tests/shell/physical_margin_constraint_probe.lua`](../tests/shell/physical_margin_constraint_probe.lua) | `CHALLENGES` || [`tests/shell/farm_spatial_context_probe.lua`](../tests/shell/farm_spatial_context_probe.lua) | `CHALLENGES` |
 | [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
 
 ## Test envelope
