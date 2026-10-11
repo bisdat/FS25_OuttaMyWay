@@ -132,6 +132,13 @@ local wrong,wrongEdges=geometry({0,24,24,0},{0,0,24,24})
 assert(physical.run(77,wrong,wrongEdges,nil)==false)
 assert(find("PHYSICAL_MARGIN_UNAVAILABLE").reason=="FIXTURE_EDGE_GEOMETRY_MISMATCH")
 assert(find("PHYSICAL_MARGIN_POINT")==nil)
+-- Exact lengths and field ID alone must not match a different map.
+local shiftedX={}
+for i=1,#field77.xs do shiftedX[i]=field77.xs[i]+1000 end
+local shifted,shiftedEdges=geometry(shiftedX,field77.zs)
+events={}
+assert(physical.run(77,shifted,shiftedEdges,nil)==false)
+assert(find("PHYSICAL_MARGIN_UNAVAILABLE").reason=="FIXTURE_EDGE_GEOMETRY_MISMATCH")
 events={}
 assert(physical.run(29,riverbend,edges29,7)==false)
 assert(find("PHYSICAL_MARGIN_UNAVAILABLE").reason=="UNSUPPORTED_EXPERIMENT_FIXTURE")
