@@ -502,7 +502,7 @@ function Probe:update(dt)
         self.attempted=true
         publish("FARM_CONTEXT_SURVEY_UNAVAILABLE",{
             selectedFarmlandId=toValue(self.diagnosticSource.spatialFarmlandId),
-            field=DEFAULT_FIELD_ID,reason=ok and tostring(reason) or "SURVEY_EXCEPTION",
+            field="unresolved",reason=ok and tostring(reason) or "SURVEY_EXCEPTION",
             note="NO_INFERRED_PARKING_REGION"
         })
     end
