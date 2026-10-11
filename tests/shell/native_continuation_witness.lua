@@ -1,10 +1,18 @@
 -- Post-interruption observations are passive, finite and actor-specific.
 OuttaMyWay={VERSION="0.5.3.test"}
 local published={}
-local publisher={publish=function(_,class,severity,code,makePayload)
-    assert(class=="NORMAL" and severity=="INFO")
-    published[#published+1]={code=code,detail=makePayload().detail}
-end}
+local debugEnabled=true
+local publisher={
+    isEligible=function(_,class,severity,code)
+        assert(class=="DEBUG" and severity=="INFO"
+            and code=="NATIVE_CONTINUATION_WITNESS")
+        return debugEnabled
+    end,
+    publish=function(_,class,severity,code,makePayload)
+        assert(class=="DEBUG" and severity=="INFO")
+        published[#published+1]={code=code,detail=makePayload().detail}
+    end
+}
 local reads=0
 local roots=setmetatable({},{__mode="k"})
 getWorldTranslation=function(node)
@@ -71,4 +79,19 @@ assert(witness:begin(12000,movement,outcome,observer,token,"M|P",true,physical))
 witness:finish(12500,"NEW_COMMITMENT")
 assert(#published==6 and published[#published].code=="NATIVE_CONTINUATION_WITNESS_ENDED")
 assert(not witness:isActive())
+debugEnabled=false
+local beforeReads=reads
+local beforeLines=#published
+assert(not witness:begin(15000,movement,outcome,observer,token,"M|P",
+    true,physical))
+witness:advance(20000)
+assert(reads==beforeReads and #published==beforeLines
+    and not witness:isActive(),"suppressed DEBUG performs no witness reads")
+debugEnabled=true
+assert(witness:begin(25000,movement,outcome,observer,token,"M|P",true,physical))
+beforeReads=reads
+debugEnabled=false
+witness:advance(25500)
+assert(not witness:isActive() and reads==beforeReads,
+    "active witness must stop sampling when DEBUG is disabled")
 print("Native continuation witness: finite passive readings, occurrence identity, lease state, supersession PASS")
