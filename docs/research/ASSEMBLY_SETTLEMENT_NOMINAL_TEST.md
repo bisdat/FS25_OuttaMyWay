@@ -1,6 +1,6 @@
-# TEST 0.5.5.4 — Field 77 Physical Assembly Nominal Feasibility Screen
+# TEST 0.5.5.4–0.5.5.5 — Field 77 Nominal Assembly Polygon Screen
 
-**Status:** TEST **0.5.5.4** executed in GIANTS 1.24; original assembly screen was blocked by a native vehicle-population source error, not by nominal field geometry. **0.5.5.5** changes only that source and awaits a rerun. No movement or parking. The acceptance target is an observed *real vehicle plus all attached implements*, not a synthetic map-only corridor.
+**Status:** TEST **0.5.5.5 GIANTS 1.24.0.0 run validated the native vehicle-population fix and nominal static polygon screening of two real *single-member* vehicles** on Field 77; the originally requested *articulated multi-member* case remains untested. No movement or parking. Keep PR draft. The acceptance target remains a complete live tractor-plus-implement, not a root-only surrogate or synthetic map-only corridor.
 
 ## Why this test follows the source studies
 
@@ -15,6 +15,36 @@ Owner-supplied `log(20261011-155307).txt`, GIANTS 1.24.0.0, Mindenerwald, confir
 **Discovery — VehicleSystem Catalogue Authority:** the probe incorrectly looked up `g_currentMission.vehicles`. The project's pre-existing [GIANTS Runtime Knowledge](../engine/GIANTS_RUNTIME_KNOWLEDGE.md#vehiclesystem-exposes-current-savegame-vehicles-and-root-assemblies) already specifies the native `g_currentMission.vehicleSystem.vehicles` catalogue. This is an implementation source defect, not a missing architectural responsibility, nonexistent in-field vehicle or invalid requested southern edge. The original mock test supplied the same erroneous alias, so it could not falsify the mistake.
 
 **Corrective TEST 0.5.5.5:** change only `AssemblySettlementProbe` source to `g_currentMission.vehicleSystem.vehicles`, update the behavioural fixture to model the true GIANTS mission hierarchy, assert that a fake legacy `mission.vehicles` alias does **not** suffice, and preserve the original one-shot diagnostic gating, geometry and no-Control behaviour. GIANTS Reality validation of this correction remains pending.
+
+## GIANTS Reality — 0.5.5.5 rerun, 11 October 2026
+
+Owner-supplied `log(20261011-160156).txt` confirms OuttaMyWay **0.5.5.5** was enabled on GIANTS **1.24.0.0**, Mindenerwald savegame 3. The original read-only surveys repeated successfully: registered **Field 77, south edge 9, 230.97 m**, **690** field-edge samples, **22 physical-margin points / 20 physics queries**, **0 physics query errors**, and no represented physics hits. The field/margin surveys do **not** certify settlement clearance.
+
+**VehicleSystem Catalogue Authority was corrected and validated in GIANTS.** At 17:01:28.837 the one-shot `ASSEMBLY_SETTLEMENT_SCAN` found **56 registered scene vehicles**, **two in-field roots** eligible, **two selected**, without scene or neighbouring-field registry truncation.
+
+| Recorded witness | rootNode 396337 | rootNode 400645 |
+| --- | ---: | ---: |
+| Root world X/Z, metres | −0.18 / −233.18 | 28.81 / −611.39 |
+| Actual root inside source polygon | yes | yes |
+| Distance to preferred edge 9 | 25.45 m | 394.67 m |
+| Real runtime members captured | **1** | **1** |
+| Nominal selected-member longitudinal extent | 11.10 m | 9.00 m |
+| Nominal selected-member lateral extent | 3.50 m | 3.90 m |
+| Hypothetical static poses screened | 144 | 144 |
+| **No registered productive-field polygon intersections** | **82** | **71** |
+| Neighbour registered-field conflicts | 62 | 64 |
+| Source registered-field conflicts | 0 | 9 |
+| Chosen-edge endpoint spill | 0 | 0 |
+| Unresolved polygon computations | 0 | 0 |
+| Example pose (both): station / root depth / direction | 207.88 m / +2.00 m / +1 | 207.88 m / +2.00 m / +1 |
+
+Counts partition each **finite, hypothetical** screening grid of 144 positions; they are not evidence of 82 or 71 continuously connected parking places, nor are these real vehicle positions. The repeated example is determined by the nominal sampler's example-ranking rule, **not** an optimised or authorised terminal destination. Both outcomes explicitly remain `Approach=WAITING_FOR_EVIDENCE`, `Run-Out=WAITING_FOR_EVIDENCE`, `Terminal=WAITING_FOR_EVIDENCE`, `configuration=UNVERIFIED_TRANSIT`. No OuttaMyWay runtime exception appears; four `FieldManager` map-farmland touching errors predate the diagnostic survey and are not attributed to the probe.
+
+**Discovery — Single-Body Nominal Fit:** in GIANTS Reality, at least one modelled edge-parallel *stationary* position for each of two actual single-member root vehicles is polygon-nonintersecting. This falsifies a general claim that no nominal static rectangle could fit on the preferred edge, but **does not demonstrate physical clearance or continuity**. Both nominal widths (**3.50 m, 3.90 m**) also exceed an assumed **3 m** parallel-margin budget; a 3 m corridor should not be treated as sufficient for either measured rectangle without lateral placement/clearance validation. The sampler tests outward root depths of +2 to +12 m, not a measured continuous 3 m corridor.
+
+**Unresolved — Articulated Assembly Witness:** both observed `memberCount=1`. That is normal if the actual roots were self-propelled machines with no attached GIANTS children, but the log does **not** publish vehicle type names and cannot establish their identities or whether the user intended to have an attached implement. Do not reinterpret one member as a tractor-plus-tool or claim hitch geometry was tested. The full selected Physical Assembly contract must be challenged with a recognisable **root tractor + hitched implement** in Field 77 at scan time, expecting `memberCount>=2` and dimensions consistent with both. If such an assembly is actually present but capture still reports one, that becomes **Attachment Membership Evidence** failure to investigate before further movement architecture.
+
+**Decision:** validate the two available single-body results as **polygon-only discovery**; retain the existing TEST **0.5.5.5** for an articulated-assembly rerun rather than change code or add Control. No PATCH promotion, parking manoeuvre or in-field movement test is supported by this evidence alone. If a genuine coupled assembly is available, place it **inside native Field 77 before loading the save**, keeping diagnostics enabled and no `spatialFarmlandId` override. The one-shot survey will select up to three closest eligible roots. Return the `ASSEMBLY_SETTLEMENT` lines and identify which machine is the tractor/tool.
 
 ## Reality fixture and tested claim
 
