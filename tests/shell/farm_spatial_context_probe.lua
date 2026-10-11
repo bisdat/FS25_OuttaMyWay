@@ -91,6 +91,8 @@ local rightSix=assert(find("FIELD_EDGE_OUTSIDE_SAMPLE",2,6))
 assert(rightSix.neighborFieldIds=="78")
 local left=assert(find("FARM_CONTEXT_EDGE",4))
 assert(left.side=="X_MIN")
+local rightSummary=assert(find("FARM_CONTEXT_SIDE_SUMMARY"))
+assert(rightSummary.offsetM==2)
 assert(find("FARM_CONTEXT_SURVEY_FINISHED"))
 local before=#events
 probe:update(10000)
