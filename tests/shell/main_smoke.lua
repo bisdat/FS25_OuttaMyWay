@@ -93,6 +93,7 @@ source=function(path)
         or path=="scripts/observation/NativeBlockageObservation.lua"
         or path=="scripts/observation/NativeJobCompletionProbe.lua"
         or path=="scripts/observation/FarmEdgeGeometry.lua"
+        or path=="scripts/observation/PhysicalMarginConstraintProbe.lua"
         or path=="scripts/observation/FarmSpatialContextProbe.lua"
         or path=="scripts/control/CompletionTransitRuntime.lua"
         or path=="scripts/diagnostics/VersionHud.lua"
