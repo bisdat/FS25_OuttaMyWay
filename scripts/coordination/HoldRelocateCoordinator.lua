@@ -408,7 +408,8 @@ function Coordinator:startPairEgress(state,nowMs)
         first,second,state.commitment.fieldCentroid)
     local objective,mover,other,reason=
         OuttaMyWay.ProjectedEgressRegion.planPairCascade(
-            state.commitment,preferred,alternative)
+            state.commitment,preferred,alternative,
+            OuttaMyWay.PairSteeringDemand)
     if objective==nil then
         self:finishWithOutcome("NO_FEASIBLE_PAIR_EGRESS",
             reason or "ALL_PAIR_EGRESS_OPTIONS_EXHAUSTED")
@@ -480,6 +481,13 @@ function Coordinator:startPairEgress(state,nowMs)
         nominalFullTravelM=objective.nominalFullTravelM,
         isPartialEgress=objective.isPartialEgress,
         egressOptionality=objective.egressOptionality,
+        selectedSteeringDeviationDeg=objective.selectedSteeringDeviationDeg,
+        previousGeometryPreferredDeviationDeg=objective.previousGeometryPreferredDeviationDeg,
+        previousGeometryPreferredDirection=objective.previousGeometryPreferredDirection,
+        steeringChangedGeometryPreference=objective.steeringChangedGeometryPreference,
+        steeringCandidatesAssessed=objective.steeringCandidatesAssessed,
+        steeringCandidatesUnavailable=objective.steeringCandidatesUnavailable,
+        steeringShortlist=objective.steeringShortlist,
         demandSeparationGainM=objective.localDemandSeparationGainM,
         remainingWorkingWidthM=objective.remainingWorkingWidthM,
         workingCorridorMarginM=objective.workingCorridorMarginM,
