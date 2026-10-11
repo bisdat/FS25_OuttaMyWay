@@ -27,6 +27,7 @@ local modules={
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/control/CompletionTransitRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -72,12 +73,17 @@ end)
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
 OuttaMyWay.nativeJobCompletionProbe=OuttaMyWay.NativeJobCompletionProbe.new(OuttaMyWay.configuration)
+OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(OuttaMyWay.configuration)
+OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
+    OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
+end)
 OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(
     OuttaMyWay.configuration,OuttaMyWay.nativeBlockageObservation)
 OuttaMyWay.configuration:addChangeListener(function(notification)
     if notification~=nil and notification.name=="enabled"
         and notification.value==false then
         OuttaMyWay.liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")
+        OuttaMyWay.completionTransitRuntime:relinquish()
     end
 end)
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
@@ -85,6 +91,7 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.nativeBlockageObservation)
     addModEventListener(OuttaMyWay.nativeJobCompletionProbe)
+    addModEventListener(OuttaMyWay.completionTransitRuntime)
     addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end
