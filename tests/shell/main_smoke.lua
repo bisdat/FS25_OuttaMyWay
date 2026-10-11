@@ -27,6 +27,7 @@ local expected={
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/assessment/SettlementStraightRunout.lua",
     "scripts/observation/AssemblySettlementProbe.lua",
     "scripts/observation/PhysicalMarginConstraintProbe.lua",
     "scripts/observation/FarmSpatialContextProbe.lua",
