@@ -125,6 +125,7 @@ local function roadSamples(poly)
         local ok,length=pcall(getSplineLength,spline)
         if ok and finite(length) and length>0 then
             valid=valid+1
+            if length/4>300 then truncated=true end
             local steps=math.max(1,math.min(300,math.ceil(length/4)))
             for i=0,steps do
                 local got,x,_,z=pcall(getSplinePosition,spline,i/steps)
@@ -230,7 +231,7 @@ local function recordOffset(edge,offset,sourceOwner,neighbors,totalSamples)
     if count==0 then return nil,0 end
     local summary={blocked=0,clear=0,unknown=0,
         allowed=0,denied=0,accessUnknown=0,
-        farms={},owners={},neighborFields={},
+        farms={},owners={},neighborFields={},sourceReentry=0,
         blockedRanges={},minCost=nil,maxCost=nil}
     local runStart=nil
     for k=1,count do
@@ -244,6 +245,9 @@ local function recordOffset(edge,offset,sourceOwner,neighbors,totalSamples)
             summary.accessUnknown=summary.accessUnknown+1
         else
             local sx,sz=x+nx*offset,z+nz*offset
+            if G.inside(edge.polygon,sx,sz) then
+                summary.sourceReentry=summary.sourceReentry+1
+            end
             local r=nativeSample(sx,sz,sourceOwner)
             updateKeyCount(summary.farms,r.farmlandId)
             updateKeyCount(summary.owners,r.ownerId)
@@ -291,6 +295,7 @@ local function recordOffset(edge,offset,sourceOwner,neighbors,totalSamples)
         accessAllowed=summary.allowed,accessDenied=summary.denied,
         accessUnknown=summary.accessUnknown,
         neighborFieldIds=#ids==0 and "none" or table.concat(ids,","),
+        sourcePolygonReentry=summary.sourceReentry,
         navBlocked=summary.blocked,navUnblocked=summary.clear,
         navUnknown=summary.unknown,navCostMin=fmt(summary.minCost),
         navCostMax=fmt(summary.maxCost),
@@ -349,6 +354,7 @@ function Probe:survey()
             and g_currentMission.aiSystem.navigationMap~=nil
     })
     local totalSamples=0
+    local sideSummaries={}
     for i=1,#edges do
         local e=edges[i]
         e.polygon=poly
@@ -360,10 +366,32 @@ function Probe:survey()
             lengthM=fmt(e.length),outwardX=fmt(e.nx),outwardZ=fmt(e.nz),
             nearestRoadSplineSampleM=fmt(roadDistance)
         })
-        for j=1,#OFFSET_METRES do
-            local _,count=recordOffset(e,OFFSET_METRES[j],owner,neighbors,totalSamples)
-            totalSamples=totalSamples+count
+        local side=sideSummaries[e.side] or {
+            edges=0,roadMin=nil,blocked=0,unblocked=0,unknown=0,reentry=0}
+        sideSummaries[e.side]=side
+        side.edges=side.edges+1
+        if roadDistance~=nil then
+            side.roadMin=math.min(side.roadMin or roadDistance,roadDistance)
         end
+        for j=1,#OFFSET_METRES do
+            local sample,count=recordOffset(e,OFFSET_METRES[j],owner,neighbors,totalSamples)
+            totalSamples=totalSamples+count
+            if j==1 and sample~=nil then
+                side.blocked=side.blocked+sample.blocked
+                side.unblocked=side.unblocked+sample.clear
+                side.unknown=side.unknown+sample.unknown
+                side.reentry=side.reentry+sample.sourceReentry
+            end
+        end
+    end
+    for sideName,summary in pairs(sideSummaries) do
+        publish("FARM_CONTEXT_SIDE_SUMMARY",{
+            field=FIELD_ID,side=sideName,edges=summary.edges,
+            nearestRoadSplineSampleM=fmt(summary.roadMin),
+            offsetM=2,navBlocked=summary.blocked,
+            navUnblocked=summary.unblocked,navUnknown=summary.unknown,
+            sourcePolygonReentry=summary.reentry
+        })
     end
     publish("FARM_CONTEXT_SURVEY_FINISHED",{
         field=FIELD_ID,edges=#edges,offsetsM="2,6,12",
