@@ -188,6 +188,30 @@ g_currentMission={vehicles={a.vehicle,b.vehicle,tool}}
 assert(Plan.planPairCascade(c,a,b),
     "an attached implement already represented in a pair must not masquerade as an independent third-party obstacle")
 g_currentMission=nil
+-- Candidate preference must see effective local GIANTS command direction,
+-- not treat all geometrically reachable reverse bearings as equivalent.
+local geometryOnly=assert(Plan.planPairCascade(c,a,b))
+local badTargetX,badTargetZ=geometryOnly.targetX,geometryOnly.targetZ
+local assessedCount=0
+local demandStub={assess=function(_,x,z,_forward)
+    assessedCount=assessedCount+1
+    local isOld=math.abs(x-badTargetX)<0.000001
+        and math.abs(z-badTargetZ)<0.000001
+    return {deviationDeg=isOld and 83 or 18,
+        driveLocalX=0,driveLocalZ=-1}
+end}
+local assessed=assert(Plan.planPairCascade(c,a,b,demandStub))
+assert(assessedCount>1 and assessed.steeringCandidatesAssessed>1)
+assert(assessed.selectedSteeringDeviationDeg==18
+    and assessed.previousGeometryPreferredDeviationDeg==83
+    and assessed.steeringChangedGeometryPreference,
+    "ranking must distinguish native steering demand from geometric preference")
+assert(assessed.isPartialEgress==geometryOnly.isPartialEgress,
+    "steering preference must not override complete-versus-staged travel")
+local missing,_,__,noSteer=Plan.planPairCascade(c,a,b,
+    {assess=function()return nil,"NO_COMMAND_FRAME" end})
+assert(missing==nil and noSteer=="PAIR_STEERING_EVIDENCE_UNAVAILABLE",
+    "unavailable native steering geometry cannot authorise any reverse")
 -- Missing complete member size is not replaced by productive width or a
 -- fabricated fallback, even if the worker root alone is valid.
 local noSize=assembly(30,30,nil,nil)
