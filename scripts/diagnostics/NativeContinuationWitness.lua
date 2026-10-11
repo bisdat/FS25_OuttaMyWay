@@ -97,6 +97,7 @@ local function actorFields(state,participant,role)
     local spec=type(vehicle)=="table" and vehicle.spec_aiFieldWorker or nil
     local strategy=participant.sourceStrategyReference
     local strategyCurrent=strategy~=nil and currentStrategy(vehicle,strategy)
+    local blockedText=strategyCurrent and tostring(strategy.isBlocked) or "UNAVAILABLE"
     local job=currentJob(vehicle)
     local params=nativeDrive(vehicle)
     local control=state.physicalControl
@@ -107,8 +108,7 @@ local function actorFields(state,participant,role)
         .." "..role.."StrategySame="..tostring(strategyCurrent)
         .." "..role.."AiActive="..tostring(type(spec)=="table"
             and spec.isActive==true)
-        .." "..role.."IsBlocked="..tostring(strategyCurrent
-            and strategy.isBlocked or "UNAVAILABLE")
+        .." "..role.."IsBlocked="..blockedText
         .." "..role.."RootDisplacementM="..tostring(displacementM)
         .." "..role.."DriveParamsValid="..tostring(params and params.valid)
         .." "..role.."DriveMaxSpeed="..tostring(params and params.maxSpeed)
