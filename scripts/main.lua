@@ -11,6 +11,7 @@ local modules={
     "scripts/coordination/NativePairCommitmentAuthority.lua",
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
+    "scripts/diagnostics/NativeContinuationWitness.lua",
     "scripts/diagnostics/ReverseKinematicsProbe.lua",
     "scripts/control/mechanisms/NativeReverseMechanism.lua",
     "scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua",
