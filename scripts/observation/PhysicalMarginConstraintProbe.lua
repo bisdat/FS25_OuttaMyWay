@@ -266,6 +266,8 @@ function Probe.run(fieldId,poly,edges,selectedFarmlandId)
         return false
     end
     local self=setmetatable({
+        -- Expose the callback directly on the target for native overlapBox.
+        onOverlapHit=Probe.onOverlapHit,
         fixture=fixture,points=0,physicsCalls=0,physicsErrors=0,
         totalHits=0,roadHits=0,physicsTruncated=false,
         pointsTruncated=false,hitListsTruncated=0
