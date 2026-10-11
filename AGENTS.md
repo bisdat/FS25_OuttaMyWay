@@ -98,8 +98,7 @@ responsible GitHub Issue where unresolved work exists
 Follow the responsibility routes that can materially affect the question:
 
 - runtime/system semantics → root `architecture/README.md`, then
-  `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and applicable
-  specialised architecture;
+  the relevant current responsibility documents linked from that index;
 - GIANTS/FS25 runtime behaviour or API assumptions → `docs/engine/README.md`,
   then `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` and
   `docs/engine/GIANTS_API_SURFACES.md` where applicable;
@@ -169,9 +168,8 @@ classifying the observation as NEW.
 ## Current architectural authority
 
 For runtime/system behaviour, the Repository Context Bootstrap must traverse
-`architecture/README.md`,
-`architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and the applicable
-specialised architecture before implementation. Where unresolved work is already
+`architecture/README.md` and the relevant current responsibility documents
+linked from that index before implementation. Where unresolved work is already
 owned by a GitHub Issue, read that Issue as work-item context rather than as
 Architecture or accepted implementation authority.
 Treat historical documents as evidence/provenance where they conflict with
