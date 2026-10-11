@@ -55,6 +55,7 @@ g_farmlandManager={
     end
 }
 dofile("scripts/observation/FarmEdgeGeometry.lua")
+dofile("scripts/observation/PhysicalMarginConstraintProbe.lua")
 dofile("scripts/observation/FarmSpatialContextProbe.lua")
 local probe=OuttaMyWay.FarmSpatialContextProbe.new(configuration,source)
 probe:loadMap()
