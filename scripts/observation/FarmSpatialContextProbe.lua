@@ -163,6 +163,26 @@ local function nearestRoadDistance(edge,points)
     return closest
 end
 
+
+local function nearestFieldGap(edge,neighbors)
+    local closest,id=math.huge,nil
+    local ax,bx=math.min(edge.ax,edge.bx),math.max(edge.ax,edge.bx)
+    local az,bz=math.min(edge.az,edge.bz),math.max(edge.az,edge.bz)
+    for i=1,#neighbors do
+        local other=neighbors[i]
+        local p=other.polygon
+        local dx=math.max(0,p.minX-bx,ax-p.maxX)
+        local dz=math.max(0,p.minZ-bz,az-p.maxZ)
+        if dx*dx+dz*dz<=closest*closest then
+            local gap=G.edgeToPolygonGap(edge,p)
+            if gap~=nil and gap<closest then
+                closest,id=gap,other.id
+            end
+        end
+    end
+    return closest<math.huge and closest or nil,id
+end
+
 local function nativeSample(x,z,sourceOwner)
     local result={farmlandId="unknown",ownerId="unknown",
         access="unknown",cost=nil,blocking=nil}
@@ -359,12 +379,15 @@ function Probe:survey()
         local e=edges[i]
         e.polygon=poly
         local roadDistance=nearestRoadDistance(e,roads)
+        local fieldGap,nearestField=nearestFieldGap(e,neighbors)
         publish("FARM_CONTEXT_EDGE",{
             field=FIELD_ID,edge=e.index,nextVertex=e.nextIndex,
             side=e.side,
             ax=fmt(e.ax),az=fmt(e.az),bx=fmt(e.bx),bz=fmt(e.bz),
             lengthM=fmt(e.length),outwardX=fmt(e.nx),outwardZ=fmt(e.nz),
-            nearestRoadSplineSampleM=fmt(roadDistance)
+            nearestRoadSplineSampleM=fmt(roadDistance),
+            nearestOtherFieldBoundaryM=fmt(fieldGap),
+            nearestOtherFieldId=toValue(nearestField)
         })
         local side=sideSummaries[e.side] or {
             edges=0,roadMin=nil,blocked=0,unblocked=0,unknown=0,reentry=0}
