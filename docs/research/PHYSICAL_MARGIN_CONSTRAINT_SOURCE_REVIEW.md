@@ -100,4 +100,4 @@ The proposal above has been encoded as a **fixture-guarded, bounded** adjunct `s
 - **Validation:** New synthetic CI confirms API gating, query bounds and explicit failure handling, but **does not validate real physics/terrain surfaces**. Installed FS25 1.24 Reality must challenge the source-derived signatures before relying on them.
 - **Engine Knowledge:** Findings remain in Research until confirmed in 1.24; do **not** revise `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` to imply validation that has not occurred.
 
-**Decision gate:** Agree to the bounded, read-only physical-obstacle/terrain diagnostic experiment and a separate TEST build before adding a production Exterior Margin Profile or Settlement Corridor Assessment.
+**Decision gate:** The owner agreed to the bounded read-only TEST `0.5.5.3` experiment. Next: collect GIANTS Reality on both maps before deciding whether observed physical constraints can support a future continuous Exterior Margin Profile or Settlement Corridor Assessment.
