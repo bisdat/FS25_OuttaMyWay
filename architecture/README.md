@@ -1,20 +1,17 @@
 # System Architecture
 
-This is the current navigation entry to OuttaMyWay's 0.5 responsibilities.
-Architecture describes what the system should achieve; Specifications provide executable-facing obligations; source realises them; GIANTS Reality challenges each claim.
+System Architecture describes what OuttaMyWay should achieve, why its responsibilities exist, and the boundaries of its authority. It is organised by current responsibility rather than release, implementation tranche or validation history.
 
-## Current boundaries
+OuttaMyWay aims to preserve autonomous GIANTS fieldwork through the least disruptive justified intervention. GIANTS retains native productive routing and job execution. Native observations provide evidence for Situation Assessment; they do not independently authorise OuttaMyWay physical Control. The governing responsibilities and their limits are described in the documents below.
 
-- [Project Vision](PROJECT_VISION.md) — preserve autonomous GIANTS fieldwork through minimal justified intervention.
-- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — TEST 0.5.2.20 **Asymmetric Cooperative Egress**: admit/assess a current native blocked pair, select one mover/direction, then request TRANSIT only on that mover while native relocation begins. The other worker remains in WORKING at 1 km/h for five seconds before independent release; the mover travels the remaining worker width + 5 m, then waits seven seconds before its own GIANTS restart. No shared fold wait or nonmover reconfiguration. TS015 replay pending; TS001 route-ranking issue still open.
-- [Configuration](CONFIGURATION.md) — supported player choices and consent.
-- [Log Publication](LOG_PUBLICATION.md) — bounded runtime/engineering fact publication.
-- [GUI](GUI.md) — current settings and status indication; full operational messaging deferred.
+## Current architectural responsibilities
 
-Field-validated TEST 0.5.1.3 (#461), GIANTS TS003 **PASS** on 9 October 2026, retains solo BWR **outside** field polygons and TRANSIT / 40 m oblique region / immediate FIELDWORK STOP/START, with no solo Hold timer. The preferred inward direction uses the **worker's native active course field**, never an adjacent field in the global registry. Paired mechanisms are unchanged. Native blocked Observation nominates candidates only. Independent commitment checks current GIANTS FIELDWORK jobs, field polygon and physical references before Control begins. The active shell does not invent native blockage or rebuild historic predictive Passage responsibilities.
+- [Project Vision](PROJECT_VISION.md) — mission, autonomous continuity, Trust Test and scope.
+- [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — native blockage evidence, qualification, candidate relationships, intervention responsibility, bounded egress and GIANTS handback.
+- [Configuration](CONFIGURATION.md) — supported player choices, consent, persistence and change semantics.
+- [Log Publication](LOG_PUBLICATION.md) — eligibility, classification and delivery of runtime and engineering log events without acquiring semantic authority.
+- [GUI](GUI.md) — player-facing product status, configuration presentation, operational communication and Help/Reference boundaries.
 
-## Deliberately unresolved
+## Related engineering surfaces
 
-The GIANTS physical consequences of repeated Cross-Track Egress, fold configuration and FIELDWORK handback still require Reality validation under [issue #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440). [Standards reconciliation #441](https://github.com/bisdat/FS25_OuttaMyWay/issues/441) remains a separate responsibility.
-
-Archived 0.4 source and evidence remain historical context under [archive/0.4.11.0](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0).
+[Specification](../spec/README.md) defines implementation-facing contracts for the architectural responsibilities. [Production source](../scripts/main.lua) realises current mechanisms; neither source structure nor successful tests redefine Architecture. [Engineering documentation](../docs/README.md) provides standards, engine knowledge, validation methodology and evidence history. Substantial unresolved questions are tracked in GitHub Issues rather than maintained as a rolling status narrative here.
