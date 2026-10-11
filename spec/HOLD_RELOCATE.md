@@ -52,6 +52,14 @@ Once paired movement starts, its authority is conditional, separate from admissi
 
 This is a movement-continuation fail-safe, not a corrected steering controller or proof of collision-free physical settlement. Incomplete root evidence terminates an active paired movement conservatively.
 
+### Post-interruption Native Continuation Witness — investigation
+
+Following a paired `EGRESS_INTERRUPTED`, a **passive, non-authorising** witness samples both actors immediately after scoped Control cleanup, then at **500 ms**, **2,000 ms** and **5,000 ms**. It retains at most one active witness. An independently admitted subsequent movement terminates the earlier witness, rather than attributing that new OMW Control to GIANTS. There is no continuing sample after the 5 s horizon.
+
+Each finite observation records native job-reference continuity, continued membership of the admitted GIANTS field-course strategy, its `isBlocked` state, native AI active flag, root displacement measured from interruption, passive `aiDriveParams.valid` and `maxSpeed`, and the presence of OMW-owned reverse, TRANSIT, Regulation and Hold leases for each participant. The original candidate is reported as the same native pair occurrence, a new one, or absent, together with whether it was already attempted. Absent/unavailable sources are labelled, not invented.
+
+The witness cannot prove a fresh `driveToPoint` call, physical clearance, successful configuration restoration, or GIANTS recoverability. It must not install drive wrappers, call `getDriveData()`, generate blocked events, reacquire Control, or retry an interrupted manoeuvre. The four observations are bounded NORMAL log facts for this investigation and require no DIAGNOSTIC setting; inactive witness work is zero except for a lightweight active-state check.
+
 ## Reactive static Control and release
 
 After exclusive static commitment, request TRANSIT once for the non-active subject, then issue supported direct GIANTS `driveToPoint` commands under a scoped motor, physics and native cruise lease; completed/non-job machines do not independently issue periodic AI drive commands. Regulate the **blocked active beneficiary at 1 km/h for 5,000 ms**, retaining its existing GIANTS job and WORKING configuration. This is not a translation STOP or a FIELDWORK job replacement.
@@ -94,6 +102,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`scripts/coordination/NativePairCommitmentAuthority.lua`](../scripts/coordination/NativePairCommitmentAuthority.lua) | `SUPPORTS` |
 | [`scripts/control/HoldRelocatePhysicalControl.lua`](../scripts/control/HoldRelocatePhysicalControl.lua) | `SUPPORTS` |
 | [`scripts/coordination/LiveHoldRelocateRuntime.lua`](../scripts/coordination/LiveHoldRelocateRuntime.lua) | `SUPPORTS` |
+| [`scripts/diagnostics/NativeContinuationWitness.lua`](../scripts/diagnostics/NativeContinuationWitness.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 
@@ -108,6 +117,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`tests/shell/native_transit_request_mechanism.lua`](../tests/shell/native_transit_request_mechanism.lua) | `CHALLENGES` |
 | [`tests/shell/native_fieldwork_job_replacement.lua`](../tests/shell/native_fieldwork_job_replacement.lua) | `CHALLENGES` |
 | [`tests/shell/live_hold_relocate.lua`](../tests/shell/live_hold_relocate.lua) | `CHALLENGES` |
+| [`tests/shell/native_continuation_witness.lua`](../tests/shell/native_continuation_witness.lua) | `CHALLENGES` |
 | [`tests/shell/static_blocker_relocation.lua`](../tests/shell/static_blocker_relocation.lua) | `CHALLENGES` |
 
 ## Implementation traceability and validation scope
