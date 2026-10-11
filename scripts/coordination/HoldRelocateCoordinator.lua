@@ -9,6 +9,14 @@ Coordinator.__index=Coordinator
 local STATIC_EGRESS_REGULATION_MS=5000 -- unchanged static-blocker beneficiary
 local PAIR_EGRESS_REGULATION_MS=8000 -- #470 test: protect mover through first egress
 local STATIC_EGRESS_FAILSAFE_MS=25000 -- cancel static movement after 25 seconds
+local PAIR_EGRESS_DEADLINE_MS=20000 -- maximum paired movement authority
+local PAIR_TRAJECTORY_SAMPLE_MS=250
+local PAIR_TRAJECTORY_SAMPLE_COUNT=5
+local PAIR_TRAJECTORY_MIN_TRAVEL_M=1
+local PAIR_TRAJECTORY_STRONG_REGRESSION_M=0.25
+local PAIR_TRAJECTORY_STRONG_LATERAL_GAIN_M=1
+local PAIR_TRAJECTORY_SUSPECT_LATERAL_GAIN_M=1.5
+local PAIR_TRAJECTORY_SUSPECT_PROGRESS_FRACTION=0.25
 local RELOCATED_HOLD_MS=7000 -- timer-only continuation, independent of pair distance
 local EGRESS_PATH_SAMPLE_M=2 -- validate straight segment within polygon
 local MIN_CENTROID_BEARING_M=0.01
@@ -17,6 +25,61 @@ local BWR_STEERING_HORIZON_M=40 -- steering reference only, not authorised trave
 local function finite(value)
     return type(value)=="number" and value==value
         and value~=math.huge and value~=-math.huge
+end
+
+-- Production evidence: fixed-cadence, five-point root positions, not the
+-- diagnostic probe or an inferred mechanical hitch angle. Each complete
+-- five-point window spans approximately 1 s in normal GIANTS updates.
+-- These thresholds are provisional until field validation.
+local function assessPairDivergence(state,nowMs,x,z)
+    if nowMs<state.pairNextSampleMs then return nil end
+    local region=state.objective.returnRegion
+    if not finite(region.originX) or not finite(region.originZ)
+        or not finite(region.directionX) or not finite(region.directionZ) then
+        return "PAIR_TRAJECTORY_REFERENCE_UNAVAILABLE"
+    end
+    local dx,dz=x-region.originX,z-region.originZ
+    local samples=state.pairTrajectorySamples
+    if #samples>0 and nowMs-samples[#samples].timeMs>
+        PAIR_TRAJECTORY_SAMPLE_MS*2 then
+        -- A long simulation/update gap cannot masquerade as a 1 s trend.
+        samples={}
+        state.pairTrajectorySamples=samples
+        state.pairSuspectWindows=0
+    end
+    samples[#samples+1]={timeMs=nowMs,x=x,z=z,
+        progressM=dx*region.directionX+dz*region.directionZ,
+        lateralM=dx*region.directionZ-dz*region.directionX}
+    state.pairNextSampleMs=nowMs+PAIR_TRAJECTORY_SAMPLE_MS
+    if #samples>PAIR_TRAJECTORY_SAMPLE_COUNT then table.remove(samples,1) end
+    if #samples<PAIR_TRAJECTORY_SAMPLE_COUNT then return nil end
+    local travelledM=0
+    for i=2,#samples do
+        local ax,az=samples[i].x-samples[i-1].x,
+            samples[i].z-samples[i-1].z
+        travelledM=travelledM+math.sqrt(ax*ax+az*az)
+    end
+    if travelledM<PAIR_TRAJECTORY_MIN_TRAVEL_M then
+        state.pairSuspectWindows=0
+        return nil
+    end
+    local first,last=samples[1],samples[#samples]
+    local progressGainM=last.progressM-first.progressM
+    local lateralGainM=math.abs(last.lateralM)-math.abs(first.lateralM)
+    if progressGainM<=-PAIR_TRAJECTORY_STRONG_REGRESSION_M
+        and lateralGainM>=PAIR_TRAJECTORY_STRONG_LATERAL_GAIN_M then
+        return "PAIR_TRAJECTORY_DIVERGED"
+    end
+    if progressGainM<=travelledM*PAIR_TRAJECTORY_SUSPECT_PROGRESS_FRACTION
+        and lateralGainM>=PAIR_TRAJECTORY_SUSPECT_LATERAL_GAIN_M then
+        state.pairSuspectWindows=state.pairSuspectWindows+1
+        if state.pairSuspectWindows>=2 then
+            return "PAIR_TRAJECTORY_DIVERGED"
+        end
+    else
+        state.pairSuspectWindows=0
+    end
+    return nil
 end
 
 local function positioned(participant)
@@ -80,6 +143,7 @@ function Coordinator:getStatus()
             and state.objective.returnRegion.requiredProgressM or nil,
         egressRegulationUntilMs=state.egressRegulationUntilMs,
         staticEgressDeadlineMs=state.staticEgressDeadlineMs,
+        pairMovementDeadlineMs=state.pairMovementDeadlineMs,
         relocatedHoldUntilMs=state.relocatedHoldUntilMs,
         egressHoldResults=self.lastEgressRegulationResults
     }
@@ -402,6 +466,10 @@ function Coordinator:startPairEgress(state,nowMs)
         return
     end
     state.phase=objective.isReverse and "REVERSING" or "PAIR_FORWARD_MOVING"
+    state.pairMovementDeadlineMs=nowMs+PAIR_EGRESS_DEADLINE_MS
+    state.pairNextSampleMs=nowMs
+    state.pairTrajectorySamples={}
+    state.pairSuspectWindows=0
     self.lastPairMotionStartEvidence={
         commitmentId=state.commitmentId,
         relocatingAssemblyReferenceKey=mover.assemblyReferenceKey,
@@ -767,6 +835,35 @@ function Coordinator:advance(nowMs,dt)
         if status.isFailed==true then
             self:finishWithOutcome("CONTROL_INTERRUPTED",status.reason or "REVERSE_FAILED")
             return
+        end
+        -- Paired movement is independently bounded. Withdrawal returns
+        -- Control to the *existing* GIANTS job; it does not request a native
+        -- stop/start, successful relocated Hold or a second mover.
+        if not state.isSingle then
+            if not finite(state.pairMovementDeadlineMs)
+                or nowMs>=state.pairMovementDeadlineMs then
+                self:finishWithOutcome("EGRESS_INTERRUPTED",
+                    "PAIR_MOVEMENT_DEADLINE_20S")
+                return
+            end
+            if not finite(status.rootX) or not finite(status.rootZ) then
+                self:finishWithOutcome("EGRESS_INTERRUPTED",
+                    "PAIR_ROOT_POSITION_UNAVAILABLE")
+                return
+            end
+            local isInside=OuttaMyWay.ProjectedEgressRegion.isRootInField(
+                state.commitment.fieldPolygon,status.rootX,status.rootZ)
+            if not isInside then
+                self:finishWithOutcome("EGRESS_INTERRUPTED",
+                    "PAIR_FIELD_BOUNDARY_BREACH")
+                return
+            end
+            local divergence=assessPairDivergence(
+                state,nowMs,status.rootX,status.rootZ)
+            if divergence~=nil then
+                self:finishWithOutcome("EGRESS_INTERRUPTED",divergence)
+                return
+            end
         end
         if status.isComplete~=true then return end
         local stopped,stopReason=command(self.physicalControl,"stopReverse",state.relocator.vehicle)
