@@ -101,6 +101,8 @@ A good model should explain **both** human selections *without* inventing “Fie
 
 **Accepted architectural option:** use the completed field interior for alignment before a shallow crossing when required; preserve existing active worker rights and separate physical Control authority.
 
+**Physical Constraint Witness source review:** [FS25 Native Physics/Terrain/Road Investigation](../docs/research/PHYSICAL_MARGIN_CONSTRAINT_SOURCE_REVIEW.md) identifies read-only collider and terrain queries that might positively witness obstacles or ditches. Its **Road Identity Gap** remains unresolved: road splines and their vehicle-width eligibility metadata cannot by themselves bound the occupied road surface. Those FS25 v1.20 source findings must be challenged in the user's v1.24 game before any positive continuous-width claim. No new runtime observation contract is admitted.
+
 **Open discoveries, in order:** (1) reliable physical **outer constraint** of the near-field strip, especially road/obstacle boundaries; (2) continuous along-edge coverage, rather than isolated clear sample points; (3) actual assembly TRANSIT footprint and forward-swept feasibility; (4) positive terminal occupancy verification. Investigate each independently before composing an actuator.
 
 **Source/Specification disposition:** No script change. The existing `FARM_SPATIAL_CONTEXT_OBSERVATION` jurisdiction remains intentionally **diagnostic and pointwise**; it is neither expanded nor claimed to provide continuous proof. The present Completion TRANSIT Specification remains **request-only** and authorises no movement. A new implementation-facing contract is premature until physical-constraint observation feasibility has been challenged in GIANTS Reality.
