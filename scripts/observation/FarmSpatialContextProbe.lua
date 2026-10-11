@@ -1,5 +1,5 @@
 -- Read-only GIANTS Farm Spatial Context witness for Issues #420/#476.
--- Specification Jurisdictions: `FARM_SPATIAL_CONTEXT_OBSERVATION`
+-- Specification Jurisdictions: `FARM_SPATIAL_CONTEXT_OBSERVATION`, `SETTLEMENT_CORRIDOR_ASSESSMENT`
 -- Enumerates consecutive polygon-vertex pairs and samples outside them.
 -- Does not nominate parking, hold, start jobs, alter costmaps or move anything.
 OuttaMyWay=OuttaMyWay or {}
