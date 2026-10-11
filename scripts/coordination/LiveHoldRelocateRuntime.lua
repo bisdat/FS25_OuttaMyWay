@@ -40,6 +40,8 @@ function Runtime.new(configuration,observer)
         authority=authority,physicalControl=physical,coordinator=coordinator,
         continuationWitness=OuttaMyWay.NativeContinuationWitness.new(
             OuttaMyWay.LogPublication.origin("NATIVE_CONTINUATION_WITNESS")),
+        clearanceWitness=OuttaMyWay.PairClearanceWitness.new(
+            OuttaMyWay.LogPublication.origin("PAIR_CLEARANCE_WITNESS")),
         currentCandidateIdentity=nil,currentCandidatePairKey=nil,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
@@ -60,6 +62,7 @@ function Runtime:loadMap()
     self.currentCandidateIdentity=nil
     self.currentCandidatePairKey=nil
     self.continuationWitness.active=nil
+    self.clearanceWitness:discard()
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
     self.lastReportedStaticMotionEvidence=nil
@@ -72,6 +75,7 @@ end
 function Runtime:relinquish(reason)
     -- Disable/delete cancels future witness sampling as well as Control.
     self.continuationWitness.active=nil
+    if self.clearanceWitness~=nil then self.clearanceWitness:discard() end
     local active=self.coordinator.active
     if active==nil then
         -- No physical action survives; likewise do not retain an abandoned
@@ -117,11 +121,25 @@ function Runtime:update(dt)
         self:relinquish("CLOCK_UNAVAILABLE")
         return
     end
-    -- Finite passive samples occur only after a paired interruption.
+    -- Passive witnesses have their own finite event/clock gates.
     self.continuationWitness:advance(nowMs)
+    self.clearanceWitness:advance(nowMs)
     if coordinator:isActive() then
         local observedMovement=coordinator.active
+        local priorPhase=observedMovement.phase
+        local priorPeerRegulated=observedMovement.isBlockerRegulated
+            and observedMovement.isBlockerRegulated[1]==true
         coordinator:advance(nowMs,dt)
+        if coordinator:isActive() then
+            if priorPhase~="HOLD_RELOCATED"
+                and observedMovement.phase=="HOLD_RELOCATED" then
+                self.clearanceWitness:milestone(nowMs,"RETURN_REGION_REACHED")
+            end
+            if priorPeerRegulated and observedMovement.isBlockerRegulated
+                and observedMovement.isBlockerRegulated[1]~=true then
+                self.clearanceWitness:milestone(nowMs,"REGULATION_ENDED")
+            end
+        end
         local wait=coordinator.lastPairTransitExhaustion
         if wait~=nil and wait~=self.lastReportedPairTransitExhaustion then
             self.lastReportedPairTransitExhaustion=wait
@@ -206,6 +224,14 @@ function Runtime:update(dt)
                         .." reason="..tostring(outcome.reason))
             end
             self.authority:release(self.authority.active)
+            if outcome~=nil then
+                if outcome.status=="NATIVE_RESTART_ACCEPTED" then
+                    self.clearanceWitness:milestone(nowMs,
+                        "NATIVE_RESTART_ACCEPTED")
+                else
+                    self.clearanceWitness:finish(nowMs,outcome.status)
+                end
+            end
             if outcome~=nil and outcome.status=="EGRESS_INTERRUPTED" then
                 self.continuationWitness:begin(nowMs,observedMovement,outcome,
                     self.observer,self.currentCandidateIdentity,
@@ -261,6 +287,10 @@ function Runtime:update(dt)
                 if accepted then
                     -- New OMW movement supersedes old passive attribution.
                     self.continuationWitness:finish(nowMs,"NEW_COMMITMENT")
+                    self.clearanceWitness:finish(nowMs,"SUPERSEDED_BY_NEW_COMMITMENT")
+                    if coordinator:isActive() then
+                        self.clearanceWitness:begin(nowMs,coordinator.active)
+                    end
                     self.currentCandidateIdentity=evidence.candidateIdentity
                     self.currentCandidatePairKey=evidence.pairKey
                     local details=commitment.commitmentId
