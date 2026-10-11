@@ -7,6 +7,7 @@ dofile("scripts/coordination/PairTransitRegion.lua")
 dofile("scripts/coordination/HoldRelocateCoordinator.lua")
 dofile("scripts/control/HoldRelocatePhysicalControl.lua")
 dofile("scripts/diagnostics/NativeContinuationWitness.lua")
+dofile("scripts/diagnostics/PairClearanceWitness.lua")
 dofile("scripts/coordination/LiveHoldRelocateRuntime.lua")
 local Authority=OuttaMyWay.NativePairCommitmentAuthority
 local Coordinator=OuttaMyWay.HoldRelocateCoordinator
