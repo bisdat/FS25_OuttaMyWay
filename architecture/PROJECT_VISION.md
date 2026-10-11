@@ -10,9 +10,10 @@ Preserve autonomous continuity through the least disruptive justified interventi
 
 ## Blocked-evidence-first recovery direction
 
-For the 0.5 rewrite, prefer positive native GIANTS worker-blocked evidence over continuous OMW collision prediction and anticipatory Regulation. The accepted [Hold & Relocate six-stage architecture](BLOCKED_PROGRESS_QUALIFICATION.md#4-hold--relocate--accepted-six-stage-architecture) responds after ≥1 second of native blocked evidence, selects the **worker nearest the field centroid** for relocation, protects its egress by holding immediate-vicinity blockers for **5 seconds**, configures TRANSIT and reverses using GIANTS-native BWR steering towards the field centroid for **≤30 m + offset**, holds the relocated worker for **10 seconds** so the blocker can resume, then stops and immediately restarts the relocated worker's native AI job. The two holds end **on their timers**, without pairwise release criteria. GIANTS retains native replanning authority: OMW does not reconstruct the productive route or insist on an OMW axis-return manoeuvre.
+OuttaMyWay begins with GIANTS-native field-worker blocked-state evidence rather than maintaining a separate predictive collision system. A native blocked assertion nominates a current Situation; it does not identify the causal obstacle or confer physical Control. [Native Blockage and Hold & Relocate Architecture](BLOCKED_PROGRESS_QUALIFICATION.md) governs qualification, bounded responses, individual release and GIANTS FIELDWORK handback.
 
-This is a design direction, not an assertion that GIANTS blocked messages identify which worker should yield or that native transport, recovery, collision or blocking-region APIs have been validated. The initial 0.5 implementation deliberately performs **no** AI intervention while those questions are investigated. Future temporary Blocking Regions are hypotheses, not active protection.
+The intervention must preserve native autonomous routing and distinguish a requested movement, a measured Return Region outcome and actual physical or productive continuation. Where current evidence cannot support safe assistance, it is legitimate to abstain from physical Control rather than invent a collision verdict or a route.
+
 
 ## Success Criterion
 
