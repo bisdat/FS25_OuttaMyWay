@@ -487,6 +487,18 @@ function Probe:survey()
         sampleTruncated=totalSamples>=MAX_TOTAL_SAMPLES,
         note="PASSIVE_ONLY_NOT_SETTLEMENT_CLEARANCE"
     })
+    -- Separate, one-shot diagnostic physics/terrain experiment. Its failure
+    -- cannot invalidate the already-completed original spatial survey.
+    local physical=OuttaMyWay.PhysicalMarginConstraintProbe
+    if type(physical)=="table" and type(physical.run)=="function" then
+        local ok,_,err=pcall(physical.run,fieldId,poly,edges,selectedFarmlandId)
+        if not ok then
+            publish("PHYSICAL_MARGIN_UNAVAILABLE",{
+                field=fieldId,reason="EXPERIMENT_EXCEPTION",
+                note="SPATIAL_SURVEY_REMAINS_VALID"
+            })
+        end
+    end
     return true
 end
 
