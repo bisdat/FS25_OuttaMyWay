@@ -1,5 +1,5 @@
 -- TEST-only actual-assembly nominal geometry witness for Field 77 edge 9.
--- Specification Jurisdiction: SETTLEMENT_CORRIDOR_ASSESSMENT
+-- Specification Jurisdictions: `SETTLEMENT_CORRIDOR_ASSESSMENT`
 -- No virtual projection is a parking target, route, or physical clearance.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.AssemblySettlementProbe={}
