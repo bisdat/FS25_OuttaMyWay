@@ -496,6 +496,7 @@ function Region.planPair(commitment,preferred,alternative,steeringAssessor)
                 end
             end
         end
+        table.sort(shortlist,function(a,b) return better(a,b,true) end)
         best.steeringShortlist={}
         for i=1,#shortlist do
             local c=shortlist[i]
