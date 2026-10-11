@@ -38,6 +38,9 @@ function Runtime.new(configuration,observer)
     return setmetatable({
         configuration=configuration,observer=observer,
         authority=authority,physicalControl=physical,coordinator=coordinator,
+        continuationWitness=OuttaMyWay.NativeContinuationWitness.new(
+            OuttaMyWay.LogPublication.origin("NATIVE_CONTINUATION_WITNESS")),
+        currentCandidateIdentity=nil,currentCandidatePairKey=nil,
         attempted=setmetatable({},{__mode="k"}),
         publication=OuttaMyWay.LogPublication.origin("HOLD_RELOCATE"),
         lastReportedEgressRegulationResults=nil,
@@ -54,6 +57,9 @@ function Runtime:loadMap()
     -- A new map cannot inherit attempted native occurrences or publication
     -- references from a previous map.
     self.attempted=setmetatable({},{__mode="k"})
+    self.currentCandidateIdentity=nil
+    self.currentCandidatePairKey=nil
+    self.continuationWitness.active=nil
     self.lastReportedEgressRegulationResults=nil
     self.lastReportedInitialMotionEvidence=nil
     self.lastReportedStaticMotionEvidence=nil
@@ -64,6 +70,8 @@ end
 -- Disabling requests immediate native Control release; completion is reported
 -- for the current episode only, without parked cross-episode job history.
 function Runtime:relinquish(reason)
+    -- Disable/delete cancels future witness sampling as well as Control.
+    self.continuationWitness.active=nil
     local active=self.coordinator.active
     if active==nil then
         -- No physical action survives; likewise do not retain an abandoned
@@ -109,7 +117,10 @@ function Runtime:update(dt)
         self:relinquish("CLOCK_UNAVAILABLE")
         return
     end
+    -- Finite passive samples occur only after a paired interruption.
+    self.continuationWitness:advance(nowMs)
     if coordinator:isActive() then
+        local observedMovement=coordinator.active
         coordinator:advance(nowMs,dt)
         local wait=coordinator.lastPairTransitExhaustion
         if wait~=nil and wait~=self.lastReportedPairTransitExhaustion then
@@ -195,6 +206,16 @@ function Runtime:update(dt)
                         .." reason="..tostring(outcome.reason))
             end
             self.authority:release(self.authority.active)
+            if outcome~=nil and outcome.status=="EGRESS_INTERRUPTED" then
+                self.continuationWitness:begin(nowMs,observedMovement,outcome,
+                    self.observer,self.currentCandidateIdentity,
+                    self.currentCandidatePairKey,
+                    self.currentCandidateIdentity~=nil
+                        and self.attempted[self.currentCandidateIdentity]==true,
+                    self.physicalControl)
+            end
+            self.currentCandidateIdentity=nil
+            self.currentCandidatePairKey=nil
         end
         return
     end
@@ -238,6 +259,10 @@ function Runtime:update(dt)
             else
                 local accepted,why=coordinator:begin(commitment,nowMs)
                 if accepted then
+                    -- New OMW movement supersedes old passive attribution.
+                    self.continuationWitness:finish(nowMs,"NEW_COMMITMENT")
+                    self.currentCandidateIdentity=evidence.candidateIdentity
+                    self.currentCandidatePairKey=evidence.pairKey
                     local details=commitment.commitmentId
                     if commitment.kind=="STATIC_BLOCKER" then
                         details=details.." inferredStaticSubject="
