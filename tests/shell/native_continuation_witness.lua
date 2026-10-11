@@ -1,15 +1,15 @@
 -- Post-interruption observations are passive, finite and actor-specific.
 OuttaMyWay={VERSION="0.5.3.test"}
 local published={}
-local debugEnabled=true
+local diagnosticEnabled=true
 local publisher={
     isEligible=function(_,class,severity,code)
-        assert(class=="DEBUG" and severity=="INFO"
+        assert(class=="DIAGNOSTIC" and severity=="INFO"
             and code=="NATIVE_CONTINUATION_WITNESS")
-        return debugEnabled
+        return diagnosticEnabled
     end,
     publish=function(_,class,severity,code,makePayload)
-        assert(class=="DEBUG" and severity=="INFO")
+        assert(class=="DIAGNOSTIC" and severity=="INFO")
         published[#published+1]={code=code,detail=makePayload().detail}
     end
 }
@@ -79,19 +79,19 @@ assert(witness:begin(12000,movement,outcome,observer,token,"M|P",true,physical))
 witness:finish(12500,"NEW_COMMITMENT")
 assert(#published==6 and published[#published].code=="NATIVE_CONTINUATION_WITNESS_ENDED")
 assert(not witness:isActive())
-debugEnabled=false
+diagnosticEnabled=false
 local beforeReads=reads
 local beforeLines=#published
 assert(not witness:begin(15000,movement,outcome,observer,token,"M|P",
     true,physical))
 witness:advance(20000)
 assert(reads==beforeReads and #published==beforeLines
-    and not witness:isActive(),"suppressed DEBUG performs no witness reads")
-debugEnabled=true
+    and not witness:isActive(),"suppressed DIAGNOSTIC performs no witness reads")
+diagnosticEnabled=true
 assert(witness:begin(25000,movement,outcome,observer,token,"M|P",true,physical))
 beforeReads=reads
-debugEnabled=false
+diagnosticEnabled=false
 witness:advance(25500)
 assert(not witness:isActive() and reads==beforeReads,
-    "active witness must stop sampling when DEBUG is disabled")
+    "active witness must stop sampling when DIAGNOSTIC is disabled")
 print("Native continuation witness: finite passive readings, occurrence identity, lease state, supersession PASS")
