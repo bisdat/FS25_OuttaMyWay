@@ -7,6 +7,8 @@ authority.
 
 ## Breadcrumbs
 
+- [Field 77 Farm Spatial Context Probe](FIELD77_SPATIAL_PROBE.md) — screenshot-grounded road/hedge comparison plan for diagnostic-only source-field edge surveying (#476).
+
 - [Blocked Recovery Investigations](BLOCKED_RECOVERY_INVESTIGATIONS.md) — historical native-blockage, solo/static recovery and pair-egress hypotheses, disproofs and GIANTS validation provenance; current authority stays in Architecture and Specification.
 
 - [Spatial Pair Inference](SPATIAL_PAIR_INFERENCE.md) — minimal nearest-local-worker hypothesis from GIANTS root X/Z positions; locality bound and causal attribution remain unvalidated under #440.
