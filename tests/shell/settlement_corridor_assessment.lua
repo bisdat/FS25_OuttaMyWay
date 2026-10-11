@@ -113,7 +113,7 @@ end
 localDirectionToWorld=function(node,x,_,z)
     return x,0,z
 end
-g_currentMission={vehicles={root,child}}
+g_currentMission={vehicleSystem={vehicles={root,child}}}
 assert(probe.run(77,p77,e77,{},false,nil)==true)
 local scan=assert(find("ASSEMBLY_SETTLEMENT_SCAN"))
 assert(scan.candidatesNearField==1 and scan.selectedSubjects==1)
