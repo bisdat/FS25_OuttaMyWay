@@ -2,7 +2,7 @@
 
 **Issue:** [#476 Completion-Triggered Terminal Egress](https://github.com/bisdat/FS25_OuttaMyWay/issues/476) / [#420 Native API Investigation](https://github.com/bisdat/FS25_OuttaMyWay/issues/420)  
 **Date:** 11 October 2026  
-**Status:** **Source findings and proposed read-only Reality experiment — NOT validated runtime evidence, no code change.**
+**Status:** **Source findings with bounded TEST 0.5.5.3 diagnostic implementation; physics/terrain semantics NOT YET validated by user in-game Reality.**
 
 ## Question and bounded sources
 
