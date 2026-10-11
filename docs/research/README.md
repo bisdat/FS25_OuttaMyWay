@@ -7,6 +7,7 @@ authority.
 
 ## Breadcrumbs
 
+- [Exterior Margin Profile Falsification Plan](EXTERIOR_MARGIN_PROFILE_VALIDATION.md) — Field 77/Riverbend evidence matrix, missing physical boundaries and prospective tests; no new movement.
 - [Riverbend Springs Farmland 2 Contrast](RIVERBEND_FIELD2_SPATIAL_PROBE.md) — TS004 screenshot and cross-map falsification plan for spatial survey 0.5.5.2.
 - [Field 77 Farm Spatial Context Probe](FIELD77_SPATIAL_PROBE.md) — screenshot-grounded road/hedge comparison plan for diagnostic-only source-field edge surveying (#476).
 
