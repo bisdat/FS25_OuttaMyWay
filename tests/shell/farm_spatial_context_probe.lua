@@ -1,6 +1,6 @@
 -- Synthetic Field 77: road along Z_MIN, hedge protrusion on X_MAX,
 -- field 78 beyond X_MAX and other farmland. Passive survey only.
-OuttaMyWay={VERSION="0.5.5.1"}
+OuttaMyWay={VERSION="0.5.5.2"}
 local events,navCalls,splineCalls={},0,0
 local diagnostic=false
 OuttaMyWay.LogPublication={origin=function()
@@ -78,6 +78,7 @@ end
 local summary=assert(find("FARM_CONTEXT_FIELD"))
 assert(summary.field==77 and summary.vertexCount==4)
 assert(summary.sourceFarmOwner=="7")
+assert(summary.targetSelection=="DEFAULT_FIELD" and summary.selectedFarmlandId=="unknown")
 assert(summary.roadRegistered==1 and summary.roadPointsNearField>0)
 local top=assert(find("FARM_CONTEXT_EDGE",1))
 assert(top.side=="Z_MIN")
@@ -103,4 +104,45 @@ probe:deleteMap()
 diagnostic=false
 probe:update(30000)
 assert(#events==before,"disabled diagnostic must not run even after map restart")
-print("Farm Spatial Context gated Field 77 survey PASS")
+-- Different map's screenshot specifies *farmland* 2. The registered
+-- polygon must be selected from that parcel rather than ID assumption.
+local field2=field({100,124,124,100},{0,0,24,24})
+g_fieldManager.fields[2]=field2
+g_farmlandManager.getFarmlandIdAtWorldPosition=function(_,x,z)
+    if x>90 then return 2 end
+    return x>24 and 20 or 10
+end
+g_farmlandManager.getOwnerIdAtWorldPosition=function(_,x,z)
+    return x>90 and 7 or (x>24 and 8 or 7)
+end
+local diagnosticSource2={
+    publicationPolicy=function() return "DIAGNOSTIC" end,
+    spatialTargetFarmlandId=function() return 2,nil end
+}
+local probe2=OuttaMyWay.FarmSpatialContextProbe.new(configuration,diagnosticSource2)
+local beforeSecond=#events
+probe2:loadMap()
+probe2:update(7000)
+assert(#events>beforeSecond,"second-map selection should produce observations")
+local result2
+for i=beforeSecond+1,#events do
+    if events[i].code=="FARM_CONTEXT_FIELD" then result2=events[i].body; break end
+end
+assert(result2~=nil and result2.field==2
+    and result2.selectedFarmlandId=="2"
+    and result2.resolvedFarmlandId=="2"
+    and result2.targetSelection=="FARMLAND",
+    "target farmland 2 must identify native field polygon 2")
+
+-- If farmland 2 includes multiple registered polygons, do not select
+-- a field by registry iteration order: preserve uncertainty.
+g_fieldManager.fields[3]=field({130,154,154,130},{0,0,24,24})
+local ambiguous=OuttaMyWay.FarmSpatialContextProbe.new(configuration,diagnosticSource2)
+local oldEvents=#events
+ambiguous:loadMap()
+ambiguous:update(21000)
+assert(#events==oldEvents+1)
+assert(events[#events].code=="FARM_CONTEXT_SURVEY_UNAVAILABLE")
+assert(events[#events].body.reason=="FARMLAND_CONTAINS_MULTIPLE_FIELDS")
+
+print("Farm Spatial Context Field 77 and selected Farmland 2 survey PASS")
