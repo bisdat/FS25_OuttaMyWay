@@ -37,7 +37,7 @@ The adjacent `PhysicalMarginConstraintProbe` is an **engineering-only**, strictl
 
 - Without an explicit farmland selector, survey Mindenerwald registered **Field 77**, preferred south **edge 9** (expected length 230.97 m), and known hedge control **edge 2** (48.26 m).
 - With `spatialFarmlandId=2`, survey Riverbend registered **Field 29**, preferred east **edge 1** (141.99 m), and north-road control **edge 7** (59.99 m).
-- Reject any unsupported selector, registered field identity or edge-length mismatch. These numeric fixture IDs are **test selection**, not a general settlement preference or production edge ranking.
+- Reject any unsupported selector, registered field identity, edge-length or recorded **world-coordinate endpoint** mismatch (3 m fixture tolerance). These numeric fixture IDs are **test selection**, not a general settlement preference or production edge ranking.
 
 At quarter and three-quarter stations of a preferred segment, sample a bounded set of inward/exterior depths. Field 77 uses `-2,1,2,3,4,6,8,12 m`; Riverbend `-2,2,6,12,18,24,30 m`. At Field 77's hedge control, sample at stations `8 m` and `40 m` with exterior depths `2,6,12 m`; at Riverbend's north road control, sample halfway along its edge at `2,6,12,18,24,30 m`. Budget **no more than 24 stations/offset positions and 22 synchronous physics queries** per completed survey. Every reading carries the native registered field/edge, station `s`, signed depth `d`, world X/Z, source polygon membership, farmland ID, navigation point status and terrain-height/normal availability.
 
