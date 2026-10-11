@@ -19,4 +19,7 @@ Farmland IDs are not necessarily registered field IDs.
 
 This file is not supported player Configuration and is never created automatically.
 -->
+<outtaMyWayDiagnostics enabled="true" />
+<!-- For Riverbend Springs (Farmland 2) replace the element above with:
 <outtaMyWayDiagnostics enabled="true" spatialFarmlandId="2" />
+-->
