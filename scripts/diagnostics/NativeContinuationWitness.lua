@@ -74,14 +74,22 @@ local function candidateStatus(witness)
     return newIdentity and "NEW_NATIVE_OCCURRENCE" or "NO_PAIR_CANDIDATE"
 end
 
+-- Eligibility gates production of the witness, not just its log line.
+-- Disabled DEBUG means no actor-root, native-job or lease reads.
+local function enabled(publisher)
+    if type(publisher)~="table"
+        or type(publisher.isEligible)~="function" then return false end
+    local ok,available=pcall(publisher.isEligible,publisher,
+        "DEBUG","INFO","NATIVE_CONTINUATION_WITNESS")
+    return ok and available==true
+end
 local function publish(state,code,detail)
-    -- A fixed maximum of four NORMAL observations per interruption provides
-    -- evidence without enabling expensive DIAGNOSTIC trajectory probes.
+    -- At most four DEBUG samples per interruption; never a per-frame dump.
     -- Publication failure is never allowed to affect GIANTS or OMW Control.
     if type(state.publisher)~="table"
         or type(state.publisher.publish)~="function" then return end
     pcall(state.publisher.publish,state.publisher,
-        "NORMAL","INFO",code,function()
+        "DEBUG","INFO",code,function()
             return {detail=detail,version=OuttaMyWay.VERSION}
         end)
 end
@@ -144,6 +152,7 @@ end
 function Witness:advance(nowMs)
     local state=self.active
     if state==nil then return end
+    if not enabled(self.publisher) then self.active=nil;return end
     if not finite(nowMs) or nowMs<state.startedMs then
         self:finish(nowMs,"CLOCK_INVALID")
         return
@@ -178,6 +187,7 @@ function Witness:begin(nowMs,movement,outcome,observer,
         return false
     end
     if self.active~=nil then self:finish(nowMs,"REPLACED_BY_INTERRUPTION") end
+    if not enabled(self.publisher) then return false end
     local mover,peer=movement.relocator,movement.blockers[1]
     local mx,mz=location(mover.vehicle)
     local px,pz=location(peer.vehicle)
