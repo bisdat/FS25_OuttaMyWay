@@ -147,7 +147,7 @@ local fake,fe=field(shifted,zs)
 events={}
 assert(probe.run(77,fake,fe,{},false,nil)==false)
 assert(#events==0,"same edge length on other map must not match")
-g_currentMission.vehicles={}
+g_currentMission.vehicleSystem.vehicles={}
 events={}
 assert(probe.run(77,p77,e77,{},false,nil)==true)
 assert(find("ASSEMBLY_SETTLEMENT_UNAVAILABLE").reason==
