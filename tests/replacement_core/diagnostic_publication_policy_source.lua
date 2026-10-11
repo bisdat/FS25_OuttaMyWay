@@ -17,22 +17,22 @@ end
 local state={}
 local function installApi(options)
     options=options or {}
-    state={loadCalls=0,deleteCalls=0,lastPath=nil,registeredKey=nil}
+    state={loadCalls=0,deleteCalls=0,lastPath=nil,registeredKeys={}}
     getUserProfileAppPath=function() return options.profilePath or "/profile/" end
     fileExists=function(path)
         state.lastPath=path
         if options.fileCheckError then error("file check failed") end
         return options.exists==true
     end
-    XMLValueType={BOOL="BOOL"}
+    XMLValueType={BOOL="BOOL",INT="INT"}
     XMLSchema={
         new=function(name)
             if options.schemaError then error("schema failed") end
             return {
                 register=function(self,valueType,key)
                     if options.registerError then error("register failed") end
-                    equal(valueType,XMLValueType.BOOL)
-                    state.registeredKey=key
+                    assert(valueType==XMLValueType.BOOL or valueType==XMLValueType.INT)
+                    state.registeredKeys[key]=valueType
                 end
             }
         end
@@ -45,6 +45,9 @@ local function installApi(options)
             return {
                 getValue=function(self,key)
                     if options.valueError then error("value failed") end
+                    if key=="outtaMyWayDiagnostics#spatialFarmlandId" then
+                        return options.spatialValue
+                    end
                     return options.value
                 end,
                 delete=function(self) state.deleteCalls=state.deleteCalls+1 end
@@ -69,7 +72,10 @@ test("valid enabled sidecar resolves DIAGNOSTIC",function()
     local enabled,reason=source:loadSidecar()
     equal(enabled,true); equal(reason,"ENABLED")
     equal(source:publicationPolicy(),"DIAGNOSTIC")
-    equal(state.registeredKey,"outtaMyWayDiagnostics#enabled")
+    equal(state.registeredKeys["outtaMyWayDiagnostics#enabled"],"BOOL")
+    equal(state.registeredKeys["outtaMyWayDiagnostics#spatialFarmlandId"],"INT")
+    local target,err=source:spatialTargetFarmlandId()
+    equal(target,nil); equal(err,nil)
     equal(state.loadCalls,1); equal(state.deleteCalls,1)
 end)
 
@@ -106,6 +112,24 @@ test("profile path failure fails safe to NORMAL",function()
     local enabled,reason=source:loadSidecar()
     equal(enabled,false); equal(reason,"PROFILE_PATH_UNAVAILABLE")
     equal(source:publicationPolicy(),"NORMAL")
+end)
+
+test("optional engineering spatial farmland target loads without changing diagnostic policy",function()
+    installApi({exists=true,value=true,spatialValue=2})
+    local source=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(source:loadSidecar(),true)
+    equal(source:publicationPolicy(),"DIAGNOSTIC")
+    local target,err=source:spatialTargetFarmlandId()
+    equal(target,2); equal(err,nil)
+end)
+
+test("invalid engineering spatial target does not silently select another field",function()
+    installApi({exists=true,value=true,spatialValue=-7})
+    local source=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(source:loadSidecar(),true)
+    equal(source:publicationPolicy(),"DIAGNOSTIC")
+    local target,err=source:spatialTargetFarmlandId()
+    equal(target,nil); equal(err,"SPATIAL_FARMLAND_ID_INVALID")
 end)
 
 print(string.format("RESULT %d passed / %d failed",passed,failed))
