@@ -59,13 +59,13 @@ An AI-road spline and a ROAD-tagged physics object are **different possible repr
 
 A physics sweep of a fixed box may **positively detect** an obstacle in a representative forward volume, but a negative test cannot model the changing footprint of a tractor plus trailing implement around a turn or across changing terrain. Keep physical obstacle observation, assembly-specific approach/run-out assessment and final verified occupancy independent.
 
-## Proposed bounded GIANTS Reality experiment — no new TEST built yet
+## Bounded GIANTS Reality experiment — implemented in TEST 0.5.5.3, not yet field-validated
 
 **Purpose:** challenge whether physics/terrain adds reliable *positive physical obstacle and terrain-profile evidence* that `FARM_CONTEXT_EDGE` plus navigation-map cost lacks. **Do not attempt to prove an entire 231 m parking corridor in one step.**
 
 1. **Version and API gate:** On FS25 1.24, log availability of `overlapBox`, `raycastAll`, `sweepBoxVector`, `getTerrainHeightAtWorldPos`, `getTerrainNormalAtWorldPos`, and `CollisionFlag.ROAD`. If absent, mark unsupported and do not guess old signatures or call mutation APIs.
 2. **Positive/negative controls:** On Mindenerwald, include a screenshot-identified protruding **hedge** location (especially the previously noted upper-right edge 2) and an apparently open middle cross-section of **preferred southern edge 9**. On Riverbend, include a **roadside** cross-section from east **edge 1** (owner-preferred strip) and a known road-adjacent location near north edge 7 as a positive visible-road control.
-3. **Very small, bounded transverse measurements:** At a few explicitly chosen along-edge stations, measure *terrain height/normal* across the source-field boundary and into the margin, read existing farmland/field membership and AI nav-point status, and report **positive** collision hits from a small box/ray or straight swept box, with filter groups and node identity where supported. Keep raw station `s`, outward depth `d`, map/field/edge identity and sample size.
+3. **Very small, bounded transverse measurements:** At a few explicitly chosen along-edge stations, measure *terrain height/normal* across the source-field boundary and into the margin, read farmland identity and AI nav-point status, and report **positive** collision hits using a **bounded 0.9 m × 0.9 m × 2 m overlap box**. Raycast and box-sweep availability are logged but not invoked in this first experiment. Keep raw station `s`, outward depth `d`, field/edge identity and sample size. Keep raw station `s`, outward depth `d`, map/field/edge identity and sample size.
 4. **Cross-check what is visible:** Ask whether a known hedge generates a collider hit; whether a known ditch generates an elevation/normal change; whether a known road has a ROAD collider and, if so, whether it aligns with the physical road surface. **No hit**, especially where a road/hedge is visible, is a valuable representation failure.
 5. **Performance/authority controls:** One-shot, diagnostics-only, small bounded number of queries; avoid per-tick work or repeatedly enumerating world physics. Read-only: no `setAreaDirty`, road registration, `addObstacle`, physics state change, native AI job or movement. Beware synchronous query cost and log publication perturbing GIANTS behaviour. Prefer initial stationary map observations without workers so native temporal variation is minimized.
 
@@ -76,11 +76,11 @@ A physics sweep of a fixed box may **positively detect** an obstacle in a repres
 - If a box sweep detects objects missed by the old point navmap, it supports **better positive hazard observation**, not an automatic clearance pass.
 - If new APIs differ in v1.24, update the source contract and do not paper over with fallback claims.
 
-**Acceptance for the proposed diagnostic experiment:** capture at least one meaningful positive witness and one meaningful counterexample or explicit missing-representation result on the named map control points; preserve unknowns. **Do not require parking success**, since no parking controller exists.
+**Acceptance for the implemented diagnostic experiment:** capture at least one meaningful positive witness and one meaningful counterexample or explicit missing-representation result on the named map control points; preserve unknowns. **Do not require parking success**, since no parking controller exists.
 
 ## TEST 0.5.5.3 experimental implementation (pending Reality)
 
-The proposal above has been encoded as a **fixture-guarded, bounded** adjunct `scripts/observation/PhysicalMarginConstraintProbe.lua` called after the existing successful `FarmSpatialContextProbe:survey()`; it produces `PHYSICAL_MARGIN_CAPABILITY`, `PHYSICAL_MARGIN_POINT`, `PHYSICAL_MARGIN_SURVEY_FINISHED`, or explicit `PHYSICAL_MARGIN_UNAVAILABLE`. This experiment runs exclusively with the original server-only DIAGNOSTIC gate and is allowed to fail without overturning the preceding native Field Polygon / nav / farmland baseline.
+The bounded plan above has been encoded as a **fixture-guarded, bounded** adjunct `scripts/observation/PhysicalMarginConstraintProbe.lua` called after the existing successful `FarmSpatialContextProbe:survey()`; it produces `PHYSICAL_MARGIN_CAPABILITY`, `PHYSICAL_MARGIN_POINT`, `PHYSICAL_MARGIN_SURVEY_FINISHED`, or explicit `PHYSICAL_MARGIN_UNAVAILABLE`. This experiment runs exclusively with the original server-only DIAGNOSTIC gate and is allowed to fail without overturning the preceding native Field Polygon / nav / farmland baseline.
 
 **Probe regions:**
 - Mindenerwald default Field 77: preferred edge **9**, stations at 25% and 75%, depths `-2,1,2,3,4,6,8,12 m`; known hedge control edge **2**, stations 8 m and 40 m, depths `2,6,12 m`.
