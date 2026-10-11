@@ -31,11 +31,20 @@ local function heading(vehicle)
     if len<0.00001 then return nil,nil end
     return x/len,z/len
 end
+-- Eligibility gates *production* of geometry, not merely publication.
+-- When DEBUG is off, no new member-node transform or root sample is done.
+local function enabled(publisher)
+    if type(publisher)~="table"
+        or type(publisher.isEligible)~="function" then return false end
+    local ok,available=pcall(publisher.isEligible,publisher,
+        "DEBUG","INFO","PAIR_CLEARANCE_OBSERVATION")
+    return ok and available==true
+end
 local function publish(state,code,payload)
     local publisher=state.publisher
     if type(publisher)~="table"
         or type(publisher.publish)~="function" then return end
-    pcall(publisher.publish,publisher,"NORMAL","INFO",code,function()
+    pcall(publisher.publish,publisher,"DEBUG","INFO",code,function()
         payload.version=OuttaMyWay.VERSION
         return payload
     end)
@@ -102,7 +111,7 @@ end
 function Witness:finish(nowMs,reason)
     local state=self.active
     if state==nil then return end
-    if finite(nowMs) and nowMs>=state.startedMs then
+    if enabled(self.publisher) and finite(nowMs) and nowMs>=state.startedMs then
         sample(state,nowMs,reason or "OBSERVATION_FINISHED")
     end
     self.active=nil
@@ -115,6 +124,7 @@ function Witness:begin(nowMs,state)
         or type(state.blockers[1])~="table"
         or type(state.objective)~="table" then return false end
     if self.active~=nil then self:finish(nowMs,"SUPERSEDED") end
+    if not enabled(self.publisher) then return false end
     self.active={publisher=self.publisher,
         startedMs=nowMs,stageStartMs=nowMs,
         commitmentId=state.commitmentId,
@@ -127,6 +137,7 @@ end
 function Witness:milestone(nowMs,label)
     local state=self.active
     if state==nil or not finite(nowMs) or nowMs<state.startedMs then return end
+    if not enabled(self.publisher) then self:discard();return end
     if label=="RETURN_REGION_REACHED" and state.stage=="MOVING" then
         sample(state,nowMs,label)
         state.stage="HOLD";state.stageStartMs=nowMs;state.nextIndex=1
@@ -142,6 +153,10 @@ end
 function Witness:advance(nowMs)
     local state=self.active
     if state==nil then return end
+    if not enabled(self.publisher) then
+        self:discard()
+        return
+    end
     if not finite(nowMs) or nowMs<state.stageStartMs then
         self:discard()
         return
