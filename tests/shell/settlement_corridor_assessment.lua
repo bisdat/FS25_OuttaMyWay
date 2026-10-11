@@ -153,4 +153,13 @@ assert(probe.run(77,p77,e77,{},false,nil)==true)
 assert(find("ASSEMBLY_SETTLEMENT_UNAVAILABLE").reason==
     "NO_ASSEMBLY_IN_FIELD_OR_NEAR_EDGE")
 assert(mutations==0)
+-- Regression: a legacy-looking mission.vehicles value must not mask
+-- missing GIANTS vehicleSystem; never treat the wrong source as authority.
+g_currentMission={vehicles={root,child}}
+events={}
+assert(probe.run(77,p77,e77,{},false,nil)==false)
+assert(find("ASSEMBLY_SETTLEMENT_UNAVAILABLE").reason==
+    "VEHICLE_CATALOGUE_UNAVAILABLE")
+assert(find("ASSEMBLY_SETTLEMENT_SCAN")==nil)
+assert(mutations==0)
 print("Assembly-specific settlement nominal polygon screen: PASS")
