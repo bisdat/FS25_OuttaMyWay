@@ -9,6 +9,7 @@ Specifications define implementation-facing obligations for the current [System 
 | Configuration | [Configuration Specification](CONFIGURATION.md) | [Configuration.lua](../scripts/configuration/Configuration.lua) and current GUI/runtime consumers |
 | Log Publication | [Log Publication Specification](LOG_PUBLICATION.md) | [LogPublication.lua](../scripts/publication/LogPublication.lua) and publication producers |
 | Native Blockage Observation | [Native Blockage Observation Specification](NATIVE_BLOCKAGE_OBSERVATION.md) | [NativeBlockageObservation.lua](../scripts/observation/NativeBlockageObservation.lua), bounded native read-only evidence |
+| Completion Transit | [Completion Transit Specification](COMPLETION_TRANSIT.md) | [CompletionTransitRuntime.lua](../scripts/control/CompletionTransitRuntime.lua), request-only completion configuration |
 | Native Job Completion Observation | [Native Job Completion Observation Specification](NATIVE_JOB_COMPLETION_OBSERVATION.md) | [NativeJobCompletionProbe.lua](../scripts/observation/NativeJobCompletionProbe.lua), diagnostic-only FIELDWORK stop-reason evidence |
 | Spatial Pair Inference | [Spatial Pair Inference Specification](SPATIAL_PAIR_INFERENCE.md) | [SpatialPairInference.lua](../scripts/assessment/SpatialPairInference.lua), bounded candidate evaluation |
 | Hold & Relocate | [Hold & Relocate Specification](HOLD_RELOCATE.md) | [HoldRelocateCoordinator.lua](../scripts/coordination/HoldRelocateCoordinator.lua), native commitment and subordinate physical Control participants |
