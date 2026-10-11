@@ -29,6 +29,24 @@ Read `g_currentMission.aiSystem.roadSplines` without changing it. Sample each ad
 
 No invocation of `AISystem:addBlockingRegion`, `addObstacle`, `setAreaDirty`, `addRoadSpline`, vehicle jobs, vehicle controls, map update, or any mutation API is admitted.
 
+## TEST 0.5.5.3 — isolated Physical Margin Constraint witness
+
+The adjacent `PhysicalMarginConstraintProbe` is an **engineering-only**, strictly read-only source-compatibility experiment within this Observation jurisdiction. It runs **once**, after the existing `FARM_CONTEXT_SURVEY_FINISHED` on the same eligible server-only DIAGNOSTIC survey. Its failure or missing API must **not** invalidate or retry the prior spatial survey. There is no new client, normal/debug, configuration, production assessment or Control consumer.
+
+**Guarded Ground Truth fixtures only:**
+
+- Without an explicit farmland selector, survey Mindenerwald registered **Field 77**, preferred south **edge 9** (expected length 230.97 m), and known hedge control **edge 2** (48.26 m).
+- With `spatialFarmlandId=2`, survey Riverbend registered **Field 29**, preferred east **edge 1** (141.99 m), and north-road control **edge 7** (59.99 m).
+- Reject any unsupported selector, registered field identity or edge-length mismatch. These numeric fixture IDs are **test selection**, not a general settlement preference or production edge ranking.
+
+At quarter and three-quarter stations of a preferred segment, sample a bounded set of inward/exterior depths. Field 77 uses `-2,1,2,3,4,6,8,12 m`; Riverbend `-2,2,6,12,18,24,30 m`. At Field 77's hedge control, sample at stations `8 m` and `40 m` with exterior depths `2,6,12 m`; at Riverbend's north road control, sample halfway along its edge at `2,6,12,18,24,30 m`. Budget **no more than 24 stations/offset positions and 22 synchronous physics queries** per completed survey. Every reading carries the native registered field/edge, station `s`, signed depth `d`, world X/Z, source polygon membership, farmland ID, navigation point status and terrain-height/normal availability.
+
+**Positive physics witnesses:** when available, call native `overlapBox` at exterior points with a horizontal 0.9 m × 0.9 m and vertical 2 m box, 0.1 m above terrain, using represented `STATIC_OBJECT`, `BUILDING`, `TREE`, `ROAD` and `AI_BLOCKING` mask groups; dynamic objects excluded, static/kinematic enabled, exact overlap requested. Record hit count, a bounded list of node IDs/names and, if native collision-group classification works, ROAD/TREE/STATIC group presence. Terrain height and terrain normal, and optional nav costmap blocking, are read independently and may be unavailable. Record a grouped capability event, point events and a summary under `PHYSICAL_MARGIN`, including query failures and truncations.
+
+`NO_REPRESENTED_HIT` means only **no callback hit in this finite test volume using the selected mask**, never a terrain/road/assembly clearance pass; `QUERY_FAILED` and `API_UNAVAILABLE` are different from no hit. Spline `maxWidth` is *not* used to infer road-surface width. This experiment does not compute a continuous Exterior Margin Profile, choose a parking position, perform collision-map mutations, move vehicles, or authorise a Settlement Corridor. Missing or differing v1.24 APIs are evidence to record, not conditions to invent fallback “clear” values.
+
+Runtime acceptance requires user-supplied TEST 0.5.5.3 GIANTS Reality on both maps: a positive known hedge/road witness **or** explicit representation failure, compared with visible Ground Truth. Offline mocks only establish bounds and missing-evidence contract semantics. See [Physical Margin Constraint source study](../docs/research/PHYSICAL_MARGIN_CONSTRAINT_SOURCE_REVIEW.md).
+
 ## Comparison fixtures — owner's screenshots
 
 For the existing Field 77 reference, compare four conditions using native logs from an actual play session:
