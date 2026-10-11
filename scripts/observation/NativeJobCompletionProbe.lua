@@ -50,7 +50,11 @@ local function messageIdentity(aiMessage)
 end
 
 function Probe.new(configuration)
-    return setmetatable({configuration=configuration,subscribed=false,seen={}},Probe)
+    return setmetatable({configuration=configuration,subscribed=false,seen={},completionListener=nil},Probe)
+end
+
+function Probe:setCompletionListener(listener)
+    self.completionListener=listener
 end
 
 function Probe:onJobStopped(job,aiMessage)
@@ -72,6 +76,10 @@ function Probe:onJobStopped(job,aiMessage)
             version=OuttaMyWay.VERSION
         }
     end)
+    if isSuccessMessage(aiMessage) and type(self.completionListener)=="function" then
+        -- Observation is never allowed to break native GIANTS job dispatch.
+        pcall(self.completionListener,job,vehicleOf(job))
+    end
 end
 
 function Probe:loadMap()
