@@ -29,6 +29,19 @@ For each, inspect actual stop-message class, timing and job/vehicle association.
 
 The experiment MUST NOT issue TRANSIT, stop/start/replace AI jobs, run relocation, register navigation agents or modify Control/Regulation. Existing paired, solo and static relocation mechanics remain unchanged.
 
+## Contract participants
+
+| Production source | Participation |
+| --- | --- |
+| [`scripts/observation/NativeJobCompletionProbe.lua`](../scripts/observation/NativeJobCompletionProbe.lua) | `REALISES` |
+
+## Repository validation participants
+
+| Validation surface | Relationship |
+| --- | --- |
+| [`tests/shell/native_job_completion_probe.lua`](../tests/shell/native_job_completion_probe.lua) | `CHALLENGES` |
+| [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
+
 ## Implementation traceability
 
 - **Primary source:** `scripts/observation/NativeJobCompletionProbe.lua`
