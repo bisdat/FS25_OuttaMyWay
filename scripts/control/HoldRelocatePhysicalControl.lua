@@ -131,6 +131,10 @@ local function buildTransitPlan(vehicle,isPair)
         foldTargets=foldTargets,unknownFoldCount=unknownFoldCount}
 end
 
+-- Shared native command-plan builder only; existing BWR decisions are unchanged.
+-- Completion Transit uses an isolated request mechanism and never shares BWR plans.
+Control.buildTransitPlan=buildTransitPlan
+
 function Control.new(authority)
     local control=setmetatable({authority=authority,
         plans=setmetatable({},{__mode="k"})},Control)
