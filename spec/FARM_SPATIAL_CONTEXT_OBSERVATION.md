@@ -21,7 +21,7 @@ Obtain native `g_fieldManager:getFieldById(77)` when available, with fallback to
 
 Determine the local outward normal using polygon winding and the native polygon point-in-containment test on both sides of a 0.25 m offset. If the local side is ambiguous, record unresolved evidence instead of assuming outside.
 
-At most 96 samples per edge, spaced nominally 6 m with 6000 total sample budget, measured at interior segment positions, at 2, 6 and 12 metres along the **local outward** normal. Each offset reports farmland ID/owner distributions, source-field owner access permission when that owner is known, membership of other registered field polygons and GIANTS native point navigation cost/blocking distribution. Record blocked intervals along that segment in metres. A sampled `navUnblocked` position is not full vehicle-clearance authority.
+At most 96 samples per edge, spaced nominally 6 m with 6000 total sample budget, measured at interior segment positions, at 2, 6 and 12 metres along the **local outward** normal. Each offset reports farmland ID/owner distributions, source-field owner access permission when that owner is known, membership of other registered field polygons and GIANTS native point navigation cost/blocking distribution. Record blocked intervals along that segment in metres and count any offset points that re-enter the source polygon (a possible concavity). Summarise each coordinate-oriented side using 2 m costmap sample counts and nearest sampled road-spline distance. A sampled `navUnblocked` position is not full vehicle-clearance authority.
 
 ## Road-spline observation
 
