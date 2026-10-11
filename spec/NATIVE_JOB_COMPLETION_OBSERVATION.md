@@ -7,7 +7,7 @@
 
 **Primary Architecture Authority:** [Completion-Triggered Terminal Egress — Investigation Boundary](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--native-job-completion-observation)
 
-This is a DIAGNOSTIC, read-only GIANTS FIELDWORK termination-reason experiment. Its output is not an actionable Terminal Egress request. It does not audit completed agronomy, adopt job termination as physical Control authority, or modify existing Hold & Relocate / Reactive Static Blocker Recovery.
+This is a DIAGNOSTIC, read-only GIANTS FIELDWORK termination-reason experiment. Its output is not itself an actionable Terminal Egress request; only a positive class witness may be forwarded to the separately specified request-only Completion Transit consumer. It does not audit completed agronomy, adopt job termination as physical Control authority, or modify existing Hold & Relocate / Reactive Static Blocker Recovery.
 
 ## Candidate native signal
 
@@ -27,7 +27,7 @@ The probe is a **source-supported hypothesis**, not in-game confirmation of FS25
 
 For each, inspect actual stop-message class, timing and job/vehicle association. In particular validate whether the success class is ever delivered for a manual stop or an OMW replacement. Any such counterexample invalidates the candidate positive-admission rule; preserve that result as evidence.
 
-The experiment MUST NOT issue TRANSIT, stop/start/replace AI jobs, run relocation, register navigation agents or modify Control/Regulation. Existing paired, solo and static relocation mechanics remain unchanged.
+The Observer itself MUST NOT issue TRANSIT, stop/start/replace AI jobs, run relocation, register navigation agents or modify Control/Regulation. A separately governed Completion Transit consumer may respond to positive evidence with transport-configuration requests only. Existing paired, solo and static relocation mechanics remain unchanged.
 
 ## Contract participants
 
