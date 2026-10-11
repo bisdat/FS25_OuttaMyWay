@@ -26,6 +26,7 @@ local current,valid=true,true
 local failTransit,failReverse,failPreflight,failRelease=nil,false,nil,nil
 local nativeAccept=true
 local completed=false
+local rootX,rootZ=10,10
 local function event(verb,v)
     events[#events+1]=verb..":"..(v and v.name or "-")
 end
@@ -80,7 +81,7 @@ local physical={
         return not failReverse,"REVERSE_REQUEST_FAILED"
     end,
     reverseStatus=function()
-        return {isComplete=completed,isFailed=false,
+        return {isComplete=completed,isFailed=false,rootX=rootX,rootZ=rootZ,
             travelledM=completed and 41 or 0}
     end,
     stopReverse=function(_,v)event("REVERSE_STOP",v);return true end,
@@ -225,4 +226,60 @@ assert(not c:isActive()
     and not has("NATIVE_STOP_START","A"),
     "failure to release early Regulation must interrupt handback")
 failRelease=nil
-print("Asymmetric paired egress: mover-only TRANSIT, independent 8s pair/5s static Regulation and 7s Hold, scoped cleanup PASS")
+-- Movement authority is actor-scoped and ends after an absolute 20 s.
+-- Neither failure nor timeout may replace the existing GIANTS job.
+events={};completed=false;rootX,rootZ=10,10
+assert(c:begin(admitted(),130000))
+c:advance(149999)
+assert(c:isActive())
+c:advance(150000)
+assert(not c:isActive() and has("REVERSE_CANCEL","A")
+    and has("TRANSIT_CANCEL","A") and not has("TRANSIT_CANCEL","B")
+    and not has("NATIVE_STOP_START","A")
+    and not has("HOLD_RELOCATED_WORKER","A"))
+assert(c:getStatus().lastOutcome.status=="EGRESS_INTERRUPTED"
+    and c:getStatus().lastOutcome.reason=="PAIR_MOVEMENT_DEADLINE_20S")
+
+-- Field-jurisdiction guard pre-empts even an apparent completion.
+events={};completed=true;rootX,rootZ=101,10
+assert(c:begin(admitted(),160000))
+c:advance(160001)
+assert(not c:isActive() and has("REVERSE_CANCEL","A")
+    and not has("REVERSE_STOP","A") and not has("NATIVE_STOP_START","A"))
+assert(c:getStatus().lastOutcome.reason=="PAIR_FIELD_BOUNDARY_BREACH")
+
+-- Strong divergence: five readings 250 ms apart show regressing
+-- projected progress while the root travels outwards laterally.
+events={};completed=false;rootX,rootZ=10,10
+assert(c:begin(admitted(),170000))
+for i=0,4 do
+    rootX,rootZ=10+i*0.15,10+i*0.5
+    c:advance(170000+i*250)
+end
+assert(not c:isActive() and has("REVERSE_CANCEL","A")
+    and not has("NATIVE_STOP_START","A"))
+assert(c:getStatus().lastOutcome.reason=="PAIR_TRAJECTORY_DIVERGED")
+
+-- A weak mostly-sideways trajectory must persist across two overlapping
+-- one-second windows; one marginal window is insufficient.
+events={};completed=false;rootX,rootZ=10,10
+assert(c:begin(admitted(),180000))
+for i=0,4 do
+    rootX,rootZ=10-i*0.03,10+i*0.5
+    c:advance(180000+i*250)
+end
+assert(c:isActive(),"one suspect window is not independently conclusive")
+rootX,rootZ=9.85,12.5
+c:advance(181250)
+assert(not c:isActive()
+    and c:getStatus().lastOutcome.reason=="PAIR_TRAJECTORY_DIVERGED")
+
+-- Stationary/configuring movement has no displacement basis for an
+-- inferred jackknife and is allowed until the independent deadline.
+events={};completed=false;rootX,rootZ=10,10
+assert(c:begin(admitted(),190000))
+for i=0,8 do c:advance(190000+i*250) end
+assert(c:isActive() and not has("REVERSE_CANCEL","A"))
+assert(c:relinquish("TEST_CLEANUP"))
+
+print("Asymmetric paired egress, movement continuation guards, scoped cancellation PASS")
