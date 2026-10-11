@@ -75,7 +75,10 @@ end
 function Probe.run(fieldId,poly,edges,neighbors,registryTruncated,selectedFarmlandId)
     local edge=matchingFixture(fieldId,edges,selectedFarmlandId)
     if edge==nil then return false,"ASSEMBLY_FIXTURE_MISMATCH" end
-    local world=g_currentMission and g_currentMission.vehicles
+    -- GIANTS FS25 VehicleSystem owns the live savegame vehicle population.
+    -- Mission.vehicles is not the native catalogue (observed 0.5.5.4).
+    local system=g_currentMission and g_currentMission.vehicleSystem
+    local world=system and system.vehicles
     if type(world)~="table" then
         publish("ASSEMBLY_SETTLEMENT_UNAVAILABLE",{
             field=fieldId,edge=edge.index,reason="VEHICLE_CATALOGUE_UNAVAILABLE"
