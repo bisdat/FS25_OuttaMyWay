@@ -58,7 +58,7 @@ No positive continuous-width claim is justified by the current surveys. Their me
 
 ## Distinct downstream responsibility — Settlement Corridor Assessment
 
-A **Settlement Corridor** is a *possible connected journey plus final occupied region* for one actual assembly. The profile alone cannot establish one. Assessment must consider the assembly as **all coupled components** in its verified TRANSIT state, not only the tractor root or nominal implement width, and independently answer three questions.
+A **Settlement Corridor** is a *possible connected journey plus final occupied region* for one actual assembly. The profile alone cannot establish one. Assessment must consider **all coupled components** of the actual Physical Assembly, not only the tractor root or nominal implement width. **TRANSIT is requested, not verified or used as a readiness gate**; the currently observed nominal footprint and uncertainty about actual geometry must remain explicit. Assess the following three questions independently.
 
 ### 1. Approach Envelope — can the entire assembly reach and align?
 
@@ -93,7 +93,7 @@ The full Settlement Corridor Assessment remains an architectural responsibility,
 
 ### TEST 0.5.5.4/0.5.5.5: Nominal Assembly Polygon Screen (not complete Assessment)
 
-The existing GIANTS runtime already provides selected real member base-size rectangles and current articulated transforms through `PairTransitRegion.capture`. This is **nominal selected-instance evidence**, not verified folded TRANSIT configuration. To move from independent map evidence to an actual assembly, a bounded read-only **Nominal Assembly Polygon Screen** now projects each member rectangle—freezing its current articulation—into hypothetical edge-parallel stationary poses at sampled stations/depths and both along-edge directions. It detects positive intersection with the source or other registered field polygons and rejects member envelopes extending beyond the nominated edge endpoints.
+The existing GIANTS runtime already provides selected real member base-size rectangles and current articulated transforms through `PairTransitRegion.capture`. This is **nominal selected-instance evidence**, not a claim about achieved TRANSIT geometry; no fold-state verification is required or proposed. To move from independent map evidence to an actual assembly, a bounded read-only **Nominal Assembly Polygon Screen** now projects each member rectangle—freezing its current articulation—into hypothetical edge-parallel stationary poses at sampled stations/depths and both along-edge directions. It detects positive intersection with the source or other registered field polygons and rejects member envelopes extending beyond the nominated edge endpoints.
 
 This *necessary-condition screen* may reject sampled placements or identify **polygon-nonintersecting hypothetical poses**, but it does not identify connected free space through an approach, straighten a hitch, exclude roads/hedges/ditches, protect current workers, or authorise a stop. In all cases, the actual architectural Approach, Run-Out and Terminal results remain **WAITING_FOR_EVIDENCE**. A positive count is neither a parking candidate nor an approved position; it cannot be reused by Control. See [Settlement Corridor Assessment Specification](../spec/SETTLEMENT_CORRIDOR_ASSESSMENT.md) and [TEST 0.5.5.4 Reality plan](../docs/research/ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md).
 
