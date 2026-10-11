@@ -6,10 +6,10 @@ OuttaMyWay.LiveHoldRelocateRuntime={}
 local Runtime=OuttaMyWay.LiveHoldRelocateRuntime
 Runtime.__index=Runtime
 
-local function issue(runtime,level,code,detail)
+local function issue(runtime,level,code,detail,publicationClass)
     local publication=runtime.publication
     if publication==nil then return end
-    publication:publish("NORMAL",level,code,function()
+    publication:publish(publicationClass or "NORMAL",level,code,function()
         return {detail=tostring(detail or ""),version=OuttaMyWay.VERSION}
     end)
 end
@@ -176,7 +176,51 @@ function Runtime:update(dt)
                     start.remainingWorkerConfiguration)
                 .." representation="..tostring(start.geometryBasis)
                 .." confirmedPhysicalClearance=false"
-                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh))
+                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh),
+                "DEBUG")
+            if start.selectedSteeringDeviationDeg~=nil then
+                issue(self,"INFO","HOLD_RELOCATE_STEERING_SELECTION",
+                    "commitmentId="..tostring(start.commitmentId)
+                    .." direction="..tostring(start.directionSource)
+                    .." initialNativeCommandDeviationDeg="
+                    ..tostring(start.selectedSteeringDeviationDeg)
+                    .." geometryOnlyPreferredDirection="
+                    ..tostring(start.previousGeometryPreferredDirection)
+                    .." geometryOnlyPreferredCommandDeviationDeg="
+                    ..tostring(start.previousGeometryPreferredDeviationDeg)
+                    .." changedGeometryPreference="
+                    ..tostring(start.steeringChangedGeometryPreference)
+                    .." viableCandidates="
+                    ..tostring(start.steeringCandidatesAssessed)
+                    .." candidatesMissingSteeringEvidence="
+                    ..tostring(start.steeringCandidatesUnavailable),
+                    "DEBUG")
+                -- High-detail alternatives are relevant to this engineering
+                -- investigation only; not a support-grade causal summary.
+                local enabled=false
+                if type(self.publication.isEligible)=="function" then
+                    local ok,eligible=pcall(self.publication.isEligible,
+                        self.publication,"DIAGNOSTIC","INFO",
+                        "HOLD_RELOCATE_STEERING_CANDIDATES")
+                    enabled=ok and eligible==true
+                end
+                if enabled and type(start.steeringShortlist)=="table" then
+                    for i=1,#start.steeringShortlist do
+                        local c=start.steeringShortlist[i]
+                        issue(self,"INFO","HOLD_RELOCATE_STEERING_CANDIDATES",
+                            "commitmentId="..tostring(start.commitmentId)
+                            .." rank="..tostring(i)
+                            .." moverIndex="..tostring(c.moverIndex)
+                            .." direction="..tostring(c.mode)
+                            .." initialNativeCommandDeviationDeg="
+                            ..tostring(c.demandDeg)
+                            .." travelM="..tostring(c.projectedTravelM)
+                            .." demandSeparationGainM="
+                            ..tostring(c.demandSeparationGainM),
+                            "DIAGNOSTIC")
+                    end
+                end
+            end
         end
         local static=coordinator.lastStaticMotionEvidence
         if static~=nil and static~=self.lastReportedStaticMotionEvidence then
@@ -190,7 +234,7 @@ function Runtime:update(dt)
                     tostring(static.physicalDisplacementM)
                 .." lateralProgressM="..tostring(static.progressM)
                 .." requiredLateralM="..tostring(static.requiredProgressM)
-                .." statusReason="..tostring(static.statusReason))
+                .." statusReason="..tostring(static.statusReason),"DEBUG")
         end
         local motion=coordinator.lastInitialMotionEvidence
         if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
@@ -199,7 +243,7 @@ function Runtime:update(dt)
                 "commitmentId="..tostring(motion.commitmentId)
                 .." angleToTargetDeg="..tostring(motion.relativeToTargetDeg)
                 .." angleToNativeReverseDeg="..
-                    tostring(motion.relativeToNativeReverseDeg))
+                    tostring(motion.relativeToNativeReverseDeg),"DEBUG")
         end
         local results=coordinator.lastEgressRegulationResults
         if results~=nil and results~=self.lastReportedEgressRegulationResults then
@@ -212,7 +256,7 @@ function Runtime:update(dt)
                     .." nativeDriveCalls="..tostring(e.interceptCount)
                     .." displacementM="..tostring(e.displacementM)
                     .." regulationKmh="..tostring(e.regulatedSpeedKmh)
-                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh))
+                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh),"DEBUG")
             end
         end
         if not coordinator:isActive() then
