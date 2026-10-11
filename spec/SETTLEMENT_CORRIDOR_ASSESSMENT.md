@@ -48,7 +48,7 @@ This is a bounded *engineering representation* assessment, not a production crit
 | [`scripts/assessment/SettlementCorridorAssessment.lua`](../scripts/assessment/SettlementCorridorAssessment.lua) | `REALISES` |
 | [`scripts/observation/AssemblySettlementProbe.lua`](../scripts/observation/AssemblySettlementProbe.lua) | `REALISES` |
 | [`scripts/observation/FarmSpatialContextProbe.lua`](../scripts/observation/FarmSpatialContextProbe.lua) | `REALISES` |
-| [`scripts/coordination/PairTransitRegion.lua`](../scripts/coordination/PairTransitRegion.lua) | `SUPPLIES` nominal multi-member size evidence |
+| [`scripts/coordination/PairTransitRegion.lua`](../scripts/coordination/PairTransitRegion.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 
