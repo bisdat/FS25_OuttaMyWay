@@ -272,7 +272,7 @@ end
 -- native forward/reverse mechanism that can steer toward that region.
 -- Only near-AXIAL directions are excluded, not directions predominantly
 -- lateral to both workers (impossible at right-angle crossings).
-function Region.planPair(commitment,preferred,alternative)
+function Region.planPair(commitment,preferred,alternative,steeringAssessor)
     if type(commitment)~="table" or type(commitment.fieldPolygon)~="table"
         or type(commitment.fieldCentroid)~="table" then
         return nil,nil,nil,"PAIR_REGION_EVIDENCE_UNAVAILABLE"
@@ -280,7 +280,9 @@ function Region.planPair(commitment,preferred,alternative)
     local scene,sceneAvailable=sceneOccupancy(
         preferred,alternative,commitment.fieldPolygon)
     local candidates,optionSectors={},{{},{}}
-    local attempts=0
+    local attempts,steeringUnavailable=0,0
+    local assessSteering=type(steeringAssessor)=="table"
+        and type(steeringAssessor.assess)=="function"
     for moverIndex,mover in ipairs({preferred,alternative}) do
         local other=mover==preferred and alternative or preferred
         local foot,otherFoot=mover.transitFootprint,other.transitFootprint
@@ -399,7 +401,24 @@ function Region.planPair(commitment,preferred,alternative)
                                 isValidatedBearing=ray.validatedBearing,
                                 moverIndex=moverIndex,
                                 mover=mover,other=other}
-                            candidates[#candidates+1]=c
+                            if assessSteering then
+                                -- Assess the *actual native local target*
+                                -- produced by the candidate's world reference.
+                                -- A spatially admitted ray is not yet an
+                                -- executable reverse steering demand.
+                                local command=steeringAssessor.assess(
+                                    mover.vehicle,c.targetX,c.targetZ,
+                                    c.moveForwards)
+                                if type(command)=="table"
+                                    and finite(command.deviationDeg) then
+                                    c.steeringDemand=command
+                                    candidates[#candidates+1]=c
+                                else
+                                    steeringUnavailable=steeringUnavailable+1
+                                end
+                            else
+                                candidates[#candidates+1]=c
+                            end
                         end
                     end
                 end
@@ -410,38 +429,83 @@ function Region.planPair(commitment,preferred,alternative)
     for i=1,2 do
         for _ in pairs(optionSectors[i]) do options[i]=options[i]+1 end
     end
-    local best
+    local function better(c,best,considerSteering)
+        if best==nil then return true end
+        if c.isPartialEgress~=best.isPartialEgress then
+            return not c.isPartialEgress
+        end
+        -- Only rank command demand among candidates already satisfying
+        -- the same spatial completeness class. No unvalidated angle veto:
+        -- a near-axial command can still be an unsafe reversing manoeuvre.
+        if considerSteering and math.abs(c.steeringDemand.deviationDeg
+            -best.steeringDemand.deviationDeg)>0.01 then
+            return c.steeringDemand.deviationDeg<
+                best.steeringDemand.deviationDeg
+        end
+        if c.egressOptionality~=best.egressOptionality then
+            return c.egressOptionality>best.egressOptionality
+        elseif c.isValidatedBearing~=best.isValidatedBearing then
+            return c.isValidatedBearing
+        elseif math.abs(c.regionTravelM-best.regionTravelM)>0.01 then
+            return c.regionTravelM>best.regionTravelM
+        elseif math.abs(c.localDemandSeparationGainM-
+                best.localDemandSeparationGainM)>0.01 then
+            return c.localDemandSeparationGainM>
+                best.localDemandSeparationGainM
+        elseif c.moverIndex~=best.moverIndex then
+            return c.moverIndex<best.moverIndex
+        end
+        return c.fieldInteriorScore>best.fieldInteriorScore+0.01
+    end
+    local best,legacyBest
     for i=1,#candidates do
         local c=candidates[i]
         c.egressOptionality=options[c.moverIndex]
-        if best==nil then
-            best=c
-        else
-            -- A complete egress outranks staging. A mover with more viable
-            -- escape sectors has greater optionality. For the chosen mover
-            -- prefer TS015's proven ±70° reverse before centroid preference.
-            local better=false
-            if c.isPartialEgress~=best.isPartialEgress then
-                better=not c.isPartialEgress
-            elseif c.egressOptionality~=best.egressOptionality then
-                better=c.egressOptionality>best.egressOptionality
-            elseif c.isValidatedBearing~=best.isValidatedBearing then
-                better=c.isValidatedBearing
-            elseif math.abs(c.regionTravelM-best.regionTravelM)>0.01 then
-                better=c.regionTravelM>best.regionTravelM
-            elseif math.abs(c.localDemandSeparationGainM-
-                    best.localDemandSeparationGainM)>0.01 then
-                better=c.localDemandSeparationGainM>
-                    best.localDemandSeparationGainM
-            elseif c.moverIndex~=best.moverIndex then
-                better=c.moverIndex<best.moverIndex
+        if better(c,best,assessSteering) then best=c end
+        if better(c,legacyBest,false) then legacyBest=c end
+    end
+    if best==nil then return nil,nil,nil,
+        steeringUnavailable>0 and "PAIR_STEERING_EVIDENCE_UNAVAILABLE"
+            or "NO_SAFE_PAIR_EGRESS_REGION" end
+    if assessSteering then
+        best.selectedSteeringDeviationDeg=best.steeringDemand.deviationDeg
+        best.selectedDriveLocalX=best.steeringDemand.driveLocalX
+        best.selectedDriveLocalZ=best.steeringDemand.driveLocalZ
+        best.previousGeometryPreferredDeviationDeg=
+            legacyBest.steeringDemand.deviationDeg
+        best.previousGeometryPreferredDirection=legacyBest.directionSource
+        best.steeringChangedGeometryPreference=best~=legacyBest
+        best.steeringCandidatesAssessed=#candidates
+        best.steeringCandidatesUnavailable=steeringUnavailable
+        -- A small finite investigation record, not a per-frame stream.
+        -- Populated from values that were required for selection anyway.
+        local shortlist={}
+        for i=1,#candidates do
+            local c=candidates[i]
+            if #shortlist<5 then
+                shortlist[#shortlist+1]=c
             else
-                better=c.fieldInteriorScore>best.fieldInteriorScore+0.01
+                local worst=1
+                for j=2,#shortlist do
+                    if better(shortlist[worst],shortlist[j],true) then
+                        worst=j
+                    end
+                end
+                if better(c,shortlist[worst],true) then
+                    shortlist[worst]=c
+                end
             end
-            if better then best=c end
+        end
+        best.steeringShortlist={}
+        for i=1,#shortlist do
+            local c=shortlist[i]
+            best.steeringShortlist[i]={
+                moverIndex=c.moverIndex,mode=c.directionSource,
+                demandDeg=c.steeringDemand.deviationDeg,
+                projectedTravelM=c.regionTravelM,
+                demandSeparationGainM=c.localDemandSeparationGainM}
         end
     end
-    if best==nil then return nil,nil,nil,"NO_SAFE_PAIR_EGRESS_REGION" end
     local mover,other=best.mover,best.other
     best.mover=nil;best.other=nil;best.moverIndex=nil
     best.cascadeAttempts=attempts
