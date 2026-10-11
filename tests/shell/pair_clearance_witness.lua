@@ -1,10 +1,18 @@
 -- Witness is bounded, passive, and never confers egress authority.
 OuttaMyWay={VERSION="TEST"}
 local records={}
-local publication={publish=function(_,class,severity,code,make)
-    assert(class=="NORMAL" and severity=="INFO")
-    records[#records+1]={code=code,payload=make()}
-end}
+local debugEnabled=true
+local publication={
+    isEligible=function(_,class,severity,code)
+        assert(class=="DEBUG" and severity=="INFO"
+            and code=="PAIR_CLEARANCE_OBSERVATION")
+        return debugEnabled
+    end,
+    publish=function(_,class,severity,code,make)
+        assert(class=="DEBUG" and severity=="INFO")
+        records[#records+1]={code=code,payload=make()}
+    end
+}
 local points={}
 getWorldTranslation=function(node)
     local p=assert(points[node]);return p.x,0,p.z
@@ -60,4 +68,18 @@ assert(not w:begin(1000,{isSingle=true}))
 assert(w:begin(60000,state))
 w:milestone(60100,"EGRESS_INTERRUPTED")
 assert(w.active==nil and records[#records].payload.milestone=="EGRESS_INTERRUPTED")
+-- Suppressed DEBUG must skip starting the witness AND all geometry sampling.
+debugEnabled=false
+local before=#records
+local beforeSamples=samples
+assert(not w:begin(90000,state))
+w:advance(92000)
+assert(w.active==nil and #records==before and samples==beforeSamples)
+-- Disabling while active must discard the witness without another sample.
+debugEnabled=true
+assert(w:begin(100000,state))
+beforeSamples=samples
+debugEnabled=false
+w:advance(102000)
+assert(w.active==nil and samples==beforeSamples)
 print("Pair clearance witness: bounded samples, spatial and temporal proxy, independent phase boundaries PASS")
