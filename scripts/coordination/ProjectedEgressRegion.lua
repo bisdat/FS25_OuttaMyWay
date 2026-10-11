@@ -36,6 +36,13 @@ local function inside(poly,x,z)
     end
     return result
 end
+-- Admission uses the same polygon definition as the paired movement guard.
+-- This is root containment, not a guarantee of implement-envelope clearance.
+function Region.isRootInField(poly,x,z)
+    if not finite(x) or not finite(z) then return false end
+    return inside(poly,x,z)
+end
+
 local function segmentInField(poly,x,z,dx,dz,length)
     local count=math.max(1,math.ceil(length/SAMPLE_STEP_M))
     for i=0,count do
