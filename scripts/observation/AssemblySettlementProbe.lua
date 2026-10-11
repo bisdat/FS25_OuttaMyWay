@@ -158,6 +158,48 @@ function Probe.run(fieldId,poly,edges,neighbors,registryTruncated,selectedFarmla
                     record.neighborConflicts=assessed.neighborConflicts
                     record.edgeSpill=assessed.edgeSpill
                     record.unknown=assessed.unknown
+                    -- Continuous planar straight translation, not native
+                    -- steering/run-out feasibility. Strictly capped seeds.
+                    local straight=OuttaMyWay.SettlementStraightRunout
+                    if type(straight)=="table"
+                        and type(straight.assess)=="function" then
+                        local seen,sw=pcall(straight.assess,
+                            assessed,poly,neighbors,
+                            registryTruncated or truncated)
+                        if seen and type(sw)=="table" then
+                            record.straightSweepSeeds=sw.assessedSeeds
+                            record.straightSweepQueryCount=sw.queryCount
+                            record.straightSweepPolygonOnlyLowerM=
+                                fmt(sw.maxLowerBoundM)
+                            record.straightSweepReason=sw.reason
+                            for _,sample in ipairs(sw.results) do
+                                publish("ASSEMBLY_SETTLEMENT_STRAIGHT_SWEEP",{
+                                    field=fieldId,edge=edge.index,
+                                    rootNode=tostring(vehicle.rootNode),
+                                    memberCount=foot.memberCount,
+                                    stationM=fmt(sample.stationM),
+                                    rootDepthM=fmt(sample.depthM),
+                                    travelDirection=sample.direction,
+                                    endpointHorizonM=fmt(sample.horizonM),
+                                    clearLowerBoundM=fmt(sample.lowerBoundM),
+                                    conflictUpperBoundM=fmt(sample.upperBoundM),
+                                    sweeps=sample.queryCount,
+                                    status=sample.status,
+                                    limitingEvidence=sample.blockedBy,
+                                    basis=sample.basis,
+                                    approach="WAITING_FOR_EVIDENCE",
+                                    runOut="WAITING_FOR_EVIDENCE",
+                                    terminal="WAITING_FOR_EVIDENCE",
+                                    note="REGISTERED_FIELD_POLYGONS_ONLY_NO_CONTROL"
+                                })
+                            end
+                        else
+                            record.straightSweepReason="SWEEP_ASSESSMENT_EXCEPTION"
+                            record.straightSweepSeeds=0
+                        end
+                    else
+                        record.straightSweepReason="SWEEP_ASSESSMENT_UNAVAILABLE"
+                    end
                     if assessed.best then
                         record.exampleStationM=fmt(assessed.best.stationM)
                         record.exampleRootDepthM=fmt(assessed.best.depthM)
