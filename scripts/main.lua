@@ -27,6 +27,8 @@ local modules={
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/observation/FarmEdgeGeometry.lua",
+    "scripts/observation/FarmSpatialContextProbe.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
@@ -74,6 +76,9 @@ OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
 OuttaMyWay.nativeJobCompletionProbe=OuttaMyWay.NativeJobCompletionProbe.new(OuttaMyWay.configuration)
 OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(OuttaMyWay.configuration)
+-- Engineering-only one-shot Field 77 spatial survey. No production consumer.
+OuttaMyWay.farmSpatialContextProbe=OuttaMyWay.FarmSpatialContextProbe.new(
+    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
 OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
     OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
 end)
@@ -91,6 +96,7 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.nativeBlockageObservation)
     addModEventListener(OuttaMyWay.nativeJobCompletionProbe)
+    addModEventListener(OuttaMyWay.farmSpatialContextProbe)
     addModEventListener(OuttaMyWay.completionTransitRuntime)
     addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
