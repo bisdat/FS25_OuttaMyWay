@@ -98,6 +98,8 @@ assert(left.side=="X_MIN")
 local rightSummary=assert(find("FARM_CONTEXT_SIDE_SUMMARY"))
 assert(rightSummary.offsetM==2)
 assert(find("FARM_CONTEXT_SURVEY_FINISHED"))
+assert(find("PHYSICAL_MARGIN_UNAVAILABLE").reason=="FIXTURE_EDGE_GEOMETRY_MISMATCH",
+    "diagnostic must refuse other map geometry even if field ID matches")
 local before=#events
 probe:update(10000)
 assert(#events==before,"survey must not repeat")
