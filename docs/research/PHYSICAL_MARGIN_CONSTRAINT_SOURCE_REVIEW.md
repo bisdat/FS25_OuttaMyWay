@@ -2,7 +2,7 @@
 
 **Issue:** [#476 Completion-Triggered Terminal Egress](https://github.com/bisdat/FS25_OuttaMyWay/issues/476) / [#420 Native API Investigation](https://github.com/bisdat/FS25_OuttaMyWay/issues/420)  
 **Date:** 11 October 2026  
-**Status:** **Source findings and TEST 0.5.5.3 instrument, with partial GIANTS 1.24 Reality validation on Riverbend Field 29; Mindenerwald Field 77 physics fixture remains untested.** See [field log findings](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md).
+**Status:** **Source findings and TEST 0.5.5.3 instrument validated as a bounded diagnostic on both GIANTS 1.24 field fixtures: Riverbend Field 29 yields a ROAD physics witness; Mindenerwald Field 77 exposes nav-blocked / physics-no-hit discordance. No collision clearance or settlement authority.** See [field log findings](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md).
 
 ## Question and bounded sources
 
@@ -88,7 +88,7 @@ The bounded plan above has been encoded as a **fixture-guarded, bounded** adjunc
 - Both fixtures require their logged source edge lengths and the four X/Z endpoint coordinates each within **3 m** of the original Reality observations, preventing accidental activation for similarly numbered fields on unrelated maps. Other map identities are explicitly unavailable rather than guessed.
 - Per survey maximum **24** transverse point positions, **22** synchronous overlap calls, bounded per-box hit records. The box is intentionally small (0.9 m × 0.9 m × 2 m, bottom 0.1 m above terrain): it is a *representation witness*, **not** the vehicle envelope.
 
-**Validation disposition:** CI covers fake native `overlapBox` callbacks with TREE/ROAD flags, absent and failing APIs, and mismatched fixture geometry. In subsequent GIANTS 1.24 Reality, Riverbend produced 18 successful overlap queries and one native ROAD-labelled collision witness, plus terrain-height profiles. Field 77 remains untested because Mindenerwald selected native Field 2 through the persisted farmland selector. See [Reality findings](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md); no general road/hedge coverage established.
+**Validation disposition:** CI covers synthetic TREE/ROAD hits, absent/failing APIs and mismatch refusal. In GIANTS 1.24, Riverbend Field 29 produced 18 successful overlap queries and one ROAD-labelled collision; Mindenerwald Field 77 subsequently produced 20 successful overlap queries with **zero** collision callbacks even where nav was blocked at two hedge-control sample points. This is **Navigation–Physics Representation Discordance**, not clearance. See [Reality findings](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md).
 
 **Requested logs:** Both maps in TEST `0.5.5.3`, DIAGNOSTICS=true; Riverbend also requires `spatialFarmlandId="2"`. Compare `[PHYSICAL_MARGIN]` messages against the two in-game map references and preserve a screenshot if a collider was actually seen along the chosen cross-section. A missing hedge or ROAD hit is a **useful negative discovery**; do not silently broaden the scan or invent parking clearance.
 
@@ -97,7 +97,7 @@ The bounded plan above has been encoded as a **fixture-guarded, bounded** adjunc
 - **Architecture:** The [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md) needs evidence of limiting features and unknowns; these sources offer candidate *witnesses*, not a change in settlement policy.
 - **Specification:** [Farm Spatial Context Observation](../../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md) retains the implemented `2/6/12 m` baseline and now explicitly contracts the separate TEST `0.5.5.3` physics adjunct. It does not constitute a continuous Exterior Margin Profile.
 - **Source:** a separate experimental `PhysicalMarginConstraintProbe.lua` now makes guarded, bounded read-only native queries in TEST `0.5.5.3`. It is **not** production settlement assessment or Control.
-- **Validation:** New synthetic CI confirms API gating, query bounds and explicit failure handling, but **does not validate real physics/terrain surfaces**. Installed FS25 1.24 Reality must challenge the source-derived signatures before relying on them.
+- **Validation:** Synthetic CI confirmed API gating, bounds and explicit failure handling; GIANTS 1.24 confirmed working terrain-height and collision queries on both known fixtures. The sparse samples **do not validate full road/hedge representation or articulated assembly clearance**.
 - **Engine Knowledge:** Findings remain in Research until confirmed in 1.24; do **not** revise `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` to imply validation that has not occurred.
 
-**Decision gate:** The owner agreed to TEST `0.5.5.3`; Riverbend has now returned positive GIANTS Reality. Next: capture the **missing** Mindenerwald Field 77 physics run with the farmland selector cleared, and compare edge 9/hedge controls before discussing continuous Exterior Margin Profile feasibility.
+**Decision gate:** The owner agreed to TEST `0.5.5.3` and both native field fixtures have now run successfully. We have both positive ROAD physics evidence and negative nav-blocked/physics-no-hit discordance. Next architectural discussion: whether these independent representations can contribute to an Exterior Margin Profile while preserving **WAITING_FOR_EVIDENCE** for uninterrupted, assembly-sized, edge-aligned traversals. Do not infer physical clearance or implement automatic parking from this diagnostic.
