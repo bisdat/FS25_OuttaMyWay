@@ -63,16 +63,16 @@ A non-georeferenced screenshot cannot directly validate metre offsets or world-c
 | Production source | Participation |
 | --- | --- |
 | [`scripts/observation/FarmEdgeGeometry.lua`](../scripts/observation/FarmEdgeGeometry.lua) | `REALISES` |
-
-| [`scripts/observation/PhysicalMarginConstraintProbe.lua`](../scripts/observation/PhysicalMarginConstraintProbe.lua) | `REALISES` || [`scripts/observation/FarmSpatialContextProbe.lua`](../scripts/observation/FarmSpatialContextProbe.lua) | `REALISES` |
+| [`scripts/observation/PhysicalMarginConstraintProbe.lua`](../scripts/observation/PhysicalMarginConstraintProbe.lua) | `REALISES` |
+| [`scripts/observation/FarmSpatialContextProbe.lua`](../scripts/observation/FarmSpatialContextProbe.lua) | `REALISES` |
 
 ## Repository validation participants
 
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/farm_edge_geometry.lua`](../tests/shell/farm_edge_geometry.lua) | `CHALLENGES` |
-
-| [`tests/shell/physical_margin_constraint_probe.lua`](../tests/shell/physical_margin_constraint_probe.lua) | `CHALLENGES` || [`tests/shell/farm_spatial_context_probe.lua`](../tests/shell/farm_spatial_context_probe.lua) | `CHALLENGES` |
+| [`tests/shell/physical_margin_constraint_probe.lua`](../tests/shell/physical_margin_constraint_probe.lua) | `CHALLENGES` |
+| [`tests/shell/farm_spatial_context_probe.lua`](../tests/shell/farm_spatial_context_probe.lua) | `CHALLENGES` |
 | [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
 
 ## Test envelope
