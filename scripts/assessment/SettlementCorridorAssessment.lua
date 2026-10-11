@@ -1,5 +1,5 @@
 -- Pure nominal polygon assessment of one actual selected Physical Assembly.
--- Specification Jurisdiction: SETTLEMENT_CORRIDOR_ASSESSMENT (TEST only).
+-- Specification Jurisdictions: `SETTLEMENT_CORRIDOR_ASSESSMENT`
 -- NO positive result from this module is physical clearance, a route or Control.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.SettlementCorridorAssessment={}
