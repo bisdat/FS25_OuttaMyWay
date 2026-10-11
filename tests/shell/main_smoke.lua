@@ -6,6 +6,7 @@ local expected={
     "scripts/coordination/HoldRelocateCoordinator.lua",
     "scripts/coordination/ProjectedEgressRegion.lua",
     "scripts/coordination/PairTransitRegion.lua",
+    "scripts/coordination/PairSteeringDemand.lua",
     "scripts/coordination/NativePairCommitmentAuthority.lua",
     "scripts/control/HoldRelocatePhysicalControl.lua",
     "scripts/coordination/LiveHoldRelocateRuntime.lua",
@@ -51,6 +52,7 @@ source=function(path)
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/coordination/ProjectedEgressRegion.lua"
         or path=="scripts/coordination/PairTransitRegion.lua"
+        or path=="scripts/coordination/PairSteeringDemand.lua"
         or path=="scripts/coordination/NativePairCommitmentAuthority.lua"
         or path=="scripts/control/HoldRelocatePhysicalControl.lua"
         or path=="scripts/coordination/LiveHoldRelocateRuntime.lua"
