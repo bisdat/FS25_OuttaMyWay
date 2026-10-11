@@ -1,4 +1,4 @@
--- Read-only GIANTS Farm Spatial Context witness for Field 77 / Issue #476.
+-- Read-only GIANTS Farm Spatial Context witness for Issues #420/#476.
 -- Specification Jurisdictions: `FARM_SPATIAL_CONTEXT_OBSERVATION`
 -- Enumerates consecutive polygon-vertex pairs and samples outside them.
 -- Does not nominate parking, hold, start jobs, alter costmaps or move anything.
@@ -9,7 +9,7 @@ Probe.__index=Probe
 local G=OuttaMyWay.FarmEdgeGeometry
 local publication=OuttaMyWay.LogPublication.origin("FARM_SPATIAL_CONTEXT")
 
-local FIELD_ID=77  -- TS019 fixture only; not a production map assumption
+local DEFAULT_FIELD_ID=77  -- retained original fixture when no farmland selected
 local OFFSET_METRES={2,6,12}
 local SAMPLE_SPACING_M=6
 local MAX_SAMPLES_PER_EDGE=96
@@ -47,22 +47,78 @@ local function fieldId(field,index)
     return tostring(index)
 end
 
-local function targetField()
-    local manager=g_fieldManager
-    if type(manager)~="table" then return nil,"FIELD_MANAGER_UNAVAILABLE" end
-    if type(manager.getFieldById)=="function" then
-        local ok,field=pcall(manager.getFieldById,manager,FIELD_ID)
-        if ok and type(field)=="table" then return field,nil end
+-- The screenshot gives us a Farmland number. It is not proof that the
+-- registered field polygon shares the same ID. Resolve a *unique* source
+-- field through sampled native farmland membership, or report ambiguity.
+local function farmlandIdForField(field)
+    local farm=g_farmlandManager
+    if type(farm)~="table"
+        or type(farm.getFarmlandIdAtWorldPosition)~="function" then
+        return nil,"FARMLAND_LOOKUP_UNAVAILABLE"
     end
-    local fields=manager.fields
-    if type(fields)~="table" then return nil,"FIELD_REGISTRY_UNAVAILABLE" end
-    if type(fields[FIELD_ID])=="table" then return fields[FIELD_ID],nil end
-    for key,field in pairs(fields) do
-        if type(field)=="table" and fieldId(field,key)==FIELD_ID then
-            return field,nil
+    local poly,err=G.polygonFor(field)
+    if poly==nil then return nil,err end
+    local x,z=field.posX,field.posZ
+    if finite(x) and finite(z) and G.inside(poly,x,z) then
+        local ok,id=pcall(farm.getFarmlandIdAtWorldPosition,farm,x,z)
+        if ok and type(id)=="number" then return id,nil end
+    end
+    local edges=G.edges(poly)
+    for i=1,#edges do
+        local edge=edges[i]
+        local mx,mz=(edge.ax+edge.bx)/2,(edge.az+edge.bz)/2
+        local nx,nz=G.outwardAt(poly,edge,mx,mz)
+        if nx~=nil then
+            for _,depth in ipairs({2,0.5}) do
+                local ix,iz=mx-nx*depth,mz-nz*depth
+                if G.inside(poly,ix,iz) then
+                    local ok,id=pcall(farm.getFarmlandIdAtWorldPosition,farm,ix,iz)
+                    if ok and type(id)=="number" then return id,nil end
+                end
+            end
         end
     end
-    return nil,"FIELD_77_NOT_REGISTERED"
+    return nil,"FARMLAND_ID_UNRESOLVED"
+end
+
+local function targetField(selectedFarmlandId)
+    local manager=g_fieldManager
+    if type(manager)~="table" then return nil,nil,"FIELD_MANAGER_UNAVAILABLE" end
+    local fields=manager.fields
+    if selectedFarmlandId~=nil then
+        if type(fields)~="table" then return nil,nil,"FIELD_REGISTRY_UNAVAILABLE" end
+        local selected,selectedId,matches,scanned=nil,nil,0,0
+        for key,field in pairs(fields) do
+            scanned=scanned+1
+            if scanned>MAX_FIELDS then return nil,nil,"FIELD_REGISTRY_TRUNCATED" end
+            if type(field)=="table" then
+                local farmlandId=farmlandIdForField(field)
+                if farmlandId==selectedFarmlandId then
+                    selected,selectedId=field,fieldId(field,key)
+                    matches=matches+1
+                    if matches>1 then
+                        return nil,nil,"FARMLAND_CONTAINS_MULTIPLE_FIELDS"
+                    end
+                end
+            end
+        end
+        if selected==nil then return nil,nil,"NO_FIELD_FOR_SELECTED_FARMLAND" end
+        return selected,selectedId,nil
+    end
+    if type(manager.getFieldById)=="function" then
+        local ok,field=pcall(manager.getFieldById,manager,DEFAULT_FIELD_ID)
+        if ok and type(field)=="table" then return field,DEFAULT_FIELD_ID,nil end
+    end
+    if type(fields)~="table" then return nil,nil,"FIELD_REGISTRY_UNAVAILABLE" end
+    if type(fields[DEFAULT_FIELD_ID])=="table" then
+        return fields[DEFAULT_FIELD_ID],DEFAULT_FIELD_ID,nil
+    end
+    for key,field in pairs(fields) do
+        if type(field)=="table" and fieldId(field,key)==DEFAULT_FIELD_ID then
+            return field,DEFAULT_FIELD_ID,nil
+        end
+    end
+    return nil,nil,"DEFAULT_FIELD_77_NOT_REGISTERED"
 end
 
 local function fieldCatalogue(target)
@@ -244,7 +300,7 @@ local function compactCounts(counts)
     return #list==0 and "none" or table.concat(list,",")
 end
 
-local function recordOffset(edge,offset,sourceOwner,neighbors,totalSamples)
+local function recordOffset(edge,offset,sourceOwner,neighbors,totalSamples,fieldId)
     local count=math.max(1,math.min(MAX_SAMPLES_PER_EDGE,
         math.ceil(edge.length/SAMPLE_SPACING_M)))
     count=math.min(count,math.max(0,MAX_TOTAL_SAMPLES-totalSamples))
@@ -308,7 +364,7 @@ local function recordOffset(edge,offset,sourceOwner,neighbors,totalSamples)
     for id in pairs(summary.neighborFields) do ids[#ids+1]=id end
     table.sort(ids)
     publish("FIELD_EDGE_OUTSIDE_SAMPLE",{
-        field=FIELD_ID,edge=edge.index,offsetM=offset,
+        field=fieldId,edge=edge.index,offsetM=offset,
         samples=count,sampleSpacingM=fmt(edge.length/count),
         farmlandIds=compactCounts(summary.farms),
         ownerIds=compactCounts(summary.owners),
@@ -351,7 +407,12 @@ function Probe:deleteMap()
 end
 
 function Probe:survey()
-    local field,why=targetField()
+    local selectedFarmlandId,selectionError=nil,nil
+    if type(self.diagnosticSource.spatialTargetFarmlandId)=="function" then
+        selectedFarmlandId,selectionError=self.diagnosticSource:spatialTargetFarmlandId()
+    end
+    if selectionError~=nil then return false,selectionError end
+    local field,fieldId,why=targetField(selectedFarmlandId)
     if field==nil then return false,why end
     local poly,reason=G.polygonFor(field)
     if poly==nil then return false,reason end
@@ -360,8 +421,12 @@ function Probe:survey()
     local neighbors,fieldsTruncated=fieldCatalogue(field)
     local roads,roadInfo=roadSamples(poly)
     local owner=sourceFarmOwner(poly)
+    local nativeFarmlandId=farmlandIdForField(field)
     publish("FARM_CONTEXT_FIELD",{
-        field=FIELD_ID,vertexCount=poly.vertexCount,edgeCount=#edges,
+        field=fieldId,selectedFarmlandId=toValue(selectedFarmlandId),
+        resolvedFarmlandId=toValue(nativeFarmlandId),
+        targetSelection=selectedFarmlandId~=nil and "FARMLAND" or "DEFAULT_FIELD",
+        vertexCount=poly.vertexCount,edgeCount=#edges,
         bboxMinX=fmt(poly.minX),bboxMaxX=fmt(poly.maxX),
         bboxMinZ=fmt(poly.minZ),bboxMaxZ=fmt(poly.maxZ),
         sourceFarmOwner=toValue(owner),neighborFieldCount=#neighbors,
@@ -381,7 +446,7 @@ function Probe:survey()
         local roadDistance=nearestRoadDistance(e,roads)
         local fieldGap,nearestField=nearestFieldGap(e,neighbors)
         publish("FARM_CONTEXT_EDGE",{
-            field=FIELD_ID,edge=e.index,nextVertex=e.nextIndex,
+            field=fieldId,edge=e.index,nextVertex=e.nextIndex,
             side=e.side,
             ax=fmt(e.ax),az=fmt(e.az),bx=fmt(e.bx),bz=fmt(e.bz),
             lengthM=fmt(e.length),outwardX=fmt(e.nx),outwardZ=fmt(e.nz),
@@ -397,7 +462,7 @@ function Probe:survey()
             side.roadMin=math.min(side.roadMin or roadDistance,roadDistance)
         end
         for j=1,#OFFSET_METRES do
-            local sample,count=recordOffset(e,OFFSET_METRES[j],owner,neighbors,totalSamples)
+            local sample,count=recordOffset(e,OFFSET_METRES[j],owner,neighbors,totalSamples,fieldId)
             totalSamples=totalSamples+count
             if j==1 and sample~=nil then
                 side.blocked=side.blocked+sample.blocked
@@ -409,7 +474,7 @@ function Probe:survey()
     end
     for sideName,summary in pairs(sideSummaries) do
         publish("FARM_CONTEXT_SIDE_SUMMARY",{
-            field=FIELD_ID,side=sideName,edges=summary.edges,
+            field=fieldId,side=sideName,edges=summary.edges,
             nearestRoadSplineSampleM=fmt(summary.roadMin),
             offsetM=2,navBlocked=summary.blocked,
             navUnblocked=summary.unblocked,navUnknown=summary.unknown,
@@ -417,7 +482,7 @@ function Probe:survey()
         })
     end
     publish("FARM_CONTEXT_SURVEY_FINISHED",{
-        field=FIELD_ID,edges=#edges,offsetsM="2,6,12",
+        field=fieldId,edges=#edges,offsetsM="2,6,12",
         totalEdgeSamples=totalSamples,sampleBudget=MAX_TOTAL_SAMPLES,
         sampleTruncated=totalSamples>=MAX_TOTAL_SAMPLES,
         note="PASSIVE_ONLY_NOT_SETTLEMENT_CLEARANCE"
@@ -436,7 +501,8 @@ function Probe:update(dt)
     if self.elapsedMs>=20000 then
         self.attempted=true
         publish("FARM_CONTEXT_SURVEY_UNAVAILABLE",{
-            field=FIELD_ID,reason=ok and tostring(reason) or "SURVEY_EXCEPTION",
+            selectedFarmlandId=toValue(self.diagnosticSource.spatialFarmlandId),
+            field=DEFAULT_FIELD_ID,reason=ok and tostring(reason) or "SURVEY_EXCEPTION",
             note="NO_INFERRED_PARKING_REGION"
         })
     end
