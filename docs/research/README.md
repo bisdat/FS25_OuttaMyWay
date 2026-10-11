@@ -7,6 +7,8 @@ authority.
 
 ## Breadcrumbs
 
+- [Blocked Recovery Investigations](BLOCKED_RECOVERY_INVESTIGATIONS.md) — historical native-blockage, solo/static recovery and pair-egress hypotheses, disproofs and GIANTS validation provenance; current authority stays in Architecture and Specification.
+
 - [Spatial Pair Inference](SPATIAL_PAIR_INFERENCE.md) — minimal nearest-local-worker hypothesis from GIANTS root X/Z positions; locality bound and causal attribution remain unvalidated under #440.
 - [Useful Continuation Evidence](USEFUL_CONTINUATION_EVIDENCE.md) — GIANTS field-course progress/turn/implement state source study; candidate Native Course Advancement witness, failure cases and unvalidated semantics for #440.
 - [Native Blocked Event Tap](NATIVE_BLOCKED_EVENT_TAP.md) — completed TEST 0.5.0.5 event-construction evidence (including a 174 ms true/false pulse); instrument retired in TEST 0.5.0.6, limitations retained.

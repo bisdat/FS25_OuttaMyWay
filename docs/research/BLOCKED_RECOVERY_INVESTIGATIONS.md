@@ -1,0 +1,47 @@
+# Blocked Recovery Investigations — Historical Evidence and Disproven Hypotheses
+
+## Role and evidence boundary
+
+This is a historical investigation route for native blocked-first recovery, spatial pair inference, solo recovery, non-active static blockers and pair egress. **It is not current Architecture, Specification, or a list of approved behaviour.** Accepted system responsibilities are defined by [Native Blockage and Hold & Relocate Architecture](../../architecture/BLOCKED_PROGRESS_QUALIFICATION.md) and operationalised by the [Specifications](../../spec/README.md).
+
+The complete pre-reconciliation investigation narrative remains available at the [immutable predecessor of the mixed Architecture document](https://github.com/bisdat/FS25_OuttaMyWay/blob/a6dadc709984386cdfa1771e6041e67e833a7812/architecture/BLOCKED_PROGRESS_QUALIFICATION.md). Its historical assertions, source inventories, unmerged-state claims and test timing proposals are **provenance only**; they must not be used as current requirements. This index extracts the useful *why*, without copying the full build-by-build evidence.
+
+For detailed chronological records, use the [Engineering Journal](../ENGINEERING_JOURNAL.md), the scenario [library](SCENARIO_LIBRARY.md) and the linked GitHub investigation records.
+
+## Native evidence and candidate inference
+
+**Observation:** GIANTS `isBlocked` identifies the affected worker but not a causal blocker. During ordinary opposed traffic GIANTS may briefly assert blockage, or alternate positive and negative reports. **Disproved approach:** another OMW collision detector or an A8-specific classification branch was not needed to admit initial reactive exploration. The source-backed and GIANTS observations appear in [Native Blocked-State Probe](NATIVE_BLOCKED_STATE_PROBE.md), [Native Blocked Event Tap](NATIVE_BLOCKED_EVENT_TAP.md), [Spatial Pair Inference](SPATIAL_PAIR_INFERENCE.md) and [blocked-first investigation #440](https://github.com/bisdat/FS25_OuttaMyWay/issues/440).
+
+**Accepted distinction:** one second of positively supported native blockage is a *consideration threshold*; a 30 m nearest eligible root rule provides a *candidate*, never a causal or clearance verdict. The earlier event-constructor interception was retired. Multi-pulse unresolved-encounter continuity remained a concept rather than a proved live observer contract. Historical timing and sampling assumptions must not silently be promoted into stronger Runtime authority.
+
+## Solo recovery and static blocker evidence
+
+**Solo field association (TS003, #461):** An initial root-in-polygon admission veto rejected a worker genuinely blocked outside the field. A later global-field search could favour an adjacent field as the supposed inward destination. Both were disproved in GIANTS tests. The corrected distinction is that solo native blockage does not require common pair-polygon membership, while inward direction, when used, refers to the worker's *own GIANTS course field*. See [#461](https://github.com/bisdat/FS25_OuttaMyWay/issues/461) and the TS003 entries in the [Engineering Journal](../ENGINEERING_JOURNAL.md).
+
+**Static physical subject (TS018, #465):** A qualified native blocked worker with a nearby inactive assembly can justify *bounded inference* of a non-active blocker without proving exact contact. An initial static candidate filter relying on front-facing proximity, narrow cross-track proximity or GIANTS `playerControlled` tab-selection was disproved. Selected assemblies could receive hundreds of apparently valid drive calls with a started motor yet make almost no physical movement until the player tabbed out. This is physical-realisation evidence, not proof of deliberate player driving or a reason to treat a command as an outcome. See [#465](https://github.com/bisdat/FS25_OuttaMyWay/issues/465), [TS018 scenario evidence](SCENARIO_LIBRARY.md) and [GIANTS Runtime Knowledge](../engine/GIANTS_RUNTIME_KNOWLEDGE.md).
+
+**Unresolved distinction — Static In-Field Settlement:** a cross-track Return Region can be reached near the boundary. Clearing a productive corridor and selecting a safe long-term in-field resting place are not identical. TS018's successful recovery did not measure a mandatory field-interior margin, so the earlier screenshot did not establish a new numerical threshold or a general settlement mechanism. The archived mixed narrative retains that hypothesis and its uncertainty.
+
+## Pair geometry and commitment evolution
+
+**Rejected diagonal endpoint (TS015):** a virtual working-width-by-working-width, 45-degree destination and a bounded chord-distance watchdog did not certify physical swept-space clearance. Five seconds of physical blocker Hold could demonstrably suppress motion while still expiring before the moving assembly cleared the productive corridor. The endpoint hypothesis and its `FAILED_SAFE` response were withdrawn; the subsequent model separated Regulation from the mover's completion and replaced destination arrival with a Return Region.
+
+**Axial Retreat Trap (TS015):** a GIANTS-native reverse and successful projected *longitudinal* progress could return a worker to FIELDWORK without leaving the counterpart's productive cross-track corridor. That disproved the equivalence of a BWR-style axial Return Region and cooperative lateral egress. Proposed clearance regions and native steering vectors were then investigated separately. A TRANSIT request was never proof of immediate physical compaction.
+
+**Perpendicular-Axis Exclusion (TS001, #468):** requiring one vector to be predominantly lateral to *both* nearly perpendicular workers could reject every candidate before Control. Likewise, a centroid-preferred mover could have no available egress while the alternative had usable space. The resulting spatial option comparison examines both mover assignments and supported region candidates; where available a partial staging movement may be useful without committing to a sticky follow-up. See [#468](https://github.com/bisdat/FS25_OuttaMyWay/issues/468) and [merged #469](https://github.com/bisdat/FS25_OuttaMyWay/pull/469).
+
+**Independent release:** trials that reconfigured both workers or coupled their fold/restart timing degraded otherwise successful TS015 behaviour. The durable discovery was **one pair situation, one selected movement, independently timed actor Controls, and fresh requalification after handback**. This does not guarantee that the first movement prevents all later native blockage.
+
+## Kinematic reverse investigation (TS004, #470)
+
+**Command-to-Corridor Divergence:** a world-space ray deemed geometrically available can become an almost lateral local `driveToPoint` steering instruction after GIANTS tool-reverser-frame correction; a trailing implement may jackknife and actual root progress may retreat while lateral error grows. A first successful move with more tool-node yaw, followed by a second failing move with less yaw, disproved initial articulation alone as a sufficient jackknife predictor. The same 12 km/h requested speed appeared in successful and failing episodes, also disproving high requested speed as a necessary single cause.
+
+**Reverse Steering Target Contract:** native field-course steering receives a segment-generated target before tool correction, whereas the investigated OMW mechanism supplied a farther spatial-ray world target to a similar correction. Neither a sign error nor a universal steering-horizon change was proved. Read-only alternative look-throughs sometimes favoured a shorter reference and sometimes favoured the existing farther one.
+
+**Post-Handback Requalification Branch Point:** even the same executable and broadly similar initial scene could lead to either a single completed relocation or a second native blocked episode. Requalification and the kinematic safety of any newly admitted movement are different questions. Eight-second pair Regulation was field-tested as a situation-shaping timing choice; TS004 could still perform two separately admitted movements. TS001 and TS015 supplied subsequent observed regressions, not a proof of universal articulated stability.
+
+The full time-correlated tool-frame measurements, shadow look-throughs, video summaries, alternatives and explicit negative conclusions are in [#470](https://github.com/bisdat/FS25_OuttaMyWay/issues/470), with experimental source in [#471](https://github.com/bisdat/FS25_OuttaMyWay/pull/471), timing validation in [#472](https://github.com/bisdat/FS25_OuttaMyWay/pull/472), and the accepted checkpoint in [#473](https://github.com/bisdat/FS25_OuttaMyWay/pull/473). **The Kinematic Egress Feasibility question remains open**; historical field passes do not establish a general reverse-path safety certificate.
+
+## Interpretation policy
+
+The dated TEST results, experimental thresholds, candidate module names and abandoned sequencing proposals in the predecessor are historical evidence, not standing authority. Promote a specific enduring conclusion to Architecture only after checking it against current Reality and the relevant Specification and source. Failed tests are retained to make past wrong assumptions identifiable, not to preserve them as current commands.
