@@ -47,12 +47,13 @@ local function withinRing(points,x,z)
     end
     return inside
 end
-local function rectIntersectsPolygon(rect,poly)
-    if poly==nil or type(poly.xs)~="table"
-        or type(poly.zs)~="table" or not finite(poly.vertexCount) then return nil end
+local function shapeIntersectsPolygon(rect,poly)
+    if type(rect)~="table" or #rect<3 or poly==nil
+        or type(poly.xs)~="table" or type(poly.zs)~="table"
+        or not finite(poly.vertexCount) then return nil end
     -- Check both containments and all boundary intersections. Four corners
     -- outside a concave polygon are NOT proof of a clear rectangle.
-    for i=1,4 do
+    for i=1,#rect do
         local p=rect[i]
         if G.inside(poly,p.x,p.z) then return true end
         for j=1,poly.vertexCount do
@@ -64,8 +65,8 @@ local function rectIntersectsPolygon(rect,poly)
     for i=1,poly.vertexCount do
         if withinRing(rect,poly.xs[i],poly.zs[i]) then return true end
     end
-    for i=1,4 do
-        local j=i==4 and 1 or i+1
+    for i=1,#rect do
+        local j=i==#rect and 1 or i+1
         for k=1,poly.vertexCount do
             local l=k==poly.vertexCount and 1 or k+1
             if intersect(rect[i].x,rect[i].z,rect[j].x,rect[j].z,
@@ -76,6 +77,8 @@ local function rectIntersectsPolygon(rect,poly)
     end
     return false
 end
+-- Also accepts the 4–6 point convex hull of a rigid straight member sweep.
+Assessment.shapeIntersectsPolygon=shapeIntersectsPolygon
 
 local function candidateRects(foot,rootFX,rootFZ,edge,station,depth,direction)
     local tx,tz=edge.dx/edge.length*direction,edge.dz/edge.length*direction
@@ -112,7 +115,7 @@ function Assessment.assess(foot,rootFX,rootFZ,poly,edge,neighbors,
         nominalBasis="CURRENT_MEMBER_BASE_RECTANGLES_FROZEN_ARTICULATION",
         assessed=0,nominalNoPolygonConflict=0,
         sourceConflicts=0,neighborConflicts=0,edgeSpill=0,
-        unknown=0,best=nil,travelDirections=2}
+        unknown=0,best=nil,travelDirections=2,sweepSeeds={}}
     if catalogueTruncated==true or type(neighbors)~="table"
         or type(foot)~="table" or type(foot.corners)~="table"
         or not finite(foot.memberCount) or foot.memberCount<1
@@ -142,6 +145,7 @@ function Assessment.assess(foot,rootFX,rootFZ,poly,edge,neighbors,
     -- No verified fold state, static obstacle coverage, worker demand or
     -- steering/run-out is available; these statuses always stay unresolved.
     outcome.reason="POLYGON_ONLY_NOMINAL_TEST_NOT_CLEARANCE"
+    local sweepChoices={}
     for di=1,#DIRECTIONS do
         local direction=DIRECTIONS[di]
         for si=1,#STATION_FRACTIONS do
@@ -167,13 +171,13 @@ function Assessment.assess(foot,rootFX,rootFZ,poly,edge,neighbors,
                     else
                         local sourceConflict,neighborConflict,invalid=false,false,false
                         for r=1,#rects do
-                            local hit=rectIntersectsPolygon(rects[r],poly)
+                            local hit=shapeIntersectsPolygon(rects[r],poly)
                             if hit==nil then invalid=true
                             elseif hit then sourceConflict=true end
                             if not sourceConflict then
                                 for n=1,#neighbors do
                                     local other=neighbors[n].polygon
-                                    local overlap=rectIntersectsPolygon(rects[r],other)
+                                    local overlap=shapeIntersectsPolygon(rects[r],other)
                                     if overlap==nil then invalid=true;break end
                                     if overlap then neighborConflict=true;break end
                                 end
@@ -195,6 +199,41 @@ function Assessment.assess(foot,rootFX,rootFZ,poly,edge,neighbors,
                                 nominalLengthM=maxAlong-minAlong,
                                 distanceFromEdgeStartM=headroom
                             }
+                            -- Preserve the existing illustrative static
+                            -- example separately from *forward* run-out.
+                            local forwardHeadroom=direction==1
+                                and edge.length-(station+maxAlong)-0.5
+                                or station+minAlong-0.5
+                            if forwardHeadroom>0 then
+                                local seed={
+                                    stationM=station,depthM=depth,
+                                    direction=direction,
+                                    forwardHeadroomM=forwardHeadroom,
+                                    tx=edge.dx/edge.length*direction,
+                                    tz=edge.dz/edge.length*direction,
+                                    rects=rects
+                                }
+                                local choices=sweepChoices[direction]
+                                if choices==nil then
+                                    choices={}
+                                    sweepChoices[direction]=choices
+                                end
+                                if choices.longest==nil
+                                    or forwardHeadroom
+                                        >choices.longest.forwardHeadroomM
+                                    or (forwardHeadroom==
+                                            choices.longest.forwardHeadroomM
+                                        and depth<choices.longest.depthM) then
+                                    choices.longest=seed
+                                end
+                                if choices.shallowest==nil
+                                    or depth<choices.shallowest.depthM
+                                    or (depth==choices.shallowest.depthM
+                                        and forwardHeadroom
+                                            >choices.shallowest.forwardHeadroomM) then
+                                    choices.shallowest=seed
+                                end
+                            end
                             if outcome.best==nil or depth<outcome.best.depthM
                                 or (depth==outcome.best.depthM
                                     and candidate.distanceFromEdgeStartM
@@ -204,6 +243,18 @@ function Assessment.assess(foot,rootFX,rootFZ,poly,edge,neighbors,
                         end
                     end
                 end
+            end
+        end
+    end
+    -- Two deterministic witnesses per direction: longest available
+    -- *edge endpoint* horizon, and shallowest tested outward depth.
+    -- They remain hypothetical and never become navigation targets.
+    for _,direction in ipairs(DIRECTIONS) do
+        local c=sweepChoices[direction]
+        if c then
+            outcome.sweepSeeds[#outcome.sweepSeeds+1]=c.longest
+            if c.shallowest~=c.longest then
+                outcome.sweepSeeds[#outcome.sweepSeeds+1]=c.shallowest
             end
         end
     end
