@@ -125,6 +125,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/farm_edge_geometry.lua
           "$LUAJIT_BIN" tests/shell/farm_spatial_context_probe.lua
           "$LUAJIT_BIN" tests/shell/physical_margin_constraint_probe.lua
+          "$LUAJIT_BIN" tests/shell/settlement_corridor_assessment.lua
           "$LUAJIT_BIN" tests/shell/completion_transit.lua
           "$LUAJIT_BIN" tests/shell/static_blockage_encounter.lua
           "$LUAJIT_BIN" tests/shell/static_blocker_relocation.lua
