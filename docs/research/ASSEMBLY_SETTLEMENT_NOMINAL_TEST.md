@@ -1,6 +1,6 @@
 # TEST 0.5.5.4 — Field 77 Physical Assembly Nominal Feasibility Screen
 
-**Status:** executable **read-only** assembly-specific TEST awaiting GIANTS 1.24 Reality, no movement or parking. The acceptance target is an observed *real vehicle plus all attached implements*, not a synthetic map-only corridor.
+**Status:** TEST **0.5.5.4** executed in GIANTS 1.24; original assembly screen was blocked by a native vehicle-population source error, not by nominal field geometry. **0.5.5.5** changes only that source and awaits a rerun. No movement or parking. The acceptance target is an observed *real vehicle plus all attached implements*, not a synthetic map-only corridor.
 
 ## Why this test follows the source studies
 
