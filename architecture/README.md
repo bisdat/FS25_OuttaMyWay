@@ -17,4 +17,5 @@ OuttaMyWay aims to preserve autonomous GIANTS fieldwork through the least disrup
 
 [Specification](../spec/README.md) defines implementation-facing contracts for the architectural responsibilities. [Production source](../scripts/main.lua) realises current mechanisms; neither source structure nor successful tests redefine Architecture. [Engineering documentation](../docs/README.md) provides standards, engine knowledge, validation methodology and evidence history. Substantial unresolved questions are tracked in GitHub Issues rather than maintained as a rolling status narrative here.
 
-- [Farm Spatial Context Observation](FARM_SPATIAL_CONTEXT_OBSERVATION.md) — test-only Field 77 geometry and native-map evidence; not settlement admission.
+- [Farm Spatial Context Observation](FARM_SPATIAL_CONTEXT_OBSERVATION.md) — diagnostic field-edge and native-map observations on Field 77 and Riverbend; not settlement admission.
+- [Exterior Margin Profile](EXTERIOR_MARGIN_PROFILE.md) — proposed world-space evidence for continuous exterior depth and length, separate from actual-assembly corridor assessment and physical Control.
