@@ -52,6 +52,16 @@ Once paired movement starts, its authority is conditional, separate from admissi
 
 This is a movement-continuation fail-safe, not a corrected steering controller or proof of collision-free physical settlement. Incomplete root evidence terminates an active paired movement conservatively.
 
+### Clearance Sufficiency — finite Observation experiment
+
+For the current TS004 investigation, the accepted **WORKING-width-plus-5 m** movement objective remains unchanged as an admission/completion heuristic; its attainment does not establish spatial or temporal physical clearance. Preserve individual mover and peer Control lifecycles.
+
+For a live admitted pair only, capture a **finite, passive clearance witness** at initial egress, at most three intermediate moving samples (**1.5, 3.5 and 5.5 s** from start), on realised Return Region entry, at most two observations during the relocated Hold (**2 and 5 s** after region entry, only if the Hold continues), independently on the peer Regulation release, and at native successful handback. If GIANTS continuation follows without a new OMW intervention, sample at most **1, 3 and 5 s** after handback. A new commitment supersedes that witness; interruption or shutdown ends it. Expired sample times are skipped, not published as repeated synthetic measurements.
+
+Record both actor roots and observed current steering-node headings, the selected egress direction and projected root travel, horizontal **root-to-root separation**, and a **nominal current member-envelope gap** based on actual current orientation of the *already selected* GIANTS base-size member rectangles. Compare successive gap observations to report its observed closing rate and, only when positive and closing, a **straight-line time-to-zero gap proxy**. These geometric figures are **not** verified collision spacing, working implement sweep, mechanical hitch angle, or GIANTS future path. If any member shape is missing, publish unavailable instead of certifying positive clearance. Do not use readings to decide Control in this experiment.
+
+Only the accepted pair's existing captured member records are re-observed at the finite sample points. There is no extra `getDriveData()`, no per-frame shape census, native drive wrapper, relocation retry, changed movement direction, altered Regulation or Hold duration, or automatic handback gate. NORMAL publications make comparison possible with DIAGNOSTIC off, while an inactive witness has no physical sampling. Offline fixtures validate geometry math and bounded sampling; GIANTS field runs validate physical relevance and timing sensitivity.
+
 ### Post-interruption Native Continuation Witness — investigation
 
 Following a paired `EGRESS_INTERRUPTED`, a **passive, non-authorising** witness samples both actors immediately after scoped Control cleanup, then at **500 ms**, **2,000 ms** and **5,000 ms**. It retains at most one active witness. An independently admitted subsequent movement terminates the earlier witness, rather than attributing that new OMW Control to GIANTS. There is no continuing sample after the 5 s horizon.
@@ -102,6 +112,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`scripts/coordination/NativePairCommitmentAuthority.lua`](../scripts/coordination/NativePairCommitmentAuthority.lua) | `SUPPORTS` |
 | [`scripts/control/HoldRelocatePhysicalControl.lua`](../scripts/control/HoldRelocatePhysicalControl.lua) | `SUPPORTS` |
 | [`scripts/coordination/LiveHoldRelocateRuntime.lua`](../scripts/coordination/LiveHoldRelocateRuntime.lua) | `SUPPORTS` |
+| [`scripts/diagnostics/PairClearanceWitness.lua`](../scripts/diagnostics/PairClearanceWitness.lua) | `SUPPORTS` |
 | [`scripts/diagnostics/NativeContinuationWitness.lua`](../scripts/diagnostics/NativeContinuationWitness.lua) | `SUPPORTS` |
 
 ## Repository validation participants
@@ -111,6 +122,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`tests/shell/hold_relocate.lua`](../tests/shell/hold_relocate.lua) | `CHALLENGES` |
 | [`tests/shell/pair_native_drive_interposition.lua`](../tests/shell/pair_native_drive_interposition.lua) | `CHALLENGES` |
 | [`tests/shell/pair_transit_region.lua`](../tests/shell/pair_transit_region.lua) | `CHALLENGES` |
+| [`tests/shell/pair_clearance_witness.lua`](../tests/shell/pair_clearance_witness.lua) | `CHALLENGES` |
 | [`tests/shell/pair_transit_settlement.lua`](../tests/shell/pair_transit_settlement.lua) | `CHALLENGES` |
 | [`tests/shell/native_reverse_mechanism.lua`](../tests/shell/native_reverse_mechanism.lua) | `CHALLENGES` |
 | [`tests/shell/native_translation_hold_mechanism.lua`](../tests/shell/native_translation_hold_mechanism.lua) | `CHALLENGES` |
