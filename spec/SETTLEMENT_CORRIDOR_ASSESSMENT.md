@@ -31,7 +31,7 @@ Report `ASSEMBLY_SETTLEMENT_SCAN`, zero-to-three `ASSEMBLY_SETTLEMENT_NOMINAL_SC
 
 - **Approach = `WAITING_FOR_EVIDENCE`** — actual source heading, swept articulation and current active-worker demand not assessed.
 - **Run-Out = `WAITING_FOR_EVIDENCE`** — no forward journey, steering, continuous obstacle/boundary evidence or run-out distance is established.
-- **Terminal = `WAITING_FOR_EVIDENCE`** — current nominal body rectangles are not a verified TRANSIT-folded or collision-complete static envelope, and road/hedge/terrain/dynamic occupancy exclusion is not established.
+- **Terminal = `WAITING_FOR_EVIDENCE`** — current nominal body rectangles are not a collision-complete static envelope, and road/hedge/terrain/dynamic occupancy exclusion is not established. **Do not add verification of TRANSIT/fold completion as a prerequisite**; completion handling separately requests TRANSIT without a readiness check.
 
 This explicitly prevents `nominalCandidateCount>0` from being misread as `SUPPORTED` or from triggering any Control action. The results cannot be cached as a definitive physical-margin profile or reused as an admitted Movement Control goal.
 
@@ -64,4 +64,4 @@ Offline CI must establish that complete coupled member rectangles—not only roo
 
 In **TEST 0.5.5.4**, the user should load **Mindenerwald Field 77** with `<outtaMyWayDiagnostics enabled="true" />` and at least one complete, real tractor/implement assembly present in the field or within 20 m of edge 9. Collect `[ASSEMBLY_SETTLEMENT]` events and compare the root, member count and nominal dimensions with the visibly selected assembly. If no target is found or size evidence is unavailable, the result is a **valid negative test** identifying what we must observe differently.
 
-Only after that logged GIANTS Reality may we decide whether the current folded/TRANSIT envelope needs a dedicated verified-configuration witness, then test actual connected run-out and infield alignment as separate responsibilities. No movement test is admitted by this experiment.
+The remaining validation responsibilities are **continuous corridor access, infield alignment, forward run-out and whole-assembly terminal occupancy**. TRANSIT remains a request-only capability; **no dedicated fold-completion or TRANSIT-readiness witness is to be introduced**. Actual behaviour and physical clearance must be validated in GIANTS Reality, with uncertainty retained when nominal geometry is insufficient. No movement test is admitted by this experiment.
