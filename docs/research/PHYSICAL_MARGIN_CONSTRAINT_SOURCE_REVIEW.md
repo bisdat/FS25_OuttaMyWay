@@ -100,4 +100,4 @@ The bounded plan above has been encoded as a **fixture-guarded, bounded** adjunc
 - **Validation:** New synthetic CI confirms API gating, query bounds and explicit failure handling, but **does not validate real physics/terrain surfaces**. Installed FS25 1.24 Reality must challenge the source-derived signatures before relying on them.
 - **Engine Knowledge:** Findings remain in Research until confirmed in 1.24; do **not** revise `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` to imply validation that has not occurred.
 
-**Decision gate:** The owner agreed to the bounded read-only TEST `0.5.5.3` experiment. Next: collect GIANTS Reality on both maps before deciding whether observed physical constraints can support a future continuous Exterior Margin Profile or Settlement Corridor Assessment.
+**Decision gate:** The owner agreed to TEST `0.5.5.3`; Riverbend has now returned positive GIANTS Reality. Next: capture the **missing** Mindenerwald Field 77 physics run with the farmland selector cleared, and compare edge 9/hedge controls before discussing continuous Exterior Margin Profile feasibility.
