@@ -24,6 +24,8 @@ local expected={
     "scripts/publication/LogPublication.lua",
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
+    "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/control/CompletionTransitRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -86,6 +88,8 @@ source=function(path)
         }
     elseif path=="scripts/observation/StaticBlockageEncounterObservation.lua"
         or path=="scripts/observation/NativeBlockageObservation.lua"
+        or path=="scripts/observation/NativeJobCompletionProbe.lua"
+        or path=="scripts/control/CompletionTransitRuntime.lua"
         or path=="scripts/diagnostics/VersionHud.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then
@@ -104,10 +108,12 @@ assert(OuttaMyWay.liveHoldRelocateRuntime.authority~=nil)
 assert(OuttaMyWay.liveHoldRelocateRuntime.physicalControl~=nil)
 assert(not OuttaMyWay.liveHoldRelocateRuntime.authority:enabled(),
     "offline client fixture cannot control workers")
-assert(#registered==4 and registered[1]==OuttaMyWay.versionHud
+assert(#registered==6 and registered[1]==OuttaMyWay.versionHud
     and registered[2]==OuttaMyWay.nativeBlockageObservation
-    and registered[3]==OuttaMyWay.liveHoldRelocateRuntime
-    and registered[4]==OuttaMyWay.disabledStartupReminder)
+    and registered[3]==OuttaMyWay.nativeJobCompletionProbe
+    and registered[4]==OuttaMyWay.completionTransitRuntime
+    and registered[5]==OuttaMyWay.liveHoldRelocateRuntime
+    and registered[6]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(OuttaMyWay.nativeBlockedEventTap==nil)
 assert(type(OuttaMyWay.nativeBlockageObservation.update)=="function")
