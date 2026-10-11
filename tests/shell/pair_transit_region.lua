@@ -48,6 +48,28 @@ assert(fa.memberCount==2 and #fa.corners==8
 assert(fa.basis=="GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION"
     and fa.negativeClearanceAuthority==false)
 a.transitFootprint=fa;b.transitFootprint=fb
+-- A captured member has a fixed base-size rectangle but a *current*
+-- orientation: finite clearance observations must follow actual node pose,
+-- not translate old snapshots as if all articulated members remained aligned.
+local gapA=assembly(0,0,2,4)
+local gapB=assembly(8,0,2,4)
+local gapAFoot=assert(Geometry.capture(gapA.vehicle))
+local gapBFoot=assert(Geometry.capture(gapB.vehicle))
+local initialGap=assert(Geometry.observePairNominalGap(gapAFoot,gapBFoot))
+assert(math.abs(initialGap-4)<0.0001)
+points[gapB.vehicle.rootNode].headingX=0
+points[gapB.vehicle.rootNode].headingZ=1
+local rotatedGap=assert(Geometry.observePairNominalGap(gapAFoot,gapBFoot))
+assert(math.abs(rotatedGap-5)<0.0001,
+    "current attachment/node rotation changes nominal member gap")
+points[gapB.vehicle.rootNode].headingX=1
+points[gapB.vehicle.rootNode].headingZ=0
+points[gapB.vehicle.rootNode].x=3
+assert(Geometry.observePairNominalGap(gapAFoot,gapBFoot)==0,
+    "represented overlapping rectangles have zero nominal separation")
+local unavailable,why=Geometry.observePairNominalGap({memberGeometry={}},gapBFoot)
+assert(unavailable==nil and why=="NOMINAL_MEMBER_GEOMETRY_UNAVAILABLE")
+
 local field={xs={0,100,100,0},zs={0,0,100,100}}
 local c={fieldPolygon=field,fieldCentroid={x=50,z=50}}
 local choice,mover,other=Plan.planPairCascade(c,a,b)
