@@ -1,6 +1,6 @@
 -- Synthetic Field 77: road along Z_MIN, hedge protrusion on X_MAX,
 -- field 78 beyond X_MAX and other farmland. Passive survey only.
-OuttaMyWay={VERSION="0.5.5.2"}
+OuttaMyWay={VERSION="0.5.5.3"}
 local events,navCalls,splineCalls={},0,0
 local diagnostic=false
 OuttaMyWay.LogPublication={origin=function()
