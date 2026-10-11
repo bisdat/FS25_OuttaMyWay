@@ -8,7 +8,7 @@
 
 **Configuration decision:** The accepted plateau uses existing global product `enabled` to admit completion TRANSIT. The separately persisted player choice proposed by [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476) remains an outstanding future capability requirement; it is not retroactively a blocker to retaining this validated request-only baseline.
 
-**PATCH boundary:** Only version identity and explanatory repository Architecture/Specification/Changelog text change relative to merged TEST `0.5.4.2`. No Control, movement, detection, plan selection, logging, player setting or other runtime behaviour is changed by this checkpoint. Physical Off-Field Settlement and parking allocation will be designed and tested in independent increments.
+**PATCH boundary:** Exactly three files change relative to merged TEST `0.5.4.2`: `scripts/config.lua`, `modDesc.xml` and `CHANGELOG.md`. Architecture/Specification alignment is a separate documentation responsibility, not part of this PATCH. No Control, movement, detection, plan selection, logging, player setting or other runtime behaviour is changed by this checkpoint. Physical Off-Field Settlement and parking allocation will be designed and tested in independent increments.
 
 **Governance:** Accepted field-validated PATCH plateau; this is not a claim of universal completion-detection coverage, physical parking readiness, or canonical release beyond project policy.
 
