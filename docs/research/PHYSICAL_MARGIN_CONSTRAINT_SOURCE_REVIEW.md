@@ -14,7 +14,7 @@ This review uses:
 - the public FS25 v1.20 `AISystem` implementation, in particular its AI spline registration, physics interference diagnostic and collision filters; and
 - existing **FS25 1.24.0.0 Reality** logged on diagnostic TEST `0.5.5.1` (Mindenerwald, Field 77) and `0.5.5.2` (Riverbend Springs, registered Field 29).
 
-**Version distinction:** Available documented signatures are from **v1.20**. The user's installed engine is **FS25 1.24**. We have **not** verified or invoked the new candidate physics/terrain APIs in that runtime. A callable function in source is a hypothesis to test, not a proven safe witness of full vehicle clearance.
+**Version distinction:** Available documented signatures are from **v1.20**; the user's installed engine is **FS25 1.24**. TEST **0.5.5.3** now **verified the native `overlapBox` callback, ROAD group test and terrain height/normal reads** on Riverbend Field 29, within one bounded experiment (one ROAD-labelled collider hit, not complete representation). `raycastAll` and `sweepBoxVector` are detected but **not invoked**. A callable API or a no-hit return does not prove full vehicle clearance.
 
 Ground Truth: [Field 77 log and owner map](FIELD77_SPATIAL_PROBE.md), [Riverbend log and owner map](RIVERBEND_FIELD2_SPATIAL_PROBE.md). Governing conceptual boundary: [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md).
 
