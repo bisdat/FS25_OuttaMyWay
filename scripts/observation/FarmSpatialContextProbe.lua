@@ -499,6 +499,19 @@ function Probe:survey()
             })
         end
     end
+    -- Read-only assembly-specific nominal terminal polygon screen. A failure
+    -- is diagnostic-only and can never invalidate prior native map evidence.
+    local assembly=OuttaMyWay.AssemblySettlementProbe
+    if type(assembly)=="table" and type(assembly.run)=="function" then
+        local ok=pcall(assembly.run,fieldId,poly,edges,neighbors,
+            fieldsTruncated,selectedFarmlandId)
+        if not ok then
+            publish("ASSEMBLY_SETTLEMENT_UNAVAILABLE",{
+                field=fieldId,reason="NOMINAL_SCREEN_EXCEPTION",
+                note="PRIOR_SPATIAL_SURVEY_REMAINS_VALID"
+            })
+        end
+    end
     return true
 end
 
