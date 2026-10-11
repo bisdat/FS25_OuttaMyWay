@@ -41,6 +41,17 @@ The full relocation objective is the **remaining worker's captured WORKING width
 
 Pair admission validates both workers. During an already-selected mover's actuation, maintain the mover's own current native job/strategy and physical references. The nonmover's own lifecycle may supersede its speed lease without cancelling the mover merely because the other job changed.
 
+### Paired movement continuation and interruption
+
+Once paired movement starts, its authority is conditional, separate from admission:
+1. The **primary** guard samples realised mover root position at most every **250 ms**, retaining five observations (normally **1,000 ms** between first and last) and computing the actual distance travelled, projected Return Region progress and signed perpendicular corridor departure. Samples separated by more than **500 ms** reset the incomplete window. This production evidence must not depend on DIAGNOSTIC publication or tool-joint instrumentation.
+2. Provisional **Command-to-Corridor Divergence** classification requires at least **1 m** observed physical travel over a full window. **Strong divergence** is projected progress regression of at least **0.25 m**, accompanied by at least **1 m** increase in absolute lateral deviation. **Suspected divergence** is projected progress no greater than **25%** of observed travel with at least **1.5 m** increase in lateral deviation; require two consecutive overlapping suspect windows. Overlap is persistence, not independent statistical corroboration. These thresholds are an implementation hypothesis requiring TS004/TS001/TS015 field validation, not evidence of a universal safe articulation angle.
+3. An absolute **20,000 ms** deadline begins with the accepted paired movement command and cannot be extended by progress, configuration changes or sampling resets.
+4. The mover root must remain inside the **captured GIANTS field-course polygon** authorised for this paired egress; a boundary breach interrupts Control. This root-only bound does not claim that an attached implement remains within the polygon. The field-confined rule does not apply indiscriminately to solo, static or future intentionally off-field relocation.
+5. Any guard breach pre-empts normal Return Region success on that update. The outcome is **EGRESS_INTERRUPTED** with a specific cause. Cancel only the mover's OMW directional override and own TRANSIT request/restore actions, with independently scoped Regulation cleanup as required. Do **not** issue success-only relocated Hold, stop/restart the current native job, automatically choose another mover or suppress genuinely fresh native blocked evidence. GIANTS' *existing* FIELDWORK job may continue and resolve or reassert blockage. If Control release fails, report **CONTROL_INTERRUPTED** rather than claiming clean handback.
+
+This is a movement-continuation fail-safe, not a corrected steering controller or proof of collision-free physical settlement. Incomplete root evidence terminates an active paired movement conservatively.
+
 ## Reactive static Control and release
 
 After exclusive static commitment, request TRANSIT once for the non-active subject, then issue supported direct GIANTS `driveToPoint` commands under a scoped motor, physics and native cruise lease; completed/non-job machines do not independently issue periodic AI drive commands. Regulate the **blocked active beneficiary at 1 km/h for 5,000 ms**, retaining its existing GIANTS job and WORKING configuration. This is not a translation STOP or a FIELDWORK job replacement.
