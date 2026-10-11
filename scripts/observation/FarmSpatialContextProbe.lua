@@ -13,7 +13,7 @@ local FIELD_ID=77  -- TS019 fixture only; not a production map assumption
 local OFFSET_METRES={2,6,12}
 local SAMPLE_SPACING_M=6
 local MAX_SAMPLES_PER_EDGE=96
-local MAX_TOTAL_SAMPLES=800
+local MAX_TOTAL_SAMPLES=6000
 local MAX_FIELDS=600
 local MAX_ROAD_SPLINES=300
 local MAX_ROAD_POINTS=8000
@@ -344,7 +344,9 @@ function Probe:survey()
         roadRegistered=roadInfo.registered,roadValid=toValue(roadInfo.valid),
         roadPointsNearField=roadInfo.sampled,
         roadReadAvailable=roadInfo.available,
-        roadReadFailures=roadInfo.failures,roadTruncated=roadInfo.truncated
+        roadReadFailures=roadInfo.failures,roadTruncated=roadInfo.truncated,
+        navMapAvailable=g_currentMission~=nil and g_currentMission.aiSystem~=nil
+            and g_currentMission.aiSystem.navigationMap~=nil
     })
     local totalSamples=0
     for i=1,#edges do
@@ -376,11 +378,11 @@ function Probe:update(dt)
     -- Absolutely no diagnostic geometry or native map reads when disabled.
     if self.attempted or not self:diagnosticEligible() then return end
     self.elapsedMs=self.elapsedMs+math.max(0,tonumber(dt) or 0)
-    if self.elapsedMs<3000 or self.elapsedMs-self.lastAttemptMs<1000 then return end
+    if self.elapsedMs<6000 or self.elapsedMs-self.lastAttemptMs<1000 then return end
     self.lastAttemptMs=self.elapsedMs
     local ok,success,reason=pcall(self.survey,self)
     if ok and success then self.attempted=true; return end
-    if self.elapsedMs>=15000 then
+    if self.elapsedMs>=20000 then
         self.attempted=true
         publish("FARM_CONTEXT_SURVEY_UNAVAILABLE",{
             field=FIELD_ID,reason=ok and tostring(reason) or "SURVEY_EXCEPTION",
