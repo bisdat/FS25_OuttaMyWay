@@ -14,20 +14,25 @@ local FIXTURES={
     default={
         name="MINDENERWALD_FIELD77",field=77,
         edge=9,length=230.97,
+        endpoints={228.15,-243.04,-0.06,-207.44},
         depths={-2,1,2,3,4,6,8,12},
         controlEdge=2,controlLength=48.26,
+        controlEndpoints={143.52,-656.06,153.81,-608.91},
         controls={{station=8,depths={2,6,12}},
                   {station=40,depths={2,6,12}}}
     },
     farmland2={
         name="RIVERBEND_FARMLAND2_FIELD29",field=29,
         edge=1,length=141.99,
+        endpoints={-898.15,304.13,-849.01,170.91},
         depths={-2,2,6,12,18,24,30},
         controlEdge=7,controlLength=59.99,
+        controlEndpoints={-910.16,123.27,-969.82,117.04},
         controls={{fraction=0.5,depths={2,6,12,18,24,30}}}
     }
 }
 local EDGE_LENGTH_TOLERANCE_M=3
+local ENDPOINT_TOLERANCE_M=3
 local MAX_QUERY_POINTS=24
 local MAX_PHYSICS_CALLS=22
 local MAX_RECORDED_HITS=8
@@ -143,12 +148,21 @@ local function farmlandAt(x,z)
     return tostring(id)
 end
 
-local function fixtureEdge(edges,index,expectedLength)
+local function fixtureEdge(edges,index,expectedLength,endpoints)
     local edge=edges and edges[index]
-    if edge==nil or edge.index~=index
-        or not finite(edge.length)
-        or math.abs(edge.length-expectedLength)>EDGE_LENGTH_TOLERANCE_M then
+    if edge==nil or edge.index~=index or not finite(edge.length)
+        or math.abs(edge.length-expectedLength)>EDGE_LENGTH_TOLERANCE_M
+        or type(endpoints)~="table" then
         return nil
+    end
+    -- Identical numeric field IDs and edge lengths can occur on other maps.
+    -- Tie the experimental fixture to the observed native world geometry.
+    local actual={edge.ax,edge.az,edge.bx,edge.bz}
+    for i=1,4 do
+        if not finite(actual[i])
+            or math.abs(actual[i]-endpoints[i])>ENDPOINT_TOLERANCE_M then
+            return nil
+        end
     end
     return edge
 end
@@ -240,8 +254,9 @@ function Probe.run(fieldId,poly,edges,selectedFarmlandId)
         })
         return false
     end
-    local edge=fixtureEdge(edges,fixture.edge,fixture.length)
-    local control=fixtureEdge(edges,fixture.controlEdge,fixture.controlLength)
+    local edge=fixtureEdge(edges,fixture.edge,fixture.length,fixture.endpoints)
+    local control=fixtureEdge(edges,fixture.controlEdge,fixture.controlLength,
+        fixture.controlEndpoints)
     if edge==nil or control==nil then
         publish("PHYSICAL_MARGIN_UNAVAILABLE",{
             field=fieldId,fixture=fixture.name,
