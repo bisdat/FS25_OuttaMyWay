@@ -85,7 +85,7 @@ The bounded plan above has been encoded as a **fixture-guarded, bounded** adjunc
 **Probe regions:**
 - Mindenerwald default Field 77: preferred edge **9**, stations at 25% and 75%, depths `-2,1,2,3,4,6,8,12 m`; known hedge control edge **2**, stations 8 m and 40 m, depths `2,6,12 m`.
 - Riverbend with `spatialFarmlandId=2`: resolved registered Field **29**, preferred edge **1**, quarter/three-quarter stations at depths `-2,2,6,12,18,24,30 m`; north-road control edge **7** at half-length with `2,6,12,18,24,30 m`.
-- Both fixtures require their logged source edge lengths within **3 m** of the original Reality observations. Other map identities are explicitly unavailable rather than guessed.
+- Both fixtures require their logged source edge lengths and the four X/Z endpoint coordinates each within **3 m** of the original Reality observations, preventing accidental activation for similarly numbered fields on unrelated maps. Other map identities are explicitly unavailable rather than guessed.
 - Per survey maximum **24** transverse point positions, **22** synchronous overlap calls, bounded per-box hit records. The box is intentionally small (0.9 m × 0.9 m × 2 m, bottom 0.1 m above terrain): it is a *representation witness*, **not** the vehicle envelope.
 
 **Validation disposition:** CI covers fake native `overlapBox` callbacks with TREE/ROAD flags, absent and failing APIs, and mismatched fixture geometry. These only validate observation discipline, not GIANTS 1.24 runtime availability or actual road/hedge coverage.
