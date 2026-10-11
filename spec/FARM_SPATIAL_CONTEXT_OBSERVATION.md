@@ -63,7 +63,8 @@ A non-georeferenced screenshot cannot directly validate metre offsets or world-c
 | Production source | Participation |
 | --- | --- |
 | [`scripts/observation/FarmEdgeGeometry.lua`](../scripts/observation/FarmEdgeGeometry.lua) | `REALISES` |
-| [`scripts/observation/FarmSpatialContextProbe.lua`](../scripts/observation/FarmSpatialContextProbe.lua) | `REALISES` |
+
+| [`scripts/observation/PhysicalMarginConstraintProbe.lua`](../scripts/observation/PhysicalMarginConstraintProbe.lua) | `REALISES` || [`scripts/observation/FarmSpatialContextProbe.lua`](../scripts/observation/FarmSpatialContextProbe.lua) | `REALISES` |
 
 ## Repository validation participants
 
