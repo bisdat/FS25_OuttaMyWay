@@ -96,7 +96,7 @@ The proposal above has been encoded as a **fixture-guarded, bounded** adjunct `s
 
 - **Architecture:** The [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md) needs evidence of limiting features and unknowns; these sources offer candidate *witnesses*, not a change in settlement policy.
 - **Specification:** [Farm Spatial Context Observation](../../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md) remains the implemented diagnostic `2/6/12 m` point survey. This study is **not** silently added to its existing contract.
-- **Source:** unchanged. The above probe is an **experiment proposal**, not implemented functions.
+- **Source:** a separate experimental `PhysicalMarginConstraintProbe.lua` now makes guarded, bounded read-only native queries in TEST `0.5.5.3`. It is **not** production settlement assessment or Control.
 - **Validation:** Existing CI and TEST `0.5.5.1`/`0.5.5.2` do **not** validate the new physics/terrain surfaces. Installed FS25 1.24 Reality must challenge v1.20 documentation before relying on it.
 - **Engine Knowledge:** Findings remain in Research until confirmed in 1.24; do **not** revise `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` to imply validation that has not occurred.
 
