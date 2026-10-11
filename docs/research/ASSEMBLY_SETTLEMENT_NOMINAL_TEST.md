@@ -8,6 +8,14 @@ The owner accepted [Settlement Corridor](../../architecture/COMPLETION_TRIGGERED
 
 Therefore another arbitrary point-cloud scan cannot *prove* a parked articulated assembly fits. This test makes the **first falsifiable assembly-specific geometric claim**, while preserving missing evidence.
 
+## GIANTS Reality — first 0.5.5.4 run, 11 October 2026
+
+Owner-supplied `log(20261011-155307).txt`, GIANTS 1.24.0.0, Mindenerwald, confirms **TEST 0.5.5.4 loaded enabled**, native source Field **77** edge **9** (230.97 m), complete `FARM_CONTEXT_SURVEY_FINISHED` (690 samples), and completed Physical Margin adjunct (20 physics calls, no errors and zero represented physics hits at selected points). The original nominal assembly screen emitted `ASSEMBLY_SETTLEMENT_UNAVAILABLE reason=VEHICLE_CATALOGUE_UNAVAILABLE`. **No real member footprint, no polygon candidate count and no terminal feasibility result were produced.**
+
+**Discovery — VehicleSystem Catalogue Authority:** the probe incorrectly looked up `g_currentMission.vehicles`. The project's pre-existing [GIANTS Runtime Knowledge](../engine/GIANTS_RUNTIME_KNOWLEDGE.md#vehiclesystem-exposes-current-savegame-vehicles-and-root-assemblies) already specifies the native `g_currentMission.vehicleSystem.vehicles` catalogue. This is an implementation source defect, not a missing architectural responsibility, nonexistent in-field vehicle or invalid requested southern edge. The original mock test supplied the same erroneous alias, so it could not falsify the mistake.
+
+**Corrective TEST 0.5.5.5:** change only `AssemblySettlementProbe` source to `g_currentMission.vehicleSystem.vehicles`, update the behavioural fixture to model the true GIANTS mission hierarchy, assert that a fake legacy `mission.vehicles` alias does **not** suffice, and preserve the original one-shot diagnostic gating, geometry and no-Control behaviour. GIANTS Reality validation of this correction remains pending.
+
 ## Reality fixture and tested claim
 
 **Mindenerwald registered Field 77, owner-preferred southern edge 9**, 230.97 m long. Keep `spatialFarmlandId` **absent** in the engineering diagnostic sidecar. Run **TEST 0.5.5.4** with at least one real tractor/implement assembly *physically present inside Field 77* or with its tractor root within 20 m of edge 9 when the initial six-second survey executes. The existing Field 77 work-save may already satisfy this. **No AI worker, native success event or parking manoeuvre is required.**
