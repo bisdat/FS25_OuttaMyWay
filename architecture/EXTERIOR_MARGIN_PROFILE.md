@@ -84,6 +84,12 @@ A future assessor must be able to distinguish at least **SUPPORTED**, **UNSUPPOR
 
 These describe **assessment results**, never autonomous permission to move. Separate positive post-completion Movement Control admission, revalidation, interruption, safe relinquishment and player communication remain outside this concept, under [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476). Do not treat this taxonomy as implemented product states.
 
+### TEST 0.5.5.4: Nominal Assembly Polygon Screen (not complete Assessment)
+
+The existing GIANTS runtime already provides selected real member base-size rectangles and current articulated transforms through `PairTransitRegion.capture`. This is **nominal selected-instance evidence**, not verified folded TRANSIT configuration. To move from independent map evidence to an actual assembly, a bounded read-only **Nominal Assembly Polygon Screen** now projects each member rectangle—freezing its current articulation—into hypothetical edge-parallel stationary poses at sampled stations/depths and both along-edge directions. It detects positive intersection with the source or other registered field polygons and rejects member envelopes extending beyond the nominated edge endpoints.
+
+This *necessary-condition screen* may reject sampled placements or identify **polygon-nonintersecting hypothetical poses**, but it does not identify connected free space through an approach, straighten a hitch, exclude roads/hedges/ditches, protect current workers, or authorise a stop. In all cases, the actual architectural Approach, Run-Out and Terminal results remain **WAITING_FOR_EVIDENCE**. A positive count is neither a parking candidate nor an approved position; it cannot be reused by Control. See [Settlement Corridor Assessment Specification](../spec/SETTLEMENT_CORRIDOR_ASSESSMENT.md) and [TEST 0.5.5.4 Reality plan](../docs/research/ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md).
+
 ## Two human-preferred falsification fixtures
 
 | Fixture | Owner-preferred segment | Reality observation | Evidence not yet available |
