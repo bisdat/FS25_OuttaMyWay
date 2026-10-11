@@ -128,7 +128,13 @@ physical.reverseMechanism={
         end
         return true
     end,
-    reverseStatus=function()return reverse end,
+    reverseStatus=function()
+        -- Root evidence belongs to the moving assembly; pair scenarios
+        -- below retain a stationary, in-field root unless noted.
+        reverse.rootX=reverse.rootX or 20
+        reverse.rootZ=reverse.rootZ or 20
+        return reverse
+    end,
     stopReverse=function()events[#events+1]="REVERSE_STOP";return true end,
     cancelReverse=function()events[#events+1]="REVERSE_CANCEL";return true end
 }
