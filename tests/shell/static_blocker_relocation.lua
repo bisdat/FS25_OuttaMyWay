@@ -368,7 +368,10 @@ assert(authority:release(reclaimed))
 -- not rejected by a retained commitment or prior outcome.
 local runtime=OuttaMyWay.LiveHoldRelocateRuntime
 local stubRuntime=setmetatable({
-    coordinator=coordinator,authority=authority,publication=nil},runtime)
+    coordinator=coordinator,authority=authority,publication=nil,
+    -- Static-only fixture supplies inert diagnostics without constructing
+    -- the full live runtime; no post-paired-interruption witness is active.
+    continuationWitness={active=nil}},runtime)
 local laterSnapshot=OuttaMyWay.StaticBlockageEncounterObservation.capture(
     worker,g_currentMission,300)
 local later=assert(authority:admitStaticBlockerCandidate(
