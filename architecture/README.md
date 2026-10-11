@@ -16,3 +16,5 @@ OuttaMyWay aims to preserve autonomous GIANTS fieldwork through the least disrup
 ## Related engineering surfaces
 
 [Specification](../spec/README.md) defines implementation-facing contracts for the architectural responsibilities. [Production source](../scripts/main.lua) realises current mechanisms; neither source structure nor successful tests redefine Architecture. [Engineering documentation](../docs/README.md) provides standards, engine knowledge, validation methodology and evidence history. Substantial unresolved questions are tracked in GitHub Issues rather than maintained as a rolling status narrative here.
+
+- [Farm Spatial Context Observation](FARM_SPATIAL_CONTEXT_OBSERVATION.md) — test-only Field 77 geometry and native-map evidence; not settlement admission.
