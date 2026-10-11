@@ -32,6 +32,7 @@ SHELL_MODULES = [
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/control/CompletionTransitRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua",
@@ -63,7 +64,7 @@ def test_shell_wires_only_admitted_hold_relocate_without_legacy_control():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 5
+    assert text.count("addModEventListener(") == 6
     assert "OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new" in text
     assert "addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)" in text
     assert 'liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")' in text
