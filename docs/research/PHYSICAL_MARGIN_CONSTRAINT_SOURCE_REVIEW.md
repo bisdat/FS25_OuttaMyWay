@@ -2,7 +2,7 @@
 
 **Issue:** [#476 Completion-Triggered Terminal Egress](https://github.com/bisdat/FS25_OuttaMyWay/issues/476) / [#420 Native API Investigation](https://github.com/bisdat/FS25_OuttaMyWay/issues/420)  
 **Date:** 11 October 2026  
-**Status:** **Source findings with bounded TEST 0.5.5.3 diagnostic implementation; physics/terrain semantics NOT YET validated by user in-game Reality.**
+**Status:** **Source findings and TEST 0.5.5.3 instrument, with partial GIANTS 1.24 Reality validation on Riverbend Field 29; Mindenerwald Field 77 physics fixture remains untested.** See [field log findings](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md).
 
 ## Question and bounded sources
 
