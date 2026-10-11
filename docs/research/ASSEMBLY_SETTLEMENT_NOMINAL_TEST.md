@@ -1,6 +1,6 @@
 # TEST 0.5.5.4–0.5.5.5 — Field 77 Nominal Assembly Polygon Screen
 
-**Status:** TEST **0.5.5.5 GIANTS 1.24.0.0 run validated the native vehicle-population fix and nominal static polygon screening of two real *single-member* vehicles** on Field 77; the originally requested *articulated multi-member* case remains untested. No movement or parking. Keep PR draft. The acceptance target remains a complete live tractor-plus-implement, not a root-only surrogate or synthetic map-only corridor.
+**Status:** TEST **0.5.5.5** has now validated GIANTS VehicleSystem enumeration, nominal static screening of single-body vehicles, **and first real two-member assembly capture** on Field 77. The second load in `log(20261011-160955).txt` includes a tractor according to the owner, with `memberCount=2` reported by native attached-assembly traversal. This remains read-only polygon evidence: no terminal clearance, manoeuvre, approach, run-out or parking has been validated. Keep PR draft.
 
 ## Why this test follows the source studies
 
@@ -45,6 +45,38 @@ Counts partition each **finite, hypothetical** screening grid of 144 positions; 
 **Unresolved — Articulated Assembly Witness:** both observed `memberCount=1`. That is normal if the actual roots were self-propelled machines with no attached GIANTS children, but the log does **not** publish vehicle type names and cannot establish their identities or whether the user intended to have an attached implement. Do not reinterpret one member as a tractor-plus-tool or claim hitch geometry was tested. The full selected Physical Assembly contract must be challenged with a recognisable **root tractor + hitched implement** in Field 77 at scan time, expecting `memberCount>=2` and dimensions consistent with both. If such an assembly is actually present but capture still reports one, that becomes **Attachment Membership Evidence** failure to investigate before further movement architecture.
 
 **Decision:** validate the two available single-body results as **polygon-only discovery**; retain the existing TEST **0.5.5.5** for an articulated-assembly rerun rather than change code or add Control. No PATCH promotion, parking manoeuvre or in-field movement test is supported by this evidence alone. If a genuine coupled assembly is available, place it **inside native Field 77 before loading the save**, keeping diagnostics enabled and no `spatialFarmlandId` override. The one-shot survey will select up to three closest eligible roots. Return the `ASSEMBLY_SETTLEMENT` lines and identify which machine is the tractor/tool.
+
+## GIANTS Reality — real coupled assembly observed, 11 October 2026
+
+Owner supplied `log(20261011-160955).txt` and confirmed the **last loaded game has a tractor**. The log contains **two separate singleplayer loads** using TEST `0.5.5.5`.
+
+- **First load**, 17:07:37–17:07:38: census **56** scene vehicles, two in-field roots selected, both `memberCount=1`; nominal polygon-compatible counts **71/144** and **82/144**, consistent with the preceding single-member evidence.
+- **Second load**, 17:09:23–17:09:24: census **55** scene vehicles, **three** in-field roots selected, one now with **`memberCount=2`** and two remaining `memberCount=1`. Native Field 77 south edge9 and both field and physical-margin surveys completed again without physics-query errors, sample truncation or assembly-screen exceptions.
+
+The newly observed multi-member subject:
+
+| GIANTS nominal witness | Observed |
+| --- | --- |
+| Root node | `904020` |
+| Root position X/Z | `55.89, -248.42` m |
+| Current root inside source field | true |
+| Distance to selected edge | 31.86 m |
+| **Captured attached-assembly members** | **2** |
+| Nominal projected width / length | **3.69 m / 12.04 m** |
+| Static hypothetical positions screened | 144 |
+| Polygon-compatible hypothetical positions | **73** |
+| Neighbouring productive-field polygon conflicts | 62 |
+| Source productive-field polygon conflicts | 9 |
+| Edge endpoint spill / unknown model cases | 0 / 0 |
+| Illustrative sample | Station 207.88 m, root depth +2.00 m, along-edge direction +1 |
+| Reported approach / run-out / terminal state | `WAITING_FOR_EVIDENCE` / `WAITING_FOR_EVIDENCE` / `WAITING_FOR_EVIDENCE` |
+| Configuration witness | `UNVERIFIED_TRANSIT` |
+
+**Discovery — Attached Assembly Census in GIANTS Reality:** `PairTransitRegion.capture` was demonstrably capable of traversing and combining at least two live GIANTS members of a selected real root assembly. The former diagnosis that our test had not yet observed any coupled member was valid for the *earlier load* but is now superseded by this later evidence. We should no longer ask for another identical member-count test or change the capture code speculatively.
+
+**Limits:** the log does **not** include the specific tractor/tool names, whether the implement is folded, member-specific widths, hitch angle or the direction of in-field alignment. The reported nominal envelope corresponds to **current captured articulation**, rigidly projected to a hypothetical edge-parallel root pose. It is not proof that the two members can be driven into that configuration. **73/144** signifies polygon-nonintersecting sampled static modelled poses, **not** 73 terminal places, 3.69m of actual physically clear strip or valid continuous run-out. No field movement was commanded.
+
+**Next architectural question:** given successful native member enumeration, is the next missing evidence a **TRANSIT-configuration witness** for the actual complete Physical Assembly, or should we first specify a **continuous connected exterior corridor** bound by physical obstacles and neighbouring productive fields? The two are independent prerequisites to real movement. Preserve separate Approach Envelope, Run-Out Envelope and Terminal Envelope. No movement-authority escalation follows this result automatically.
 
 ## Reality fixture and tested claim
 
