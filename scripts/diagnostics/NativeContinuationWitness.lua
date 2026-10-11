@@ -75,21 +75,21 @@ local function candidateStatus(witness)
 end
 
 -- Eligibility gates production of the witness, not just its log line.
--- Disabled DEBUG means no actor-root, native-job or lease reads.
+-- Disabled DIAGNOSTIC means no actor-root, native-job or lease reads.
 local function enabled(publisher)
     if type(publisher)~="table"
         or type(publisher.isEligible)~="function" then return false end
     local ok,available=pcall(publisher.isEligible,publisher,
-        "DEBUG","INFO","NATIVE_CONTINUATION_WITNESS")
+        "DIAGNOSTIC","INFO","NATIVE_CONTINUATION_WITNESS")
     return ok and available==true
 end
 local function publish(state,code,detail)
-    -- At most four DEBUG samples per interruption; never a per-frame dump.
+    -- At most four DIAGNOSTIC samples per interruption, never per-frame.
     -- Publication failure is never allowed to affect GIANTS or OMW Control.
     if type(state.publisher)~="table"
         or type(state.publisher.publish)~="function" then return end
     pcall(state.publisher.publish,state.publisher,
-        "DEBUG","INFO",code,function()
+        "DIAGNOSTIC","INFO",code,function()
             return {detail=detail,version=OuttaMyWay.VERSION}
         end)
 end
