@@ -19,13 +19,13 @@ Capture native job identity, available vehicle root identity, observed reason id
 
 ## Validation
 
-The candidate native event was validated within a bounded FS25 `1.24.0.0` test envelope: TS019 distinguished manual stop from successful FIELDWORK completion; TS003 observed a Hold & Relocate stop/restart without false success classification. Other native failure and replacement variants remain unvalidated. GitHub Actions checks structural and offline witness behaviour. In-game validation must compare:
+The probe is a **source-supported hypothesis**, not in-game confirmation of FS25 1.24 behaviour. GitHub Actions checks structural and offline witness behaviour. In-game validation must compare:
 1. natural FIELDWORK completion (prefer TS003);
 2. deliberate manual FIELDWORK stop;
 3. OMW-induced native job replacement / blocked-worker recovery handback;
 4. native FIELDWORK failure or interruption.
 
-For further validation, inspect actual stop-message class, timing and job/vehicle association. In particular validate whether the success class is ever delivered for a manual stop or an OMW replacement. Any such counterexample invalidates the candidate positive-admission rule; preserve that result as evidence.
+For each, inspect actual stop-message class, timing and job/vehicle association. In particular validate whether the success class is ever delivered for a manual stop or an OMW replacement. Any such counterexample invalidates the candidate positive-admission rule; preserve that result as evidence.
 
 The Observer itself MUST NOT issue TRANSIT, stop/start/replace AI jobs, run relocation, register navigation agents or modify Control/Regulation. A separately governed Completion Transit consumer may respond to positive evidence with transport-configuration requests only. Existing paired, solo and static relocation mechanics remain unchanged.
 
