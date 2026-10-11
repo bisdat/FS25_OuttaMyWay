@@ -28,6 +28,8 @@ local modules={
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
+    "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/observation/AssemblySettlementProbe.lua",
     "scripts/observation/PhysicalMarginConstraintProbe.lua",
     "scripts/observation/FarmSpatialContextProbe.lua",
     "scripts/control/CompletionTransitRuntime.lua",
