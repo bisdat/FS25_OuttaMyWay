@@ -1,3 +1,17 @@
+# v0.5.5.0 PATCH CHECKPOINT — Completion-Triggered TRANSIT Plateau
+
+**Accepted source baseline:** `main` after the owner's merge of [PR #480](https://github.com/bisdat/FS25_OuttaMyWay/pull/480), incorporating native FIELDWORK completion observation from the preceding investigation and request-only Completion TRANSIT tested as `0.5.4.2`. This PATCH promotes the tested baseline to `0.5.5.0`, resetting BUILD to zero within the 0.5 architectural epoch.
+
+**GIANTS Reality evidence:** [TS019](https://github.com/bisdat/FS25_OuttaMyWay/pull/480#issuecomment-6107614949) observed Condor's native `AIMessageSuccessFinishedJob` and the accepted request to enter TRANSIT, with actual TRANSIT confirmed in-game. Manually stopped Patriot produced a non-success job-stop classification and no completion TRANSIT request. The preceding TS003 stop/restart test classified OMW's native job replacement as non-success. The CI structural, generated-reference and Lua contract checks passed for PR #480.
+
+**Accepted physical behaviour:** Successful GIANTS FIELDWORK termination may send native work-off, raise and supported fold requests for a completed assembly. The Completion TRANSIT runtime has an independent mechanism state and shares only the established native command-plan builder with Hold & Relocate. It neither audits agronomy nor moves/parks assemblies. No automatic off-field egress is admitted, and accepted request does not prove physical readiness. Existing paired/solo and Reactive Static Blocker Recovery responsibilities remain unchanged.
+
+**Configuration decision:** The accepted plateau uses existing global product `enabled` to admit completion TRANSIT. The separately persisted player choice proposed by [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476) remains an outstanding future capability requirement; it is not retroactively a blocker to retaining this validated request-only baseline.
+
+**PATCH boundary:** Exactly three files change relative to merged TEST `0.5.4.2`: `scripts/config.lua`, `modDesc.xml` and `CHANGELOG.md`. Architecture/Specification alignment is a separate documentation responsibility, not part of this PATCH. No Control, movement, detection, plan selection, logging, player setting or other runtime behaviour is changed by this checkpoint. Physical Off-Field Settlement and parking allocation will be designed and tested in independent increments.
+
+**Governance:** Accepted field-validated PATCH plateau; this is not a claim of universal completion-detection coverage, physical parking readiness, or canonical release beyond project policy.
+
 # v0.5.4.0 PATCH CHECKPOINT — Steering-Aware Paired Egress Plateau
 
 **Accepted source baseline:** `main` after the owner's merge of [PR #477](https://github.com/bisdat/FS25_OuttaMyWay/pull/477) (merged 11 October 2026, commit `40fc3b98622f002aa15895c94104d4142071c047`), containing field-tested TEST `0.5.3.6`. [Issue #470](https://github.com/bisdat/FS25_OuttaMyWay/issues/470) was closed by the owner. This checkpoint records the **Validated Plateau within the existing 0.5 architectural epoch**; it is accepted but **non-canonical**.
