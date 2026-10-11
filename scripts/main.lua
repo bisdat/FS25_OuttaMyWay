@@ -26,6 +26,7 @@ local modules={
     "scripts/publication/LogPublication.lua",
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
+    "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -70,6 +71,7 @@ end)
 -- Observation supplies native pair evidence but never issues a Pair Commitment.
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
+OuttaMyWay.nativeJobCompletionProbe=OuttaMyWay.NativeJobCompletionProbe.new(OuttaMyWay.configuration)
 OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(
     OuttaMyWay.configuration,OuttaMyWay.nativeBlockageObservation)
 OuttaMyWay.configuration:addChangeListener(function(notification)
@@ -82,6 +84,7 @@ OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaM
 if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.nativeBlockageObservation)
+    addModEventListener(OuttaMyWay.nativeJobCompletionProbe)
     addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end
