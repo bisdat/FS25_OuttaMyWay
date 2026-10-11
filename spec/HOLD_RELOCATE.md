@@ -52,6 +52,14 @@ Once paired movement starts, its authority is conditional, separate from admissi
 
 This is a movement-continuation fail-safe, not a corrected steering controller or proof of collision-free physical settlement. Incomplete root evidence terminates an active paired movement conservatively.
 
+### One-shot Candidate Steering Demand — TEST hypothesis
+
+A geometric pair egress candidate must not be treated as kinematically equivalent to other viable candidates merely because it lies within the nominal reverse bearing allowance. For **both possible movers**, after current polygon/represented-corridor eligibility, make a bounded, non-actuating prediction of the actual **native steering-node local target direction** from the candidate's existing world reference. In reverse, use the same optional GIANTS tool-reverser correction and vehicle reverser frame as the subordinate actuation mechanism; for forward candidates use the native AI steering frame. Do not command `driveToPoint`, change folding/Control or ask GIANTS to reveal its future course.
+
+During TEST 0.5.3.6, rank **complete spatial egress above partial staging**, then prefer the smaller **initial effective local target deviation from straight reverse/forward** among equally complete candidate plans before established optionality, validated oblique-bearing, distance and nominal demand preferences. This is a *candidate ordering experiment*, not a claim that a small command angle guarantees a stable articulated path, or that an individual global angle cutoff is safe. A candidate without a readable native command frame/tool correction cannot become an affirmative movement choice; where all candidates lack steering evidence, no new paired Control is admitted. An evaluation is made only on pair admission, never continuously during steering. The existing movement-continuation divergence, field-boundary and 20 s guards remain authoritative throughout movement.
+
+**Logging ownership:** a bounded DEBUG selection event identifies chosen direction, effective native local command deviation, the historic geometry-only preference and whether selection changed. At DIAGNOSTIC eligibility, only a finite shortlist of candidate bearing/progress comparisons is published. The post-correction calculations used for actual candidate ranking are **production Situation Assessment** regardless of logging; only the additional publication and optional engineering witness sensors may be gated by diagnostics. No changed reverse transform, steering horizon, motion speed, mover Hold, peer Regulation or independent actor lifecycle follows from this experiment. TS004 requires in-game validation; TS001 and TS015 are explicit regression fixtures.
+
 ### Clearance Sufficiency — finite Observation experiment
 
 For the current TS004 investigation, the accepted **WORKING-width-plus-5 m** movement objective remains unchanged as an admission/completion heuristic; its attainment does not establish spatial or temporal physical clearance. Preserve individual mover and peer Control lifecycles.
@@ -60,7 +68,7 @@ For a live admitted pair only, capture a **finite, passive clearance witness** a
 
 Record both actor roots and observed current steering-node headings, the selected egress direction and projected root travel, horizontal **root-to-root separation**, and a **nominal current member-envelope gap** based on actual current orientation of the *already selected* GIANTS base-size member rectangles. Compare successive gap observations to report its observed closing rate and, only when positive and closing, a **straight-line time-to-zero gap proxy**. These geometric figures are **not** verified collision spacing, working implement sweep, mechanical hitch angle, or GIANTS future path. If any member shape is missing, publish unavailable instead of certifying positive clearance. Do not use readings to decide Control in this experiment.
 
-Only the accepted pair's existing captured member records are re-observed at the finite sample points. There is no extra `getDriveData()`, no per-frame shape census, native drive wrapper, relocation retry, changed movement direction, altered Regulation or Hold duration, or automatic handback gate. DEBUG-class publications make comparison possible with DEBUG enabled and DIAGNOSTIC off. The witness checks publication eligibility **before sensor or geometry work**, so under NORMAL policy it does not take physical samples; when DEBUG is disabled mid-witness, the witness ends without another read. Offline fixtures validate geometry math and bounded sampling; GIANTS field runs validate physical relevance and timing sensitivity.
+Only the accepted pair's existing captured member records are re-observed at the finite sample points. There is no extra `getDriveData()`, no per-frame shape census, native drive wrapper, relocation retry, changed movement direction, altered Regulation or Hold duration, or automatic handback gate. These high-detail time-series observations are **DIAGNOSTIC class** only. The witness checks DIAGNOSTIC eligibility **before sensor or geometry work**, so ordinary NORMAL/DEBUG runs do not take optional clearance-witness samples; disabling DIAGNOSTIC mid-witness cancels its sampling without another read. These optional observations must remain separate from steering calculations necessary for production candidate assessment. Offline fixtures validate geometry math and bounded sampling; GIANTS field runs validate physical relevance and timing sensitivity.
 
 ### Post-interruption Native Continuation Witness — investigation
 
@@ -68,7 +76,7 @@ Following a paired `EGRESS_INTERRUPTED`, a **passive, non-authorising** witness 
 
 Each finite observation records native job-reference continuity, continued membership of the admitted GIANTS field-course strategy, its `isBlocked` state, native AI active flag, root displacement measured from interruption, passive `aiDriveParams.valid` and `maxSpeed`, and the presence of OMW-owned reverse, TRANSIT, Regulation and Hold leases for each participant. The original candidate is reported as the same native pair occurrence, a new one, or absent, together with whether it was already attempted. Absent/unavailable sources are labelled, not invented.
 
-The witness cannot prove a fresh `driveToPoint` call, physical clearance, successful configuration restoration, or GIANTS recoverability. It must not install drive wrappers, call `getDriveData()`, generate blocked events, reacquire Control, or retry an interrupted manoeuvre. The four observations are bounded **DEBUG-class, INFO-severity** evidence facts for this investigation and require no DIAGNOSTIC setting. Publication eligibility is checked before root/job/strategy/lease sampling, including after a runtime policy change; suppressed DEBUG performs no witness sensor work. Inactive witness work is zero except for a lightweight active-state check.
+The witness cannot prove a fresh `driveToPoint` call, physical clearance, successful configuration restoration, or GIANTS recoverability. It must not install drive wrappers, call `getDriveData()`, generate blocked events, reacquire Control, or retry an interrupted manoeuvre. The four observations are bounded **DIAGNOSTIC-class, INFO-severity** engineering facts for this investigation. Publication eligibility is checked before root/job/strategy/lease sampling, including after a runtime policy change; suppressed DIAGNOSTIC performs no optional witness sensor work. Inactive witness work is zero except for a lightweight active-state check.
 
 ## Reactive static Control and release
 
@@ -103,6 +111,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | --- | --- |
 | [`scripts/coordination/HoldRelocateCoordinator.lua`](../scripts/coordination/HoldRelocateCoordinator.lua) | `REALISES` |
 | [`scripts/coordination/PairTransitRegion.lua`](../scripts/coordination/PairTransitRegion.lua) | `SUPPORTS` |
+| [`scripts/coordination/PairSteeringDemand.lua`](../scripts/coordination/PairSteeringDemand.lua) | `SUPPORTS` |
 | [`scripts/coordination/ProjectedEgressRegion.lua`](../scripts/coordination/ProjectedEgressRegion.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeReverseMechanism.lua`](../scripts/control/mechanisms/NativeReverseMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
@@ -122,6 +131,7 @@ Native Regulation, movement and translation-only Hold use distinct scoped contro
 | [`tests/shell/hold_relocate.lua`](../tests/shell/hold_relocate.lua) | `CHALLENGES` |
 | [`tests/shell/pair_native_drive_interposition.lua`](../tests/shell/pair_native_drive_interposition.lua) | `CHALLENGES` |
 | [`tests/shell/pair_transit_region.lua`](../tests/shell/pair_transit_region.lua) | `CHALLENGES` |
+| [`tests/shell/pair_steering_demand.lua`](../tests/shell/pair_steering_demand.lua) | `CHALLENGES` |
 | [`tests/shell/pair_clearance_witness.lua`](../tests/shell/pair_clearance_witness.lua) | `CHALLENGES` |
 | [`tests/shell/pair_transit_settlement.lua`](../tests/shell/pair_transit_settlement.lua) | `CHALLENGES` |
 | [`tests/shell/native_reverse_mechanism.lua`](../tests/shell/native_reverse_mechanism.lua) | `CHALLENGES` |
