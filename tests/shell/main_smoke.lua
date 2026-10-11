@@ -97,6 +97,7 @@ source=function(path)
         or path=="scripts/observation/NativeJobCompletionProbe.lua"
         or path=="scripts/observation/FarmEdgeGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
+        or path=="scripts/assessment/SettlementStraightRunout.lua"
         or path=="scripts/observation/AssemblySettlementProbe.lua"
         or path=="scripts/observation/PhysicalMarginConstraintProbe.lua"
         or path=="scripts/observation/FarmSpatialContextProbe.lua"
