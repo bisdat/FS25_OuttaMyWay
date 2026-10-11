@@ -72,7 +72,7 @@ function Region.capture(vehicle)
     if not ok or not finite(rootX) or not finite(rootZ) then
         return nil,"TRANSIT_ROOT_EVIDENCE_UNAVAILABLE"
     end
-    local corners,seen,count={}, {},0
+    local corners,seen,members,count={}, {},{},0
     local function visit(object)
         if type(object)~="table" or object.isDeleted==true
             or object.rootNode==nil then return false,"TRANSIT_MEMBER_UNAVAILABLE" end
@@ -82,6 +82,11 @@ function Region.capture(vehicle)
         if count>MAX_MEMBERS then return false,"TRANSIT_MEMBER_BUDGET_EXCEEDED" end
         local w,l,wo,lo=memberSize(object)
         if w==nil then return false,"TRANSIT_MEMBER_SIZE_UNAVAILABLE" end
+        -- Retain the native members and their known base-size rectangles so
+        -- a finite, passive witness can reobserve current articulated poses.
+        -- The planner still uses exactly the same original corner snapshot.
+        members[#members+1]={object=object,width=w,length=l,
+            widthOffset=wo,lengthOffset=lo}
         for _,right in ipairs({-1,1}) do
             for _,forward in ipairs({-1,1}) do
                 local placed,x,_,z=pcall(localToWorld,object.rootNode,
@@ -108,7 +113,7 @@ function Region.capture(vehicle)
     local valid,reason=visit(vehicle)
     if not valid or #corners==0 then return nil,reason or "TRANSIT_ENVELOPE_UNAVAILABLE" end
     return {rootX=rootX,rootZ=rootZ,corners=corners,memberCount=count,
-        memberObjects=seen,
+        memberObjects=seen,memberGeometry=members,
         basis="GIANTS_SELECTED_RUNTIME_BASE_SIZE_UNION",
         negativeClearanceAuthority=false},nil
 end
@@ -441,4 +446,102 @@ function Region.planPair(commitment,preferred,alternative)
     best.mover=nil;best.other=nil;best.moverIndex=nil
     best.cascadeAttempts=attempts
     return best,mover,other
+end
+
+-- Passive *current* nominal envelope separation between two previously
+-- admitted physical assemblies. Unlike the planner's translated corners,
+-- each actual selected member node is transformed again at observation time:
+-- this captures changes in heading/articulation, but not GIANTS collision
+-- shapes, moving booms, ground contact or a complete swept path. Never use
+-- this proxy as permission for Control or as proof of safe clearance.
+local function currentRectangle(member)
+    if type(member)~="table" or type(member.object)~="table"
+        or member.object.isDeleted==true or member.object.rootNode==nil
+        or type(localToWorld)~="function" then return nil end
+    local w,l=member.width,member.length
+    local wo,lo=member.widthOffset,member.lengthOffset
+    if not finite(w) or not finite(l) or not finite(wo) or not finite(lo)
+        then return nil end
+    local vertices={}
+    local positions={{-1,-1},{1,-1},{1,1},{-1,1}}
+    for i=1,4 do
+        local p=positions[i]
+        local ok,x,_,z=pcall(localToWorld,member.object.rootNode,
+            wo+p[1]*w*0.5,0,lo+p[2]*l*0.5)
+        if not ok or not finite(x) or not finite(z) then return nil end
+        vertices[i]={x=x,z=z}
+    end
+    return vertices
+end
+
+local function projectionsDisjoint(a,b)
+    for edge=1,4 do
+        local nextEdge=edge%4+1
+        local dx=a[nextEdge].x-a[edge].x
+        local dz=a[nextEdge].z-a[edge].z
+        local nx,nz=-dz,dx
+        local amin,amax,bmin,bmax
+        for j=1,4 do
+            local av=a[j].x*nx+a[j].z*nz
+            local bv=b[j].x*nx+b[j].z*nz
+            amin=amin and math.min(amin,av) or av
+            amax=amax and math.max(amax,av) or av
+            bmin=bmin and math.min(bmin,bv) or bv
+            bmax=bmax and math.max(bmax,bv) or bv
+        end
+        if amax<bmin or bmax<amin then return true end
+    end
+    return false
+end
+
+local function vertexEdgeSquared(p,a,b)
+    local dx,dz=b.x-a.x,b.z-a.z
+    local sq=dx*dx+dz*dz
+    local t=sq>0 and math.max(0,math.min(1,
+        ((p.x-a.x)*dx+(p.z-a.z)*dz)/sq)) or 0
+    local x,z=a.x+dx*t,a.z+dz*t
+    return (p.x-x)^2+(p.z-z)^2
+end
+
+local function rectangleGap(a,b)
+    if not projectionsDisjoint(a,b)
+        and not projectionsDisjoint(b,a) then return 0 end
+    local nearest=math.huge
+    for edge=1,4 do
+        local nextEdge=edge%4+1
+        for j=1,4 do
+            nearest=math.min(nearest,
+                vertexEdgeSquared(a[j],b[edge],b[nextEdge]),
+                vertexEdgeSquared(b[j],a[edge],a[nextEdge]))
+        end
+    end
+    return math.sqrt(nearest)
+end
+
+function Region.observePairNominalGap(first,second)
+    local one=type(first)=="table" and first.memberGeometry or nil
+    local two=type(second)=="table" and second.memberGeometry or nil
+    if type(one)~="table" or #one==0
+        or type(two)~="table" or #two==0 then
+        return nil,"NOMINAL_MEMBER_GEOMETRY_UNAVAILABLE"
+    end
+    local a,b={},{}
+    for i=1,#one do
+        local rect=currentRectangle(one[i])
+        if rect==nil then return nil,"CURRENT_MEMBER_POSE_UNAVAILABLE" end
+        a[#a+1]=rect
+    end
+    for i=1,#two do
+        local rect=currentRectangle(two[i])
+        if rect==nil then return nil,"CURRENT_MEMBER_POSE_UNAVAILABLE" end
+        b[#b+1]=rect
+    end
+    local gap=math.huge
+    for i=1,#a do
+        for j=1,#b do
+            gap=math.min(gap,rectangleGap(a[i],b[j]))
+            if gap==0 then return 0,nil end
+        end
+    end
+    return gap,nil
 end
