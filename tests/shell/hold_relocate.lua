@@ -2,6 +2,10 @@
 -- regulate the remaining worker independently. Solo/static are separate.
 OuttaMyWay={ProjectedEgressRegion={}}
 local selectedMode="OBLIQUE_REVERSE"
+OuttaMyWay.ProjectedEgressRegion.isRootInField=function(poly,x,z)
+    return x>=poly.xs[1] and x<=poly.xs[2]
+        and z>=poly.zs[1] and z<=poly.zs[3]
+end
 OuttaMyWay.ProjectedEgressRegion.planPairCascade=function(_,preferred,other)
     if selectedMode=="NONE" then
         return nil,nil,nil,"NO_FEASIBLE_PAIR_EGRESS"
