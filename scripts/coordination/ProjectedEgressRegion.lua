@@ -216,13 +216,13 @@ end
 
 -- Reverse 70 degrees for both mover assignments precedes any non-axial,
 -- partner-withdrawing centroid option. Pure axial travel is never an exit.
-function Region.planPairCascade(commitment,preferred,alternative)
+function Region.planPairCascade(commitment,preferred,alternative,steeringAssessor)
     -- A prepared pair uses selected-runtime assembly envelopes, not the
     -- legacy productive-width ray scale.
     if type(preferred.transitFootprint)=="table"
         or type(alternative.transitFootprint)=="table" then
         return OuttaMyWay.PairTransitRegion.planPair(
-            commitment,preferred,alternative)
+            commitment,preferred,alternative,steeringAssessor)
     end
     local attempts=0
     for _,mode in ipairs({"OBLIQUE_REVERSE","CENTROID"}) do
