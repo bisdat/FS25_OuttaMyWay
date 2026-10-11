@@ -95,7 +95,7 @@ function Probe:onOverlapHit(node)
     if type(getName)=="function" then
         local ok,n=pcall(getName,node)
         if ok and type(n)=="string" then
-            name=string.sub(n,1,48)
+            name=string.sub(string.gsub(n,"[^%w_%-]","_"),1,48)
         end
     end
     state.nodes[#state.nodes+1]=tostring(node)..":"..name
