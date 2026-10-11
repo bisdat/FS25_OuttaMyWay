@@ -78,6 +78,20 @@ A physics sweep of a fixed box may **positively detect** an obstacle in a repres
 
 **Acceptance for the proposed diagnostic experiment:** capture at least one meaningful positive witness and one meaningful counterexample or explicit missing-representation result on the named map control points; preserve unknowns. **Do not require parking success**, since no parking controller exists.
 
+## TEST 0.5.5.3 experimental implementation (pending Reality)
+
+The proposal above has been encoded as a **fixture-guarded, bounded** adjunct `scripts/observation/PhysicalMarginConstraintProbe.lua` called after the existing successful `FarmSpatialContextProbe:survey()`; it produces `PHYSICAL_MARGIN_CAPABILITY`, `PHYSICAL_MARGIN_POINT`, `PHYSICAL_MARGIN_SURVEY_FINISHED`, or explicit `PHYSICAL_MARGIN_UNAVAILABLE`. This experiment runs exclusively with the original server-only DIAGNOSTIC gate and is allowed to fail without overturning the preceding native Field Polygon / nav / farmland baseline.
+
+**Probe regions:**
+- Mindenerwald default Field 77: preferred edge **9**, stations at 25% and 75%, depths `-2,1,2,3,4,6,8,12 m`; known hedge control edge **2**, stations 8 m and 40 m, depths `2,6,12 m`.
+- Riverbend with `spatialFarmlandId=2`: resolved registered Field **29**, preferred edge **1**, quarter/three-quarter stations at depths `-2,2,6,12,18,24,30 m`; north-road control edge **7** at half-length with `2,6,12,18,24,30 m`.
+- Both fixtures require their logged source edge lengths within **3 m** of the original Reality observations. Other map identities are explicitly unavailable rather than guessed.
+- Per survey maximum **24** transverse point positions, **22** synchronous overlap calls, bounded per-box hit records. The box is intentionally small (0.9 m × 0.9 m × 2 m, bottom 0.1 m above terrain): it is a *representation witness*, **not** the vehicle envelope.
+
+**Validation disposition:** CI covers fake native `overlapBox` callbacks with TREE/ROAD flags, absent and failing APIs, and mismatched fixture geometry. These only validate observation discipline, not GIANTS 1.24 runtime availability or actual road/hedge coverage.
+
+**Requested logs:** Both maps in TEST `0.5.5.3`, DIAGNOSTICS=true; Riverbend also requires `spatialFarmlandId="2"`. Compare `[PHYSICAL_MARGIN]` messages against the two in-game map references and preserve a screenshot if a collider was actually seen along the chosen cross-section. A missing hedge or ROAD hit is a **useful negative discovery**; do not silently broaden the scan or invent parking clearance.
+
 ## Authority and version disposition
 
 - **Architecture:** The [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md) needs evidence of limiting features and unknowns; these sources offer candidate *witnesses*, not a change in settlement policy.
