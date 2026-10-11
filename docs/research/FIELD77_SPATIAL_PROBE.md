@@ -59,3 +59,15 @@ A mismatch improves the architecture by identifying missing physical/world conce
 **Next observation question:** What is the *along-edge continuous free-space interval* and distance to the first other field/physical obstacle at each edge station, rather than the segment's single minimum neighbouring-field gap and aggregate IDs? Investigate road/hedge native collision evidence independently before any Settlement Assessment. No change to Completion TRANSIT or other Control is justified by this survey.
 
 **Concurrent unrelated OMW behaviour:** Shortly after surveying, at 12:50:26–.39, an existing Hold & Relocate episode ran and reported `NATIVE_RESTART_ACCEPTED`; native stop reason `nil` was classified `successClass=false`. This is not evidence that the spatial survey commanded movement or caused the recovery.
+
+## Owner's in-game map update — southern preference and vertex indexing (11 October 2026)
+
+The owner supplied a higher-quality FS25 in-game map of displayed **Field/Farmland 77** with visible neighbouring areas labelled **68, 69, 70** to the left, a road across the top and a green exterior band across the bottom. The owner explicitly prefers the **southernmost exterior margin** for parallel parking and referred to it as "edge 10".
+
+**Numbering check against recorded GIANTS coordinates:** In the TEST `0.5.5.1` diagnostic ordered-vertex sequence, the south-facing near-horizontal edge is **probe edge 9**, from `(X=228.15,Z=-243.04)` to `(X=-0.06,Z=-207.44)`, length **230.97 m**, local outward normal `(+0.15,+0.99)`. Probe **edge 10** continues from the latter southwest endpoint to `(X=-10.56,Z=-343.82)`, length **136.78 m**, facing west (outward `(-1.00,+0.08)`). Probe **edge 11** then runs the upper western boundary. Edge indices are therefore *geometry-registration labels*, not visual map labels.
+
+**Interpretation awaiting explicit owner confirmation:** The described *southernmost* strip is edge 9 in the recorded probe, even though the owner's text calls it edge 10. Do not silently change the underlying polygon indexing or transfer the preference to the lower-left (edge 10) segment. Clarify whether "southernmost" or the literal index "10" identifies the desired strip.
+
+**Existing empirical cross-check:** Probe edge 9 has **39/39 unblocked navigation-point samples at each +2/+6/+12 m offset**. At +6/+12 m the sampled farmland parcel is **49** with owner **1** (native farmland ID, not necessarily displayed Field 49). At +12 m some stations also lie inside a *different registered field polygon*. Nearest other field boundary across edge 9 is **6.88 m**, a segment-wide minimum that may be near a corner. The map does not georeference the *usable* strip width and gives no full-envelope or road clearance certificate.
+
+**Architectural significance:** The owner corroborates the southern margin as a first human-preferred **Edge-Aligned Settlement** investigation fixture, parallel to Riverbend's eastern edge 1. Keep separate the player's visual boundary names, the GIANTS native ordered `edge` index, the registered `field` ID and `farmlandId`. No parking permission or movement is admitted by the new screenshot.
