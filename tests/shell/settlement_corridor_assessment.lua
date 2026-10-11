@@ -1,5 +1,5 @@
--- TEST 0.5.5.4: nominal actual-assembly polygon screen, not parking.
-OuttaMyWay={VERSION="0.5.5.4"}
+-- TEST 0.5.5.6: nominal actual-assembly polygon screen plus straight swept envelope; no parking.
+OuttaMyWay={VERSION="0.5.5.6"}
 local events={}
 OuttaMyWay.LogPublication={origin=function(name)
     assert(name=="ASSEMBLY_SETTLEMENT")
@@ -15,6 +15,7 @@ local function find(code)
 end
 dofile("scripts/observation/FarmEdgeGeometry.lua")
 dofile("scripts/assessment/SettlementCorridorAssessment.lua")
+dofile("scripts/assessment/SettlementStraightRunout.lua")
 dofile("scripts/coordination/PairTransitRegion.lua")
 dofile("scripts/observation/AssemblySettlementProbe.lua")
 local G=OuttaMyWay.FarmEdgeGeometry
@@ -125,6 +126,14 @@ assert(observation.nominalScreened==144
     and observation.terminal=="WAITING_FOR_EVIDENCE"
     and observation.configuration=="UNVERIFIED_TRANSIT")
 assert(observation.note=="CANDIDATE_ONLY_NEVER_MOVEMENT_AUTHORITY")
+assert(observation.straightSweepSeeds>=1 and observation.straightSweepSeeds<=4)
+assert(observation.straightSweepQueryCount<=40)
+local sweep=assert(find("ASSEMBLY_SETTLEMENT_STRAIGHT_SWEEP"))
+assert(sweep.memberCount==2 and sweep.status=="POLYGON_ONLY_CONTINUOUS_GEOMETRY")
+assert(sweep.approach=="WAITING_FOR_EVIDENCE"
+    and sweep.runOut=="WAITING_FOR_EVIDENCE"
+    and sweep.terminal=="WAITING_FOR_EVIDENCE")
+assert(sweep.note=="REGISTERED_FIELD_POLYGONS_ONLY_NO_CONTROL")
 assert(mutations==0,"geometry screening cannot actuate")
 assert(find("ASSEMBLY_SETTLEMENT_FINISHED").observedSubjects==1)
 
@@ -134,6 +143,7 @@ local unresolved=assert(find("ASSEMBLY_SETTLEMENT_NOMINAL_SCREENED"))
 assert(unresolved.nominalScreened==0
     and unresolved.reason=="GEOMETRY_OR_NEIGHBOR_CATALOGUE_UNAVAILABLE")
 assert(unresolved.nominalCandidateCount==0)
+assert(find("ASSEMBLY_SETTLEMENT_STRAIGHT_SWEEP")==nil)
 
 events={}
 assert(probe.run(77,p77,e77,{},false,2)==false)
