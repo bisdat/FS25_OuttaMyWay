@@ -1,6 +1,6 @@
-# TEST 0.5.5.4–0.5.5.5 — Field 77 Nominal Assembly Polygon Screen
+# TEST 0.5.5.4–0.5.5.6 — Field 77 Nominal Assembly and Straight-Sweep Evidence
 
-**Status:** TEST **0.5.5.5** has now validated GIANTS VehicleSystem enumeration, nominal static screening of single-body vehicles, **and first real two-member assembly capture** on Field 77. The second load in `log(20261011-160955).txt` includes a tractor according to the owner, with `memberCount=2` reported by native attached-assembly traversal. This remains read-only polygon evidence: no terminal clearance, manoeuvre, approach, run-out or parking has been validated. Keep PR draft.
+**Status:** TEST **0.5.5.5** validated native VehicleSystem enumeration, nominal static screening and a **real two-member tractor assembly** on Field 77. TEST **0.5.5.6** adds a strictly read-only *continuous rigid straight-sweep of that nominal member snapshot against registered field polygons*, following the accepted Approach / Run-Out / Terminal architecture. It awaits owner GIANTS 1.24 Reality; no actual run-out, physical corridor, movement or parking has been validated. TRANSIT is a request only. Keep PR draft.
 
 ## Why this test follows the source studies
 
@@ -77,6 +77,25 @@ The newly observed multi-member subject:
 **Limits:** the log does **not** include the specific tractor/tool names, whether the implement is folded, member-specific widths, hitch angle or the direction of in-field alignment. The reported nominal envelope corresponds to **current captured articulation**, rigidly projected to a hypothetical edge-parallel root pose. It is not proof that the two members can be driven into that configuration. **73/144** signifies polygon-nonintersecting sampled static modelled poses, **not** 73 terminal places, 3.69m of actual physically clear strip or valid continuous run-out. No field movement was commanded.
 
 **Owner clarification (11 October 2026):** the TRANSIT-configuration witness proposed here is **withdrawn**. OuttaMyWay's established policy is to **request TRANSIT without checking or waiting for fold completion**. The next relevant validation is a **continuous connected exterior corridor** that admits a real assembly's approach, forward run-out and complete off-field stopping occupancy. Preserve the three envelopes and the uncertainty inherent in nominal geometry; do not introduce readiness gating. No movement-authority escalation follows this result automatically.
+
+## TEST 0.5.5.6 — Connected nominal polygon geometry (pending GIANTS Reality)
+
+**New falsifiable hypothesis:** multiple nonintersecting static poses do not necessarily form a continuous **longitudinal** polygon-compatible swept region for a **two-member** nominal assembly. A narrow neighbouring registered field can lie between endpoints. Rigid straight translation of all current nominal member rectangles provides a mathematically continuous geometric witness *in the registered field-polygon layer*, without requiring movement or further pointwise physics sampling.
+
+**No architecture rediscovery:** the Settlement Corridor's Approach, Run-Out and Terminal envelopes already exist. This is a bounded geometry experiment **within** the current `SETTLEMENT_CORRIDOR_ASSESSMENT` jurisdiction—not a proposed new movement feature, not a TRANSIT-readiness check and not a physical clearance contract.
+
+**Experiment:**
+
+- Source Mindenerwald registered Field 77, owner-selected edge **9**, same georeferenced fixture, no `spatialFarmlandId` selector. Capture the actual complete root-plus-attached-implement nominal rectangles using already GIANTS-validated `PairTransitRegion.capture`.
+- Retain the existing **144 static poses** and counts. Choose **no more than four additional direction-aware forward seeds**, using shallowest root depth and greatest forward edge-endpoint headroom independently for each travel direction; do **not** confuse the previously logged static `exampleStationM=207.88` with a path start or recommended run-out.
+- For each seed, form a **single continuous swept polygon for each member**, equal to the convex hull of that member's original four rectangle corners and its corners after a straight rigid displacement, and test the swept polygon against the source and other registered field polygons. The hull contains all intermediate poses, not a string of disconnected sample points. Full edge-endpoint horizon first; if it intersects a field, use up to **eight bisections** to bracket an obstacle-limited nominal forward extent. At most **four seeds × ten polygon-sweep checks** per selected assembly, with no physics queries.
+- Publish at most **four `[ASSEMBLY_SETTLEMENT][ASSEMBLY_SETTLEMENT_STRAIGHT_SWEEP]`** records per selected assembly, with rootNode, memberCount, direction, native edge station, outward root depth, tested endpoint horizon, polygon-only clear lower bound, upper conflict bracket, limiting field type and per-seed checks. The old `ASSEMBLY_SETTLEMENT_NOMINAL_SCREENED` report gains total seed count, check count and maximum sampled polygon-only clear lower bound.
+
+**Non-negotiable uncertainty:** A positive geometric lower bound proves **only** that all nominal member rectangles remain outside registered working-field polygons throughout **hypothetical rigid straight translation**. It neither connects the actual in-field pose to that virtual start nor accounts for native steering and changing articulation, hedges, fences, roads, terrain, active workers or actual stopping space. The physical **Approach, Run-Out, Terminal** states remain `WAITING_FOR_EVIDENCE`. No number of metres here is an admitted safe-run-out threshold or parking position.
+
+**Owner in-game check:** Launch **TEST `0.5.5.6`** using the same loaded Mindenerwald save with the tractor and attached implement inside Field 77. DIAGNOSTICS enabled; omit farmland selector. The survey runs once about six seconds after map load, no AI job completion or manual vehicle movement required. Supply full log and correlate `rootNode=904020` **only if it is still the same current in-game root** (IDs can change across loads). Compare positive/negative swept distances per direction with the baseline **two-member / 73 of 144 static positions**, and check log completion/performance.
+
+**Falsification:** If both static end poses are polygon-compatible but the hull intersects a neighbouring registered field in between, the discrete-fit count was misleading about connectivity. If all four seed sweeps show uninterrupted nominal polygon travel up to their endpoint horizons, then **registered polygons alone are not the limiting layer at those example sites**, and the next genuine limitation is physical constraints/steering—not another static sample scan. If no useful seeds or missing geometry, retain `WAITING_FOR_EVIDENCE` and name what is absent. No outcome admits real movement.
 
 ## Reality fixture and tested claim
 
