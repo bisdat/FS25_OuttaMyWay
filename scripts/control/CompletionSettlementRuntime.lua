@@ -8,7 +8,7 @@ Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
 local LEG_DEADLINE_MS=180000
-local SPEED_KMH=8
+local SAMPLE_MS=1000
 local function publish(level,code,fields)
     publication:publish("NORMAL",level,code,function()
         fields.version=OuttaMyWay.VERSION
@@ -23,6 +23,23 @@ local function rootPose(vehicle)
         and x==x and z==z then return x,z end
     return nil
 end
+local function playerClaim(vehicle)
+    if type(vehicle)~="table" then return "VEHICLE_UNAVAILABLE" end
+    if type(vehicle.getIsControlled)=="function" then
+        local ok,controlled=pcall(vehicle.getIsControlled,vehicle)
+        if ok and controlled==true then return "NATIVE_PLAYER_CONTROL_ACTIVE" end
+    end
+    local selected=g_currentMission and g_currentMission.controlledVehicle
+    if selected==vehicle then return "MISSION_PLAYER_CONTROL_ACTIVE" end
+    if type(selected)=="table" and type(selected.getRootVehicle)=="function" then
+        local ok,root=pcall(selected.getRootVehicle,selected)
+        if ok and root==vehicle then
+            return "MISSION_ROOT_PLAYER_CONTROL_ACTIVE"
+        end
+    end
+    return nil
+end
+
 local function superseded(vehicle)
     if type(vehicle)~="table" or vehicle.isDeleted==true then return true end
     if type(vehicle.getCurrentAIJob)=="function" then
@@ -69,6 +86,46 @@ function Runtime:finish(code,reason)
         code,{rootNode=tostring(state.vehicle.rootNode),
             leg=state.legIndex,reason=tostring(reason)})
 end
+-- Diagnostic-only sampled control attribution: do not calculate expensive
+-- vehicle pose/heading unless DIAGNOSTIC publication is actually eligible.
+function Runtime:sampleMotion(state,status)
+    if state.telemetryElapsedMs<SAMPLE_MS then return end
+    state.telemetryElapsedMs=0
+    if type(publication.isEligible)~="function"
+        or not publication:isEligible("DIAGNOSTIC","INFO",
+            "COMPLETION_SETTLEMENT_MOTION_SAMPLE") then return end
+    local vehicle=state.vehicle
+    local x,z=rootPose(vehicle)
+    local fx,fz=nil,nil
+    if type(localDirectionToWorld)=="function" and vehicle.rootNode~=nil then
+        local ok,dx,_,dz=pcall(localDirectionToWorld,vehicle.rootNode,0,0,1)
+        if ok and type(dx)=="number" and type(dz)=="number" then
+            fx,fz=dx,dz
+        end
+    end
+    local cruise=nil
+    if type(vehicle.getCruiseControlState)=="function" then
+        local ok,v=pcall(vehicle.getCruiseControlState,vehicle)
+        if ok then cruise=v end
+    end
+    publication:publish("DIAGNOSTIC","INFO",
+        "COMPLETION_SETTLEMENT_MOTION_SAMPLE",function()
+        return {version=OuttaMyWay.VERSION,
+            rootNode=tostring(vehicle.rootNode),
+            leg=state.route.legs[state.legIndex].name,
+            phase=state.phase,x=x,z=z,headingX=fx,headingZ=fz,
+            steeringRotatedTime=vehicle.rotatedTime,
+            playerClaim=playerClaim(vehicle) or "NO_POSITIVE_CLAIM",
+            speedMps=type(vehicle.lastSpeedReal)=="number"
+                and math.abs(vehicle.lastSpeedReal)*1000 or "unknown",
+            cruiseState=cruise,commanded=self.drive.active
+                and self.drive.active.commanded or 0,
+            localTargetDistanceM=status and status.localTargetDistanceM,
+            regionProgressM=status and status.progressM,
+            stoppingSteadyMs=status and status.steadyMs}
+    end)
+end
+
 function Runtime:startLeg()
     local s=self.active
     if s==nil then return end
@@ -94,7 +151,7 @@ function Runtime:startLeg()
     end
     -- Same proven GIANTS driveToPoint mechanism, independent lease.
     -- This point-target contract is not BWR cross-track settlement.
-    local objective={moveForwards=true,maximumSpeedKmh=SPEED_KMH,
+    local objective={moveForwards=true,
         targetX=leg.point.x,targetZ=leg.point.z,
         returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
     local started,evidence=self.drive:startMovement(s.vehicle,objective)
@@ -105,18 +162,32 @@ function Runtime:startLeg()
         return
     end
     s.driveArmed=true
+    s.phase="MOVING"
     s.legElapsedMs=0
+    s.telemetryElapsedMs=0
     publish("INFO","COMPLETION_SETTLEMENT_LEG_STARTED",{
         rootNode=tostring(s.vehicle.rootNode),leg=leg.name,
         ordinal=s.legIndex,targetX=string.format("%.2f",leg.point.x),
         targetZ=string.format("%.2f",leg.point.z),
         remainingM=string.format("%.2f",distance),
-        requestedSpeedKmh=SPEED_KMH})
+        requestedSpeedKmh=type(evidence)=="table"
+            and evidence.requestedDriveSpeedKmh or "unknown",
+        localTargetContract=type(evidence)=="table"
+            and evidence.localTargetContract or "unknown",
+        initialCruiseState=type(evidence)=="table"
+            and evidence.initialCruiseState or "unknown"})
 end
 function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     if not self:isAdmitted() or transitAccepted~=true
         or type(vehicle)~="table" or self.attempted[vehicle]
-        or self.active~=nil or pairedControlActive() or superseded(vehicle) then
+        or self.active~=nil or pairedControlActive()
+        or superseded(vehicle) then
+        return false
+    end
+    local claim=playerClaim(vehicle)
+    if claim~=nil then
+        publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+            rootNode=tostring(vehicle.rootNode),reason=claim})
         return false
     end
     self.attempted[vehicle]=true
@@ -132,7 +203,8 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
         return false
     end
     self.active={vehicle=vehicle,job=job,route=route,legIndex=1,
-        totalElapsedMs=0,legElapsedMs=0,driveArmed=false}
+        totalElapsedMs=0,legElapsedMs=0,telemetryElapsedMs=0,
+        phase="ADMITTED",driveArmed=false}
     publish("INFO","COMPLETION_SETTLEMENT_ADMITTED",{
         rootNode=tostring(vehicle.rootNode),field=route.field,edge=route.edge,
         memberCount=route.memberCount,
@@ -144,10 +216,11 @@ end
 function Runtime:update(dt)
     local s=self.active
     if s==nil then return end
+    local claim=playerClaim(s.vehicle)
     if not self:isAdmitted() or superseded(s.vehicle)
-        or pairedControlActive() then
+        or pairedControlActive() or claim~=nil then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-            "CONFIGURATION_JOB_OR_OTHER_CONTROL_SUPERSEDED")
+            claim or "CONFIGURATION_JOB_OR_OTHER_CONTROL_SUPERSEDED")
         return
     end
     if type(dt)~="number" or dt<=0 or dt>5000 then
@@ -157,29 +230,53 @@ function Runtime:update(dt)
     end
     s.totalElapsedMs=s.totalElapsedMs+dt
     s.legElapsedMs=s.legElapsedMs+dt
+    s.telemetryElapsedMs=s.telemetryElapsedMs+dt
     if s.totalElapsedMs>TOTAL_DEADLINE_MS
         or s.legElapsedMs>LEG_DEADLINE_MS then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
     end
-    local status=self.drive:movementStatus(s.vehicle,dt)
+    local status
+    if s.phase=="STOPPING" then
+        status=self.drive:settlementStopStatus(s.vehicle,dt)
+    else
+        status=self.drive:movementStatus(s.vehicle,dt)
+    end
     if status==nil or status.isFailed then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
             status and status.reason or "DRIVE_STATUS_UNAVAILABLE")
         return
     end
-    if status.isComplete then
+    self:sampleMotion(s,status)
+    if s.phase=="MOVING" and status.isComplete then
+        local started,reason=self.drive:beginSettlementStop(s.vehicle)
+        if not started then
+            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                reason or "SETTLEMENT_BRAKING_UNAVAILABLE")
+            return
+        end
+        s.phase="STOPPING"
+        publish("INFO","COMPLETION_SETTLEMENT_STOPPING",{
+            rootNode=tostring(s.vehicle.rootNode),
+            leg=s.route.legs[s.legIndex].name,
+            note="PHYSICAL_STOP_AWAITED"})
+        return
+    end
+    if s.phase=="STOPPING" and status.isStopped then
         local stopped,why=self.drive:stopMovement(s.vehicle)
         if not stopped then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-                why or "LEG_STOP_UNCONFIRMED")
+                why or "PHYSICAL_STOP_RELEASE_UNCONFIRMED")
             return
         end
         s.driveArmed=false
         publish("INFO","COMPLETION_SETTLEMENT_LEG_FINISHED",{
             rootNode=tostring(s.vehicle.rootNode),
-            leg=s.route.legs[s.legIndex].name,ordinal=s.legIndex})
+            leg=s.route.legs[s.legIndex].name,ordinal=s.legIndex,
+            physicalSpeedMps=status.speedMps,
+            steadyMs=status.steadyMs,
+            cruiseState=status.cruiseState})
         s.legIndex=s.legIndex+1
         self:startLeg()
     end

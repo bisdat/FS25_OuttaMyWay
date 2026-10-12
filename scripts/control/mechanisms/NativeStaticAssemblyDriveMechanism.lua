@@ -23,6 +23,20 @@ local function pose(node)
         and {x=x,y=y,z=z} or nil
 end
 
+local function playerClaimed(vehicle)
+    if type(vehicle.getIsControlled)=="function" then
+        local ok,active=pcall(vehicle.getIsControlled,vehicle)
+        if ok and active==true then return true end
+    end
+    local selected=g_currentMission and g_currentMission.controlledVehicle
+    if selected==vehicle then return true end
+    if type(selected)=="table" and type(selected.getRootVehicle)=="function" then
+        local ok,root=pcall(selected.getRootVehicle,selected)
+        if ok and root==vehicle then return true end
+    end
+    return false
+end
+
 local function newlyAIActive(vehicle)
     -- A new native AI job can legitimately supersede direct static movement.
     -- Merely tabbing into the assembly is not a motion command or veto.
@@ -59,6 +73,14 @@ function M:startMovement(vehicle,objective)
         or type(vehicle.stopMotor)~="function"
         or newlyAIActive(vehicle) then
         return false,"STATIC_DRIVE_NATIVE_PRECONDITION_MISSING"
+    end
+    local settlement=objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG"
+    if settlement and (playerClaimed(vehicle)
+        or type(Drivable)~="table"
+        or type(Drivable.CRUISECONTROL_STATE_OFF)~="number"
+        or type(vehicle.getCruiseControlState)~="function"
+        or type(vehicle.setCruiseControlState)~="function") then
+        return false,"SETTLEMENT_CONTROL_CLAIMED_OR_CRUISE_UNAVAILABLE"
     end
     local origin=pose(vehicle.rootNode)
     if origin==nil then return false,"STATIC_DRIVE_POSE_UNAVAILABLE" end
@@ -105,21 +127,20 @@ function M:startMovement(vehicle,objective)
     local directionalCruiseMaximum=objective.moveForwards
         and cruise.maxSpeed or cruise.maxSpeedReverse
     local speed=math.min(nativeMaximumKmh,directionalCruiseMaximum)
-    if objective.maximumSpeedKmh~=nil then
-        if objective.returnRegion.source~="COMPLETION_SETTLEMENT_LEG"
-            or not finite(objective.maximumSpeedKmh)
-            or objective.maximumSpeedKmh<=0
-            or objective.maximumSpeedKmh>15 then
-            return false,"SETTLEMENT_DRIVE_SPEED_CAP_INVALID"
-        end
-        speed=math.min(speed,objective.maximumSpeedKmh)
-    end
     if not finite(speed) or speed<=0 then
         return false,"STATIC_NATIVE_DRIVE_SPEED_UNAVAILABLE"
     end
     local wasRunning,alreadyStarted=pcall(vehicle.getIsMotorStarted,vehicle)
     if not wasRunning or type(alreadyStarted)~="boolean" then
         return false,"STATIC_MOTOR_STATE_UNKNOWN"
+    end
+    local priorCruiseState=nil
+    if settlement then
+        local read,value=pcall(vehicle.getCruiseControlState,vehicle)
+        if not read or type(value)~="number" then
+            return false,"SETTLEMENT_CRUISE_STATE_UNKNOWN"
+        end
+        priorCruiseState=value
     end
     -- Register potential effects before setters, so cancellation can restore
     -- cruise, physics activation and motor even after a partial native call.
@@ -130,6 +151,8 @@ function M:startMovement(vehicle,objective)
         oldForceIsActive=vehicle.forceIsActive,
         oldForwardSpeed=cruise.speed,oldReverseSpeed=cruise.speedReverse,
         speedKmh=speed,startedMotor=not alreadyStarted,
+        settlement=settlement,priorCruiseState=priorCruiseState,
+        stopping=false,stopped=false,steadyMs=0,
         lastDt=16,commanded=0,isFailed=false,isComplete=false
     }
     self.active=state
@@ -150,7 +173,9 @@ function M:startMovement(vehicle,objective)
         requestedDriveSpeedKmh=speed,
         nativeDirectionalMotorMaximumKmh=nativeMaximumKmh,
         nativeDirectionalCruiseMaximumKmh=directionalCruiseMaximum,
-        moveForwards=objective.moveForwards}
+        moveForwards=objective.moveForwards,
+        localTargetContract=settlement and "POSITION" or "LEGACY_UNIT",
+        initialCruiseState=priorCruiseState}
 end
 
 function M:movementStatus(vehicle,dt)
@@ -241,15 +266,86 @@ function M:movementStatus(vehicle,dt)
     end
     s.lastDt=finite(dt) and dt or 16
     s.commanded=s.commanded+1
+    -- GIANTS driveToPoint expects a local-space POSITION. Historical BWR
+    -- supplies unit vectors; preserve that validated legacy path, and fix
+    -- only the new Completion Settlement caller for this TEST.
+    local tx,tz=lx/length,lz/length
+    if s.settlement then tx,tz=lx,lz end
+    s.localTargetDistanceM=length
     local driven=pcall(AIVehicleUtil.driveToPoint,vehicle,s.lastDt,
-        1,true,s.objective.moveForwards,lx/length,lz/length,s.speedKmh,false)
+        1,true,s.objective.moveForwards,tx,tz,s.speedKmh,false)
     if not driven then
         s.isFailed=true;s.reason="STATIC_NATIVE_DRIVE_FAILED"
         return {isFailed=true,reason=s.reason}
     end
     return {isComplete=false,progressM=progress.progressM,
         physicalDisplacementM=s.physicalDisplacementM,
-        commandedDriveCount=s.commanded,motorStarted=true}
+        commandedDriveCount=s.commanded,motorStarted=true,
+        localTargetDistanceM=s.localTargetDistanceM}
+end
+
+-- A settlement point is only a position witness. Maintain native braking
+-- and cruise-OFF Control until actual low speed and stationary displacement
+-- are observed over a bounded, continuous interval.
+function M:beginSettlementStop(vehicle)
+    local s=self.active
+    if s==nil or s.vehicle~=vehicle or not s.settlement
+        or not s.isComplete then
+        return false,"SETTLEMENT_STOP_NOT_ADMITTED"
+    end
+    s.stopping=true
+    s.steadyMs=0
+    s.steadyOrigin=nil
+    return true
+end
+
+function M:settlementStopStatus(vehicle,dt)
+    local s=self.active
+    if s==nil or s.vehicle~=vehicle or not s.settlement
+        or not s.stopping then
+        return {isFailed=true,reason="SETTLEMENT_STOP_NOT_ACTIVE"}
+    end
+    if not finite(dt) or dt<=0 or dt>5000 then
+        return {isFailed=true,reason="SETTLEMENT_STOP_CLOCK_INVALID"}
+    end
+    local off=type(Drivable)=="table" and Drivable.CRUISECONTROL_STATE_OFF
+    if type(off)~="number" or type(vehicle.setCruiseControlState)~="function"
+        or type(vehicle.getCruiseControlState)~="function" then
+        return {isFailed=true,reason="SETTLEMENT_CRUISE_CONTROL_UNAVAILABLE"}
+    end
+    local changed=pcall(vehicle.setCruiseControlState,vehicle,off,true)
+    local neutral=type(AIVehicleUtil)=="table"
+        and type(AIVehicleUtil.driveToPoint)=="function"
+        and pcall(AIVehicleUtil.driveToPoint,vehicle,dt,0,false,
+            false,0,1,0,false)
+    local read,cruise=pcall(vehicle.getCruiseControlState,vehicle)
+    if not changed or not neutral or not read or cruise~=off then
+        return {isFailed=true,reason="SETTLEMENT_NEUTRAL_REQUEST_UNCONFIRMED"}
+    end
+    local raw=vehicle.lastSpeedReal
+    local current=pose(vehicle.rootNode)
+    if not finite(raw) or current==nil then
+        return {isFailed=true,reason="SETTLEMENT_STOP_SPEED_OR_POSE_UNKNOWN"}
+    end
+    local speedMps=math.abs(raw)*1000 -- GIANTS lastSpeedReal is metres/ms
+    if s.steadyOrigin==nil or speedMps>0.12 then
+        s.steadyMs=0
+        s.steadyOrigin=current
+    else
+        local dx,dz=current.x-s.steadyOrigin.x,
+            current.z-s.steadyOrigin.z
+        if dx*dx+dz*dz>0.04 then
+            s.steadyMs=0
+            s.steadyOrigin=current
+        else
+            s.steadyMs=s.steadyMs+dt
+        end
+    end
+    if speedMps<=0.12 and s.steadyMs>=1200 then
+        s.stopped=true
+    end
+    return {isStopped=s.stopped,speedMps=speedMps,
+        steadyMs=s.steadyMs,cruiseState=cruise}
 end
 
 -- During map teardown GIANTS may already have deleted the root. There is
@@ -271,11 +367,25 @@ local function release(self,vehicle,requireComplete)
     if requireComplete and not s.isComplete then
         return false,"STATIC_REGION_NOT_REACHED"
     end
+    if requireComplete and s.settlement and not s.stopped then
+        return false,"SETTLEMENT_PHYSICAL_STOP_NOT_CONFIRMED"
+    end
     local failures={}
     if type(AIVehicleUtil)=="table"
         and type(AIVehicleUtil.driveToPoint)=="function" then
         pcall(AIVehicleUtil.driveToPoint,vehicle,s.lastDt,0,false,
             false,0,1,0,false)
+    end
+    -- Completion parking never restores an engine's ACTIVE cruise state.
+    -- A neutral drive call alone does not clear it in GIANTS.
+    local off=type(Drivable)=="table" and Drivable.CRUISECONTROL_STATE_OFF
+    if s.settlement then
+        local applied=type(off)=="number"
+            and type(vehicle.setCruiseControlState)=="function"
+            and pcall(vehicle.setCruiseControlState,vehicle,off,true)
+        if not applied then
+            failures[#failures+1]="SETTLEMENT_CRUISE_OFF_REQUEST_FAILED"
+        end
     end
     local cruise=vehicle.spec_drivable and vehicle.spec_drivable.cruiseControl
     local restored=pcall(vehicle.setCruiseControlMaxSpeed,vehicle,
@@ -286,7 +396,16 @@ local function release(self,vehicle,requireComplete)
         or math.abs(cruise.speedReverse-s.oldReverseSpeed)>0.001 then
         failures[#failures+1]="STATIC_CRUISE_RESTORE_UNCONFIRMED"
     end
-    if s.startedMotor then
+    if s.settlement then
+        local read,state=pcall(vehicle.getCruiseControlState,vehicle)
+        if not read or state~=off then
+            failures[#failures+1]="SETTLEMENT_CRUISE_OFF_UNCONFIRMED"
+        end
+    end
+    local stopMotor=(not s.settlement and s.startedMotor)
+        or (s.settlement and not newlyAIActive(vehicle)
+            and not playerClaimed(vehicle))
+    if stopMotor then
         local stopped,answer=pcall(vehicle.stopMotor,vehicle,true)
         if not stopped or answer==false then
             failures[#failures+1]="STATIC_MOTOR_STOP_UNCONFIRMED"

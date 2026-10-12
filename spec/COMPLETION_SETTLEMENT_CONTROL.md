@@ -15,7 +15,7 @@ A real native successful GIANTS `AIJobFieldWork` stop is the only trigger. The e
 
 Physical movement additionally requires an explicit engineering-only `settlementPrototype="true"` attribute in `modSettings/FS25_OuttaMyWay/diagnostics.xml`, alongside `enabled="true"`. Diagnostic logging alone does **not** enable physical Control. The default is no settlement movement. This is intentionally separate from player Configuration and must not mutate the existing accepted completion-TRANSIT request-only behaviour when the opt-in is absent.
 
-TEST 0.5.5.7 admits only the already surveyed Mindenerwald registered Field **77**, native southern edge **9**, matched by its measured ordered endpoints and length. Other fields remain not admitted. This is a scoped Reality experiment, not field-dependent general product logic.
+TEST 0.5.5.8 admits only the already surveyed Mindenerwald registered Field **77**, native southern edge **9**, matched by its measured ordered endpoints and length. Other fields remain not admitted. This is a scoped Reality experiment, not field-dependent general product logic.
 
 ## Route and native physical action
 
@@ -29,7 +29,7 @@ Construct three forward-only steering legs relative to the native selected edge-
 
 These are **point targets**, not a validated safe route or promised lane. The crossing uses the expressly accepted driveable-edge premise for prototyping. Registered productive-field polygons are the only positive nominal travel witness. Roads, hedge colliders, other moving workers, articulation during turns and physical margin obstacles are not certified. Native dynamics may disprove the manoeuvre.
 
-An *independent instance* of [Native Static Assembly Drive](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) supplies the same GIANTS `AIVehicleUtil.driveToPoint`, forward steering node, motor, cruise and release mechanisms already used by blocked recovery. A separate `COMPLETION_SETTLEMENT_LEG` return contract reports root arrival within 2.5 m of its target; completed ordinary blocker-recovery objectives retain their unchanged region semantics. Prototype maximum commanded speed is **8 km/h** (or lower native limit). A lateral trajectory divergence over 20 m, failed native command, unobservable pose, unexpected new AI job, other intervention, disable or bounded lease expiry aborts and neutralises motion.
+An *independent instance* of [Native Static Assembly Drive](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) supplies the same GIANTS `AIVehicleUtil.driveToPoint`, forward steering node, motor, cruise and release mechanisms already used by blocked recovery. A separate `COMPLETION_SETTLEMENT_LEG` return contract reports root arrival within 2.5 m of its target; completed ordinary blocker-recovery objectives retain their unchanged region semantics. Completion Settlement commands the vehicle's **native forward motor/cruise maximum** without an artificial 8 km/h cap. The new Control path passes a true local-space **point position** into GIANTS `driveToPoint`; the separately validated Hold & Relocate legacy normalised-target path is deliberately unchanged in this TEST. A lateral trajectory divergence over 20 m, failed native command, unobservable pose, unexpected new AI job, other intervention, disable or bounded lease expiry aborts and neutralises motion.
 
 The complete attempt has a finite 240-second Control lease and each leg a 180-second upper bound. Those bounds are failsafes, not claims that a GIANTS vehicle must complete the route in that time. No automatic retry or speculative reversal is permitted.
 
@@ -37,13 +37,17 @@ The complete attempt has a finite 240-second Control lease and each leg a 180-se
 
 After the final forward leg stops, recapture the *current* attached assembly nominal member geometry. A successful TEST observation requires unchanged member count, the root and **every captured member rectangle disjoint from the source and other registered field polygons**. If any member remains inside or current membership cannot be observed, report an interrupted or incomplete terminal rather than celebrating root arrival.
 
-Release the active native steering/motor/cruise lease after each leg and on any interruption. Do not restore WORKING posture to the completed vehicle. A player disabling the mod must immediately request neutralisation; a subsequently acquired GIANTS AI job supersedes the completion attempt. Map teardown discards deleted physical references without issuing stale engine calls. Any failure to neutralise is published as a warning.
+Root arrival at a waypoint is **not** physical stopping. After each leg's arrival, retain the native actuator lease and issue `driveToPoint` with driving disabled, steering neutral and native cruise OFF **every update**. Continue until `lastSpeedReal` is at most 0.12 m/s, and root displacement stays within 0.20 m, for at least 1,200 ms of continuous measured stillness. Require positive cruise-OFF observation before releasing the leg. If speed/position/confirmation is unavailable, Control interrupts without declaring successful settlement. This contract is independently testable from polygon terminal occupancy.
+
+Releasing a Completion Settlement leg keeps native cruise OFF, restores the prior forward/reverse cruise *limits* only and requests the engine to stop where no newer native AI job or player-Control claim has taken over. The prior ACTIVE cruise state must **not** be reactivated on a parked completed vehicle. A final `COMPLETION_SETTLEMENT_FINISHED` requires both verified stopped final-leg release and the fresh full-member geometry check. Disable, a new native AI job or a positive player-Control selection must revoke physical movement and request bounded neutralisation; engine control must not be stolen from a newly active job or player-controlled vehicle. Map teardown discards deleted physical references without issuing stale engine calls. Any failure to neutralise is published as a warning.
+
+**Player Control interlock:** at admission and throughout execution, a positive `getIsControlled()` or `g_currentMission.controlledVehicle` root selection preempts Completion Settlement. A missing or false witness cannot establish exclusive ownership; it only does not veto this tightly opted-in TEST. No active player steering and OuttaMyWay steering may be combined to satisfy a successful autonomous motion test. The turn path remains the same three waypoint legs as TEST 0.5.5.7; a J-entry trajectory change is deliberately deferred until independent steering is retested.
 
 There is no generally verified dynamic-worker demand arbitration, collision-complete physical safety proof, or universal off-field parking allocation. Any such unsupported assumption must remain falsifiable during the explicitly opted-in prototype.
 
 ## Observable contract
 
-NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_LEG_STARTED`, `COMPLETION_SETTLEMENT_LEG_FINISHED`, `COMPLETION_SETTLEMENT_FINISHED`, `COMPLETION_SETTLEMENT_NOT_ADMITTED`, `COMPLETION_SETTLEMENT_INTERRUPTED` and `COMPLETION_SETTLEMENT_NEUTRALIZE_UNCONFIRMED` distinguish stages and failures. The existing `COMPLETED_WORKER_TRANSIT_REQUESTED` still records the separate configuration request. Experimental action must never be inferred merely from the previous DIAGNOSTIC polygon-sweep log.
+NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_LEG_STARTED`, `COMPLETION_SETTLEMENT_STOPPING`, `COMPLETION_SETTLEMENT_LEG_FINISHED`, `COMPLETION_SETTLEMENT_FINISHED`, `COMPLETION_SETTLEMENT_NOT_ADMITTED`, `COMPLETION_SETTLEMENT_INTERRUPTED` and `COMPLETION_SETTLEMENT_NEUTRALIZE_UNCONFIRMED` distinguish stages and failures. The existing `COMPLETED_WORKER_TRANSIT_REQUESTED` still records the separate configuration request. Experimental action must never be inferred merely from the previous DIAGNOSTIC polygon-sweep log. One-second `COMPLETION_SETTLEMENT_MOTION_SAMPLE` payloads are eligible only for `DIAGNOSTIC` publication and include current heading, requested steering state, native velocity, cruise state, player-claim witness and local target distance. They must not be computed when DIAGNOSTIC is disabled.
 
 ## Contract participants
 
@@ -61,6 +65,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/completion_settlement.lua`](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
+| [`tests/shell/completion_settlement_drive.lua`](../tests/shell/completion_settlement_drive.lua) | `CHALLENGES` |
 | [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
 | [`tests/test_product_shell_structure.py`](../tests/test_product_shell_structure.py) | `CHALLENGES` |
 | [`tests/replacement_core/diagnostic_publication_policy_source.lua`](../tests/replacement_core/diagnostic_publication_policy_source.lua) | `CHALLENGES` |

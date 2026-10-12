@@ -15,7 +15,8 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
         startMovement=function(self,vehicle,objective)
             assert(objective.moveForwards==true)
             assert(objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
-            assert(objective.maximumSpeedKmh==8)
+            assert(objective.maximumSpeedKmh==nil,
+        "completion must use native speed without an artificial cap")
             driveCalls[#driveCalls+1]="START"
             self.active={vehicle=vehicle,objective=objective}
             return true
@@ -26,6 +27,17 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
             local target=self.active.objective
             vehicle.x,vehicle.z=target.targetX,target.targetZ
             return {isComplete=true}
+        end,
+        beginSettlementStop=function(self,vehicle)
+            assert(self.active and self.active.vehicle==vehicle)
+            assert(self.active.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
+            driveCalls[#driveCalls+1]="BRAKE"
+            return true
+        end,
+        settlementStopStatus=function(self,vehicle)
+            assert(self.active and self.active.vehicle==vehicle)
+            driveCalls[#driveCalls+1]="BRAKING"
+            return {isStopped=true,speedMps=0,steadyMs=1200,cruiseState=0}
         end,
         stopMovement=function(self,vehicle)
             assert(self.active and self.active.vehicle==vehicle)
@@ -93,8 +105,8 @@ assert(not runtime:onNativeCompletion({},a,false))
 assert(#driveCalls==0,"Transit rejection must not move")
 assert(runtime:onNativeCompletion({},a,true))
 assert(#driveCalls==1 and routeCalls==1)
-for i=1,3 do runtime:update(16) end
-assert(runtime.active==nil and #driveCalls==6)
+for i=1,6 do runtime:update(16) end
+assert(runtime.active==nil and #driveCalls==12)
 assert(terminalCalls==1,"terminal must be independently verified")
 assert(events[#events].code=="COMPLETION_SETTLEMENT_FINISHED")
 assert(not runtime:onNativeCompletion({},a,true),
