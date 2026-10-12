@@ -335,46 +335,352 @@ function Route.plan(vehicle,checkpoint)
         estimatedTravelM=best.track.travelM,
         legs=best.track.points},nil
 end
--- No native movement is admitted until this coroutine returns DONE.
--- Exactly one bounded resume is allowed per runtime update.
-function Route.beginPlan(vehicle)
-    if type(coroutine)~="table" or type(coroutine.create)~="function"
-        or type(coroutine.yield)~="function" then
-        return nil,"COROUTINE_UNAVAILABLE"
+-- Explicit Incremental Planner: all continuation state is ordinary Lua data.
+-- GIANTS exposes no coroutine capability in TEST 0.5.5.10. Each UPDATE may
+-- inspect only a fixed weighted number of geometry checks, including partial
+-- neighbour scans within one short guidance point.
+local REVERSES={12,18,24,0,30}
+local RADII={12,18,24}
+local ANGLES={35*RAD,45*RAD,55*RAD,65*RAD,75*RAD}
+local function charge(session,cost)
+    if session.remaining<cost then return false end
+    session.remaining=session.remaining-cost
+    session.spent=session.spent+cost
+    return true
+end
+local function finishCandidate(s)
+    local c=s.candidate
+    if c~=nil and c.accepted then
+        local track=c.track
+        local score=track.travelM+(c.jTurn and 5 or 0)
+            +(track.reverseM>0 and 0 or 2)
+        if s.best==nil or score<s.best.score then
+            s.best={score=score,track=track,
+                direction=c.direction,radius=c.radius,
+                reverseM=c.reverseLength,
+                method=c.jTurn and "FORWARD_J" or "REVERSE_FORWARD"}
+        end
     end
-    local session={spent=0,advances=0,allowance=0,finished=false}
-    session.thread=coroutine.create(function()
-        return Route.plan(vehicle,function(cost)
-            cost=cost or 1
-            if cost>session.allowance then
-                session.allowance=0
-                coroutine.yield("PENDING")
+    s.candidate=nil
+    s.method=s.method+1
+    if s.method>2 then s.method=1;s.angle=s.angle+1 end
+    if s.angle>#ANGLES then s.angle=1;s.radius=s.radius+1 end
+    if s.radius>#RADII then s.radius=1;s.reverse=s.reverse+1 end
+    if s.reverse>#REVERSES then
+        s.reverse=1;s.direction=s.direction+2
+    end
+    if s.direction>1 then s.phase="FINISH" end
+end
+local function segment(c,kind,length,forward,nextStage)
+    local steps
+    if kind=="MOVE" then
+        steps=math.ceil(math.abs(length)/STEP_M)
+    else
+        steps=math.ceil(math.abs(c.radius*length)/STEP_M)
+    end
+    if steps<1 then
+        c.stage=nextStage
+        return
+    end
+    c.segment={kind=kind,step=length/steps,steps=steps,
+        index=0,forward=forward,nextStage=nextStage}
+    c.stage="SEGMENT"
+end
+local function createCandidate(s)
+    local c={track=newTrack(s.current),direction=s.direction,
+        reverseLength=REVERSES[s.reverse],
+        radius=RADII[s.radius],alpha=ANGLES[s.angle],
+        jTurn=s.method==2,stage="REVERSE_INIT",extra=0}
+    s.candidate=c
+end
+local function makeCheck(s,p,kind,reverse)
+    local c=s.candidate
+    local station,depth=coordinates(p,s.frame)
+    if kind=="APPROACH" then
+        if #c.track.points>=MAX_POINTS
+            or station<2 or station>s.frame.length-2 then
+            c.stage="REJECT"
+            return
+        end
+    else
+        if station<3 or station>s.frame.length-3
+            or depth<0 or depth>STOP_DEPTH_MAX_M
+            or math.abs(p.fx*s.frame.ux+p.fz*s.frame.uz)
+                <math.cos(15*RAD) then
+            c.stage=kind=="TERMINAL" and "RUNOUT_INIT" or "RUNOUT_INIT"
+            return
+        end
+    end
+    local boxes=rotatedFoot(s.foot,s.current,p)
+    local check={point=p,kind=kind,reverse=reverse,
+        station=station,depth=depth,boxes=boxes,
+        member=1,neighbor=1,phase="NEIGHBOR"}
+    c.check=check
+    c.stage="CHECK"
+end
+local function checkFinished(s,clear)
+    local c=s.candidate
+    local check=c.check
+    c.check=nil
+    if check.kind=="APPROACH" then
+        if not clear then c.stage="REJECT";return end
+        local track=c.track
+        local distance=dist(track.pose,check.point)
+        if distance>=0.5 then
+            track.travelM=track.travelM+distance
+            if not c.segment.forward then
+                track.reverseM=track.reverseM+distance
             end
-            session.allowance=session.allowance-cost
-            session.spent=session.spent+cost
-        end)
-    end)
-    return session
+            track.points[#track.points+1]={
+                name=c.segment.forward and "FORWARD_GUIDANCE"
+                    or "REVERSE_POSITIONING",
+                point={x=check.point.x,z=check.point.z},
+                moveForwards=c.segment.forward}
+            track.pose=check.point
+        end
+        c.segment.index=c.segment.index+1
+        c.stage="SEGMENT"
+    elseif check.kind=="TERMINAL" and clear then
+        c.stage="RESERVE_INIT"
+    elseif check.kind=="RESERVE" and clear then
+        c.accepted=true
+        c.stage="ACCEPT"
+    else
+        c.stage="RUNOUT_INIT"
+    end
+end
+local function processCheck(s)
+    local c=s.candidate
+    local check=c.check
+    if check.phase=="NEIGHBOR" then
+        if check.member>#check.boxes then
+            check.phase="SOURCE"
+            return true
+        end
+        if check.neighbor>#s.neighbors then
+            check.member=check.member+1
+            check.neighbor=1
+            return true
+        end
+        if not charge(s,1) then return false end
+        local rect=check.boxes[check.member]
+        local minX,maxX,minZ,maxZ=math.huge,-math.huge,math.huge,-math.huge
+        for j=1,4 do
+            local p=rect[j]
+            minX=math.min(minX,p.x);maxX=math.max(maxX,p.x)
+            minZ=math.min(minZ,p.z);maxZ=math.max(maxZ,p.z)
+        end
+        local p=s.neighbors[check.neighbor].polygon
+        if minX<=p.maxX and maxX>=p.minX
+            and minZ<=p.maxZ and maxZ>=p.minZ then
+            check.phase="NEIGHBOR_EXACT"
+        else
+            check.neighbor=check.neighbor+1
+        end
+        return true
+    elseif check.phase=="NEIGHBOR_EXACT" then
+        if not charge(s,24) then return false end
+        local rect=check.boxes[check.member]
+        local poly=s.neighbors[check.neighbor].polygon
+        if A.shapeIntersectsPolygon(rect,poly)~=false then
+            checkFinished(s,false)
+        else
+            check.neighbor=check.neighbor+1
+            check.phase="NEIGHBOR"
+        end
+        return true
+    elseif check.phase=="SOURCE" then
+        if not charge(s,1) then return false end
+        if check.kind=="APPROACH" then
+            if check.reverse then
+                if not G.inside(s.poly,check.point.x,check.point.z) then
+                    checkFinished(s,false)
+                    return true
+                end
+                for m=1,#check.boxes do
+                    for i=1,4 do
+                        local corner=check.boxes[m][i]
+                        if not G.inside(s.poly,corner.x,corner.z) then
+                            checkFinished(s,false)
+                            return true
+                        end
+                    end
+                end
+            elseif not G.inside(s.poly,check.point.x,check.point.z)
+                and (check.depth<0 or check.depth>STOP_DEPTH_MAX_M) then
+                checkFinished(s,false)
+                return true
+            end
+            checkFinished(s,true)
+            return true
+        end
+        if G.inside(s.poly,check.point.x,check.point.z) then
+            checkFinished(s,false)
+            return true
+        end
+        check.sourceMember=1
+        check.phase="SOURCE_MEMBER"
+        return true
+    elseif check.phase=="SOURCE_MEMBER" then
+        if check.sourceMember>#check.boxes then
+            checkFinished(s,true)
+            return true
+        end
+        if not charge(s,24) then return false end
+        local box=check.boxes[check.sourceMember]
+        if A.shapeIntersectsPolygon(box,s.poly)~=false then
+            checkFinished(s,false)
+            return true
+        end
+        for i=1,4 do
+            local station,depth=coordinates(box[i],s.frame)
+            if station<1 or station>s.frame.length-1
+                or depth<0.15 or depth>STOP_DEPTH_MAX_M then
+                checkFinished(s,false)
+                return true
+            end
+        end
+        check.sourceMember=check.sourceMember+1
+        return true
+    end
+    error("INCREMENTAL_GEOMETRY_PHASE_INVALID")
+end
+local function advanceCandidate(s)
+    local c=s.candidate
+    if c.stage=="REVERSE_INIT" then
+        if c.reverseLength>0 then
+            segment(c,"MOVE",-c.reverseLength,false,"HEADING")
+        else c.stage="HEADING" end
+    elseif c.stage=="HEADING" then
+        local tx,tz=s.frame.ux*c.direction,s.frame.uz*c.direction
+        local p=c.track.pose
+        local delta=angleBetween(p.fx,p.fz,tx,tz)
+        if c.jTurn then
+            if math.abs(delta)<20*RAD then c.stage="REJECT"
+            else segment(c,"ARC",delta,true,"S_SETUP") end
+        elseif math.abs(delta)>18*RAD then c.stage="REJECT"
+        else c.stage="S_SETUP" end
+    elseif c.stage=="S_SETUP" then
+        local p=c.track.pose
+        local tx,tz=s.frame.ux*c.direction,s.frame.uz*c.direction
+        local side=p.fx*s.frame.nz-p.fz*s.frame.nx
+        local sense=side>=0 and 1 or -1
+        local residual=angleBetween(p.fx,p.fz,tx,tz)
+        local first=sense*c.alpha
+        c.second=residual-first
+        if first*c.second>=0 or math.abs(c.second)>95*RAD then
+            c.stage="REJECT"
+        else segment(c,"ARC",first,true,"ARC2_INIT") end
+    elseif c.stage=="ARC2_INIT" then
+        segment(c,"ARC",c.second,true,"TERMINAL_INIT")
+    elseif c.stage=="SEGMENT" then
+        local seg=c.segment
+        if seg.index>=seg.steps then
+            c.segment=nil
+            c.stage=seg.nextStage
+        else
+            local p
+            if seg.kind=="MOVE" then
+                p=advance(c.track.pose,seg.step)
+            else
+                p=turnStep(c.track.pose,c.radius,seg.step)
+            end
+            makeCheck(s,p,"APPROACH",not seg.forward)
+        end
+    elseif c.stage=="TERMINAL_INIT" then
+        makeCheck(s,c.track.pose,"TERMINAL",false)
+    elseif c.stage=="RESERVE_INIT" then
+        makeCheck(s,advance(c.track.pose,STOPPING_RESERVE_M),
+            "RESERVE",false)
+    elseif c.stage=="RUNOUT_INIT" then
+        if c.extra>35 then c.stage="REJECT"
+        else segment(c,"MOVE",STEP_M,true,"RUNOUT_DONE") end
+    elseif c.stage=="RUNOUT_DONE" then
+        c.extra=c.extra+STEP_M
+        c.stage="TERMINAL_INIT"
+    elseif c.stage=="CHECK" then
+        return processCheck(s)
+    elseif c.stage=="ACCEPT" or c.stage=="REJECT" then
+        finishCandidate(s)
+    else error("INCREMENTAL_CANDIDATE_PHASE_INVALID") end
+    return true
+end
+local function executeBudget(s)
+    while s.remaining>0 do
+        if s.phase=="INIT" then
+            if not charge(s,1) then return "PENDING" end
+            local poly,edge,neighbors,reason=field77()
+            if poly==nil then return "FAILED",nil,reason end
+            local current=pose(s.vehicle)
+            if current==nil then return "FAILED",nil,"ROOT_POSE_UNAVAILABLE" end
+            if not G.inside(poly,current.x,current.z) then
+                return "FAILED",nil,"COMPLETED_ROOT_NOT_IN_FIXTURE_FIELD"
+            end
+            local foot,why=OuttaMyWay.PairTransitRegion.capture(s.vehicle)
+            if foot==nil then return "FAILED",nil,why end
+            if foot.memberCount~=1 then
+                return "FAILED",nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
+            end
+            local frame=edgeFrame(edge,poly)
+            if frame==nil then return "FAILED",nil,"EDGE_OUTWARD_UNAVAILABLE" end
+            s.poly,s.neighbors,s.current,s.foot,s.frame=
+                poly,neighbors,current,foot,frame
+            s.direction=-1;s.reverse=1;s.radius=1;s.angle=1;s.method=1
+            s.phase="CANDIDATE"
+        elseif s.phase=="CANDIDATE" then
+            if not charge(s,1) then return "PENDING" end
+            createCandidate(s)
+            s.phase="ACTIVE"
+        elseif s.phase=="ACTIVE" then
+            -- Charge constant-cost control transitions separately from
+            -- the 1-unit neighbour AABB and 24-unit exact intersections.
+            if s.candidate.stage~="CHECK" then
+                if not charge(s,1) then return "PENDING" end
+            end
+            if not advanceCandidate(s) then return "PENDING" end
+            if s.candidate==nil and s.phase~="FINISH" then
+                s.phase="CANDIDATE"
+            end
+        elseif s.phase=="FINISH" then
+            s.finished=true
+            if s.best==nil then
+                return "FAILED",nil,"NO_POSE_REACHABLE_PARKING_REGION"
+            end
+            local best=s.best
+            return "DONE",{field=77,edge=9,poly=s.poly,
+                neighbors=s.neighbors,memberCount=s.foot.memberCount,
+                frame=s.frame,method=best.method,
+                direction=best.direction,reverseM=best.track.reverseM,
+                guideRadiusM=best.radius,
+                estimatedTravelM=best.track.travelM,
+                legs=best.track.points}
+        else error("INCREMENTAL_PLANNING_PHASE_INVALID") end
+    end
+    return "PENDING"
+end
+function Route.beginPlan(vehicle)
+    -- No native-world geometry or actuator call from completion callback.
+    if type(vehicle)~="table" then
+        return nil,"PLANNING_VEHICLE_UNAVAILABLE"
+    end
+    return {vehicle=vehicle,phase="INIT",spent=0,advances=0,
+        remaining=0,finished=false}
 end
 function Route.advancePlan(session,units)
     if type(session)~="table" or session.finished
-        or type(session.thread)~="thread" or type(units)~="number"
-        or units<24 or units>2048 then
+        or type(units)~="number" or units<24 or units>2048
+        or type(session.phase)~="string" then
         return "FAILED",nil,"PLANNING_SESSION_INVALID"
     end
-    session.allowance=units
+    session.remaining=units
     session.advances=session.advances+1
-    local okay,result,reason=coroutine.resume(session.thread)
-    if not okay then
+    local ok,phase,route,reason=pcall(executeBudget,session)
+    if not ok then
         session.finished=true
         return "FAILED",nil,"SETTLEMENT_ROUTE_PLAN_EXCEPTION"
     end
-    if coroutine.status(session.thread)~="dead" then
-        return "PENDING"
-    end
-    session.finished=true
-    if result==nil then return "FAILED",nil,reason end
-    return "DONE",result
+    if phase~="PENDING" then session.finished=true end
+    return phase,route,reason
 end
 function Route.guard(vehicle,route)
     local p=pose(vehicle)
