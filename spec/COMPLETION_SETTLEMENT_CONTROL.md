@@ -17,6 +17,17 @@ Physical movement additionally requires an explicit engineering-only `settlement
 
 TEST 0.5.5.8 admits only the already surveyed Mindenerwald registered Field **77**, native southern edge **9**, matched by its measured ordered endpoints and length. Other fields remain not admitted. This is a scoped Reality experiment, not field-dependent general product logic.
 
+
+## Governing objective after the 12 October owner clarification
+
+**Architecture authority:** [Pose-Conditioned Terminal Settlement](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#owner-confirmed-architecture-refinement--pose-conditioned-terminal-settlement-12-october-2026).
+
+The subsequent architectural decision defines an **entire-assembly terminal parking region between field boundaries** as the objective, with **success anywhere along a suitable edge**, not a specific point or mandated full-edge traverse. It prefers **brief reverse followed by forward entry** when feasible, otherwise a pose-conditioned manoeuvre such as forward J-entry. Reassess from each independently completed worker's actual root/attached-member pose. The necessary forward distance depends on assembly clearance and final stopping feasibility, not a predetermined 60 m or ~200 m route literal.
+
+**TEST `0.5.5.8` behaviour below is historical implementation, now known not to realise this goal.** In particular its maximum-sweep candidate selection, fixed far staging point, three stop-and-release waypoint transitions, forward-only direction and endpoint-minus-3 m terminal target are prototype-specific and **not accepted architectural constraints**. Do not silently alter or portray those clauses as a future general product contract. The next Control contract must be decided and separately authorised after assessing progressive forward/reverse guidance, physical swept envelopes, continuous waypoint tracking, suitable terminal region membership, stopping, and interruption.
+
+The existing player-Control veto was introduced without explicit authorisation in `0.5.5.8`; owner direction is to **retain it temporarily without retroactive architectural acceptance**. The consent gate remains separately required; no TEST executable change is implied by this specification annotation.
+
 ## Route and native physical action
 
 At admission, capture the **actual current root + attached member** nominal rectangle snapshot and run the existing 144 static-pose registered-field screen and bounded continuous straight-sweep. For the selected native Field 77 edge, select the largest reported positive sweep witness with at least 60 metres of bounded nominal uninterrupted polygon-only travel. A reported 204.55 m is a *per-run observation*, not a literal route length or universal threshold. When neither direction yields a geometrically placeable approach/exit, refuse actuation.
