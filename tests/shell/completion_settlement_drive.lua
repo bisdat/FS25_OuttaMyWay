@@ -52,14 +52,16 @@ AIVehicleUtil={
         forwards=forwards,tx=tx,tz=tz,speed=speed}
     if allowed then
         if forwards then
-            assert(speed>8 and speed<=36,
-                "settlement applies physics-based target horizon speed")
+            assert(speed>=2.5 and speed<=36,
+                "settlement speed must stay within native directional limit")
         else
-            assert(speed>8 and speed<=14.4,
+            assert(speed>=2.5 and speed<=14.4,
                 "reverse speed uses native reverse maximum")
         end
-        vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
     end
+    -- GIANTS also reactivates cruise on a NEUTRAL driveToPoint call.
+    -- Regressions in order must now fail the physical-stop assertion.
+    vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 end}
 dofile("scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua")
 local Drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism
@@ -123,6 +125,22 @@ local reverse={moveForwards=false,targetX=-7,targetZ=0,
 assert(drive:startMovement(vehicle,reverse))
 local report=drive:movementStatus(vehicle,16)
 assert(not report.isComplete and driveCalls[#driveCalls].forwards==false)
+assert(drive:cancelMovement(vehicle))
+-- A low-distance direction change must start reducing speed before arrival.
+positions[11].x,positions[11].z=0,0
+local brake={moveForwards=true,targetX=10,targetZ=0,
+    remainingAfterTargetM=0,maximumSpeedKmh=36,
+    returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
+assert(drive:startMovement(vehicle,brake))
+local startBrake=drive:movementStatus(vehicle,16)
+assert(startBrake.isComplete==false)
+local firstSpeed=driveCalls[#driveCalls].speed
+positions[11].x=7
+local approach=drive:movementStatus(vehicle,16)
+assert(approach.isComplete==false)
+local lastSpeed=driveCalls[#driveCalls].speed
+assert(lastSpeed<firstSpeed and lastSpeed<=3.61,
+    "braking demand must decrease before reaching changeover")
 assert(drive:cancelMovement(vehicle))
 -- Interruption cannot leave cruise ACTIVE even when never stopped.
 assert(drive:startMovement(vehicle,objective))

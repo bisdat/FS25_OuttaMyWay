@@ -9,6 +9,9 @@ local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
 local LEG_DEADLINE_MS=180000
 local SAMPLE_MS=1000
+-- Each update resumes the route search ONCE with a finite weighted geometry
+-- budget. No native movement or fieldwork handback occurs during planning.
+local PLAN_UNITS_PER_UPDATE=320
 -- Target-horizon braking model, not a fixed 8 km/h travel limit.
 -- TEST assumption: 1.5 m/s^2 controllable deceleration, GIANTS to validate.
 local GUIDANCE_DECEL_MPS2=1.5
@@ -16,11 +19,22 @@ local function guidanceSpeed(distance)
     return math.sqrt(2*GUIDANCE_DECEL_MPS2*
         math.max(2.5,math.min(distance,12)))*3.6
 end
-local function objectiveFor(leg,currentX,currentZ)
+local function objectiveFor(route,index,currentX,currentZ)
+    local leg=route.legs[index]
     local distance=math.sqrt((leg.point.x-currentX)^2+
         (leg.point.z-currentZ)^2)
+    local beyond=0
+    for i=index+1,#route.legs do
+        local following=route.legs[i]
+        local previous=route.legs[i-1]
+        if following.moveForwards~=leg.moveForwards then break end
+        beyond=beyond+math.sqrt(
+            (following.point.x-previous.point.x)^2+
+            (following.point.z-previous.point.z)^2)
+    end
     return {moveForwards=leg.moveForwards,
         maximumSpeedKmh=guidanceSpeed(distance),
+        remainingAfterTargetM=beyond,
         targetX=leg.point.x,targetZ=leg.point.z,
         returnRegion={source="COMPLETION_SETTLEMENT_LEG"}},distance
 end
@@ -76,7 +90,8 @@ end
 function Runtime.new(configuration,diagnostics)
     return setmetatable({configuration=configuration,diagnostics=diagnostics,
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
-        active=nil,attempted=setmetatable({},{__mode="k"})},Runtime)
+        active=nil,pending=nil,
+        attempted=setmetatable({},{__mode="k"})},Runtime)
 end
 function Runtime:isAdmitted()
     return g_server~=nil and self.configuration~=nil
@@ -87,9 +102,10 @@ function Runtime:isAdmitted()
         and self.diagnostics:isSettlementPrototypeEnabled()==true
 end
 function Runtime:finish(code,reason)
-    local state=self.active
+    local state=self.active or self.pending
     if state==nil then return end
     self.active=nil
+    self.pending=nil
     if state.driveArmed then
         local stopped,why=self.drive:cancelMovement(state.vehicle)
         if not stopped then
@@ -99,7 +115,8 @@ function Runtime:finish(code,reason)
     end
     publish(code=="COMPLETION_SETTLEMENT_FINISHED" and "INFO" or "WARNING",
         code,{rootNode=tostring(state.vehicle.rootNode),
-            leg=state.legIndex,reason=tostring(reason)})
+            phase=state.phase,leg=state.legIndex,
+            reason=tostring(reason)})
 end
 -- Diagnostic-only sampled control attribution: do not calculate expensive
 -- vehicle pose/heading unless DIAGNOSTIC publication is actually eligible.
@@ -171,7 +188,7 @@ function Runtime:startLeg()
     end
     -- Each path point is local guidance, not a commanded stop;
     -- stop and change direction only between physically distinct phases.
-    local objective=objectiveFor(leg,x,z)
+    local objective=objectiveFor(s.route,s.legIndex,x,z)
     local started,evidence=self.drive:startMovement(s.vehicle,objective)
     if not started then
         -- Native setters can partially apply before reporting failure.
@@ -199,7 +216,8 @@ end
 function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     if not self:isAdmitted() or transitAccepted~=true
         or type(vehicle)~="table" or self.attempted[vehicle]
-        or self.active~=nil or pairedControlActive()
+        or self.active~=nil or self.pending~=nil
+        or pairedControlActive()
         or superseded(vehicle) then
         return false
     end
@@ -210,34 +228,25 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
         return false
     end
     self.attempted[vehicle]=true
-    local planned,route,reason=pcall(
-        OuttaMyWay.CompletionSettlementRoute.plan,vehicle)
-    if not planned then
-        route=nil
-        reason="SETTLEMENT_ROUTE_PLAN_EXCEPTION"
-    end
-    if route==nil then
+    local okay,session,reason=pcall(
+        OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle)
+    if not okay or session==nil then
         publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
-            rootNode=tostring(vehicle.rootNode),reason=tostring(reason)})
+            rootNode=tostring(vehicle.rootNode),
+            reason=okay and tostring(reason)
+                or "SETTLEMENT_PLANNING_SESSION_UNAVAILABLE"})
         return false
     end
-    self.active={vehicle=vehicle,job=job,route=route,legIndex=1,
-        totalElapsedMs=0,legElapsedMs=0,telemetryElapsedMs=0,
-        phase="ADMITTED",driveArmed=false}
-    publish("INFO","COMPLETION_SETTLEMENT_ADMITTED",{
-        rootNode=tostring(vehicle.rootNode),field=route.field,edge=route.edge,
-        memberCount=route.memberCount,
-        plannedMethod=route.method,
-        reverseM=route.reverseM,
-        guidancePoints=#route.legs,
-        estimatedTravelM=route.estimatedTravelM,
-        guideRadiusM=route.guideRadiusM,
-        note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"})
-    self:startLeg()
-    return self.active~=nil
+    self.pending={vehicle=vehicle,job=job,plan=session,
+        elapsedMs=0,phase="PLANNING",driveArmed=false}
+    publish("INFO","COMPLETION_SETTLEMENT_PLANNING_STARTED",{
+        rootNode=tostring(vehicle.rootNode),
+        budgetUnitsPerUpdate=PLAN_UNITS_PER_UPDATE,
+        note="NO_MOVEMENT_UNTIL_ROUTE_ADMITTED"})
+    return true
 end
 function Runtime:update(dt)
-    local s=self.active
+    local s=self.active or self.pending
     if s==nil then return end
     local claim=playerClaim(s.vehicle)
     if not self:isAdmitted() or superseded(s.vehicle)
@@ -249,6 +258,39 @@ function Runtime:update(dt)
     if type(dt)~="number" or dt<=0 or dt>5000 then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
             "UPDATE_CLOCK_UNAVAILABLE")
+        return
+    end
+    if self.pending~=nil then
+        s.elapsedMs=s.elapsedMs+dt
+        if s.elapsedMs>TOTAL_DEADLINE_MS then
+            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                "FINITE_PLANNING_LEASE_EXPIRED")
+            return
+        end
+        local phase,route,reason=OuttaMyWay.CompletionSettlementRoute.advancePlan(
+            s.plan,PLAN_UNITS_PER_UPDATE)
+        if phase=="PENDING" then return end
+        if phase~="DONE" or route==nil then
+            self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
+            return
+        end
+        self.pending=nil
+        self.active={vehicle=s.vehicle,job=s.job,route=route,legIndex=1,
+            totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
+            phase="ADMITTED",driveArmed=false}
+        publish("INFO","COMPLETION_SETTLEMENT_ADMITTED",{
+            rootNode=tostring(s.vehicle.rootNode),
+            planningUpdates=s.plan.advances,
+            weightedGeometryChecks=s.plan.spent,
+            field=route.field,edge=route.edge,
+            memberCount=route.memberCount,
+            plannedMethod=route.method,reverseM=route.reverseM,
+            guidancePoints=#route.legs,
+            estimatedTravelM=route.estimatedTravelM,
+            guideRadiusM=route.guideRadiusM,
+            note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"})
+        self:startLeg()
         return
     end
     s.totalElapsedMs=s.totalElapsedMs+dt
@@ -294,7 +336,8 @@ function Runtime:update(dt)
                     "GUIDANCE_POSE_UNAVAILABLE")
                 return
             end
-            local objective=objectiveFor(nextLeg,x,z)
+            local objective=objectiveFor(
+                s.route,s.legIndex+1,x,z)
             local changed,why=self.drive:retargetSettlement(
                 s.vehicle,objective)
             if not changed then
@@ -343,6 +386,7 @@ function Runtime:relinquish(reason)
         reason or "CONTROL_REVOKED")
 end
 function Runtime:loadMap()
+    self.pending=nil
     self.active=nil
     self.attempted=setmetatable({},{__mode="k"})
 end
@@ -352,6 +396,7 @@ function Runtime:deleteMap()
         self.drive:discardOnMapDelete(s.vehicle)
     end
     self.active=nil
+    self.pending=nil
     self.attempted=setmetatable({},{__mode="k"})
 end
 return Runtime

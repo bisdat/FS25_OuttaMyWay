@@ -103,12 +103,27 @@ local function rotatedFoot(foot,initial,p)
     end
     return boxes
 end
-local function noNeighborHit(boxes,neighbors)
+-- Each expensive geometry check has a chargeable, yieldable boundary.
+-- Source Field77 polygons have world-space AABBs, so distant fields can be
+-- rejected before rectangle/polygon intersection.
+local function noNeighborHit(boxes,neighbors,checkpoint)
     for m=1,#boxes do
+        local rect=boxes[m]
+        local minX,maxX,minZ,maxZ=math.huge,-math.huge,math.huge,-math.huge
+        for j=1,4 do
+            local p=rect[j]
+            minX,maxX=math.min(minX,p.x),math.max(maxX,p.x)
+            minZ,maxZ=math.min(minZ,p.z),math.max(maxZ,p.z)
+        end
         for i=1,#neighbors do
-            if A.shapeIntersectsPolygon(boxes[m],
-                neighbors[i].polygon)~=false then
-                return false
+            if checkpoint then checkpoint(1) end
+            local p=neighbors[i].polygon
+            if minX<=p.maxX and maxX>=p.minX
+                and minZ<=p.maxZ and maxZ>=p.minZ then
+                if checkpoint then checkpoint(24) end
+                if A.shapeIntersectsPolygon(rect,p)~=false then
+                    return false
+                end
             end
         end
     end
@@ -117,11 +132,11 @@ end
 -- Candidate points may be in the completed source field during approach.
 -- Once outside they must be within the nominated edge's bounded exterior
 -- band, never beyond another end/corner of the field.
-local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse)
+local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse,checkpoint)
     local station,depth=coordinates(p,frame)
     if station<2 or station>frame.length-2 then return false end
     local boxes=rotatedFoot(foot,initial,p)
-    if not noNeighborHit(boxes,neighbors) then return false end
+    if not noNeighborHit(boxes,neighbors,checkpoint) then return false end
     if reverse then
         if not G.inside(poly,p.x,p.z) then return false end
         for m=1,#boxes do
@@ -136,14 +151,14 @@ local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse)
     end
     return true
 end
-local function terminalAllowed(p,foot,initial,poly,neighbors,frame)
+local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint)
     local station,depth=coordinates(p,frame)
     if station<3 or station>frame.length-3
         or depth<0 or depth>STOP_DEPTH_MAX_M then return false end
     local parallel=math.abs(p.fx*frame.ux+p.fz*frame.uz)
     if parallel<math.cos(15*RAD) then return false end
     local boxes=rotatedFoot(foot,initial,p)
-    if not noNeighborHit(boxes,neighbors) then return false end
+    if not noNeighborHit(boxes,neighbors,checkpoint) then return false end
     if G.inside(poly,p.x,p.z) then return false end
     for m=1,#boxes do
         if A.shapeIntersectsPolygon(boxes[m],poly)~=false then
@@ -173,10 +188,10 @@ local function newTrack(current)
     return {points={},pose={x=current.x,z=current.z,
         fx=current.fx,fz=current.fz},travelM=0,reverseM=0}
 end
-local function addPoint(track,point,forward,foot,initial,poly,neighbors,frame)
+local function addPoint(track,point,forward,foot,initial,poly,neighbors,frame,checkpoint)
     if #track.points>=MAX_POINTS
         or not approachAllowed(point,foot,initial,poly,
-            neighbors,frame,not forward) then return false end
+            neighbors,frame,not forward,checkpoint) then return false end
     local distance=dist(track.pose,point)
     if distance<0.5 then return true end
     track.travelM=track.travelM+distance
@@ -187,25 +202,25 @@ local function addPoint(track,point,forward,foot,initial,poly,neighbors,frame)
     track.pose=point
     return true
 end
-local function move(track,length,forward,foot,initial,poly,neighbors,frame)
+local function move(track,length,forward,foot,initial,poly,neighbors,frame,checkpoint)
     local steps=math.ceil(math.abs(length)/STEP_M)
     if steps<1 then return true end
     local step=length/steps
     for i=1,steps do
         local p=advance(track.pose,step)
         if not addPoint(track,p,forward,foot,initial,
-            poly,neighbors,frame) then return false end
+            poly,neighbors,frame,checkpoint) then return false end
     end
     return true
 end
-local function arc(track,radius,angle,foot,initial,poly,neighbors,frame)
+local function arc(track,radius,angle,foot,initial,poly,neighbors,frame,checkpoint)
     local steps=math.ceil(math.abs(radius*angle)/STEP_M)
     if steps<1 then return true end
     local each=angle/steps
     for i=1,steps do
         local p=turnStep(track.pose,radius,each)
         if not addPoint(track,p,true,foot,initial,
-            poly,neighbors,frame) then return false end
+            poly,neighbors,frame,checkpoint) then return false end
     end
     return true
 end
@@ -214,12 +229,12 @@ local function angleBetween(ax,az,bx,bz)
         or math.atan(ax*bz-az*bx,ax*bx+az*bz)
 end
 local function tryTrack(current,foot,poly,neighbors,frame,
-    direction,reverseLength,radius,alpha,jTurn)
+    direction,reverseLength,radius,alpha,jTurn,checkpoint)
     local track=newTrack(current)
     local tx,tz=frame.ux*direction,frame.uz*direction
     if reverseLength>0 then
         if not move(track,-reverseLength,false,foot,current,
-            poly,neighbors,frame) then return nil end
+            poly,neighbors,frame,checkpoint) then return nil end
     end
     local delta=angleBetween(track.pose.fx,track.pose.fz,tx,tz)
     if jTurn then
@@ -228,7 +243,7 @@ local function tryTrack(current,foot,poly,neighbors,frame,
         if math.abs(delta)<20*RAD then return nil end
         local turn=delta
         if not arc(track,radius,turn,foot,current,
-            poly,neighbors,frame) then return nil end
+            poly,neighbors,frame,checkpoint) then return nil end
     elseif math.abs(delta)>18*RAD then
         return nil
     end
@@ -242,28 +257,28 @@ local function tryTrack(current,foot,poly,neighbors,frame,
     local second=residual-first
     if first*second>=0 or math.abs(second)>95*RAD then return nil end
     if not arc(track,radius,first,foot,current,
-        poly,neighbors,frame) then return nil end
+        poly,neighbors,frame,checkpoint) then return nil end
     if not arc(track,radius,second,foot,current,
-        poly,neighbors,frame) then return nil end
+        poly,neighbors,frame,checkpoint) then return nil end
     -- Continue edge-parallel only until the FIRST nominal full-member
     -- exterior pose. The terminal is a region, not the edge endpoint.
     local extra=0
     while extra<=35 do
         if terminalAllowed(track.pose,foot,current,
-            poly,neighbors,frame) then
+            poly,neighbors,frame,checkpoint) then
             local beyond=advance(track.pose,STOPPING_RESERVE_M)
             if terminalAllowed(beyond,foot,current,
-                poly,neighbors,frame) then return track end
+                poly,neighbors,frame,checkpoint) then return track end
             -- Without braking reserve, keep looking along the same
             -- tangent. A later station might still offer a safe stop.
         end
         if not move(track,STEP_M,true,foot,current,
-            poly,neighbors,frame) then return nil end
+            poly,neighbors,frame,checkpoint) then return nil end
         extra=extra+STEP_M
     end
     return nil
 end
-function Route.plan(vehicle)
+function Route.plan(vehicle,checkpoint)
     local poly,edge,neighbors,reason=field77()
     if poly==nil then return nil,reason end
     local current=pose(vehicle)
@@ -291,9 +306,10 @@ function Route.plan(vehicle)
             for k=1,#radii do
                 for a=1,#angles do
                     for method=1,2 do
+                        if checkpoint then checkpoint(1) end
                         local track=tryTrack(current,foot,poly,neighbors,frame,
                             direction,reverses[j],radii[k],angles[a],
-                            method==2)
+                            method==2,checkpoint)
                         if track~=nil then
                             local score=track.travelM+
                                 (method==2 and 5 or 0)+
@@ -318,6 +334,47 @@ function Route.plan(vehicle)
         reverseM=best.track.reverseM,guideRadiusM=best.radius,
         estimatedTravelM=best.track.travelM,
         legs=best.track.points},nil
+end
+-- No native movement is admitted until this coroutine returns DONE.
+-- Exactly one bounded resume is allowed per runtime update.
+function Route.beginPlan(vehicle)
+    if type(coroutine)~="table" or type(coroutine.create)~="function"
+        or type(coroutine.yield)~="function" then
+        return nil,"COROUTINE_UNAVAILABLE"
+    end
+    local session={spent=0,advances=0,allowance=0,finished=false}
+    session.thread=coroutine.create(function()
+        return Route.plan(vehicle,function(cost)
+            cost=cost or 1
+            if cost>session.allowance then
+                session.allowance=0
+                coroutine.yield("PENDING")
+            end
+            session.allowance=session.allowance-cost
+            session.spent=session.spent+cost
+        end)
+    end)
+    return session
+end
+function Route.advancePlan(session,units)
+    if type(session)~="table" or session.finished
+        or type(session.thread)~="thread" or type(units)~="number"
+        or units<24 or units>2048 then
+        return "FAILED",nil,"PLANNING_SESSION_INVALID"
+    end
+    session.allowance=units
+    session.advances=session.advances+1
+    local okay,result,reason=coroutine.resume(session.thread)
+    if not okay then
+        session.finished=true
+        return "FAILED",nil,"SETTLEMENT_ROUTE_PLAN_EXCEPTION"
+    end
+    if coroutine.status(session.thread)~="dead" then
+        return "PENDING"
+    end
+    session.finished=true
+    if result==nil then return "FAILED",nil,reason end
+    return "DONE",result
 end
 function Route.guard(vehicle,route)
     local p=pose(vehicle)

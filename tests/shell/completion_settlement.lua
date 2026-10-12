@@ -84,10 +84,20 @@ local route={
     }
 }
 local routeCalls,terminalCalls=0,0
+local planAdvances=0
+local forcePlanPending=false
 OuttaMyWay.CompletionSettlementRoute={
-    plan=function()
+    beginPlan=function()
         routeCalls=routeCalls+1
-        return route
+        return {advances=0,spent=0}
+    end,
+    advancePlan=function(session,units)
+        assert(units>0 and units<=2048)
+        planAdvances=planAdvances+1
+        session.advances=session.advances+1
+        session.spent=session.spent+units
+        if forcePlanPending then return "PENDING" end
+        return "DONE",route
     end,
     verifyTerminal=function()
         terminalCalls=terminalCalls+1
@@ -121,7 +131,16 @@ optin=true
 assert(not runtime:onNativeCompletion({},a,false))
 assert(#driveCalls==0,"Transit rejection must not move")
 assert(runtime:onNativeCompletion({},a,true))
-assert(#driveCalls==1 and routeCalls==1)
+assert(#driveCalls==0 and routeCalls==1 and runtime.pending~=nil,
+    "successful native completion must not synchronously actuate")
+forcePlanPending=true
+runtime:update(16)
+assert(#driveCalls==0 and runtime.pending~=nil,
+    "planning may not command any motor or steer")
+forcePlanPending=false
+runtime:update(16)
+assert(#driveCalls==1 and runtime.pending==nil,
+    "only a completed planned route can begin physical Control")
 for i=1,9 do runtime:update(16) end
 assert(runtime.active==nil and #driveCalls==11,
     "two physical stops, not five per-guidance-point stops")
@@ -134,6 +153,19 @@ assert(events[#events].code=="COMPLETION_SETTLEMENT_FINISHED")
 assert(not runtime:onNativeCompletion({},a,true),
     "same completed vehicle never re-admits in one map")
 assert(runtime:onNativeCompletion({},b,true))
+assert(runtime.pending~=nil and runtime.active==nil)
+enabled=false
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending==nil
+    and driveCalls[#driveCalls]=="STOP",
+    "disable must abandon pending planning without ever driving")
+-- Once planning is complete, disable still cancels an actual lease.
+enabled=true
+local duringMotion={rootNode=25,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},duringMotion,true))
+runtime:update(16)
+assert(runtime.active~=nil)
 enabled=false
 runtime:update(16)
 assert(runtime.active==nil and driveCalls[#driveCalls]=="CANCEL",
@@ -143,6 +175,7 @@ local c={rootNode=36,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 assert(runtime:onNativeCompletion({},c,true))
+runtime:update(16)
 c.getCurrentAIJob=function()return {} end
 runtime:update(16)
 assert(runtime.active==nil and driveCalls[#driveCalls]=="CANCEL",
@@ -151,6 +184,7 @@ local d={rootNode=48,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 assert(runtime:onNativeCompletion({},d,true))
+runtime:update(16)
 failure="NATIVE_STEERING_FAILED"
 runtime:update(16)
 assert(runtime.active==nil and driveCalls[#driveCalls]=="CANCEL",
@@ -160,6 +194,7 @@ local e={rootNode=60,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 assert(runtime:onNativeCompletion({},e,true))
+runtime:update(16)
 runtime:deleteMap()
 assert(runtime.active==nil and driveCalls[#driveCalls]=="MAP_DELETE",
     "map teardown cannot issue stale engine Control")

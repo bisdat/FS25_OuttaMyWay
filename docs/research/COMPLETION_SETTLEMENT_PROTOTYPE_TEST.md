@@ -225,3 +225,12 @@ The first terminal pose that clears both registered field polygons is not automa
 **Unvalidated:** safe physical stopping after emergency cancellation, actual articulated reversing, field-margin collision clearance, and forward manoeuvre execution.
 
 **Disposition:** **TEST `0.5.5.9` overall FAIL**. Do not promote or re-run unattended. Keep main production behaviour and previously field-validated Hold & Relocate unchanged; no executable patch approved by this record. Correct the main-thread planning work boundary and the cruise-control neutralisation ordering as separate, explicit implementation hypotheses; then validate native stopping before resuming manoeuvre complexity. The 0.5.5.8 player-Control veto remains unchanged as owner instructed.
+
+## TEST 0.5.5.10 — narrowly scoped validation plan (pending in-game)
+
+**Implementation response to prior TS018 0.5.5.9 FAIL:**
+1. The native completion event now queues a route search, rather than calculating any of the potentially expensive 150 poses synchronously. The same route choices are assessed over update frames using weighted cost checkpoints and world-axis-aligned bounds rejection for distant neighbours. Admission logs `planningUpdates` and `weightedGeometryChecks`, useful for quantifying the work distribution. Assert no motor lease during pending planning; cover disable and supersession.
+2. Native neutral `driveToPoint` is invoked **before** cruise OFF and cruise verification. This reverses the erroneous 0.5.5.9 STOPPING order, while retaining speed and measured 1.2 s stillness as independent evidence.
+3. Existing guidance speed model now also reduces native speed as continuous same-direction distance to the next physical stop shrinks. This is intended to avoid arriving at the reverse→forward transition at 4.65 m/s (0.5.5.9 sample); stopping dynamics at 1.5 m/s² remain a *hypothesis*, not a guarantee.
+
+**Next experiment:** one-member TS018 Field 77, engineering opt-in and DIAGNOSTIC enabled; complete log plus video spanning job completion, planning, reverse, direction-change STOPPING, forward and physical parking. Treat any game-frame pause, uncontrolled inertia, repeated uncontrolled cruise activation or failure to reach a valid parking region as FAIL. No implementation change to player-Control interlock, production TRANSIT or previously field-validated Hold & Relocate.

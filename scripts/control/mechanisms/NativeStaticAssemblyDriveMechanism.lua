@@ -279,6 +279,25 @@ function M:movementStatus(vehicle,dt)
         return {isFailed=true,reason=s.reason}
     end
     s.lastDt=finite(dt) and dt or 16
+    -- On approaching a direction-change or the final parking stop, start
+    -- reducing native cruise demand BEFORE reaching the last steering point.
+    -- The remaining tangent distance comes from the already-planned short
+    -- guidance points. Native braking response is still GIANTS-unvalidated.
+    if s.settlement and finite(s.objective.remainingAfterTargetM)
+        and finite(progress.remainingM) then
+        local remaining=progress.remainingM+s.objective.remainingAfterTargetM
+        local brakingKmh=math.sqrt(2*1.5*math.max(0,remaining-2.5))*3.6
+        local bounded=math.min(s.speedKmh,math.max(2.5,brakingKmh))
+        local applied=pcall(vehicle.setCruiseControlMaxSpeed,
+            vehicle,bounded,bounded)
+        if not applied then
+            s.isFailed=true;s.reason="SETTLEMENT_APPROACH_BRAKING_UNAVAILABLE"
+            return {isFailed=true,reason=s.reason}
+        end
+        s.requestedSpeedKmh=bounded
+    else
+        s.requestedSpeedKmh=s.speedKmh
+    end
     s.commanded=s.commanded+1
     -- GIANTS driveToPoint expects a local-space POSITION. Historical BWR
     -- supplies unit vectors; preserve that validated legacy path, and fix
@@ -287,7 +306,7 @@ function M:movementStatus(vehicle,dt)
     if s.settlement then tx,tz=lx,lz end
     s.localTargetDistanceM=length
     local driven=pcall(AIVehicleUtil.driveToPoint,vehicle,s.lastDt,
-        1,true,s.objective.moveForwards,tx,tz,s.speedKmh,false)
+        1,true,s.objective.moveForwards,tx,tz,s.requestedSpeedKmh,false)
     if not driven then
         s.isFailed=true;s.reason="STATIC_NATIVE_DRIVE_FAILED"
         return {isFailed=true,reason=s.reason}
@@ -361,11 +380,14 @@ function M:settlementStopStatus(vehicle,dt)
         or type(vehicle.getCruiseControlState)~="function" then
         return {isFailed=true,reason="SETTLEMENT_CRUISE_CONTROL_UNAVAILABLE"}
     end
-    local changed=pcall(vehicle.setCruiseControlState,vehicle,off,true)
+    -- GIANTS driveToPoint sets cruise ACTIVE even with allowedToDrive=false.
+    -- Therefore native neutral/braking MUST precede cruise-OFF, not follow it.
     local neutral=type(AIVehicleUtil)=="table"
         and type(AIVehicleUtil.driveToPoint)=="function"
         and pcall(AIVehicleUtil.driveToPoint,vehicle,dt,0,false,
             false,0,1,0,false)
+    local changed=neutral and pcall(
+        vehicle.setCruiseControlState,vehicle,off,true)
     local read,cruise=pcall(vehicle.getCruiseControlState,vehicle)
     if not changed or not neutral or not read or cruise~=off then
         return {isFailed=true,reason="SETTLEMENT_NEUTRAL_REQUEST_UNCONFIRMED"}

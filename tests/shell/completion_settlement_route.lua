@@ -42,8 +42,32 @@ OuttaMyWay.PairTransitRegion={
 }
 dofile("scripts/coordination/CompletionSettlementRoute.lua")
 local Route=OuttaMyWay.CompletionSettlementRoute
+-- Admission from native job-stop MUST only create the planning session;
+-- no single update may complete the whole expensive route search.
+local async=assert(Route.beginPlan(vehicle))
+assert(async.advances==0 and async.spent==0)
+local phase,route,reason
+local yielded=0
+for i=1,2500 do
+    phase,route,reason=Route.advancePlan(async,64)
+    if phase=="PENDING" then
+        yielded=yielded+1
+        assert(async.advances==i and async.spent<=64*i+24,
+            "bounded weighted geometry work per resume")
+    else
+        break
+    end
+end
+assert(phase=="DONE",reason)
+assert(yielded>=3,
+    "the completed-job callback cannot synchronously consume the search")
+assert(Route.advancePlan(async,64)=="FAILED",
+    "finished planning cannot resume again")
 local a,err=Route.plan(vehicle)
 assert(a,err)
+assert(route.estimatedTravelM==a.estimatedTravelM
+    and route.method==a.method and #route.legs==#a.legs,
+    "sliced and synchronous reference route must select alike")
 assert(a.field==77 and a.edge==9)
 assert(a.method=="REVERSE_FORWARD" or a.method=="FORWARD_J")
 assert(#a.legs>1 and #a.legs<=55,
