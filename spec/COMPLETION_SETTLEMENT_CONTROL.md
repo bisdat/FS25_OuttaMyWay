@@ -7,7 +7,7 @@
 
 **Primary Architecture Authority:** [Completion-Triggered Terminal Egress — Completion Settlement Control](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-settlement-control-test)
 
-**Implementation Status:** TEST-only, unvalidated in GIANTS Reality. This is not a generally supported parking capability.
+**Status:** Implemented as an explicitly gated TEST prototype; unvalidated in GIANTS Reality. This is not a generally supported parking capability.
 
 ## Admission
 
@@ -47,22 +47,22 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 
 ## Contract participants
 
-| Source | Participation |
+| Production source | Participation |
 | --- | --- |
-| [CompletionSettlementRoute.lua](../scripts/coordination/CompletionSettlementRoute.lua) | `REALISES` |
-| [CompletionSettlementRuntime.lua](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
-| [NativeStaticAssemblyDriveMechanism.lua](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
-| [DiagnosticPublicationPolicySource.lua](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) | `SUPPORTS` |
-| [CompletionTransitRuntime.lua](../scripts/control/CompletionTransitRuntime.lua) | `SUPPORTS` |
-| [main.lua](../scripts/main.lua) | `SUPPORTS` |
+| [`scripts/coordination/CompletionSettlementRoute.lua`](../scripts/coordination/CompletionSettlementRoute.lua) | `REALISES` |
+| [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
+| [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
+| [`scripts/diagnostics/DiagnosticPublicationPolicySource.lua`](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) | `SUPPORTS` |
+| [`scripts/control/CompletionTransitRuntime.lua`](../scripts/control/CompletionTransitRuntime.lua) | `SUPPORTS` |
+| [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
 
-## Validation participants
+## Repository validation participants
 
-| Test | Role |
+| Validation surface | Relationship |
 | --- | --- |
-| [Completion Settlement lifecycle](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
-| [Shell composition](../tests/shell/main_smoke.lua) | `CHALLENGES` |
-| [Structural shell contract](../tests/test_product_shell_structure.py) | `CHALLENGES` |
-| [Diagnostics sidecar contract](../tests/replacement_core/diagnostic_publication_policy_source.lua) | `CHALLENGES` |
+| [`tests/shell/completion_settlement.lua`](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
+| [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
+| [`tests/test_product_shell_structure.py`](../tests/test_product_shell_structure.py) | `CHALLENGES` |
+| [`tests/replacement_core/diagnostic_publication_policy_source.lua`](../tests/replacement_core/diagnostic_publication_policy_source.lua) | `CHALLENGES` |
 
 **Validation boundary:** GitHub Actions verifies offline contracts and syntax. Only a controlled GIANTS session on the named savegame can test the forward manoeuvre, attachment tracking, cancellation and end-state. Record any deviation as evidence and retain PR #482 draft until field validation.
