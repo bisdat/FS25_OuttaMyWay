@@ -13,12 +13,21 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     return {
         active=nil,
         startMovement=function(self,vehicle,objective)
-            assert(objective.moveForwards==true)
+            assert(type(objective.moveForwards)=="boolean")
+            assert(objective.maximumSpeedKmh>8
+                and objective.maximumSpeedKmh<60,
+                "local guidance speed must respond to target horizon")
             assert(objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
-            assert(objective.maximumSpeedKmh==nil,
-        "completion must use native speed without an artificial cap")
             driveCalls[#driveCalls+1]="START"
             self.active={vehicle=vehicle,objective=objective}
+            return true
+        end,
+        retargetSettlement=function(self,vehicle,objective)
+            assert(self.active and self.active.vehicle==vehicle)
+            assert(self.active.objective.moveForwards==objective.moveForwards,
+                "a direction change must require a real stop")
+            driveCalls[#driveCalls+1]="RETARGET"
+            self.active.objective=objective
             return true
         end,
         movementStatus=function(self,vehicle)
@@ -59,11 +68,19 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     }
 end}
 local route={
-    field=77,edge=9,memberCount=2,lengthM=204.55,
+    field=77,edge=9,memberCount=1,estimatedTravelM=32,
+    method="REVERSE_FORWARD",reverseM=10,guideRadiusM=18,
     legs={
-        {name="INFIELD_APPROACH",point={x=10,z=10}},
-        {name="SHALLOW_CROSSING",point={x=30,z=12}},
-        {name="FORWARD_RUNOUT",point={x=200,z=12}}
+        {name="REVERSE_POSITIONING",point={x=-5,z=10},
+            moveForwards=false},
+        {name="REVERSE_POSITIONING",point={x=-10,z=10},
+            moveForwards=false},
+        {name="FORWARD_GUIDANCE",point={x=5,z=10},
+            moveForwards=true},
+        {name="FORWARD_GUIDANCE",point={x=10,z=12},
+            moveForwards=true},
+        {name="FORWARD_GUIDANCE",point={x=15,z=12},
+            moveForwards=true}
     }
 }
 local routeCalls,terminalCalls=0,0
@@ -105,8 +122,13 @@ assert(not runtime:onNativeCompletion({},a,false))
 assert(#driveCalls==0,"Transit rejection must not move")
 assert(runtime:onNativeCompletion({},a,true))
 assert(#driveCalls==1 and routeCalls==1)
-for i=1,6 do runtime:update(16) end
-assert(runtime.active==nil and #driveCalls==12)
+for i=1,9 do runtime:update(16) end
+assert(runtime.active==nil and #driveCalls==11,
+    "two physical stops, not five per-guidance-point stops")
+assert(driveCalls[1]=="START" and driveCalls[2]=="RETARGET"
+    and driveCalls[3]=="BRAKE" and driveCalls[5]=="STOP"
+    and driveCalls[6]=="START" and driveCalls[7]=="RETARGET"
+    and driveCalls[8]=="RETARGET" and driveCalls[11]=="STOP")
 assert(terminalCalls==1,"terminal must be independently verified")
 assert(events[#events].code=="COMPLETION_SETTLEMENT_FINISHED")
 assert(not runtime:onNativeCompletion({},a,true),

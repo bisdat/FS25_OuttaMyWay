@@ -126,7 +126,15 @@ function M:startMovement(vehicle,objective)
     local nativeMaximumKmh=maxMps*3.6
     local directionalCruiseMaximum=objective.moveForwards
         and cruise.maxSpeed or cruise.maxSpeedReverse
-    local speed=math.min(nativeMaximumKmh,directionalCruiseMaximum)
+    local nativeSpeed=math.min(nativeMaximumKmh,directionalCruiseMaximum)
+    local speed=nativeSpeed
+    if settlement and objective.maximumSpeedKmh~=nil then
+        if not finite(objective.maximumSpeedKmh)
+            or objective.maximumSpeedKmh<=0 then
+            return false,"SETTLEMENT_GUIDANCE_SPEED_INVALID"
+        end
+        speed=math.min(speed,objective.maximumSpeedKmh)
+    end
     if not finite(speed) or speed<=0 then
         return false,"STATIC_NATIVE_DRIVE_SPEED_UNAVAILABLE"
     end
@@ -150,7 +158,8 @@ function M:startMovement(vehicle,objective)
         originX=origin.x,originZ=origin.z,
         oldForceIsActive=vehicle.forceIsActive,
         oldForwardSpeed=cruise.speed,oldReverseSpeed=cruise.speedReverse,
-        speedKmh=speed,startedMotor=not alreadyStarted,
+        speedKmh=speed,nativeSpeedKmh=nativeSpeed,
+        startedMotor=not alreadyStarted,
         settlement=settlement,priorCruiseState=priorCruiseState,
         stopping=false,stopped=false,steadyMs=0,
         lastDt=16,commanded=0,isFailed=false,isComplete=false
@@ -216,7 +225,12 @@ function M:movementStatus(vehicle,dt)
     s.physicalDisplacementM=math.sqrt(dx*dx+dz*dz)
     s.regionProgressM=progress.progressM
     if s.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG"
-        and progress.lateralOffsetM>20 then
+        and progress.progressM< -5 then
+        s.isFailed=true;s.reason="SETTLEMENT_GUIDANCE_NEGATIVE_PROGRESS"
+        return {isFailed=true,reason=s.reason}
+    end
+    if s.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG"
+        and progress.lateralOffsetM>12 then
         s.isFailed=true;s.reason="SETTLEMENT_LEG_TRAJECTORY_DIVERGED"
         return {isFailed=true,reason=s.reason}
     end
@@ -282,6 +296,40 @@ function M:movementStatus(vehicle,dt)
         physicalDisplacementM=s.physicalDisplacementM,
         commandedDriveCount=s.commanded,motorStarted=true,
         localTargetDistanceM=s.localTargetDistanceM}
+end
+
+-- Progressive local targets share one native lease while the direction
+-- stays unchanged. A direction reversal requires physical stop + release.
+function M:retargetSettlement(vehicle,objective)
+    local s=self.active
+    if s==nil or s.vehicle~=vehicle or not s.settlement
+        or not s.isComplete or s.stopping or s.stopped
+        or type(objective)~="table"
+        or type(objective.returnRegion)~="table"
+        or objective.returnRegion.source~="COMPLETION_SETTLEMENT_LEG"
+        or objective.moveForwards~=s.objective.moveForwards
+        or not finite(objective.targetX)
+        or not finite(objective.targetZ) then
+        return false,"SETTLEMENT_RETARGET_UNAVAILABLE"
+    end
+    local p=pose(vehicle.rootNode)
+    if p==nil then return false,"SETTLEMENT_RETARGET_POSE_UNKNOWN" end
+    local speed=s.nativeSpeedKmh
+    if objective.maximumSpeedKmh~=nil then
+        if not finite(objective.maximumSpeedKmh)
+            or objective.maximumSpeedKmh<=0 then
+            return false,"SETTLEMENT_GUIDANCE_SPEED_INVALID"
+        end
+        speed=math.min(speed,objective.maximumSpeedKmh)
+    end
+    local applied=pcall(vehicle.setCruiseControlMaxSpeed,vehicle,speed,speed)
+    if not applied then return false,"SETTLEMENT_RETARGET_SPEED_UNAVAILABLE" end
+    s.objective=objective
+    s.speedKmh=speed
+    s.originX,s.originZ=p.x,p.z
+    s.isComplete=false
+    s.commanded=0
+    return true
 end
 
 -- A settlement point is only a position witness. Maintain native braking

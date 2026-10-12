@@ -9,6 +9,21 @@ local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
 local LEG_DEADLINE_MS=180000
 local SAMPLE_MS=1000
+-- Target-horizon braking model, not a fixed 8 km/h travel limit.
+-- TEST assumption: 1.5 m/s^2 controllable deceleration, GIANTS to validate.
+local GUIDANCE_DECEL_MPS2=1.5
+local function guidanceSpeed(distance)
+    return math.sqrt(2*GUIDANCE_DECEL_MPS2*
+        math.max(2.5,math.min(distance,12)))*3.6
+end
+local function objectiveFor(leg,currentX,currentZ)
+    local distance=math.sqrt((leg.point.x-currentX)^2+
+        (leg.point.z-currentZ)^2)
+    return {moveForwards=leg.moveForwards,
+        maximumSpeedKmh=guidanceSpeed(distance),
+        targetX=leg.point.x,targetZ=leg.point.z,
+        returnRegion={source="COMPLETION_SETTLEMENT_LEG"}},distance
+end
 local function publish(level,code,fields)
     publication:publish("NORMAL",level,code,function()
         fields.version=OuttaMyWay.VERSION
@@ -149,11 +164,9 @@ function Runtime:startLeg()
         self:startLeg()
         return
     end
-    -- Same proven GIANTS driveToPoint mechanism, independent lease.
-    -- This point-target contract is not BWR cross-track settlement.
-    local objective={moveForwards=true,
-        targetX=leg.point.x,targetZ=leg.point.z,
-        returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
+    -- Each path point is local guidance, not a commanded stop;
+    -- stop and change direction only between physically distinct phases.
+    local objective=objectiveFor(leg,x,z)
     local started,evidence=self.drive:startMovement(s.vehicle,objective)
     if not started then
         -- Native setters can partially apply before reporting failure.
@@ -167,7 +180,8 @@ function Runtime:startLeg()
     s.telemetryElapsedMs=0
     publish("INFO","COMPLETION_SETTLEMENT_LEG_STARTED",{
         rootNode=tostring(s.vehicle.rootNode),leg=leg.name,
-        ordinal=s.legIndex,targetX=string.format("%.2f",leg.point.x),
+        ordinal=s.legIndex,moveForwards=leg.moveForwards,
+        targetX=string.format("%.2f",leg.point.x),
         targetZ=string.format("%.2f",leg.point.z),
         remainingM=string.format("%.2f",distance),
         requestedSpeedKmh=type(evidence)=="table"
@@ -208,8 +222,12 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     publish("INFO","COMPLETION_SETTLEMENT_ADMITTED",{
         rootNode=tostring(vehicle.rootNode),field=route.field,edge=route.edge,
         memberCount=route.memberCount,
-        assumedPolygonRunM=string.format("%.2f",route.lengthM),
-        note="EXPLICIT_TEST_ROUTE_ASSUMED_DRIVABLE"})
+        plannedMethod=route.method,
+        reverseM=route.reverseM,
+        guidancePoints=#route.legs,
+        estimatedTravelM=route.estimatedTravelM,
+        guideRadiusM=route.guideRadiusM,
+        note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"})
     self:startLeg()
     return self.active~=nil
 end
@@ -237,6 +255,15 @@ function Runtime:update(dt)
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
     end
+    if type(OuttaMyWay.CompletionSettlementRoute.guard)=="function" then
+        local valid,why=OuttaMyWay.CompletionSettlementRoute.guard(
+            s.vehicle,s.route)
+        if not valid then
+            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                why or "SETTLEMENT_PATH_ENVELOPE_LOST")
+            return
+        end
+    end
     local status
     if s.phase=="STOPPING" then
         status=self.drive:settlementStopStatus(s.vehicle,dt)
@@ -250,6 +277,30 @@ function Runtime:update(dt)
     end
     self:sampleMotion(s,status)
     if s.phase=="MOVING" and status.isComplete then
+        local completedLeg=s.route.legs[s.legIndex]
+        local nextLeg=s.route.legs[s.legIndex+1]
+        if nextLeg~=nil
+            and nextLeg.moveForwards==completedLeg.moveForwards then
+            -- Short steering points are continuous tracking targets.
+            -- One native lease, no artificial braking between points.
+            local x,z=rootPose(s.vehicle)
+            if x==nil then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "GUIDANCE_POSE_UNAVAILABLE")
+                return
+            end
+            local objective=objectiveFor(nextLeg,x,z)
+            local changed,why=self.drive:retargetSettlement(
+                s.vehicle,objective)
+            if not changed then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    why or "GUIDANCE_RETARGET_FAILED")
+                return
+            end
+            s.legIndex=s.legIndex+1
+            s.legElapsedMs=0
+            return
+        end
         local started,reason=self.drive:beginSettlementStop(s.vehicle)
         if not started then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
@@ -259,8 +310,9 @@ function Runtime:update(dt)
         s.phase="STOPPING"
         publish("INFO","COMPLETION_SETTLEMENT_STOPPING",{
             rootNode=tostring(s.vehicle.rootNode),
-            leg=s.route.legs[s.legIndex].name,
-            note="PHYSICAL_STOP_AWAITED"})
+            leg=completedLeg.name,
+            note=nextLeg and "DIRECTION_CHANGE_REQUIRES_STOP"
+                or "PARKING_REGION_REQUIRES_STOP"})
         return
     end
     if s.phase=="STOPPING" and status.isStopped then
