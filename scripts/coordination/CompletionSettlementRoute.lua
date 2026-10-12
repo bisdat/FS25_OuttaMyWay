@@ -273,6 +273,11 @@ function Route.plan(vehicle)
     end
     local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return nil,why end
+    -- This bounded experiment does not infer articulation stability from
+    -- nominal rigid rectangles. Multi-member reversing remains unvalidated.
+    if foot.memberCount~=1 then
+        return nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
+    end
     local frame=edgeFrame(edge,poly)
     if frame==nil then return nil,"EDGE_OUTWARD_UNAVAILABLE" end
     local best

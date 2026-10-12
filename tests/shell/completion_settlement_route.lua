@@ -17,6 +17,7 @@ g_fieldManager={fields={[77]=source,[88]=neighbor},
     getFieldById=function(_,id)return g_fieldManager.fields[id] end}
 local current={x=201.478,z=-256.684,fx=0.987846,fz=-0.155355}
 local vehicle={rootNode=111}
+local memberCount=1
 getWorldTranslation=function()
     return current.x,0,current.z
 end
@@ -36,7 +37,7 @@ OuttaMyWay.PairTransitRegion={
             end
         end
         return {rootX=current.x,rootZ=current.z,
-            corners=corners,memberCount=1}
+            corners=corners,memberCount=memberCount}
     end
 }
 dofile("scripts/coordination/CompletionSettlementRoute.lua")
@@ -104,4 +105,9 @@ assert(b.estimatedTravelM<edge.length*.55)
 -- The field fixture does not secretly admit another polygon.
 current.x,current.z=900,900
 assert(Route.plan(vehicle)==nil)
+current.x,current.z=201.478,-256.684
+memberCount=2
+local multi,reasonMulti=Route.plan(vehicle)
+assert(multi==nil and reasonMulti=="ARTICULATED_ENTRY_REALITY_UNVALIDATED",
+    "a nominal rigid path does not authorise articulated reversing")
 print("completion settlement pose-conditioned parking region PASS")
