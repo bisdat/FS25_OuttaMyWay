@@ -36,6 +36,41 @@ Retain the complete GIANTS log including `COMPLETED_WORKER_TRANSIT_REQUESTED`, `
 
 One normal-completion run is the first decisive test. A second deliberate mod-disable test while an approach leg is active challenges relinquishment. Do not call an offline CI PASS a successful GIANTS parking result.
 
-## Result and next decision
+## GIANTS Reality — TS018, 12 October 2026
 
-**PENDING GIANTS Reality.** CI and review will determine whether the code expresses the agreed TEST premise consistently. Real steering must then validate or disprove the three-leg hypothesis. PR remains draft and unmerged.
+**Evidence:** supplied archive `0.5.5.7_TS018.zip`, containing a complete 2,928-line GIANTS log and a 352.875-second (2560×1440, 60 fps) in-game video, Mindenerwald Field 77.
+
+**Observed native completion/Control sequence** (log clock):
+
+| Time | Runtime evidence |
+| --- | --- |
+| 05:22:19.808 | `AIMessageSuccessFinishedJob` for root `398874`, job 0 |
+| 05:22:19.808 | `COMPLETED_WORKER_TRANSIT_REQUESTED` |
+| 05:22:20.195 | Prototype admitted: edge 9, `memberCount=1`, selected `202.83 m` **polygon-only** sweep (different from the earlier 204.55 m two-member fixture) |
+| 05:22:20.195 | `INFIELD_APPROACH` starts, target (220.21, −247.88), initial root distance 21.08 m, requested cap 8 km/h |
+| 05:23:09.307 | Approach marked complete; `SHALLOW_CROSSING` starts, target (197.73, −236.27), root distance 23.93 m |
+| 05:23:34.825 | Crossing marked complete; `FORWARD_RUNOUT` starts, target (8.20, −206.70), root distance 194.31 m |
+| 05:25:12.779–12.783 | Final leg and `WHOLE_NOMINAL_ASSEMBLY_OUTSIDE_REGISTERED_FIELDS` both reported as success |
+
+**Video contradiction:** The completed sprayer visibly remains stationary for considerable intervals after the first steering objective is armed. The player reports that it moved only with manual steering input. The video shows irregular motion and manual manoeuvring around the first turn; the log records only position-based leg completion, not actual independent steering or who moved it. It cannot prove a native steering call was *rejected*. Crucially, at approximately **05:25:17** (roughly five seconds *after* `COMPLETION_SETTLEMENT_FINISHED`), the speedometer reads approximately **30 km/h** while the machine is still in motion; a subsequent frame around **05:25:22** reads **0 km/h**, after the player's reported manual stop. This is **positive evidence of an incomplete terminal stopping/relinquishment contract**, despite successful geometric occupancy.
+
+**Discovery — Waypoint Orientation Blindness:** The three-leg planner selects an infield *point* only 21.08 m away from the end-of-job pose without requiring an entry heading or physically realised turn curvature. Passing that point, even with manual input, is not evidence of a stable edge-aligned approach. A forward **J-shaped heading acquisition** before shallow entry is a plausible engineering hypothesis, not proven by the existing steering logs.
+
+**Discovery — Player-Control/Native-Steering Conflict:** The native direct drive mechanism checks new AI activity but not current player selection/physical Control. Existing [GIANTS Runtime Knowledge](../engine/GIANTS_RUNTIME_KNOWLEDGE.md#selected-assembly-motion-suppression--tab-context-can-claim-physical-actuation) documents an earlier independent TS018 in which hundreds of successful native drive calls moved a selected Condor by only 0.0022 m until the player tabbed away. `Drivable:updateVehiclePhysics` may rewrite `rotatedTime` for a controlled vehicle. This makes a GIANTS steering-writer conflict a **strong, previously supported explanation**, not independently instrumented proof for this specific sprayer. Neither current completion mechanism explicitly interlocks `vehicle:getIsControlled()` nor `g_currentMission.controlledVehicle`.
+
+**Discovery — Release Is Not Physical Stop:** `NativeStaticAssemblyDriveMechanism.release` issues one zero-acceleration `driveToPoint` call, restores prior cruise settings and ends the lease; it does not measure subsequent velocity, require sustained braking, or verify stationarity. When the engine was already running at arm time, release does not request `stopMotor`. `CompletionSettlementRuntime` calls `verifyTerminal` immediately after the final point-within-2.5m leg completes, so its “FINISHED” means nominal **occupancy**, not confirmed **stopped settlement**. The 30 km/h post-success video falsifies the compound “parked safely” interpretation.
+
+**Assembly scope:** The vehicle in this TS018 run reports `memberCount=1` (a self-propelled sprayer in video), so articulated attachment behaviour is still untested. The chosen sweep was **202.83 m**, not the earlier two-member **204.55 m** figure. Preserve both run-scoped observations; no fixed literal is embedded in the route planner.
+
+**Speed decision:** The 8 km/h artificial prototype cap is **unnecessary**, per the test assessment, and should be removed in a subsequent executable TEST increment. Native motor and cruise capabilities should remain governing bounds. Lifting that cap in isolation **before reliable terminal stopping** would increase the consequences of the observed release defect; do not retest unattended.
+
+**Dispositions:**
+
+1. Treat **autonomous steering unvalidated** and **safe terminal stop disproven**. TEST `0.5.5.7` is a **qualified failure**, not an accepted field-validated plateau.
+2. Before changing the turn geometry, explicitly address the player-Control/native-drive writer conflict; an occupied/selected vehicle should not silently remain under competing physical writers.
+3. Replace orientation-blind approach-point admission with a forward, heading-aware **J-Entry** hypothesis; validate actual infield heading acquisition separately from the later shallow crossing.
+4. Make *Stopped Terminal Settlement* a positive end condition: continue native neutral/braking responsibility until the whole assembly is outside and physical speed has settled, then relinquish; report failure/inability to stop rather than nominal `FINISHED`.
+5. Remove the prototype's artificial 8 km/h speed cap while retaining native limits and safety termination. Make each change independently falsifiable.
+6. Keep draft PR #482 unmerged; separate observation/discussion from the next controlled executable revision.
+
+**Authority Triad disposition:** existing Architecture's intended full-assembly **stopped** terminal outcome remains correct; the currently implemented Specification/Source interpretation is demonstrably insufficient. A follow-on contract revision must distinguish **position arrival** from **heading realised**, **player Control** and **physical stop**, with independent GIANTS validation.
