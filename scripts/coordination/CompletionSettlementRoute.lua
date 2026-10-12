@@ -1,5 +1,5 @@
 -- TEST pose-conditioned terminal region + bounded nominal entry candidates.
--- Specification Jurisdiction: COMPLETION_SETTLEMENT_CONTROL
+-- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
 -- Field 77 edge 9 is the only experimental physical movement fixture.
 -- All planned swept footprints are NOMINAL rigid snapshots, not GIANTS physics.
 OuttaMyWay=OuttaMyWay or {}
