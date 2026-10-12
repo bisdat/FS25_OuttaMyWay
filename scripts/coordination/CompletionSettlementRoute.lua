@@ -12,6 +12,9 @@ local RAD=math.pi/180
 local MAX_POINTS=55
 local STEP_M=5
 local STOP_DEPTH_MAX_M=12
+-- The first nominal clear pose is not sufficient when cruise is braking:
+-- reserve an additional tangent position for physical stopping overshoot.
+local STOPPING_RESERVE_M=5
 local function finite(x)
     return type(x)=="number" and x==x and x~=math.huge and x~=-math.huge
 end
@@ -248,7 +251,11 @@ local function tryTrack(current,foot,poly,neighbors,frame,
     while extra<=35 do
         if terminalAllowed(track.pose,foot,current,
             poly,neighbors,frame) then
-            return track
+            local beyond=advance(track.pose,STOPPING_RESERVE_M)
+            if terminalAllowed(beyond,foot,current,
+                poly,neighbors,frame) then return track end
+            -- Without braking reserve, keep looking along the same
+            -- tangent. A later station might still offer a safe stop.
         end
         if not move(track,STEP_M,true,foot,current,
             poly,neighbors,frame) then return nil end

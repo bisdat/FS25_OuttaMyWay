@@ -78,6 +78,14 @@ current.fx,current.fz=edge.dx/edge.length*a.direction,
 local finished,reason=Route.verifyTerminal(vehicle,a)
 assert(finished,reason)
 assert(Route.guard(vehicle,a))
+current.x=current.x+current.fx*5
+current.z=current.z+current.fz*5
+local reserved,whyReserved=Route.verifyTerminal(vehicle,a)
+assert(reserved,whyReserved,
+    "the chosen terminal requires five metres of stopping reserve")
+current.x,current.z=prev.x,prev.z
+print(string.format("TS018 nominal chosen route: %s reverse=%.1fm travel=%.1fm targets=%d",
+    a.method,a.reverseM,a.estimatedTravelM,#a.legs))
 -- Test a *different completing pose* chooses a different terminal position.
 local first={x=current.x,z=current.z}
 current.x,current.z,current.fx,current.fz=
@@ -85,6 +93,8 @@ current.x,current.z,current.fx,current.fz=
 local b,why=Route.plan(vehicle)
 assert(b,why)
 assert(#b.legs>1 and b.estimatedTravelM<120)
+print(string.format("Alternate pose chosen: %s reverse=%.1fm travel=%.1fm targets=%d",
+    b.method,b.reverseM,b.estimatedTravelM,#b.legs))
 local dest=b.legs[#b.legs].point
 assert(math.sqrt((dest.x-first.x)^2+(dest.z-first.z)^2)>10,
     "different completion poses should not share one far endpoint")
