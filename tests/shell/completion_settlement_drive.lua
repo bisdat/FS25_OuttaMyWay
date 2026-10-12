@@ -139,7 +139,8 @@ positions[11].x=7
 local approach=drive:movementStatus(vehicle,16)
 assert(approach.isComplete==false)
 local lastSpeed=driveCalls[#driveCalls].speed
-assert(lastSpeed<firstSpeed and lastSpeed<=3.61,
+assert(lastSpeed<firstSpeed
+    and math.abs(lastSpeed-math.sqrt(2*1.5*0.5)*3.6)<0.02,
     "braking demand must decrease before reaching changeover")
 assert(drive:cancelMovement(vehicle))
 -- Interruption cannot leave cruise ACTIVE even when never stopped.
