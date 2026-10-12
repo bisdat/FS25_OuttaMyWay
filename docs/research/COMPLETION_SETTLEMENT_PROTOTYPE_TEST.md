@@ -347,3 +347,28 @@ The second worker reached the **final target's 2.5-m acceptance region** and phy
 **Worker one:** completion successfully observed; **NO MOVE / local route coverage FAIL** to preferred edge 9, although the owner demonstrates a plausible *long* approach that the planner never considers. **Worker two:** **PHYSICAL PARKING PASS per owner** with reverse/forward motion and stationary placement; **software terminal verification FAIL/discrepancy**, unresolved until geometric failure attribution. **TS018 remains PASS**, and the same worker repeating physical placement strengthens the observed single-assembly manoeuvre result. The two outcomes are not equivalent to a double physical failure.
 
 The next discussion should protect **parking objective vs route availability vs formal evidence**, with no executed long-route or verified false-negative claim. This is an **evidence/architecture correction only**: no change to TEST `0.5.5.11`, player-Control interlock, exact field-edge candidate enumerator, or stop/geometry verifier. Draft PR #482 remains unmerged.
+
+## TS019 runtime outcome clarification — terminal warning is post-release (12 October 2026)
+
+**Owner question:** what actually follows `WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION`? The owner considers the second worker physically successful and has not requested a further corrective drive. Inspection of the exact experimental `0.5.5.11` sources establishes:
+
+1. `CompletionSettlementRuntime:update` observes `status.isStopped` after native cruise-OFF and stable low speed, then invokes `self.drive:stopMovement(vehicle)` first.
+2. On successful release, `s.driveArmed=false`, `COMPLETION_SETTLEMENT_LEG_FINISHED` is emitted, and `s.legIndex` increments. No further route leg exists, so `Runtime:startLeg` calls `CompletionSettlementRoute.verifyTerminal`.
+3. When the strict terminal predicate returns `false, "WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION"`, `Runtime:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)` clears `self.active` and `self.pending` and publishes a **NORMAL/WARNING** outcome. Because `state.driveArmed==false`, `finish` does **not** call `cancelMovement` and issues **no additional physical command**.
+4. The per-vehicle `self.attempted[vehicle]` flag set on initial completion admission is not cleared by this terminal outcome; an ordinary later update cannot restart the episode.
+
+**Named distinction — Post-Release Terminal Verification Advisory.** A completed, physically stopped, released worker can generate a strict formal terminal-verification FAIL **without any consequent relocation, retry or control lease**. This is the actual current implementation, not a proposed policy change. The term `INTERRUPTED` is a log status, not evidence that motor Control remains held. If lease release itself had failed, it would follow a different interruption path; in TS019 the successful stop and cruise-OFF evidence and subsequent geometry rejection identify the post-release case.
+
+**TS019 accepted physical result:** the second worker is a **physical parking PASS per owner**, despite the software geometry-warning discrepancy. The exact polygon predicate remains unresolved; instrumenting it later may improve evidence but does not justify *automatic correction* of an acceptable parked assembly. No experimental executable behaviour is changed.
+
+### Agreed next architecture inquiry — Extended Infield Approach to edge 9
+
+The owner agrees to investigate **a longer approach** to the existing preferred edge rather than presuming the distant worker needs another edge. Separate:
+- **Target region:** any suitable lengthwise station on preferred Field 77 edge 9, with full-member parked inter-field clearance.
+- **Extended Infield Approach:** a feasible route from the worker's *actual completed pose* through the source field to a reachable local manoeuvre entry pose near that edge. The sketched blue TS019 route is a spatial hypothesis, not certified travel.
+- **Local Entry:** the existing short reverse→forward or forward J guidance, only after a suitable arrival pose is established.
+- **Stopped Terminal:** native cruise-OFF and actual stationary assembly, then the existing non-correcting terminal verification publication.
+
+An extended approach is **not** achieved by raising `MAX_POINTS`, increasing the 35 m run-out literal or substituting one 200 m `driveToPoint` command. It requires a traversable sequence of short attainable guidance targets with heading continuity and measured containment, and must consider still-active workers and conflict zones: in TS019 worker one completed while worker two remained at work. Extended travel across the field cannot assume that productive space is empty or free of right-of-way commitments.
+
+**Evidence and implementation status:** no trajectory across Field 77 was actually driven by worker one in TS019; long-route feasibility is not yet validated. This research note **does not authorise** an automated long route or new collision-control policy. Executable `0.5.5.11` unchanged, existing player-Control veto unchanged, and PR #482 remains draft/unmerged.
