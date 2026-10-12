@@ -259,3 +259,34 @@ The `0.5.5.10` log at 07:46:13.176 proves a *pre-planning admission veto*: `CORO
 **Offline falsification:** globally set `coroutine=nil` and run the actual Field 77 fixture and two distinct completion poses through `Route.beginPlan/advancePlan`. Compare all selected method/direction/reverse/radius/terminal/guidance-point fields to the unchanged `Route.plan` reference. Assert no external motor call before `DONE`, no callback-time geometry, and bounded weighted checks per update. Errors or mismatches disprove the replacement scheduler.
 
 **GIANTS validation target:** verify `COMPLETION_SETTLEMENT_PLANNING_STARTED`, then `COMPLETION_SETTLEMENT_ADMITTED` with `planningUpdates` and `weightedGeometryChecks` but **no** `COROUTINE_UNAVAILABLE`, **no** visible game freeze, and short reverse guidance starting subsequently. Only then can the distinct 0.5.5.10 neutral-order and braking changes receive their first true in-game test. The interlock, route geometry, physical Control and production defaults are unchanged. Keep PR #482 draft and unmerged.
+
+## TEST 0.5.5.11 — field-validated TS018 PASS (12 October 2026)
+
+**Evidence and verdict:** owner supplied `0.5.5.11_TS018.zip` (GIANTS `log.txt`, 2,947 lines, and `2026-10-12 08-06-09.mp4`, 198.08 s, 2560×1440 60 fps). The owner's assessment is explicitly **"0.5.5.11 PASS"**. Review of the log and accompanying in-game recording independently supports successful execution of the complete experimental settlement lifecycle. This supersedes the prior `PENDING` validation label **for this specific theatre/assembly only**.
+
+### Observed sequence
+
+| Local time | Observed GIANTS/OuttaMyWay event |
+| --- | --- |
+| 08:06:33.023 | `OUTTAMYWAY_SHELL_STARTED` confirms version `0.5.5.11`, enabled |
+| 08:08:40.097 | Native AI job `0` / root `399970` completes successfully; completion TRANSIT request and `COMPLETION_SETTLEMENT_PLANNING_STARTED` in same millisecond |
+| 08:08:48.334 | `COMPLETION_SETTLEMENT_ADMITTED`: planning takes **8.237 s and 1,051 updates**, **335,978 weighted geometry checks**, Field 77 edge 9, `memberCount=1`, `REVERSE_FORWARD`, **24.00 m planned reverse**, **64.793 m planned travel**, 15 guidance points, nominal radius 18 m |
+| 08:08:50–56 | `COMPLETION_SETTLEMENT_MOTION_SAMPLE` proves actual reverse propulsion and successive short-target retargets; initial heading approximately (+0.988, −0.157), native speed rises to ~4.66 m/s and then declines to ~0.69 m/s before the reverse stop |
+| 08:08:56.504 | `COMPLETION_SETTLEMENT_STOPPING`, direction change requires physical stop |
+| 08:08:57.809 | Reverse leg complete at **0.0000323 m/s**, **1,206.6 ms** measured stable, cruise OFF |
+| 08:08:57.811 | `FORWARD_GUIDANCE` starts; native player claim remains absent |
+| 08:08:59–08:09:09 | Root position, heading and native steering `rotatedTime` all change during forward short-target guidance (sampled heading rotates through the S-turn, not straight-line motion) |
+| 08:09:10.184 | Final `COMPLETION_SETTLEMENT_STOPPING`, `PARKING_REGION_REQUIRES_STOP` |
+| 08:09:11.587 | Final physical stop complete at **0.0000362 m/s**, **1,204.3 ms** stable, cruise OFF |
+| 08:09:11.588 | **`COMPLETION_SETTLEMENT_FINISHED`**, `WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION`, root approximately **(210.432, −237.204)** |
+| 08:09:20.387 | User exits savegame; no further settlement warning/error or renewed acceleration logged in intervening ~8.8 seconds |
+
+### Independent video corroboration and limits
+
+The scene visibly continues updating during the planning interval, consistent with the owner's report that the former soft-lock is absent. The self-propelled sprayer reverses near the southern edge, performs its forward curved manoeuvre and remains stationary at its parking position for several seconds after the final event. Video later switches to the map/menu and exits, so the observation horizon ends with the recording; this is **not** an indefinite stationarity proof.
+
+**Success claims supported:** actual GIANTS runtime availability without a coroutine API; budgeted multi-update planning; genuine independent reverse driving and native steering targets; repeatable short guidance target handover; verified stop before reverse→forward gear transition; forward heading-acquisition path; final cruise OFF / sustained native low speed; nominal single-member physical footprint outside registered fields in the selected inter-field corridor; and owner acceptance of TS018 parking location.
+
+**Limits not waived:** this is one single-member sprayer on native Field 77 edge 9 with the experiment explicitly opted in; no articulated reverse/jackknife, other completing poses in GIANTS, other source fields, roads/hedges/ditches beyond the nominal fixture, multiplayer, or a complete world-geometry clearance certificate. The ~8.24 s **responsive planning latency** is a measurable UX consideration: the user previously required intentional waits to be explained in HUD; the current log's `PLANNING_STARTED` is not yet a full player-facing waiting message. Avoid adding unrelated HUD behaviour during this acceptance record.
+
+**Consequence:** the explicit state-machine scheduling hypothesis and the corrected native neutral-order are now **GIANTS-supported** for this fixture. Promote the architectural knowledge, not untested generality. Do **not** interpret owner PASS as authorisation to merge draft PR #482, declare a canonical PATCH, remove the single-member limit, change player-Control interlock policy or alter the previously field-validated Hold & Relocate. No executable change in this research update.
