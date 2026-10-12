@@ -97,3 +97,23 @@ After correlating TS018 video/log, inspect the native [GIANTS FS25 `AIVehicleUti
 **Evidence needed:** the complete GIANTS log, actual video through and *after* terminal stop, positive or negative `COMPLETION_SETTLEMENT_MOTION_SAMPLE` evidence, failure/interruption reasons and any mismatch between observed physics and status. CI validates offline wiring, exact native API inputs, cruise-OFF/low-speed release and inherited BWR assumptions; CI **cannot** prove road clearance, curvature, player-control timing or GIANTS physical stop.
 
 **Validation status:** PENDING GIANTS Reality for TEST 0.5.5.8. Do not treat passing an offline contract as a successful terminal parking result.
+
+
+## TEST 0.5.5.8 — 12 October 2026, early admission refusal
+
+**Evidence:** supplied `log(20261012-051854).txt`, 2,920 lines, GIANTS FS25 1.24.0.0; mod identity `0.5.5.8` (line 701, startup line 943). **Reported behaviour:** no driving at all.
+
+At **06:17:36.137**, the log records on the **same timestamp**:
+- `[NATIVE_FIELDWORK_JOB_STOPPED]` with `jobId=0`, `rootNode=398433`, `message=AIMessageSuccessFinishedJob`.
+- `[COMPLETED_WORKER_TRANSIT_REQUESTED]` for the same job and root.
+- `[COMPLETION_SETTLEMENT_NOT_ADMITTED] reason=NATIVE_PLAYER_CONTROL_ACTIVE`.
+
+No `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_LEG_STARTED`, `COMPLETION_SETTLEMENT_MOTION_SAMPLE`, `COMPLETION_SETTLEMENT_STOPPING` or terminal result is recorded for this attempt. No OuttaMyWay error is recorded. The new selection interlock in `CompletionSettlementRuntime:onNativeCompletion` consults `vehicle:getIsControlled()` **before** nominal route planning or physical drive admission, and rejects immediately. Therefore **the steering-target correction, native-speed command and stopping Control in TEST 0.5.5.8 were not executed or tested**.
+
+**Discovery — Synchronous Completion / Control-Handover Ambiguity.** The guard evaluated `getIsControlled()==true` at the *exact same millisecond* as GIANTS' native AI job termination notification. The log does **not** record `g_currentMission.controlledVehicle`, player seat/tab context, explicit steering input or a later `getIsControlled()` sample; therefore this single positive witness cannot distinguish a genuinely player-selected vehicle from a possible transient handover state at job termination. The printed reason says `NATIVE_PLAYER_CONTROL_ACTIVE`, but **player intention and physical steering competition are not established**.
+
+This newly added policy **prevents the planned GIANTS actuation experiment** under that witness; it should not be labelled an engine steering refusal or a disproven drive correction. The earlier observation that tab-selection can suppress non-job motion is independent and remains valid, but selection alone is not evidence of a manually commanded steering or throttle input. Whether selected vehicles must be eligible for unattended settlement is an architectural decision, not a reason to silently force competing writers.
+
+**Immediate discriminating validation (unchanged TEST 0.5.5.8):** before the worker finishes the job, switch the player's controlled vehicle to a different vehicle or remain on foot, and do not take control of the completed worker during the attempted approach. Switching after the stopped-job event cannot restart this attempt because completion admission is event-triggered. If the same `NATIVE_PLAYER_CONTROL_ACTIVE` reason persists while the worker is definitely not selected, the synchronously sampled GIANTS handover flag is a strong new hypothesis requiring post-stop observation before admission. If the guard clears, the actual `COMPLETION_SETTLEMENT_LEG_STARTED` and `COMPLETION_SETTLEMENT_MOTION_SAMPLE` events are the first meaningful steering/stop test. No executable change is justified by this log alone.
+
+**Disposition:** TEST 0.5.5.8 physical Control **not exercised**, neither PASS nor an actual steering FAIL; failure is **admission-policy gating**. Keep PR #482 draft, main unchanged, and do not invent a new driving algorithm from this negative observation.
