@@ -1,7 +1,8 @@
 -- Direct non-job physical movement of a nominated inactive assembly.
--- Specification Jurisdictions: `HOLD_RELOCATE`
+-- Specification Jurisdictions: `HOLD_RELOCATE`, `COMPLETION_SETTLEMENT_CONTROL`
 -- GIANTS driveToPoint, native steering/reverser frames and bounded motor/physics
--- activity are used. This module never creates an AI job or scans geometry.
+-- activity are used by independent BWR and completion-settlement instances.
+-- This module never creates an AI job or scans geometry.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={}
 local M=OuttaMyWay.NativeStaticAssemblyDriveMechanism
@@ -43,7 +44,8 @@ function M:startMovement(vehicle,objective)
     if type(vehicle)~="table" or vehicle.rootNode==nil
         or type(objective)~="table"
         or objective.returnRegion==nil
-        or objective.returnRegion.source~="STATIC_CROSS_TRACK_REGION"
+        or (objective.returnRegion.source~="STATIC_CROSS_TRACK_REGION"
+            and objective.returnRegion.source~="COMPLETION_SETTLEMENT_LEG")
         or type(objective.moveForwards)~="boolean"
         or not finite(objective.targetX)
         or not finite(objective.targetZ)
@@ -103,6 +105,15 @@ function M:startMovement(vehicle,objective)
     local directionalCruiseMaximum=objective.moveForwards
         and cruise.maxSpeed or cruise.maxSpeedReverse
     local speed=math.min(nativeMaximumKmh,directionalCruiseMaximum)
+    if objective.maximumSpeedKmh~=nil then
+        if objective.returnRegion.source~="COMPLETION_SETTLEMENT_LEG"
+            or not finite(objective.maximumSpeedKmh)
+            or objective.maximumSpeedKmh<=0
+            or objective.maximumSpeedKmh>15 then
+            return false,"SETTLEMENT_DRIVE_SPEED_CAP_INVALID"
+        end
+        speed=math.min(speed,objective.maximumSpeedKmh)
+    end
     if not finite(speed) or speed<=0 then
         return false,"STATIC_NATIVE_DRIVE_SPEED_UNAVAILABLE"
     end
@@ -153,8 +164,23 @@ function M:movementStatus(vehicle,dt)
         return {isFailed=true,reason=s.reason}
     end
     local p=pose(vehicle.rootNode)
-    local progress=p and OuttaMyWay.ProjectedEgressRegion.progress(
-        s.objective.returnRegion,p.x,p.z) or nil
+    local progress
+    if p~=nil and s.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG" then
+        local tx,tz=s.objective.targetX-s.originX,
+            s.objective.targetZ-s.originZ
+        local length=math.sqrt(tx*tx+tz*tz)
+        if length>=0.001 then
+            local dx,dz=p.x-s.originX,p.z-s.originZ
+            local remaining=math.sqrt((p.x-s.objective.targetX)^2
+                +(p.z-s.objective.targetZ)^2)
+            progress={progressM=(dx*tx+dz*tz)/length,
+                remainingM=remaining,isInRegion=remaining<=2.5,
+                lateralOffsetM=math.abs(dx*tz-dz*tx)/length}
+        end
+    else
+        progress=p and OuttaMyWay.ProjectedEgressRegion.progress(
+            s.objective.returnRegion,p.x,p.z) or nil
+    end
     if progress==nil then
         s.isFailed=true;s.reason="STATIC_PROGRESS_UNAVAILABLE"
         return {isFailed=true,reason=s.reason}
@@ -164,6 +190,11 @@ function M:movementStatus(vehicle,dt)
     local dx,dz=p.x-s.originX,p.z-s.originZ
     s.physicalDisplacementM=math.sqrt(dx*dx+dz*dz)
     s.regionProgressM=progress.progressM
+    if s.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG"
+        and progress.lateralOffsetM>20 then
+        s.isFailed=true;s.reason="SETTLEMENT_LEG_TRAJECTORY_DIVERGED"
+        return {isFailed=true,reason=s.reason}
+    end
     if s.commanded>0 and progress.isInRegion then
         s.isComplete=true
         return {isComplete=true,progressM=progress.progressM,

@@ -45,6 +45,9 @@ local function installApi(options)
             return {
                 getValue=function(self,key)
                     if options.valueError then error("value failed") end
+                    if key=="outtaMyWayDiagnostics#settlementPrototype" then
+                        return options.prototypeValue
+                    end
                     if key=="outtaMyWayDiagnostics#spatialFarmlandId" then
                         return options.spatialValue
                     end
@@ -74,6 +77,8 @@ test("valid enabled sidecar resolves DIAGNOSTIC",function()
     equal(source:publicationPolicy(),"DIAGNOSTIC")
     equal(state.registeredKeys["outtaMyWayDiagnostics#enabled"],"BOOL")
     equal(state.registeredKeys["outtaMyWayDiagnostics#spatialFarmlandId"],"INT")
+    equal(state.registeredKeys["outtaMyWayDiagnostics#settlementPrototype"],"BOOL")
+    equal(source:isSettlementPrototypeEnabled(),false)
     local target,err=source:spatialTargetFarmlandId()
     equal(target,nil); equal(err,nil)
     equal(state.loadCalls,1); equal(state.deleteCalls,1)
@@ -130,6 +135,23 @@ test("invalid engineering spatial target does not silently select another field"
     equal(source:publicationPolicy(),"DIAGNOSTIC")
     local target,err=source:spatialTargetFarmlandId()
     equal(target,nil); equal(err,"SPATIAL_FARMLAND_ID_INVALID")
+end)
+
+test("physical TEST Control requires a second explicit true flag",function()
+    installApi({exists=true,value=true,prototypeValue=true})
+    local source=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(source:loadSidecar(),true)
+    equal(source:isSettlementPrototypeEnabled(),true)
+    installApi({exists=true,value=false,prototypeValue=true})
+    local other=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(other:loadSidecar(),false)
+    equal(other:isSettlementPrototypeEnabled(),false)
+    installApi({exists=true,value=true,prototypeValue="true"})
+    local invalid=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    local enabled,reason=invalid:loadSidecar()
+    equal(enabled,false)
+    equal(reason,"SETTLEMENT_PROTOTYPE_FLAG_INVALID")
+    equal(invalid:isSettlementPrototypeEnabled(),false)
 end)
 
 print(string.format("RESULT %d passed / %d failed",passed,failed))

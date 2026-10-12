@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Completion-Triggered Terminal Egress is a proposed post-Job Episode responsibility tracked by [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476). It may eventually place a finished Physical Assembly in TRANSIT and settle the complete assembly safely outside its original field. No movement policy or admission of that physical responsibility is established by the present investigation.
+Completion-Triggered Terminal Egress is a proposed post-Job Episode responsibility tracked by [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476). It may eventually place a finished Physical Assembly in TRANSIT and settle the complete assembly safely outside its original field. The accepted production baseline remains request-only. TEST 0.5.5.7 adds a separately opted-in, restricted experimental physical Control responsibility, not general settlement authority.
 
 GIANTS retains native FIELDWORK termination and agronomic authority. OuttaMyWay must not independently audit whether agronomy is complete. A manually stopped, cancelled, replaced or otherwise non-successfully terminated job must not initiate completion-triggered relocation.
 
@@ -56,3 +56,16 @@ Completion TRANSIT was validated by CI and TS019 at TEST `0.5.4.2`, accepted in 
 **Present evidence and next boundary test:** TEST `0.5.5.5` observed a **real two-member tractor assembly** and 73/144 hypothetical static polygon-compatible poses on Field 77 edge 9. TEST `0.5.5.6` extends that read-only diagnostic to a **continuous nominal straight-swept region** for each rigidly translated member rectangle: registered field-polygon obstacles may occur *between* otherwise compatible stationary poses. This is still **not an actual approach, steerable forward run-out, road/hedge clearance, terminal occupancy, or Control admission**. TRANSIT continues to be **requested without a completion check**. See the [Settlement Corridor Assessment contract](../spec/SETTLEMENT_CORRIDOR_ASSESSMENT.md).
 
 **Next falsifiable question:** For either preferred edge, can an actual folded articulated assembly achieve an infield-aligned approach, a safe boundary crossing, an uninterrupted forward run-out, and full exterior terminal occupancy? Existing diagnostic samples **do not answer this**. Treat a narrow margin that fits the terminal footprint but not the swept approach as a legitimate reason to use infield alignment or reject the corridor; never reinterpret its pointwise 'unblocked' samples as proof of manoeuvrability.
+
+## Specification Jurisdiction — Completion Settlement Control (TEST)
+
+**Jurisdiction ID:** `COMPLETION_SETTLEMENT_CONTROL`  
+**Primary Specification:** [Completion Settlement Control](../spec/COMPLETION_SETTLEMENT_CONTROL.md)
+
+**Discovery — Completion Settlement Control.** The nominal straight-sweep of a real articulated assembly on the selected field edge has provided enough **bounded polygon-only longitudinal geometry** to justify a falsifiable *movement prototype*, without repeating the existing terrain/navigation/physics-margin observations. The explicit experimental assumption is that the selected route is driveable. This is a premise for GIANTS Reality to test, not established physical clearance.
+
+The architectural responsibility differs from both Completion Transit and blocked-first Hold & Relocate. Following a genuinely successful native fieldwork stop and an accepted separate TRANSIT request, an explicitly authorised TEST coordinator may seek an infield approach, cross the boundary at a shallow angle, continue forward to straighten the entire assembly, and verify an off-field full-member terminal footprint. The world-space sample, the actual dynamic path, and terminal occupancy remain separate facts; a tractor root crossing alone is not success.
+
+The first bounded prototype runs only on Mindenerwald registered Field 77 edge 9, with a distinct engineering consent flag in diagnostics.xml; `DIAGNOSTICS=true` by itself must never grant physical movement authority. It uses an independent instance of the already working native forward-steering mechanism, 8 km/h command cap, finite leases, new-job/disable/other-Control supersession and best-effort physical neutralisation. It must not gate on TRANSIT fold completion or restore a completed worker to productive WORKING configuration. Active-worker conflict avoidance and general road/hedge coverage are **not** proven by the route assumption; the prototype's bounded behaviour must be treated as an experiment, not an accepted off-field parking service.
+
+**Authority Triad disposition for TEST 0.5.5.7:** Architecture establishes a separate experimental Control jurisdiction; Specification owns the exact three-leg admission/execution/interruption contract; source realises that contract without expanding production request-only defaults. Offline contracts challenge consent, lifecycle and module composition. A real GIANTS passage and full off-field settlement have not been observed.

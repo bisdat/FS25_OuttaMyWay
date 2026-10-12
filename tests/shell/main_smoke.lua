@@ -28,10 +28,12 @@ local expected={
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/assessment/SettlementStraightRunout.lua",
+    "scripts/coordination/CompletionSettlementRoute.lua",
     "scripts/observation/AssemblySettlementProbe.lua",
     "scripts/observation/PhysicalMarginConstraintProbe.lua",
     "scripts/observation/FarmSpatialContextProbe.lua",
     "scripts/control/CompletionTransitRuntime.lua",
+    "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -98,10 +100,12 @@ source=function(path)
         or path=="scripts/observation/FarmEdgeGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
         or path=="scripts/assessment/SettlementStraightRunout.lua"
+        or path=="scripts/coordination/CompletionSettlementRoute.lua"
         or path=="scripts/observation/AssemblySettlementProbe.lua"
         or path=="scripts/observation/PhysicalMarginConstraintProbe.lua"
         or path=="scripts/observation/FarmSpatialContextProbe.lua"
         or path=="scripts/control/CompletionTransitRuntime.lua"
+        or path=="scripts/control/CompletionSettlementRuntime.lua"
         or path=="scripts/diagnostics/VersionHud.lua"
         or path=="scripts/gui/ConfigurationSettingsExtension.lua"
         or path=="scripts/gui/DisabledStartupReminder.lua" then
@@ -120,13 +124,14 @@ assert(OuttaMyWay.liveHoldRelocateRuntime.authority~=nil)
 assert(OuttaMyWay.liveHoldRelocateRuntime.physicalControl~=nil)
 assert(not OuttaMyWay.liveHoldRelocateRuntime.authority:enabled(),
     "offline client fixture cannot control workers")
-assert(#registered==7 and registered[1]==OuttaMyWay.versionHud
+assert(#registered==8 and registered[1]==OuttaMyWay.versionHud
     and registered[2]==OuttaMyWay.nativeBlockageObservation
     and registered[3]==OuttaMyWay.nativeJobCompletionProbe
     and registered[4]==OuttaMyWay.farmSpatialContextProbe
     and registered[5]==OuttaMyWay.completionTransitRuntime
-    and registered[6]==OuttaMyWay.liveHoldRelocateRuntime
-    and registered[7]==OuttaMyWay.disabledStartupReminder)
+    and registered[6]==OuttaMyWay.completionSettlementRuntime
+    and registered[7]==OuttaMyWay.liveHoldRelocateRuntime
+    and registered[8]==OuttaMyWay.disabledStartupReminder)
 assert(OuttaMyWay.nativeBlockedProbe==nil)
 assert(OuttaMyWay.nativeBlockedEventTap==nil)
 assert(type(OuttaMyWay.nativeBlockageObservation.update)=="function")
