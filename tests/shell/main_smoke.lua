@@ -29,6 +29,7 @@ local expected={
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/assessment/SettlementStraightRunout.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/observation/AssemblySettlementProbe.lua",
     "scripts/observation/PhysicalMarginConstraintProbe.lua",
     "scripts/observation/FarmSpatialContextProbe.lua",
@@ -101,6 +102,7 @@ source=function(path)
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
         or path=="scripts/assessment/SettlementStraightRunout.lua"
         or path=="scripts/coordination/CompletionSettlementRoute.lua"
+        or path=="scripts/coordination/ExtendedInfieldApproach.lua"
         or path=="scripts/observation/AssemblySettlementProbe.lua"
         or path=="scripts/observation/PhysicalMarginConstraintProbe.lua"
         or path=="scripts/observation/FarmSpatialContextProbe.lua"
