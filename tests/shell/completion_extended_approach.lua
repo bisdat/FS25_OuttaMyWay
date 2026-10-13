@@ -41,6 +41,7 @@ OuttaMyWay.PairTransitRegion={capture=function(vehicle)
     end
     return {memberCount=1,corners=corners}
 end}
+dofile("scripts/coordination/SettlementPhysicalOccupancy.lua")
 dofile("scripts/coordination/ExtendedInfieldApproach.lua")
 local A=OuttaMyWay.ExtendedInfieldApproach
 local context=A.beginPlan(root)
@@ -80,6 +81,12 @@ otherPose.x,otherPose.z=route.legs[1].point.x,route.legs[1].point.z
 local safe,why=A.guard(root,route,1)
 assert(not safe and why=="EXTENDED_ACTIVE_WORKER_PROXIMITY",
     "dynamic worker position must revoke the long approach")
+-- GIANTS may finish the other job while its body remains present.
+other.getIsAIActive=function()return false end
+safe,why=A.guard(root,route,1)
+assert(not safe and why=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED",
+    "a completed stationary worker still occupies its actual footprint")
+other.getIsAIActive=function()return true end
 -- The established registry is mission.vehicleSystem.vehicles. A legacy
 -- mission.vehicles alias must not silently stand in for that witness.
 g_currentMission.vehicles={root,other}

@@ -7,6 +7,7 @@ OuttaMyWay.CompletionSettlementRoute={}
 local Route=OuttaMyWay.CompletionSettlementRoute
 local G=OuttaMyWay.FarmEdgeGeometry
 local A=OuttaMyWay.SettlementCorridorAssessment
+local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
 local FIXTURE={ax=228.15,az=-243.04,bx=-0.06,bz=-207.44,length=230.97}
 local RAD=math.pi/180
 local MAX_POINTS=55
@@ -132,8 +133,10 @@ end
 -- Candidate points may be in the completed source field during approach.
 -- Once outside they must be within the nominated edge's bounded exterior
 -- band, never beyond another end/corner of the field.
-local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse,checkpoint)
+local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse,checkpoint,occupants,ownRadius)
     local station,depth=coordinates(p,frame)
+    if occupants~=nil and not Occupancy.clear(p,ownRadius,occupants)
+        then return false end
     if station<2 or station>frame.length-2 then return false end
     local boxes=rotatedFoot(foot,initial,p)
     if not noNeighborHit(boxes,neighbors,checkpoint) then return false end
@@ -151,8 +154,10 @@ local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse,check
     end
     return true
 end
-local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint)
+local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
     local station,depth=coordinates(p,frame)
+    if occupants~=nil and not Occupancy.clear(p,ownRadius,occupants)
+        then return false end
     if station<3 or station>frame.length-3
         or depth<0 or depth>STOP_DEPTH_MAX_M then return false end
     local parallel=math.abs(p.fx*frame.ux+p.fz*frame.uz)
@@ -188,10 +193,10 @@ local function newTrack(current)
     return {points={},pose={x=current.x,z=current.z,
         fx=current.fx,fz=current.fz},travelM=0,reverseM=0}
 end
-local function addPoint(track,point,forward,foot,initial,poly,neighbors,frame,checkpoint)
+local function addPoint(track,point,forward,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
     if #track.points>=MAX_POINTS
         or not approachAllowed(point,foot,initial,poly,
-            neighbors,frame,not forward,checkpoint) then return false end
+            neighbors,frame,not forward,checkpoint,occupants,ownRadius) then return false end
     local distance=dist(track.pose,point)
     if distance<0.5 then return true end
     track.travelM=track.travelM+distance
@@ -202,25 +207,25 @@ local function addPoint(track,point,forward,foot,initial,poly,neighbors,frame,ch
     track.pose=point
     return true
 end
-local function move(track,length,forward,foot,initial,poly,neighbors,frame,checkpoint)
+local function move(track,length,forward,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
     local steps=math.ceil(math.abs(length)/STEP_M)
     if steps<1 then return true end
     local step=length/steps
     for i=1,steps do
         local p=advance(track.pose,step)
         if not addPoint(track,p,forward,foot,initial,
-            poly,neighbors,frame,checkpoint) then return false end
+            poly,neighbors,frame,checkpoint,occupants,ownRadius) then return false end
     end
     return true
 end
-local function arc(track,radius,angle,foot,initial,poly,neighbors,frame,checkpoint)
+local function arc(track,radius,angle,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
     local steps=math.ceil(math.abs(radius*angle)/STEP_M)
     if steps<1 then return true end
     local each=angle/steps
     for i=1,steps do
         local p=turnStep(track.pose,radius,each)
         if not addPoint(track,p,true,foot,initial,
-            poly,neighbors,frame,checkpoint) then return false end
+            poly,neighbors,frame,checkpoint,occupants,ownRadius) then return false end
     end
     return true
 end
@@ -229,12 +234,12 @@ local function angleBetween(ax,az,bx,bz)
         or math.atan(ax*bz-az*bx,ax*bx+az*bz)
 end
 local function tryTrack(current,foot,poly,neighbors,frame,
-    direction,reverseLength,radius,alpha,jTurn,checkpoint)
+    direction,reverseLength,radius,alpha,jTurn,checkpoint,occupants,ownRadius)
     local track=newTrack(current)
     local tx,tz=frame.ux*direction,frame.uz*direction
     if reverseLength>0 then
         if not move(track,-reverseLength,false,foot,current,
-            poly,neighbors,frame,checkpoint) then return nil end
+            poly,neighbors,frame,checkpoint,occupants,ownRadius) then return nil end
     end
     local delta=angleBetween(track.pose.fx,track.pose.fz,tx,tz)
     if jTurn then
@@ -243,7 +248,7 @@ local function tryTrack(current,foot,poly,neighbors,frame,
         if math.abs(delta)<20*RAD then return nil end
         local turn=delta
         if not arc(track,radius,turn,foot,current,
-            poly,neighbors,frame,checkpoint) then return nil end
+            poly,neighbors,frame,checkpoint,occupants,ownRadius) then return nil end
     elseif math.abs(delta)>18*RAD then
         return nil
     end
@@ -257,23 +262,23 @@ local function tryTrack(current,foot,poly,neighbors,frame,
     local second=residual-first
     if first*second>=0 or math.abs(second)>95*RAD then return nil end
     if not arc(track,radius,first,foot,current,
-        poly,neighbors,frame,checkpoint) then return nil end
+        poly,neighbors,frame,checkpoint,occupants,ownRadius) then return nil end
     if not arc(track,radius,second,foot,current,
-        poly,neighbors,frame,checkpoint) then return nil end
+        poly,neighbors,frame,checkpoint,occupants,ownRadius) then return nil end
     -- Continue edge-parallel only until the FIRST nominal full-member
     -- exterior pose. The terminal is a region, not the edge endpoint.
     local extra=0
     while extra<=35 do
         if terminalAllowed(track.pose,foot,current,
-            poly,neighbors,frame,checkpoint) then
+            poly,neighbors,frame,checkpoint,occupants,ownRadius) then
             local beyond=advance(track.pose,STOPPING_RESERVE_M)
             if terminalAllowed(beyond,foot,current,
-                poly,neighbors,frame,checkpoint) then return track end
+                poly,neighbors,frame,checkpoint,occupants,ownRadius) then return track end
             -- Without braking reserve, keep looking along the same
             -- tangent. A later station might still offer a safe stop.
         end
         if not move(track,STEP_M,true,foot,current,
-            poly,neighbors,frame,checkpoint) then return nil end
+            poly,neighbors,frame,checkpoint,occupants,ownRadius) then return nil end
         extra=extra+STEP_M
     end
     return nil
@@ -293,6 +298,12 @@ function Route.plan(vehicle,checkpoint)
     if foot.memberCount~=1 then
         return nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
     end
+    local occupants,occupiedWhy=Occupancy.snapshot(vehicle,poly)
+    if occupants==nil then return nil,occupiedWhy end
+    local ownRadius=Occupancy.footRadius(vehicle)
+    if ownRadius==nil then
+        return nil,"PHYSICAL_OCCUPANCY_OWN_FOOTPRINT_UNAVAILABLE"
+    end
     local frame=edgeFrame(edge,poly)
     if frame==nil then return nil,"EDGE_OUTWARD_UNAVAILABLE" end
     local best
@@ -309,7 +320,7 @@ function Route.plan(vehicle,checkpoint)
                         if checkpoint then checkpoint(1) end
                         local track=tryTrack(current,foot,poly,neighbors,frame,
                             direction,reverses[j],radii[k],angles[a],
-                            method==2,checkpoint)
+                            method==2,checkpoint,occupants,ownRadius)
                         if track~=nil then
                             local score=track.travelM+
                                 (method==2 and 5 or 0)+
@@ -410,6 +421,10 @@ local function makeCheck(s,p,kind,reverse)
             c.stage=kind=="TERMINAL" and "RUNOUT_INIT" or "RUNOUT_INIT"
             return
         end
+    end
+    if not Occupancy.clear(p,s.ownRadius,s.occupants) then
+        c.stage=kind=="APPROACH" and "REJECT" or "RUNOUT_INIT"
+        return
     end
     local boxes=rotatedFoot(s.foot,s.current,p)
     local check={point=p,kind=kind,reverse=reverse,
@@ -623,6 +638,13 @@ local function executeBudget(s)
             end
             local frame=edgeFrame(edge,poly)
             if frame==nil then return "FAILED",nil,"EDGE_OUTWARD_UNAVAILABLE" end
+            local occupants,occupiedWhy=Occupancy.snapshot(s.vehicle,poly)
+            if occupants==nil then return "FAILED",nil,occupiedWhy end
+            local ownRadius=Occupancy.footRadius(s.vehicle)
+            if ownRadius==nil then
+                return "FAILED",nil,"PHYSICAL_OCCUPANCY_OWN_FOOTPRINT_UNAVAILABLE"
+            end
+            s.occupants,s.ownRadius=occupants,ownRadius
             s.poly,s.neighbors,s.current,s.foot,s.frame=
                 poly,neighbors,current,foot,frame
             s.direction=-1;s.reverse=1;s.radius=1;s.angle=1;s.method=1
@@ -691,7 +713,7 @@ function Route.guard(vehicle,route)
             and (d<0 or d>STOP_DEPTH_MAX_M)) then
         return false,"SETTLEMENT_ENTRY_OUTSIDE_EDGE_ENVELOPE"
     end
-    return true
+    return Occupancy.nextClear(vehicle,route,1)
 end
 function Route.verifyTerminal(vehicle,route)
     local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)
@@ -705,6 +727,9 @@ function Route.verifyTerminal(vehicle,route)
         route.neighbors,route.frame) then
         return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION"
     end
+    local available,why=Occupancy.nextClear(vehicle,{
+        poly=route.poly,legs={{point={x=p.x,z=p.z}}}},1)
+    if not available then return false,why end
     return true,"WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION"
 end
 return Route

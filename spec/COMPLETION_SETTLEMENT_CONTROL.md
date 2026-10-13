@@ -64,6 +64,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 
 | Production source | Participation |
 | --- | --- |
+| [`scripts/coordination/SettlementPhysicalOccupancy.lua`](../scripts/coordination/SettlementPhysicalOccupancy.lua) | `REALISES` |
 | [`scripts/coordination/CompletionSettlementRoute.lua`](../scripts/coordination/CompletionSettlementRoute.lua) | `REALISES` |
 | [`scripts/coordination/ExtendedInfieldApproach.lua`](../scripts/coordination/ExtendedInfieldApproach.lua) | `REALISES` |
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
@@ -171,3 +172,15 @@ The owner authorised a new TEST build to attempt a long infield route to the sam
 **Failure attribution:** refuse with a differentiated reason: `WORKER_SCENE_REGISTRY_UNAVAILABLE`, `WORKER_SCENE_CENSUS_LIMIT`, `WORKER_SCENE_AI_STATUS_UNAVAILABLE`, or `WORKER_SCENE_ACTIVE_POSITION_UNAVAILABLE`. Publish one NORMAL failed-scene witness containing registry source, bounded scan counts and failing root. Extended admission includes source and observed worker count. No emergency driving or looped retry is added.
 
 **Nonchanges:** the extended geometry, 0/±22.5-degree heading primitives, 8 m guidance targets, 250 ms moving-peer guard, local stop-and-replan handoff and second-worker TS019 parking remain unchanged. No BWR collision coupling, expanded field map, or new player-Control interlock. A successful offline census is **not** a guarantee of full GIANTS visibility; the next supervised TS019 run must confirm the peer root and actual movement.
+
+## TEST 0.5.5.14 — independent parking space per completed assembly
+
+**Owner direction:** "Leave BWR for now, fix the double parking issue — each needs to select their own spot, and space on the map." This authorises independent parking allocation and handling a second native completion, **not** altering native blockage evidence or BWR.
+
+**Physical Occupancy Contract:** registered GIANTS physical vehicle roots remain obstacles regardless of `getIsAIActive` or native job state. `SettlementPhysicalOccupancy` observes `g_currentMission.vehicleSystem.vehicles`, deduplicates assembly roots, uses current world poses and nominal physical/TRANSIT footprint radius with a reserve. A parked/inactive assembly remains occupied. Scanning includes Field77's polygon AABB and the immediate 50 m exterior; unknown relevant world positions and census errors cause an explicit refusal, never implied empty space. An unavailable footprint uses a conservative 22 m uncertainty radius. This is nominal exclusion—not validated physical swept geometry, future moving trajectories, or full-world obstacle mapping.
+
+**Allocation:** `CompletionSettlementRoute` screens each candidate's short guidance and final stop+5m reserve against contemporaneously occupied regions as well as registered field polygons. `ExtendedInfieldApproach` screens its route, entry pose and potential outward strip against **all physical assemblies**, not only AI-active workers, while retaining the previously validated active-worker hazard observation. A route is rechecked with a fresh census before actuation, and at the current next guidance target during movement; a newly occupied next target interrupts Control. The final, positively stopped footprint must still pass independent terminal geometry and current physical occupancy checks. **No occupied-space warning issues a corrective drive**.
+
+**Serial Completion Admission:** only one settlement Control lease is ever active. If another AI worker completes while one is settling, its accepted native completion/TRANSIT event is kept in a bounded queue (two waiting workers, consistent with the supported three-AI-worker envelope). When the lease releases, the queued worker receives a **new local and, if needed, extended plan from its actual pose and the latest scene**. The first worker's *real vehicle position*, not a stale fixed point, excludes its occupied footprint. No BWR signals are forged or dispatched. User/player Control and job supersession still veto an individual queued attempt; disabling/teardown clears the queue without driving.
+
+**Acceptance criteria:** in TS019 both independently completed roots get separate planning opportunities; before either accepts a route its complete nominal future track must be unoccupied; at stop the two parked footprints have distinct supported space along edge 9. If the space is genuinely insufficient, refusal is legitimate and far safer than double parking. Static-world/motion uncertainty remains; GIANTS evidence required.

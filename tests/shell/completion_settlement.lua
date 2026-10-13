@@ -110,6 +110,10 @@ OuttaMyWay.CompletionSettlementRoute={
     end
 }
 local refuseExtendedScene=false
+OuttaMyWay.SettlementPhysicalOccupancy={
+    routeClear=function()return true end,
+    nextClear=function()return true end
+}
 OuttaMyWay.ExtendedInfieldApproach={
     beginPlan=function()
         return {advances=0,spent=0}
@@ -246,6 +250,14 @@ assert(runtime.pending and runtime.pending.kind=="EXTENDED"
 runtime:update(16)
 assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
 assert(driveCalls[#driveCalls]=="START")
+-- The second native completion is retained; only ONE physical driver
+-- may operate until its independent settlement turn begins.
+local nextWorker={rootNode=192,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},nextWorker,true))
+assert(#runtime.waiting==1 and runtime.waiting[1].vehicle==nextWorker)
+assert(not runtime:onNativeCompletion({},nextWorker,true),
+    "a queued native completion is never accepted twice")
 runtime:update(16) -- first short target retarget
 assert(driveCalls[#driveCalls]=="RETARGET")
 runtime:update(16) -- final point starts physical stopping
@@ -258,6 +270,14 @@ assert(runtime.active and runtime.active.route.mode==nil)
 assert(driveCalls[#driveCalls]=="START")
 for i=1,9 do runtime:update(16) end
 assert(runtime.active==nil and terminalCalls==2)
+assert(#runtime.waiting==1)
+runtime:update(16)
+assert(runtime.pending and runtime.pending.vehicle==nextWorker
+    and #runtime.waiting==0,"second worker must get its OWN new planning episode")
+runtime:update(16)
+assert(runtime.active and runtime.active.vehicle==nextWorker)
+for i=1,9 do runtime:update(16) end
+assert(runtime.active==nil and terminalCalls==3)
 -- Reproduce the TS019-style no-short-route / failed worker-scene path.
 -- A failed census reports the exact witnessed limitation but can never
 -- hand control to the native driver, or retry the same completed job.

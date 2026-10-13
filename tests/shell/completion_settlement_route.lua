@@ -17,29 +17,36 @@ g_fieldManager={fields={[77]=source,[88]=neighbor},
     getFieldById=function(_,id)return g_fieldManager.fields[id] end}
 local current={x=201.478,z=-256.684,fx=0.987846,fz=-0.155355}
 local vehicle={rootNode=111}
+local other={rootNode=222}
+local otherPos={x=900,z=900,fx=1,fz=0}
 local memberCount=1
-getWorldTranslation=function()
-    return current.x,0,current.z
+g_currentMission={vehicleSystem={vehicles={vehicle}}}
+getWorldTranslation=function(node)
+    local p=node==222 and otherPos or current
+    return p.x,0,p.z
 end
-localDirectionToWorld=function(_,x,_,z)
-    if x==0 and z==1 then return current.fx,0,current.fz end
-    return current.fz*x+current.fx*z,0,-current.fx*x+current.fz*z
+localDirectionToWorld=function(node,x,_,z)
+    local p=node==222 and otherPos or current
+    if x==0 and z==1 then return p.fx,0,p.fz end
+    return p.fz*x+p.fx*z,0,-p.fx*x+p.fz*z
 end
 OuttaMyWay.PairTransitRegion={
-    capture=function()
-        local lateralX,lateralZ=-current.fz,current.fx
+    capture=function(v)
+        local p=v==other and otherPos or current
+        local lateralX,lateralZ=-p.fz,p.fx
         local corners={}
         for _,side in ipairs({-1,1}) do
             for _,front in ipairs({-1,1}) do
                 corners[#corners+1]={x=lateralX*1.2*side+
-                    current.fx*2.5*front,
-                    z=lateralZ*1.2*side+current.fz*2.5*front}
+                    p.fx*2.5*front,
+                    z=lateralZ*1.2*side+p.fz*2.5*front}
             end
         end
-        return {rootX=current.x,rootZ=current.z,
-            corners=corners,memberCount=memberCount}
+        return {rootX=p.x,rootZ=p.z,
+            corners=corners,memberCount=v==other and 1 or memberCount}
     end
 }
+dofile("scripts/coordination/SettlementPhysicalOccupancy.lua")
 dofile("scripts/coordination/CompletionSettlementRoute.lua")
 local Route=OuttaMyWay.CompletionSettlementRoute
 -- Admission from native job-stop MUST only create the planning session;
@@ -161,6 +168,31 @@ assert(math.sqrt((dest.x-first.x)^2+(dest.z-first.z)^2)>10,
 -- Both poses must remain well short of the full selected 230-m edge.
 assert(a.estimatedTravelM<edge.length*.55)
 assert(b.estimatedTravelM<edge.length*.55)
+-- A completed, AI-inactive second sprayer remains PHYSICAL occupancy.
+-- The original first worker's space must not be allocated twice.
+local occupied=a.legs[#a.legs].point
+otherPos.x,otherPos.z=occupied.x,occupied.z
+otherPos.fx,otherPos.fz=current.fx,current.fz
+g_currentMission.vehicleSystem.vehicles={vehicle,other}
+local clear,conflict=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
+    vehicle,a)
+assert(not clear and conflict=="PHYSICAL_OCCUPANCY_ROUTE_CONFLICT")
+current.x,current.z,current.fx,current.fz=201.478,-256.684,0.987846,-0.155355
+local second,secondReason=Route.plan(vehicle)
+if second~=nil then
+    local target=second.legs[#second.legs].point
+    local delta=math.sqrt((target.x-occupied.x)^2+
+        (target.z-occupied.z)^2)
+    assert(delta>10,"the same occupied parking space was reused")
+else
+    assert(secondReason=="NO_POSE_REACHABLE_PARKING_REGION",
+        "unknown occupancy failure must not be interpreted as clear")
+end
+local nextStep,whyNext=OuttaMyWay.SettlementPhysicalOccupancy.nextClear(
+    vehicle,{poly=assert(G.polygonFor(source)),
+        legs={{point={x=occupied.x,z=occupied.z}}}},1)
+assert(not nextStep and whyNext=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED")
+g_currentMission.vehicleSystem.vehicles={vehicle}
 -- The field fixture does not secretly admit another polygon.
 current.x,current.z=900,900
 assert(Route.plan(vehicle)==nil)

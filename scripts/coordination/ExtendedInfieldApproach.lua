@@ -6,6 +6,7 @@ OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.ExtendedInfieldApproach={}
 local M=OuttaMyWay.ExtendedInfieldApproach
 local G=OuttaMyWay.FarmEdgeGeometry
+local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
 local RAD=math.pi/180
 local STEP=8
 local TURN=math.pi/8
@@ -65,7 +66,14 @@ local function context(vehicle)
     end
     local peers,inventory,reason,evidence=M.activePeers(vehicle,poly)
     if not inventory then return nil,reason,evidence end
+    local occupants,occupiedWhy=Occupancy.snapshot(vehicle,poly)
+    if occupants==nil then return nil,occupiedWhy,evidence end
+    local ownRadius=Occupancy.footRadius(vehicle)
+    if ownRadius==nil then
+        return nil,"PHYSICAL_OCCUPANCY_OWN_FOOTPRINT_UNAVAILABLE",evidence
+    end
     return {poly=poly,foot=foot,initial=current,peers=peers,
+        occupants=occupants,ownRadius=ownRadius,
         sceneEvidence=evidence,
         edge={ax=edge.ax,az=edge.az,ux=edge.dx/edge.length,
             uz=edge.dz/edge.length,nx=nx,nz=nz,length=edge.length}},nil,evidence
@@ -204,6 +212,7 @@ end
 local function onField(ctx,p)
     return G.inside(ctx.poly,p.x,p.z)
         and rotatedFootOK(ctx,p) and clearance(p,ctx.peers)
+        and Occupancy.clear(p,ctx.ownRadius,ctx.occupants)
 end
 local function coord(p,f)
     local x,z=p.x-f.ax,p.z-f.az
@@ -216,6 +225,9 @@ local function isEntry(ctx,p)
         and depth<=-11 and depth>=-24
         and p.fx*(-f.ux)+p.fz*(-f.uz)>=math.cos(12*RAD)
         and onField(ctx,p)
+        and Occupancy.clear({
+            x=p.x+f.nx*12,z=p.z+f.nz*12
+        },ctx.ownRadius,ctx.occupants,8)
 end
 local function heuristic(ctx,p)
     local f=ctx.edge
@@ -369,6 +381,8 @@ function M.guard(vehicle,route,index)
     end
     local others,okay,reason=M.activePeers(vehicle,route.poly)
     if not okay then return false,reason or "EXTENDED_WORKER_OBSERVATION_UNAVAILABLE" end
+    local physical,physicalWhy=Occupancy.nextClear(vehicle,route,index)
+    if not physical then return false,physicalWhy end
     local goal=route.legs[math.min(index,#route.legs)]
     if goal~=nil then
         local x,z=goal.point.x,goal.point.z

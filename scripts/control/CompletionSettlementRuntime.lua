@@ -9,6 +9,9 @@ local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
 local LEG_DEADLINE_MS=180000
 local SAMPLE_MS=1000
+-- Serial Control remains deliberate. Other completions queue for an
+-- independent assessment and space allocation after the current lease.
+local MAX_QUEUED_COMPLETIONS=2
 -- Each update resumes the route search ONCE with a finite weighted geometry
 -- budget. No native movement or fieldwork handback occurs during planning.
 local PLAN_UNITS_PER_UPDATE=320
@@ -90,7 +93,7 @@ end
 function Runtime.new(configuration,diagnostics)
     return setmetatable({configuration=configuration,diagnostics=diagnostics,
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
-        active=nil,pending=nil,
+        active=nil,pending=nil,waiting={},
         attempted=setmetatable({},{__mode="k"})},Runtime)
 end
 function Runtime:isAdmitted()
@@ -237,21 +240,7 @@ function Runtime:startLeg()
         initialCruiseState=type(evidence)=="table"
             and evidence.initialCruiseState or "unknown"})
 end
-function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
-    if not self:isAdmitted() or transitAccepted~=true
-        or type(vehicle)~="table" or self.attempted[vehicle]
-        or self.active~=nil or self.pending~=nil
-        or pairedControlActive()
-        or superseded(vehicle) then
-        return false
-    end
-    local claim=playerClaim(vehicle)
-    if claim~=nil then
-        publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
-            rootNode=tostring(vehicle.rootNode),reason=claim})
-        return false
-    end
-    self.attempted[vehicle]=true
+local function beginEpisode(self,job,vehicle)
     local okay,session,reason=pcall(
         OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle)
     if not okay or session==nil then
@@ -269,9 +258,56 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
         note="NO_MOVEMENT_UNTIL_ROUTE_ADMITTED"})
     return true
 end
+function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
+    if not self:isAdmitted() or transitAccepted~=true
+        or type(vehicle)~="table" or self.attempted[vehicle]
+        or pairedControlActive() or superseded(vehicle) then
+        return false
+    end
+    local claim=playerClaim(vehicle)
+    if claim~=nil then
+        publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+            rootNode=tostring(vehicle.rootNode),reason=claim})
+        return false
+    end
+    if self.active~=nil or self.pending~=nil or #self.waiting>0 then
+        if #self.waiting>=MAX_QUEUED_COMPLETIONS then
+            publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+                rootNode=tostring(vehicle.rootNode),
+                reason="COMPLETION_QUEUE_CAPACITY_EXHAUSTED"})
+            return false
+        end
+        self.attempted[vehicle]=true
+        self.waiting[#self.waiting+1]={vehicle=vehicle,job=job}
+        publish("INFO","COMPLETION_SETTLEMENT_QUEUED",{
+            rootNode=tostring(vehicle.rootNode),
+            ordinal=#self.waiting,
+            note="NO_SECOND_NATIVE_CONTROL_WHILE_FIRST_SETTLES"})
+        return true
+    end
+    self.attempted[vehicle]=true
+    return beginEpisode(self,job,vehicle)
+end
 function Runtime:update(dt)
     local s=self.active or self.pending
-    if s==nil then return end
+    if s==nil then
+        if #self.waiting==0 then return end
+        if not self:isAdmitted() then
+            self.waiting={}
+            return
+        end
+        if pairedControlActive() then return end
+        local item=table.remove(self.waiting,1)
+        local claim=playerClaim(item.vehicle)
+        if superseded(item.vehicle) or claim~=nil then
+            publish("WARNING","COMPLETION_SETTLEMENT_QUEUED_REJECTED",{
+                rootNode=tostring(item.vehicle.rootNode),
+                reason=claim or "GIANTS_JOB_SUPERSEDED"})
+            return
+        end
+        beginEpisode(self,item.job,item.vehicle)
+        return
+    end
     local claim=playerClaim(s.vehicle)
     if not self:isAdmitted() or superseded(s.vehicle)
         or pairedControlActive() or claim~=nil then
@@ -331,6 +367,15 @@ function Runtime:update(dt)
                 reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
             return
         end
+        -- Reobserve ALL physical assemblies: completed workers are not
+        -- released parking space merely because their AI job stopped.
+        local spaceClear,spaceWhy=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
+            s.vehicle,route)
+        if not spaceClear then
+            self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                spaceWhy or "PARKING_SPACE_NO_LONGER_AVAILABLE")
+            return
+        end
         self.pending=nil
         self.active={vehicle=s.vehicle,job=s.job,route=route,legIndex=1,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
@@ -382,6 +427,17 @@ function Runtime:update(dt)
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 why or "SETTLEMENT_PATH_ENVELOPE_LOST")
             return
+        end
+        s.peerCheckMs=(s.peerCheckMs or 250)+dt
+        if s.peerCheckMs>=250 then
+            s.peerCheckMs=0
+            local clear,reason=OuttaMyWay.SettlementPhysicalOccupancy.nextClear(
+                s.vehicle,s.route,s.legIndex)
+            if not clear then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    reason or "LOCAL_PARKING_SPACE_OCCUPIED")
+                return
+            end
         end
     end
     local status
@@ -455,12 +511,14 @@ function Runtime:update(dt)
     end
 end
 function Runtime:relinquish(reason)
+    self.waiting={}
     self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
         reason or "CONTROL_REVOKED")
 end
 function Runtime:loadMap()
     self.pending=nil
     self.active=nil
+    self.waiting={}
     self.attempted=setmetatable({},{__mode="k"})
 end
 function Runtime:deleteMap()
@@ -470,6 +528,7 @@ function Runtime:deleteMap()
     end
     self.active=nil
     self.pending=nil
+    self.waiting={}
     self.attempted=setmetatable({},{__mode="k"})
 end
 return Runtime

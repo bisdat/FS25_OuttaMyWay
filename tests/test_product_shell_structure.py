@@ -35,6 +35,7 @@ SHELL_MODULES = [
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/assessment/SettlementStraightRunout.lua",
+    "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
     "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/observation/AssemblySettlementProbe.lua",
