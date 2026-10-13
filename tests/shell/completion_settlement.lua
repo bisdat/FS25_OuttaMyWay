@@ -9,6 +9,7 @@ OuttaMyWay.LogPublication={origin=function()
 end}
 local driveCalls={}
 local failure
+local failCancel=false
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     return {
         active=nil,
@@ -58,6 +59,7 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
             assert(self.active and self.active.vehicle==vehicle)
             driveCalls[#driveCalls+1]="CANCEL"
             self.active=nil
+            if failCancel then return false,"NATIVE_NEUTRAL_NOT_CONFIRMED" end
             return true
         end,
         discardOnMapDelete=function(self,vehicle)
@@ -413,4 +415,23 @@ activeConflict=false
 assert(runtime.replans[reroute]==1)
 -- No second route retry may bypass positive stopping or loop indefinitely.
 runtime:loadMap()
-print("completion settlement TEST lifecycle, claim handoff, stable-stop alternative and scene attribution PASS")
+-- A native cancellation without positive neutralisation evidence must
+-- RETAIN its claim. Another completed worker cannot reuse that location
+-- on the assumption that the previous driver definitely stopped.
+local uncertain={rootNode=202,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},uncertain,true))
+runtime:update(16)
+assert(runtime.active and runtime.claims[uncertain])
+failure="SYNTHETIC_NATIVE_GUIDANCE_FAILURE"
+failCancel=true
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending==nil
+    and runtime.claims[uncertain]~=nil
+    and events[#events-1].code=="COMPLETION_SETTLEMENT_CLAIM_RETAINED",
+    "unknown motor neutralisation must preserve the exclusive claim")
+failCancel=false
+failure=nil
+runtime:loadMap()
+assert(runtime.claims[uncertain]==nil)
+print("completion settlement TEST lifecycle, claim handoff, stable-stop alternative, retained unsafe claim and scene attribution PASS")
