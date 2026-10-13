@@ -79,8 +79,11 @@ assert(route.planningExpansions>3)
 -- New active-worker position in front of the route invalidates authority.
 otherPose.x,otherPose.z=route.legs[1].point.x,route.legs[1].point.z
 local safe,why=A.guard(root,route,1)
-assert(not safe and why=="EXTENDED_ACTIVE_WORKER_PROXIMITY",
-    "dynamic worker position must revoke the long approach")
+assert(not safe and why=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED",
+    "physical scene veto precedes active-worker proximity guard")
+local active,observed=A.activePeers(root,poly)
+assert(observed and #active==1,
+    "the other worker remains positively AI-active in independent evidence")
 -- GIANTS may finish the other job while its body remains present.
 other.getIsAIActive=function()return false end
 safe,why=A.guard(root,route,1)
