@@ -66,6 +66,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | --- | --- |
 | [`scripts/coordination/SettlementPhysicalOccupancy.lua`](../scripts/coordination/SettlementPhysicalOccupancy.lua) | `REALISES` |
 | [`scripts/coordination/CompletionSettlementRoute.lua`](../scripts/coordination/CompletionSettlementRoute.lua) | `REALISES` |
+| [`scripts/coordination/ParkingRegionAllocation.lua`](../scripts/coordination/ParkingRegionAllocation.lua) | `REALISES` |
 | [`scripts/coordination/ExtendedInfieldApproach.lua`](../scripts/coordination/ExtendedInfieldApproach.lua) | `REALISES` |
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
@@ -209,3 +210,11 @@ GIANTS log: root `396437` planned 288 m to preferred edge 9, was interrupted at 
 - **Untouched authority:** no BWR triggers or new BWR commands; no new player-control interlock; no universal other-field/articulated support inferred.
 
 **TEST obligations before a GIANTS run:** distinct available regions → distinct claims/routes; collision/overlap of claims refused; previously generic entry pose without local feasibility → continue searching; occupied destination after approach admission → proven stop/release, then alternate claim or refusal; no repeat-to-same-blocked-slot loops; second completed worker queued and independently assessed; original TS018 local manoeuvre and native stopping preserved. GIANTS must then validate physical separated parking, rather than interpreting CI as a field PASS.
+
+## TEST 0.5.5.15 — qualified entry and claim contracts (GIANTS pending)
+
+Implementation experimentally separates **terminal+local-entry feasibility** (`ParkingRegionAllocation`) from **extended infield steering**. After no local manoeuvre from the actual completion pose, the incremental allocator tests bounded separate edge-9 stations: each candidate must support an actual short local `CompletionSettlementRoute` from a synthetic entry position/heading constrained to that candidate's station band, with registered polygon and current physical assembly occupancy. A successful candidate obtains an exclusive claim of its actual resulting nominal terminal pose and stopping reserve, then Extended Infield Approach is targeted to its **qualified** entry rather than the broad entry band. `EXTENDED_ALREADY_AT_ENTRY` cannot bypass local terminal qualification for the new targeted mode.
+
+The existing local planner's real-pose behaviour remains first-choice; new optional entry-pose inputs rotate the nominal captured member corners into a hypothetical heading without motor actuation and constrain the final terminal station. The terminal remains independently verified at real stop. Claims are private to the settlement runtime, visible to its planning and cleared on completion/abandonment/map reset; physically parked vehicles remain occupancy even after claims release. Completed workers retain serial native Control.
+
+When an approaching native guidance target or claimed terminal is invalidated, the runtime requests `beginSettlementStop`, waits for `settlementStopStatus.isStopped` and positive `stopMovement` before releasing the claim and considering a **bounded one-time alternative**. A queued second completion can receive a turn before stopped retry. If a distinct qualified terminal cannot be found, report refusal rather than returning to the same blocked point. The experimental search stations, local trial methods and retry count are implementation hypotheses to challenge in GIANTS. **BWR and player-Control policy unchanged.**

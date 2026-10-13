@@ -4,6 +4,7 @@
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionSettlementRuntime={}
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
+local Allocation=OuttaMyWay.ParkingRegionAllocation
 Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
@@ -93,7 +94,7 @@ end
 function Runtime.new(configuration,diagnostics)
     return setmetatable({configuration=configuration,diagnostics=diagnostics,
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
-        active=nil,pending=nil,waiting={},
+        active=nil,pending=nil,waiting={},claims={},replans=setmetatable({},{__mode="k"}),
         attempted=setmetatable({},{__mode="k"}),
         deferred=setmetatable({},{__mode="k"})},Runtime)
 end
@@ -110,6 +111,7 @@ function Runtime:finish(code,reason)
     if state==nil then return end
     self.active=nil
     self.pending=nil
+    Allocation.release(self.claims,state.vehicle)
     if state.driveArmed then
         local stopped,why=self.drive:cancelMovement(state.vehicle)
         if not stopped then
@@ -180,8 +182,13 @@ function Runtime:startLeg()
                     "EXTENDED_HANDOFF_WITH_ACTIVE_DRIVE")
                 return
             end
+            if not Allocation.claimCurrent(self.claims,s.vehicle) then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "TERMINAL_CLAIM_MISSING_AT_HANDOFF")
+                return
+            end
             local session,why=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle)
+                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax})
             if session==nil then
                 self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                     why or "LOCAL_HANDOFF_PLANNER_UNAVAILABLE")
@@ -190,6 +197,7 @@ function Runtime:startLeg()
             self.active=nil
             self.pending={vehicle=s.vehicle,job=s.job,plan=session,
                 kind="LOCAL_HANDOFF",elapsedMs=s.totalElapsedMs,
+                stationMin=s.stationMin,stationMax=s.stationMax,
                 phase="PLANNING",driveArmed=false}
             publish("INFO","COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING",{
                 rootNode=tostring(s.vehicle.rootNode),
@@ -310,6 +318,46 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     self.attempted[vehicle]=true
     return beginEpisode(self,job,vehicle)
 end
+local function allocation(self,s,why)
+    local plan,reason=Allocation.beginPlan(s.vehicle,self.claims)
+    if not plan then return false,reason end
+    self.active=nil
+    self.pending={vehicle=s.vehicle,job=s.job,plan=plan,
+        kind="ALLOCATE",phase="PLANNING",driveArmed=false,
+        elapsedMs=s.totalElapsedMs or s.elapsedMs or 0}
+    publish("INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
+        rootNode=tostring(s.vehicle.rootNode),reason=why})
+    return true
+end
+local function retryStopped(self,s,why)
+    if s.driveArmed or (self.replans[s.vehicle] or 0)>=1 then return false end
+    self.replans[s.vehicle]=(self.replans[s.vehicle] or 0)+1
+    Allocation.release(self.claims,s.vehicle)
+    if #self.waiting>0 and #self.waiting<MAX_QUEUED_COMPLETIONS then
+        self.active=nil;self.pending=nil
+        self.waiting[#self.waiting+1]={vehicle=s.vehicle,job=s.job}
+        publish("INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_QUEUED",{
+            rootNode=tostring(s.vehicle.rootNode),reason=why,
+            note="STABLE_STOP_CONFIRMED"})
+        return true
+    end
+    return allocation(self,s,why)
+end
+local function stopForAlternative(self,s,reason)
+    if (self.replans[s.vehicle] or 0)>=1 then return false end
+    if not s.driveArmed then return retryStopped(self,s,reason) end
+    local started,why=self.drive:beginSettlementStop(s.vehicle)
+    if not started then
+        self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+            why or "ALTERNATIVE_BRAKING_UNAVAILABLE")
+        return true
+    end
+    s.phase="STOP_FOR_ALTERNATIVE"
+    s.alternativeReason=reason
+    publish("WARNING","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPING",{
+        rootNode=tostring(s.vehicle.rootNode),reason=reason})
+    return true
+end
 function Runtime:update(dt)
     local s=self.active or self.pending
     if s==nil then
@@ -349,12 +397,47 @@ function Runtime:update(dt)
                 "FINITE_PLANNING_LEASE_EXPIRED")
             return
         end
-        local planner=s.kind=="EXTENDED"
-            and OuttaMyWay.ExtendedInfieldApproach
-            or OuttaMyWay.CompletionSettlementRoute
+        local planner=s.kind=="ALLOCATE" and Allocation or
+            (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach
+            or OuttaMyWay.CompletionSettlementRoute)
         local phase,route,reason=planner.advancePlan(
             s.plan,PLAN_UNITS_PER_UPDATE)
         if phase=="PENDING" then return end
+        if s.kind=="ALLOCATE" and phase=="DONE" and route then
+            local claim,why=Allocation.claim(self.claims,s.vehicle,
+                route.terminalPose,route.ownRadius)
+            if not claim then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",why)
+                return
+            end
+            s.stationMin=route.stationMin;s.stationMax=route.stationMax
+            local plan,reason=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
+                s.vehicle,route.entryPose)
+            if not plan then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",reason)
+                return
+            end
+            s.plan=plan;s.kind="EXTENDED"
+            publish("INFO","COMPLETION_SETTLEMENT_REGION_CLAIMED",{
+                rootNode=tostring(s.vehicle.rootNode),station=route.station,
+                terminalX=route.terminalPose.x,terminalZ=route.terminalPose.z,
+                entryX=route.entryPose.x,entryZ=route.entryPose.z})
+            return
+        end
+        if s.kind=="EXTENDED" and phase=="DONE" and route
+            and #route.legs==0 then
+            local plan=OuttaMyWay.CompletionSettlementRoute.beginPlan(
+                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax})
+            if not plan then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    "LOCAL_HANDOFF_PLANNER_UNAVAILABLE")
+                return
+            end
+            s.plan=plan;s.kind="LOCAL_HANDOFF"
+            publish("INFO","COMPLETION_SETTLEMENT_ALREADY_AT_QUALIFIED_ENTRY",{
+                rootNode=tostring(s.vehicle.rootNode)})
+            return
+        end
         if phase~="DONE" or route==nil then
             if s.kind=="EXTENDED" and type(s.plan.sceneEvidence)=="table" then
                 -- One bounded evidence line on a failed scene admission,
@@ -372,36 +455,42 @@ function Runtime:update(dt)
             end
             if s.kind=="LOCAL_INITIAL"
                 and reason=="NO_POSE_REACHABLE_PARKING_REGION" then
-                local extended,why=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
-                    s.vehicle)
-                if extended~=nil then
-                    s.plan=extended
-                    s.kind="EXTENDED"
-                    publish("INFO","COMPLETION_SETTLEMENT_EXTENDED_PLANNING",{
-                        rootNode=tostring(s.vehicle.rootNode),
-                        reason="LOCAL_ENTRY_UNREACHABLE",
-                        note="NO_DRIVE_WHILE_PLANNING"})
-                    return
-                end
-                reason=why or reason
+                if allocation(self,s,reason) then return end
+            elseif s.kind=="LOCAL_HANDOFF" then
+                if retryStopped(self,s,reason) then return end
             end
-            if deferStoppedEntry(self,s,reason) then return end
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
             return
+        end
+        if s.kind=="LOCAL_INITIAL" then
+            local claim,why=Allocation.claimForRoute(self.claims,s.vehicle,route)
+            if not claim then
+                if allocation(self,s,why) then return end
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",why)
+                return
+            end
+        elseif s.kind=="LOCAL_HANDOFF" then
+            local okay,why=Allocation.claimClear(self.claims,s.vehicle,route.poly)
+            if not okay then
+                if retryStopped(self,s,why) then return end
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",why)
+                return
+            end
         end
         -- Reobserve ALL physical assemblies: completed workers are not
         -- released parking space merely because their AI job stopped.
         local spaceClear,spaceWhy=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
             s.vehicle,route)
         if not spaceClear then
-            if deferStoppedEntry(self,s,spaceWhy) then return end
+            if retryStopped(self,s,spaceWhy) then return end
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 spaceWhy or "PARKING_SPACE_NO_LONGER_AVAILABLE")
             return
         end
         self.pending=nil
         self.active={vehicle=s.vehicle,job=s.job,route=route,legIndex=1,
+            stationMin=s.stationMin,stationMax=s.stationMax,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
             phase="ADMITTED",driveArmed=false}
         publish("INFO","COMPLETION_SETTLEMENT_ADMITTED",{
@@ -438,9 +527,14 @@ function Runtime:update(dt)
             s.peerCheckMs=0
             local valid,why=OuttaMyWay.ExtendedInfieldApproach.guard(
                 s.vehicle,s.route,s.legIndex)
-            if not valid then
-                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-                    why or "EXTENDED_APPROACH_UNSUPPORTED")
+            local claimed,claimWhy=Allocation.claimClear(
+                self.claims,s.vehicle,s.route.poly)
+            if not valid or not claimed then
+                local reason=not claimed and claimWhy or why
+                    or "EXTENDED_APPROACH_UNSUPPORTED"
+                if not stopForAlternative(self,s,reason) then
+                    self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)
+                end
                 return
             end
         end
@@ -448,8 +542,10 @@ function Runtime:update(dt)
         local valid,why=OuttaMyWay.CompletionSettlementRoute.guard(
             s.vehicle,s.route,s.legIndex)
         if not valid then
-            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-                why or "SETTLEMENT_PATH_ENVELOPE_LOST")
+            local reason=why or "SETTLEMENT_PATH_ENVELOPE_LOST"
+            if not stopForAlternative(self,s,reason) then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)
+            end
             return
         end
         s.peerCheckMs=(s.peerCheckMs or 250)+dt
@@ -458,14 +554,16 @@ function Runtime:update(dt)
             local clear,reason=OuttaMyWay.SettlementPhysicalOccupancy.nextClear(
                 s.vehicle,s.route,s.legIndex)
             if not clear then
-                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-                    reason or "LOCAL_PARKING_SPACE_OCCUPIED")
+                local why=reason or "LOCAL_PARKING_SPACE_OCCUPIED"
+                if not stopForAlternative(self,s,why) then
+                    self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",why)
+                end
                 return
             end
         end
     end
     local status
-    if s.phase=="STOPPING" then
+    if s.phase=="STOPPING" or s.phase=="STOP_FOR_ALTERNATIVE" then
         status=self.drive:settlementStopStatus(s.vehicle,dt)
     else
         status=self.drive:movementStatus(s.vehicle,dt)
@@ -473,6 +571,23 @@ function Runtime:update(dt)
     if status==nil or status.isFailed then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
             status and status.reason or "DRIVE_STATUS_UNAVAILABLE")
+        return
+    end
+    if s.phase=="STOP_FOR_ALTERNATIVE" and status.isStopped then
+        local stopped,why=self.drive:stopMovement(s.vehicle)
+        if not stopped then
+            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                why or "ALTERNATIVE_NATIVE_RELEASE_UNCONFIRMED")
+            return
+        end
+        s.driveArmed=false
+        publish("INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPED",{
+            rootNode=tostring(s.vehicle.rootNode),
+            stableMs=status.steadyMs,cruiseState=status.cruiseState})
+        if not retryStopped(self,s,s.alternativeReason) then
+            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                "NO_REASSESSMENT_AVAILABLE")
+        end
         return
     end
     self:sampleMotion(s,status)
@@ -543,6 +658,8 @@ function Runtime:loadMap()
     self.pending=nil
     self.active=nil
     self.waiting={}
+    self.claims={}
+    self.replans=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
 end
@@ -554,6 +671,8 @@ function Runtime:deleteMap()
     self.active=nil
     self.pending=nil
     self.waiting={}
+    self.claims={}
+    self.replans=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
 end

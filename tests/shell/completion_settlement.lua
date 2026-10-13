@@ -110,6 +110,30 @@ OuttaMyWay.CompletionSettlementRoute={
     end
 }
 local refuseExtendedScene=false
+OuttaMyWay.ParkingRegionAllocation={
+    beginPlan=function()return {advances=0,spent=0}end,
+    advancePlan=function(session,units)
+        session.advances=session.advances+1
+        session.spent=session.spent+units
+        return "DONE",{entryPose={x=25,z=-30,fx=1,fz=0},
+            terminalPose={x=40,z=20},ownRadius=5,
+            stationMin=0,stationMax=100,station=50}
+    end,
+    claim=function(ledger,vehicle,terminal,radius)
+        ledger[vehicle]={x=terminal.x,z=terminal.z,radius=radius or 5}
+        return ledger[vehicle]
+    end,
+    claimForRoute=function(ledger,vehicle,planned)
+        ledger[vehicle]={x=15,z=12,radius=5}
+        return ledger[vehicle]
+    end,
+    claimClear=function(ledger,vehicle)
+        return ledger[vehicle]~=nil,"TERMINAL_CLAIM_MISSING"
+    end,
+    claimCurrent=function(ledger,vehicle)return ledger[vehicle]end,
+    release=function(ledger,vehicle)ledger[vehicle]=nil end
+}
+
 OuttaMyWay.SettlementPhysicalOccupancy={
     routeClear=function()return true end,
     nextClear=function()return true end
@@ -244,9 +268,11 @@ local callsBefore=#driveCalls
 localFallback=true
 assert(runtime:onNativeCompletion({},distant,true))
 runtime:update(16)
-assert(runtime.pending and runtime.pending.kind=="EXTENDED"
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
     and #driveCalls==callsBefore,
-    "failed local search must not issue native motion")
+    "failed local search must first assess a qualified parking region")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="EXTENDED")
 runtime:update(16)
 assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
 assert(driveCalls[#driveCalls]=="START")
@@ -301,7 +327,7 @@ assert(runtime.active==nil and runtime.pending==nil
     and #driveCalls==callsBeforeDeferral)
 assert(#runtime.waiting==2 and runtime.waiting[1].vehicle==ahead
     and runtime.waiting[2].vehicle==blocked
-    and events[#events].code=="COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE",
+    and events[#events].code=="COMPLETION_SETTLEMENT_ALTERNATIVE_QUEUED",
     "physically stopped worker must yield to the queued peer, not collide")
 runtime:update(16)
 assert(runtime.pending and runtime.pending.vehicle==ahead)
@@ -321,7 +347,7 @@ for i=1,12 do
     if terminalCalls==5 then break end
 end
 assert(runtime.active==nil and terminalCalls==5
-    and runtime.deferred[blocked]==true)
+    and runtime.replans[blocked]==1)
 assert(not runtime:onNativeCompletion({},blocked,true),
     "yielding is bounded, not a second native completion event")
 -- Reproduce the TS019-style no-short-route / failed worker-scene path.
@@ -333,6 +359,8 @@ localFallback=true
 refuseExtendedScene=true
 local beforeRefusal=#driveCalls
 assert(runtime:onNativeCompletion({},refused,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="EXTENDED")
 runtime:update(16)

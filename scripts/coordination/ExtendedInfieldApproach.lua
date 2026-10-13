@@ -219,6 +219,13 @@ local function coord(p,f)
     return x*f.ux+z*f.uz,x*f.nx+z*f.nz
 end
 local function isEntry(ctx,p)
+    if ctx.target~=nil then
+        local dx,dz=p.x-ctx.target.x,p.z-ctx.target.z
+        return dx*dx+dz*dz<=9*9
+            and p.fx*ctx.target.fx+p.fz*ctx.target.fz
+                >=math.cos(25*RAD)
+            and onField(ctx,p)
+    end
     local f=ctx.edge
     local station,depth=coord(p,f)
     return station>=16 and station<=f.length-16
@@ -230,6 +237,10 @@ local function isEntry(ctx,p)
         },ctx.ownRadius,ctx.occupants,8)
 end
 local function heuristic(ctx,p)
+    if ctx.target~=nil then
+        local dx,dz=p.x-ctx.target.x,p.z-ctx.target.z
+        return math.sqrt(dx*dx+dz*dz)
+    end
     local f=ctx.edge
     local s=coord(p,f)
     s=math.max(18,math.min(f.length-18,s))
@@ -301,18 +312,22 @@ local function reconstruct(ctx,node)
         legs[#legs+1]={name="EXTENDED_INFIELD_GUIDANCE",
             point={x=rev[i].x,z=rev[i].z},moveForwards=true}
     end
-    if #legs==0 then return nil,"EXTENDED_ALREADY_AT_ENTRY" end
+    if #legs==0 and ctx.target==nil then
+        return nil,"EXTENDED_ALREADY_AT_ENTRY"
+    end
     return {mode="EXTENDED_INFIELD",field=77,edge=9,
-        poly=ctx.poly,entryHeading={fx=ctx.edge.ux*-1,
-            fz=ctx.edge.uz*-1},estimatedTravelM=travelled,
+        poly=ctx.poly,entryHeading=ctx.target
+            and {fx=ctx.target.fx,fz=ctx.target.fz}
+            or {fx=ctx.edge.ux*-1,fz=ctx.edge.uz*-1},
+        entryPose=ctx.target,estimatedTravelM=travelled,
         memberCount=ctx.foot.memberCount,
         method="HEADING_LATTICE_INFIELD",reverseM=0,
         guideRadiusM=STEP/TURN,guidancePoints=#legs,
         legs=legs},nil
 end
-function M.beginPlan(vehicle)
+function M.beginPlan(vehicle,target)
     if type(vehicle)~="table" then return nil,"VEHICLE_UNAVAILABLE" end
-    return {vehicle=vehicle,phase="INIT",spent=0,advances=0,
+    return {vehicle=vehicle,target=target,phase="INIT",spent=0,advances=0,
         expansions=0,finished=false}
 end
 function M.advancePlan(s,budget)
@@ -329,6 +344,7 @@ function M.advancePlan(s,budget)
             if ctx==nil then
                 s.finished=true;return "FAILED",nil,reason
             end
+            ctx.target=s.target
             s.ctx=ctx
             local first={pose=ctx.initial,g=0,parent=nil}
             first.f=heuristic(ctx,first.pose)

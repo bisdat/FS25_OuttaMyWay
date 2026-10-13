@@ -77,6 +77,17 @@ local function pose(vehicle)
     if magnitude<0.001 then return nil end
     return {x=x,z=z,fx=fx/magnitude,fz=fz/magnitude}
 end
+local function rotatedFootForEntry(foot,actual,entry)
+    if entry==nil then return foot end
+    local dot=actual.fx*entry.fx+actual.fz*entry.fz
+    local cross=actual.fx*entry.fz-actual.fz*entry.fx
+    local corners={}
+    for i=1,#foot.corners do
+        local p=foot.corners[i]
+        corners[i]={x=p.x*dot-p.z*cross,z=p.x*cross+p.z*dot}
+    end
+    return {memberCount=foot.memberCount,corners=corners}
+end
 local function edgeFrame(edge,poly)
     local mx,mz=(edge.ax+edge.bx)*0.5,(edge.az+edge.bz)*0.5
     local nx,nz=G.outwardAt(poly,edge,mx,mz)
@@ -407,6 +418,12 @@ end
 local function makeCheck(s,p,kind,reverse)
     local c=s.candidate
     local station,depth=coordinates(p,s.frame)
+    if kind~="APPROACH" and s.options~=nil
+        and (station<s.options.stationMin
+            or station>s.options.stationMax) then
+        c.stage="RUNOUT_INIT"
+        return
+    end
     if kind=="APPROACH" then
         if #c.track.points>=MAX_POINTS
             or station<2 or station>s.frame.length-2 then
@@ -626,13 +643,20 @@ local function executeBudget(s)
             if not charge(s,1) then return "PENDING" end
             local poly,edge,neighbors,reason=field77()
             if poly==nil then return "FAILED",nil,reason end
-            local current=pose(s.vehicle)
-            if current==nil then return "FAILED",nil,"ROOT_POSE_UNAVAILABLE" end
+            local actual=pose(s.vehicle)
+            if actual==nil then return "FAILED",nil,"ROOT_POSE_UNAVAILABLE" end
+            local current=s.options and s.options.entryPose or actual
+            if type(current)~="table" then
+                return "FAILED",nil,"ENTRY_POSE_UNAVAILABLE"
+            end
             if not G.inside(poly,current.x,current.z) then
                 return "FAILED",nil,"COMPLETED_ROOT_NOT_IN_FIXTURE_FIELD"
             end
             local foot,why=OuttaMyWay.PairTransitRegion.capture(s.vehicle)
             if foot==nil then return "FAILED",nil,why end
+            if s.options and s.options.entryPose then
+                foot=rotatedFootForEntry(foot,actual,current)
+            end
             if foot.memberCount~=1 then
                 return "FAILED",nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
             end
@@ -640,6 +664,11 @@ local function executeBudget(s)
             if frame==nil then return "FAILED",nil,"EDGE_OUTWARD_UNAVAILABLE" end
             local occupants,occupiedWhy=Occupancy.snapshot(s.vehicle,poly)
             if occupants==nil then return "FAILED",nil,occupiedWhy end
+            if s.options and s.options.claimObstacles then
+                for i=1,#s.options.claimObstacles do
+                    occupants[#occupants+1]=s.options.claimObstacles[i]
+                end
+            end
             local ownRadius=Occupancy.footRadius(s.vehicle)
             if ownRadius==nil then
                 return "FAILED",nil,"PHYSICAL_OCCUPANCY_OWN_FOOTPRINT_UNAVAILABLE"
@@ -675,18 +704,19 @@ local function executeBudget(s)
                 direction=best.direction,reverseM=best.track.reverseM,
                 guideRadiusM=best.radius,
                 estimatedTravelM=best.track.travelM,
+                terminalPose=best.track.pose,
                 legs=best.track.points}
         else error("INCREMENTAL_PLANNING_PHASE_INVALID") end
     end
     return "PENDING"
 end
-function Route.beginPlan(vehicle)
+function Route.beginPlan(vehicle,options)
     -- No native-world geometry or actuator call from completion callback.
     if type(vehicle)~="table" then
         return nil,"PLANNING_VEHICLE_UNAVAILABLE"
     end
     return {vehicle=vehicle,phase="INIT",spent=0,advances=0,
-        remaining=0,finished=false}
+        remaining=0,finished=false,options=options}
 end
 function Route.advancePlan(session,units)
     if type(session)~="table" or session.finished
