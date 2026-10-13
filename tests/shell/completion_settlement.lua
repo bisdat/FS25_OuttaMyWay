@@ -405,7 +405,9 @@ runtime:update(16)
 assert(runtime.active==nil and runtime.pending
     and runtime.pending.kind=="ALLOCATE"
     and driveCalls[#driveCalls]=="STOP"
-    and #driveCalls==beforeConflict+2,
+    and #driveCalls==beforeConflict+3
+    and driveCalls[beforeConflict+1]=="BRAKE"
+    and driveCalls[beforeConflict+2]=="BRAKING",
     "alternative planning cannot start a new motor before positive stop")
 activeConflict=false
 assert(runtime.replans[reroute]==1)
