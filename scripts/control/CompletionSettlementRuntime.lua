@@ -111,13 +111,23 @@ function Runtime:finish(code,reason)
     if state==nil then return end
     self.active=nil
     self.pending=nil
-    Allocation.release(self.claims,state.vehicle)
+    local releaseClaim=true
     if state.driveArmed then
         local stopped,why=self.drive:cancelMovement(state.vehicle)
         if not stopped then
+            releaseClaim=false
             publish("WARNING","COMPLETION_SETTLEMENT_NEUTRALIZE_UNCONFIRMED",{
                 rootNode=tostring(state.vehicle.rootNode),reason=tostring(why)})
         end
+    end
+    -- A potentially moving owner cannot silently release its destination
+    -- to another claimant when its native steering lease is unconfirmed.
+    if releaseClaim then
+        Allocation.release(self.claims,state.vehicle)
+    else
+        publish("WARNING","COMPLETION_SETTLEMENT_CLAIM_RETAINED",{
+            rootNode=tostring(state.vehicle.rootNode),
+            reason="NATIVE_NEUTRALIZATION_UNCONFIRMED"})
     end
     publish(code=="COMPLETION_SETTLEMENT_FINISHED" and "INFO" or "WARNING",
         code,{rootNode=tostring(state.vehicle.rootNode),
