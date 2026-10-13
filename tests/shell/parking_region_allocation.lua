@@ -69,20 +69,37 @@ local incorrect,whyIncorrect=Allocation.matchesClaim(ledger,first,
     {terminalPose={x=a.terminalPose.x+25,z=a.terminalPose.z}})
 assert(not incorrect and whyIncorrect=="LOCAL_ROUTE_MISSES_CLAIMED_TERMINAL",
     "a handoff cannot quietly park far outside its exclusive claim")
--- Both workers must receive distinct claimable physical footprints
--- or the second must explicitly refuse. The same claimed root is forbidden.
+-- This fixture has a long edge and two separated physical starting
+-- poses. Both must discover distinct qualified terminals, not merely
+-- demonstrate that the second can refuse an occupied claim.
 local phase2,b,why2=qualify(second)
-if phase2=="DONE" then
-    local claim=assert(Allocation.claim(ledger,second,b.terminalPose,b.ownRadius))
-    local dx,dz=claim.x-firstClaim.x,claim.z-firstClaim.z
-    assert(dx*dx+dz*dz>(claim.radius+firstClaim.radius+4)^2,
-        "two claims may not overlap")
-    assert(b.qualifiedLocalRoute.terminalPose)
-    Allocation.release(ledger,second)
-else
-    assert(phase2=="FAILED" and why2=="NO_QUALIFIED_TERMINAL_REGION",
-        "second assembly must never silently reuse the same station")
+assert(phase2=="DONE",why2)
+local secondClaim=assert(Allocation.claim(ledger,second,
+    b.terminalPose,b.ownRadius))
+local dx,dz=secondClaim.x-firstClaim.x,secondClaim.z-firstClaim.z
+assert(dx*dx+dz*dz>(secondClaim.radius+firstClaim.radius+4)^2,
+    "two qualified terminal claims must be physically distinct")
+assert(b.qualifiedLocalRoute.terminalPose)
+Allocation.release(ledger,second)
+-- The remote first worker must find a goal-directed extended route to the
+-- specifically qualified entry, not any convenient generic edge band.
+dofile("scripts/coordination/ExtendedInfieldApproach.lua")
+local Extended=OuttaMyWay.ExtendedInfieldApproach
+local travel=assert(Extended.beginPlan(first,a.entryPose))
+local kind,planned,fail
+for i=1,1000 do
+    kind,planned,fail=Extended.advancePlan(travel,320)
+    if kind~="PENDING" then break end
 end
+assert(kind=="DONE",fail)
+assert(planned and planned.mode=="EXTENDED_INFIELD")
+assert(planned.entryPose and planned.entryPose.x==a.entryPose.x)
+assert(#planned.legs>0,"distant completion must actually navigate to claim")
+local last=planned.legs[#planned.legs].point
+local ex,ez=last.x-a.entryPose.x,last.z-a.entryPose.z
+assert(ex*ex+ez*ez<=81,
+    "planned approach must finish at the QUALIFIED entry, not a generic band")
+
 local conflict,reason=Allocation.claim(ledger,second,
     {x=firstClaim.x,z=firstClaim.z},a.ownRadius)
 assert(conflict==nil and reason=="TERMINAL_REGION_ALREADY_CLAIMED")
