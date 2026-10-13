@@ -109,6 +109,7 @@ OuttaMyWay.CompletionSettlementRoute={
         return true,"WHOLE_NOMINAL_ASSEMBLY_OUTSIDE_SOURCE_FIELD"
     end
 }
+local refuseExtendedScene=false
 OuttaMyWay.ExtendedInfieldApproach={
     beginPlan=function()
         return {advances=0,spent=0}
@@ -116,6 +117,12 @@ OuttaMyWay.ExtendedInfieldApproach={
     advancePlan=function(session,units)
         session.advances=session.advances+1
         session.spent=session.spent+units
+        if refuseExtendedScene then
+            session.sceneEvidence={registry="MISSION_VEHICLE_SYSTEM",
+                scanned=3,observedWorkers=1,outsideField=2,
+                nonAiRoots=0,failureRoot="220"}
+            return "FAILED",nil,"WORKER_SCENE_AI_STATUS_UNAVAILABLE"
+        end
         return "DONE",{mode="EXTENDED_INFIELD",field=77,edge=9,
             method="HEADING_LATTICE_INFIELD",
             estimatedTravelM=16,guideRadiusM=20,memberCount=1,
@@ -251,4 +258,29 @@ assert(runtime.active and runtime.active.route.mode==nil)
 assert(driveCalls[#driveCalls]=="START")
 for i=1,9 do runtime:update(16) end
 assert(runtime.active==nil and terminalCalls==2)
-print("completion settlement TEST lifecycle and extended handoff PASS")
+-- Reproduce the TS019-style no-short-route / failed worker-scene path.
+-- A failed census reports the exact witnessed limitation but can never
+-- hand control to the native driver, or retry the same completed job.
+local refused={rootNode=191,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+refuseExtendedScene=true
+local beforeRefusal=#driveCalls
+assert(runtime:onNativeCompletion({},refused,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="EXTENDED")
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending==nil
+    and #driveCalls==beforeRefusal,
+    "unknown relevant worker must refuse before physical actuation")
+assert(events[#events-1].code=="COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED")
+local witness=events[#events-1].fields
+assert(witness.reason=="WORKER_SCENE_AI_STATUS_UNAVAILABLE"
+    and witness.registry=="MISSION_VEHICLE_SYSTEM"
+    and witness.failureRoot=="220"
+    and witness.relevantWorkers==1)
+assert(events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED")
+assert(not runtime:onNativeCompletion({},refused,true),
+    "same native completion must not start a new search after census veto")
+refuseExtendedScene=false
+print("completion settlement TEST lifecycle, extended handoff and scene failure attribution PASS")
