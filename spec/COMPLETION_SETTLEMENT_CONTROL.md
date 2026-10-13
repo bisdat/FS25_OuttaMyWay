@@ -187,3 +187,10 @@ The owner authorised a new TEST build to attempt a long infield route to the sam
 
 
 **Bounded completion turn-yield:** after an Extended Infield Approach has positively stopped and released native Control, a `LOCAL_HANDOFF` planner which cannot find a local parking region, or whose admitted route is newly physically occupied, may yield *once* to an already queued completing worker. The yielding worker's existing physical position remains an obstacle and is independently reassessed later; no additional native movement occurs during the yield. Both unsuccessful turn and retry remain bounded; the feature does not retry an in-motion collision or forge a BWR admission. `COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE` records this condition.
+
+
+## TS019 `0.5.5.14` — invalidated entry, separate parking still unproven
+
+GIANTS log: root `396437` planned 288 m to preferred edge 9, was interrupted at 18:18:16.071 with `PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED` on guidance 36 while MOVING, so it never satisfied the positive stopped local-handoff contract. Queued root `398432` received a separate planning episode, but local plan failed and extended plan returned `EXTENDED_ALREADY_AT_ENTRY` at 18:18:17.404. Neither published `COMPLETION_SETTLEMENT_FINISHED`. Overhead video supports geographic convergence but does not by itself certify actual contact.
+
+**Specification gap for future discussion (not implemented):** allocation requires disjoint terminal claims along edge 9 and entry poses **qualified by an actually feasible local manoeuvre to the claimed terminal**. A geometric generic entry band is insufficient. If an approaching route loses its destination to another physical vehicle, a future implementation must positively neutralise Control and seek a distinctly available claim or explicitly refuse, not blindly drive on or indefinitely repeat the same path. A worker currently in a generic entry band must still have other entry/terminal search options. The runtime's serial queue alone is not a parking allocator. Preserve all `0.5.5.14` executable restrictions and unchanged BWR.
