@@ -508,3 +508,34 @@ The owner observed both sprayers converging near Field 77's eastern boundary und
 **Offline facts:** the original TS018 nominal local parking fixture still selects a `REVERSE_FORWARD` path, 18 m nominal reverse, 58.8 m total, 14 short guidance points; a separate completion pose still selects 47.1 m / 10 targets. The synthetic extended Field77 fixture still yields 392 m / 49 forward targets. A physically present **AI-inactive** second vehicle placed at the original terminal rejects the original full route and final target; if the planner can find a different local terminal it must be at least 10 m from that nominal root, otherwise a no-route refusal is accepted. An occupied next extended target is vetoed whether or not GIANTS reports that vehicle AI-active. The runtime mock verifies that a second completion is queued during the first native Control lease, not admitted simultaneously, is processed under a fresh local planning episode, and can be processed ahead of a **once-deferred, already stopped** first completion. A scene/geometry refusal commands no native drive.
 
 **Limitations and next GIANTS evidence:** the world-space circle representation is a conservative nominal bounding envelope, not true collision-free swept kinematics; dynamic positions can change between 250 ms checks, and GIANTS steering may deviate from nominal guidance. The **one-time deferral applies only to a worker which has positively stopped/released its extended approach before local parking planning**, not an in-motion collision. A second queued worker may find no reachable safe site; no guaranteed completion is claimed. Replay TS019 with two completed sprayers and observe two distinct `COMPLETION_SETTLEMENT_PLANNING_STARTED` episodes, actual physical spacing, long/local approach sequence, positive motor release and each terminal result. A refusal caused by lack of space is a legitimate safety outcome; repeatedly driving into another worker's occupied footprint is not. BWR stays untouched, PR #482 draft, no production PATCH promotion.
+
+
+## TEST 0.5.5.14 TS019 — occupancy veto works but no alternative parking allocation (13 October 2026)
+
+**Owner observation:** "same outcome as .13". Supplied `0.5.5.14_TS019.zip` (GIANTS `log.txt` 3,057 lines, 79.274-second overhead `TS_004.mp4`). This is **NOT** a two-worker parking PASS despite offline CI success. Overhead video shows the vehicles again close together near the eastern side of Field 77; the log positively differentiates .14's fail-safe stopping from .13's prior near-stall.
+
+**Exact native/runtime chronology:**
+
+| Timestamp | Evidence |
+|---|---|
+| 18:17:13.485 | GIANTS job 2 successful completion, root `396437`; experimental local planning begins |
+| 18:17:22.616 | No pose-local path, enter `COMPLETION_SETTLEMENT_EXTENDED_PLANNING` |
+| 18:17:23.151 | Extended path admitted for root `396437`, 288 m / 36 short targets, one observed active other worker |
+| 18:18:08.154 | GIANTS job 3 successful completion, root `398432`; **`COMPLETION_SETTLEMENT_QUEUED`**, ordinal 1 |
+| 18:18:15.375 | First root `396437` still physically advancing near x≈174.36, z≈−255.10, at extended guidance index 35/36 |
+| 18:18:16.071 | First interrupted **`PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED`**, leg 36, while MOVING; no `COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING` reached |
+| 18:18:16.082 | Queued second root `398432` receives independent `COMPLETION_SETTLEMENT_PLANNING_STARTED` |
+| 18:18:17.396 | Second cannot find a short local path; enters EXTENDED planning |
+| 18:18:17.404 | Second extension refuses **`EXTENDED_ALREADY_AT_ENTRY`**; publishes `COMPLETION_SETTLEMENT_NOT_ADMITTED` |
+ 
+**Positive discovery — Physical Occupancy Veto Is Real:** the code now detects occupied space and interrupts the first vehicle before completing a route into the other sprayer. The second native completion is correctly retained and receives its own later planning turn. This is an improvement in safety evidence over .13, *not* achievement of separate parking.
+
+**Disproven implementation hypothesis — Reactive Veto + Serial Queue Alone Allocates Parking:** checking the next point and subsequently replanning the other completed worker does **not** ensure independent feasible destinations. The first extended route was selected while root `398432` was still working; it became unavailable as the second worker finished near the eastern area. The first **never reached a positively stopped extended-to-local handoff**, so the one-time `LOCAL_HANDOFF` deferral policy is not applicable. Its interruption ends that episode and no alternative entry pose is considered. The second worker is **already geometrically within** the abstract extended entry region, but the local manoeuvre from its actual pose was infeasible; the long planner has no way to search for a *different* entry region and immediately rejects with `EXTENDED_ALREADY_AT_ENTRY`. This does not establish that edge 9 lacks further usable space.
+
+**Named architectural concept — Parking-Space Allocation and Replanning:** 
+- **Parking Region Claim:** identify an actual member-fit terminal interval *along the 230.97 m preferred edge*, excluding physically present bodies and outstanding commitments, rather than selecting a generic edge-entry target and hoping local parking later succeeds.
+- **Qualified Approach Entry:** an entry pose is qualified only relative to a *specific* reachable, unoccupied terminal region and its feasible local manoeuvre. Merely entering a fixed 11–24 m infield depth band with nominal edge-parallel heading is insufficient. 
+- **Reassessment on Invalidated Claim:** if physical occupancy changes while approaching, the worker must positively relinquish/stop and consider another **distinct** terminal + entry region under separately admitted control; no blind continuing, unbounded reroute, or assumption that BWR will resolve a collision.
+- **Distinct Worker Allocation:** multiple completed workers need disjoint simultaneous parking claims and physical occupancy evidence; the queue alone serialises motor Control, not destination selection. A free region can legitimately be unavailable due to a still-needed approach corridor or a newly arrived body.
+ 
+**Next design decision required before another build:** establish how region claims, feasible local manoeuvres and active-worker demand interact. A next test should challenge *two geometrically reachable distinct slots, second worker changing position mid-approach, no eligible local route at an already-valid generic entry, and stop/lease release before any reroute*. Do not simply reduce the footprint radius or relax the guard to manufacture a second PASS. Articulated assemblies and other fields remain outside test evidence. **No executable change in this evidence entry; version `0.5.5.14`, PR #482 draft/unmerged, BWR untouched.**
