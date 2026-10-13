@@ -243,9 +243,7 @@ runtime:update(16) -- first short target retarget
 assert(driveCalls[#driveCalls]=="RETARGET")
 runtime:update(16) -- final point starts physical stopping
 assert(driveCalls[#driveCalls]=="BRAKE")
-runtime:update(16) -- stillness
-assert(driveCalls[#driveCalls]=="BRAKING")
-runtime:update(16) -- stop and local handoff planning
+runtime:update(16) -- mock reports stillness and performs final release
 assert(runtime.pending and runtime.pending.kind=="LOCAL_HANDOFF")
 assert(driveCalls[#driveCalls]=="STOP")
 runtime:update(16) -- local planner admitted only after approach stopped
