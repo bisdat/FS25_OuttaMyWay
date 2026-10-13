@@ -471,6 +471,13 @@ function Runtime:update(dt)
                 return
             end
         elseif s.kind=="LOCAL_HANDOFF" then
+            local matched,miss=Allocation.matchesClaim(
+                self.claims,s.vehicle,route)
+            if not matched then
+                if retryStopped(self,s,miss) then return end
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",miss)
+                return
+            end
             local okay,why=Allocation.claimClear(self.claims,s.vehicle,route.poly)
             if not okay then
                 if retryStopped(self,s,why) then return end

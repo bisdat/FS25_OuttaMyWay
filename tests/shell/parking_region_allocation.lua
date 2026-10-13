@@ -63,6 +63,12 @@ assert(a.entryPose and a.terminalPose and a.station)
 local firstClaim=assert(Allocation.claim(ledger,first,a.terminalPose,a.ownRadius))
 assert(firstClaim==ledger[first])
 assert(Allocation.claimCurrent(ledger,first))
+assert(Allocation.matchesClaim(ledger,first,
+    {terminalPose=a.terminalPose}))
+local incorrect,whyIncorrect=Allocation.matchesClaim(ledger,first,
+    {terminalPose={x=a.terminalPose.x+25,z=a.terminalPose.z}})
+assert(not incorrect and whyIncorrect=="LOCAL_ROUTE_MISSES_CLAIMED_TERMINAL",
+    "a handoff cannot quietly park far outside its exclusive claim")
 -- Both workers must receive distinct claimable physical footprints
 -- or the second must explicitly refuse. The same claimed root is forbidden.
 local phase2,b,why2=qualify(second)

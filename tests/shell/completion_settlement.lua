@@ -110,6 +110,8 @@ OuttaMyWay.CompletionSettlementRoute={
     end
 }
 local refuseExtendedScene=false
+local activeConflict=false
+local mismatchClaim=false
 OuttaMyWay.ParkingRegionAllocation={
     beginPlan=function()return {advances=0,spent=0}end,
     advancePlan=function(session,units)
@@ -129,6 +131,9 @@ OuttaMyWay.ParkingRegionAllocation={
     end,
     claimClear=function(ledger,vehicle)
         return ledger[vehicle]~=nil,"TERMINAL_CLAIM_MISSING"
+    end,
+    matchesClaim=function()
+        return not mismatchClaim,"LOCAL_ROUTE_MISSES_CLAIMED_TERMINAL"
     end,
     claimCurrent=function(ledger,vehicle)return ledger[vehicle]end,
     release=function(ledger,vehicle)ledger[vehicle]=nil end
@@ -162,7 +167,7 @@ OuttaMyWay.ExtendedInfieldApproach={
             }}
     end,
     guard=function()
-        return true
+        return not activeConflict,"PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
     end
 }
 local optin=false
@@ -377,4 +382,33 @@ assert(events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED")
 assert(not runtime:onNativeCompletion({},refused,true),
     "same native completion must not start a new search after census veto")
 refuseExtendedScene=false
-print("completion settlement TEST lifecycle, extended handoff and scene failure attribution PASS")
+-- During a real extended lease, invalidated space must first cause
+-- physical braking and a stable released stop; only then can allocator
+-- seek an alternative station. It must not issue a new START beforehand.
+local reroute={rootNode=199,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},reroute,true))
+runtime:update(16) -- initial local refusal => allocation
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
+runtime:update(16) -- qualified terminal claimed => targeted extended
+assert(runtime.pending and runtime.pending.kind=="EXTENDED")
+runtime:update(16) -- extended native steering admitted
+assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
+local beforeConflict=#driveCalls
+activeConflict=true
+runtime:update(16)
+assert(runtime.active and runtime.active.phase=="STOP_FOR_ALTERNATIVE"
+    and driveCalls[#driveCalls]=="BRAKE",
+    "occupied next target must trigger a real braking phase")
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending
+    and runtime.pending.kind=="ALLOCATE"
+    and driveCalls[#driveCalls]=="STOP"
+    and #driveCalls==beforeConflict+2,
+    "alternative planning cannot start a new motor before positive stop")
+activeConflict=false
+assert(runtime.replans[reroute]==1)
+-- No second route retry may bypass positive stopping or loop indefinitely.
+runtime:loadMap()
+print("completion settlement TEST lifecycle, claim handoff, stable-stop alternative and scene attribution PASS")

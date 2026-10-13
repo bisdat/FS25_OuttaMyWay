@@ -78,8 +78,10 @@ function M.claim(ledger,vehicle,terminal,ownRadius)
     if not clearClaims(ledger,vehicle,terminal,ownRadius+5) then
         return nil,"TERMINAL_REGION_ALREADY_CLAIMED"
     end
+    -- Reserve endpoint uncertainty as well as the physical footprint:
+    -- the actual stopped root may differ from the nominal local guide.
     ledger[vehicle]={x=terminal.x,z=terminal.z,
-        radius=ownRadius+5,rootNode=vehicle.rootNode}
+        radius=ownRadius+14,rootNode=vehicle.rootNode}
     return ledger[vehicle]
 end
 function M.claimForRoute(ledger,vehicle,route)
@@ -90,6 +92,18 @@ function M.claimForRoute(ledger,vehicle,route)
 end
 function M.claimCurrent(ledger,vehicle)
     return type(ledger)=="table" and ledger[vehicle] or nil
+end
+function M.matchesClaim(ledger,vehicle,route)
+    local claim=M.claimCurrent(ledger,vehicle)
+    local destination=route and route.terminalPose
+    if claim==nil or type(destination)~="table" then
+        return false,"QUALIFIED_TERMINAL_EVIDENCE_MISSING"
+    end
+    local dx,dz=destination.x-claim.x,destination.z-claim.z
+    if dx*dx+dz*dz>8*8 then
+        return false,"LOCAL_ROUTE_MISSES_CLAIMED_TERMINAL"
+    end
+    return true
 end
 function M.claimClear(ledger,vehicle,poly)
     local claim=M.claimCurrent(ledger,vehicle)

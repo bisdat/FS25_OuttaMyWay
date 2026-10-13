@@ -76,6 +76,21 @@ local tx,tz=prev.x-f.ax,prev.z-f.az
 local along=tx*f.ux+tz*f.uz
 assert(along>12 and along<edge.length-12)
 assert(route.planningExpansions>3)
+-- A qualified target remains meaningful even when already inside the
+-- generic entry band; zero-distance TARGETED entry is not a route failure.
+local target={x=prev.x,z=prev.z,
+    fx=route.entryHeading.fx,fz=route.entryHeading.fz}
+local saved={x=current.x,z=current.z,fx=current.fx,fz=current.fz}
+current.x,current.z,current.fx,current.fz=
+    target.x,target.z,target.fx,target.fz
+local targeted=assert(A.beginPlan(root,target))
+local targetPhase,targetRoute,targetReason=A.advancePlan(targeted,64)
+assert(targetPhase=="DONE" and targetRoute
+    and targetRoute.mode=="EXTENDED_INFIELD"
+    and #targetRoute.legs==0,
+    "qualified entry already reached must hand off to local planner")
+current.x,current.z,current.fx,current.fz=
+    saved.x,saved.z,saved.fx,saved.fz
 -- New active-worker position in front of the route invalidates authority.
 otherPose.x,otherPose.z=route.legs[1].point.x,route.legs[1].point.z
 local safe,why=A.guard(root,route,1)
