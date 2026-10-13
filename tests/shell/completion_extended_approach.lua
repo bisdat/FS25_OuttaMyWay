@@ -19,12 +19,14 @@ local root={rootNode=100,
     getCurrentAIJob=function()return nil end}
 local other={rootNode=200,getIsAIActive=function()return true end}
 local otherPose={x=48,z=-424,fx=0,fz=1}
-g_currentMission={vehicles={root,other}}
+g_currentMission={vehicleSystem={vehicles={root,other}}}
 getWorldTranslation=function(node)
     local p=node==100 and current or otherPose
     return p.x,0,p.z
 end
+local noPeerHeading=false
 localDirectionToWorld=function(node)
+    if node==200 and noPeerHeading then error("unavailable heading") end
     local p=node==100 and current or otherPose
     return p.fx,0,p.fz
 end
@@ -78,10 +80,70 @@ otherPose.x,otherPose.z=route.legs[1].point.x,route.legs[1].point.z
 local safe,why=A.guard(root,route,1)
 assert(not safe and why=="EXTENDED_ACTIVE_WORKER_PROXIMITY",
     "dynamic worker position must revoke the long approach")
--- No scene witness is an explicit refusal, not a clearance claim.
-g_currentMission.vehicles=nil
+-- The established registry is mission.vehicleSystem.vehicles. A legacy
+-- mission.vehicles alias must not silently stand in for that witness.
+g_currentMission.vehicles={root,other}
+g_currentMission.vehicleSystem.vehicles=nil
 local blank=assert(A.beginPlan(root))
 local phase,_,fail=A.advancePlan(blank,64)
-assert(phase=="FAILED" and fail=="WORKER_SCENE_EVIDENCE_UNAVAILABLE")
-print(string.format("extended infield nominal route PASS: %.1fm %d short targets; worker guard PASS",
+assert(phase=="FAILED" and fail=="WORKER_SCENE_REGISTRY_UNAVAILABLE")
+assert(blank.sceneEvidence.registry=="MISSION_VEHICLE_SYSTEM")
+g_currentMission.vehicleSystem.vehicles={root,other}
+-- Other worker's position can be known even when heading is unavailable.
+otherPose.x,otherPose.z=48,-424
+noPeerHeading=true
+local visible,okay,why,evidence=A.activePeers(root,poly)
+assert(okay and why==nil and #visible==1 and evidence.observedWorkers==1,
+    "AI-active root position alone suffices for a proximity exclusion")
+noPeerHeading=false
+-- A distant unreadable status is irrelevant to the Field77 corridor.
+local distant={rootNode=300,getIsAIActive=function()error("native AI read")end}
+local distantPos={x=500,z=500}
+local originalTranslation=getWorldTranslation
+getWorldTranslation=function(node)
+    if node==300 then return distantPos.x,0,distantPos.z end
+    return originalTranslation(node)
+end
+g_currentMission.vehicleSystem.vehicles={root,other,distant}
+local peers,ok,status,scene=A.activePeers(root,poly)
+assert(ok and status==nil and #peers==1 and scene.outsideField==1,
+    "unrelated distant AI-status failure must not veto navigation")
+-- A relevant unobservable AI status is an explicit refusal.
+distantPos.x,distantPos.z=otherPose.x,otherPose.z
+peers,ok,status,scene=A.activePeers(root,poly)
+assert(not ok and status=="WORKER_SCENE_AI_STATUS_UNAVAILABLE"
+    and scene.failureRoot=="300",
+    "unknown status for a relevant root must not be treated as clear")
+-- Positive native AI job evidence can rescue an unavailable activity method.
+distant.getCurrentAIJob=function()return {jobId=9}end
+peers,ok,status,scene=A.activePeers(root,poly)
+assert(ok and #peers==2 and scene.observedWorkers==2)
+-- A known active root with no readable X/Z remains a blocker.
+distantPos.x,distantPos.z=700,700
+getWorldTranslation=function(node)
+    if node==300 then error("native position missing") end
+    return originalTranslation(node)
+end
+peers,ok,status,scene=A.activePeers(root,poly)
+assert(not ok and status=="WORKER_SCENE_ACTIVE_POSITION_UNAVAILABLE"
+    and scene.failureRoot=="300")
+-- Non-AI root-level equipment is not an unknown AI worker.
+local equipment={rootNode=400}
+g_currentMission.vehicleSystem.vehicles={root,other,equipment}
+getWorldTranslation=function(node)
+    if node==400 then return 48,0,-424 end
+    return originalTranslation(node)
+end
+peers,ok,status,scene=A.activePeers(root,poly)
+assert(ok and #peers==1 and scene.nonAiRoots==1)
+-- A legitimately inactive worker is excluded even if its position fails.
+local idle={rootNode=500,getIsAIActive=function()return false end}
+g_currentMission.vehicleSystem.vehicles={root,other,idle}
+getWorldTranslation=function(node)
+    if node==500 then error("no inactive position") end
+    return originalTranslation(node)
+end
+peers,ok,status=A.activePeers(root,poly)
+assert(ok and #peers==1)
+print(string.format("extended infield nominal route PASS: %.1fm %d short targets; GIANTS scene contract PASS",
     route.estimatedTravelM,#route.legs))

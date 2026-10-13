@@ -63,11 +63,12 @@ local function context(vehicle)
     if foot.memberCount~=1 then
         return nil,"EXTENDED_ARTICULATED_SWEEP_UNVALIDATED"
     end
-    local peers,inventory=M.activePeers(vehicle,poly)
-    if not inventory then return nil,"WORKER_SCENE_EVIDENCE_UNAVAILABLE" end
+    local peers,inventory,reason,evidence=M.activePeers(vehicle,poly)
+    if not inventory then return nil,reason,evidence end
     return {poly=poly,foot=foot,initial=current,peers=peers,
+        sceneEvidence=evidence,
         edge={ax=edge.ax,az=edge.az,ux=edge.dx/edge.length,
-            uz=edge.dz/edge.length,nx=nx,nz=nz,length=edge.length}}
+            uz=edge.dz/edge.length,nx=nx,nz=nz,length=edge.length}},nil,evidence
 end
 local function peerRange(vehicle)
     local radius=PEER_RESERVE_M
@@ -83,33 +84,103 @@ local function peerRange(vehicle)
     end
     return radius
 end
-function M.activePeers(selfVehicle,poly)
-    local mission=g_currentMission
-    if type(mission)~="table" or type(mission.vehicles)~="table" then
-        return {},false
+-- Use the established GIANTS physical-vehicle registry contract already
+-- consumed by StaticBlockageEncounterObservation, NOT mission.vehicles.
+-- Evaluate worker status only for objects whose root is inside this field.
+-- Unknown AI status for a potentially relevant root must not mean "clear".
+local function rootOf(v)
+    if type(v)~="table" then return nil end
+    if type(v.getRootVehicle)=="function" then
+        local ok,root=pcall(v.getRootVehicle,v)
+        if ok and type(root)=="table" then return root end
     end
-    local found,seen,examined={}, {},0
-    for _,other in pairs(mission.vehicles) do
-        examined=examined+1
-        if examined>MAX_SCENE then return found,false end
-        if type(other)=="table" and other~=selfVehicle
-            and other.isDeleted~=true and other.rootNode~=nil
-            and type(other.getIsAIActive)=="function"
-            and seen[other.rootNode]~=true then
-            seen[other.rootNode]=true
-            local ok,active=pcall(other.getIsAIActive,other)
-            if not ok then return found,false end
-            if active==true then
-                local p=pose(other)
-                if p==nil then return found,false end
-                if G.inside(poly,p.x,p.z) then
-                    found[#found+1]={vehicle=other,x=p.x,z=p.z,
-                        radius=peerRange(other)}
-                end
-            end
+    return type(v.rootVehicle)=="table" and v.rootVehicle or v
+end
+local function position(v)
+    if v.rootNode==nil or v.rootNode==0
+        or type(getWorldTranslation)~="function" then return nil end
+    local ok,x,_,z=pcall(getWorldTranslation,v.rootNode)
+    if not ok or not finite(x) or not finite(z) then return nil end
+    return {x=x,z=z}
+end
+local function aiState(v)
+    local hasFlag=type(v.getIsAIActive)=="function"
+    local hasJob=type(v.getCurrentAIJob)=="function"
+    if not hasFlag and not hasJob then
+        return nil,"NOT_AN_AI_WORKER_CONTRACT"
+    end
+    local flagKnown,flag=false,nil
+    if hasFlag then
+        local ok,value=pcall(v.getIsAIActive,v)
+        if ok and type(value)=="boolean" then
+            flagKnown=true;flag=value
         end
     end
-    return found,true
+    local jobKnown,job=false,nil
+    if hasJob then
+        local ok,value=pcall(v.getCurrentAIJob,v)
+        if ok then jobKnown=true;job=value~=nil end
+    end
+    if (flagKnown and flag) or (jobKnown and job) then return true end
+    if (not hasFlag or flagKnown) and (not hasJob or jobKnown) then
+        return false
+    end
+    return nil,"AI_STATUS_UNOBSERVABLE"
+end
+function M.activePeers(selfVehicle,poly)
+    local mission=g_currentMission
+    local vehicles=mission and mission.vehicleSystem
+        and mission.vehicleSystem.vehicles
+    local evidence={registry="MISSION_VEHICLE_SYSTEM",scanned=0,
+        observedWorkers=0,outsideField=0,nonAiRoots=0,
+        failureRoot="none"}
+    if type(vehicles)~="table" then
+        return {},false,"WORKER_SCENE_REGISTRY_UNAVAILABLE",evidence
+    end
+    local found,seen={},{}
+    local ownRoot=rootOf(selfVehicle)
+    local failReason=nil
+    local function consider(item)
+        if failReason~=nil or type(item)~="table" then return end
+        local other=rootOf(item)
+        if other==nil or other==ownRoot or other.isDeleted==true
+            or other.rootNode==nil or seen[other.rootNode] then return end
+        seen[other.rootNode]=true
+        local where=position(other)
+        if where~=nil and not G.inside(poly,where.x,where.z) then
+            evidence.outsideField=evidence.outsideField+1
+            return
+        end
+        local active,why=aiState(other)
+        if active==false then return end
+        if active==nil and why=="NOT_AN_AI_WORKER_CONTRACT" then
+            evidence.nonAiRoots=evidence.nonAiRoots+1
+            return
+        end
+        if active==nil then
+            failReason="WORKER_SCENE_AI_STATUS_UNAVAILABLE"
+        elseif where==nil then
+            failReason="WORKER_SCENE_ACTIVE_POSITION_UNAVAILABLE"
+        else
+            found[#found+1]={vehicle=other,x=where.x,z=where.z,
+                radius=peerRange(other)}
+            evidence.observedWorkers=evidence.observedWorkers+1
+            return
+        end
+        evidence.failureRoot=tostring(other.rootNode)
+    end
+    -- The native vehicle table may use entity keys or values. Scan both,
+    -- as the existing blocked-worker observation already does, and dedup.
+    for key,value in pairs(vehicles) do
+        evidence.scanned=evidence.scanned+1
+        if evidence.scanned>MAX_SCENE then
+            return found,false,"WORKER_SCENE_CENSUS_LIMIT",evidence
+        end
+        consider(key)
+        consider(value)
+        if failReason~=nil then return found,false,failReason,evidence end
+    end
+    return found,true,nil,evidence
 end
 local function clearance(p,peers)
     for i=1,#peers do
@@ -241,7 +312,8 @@ function M.advancePlan(s,budget)
     local units=budget
     while units>0 do
         if s.phase=="INIT" then
-            local ctx,reason=context(s.vehicle)
+            local ctx,reason,evidence=context(s.vehicle)
+            s.sceneEvidence=evidence
             if ctx==nil then
                 s.finished=true;return "FAILED",nil,reason
             end
@@ -295,8 +367,8 @@ function M.guard(vehicle,route,index)
     if not G.inside(route.poly,p.x,p.z) then
         return false,"EXTENDED_APPROACH_FIELD_CONTAINMENT_LOST"
     end
-    local others,okay=M.activePeers(vehicle,route.poly)
-    if not okay then return false,"EXTENDED_WORKER_OBSERVATION_UNAVAILABLE" end
+    local others,okay,reason=M.activePeers(vehicle,route.poly)
+    if not okay then return false,reason or "EXTENDED_WORKER_OBSERVATION_UNAVAILABLE" end
     local goal=route.legs[math.min(index,#route.legs)]
     if goal~=nil then
         local x,z=goal.point.x,goal.point.z

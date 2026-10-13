@@ -298,6 +298,20 @@ function Runtime:update(dt)
             s.plan,PLAN_UNITS_PER_UPDATE)
         if phase=="PENDING" then return end
         if phase~="DONE" or route==nil then
+            if s.kind=="EXTENDED" and type(s.plan.sceneEvidence)=="table" then
+                -- One bounded evidence line on a failed scene admission,
+                -- not a per-frame or per-candidate diagnostic flood.
+                local scene=s.plan.sceneEvidence
+                publish("WARNING","COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED",{
+                    rootNode=tostring(s.vehicle.rootNode),
+                    reason=tostring(reason),
+                    registry=scene.registry or "unknown",
+                    examined=scene.scanned or 0,
+                    relevantWorkers=scene.observedWorkers or 0,
+                    outsideField=scene.outsideField or 0,
+                    nonAiRoots=scene.nonAiRoots or 0,
+                    failureRoot=scene.failureRoot or "none"})
+            end
             if s.kind=="LOCAL_INITIAL"
                 and reason=="NO_POSE_REACHABLE_PARKING_REGION" then
                 local extended,why=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
@@ -326,6 +340,10 @@ function Runtime:update(dt)
             planningUpdates=s.plan.advances,
             weightedGeometryChecks=s.plan.spent,
             stage=s.kind or "LOCAL_INITIAL",
+            sceneRegistry=type(s.plan.sceneEvidence)=="table"
+                and s.plan.sceneEvidence.registry or "not-required",
+            observedActiveWorkers=type(s.plan.sceneEvidence)=="table"
+                and s.plan.sceneEvidence.observedWorkers or "not-required",
             field=route.field,edge=route.edge,
             memberCount=route.memberCount,
             plannedMethod=route.method,reverseM=route.reverseM,
