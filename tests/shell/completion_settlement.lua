@@ -268,8 +268,11 @@ assert(driveCalls[#driveCalls]=="STOP")
 runtime:update(16) -- local planner admitted only after approach stopped
 assert(runtime.active and runtime.active.route.mode==nil)
 assert(driveCalls[#driveCalls]=="START")
-for i=1,9 do runtime:update(16) end
-assert(runtime.active==nil and terminalCalls==2)
+for i=1,9 do
+    runtime:update(16)
+    if terminalCalls==2 then break end
+end
+assert(runtime.active==nil and runtime.pending==nil and terminalCalls==2)
 assert(#runtime.waiting==1)
 runtime:update(16)
 assert(runtime.pending and runtime.pending.vehicle==nextWorker
