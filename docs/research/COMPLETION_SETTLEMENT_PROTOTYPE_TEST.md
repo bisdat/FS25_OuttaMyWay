@@ -421,3 +421,28 @@ Candidate-feasibility questions, **not implemented as settled rules**:
 **Dynamic-obstacle limit:** the initial route avoids **currently observed AI-active worker positions** via conservative point/nominal-member-radius reserves; the ongoing guard re-observes their roots near current/next guidance targets approximately every 250 ms. This is *reactive proximity prevention*, not a prediction of the second worker's native course, turning demand or future occupancy. It does not guarantee physical collision avoidance. An incidental collision could still produce qualified BWR blockage evidence, but whether BWR can arbitrate that case safely is **unvalidated**; the new experimental code never invokes BWR on collision.
 
 **Next GIANTS Reality:** replay a supervised TS019-style two-worker field episode with `0.5.5.12` and full DIAGNOSTIC log/video, ensuring the unselected distant worker completes first. Observe the local no-route refusal, entry into `EXTENDED` planning, route admission, the long sequence of short forward steering targets, avoidance/revocation near the still-working peer, positive stop and local handoff (or a specific failure). Observe separately whether a second worker's completion occurs during the first active attempt. No full two-worker completion-settlement PASS is predicted from this test.
+
+
+## TEST 0.5.5.12 — TS019 repeat: extended planning vetoed by worker-scene evidence (13 October 2026)
+
+**Owner observation:** `0.5.5.12` produced "same outcome as .11". Source: supplied GIANTS `log(20261013-061859).txt`, 3,028 lines. The log distinguishes *why* the first worker remained stationary and reveals a stronger verified software terminal result for the second.
+
+| Local timestamp | Recorded evidence |
+| --- | --- |
+| 07:09:21.978 | `OUTTAMYWAY_SHELL_STARTED`, version `0.5.5.12`, mod enabled |
+| 07:16:15.462 | First worker root `396306`, job 2, GIANTS `AIMessageSuccessFinishedJob`; Completion TRANSIT requested; local incremental planning started |
+| 07:16:24.588 | `COMPLETION_SETTLEMENT_EXTENDED_PLANNING` starts for root `396306`, reason `LOCAL_ENTRY_UNREACHABLE` |
+| 07:16:24.596 | **`COMPLETION_SETTLEMENT_NOT_ADMITTED reason=WORKER_SCENE_EVIDENCE_UNAVAILABLE`**. Only ~8 ms after extended planning selection. No extended plan admitted; no extended motor or steering was commanded |
+| 07:17:10.234 | Second worker root `398988`, job 3, GIANTS success; default TRANSIT and local planning |
+| 07:17:19.785 | Short local path admitted: Field 77 edge 9, `REVERSE_FORWARD`, 12.0 m reverse, 52.818 m nominal travel, 13 guidance points |
+| 07:17:25–26 | Second worker reverses, then native cruise-OFF stop positively verified at 07:17:26.640, stable 1,205.7 ms |
+| 07:17:39–40 | Final cruise-OFF stop positively verified at 07:17:40.438, stable 1,201.9 ms |
+| 07:17:40.439 | **`COMPLETION_SETTLEMENT_FINISHED reason=WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION`** |
+
+**Primary discovery — Scene Census Admission Fragility.** In `ExtendedInfieldApproach.context` the single `WORKER_SCENE_EVIDENCE_UNAVAILABLE` result wraps `activePeers()` returning `inventory=false`. Inspection of `activePeers` shows several potential causes: (1) `g_currentMission` or its `vehicles` is not a Lua table, (2) scan exceeds 512 entries, (3) one candidate vehicle's `getIsAIActive` throws under `pcall`, or (4) an AI-active vehicle's root pose/heading is unavailable. The log has **no subreason, scene cardinality, offending root or known other-worker pose**. It is therefore unjustified to claim which branch occurred or to blame navigation geometry/obstacle connectivity. The ~8 ms gap strongly indicates *scene acquisition failure before heading-lattice search*, not search-budget exhaustion. The previous shell tests supplied a complete synthetic `g_currentMission.vehicles` inventory and therefore did not exercise this GIANTS data-contract failure.
+
+**Architectural interpretation:** the prototype currently requires a **globally complete scene census** before moving a single completed worker towards a preferred parking strip. That is stronger than the owner's requirement to use a **known other active worker's position** for avoidance, and it may be fragile in GIANTS where incidental vehicles can be unobservable. The correct response is **not** to interpret missing evidence as empty scene. Instead, first distinguish source-list availability, count exhaustion, relevant worker identified but pose unavailable, and unrelated object observation failures. Reuse validated active-worker/Operation membership where appropriate, with a conservatively bounded search around the proposed corridor. A relevant unknown obstacle must still block passage. A nonrelevant unobservable unrelated vehicle should not automatically have global veto authority without an evidence-based contract. These are **proposed** scoping changes, not approved code.
+
+**Second worker:** unlike earlier TS019 `0.5.5.11`, this run emitted an actual `COMPLETION_SETTLEMENT_FINISHED`. The user's visible "same outcome" describes **movement/parking**, not identical formal terminal-verification status. Do not regress or edit the field-validated local planner solely because the first extended plan was refused.
+
+**Next validation action:** instrument the four `activePeers` failure branches with **precise one-line bounded diagnostics**, capture known active peer root and world pose when possible, then revisit the census/obstacle evidence contract before allowing longer motor-driven exploration. No automatic BWR collision authority follows: collision-triggered BWR is still the owner's explicitly unvalidated hypothesis. Executable `0.5.5.12` unchanged by this research finding; draft PR #482 unmerged and no PATCH promotion.
