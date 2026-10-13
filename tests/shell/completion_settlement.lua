@@ -86,6 +86,7 @@ local route={
 local routeCalls,terminalCalls=0,0
 local planAdvances=0
 local forcePlanPending=false
+local localFallback=false
 OuttaMyWay.CompletionSettlementRoute={
     beginPlan=function()
         routeCalls=routeCalls+1
@@ -97,11 +98,36 @@ OuttaMyWay.CompletionSettlementRoute={
         session.advances=session.advances+1
         session.spent=session.spent+units
         if forcePlanPending then return "PENDING" end
+        if localFallback then
+            localFallback=false
+            return "FAILED",nil,"NO_POSE_REACHABLE_PARKING_REGION"
+        end
         return "DONE",route
     end,
     verifyTerminal=function()
         terminalCalls=terminalCalls+1
         return true,"WHOLE_NOMINAL_ASSEMBLY_OUTSIDE_SOURCE_FIELD"
+    end
+}
+OuttaMyWay.ExtendedInfieldApproach={
+    beginPlan=function()
+        return {advances=0,spent=0}
+    end,
+    advancePlan=function(session,units)
+        session.advances=session.advances+1
+        session.spent=session.spent+units
+        return "DONE",{mode="EXTENDED_INFIELD",field=77,edge=9,
+            method="HEADING_LATTICE_INFIELD",
+            estimatedTravelM=16,guideRadiusM=20,memberCount=1,
+            reverseM=0,legs={
+                {name="EXTENDED_INFIELD_GUIDANCE",
+                    point={x=8,z=0},moveForwards=true},
+                {name="EXTENDED_INFIELD_GUIDANCE",
+                    point={x=16,z=0},moveForwards=true}
+            }}
+    end,
+    guard=function()
+        return true
     end
 }
 local optin=false
@@ -198,4 +224,33 @@ runtime:update(16)
 runtime:deleteMap()
 assert(runtime.active==nil and driveCalls[#driveCalls]=="MAP_DELETE",
     "map teardown cannot issue stale engine Control")
-print("completion settlement TEST lifecycle PASS")
+-- When no local route exists, the same worker may receive a separately
+-- planned long approach; it MUST stop and release before replanning locally.
+runtime:loadMap()
+local distant={rootNode=190,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local callsBefore=#driveCalls
+localFallback=true
+assert(runtime:onNativeCompletion({},distant,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="EXTENDED"
+    and #driveCalls==callsBefore,
+    "failed local search must not issue native motion")
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
+assert(driveCalls[#driveCalls]=="START")
+runtime:update(16) -- first short target retarget
+assert(driveCalls[#driveCalls]=="RETARGET")
+runtime:update(16) -- final point starts physical stopping
+assert(driveCalls[#driveCalls]=="BRAKE")
+runtime:update(16) -- stillness
+assert(driveCalls[#driveCalls]=="BRAKING")
+runtime:update(16) -- stop and local handoff planning
+assert(runtime.pending and runtime.pending.kind=="LOCAL_HANDOFF")
+assert(driveCalls[#driveCalls]=="STOP")
+runtime:update(16) -- local planner admitted only after approach stopped
+assert(runtime.active and runtime.active.route.mode==nil)
+assert(driveCalls[#driveCalls]=="START")
+for i=1,9 do runtime:update(16) end
+assert(runtime.active==nil and terminalCalls==2)
+print("completion settlement TEST lifecycle and extended handoff PASS")

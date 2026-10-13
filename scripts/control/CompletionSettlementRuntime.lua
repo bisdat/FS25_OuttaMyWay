@@ -168,6 +168,30 @@ function Runtime:startLeg()
     if s==nil then return end
     local leg=s.route.legs[s.legIndex]
     if leg==nil then
+        if s.route.mode=="EXTENDED_INFIELD" then
+            -- The long approach grants NO terminal parking result.
+            -- Its final stop was independently released before handoff.
+            if s.driveArmed then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "EXTENDED_HANDOFF_WITH_ACTIVE_DRIVE")
+                return
+            end
+            local session,why=OuttaMyWay.CompletionSettlementRoute.beginPlan(
+                s.vehicle)
+            if session==nil then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    why or "LOCAL_HANDOFF_PLANNER_UNAVAILABLE")
+                return
+            end
+            self.active=nil
+            self.pending={vehicle=s.vehicle,job=s.job,plan=session,
+                kind="LOCAL_HANDOFF",elapsedMs=s.totalElapsedMs,
+                phase="PLANNING",driveArmed=false}
+            publish("INFO","COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING",{
+                rootNode=tostring(s.vehicle.rootNode),
+                note="EXTENDED_APPROACH_STOPPED_AND_RELEASED"})
+            return
+        end
         local okay,reason=OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
             s.vehicle,s.route)
         self:finish(okay and "COMPLETION_SETTLEMENT_FINISHED"
@@ -238,7 +262,7 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
         return false
     end
     self.pending={vehicle=vehicle,job=job,plan=session,
-        elapsedMs=0,phase="PLANNING",driveArmed=false}
+        kind="LOCAL_INITIAL",elapsedMs=0,phase="PLANNING",driveArmed=false}
     publish("INFO","COMPLETION_SETTLEMENT_PLANNING_STARTED",{
         rootNode=tostring(vehicle.rootNode),
         budgetUnitsPerUpdate=PLAN_UNITS_PER_UPDATE,
@@ -267,10 +291,28 @@ function Runtime:update(dt)
                 "FINITE_PLANNING_LEASE_EXPIRED")
             return
         end
-        local phase,route,reason=OuttaMyWay.CompletionSettlementRoute.advancePlan(
+        local planner=s.kind=="EXTENDED"
+            and OuttaMyWay.ExtendedInfieldApproach
+            or OuttaMyWay.CompletionSettlementRoute
+        local phase,route,reason=planner.advancePlan(
             s.plan,PLAN_UNITS_PER_UPDATE)
         if phase=="PENDING" then return end
         if phase~="DONE" or route==nil then
+            if s.kind=="LOCAL_INITIAL"
+                and reason=="NO_POSE_REACHABLE_PARKING_REGION" then
+                local extended,why=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
+                    s.vehicle)
+                if extended~=nil then
+                    s.plan=extended
+                    s.kind="EXTENDED"
+                    publish("INFO","COMPLETION_SETTLEMENT_EXTENDED_PLANNING",{
+                        rootNode=tostring(s.vehicle.rootNode),
+                        reason="LOCAL_ENTRY_UNREACHABLE",
+                        note="NO_DRIVE_WHILE_PLANNING"})
+                    return
+                end
+                reason=why or reason
+            end
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
             return
@@ -283,6 +325,7 @@ function Runtime:update(dt)
             rootNode=tostring(s.vehicle.rootNode),
             planningUpdates=s.plan.advances,
             weightedGeometryChecks=s.plan.spent,
+            stage=s.kind or "LOCAL_INITIAL",
             field=route.field,edge=route.edge,
             memberCount=route.memberCount,
             plannedMethod=route.method,reverseM=route.reverseM,
@@ -302,7 +345,19 @@ function Runtime:update(dt)
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
     end
-    if type(OuttaMyWay.CompletionSettlementRoute.guard)=="function" then
+    if s.route.mode=="EXTENDED_INFIELD" then
+        s.peerCheckMs=(s.peerCheckMs or 250)+dt
+        if s.peerCheckMs>=250 then
+            s.peerCheckMs=0
+            local valid,why=OuttaMyWay.ExtendedInfieldApproach.guard(
+                s.vehicle,s.route,s.legIndex)
+            if not valid then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    why or "EXTENDED_APPROACH_UNSUPPORTED")
+                return
+            end
+        end
+    elseif type(OuttaMyWay.CompletionSettlementRoute.guard)=="function" then
         local valid,why=OuttaMyWay.CompletionSettlementRoute.guard(
             s.vehicle,s.route)
         if not valid then

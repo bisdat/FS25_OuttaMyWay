@@ -31,6 +31,7 @@ local modules={
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/assessment/SettlementStraightRunout.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/observation/AssemblySettlementProbe.lua",
     "scripts/observation/PhysicalMarginConstraintProbe.lua",
     "scripts/observation/FarmSpatialContextProbe.lua",
