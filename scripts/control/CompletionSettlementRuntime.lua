@@ -94,7 +94,8 @@ function Runtime.new(configuration,diagnostics)
     return setmetatable({configuration=configuration,diagnostics=diagnostics,
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
         active=nil,pending=nil,waiting={},
-        attempted=setmetatable({},{__mode="k"})},Runtime)
+        attempted=setmetatable({},{__mode="k"}),
+        deferred=setmetatable({},{__mode="k"})},Runtime)
 end
 function Runtime:isAdmitted()
     return g_server~=nil and self.configuration~=nil
@@ -240,6 +241,27 @@ function Runtime:startLeg()
         initialCruiseState=type(evidence)=="table"
             and evidence.initialCruiseState or "unknown"})
 end
+-- A stopped long-approach worker may yield once if a queued completed
+-- peer currently occupies its local parking entry. No uncontrolled
+-- correction drive, no unbounded retry, and no simultaneous native leases.
+local function deferStoppedEntry(self,state,reason)
+    if state.kind~="LOCAL_HANDOFF"
+        or #self.waiting==0
+        or #self.waiting>=MAX_QUEUED_COMPLETIONS
+        or self.deferred[state.vehicle]
+        or (reason~="NO_POSE_REACHABLE_PARKING_REGION"
+            and reason~="PHYSICAL_OCCUPANCY_ROUTE_CONFLICT") then
+        return false
+    end
+    self.deferred[state.vehicle]=true
+    self.pending=nil
+    self.waiting[#self.waiting+1]={vehicle=state.vehicle,job=state.job}
+    publish("INFO","COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE",{
+        rootNode=tostring(state.vehicle.rootNode),reason=reason,
+        queuedAfterOther=#self.waiting-1,
+        note="PREVIOUS_LONG_APPROACH_PHYSICALLY_STOPPED"})
+    return true
+end
 local function beginEpisode(self,job,vehicle)
     local okay,session,reason=pcall(
         OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle)
@@ -363,6 +385,7 @@ function Runtime:update(dt)
                 end
                 reason=why or reason
             end
+            if deferStoppedEntry(self,s,reason) then return end
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
             return
@@ -372,6 +395,7 @@ function Runtime:update(dt)
         local spaceClear,spaceWhy=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
             s.vehicle,route)
         if not spaceClear then
+            if deferStoppedEntry(self,s,spaceWhy) then return end
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 spaceWhy or "PARKING_SPACE_NO_LONGER_AVAILABLE")
             return
@@ -422,7 +446,7 @@ function Runtime:update(dt)
         end
     elseif type(OuttaMyWay.CompletionSettlementRoute.guard)=="function" then
         local valid,why=OuttaMyWay.CompletionSettlementRoute.guard(
-            s.vehicle,s.route)
+            s.vehicle,s.route,s.legIndex)
         if not valid then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 why or "SETTLEMENT_PATH_ENVELOPE_LOST")
@@ -520,6 +544,7 @@ function Runtime:loadMap()
     self.active=nil
     self.waiting={}
     self.attempted=setmetatable({},{__mode="k"})
+    self.deferred=setmetatable({},{__mode="k"})
 end
 function Runtime:deleteMap()
     local s=self.active
@@ -530,5 +555,6 @@ function Runtime:deleteMap()
     self.pending=nil
     self.waiting={}
     self.attempted=setmetatable({},{__mode="k"})
+    self.deferred=setmetatable({},{__mode="k"})
 end
 return Runtime

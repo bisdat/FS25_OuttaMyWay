@@ -281,6 +281,49 @@ runtime:update(16)
 assert(runtime.active and runtime.active.vehicle==nextWorker)
 for i=1,9 do runtime:update(16) end
 assert(runtime.active==nil and terminalCalls==3)
+-- A confirmed-stop LOCAL_HANDOFF worker yields exactly once when a
+-- subsequently completed peer occupies its only local parking route.
+local blocked={rootNode=196,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local ahead={rootNode=197,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local deferredJob={}
+runtime.attempted[blocked]=true
+runtime.attempted[ahead]=true
+runtime.pending={vehicle=blocked,job=deferredJob,
+    plan={advances=0,spent=0},kind="LOCAL_HANDOFF",elapsedMs=0,
+    phase="PLANNING",driveArmed=false}
+runtime.waiting={{vehicle=ahead,job={}}}
+local callsBeforeDeferral=#driveCalls
+localFallback=true
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending==nil
+    and #driveCalls==callsBeforeDeferral)
+assert(#runtime.waiting==2 and runtime.waiting[1].vehicle==ahead
+    and runtime.waiting[2].vehicle==blocked
+    and events[#events].code=="COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE",
+    "physically stopped worker must yield to the queued peer, not collide")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.vehicle==ahead)
+runtime:update(16)
+assert(runtime.active and runtime.active.vehicle==ahead)
+for i=1,12 do
+    runtime:update(16)
+    if terminalCalls==4 then break end
+end
+assert(runtime.active==nil and terminalCalls==4)
+runtime:update(16)
+assert(runtime.pending and runtime.pending.vehicle==blocked)
+runtime:update(16)
+assert(runtime.active and runtime.active.vehicle==blocked)
+for i=1,12 do
+    runtime:update(16)
+    if terminalCalls==5 then break end
+end
+assert(runtime.active==nil and terminalCalls==5
+    and runtime.deferred[blocked]==true)
+assert(not runtime:onNativeCompletion({},blocked,true),
+    "yielding is bounded, not a second native completion event")
 -- Reproduce the TS019-style no-short-route / failed worker-scene path.
 -- A failed census reports the exact witnessed limitation but can never
 -- hand control to the native driver, or retry the same completed job.

@@ -704,7 +704,7 @@ function Route.advancePlan(session,units)
     if phase~="PENDING" then session.finished=true end
     return phase,route,reason
 end
-function Route.guard(vehicle,route)
+function Route.guard(vehicle,route,index)
     local p=pose(vehicle)
     if p==nil then return false,"SETTLEMENT_POSE_UNAVAILABLE" end
     local s,d=coordinates(p,route.frame)
@@ -713,7 +713,7 @@ function Route.guard(vehicle,route)
             and (d<0 or d>STOP_DEPTH_MAX_M)) then
         return false,"SETTLEMENT_ENTRY_OUTSIDE_EDGE_ENVELOPE"
     end
-    return Occupancy.nextClear(vehicle,route,1)
+    return Occupancy.nextClear(vehicle,route,index or 1)
 end
 function Route.verifyTerminal(vehicle,route)
     local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)
