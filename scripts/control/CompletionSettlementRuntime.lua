@@ -528,7 +528,7 @@ function Runtime:update(dt)
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
     end
-    if s.route.mode=="EXTENDED_INFIELD" then
+    if s.phase=="MOVING" and s.route.mode=="EXTENDED_INFIELD" then
         s.peerCheckMs=(s.peerCheckMs or 250)+dt
         if s.peerCheckMs>=250 then
             s.peerCheckMs=0
@@ -545,7 +545,8 @@ function Runtime:update(dt)
                 return
             end
         end
-    elseif type(OuttaMyWay.CompletionSettlementRoute.guard)=="function" then
+    elseif s.phase=="MOVING"
+        and type(OuttaMyWay.CompletionSettlementRoute.guard)=="function" then
         local valid,why=OuttaMyWay.CompletionSettlementRoute.guard(
             s.vehicle,s.route,s.legIndex)
         if not valid then
