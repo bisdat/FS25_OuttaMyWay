@@ -1,6 +1,6 @@
 --- Resolves engineering-only DIAGNOSTIC publication and explicit
 -- settlement prototype consent from a modSettings sidecar.
--- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
+-- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`, `FARM_SPATIAL_CONTEXT_OBSERVATION`
 -- This source is not supported player Configuration and owns no Runtime semantic or Control authority.
 
 OuttaMyWay.DiagnosticPublicationPolicySource = {}
@@ -10,6 +10,7 @@ Source.__index=Source
 local ROOT_KEY="outtaMyWayDiagnostics"
 local ENABLED_KEY=ROOT_KEY.."#enabled"
 local SPATIAL_FARMLAND_ID_KEY=ROOT_KEY.."#spatialFarmlandId"
+local SPATIAL_SURVEY_KEY=ROOT_KEY.."#spatialSurvey"
 local SETTLEMENT_PROTOTYPE_KEY=ROOT_KEY.."#settlementPrototype"
 local FILE_NAME="diagnostics.xml"
 local XML_FILE_ID="outtaMyWayDiagnostics"
@@ -43,6 +44,7 @@ function Source.new(modName)
         filePath=nil,
         isDiagnosticEnabled=false,
         settlementPrototypeEnabled=false,
+        spatialSurveyEnabled=false,
         spatialFarmlandId=nil, -- nil preserves Field 77 default test fixture
         spatialSelectionError=nil,
         loadReason="NOT_LOADED"
@@ -52,6 +54,7 @@ end
 function Source:loadSidecar()
     self.isDiagnosticEnabled=false
     self.settlementPrototypeEnabled=false
+    self.spatialSurveyEnabled=false
     self.spatialFarmlandId=nil
     self.spatialSelectionError=nil
     local path,pathReason=diagnosticsPath(self.modName)
@@ -97,6 +100,13 @@ function Source:loadSidecar()
         self.loadReason="SETTLEMENT_PROTOTYPE_SCHEMA_UNAVAILABLE"
         return false,self.loadReason
     end
+    -- Research survey requires an explicit opt-in separate from DIAGNOSTIC
+    -- logging and the physical settlement experiment.
+    if not pcall(schema.register,schema,XMLValueType.BOOL,
+        SPATIAL_SURVEY_KEY) then
+        self.loadReason="SPATIAL_SURVEY_SCHEMA_UNAVAILABLE"
+        return false,self.loadReason
+    end
     -- Engineering-only spatial fixture selection; never a product Configuration.
     -- An absent attribute preserves the original Field 77 test behaviour.
     local spatialSchemaAvailable=XMLValueType.INT~=nil
@@ -118,11 +128,13 @@ function Source:loadSidecar()
 
     local valueOk,value=false,nil
     local prototypeOk,prototypeValue=true,nil
+    local surveyOk,surveyValue=true,nil
     local spatialOk,spatialValue=true,nil
     if type(xmlFile.getValue)=="function" then
         valueOk,value=pcall(xmlFile.getValue,xmlFile,ENABLED_KEY)
         prototypeOk,prototypeValue=pcall(xmlFile.getValue,xmlFile,
             SETTLEMENT_PROTOTYPE_KEY)
+        surveyOk,surveyValue=pcall(xmlFile.getValue,xmlFile,SPATIAL_SURVEY_KEY)
         if spatialSchemaAvailable then
             spatialOk,spatialValue=pcall(xmlFile.getValue,xmlFile,SPATIAL_FARMLAND_ID_KEY)
         end
@@ -148,14 +160,25 @@ function Source:loadSidecar()
         self.loadReason="SETTLEMENT_PROTOTYPE_FLAG_INVALID"
         return false,self.loadReason
     end
+    if not surveyOk or (surveyValue~=nil
+        and type(surveyValue)~="boolean") then
+        self.loadReason="SPATIAL_SURVEY_FLAG_INVALID"
+        return false,self.loadReason
+    end
     self.isDiagnosticEnabled=value
     self.settlementPrototypeEnabled=value and prototypeValue==true
+    self.spatialSurveyEnabled=value and surveyValue==true
     self.loadReason=value and "ENABLED" or "DISABLED"
     return self.isDiagnosticEnabled,self.loadReason
 end
 
 function Source:publicationPolicy()
     return self.isDiagnosticEnabled and "DIAGNOSTIC" or "NORMAL"
+end
+
+-- A DIAGNOSTIC publisher does not imply consent to launch a costly survey.
+function Source:isSpatialSurveyEnabled()
+    return self.isDiagnosticEnabled and self.spatialSurveyEnabled
 end
 
 function Source:spatialTargetFarmlandId()
