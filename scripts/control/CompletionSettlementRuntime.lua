@@ -5,6 +5,7 @@ OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionSettlementRuntime={}
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local Allocation=OuttaMyWay.ParkingRegionAllocation
+local Situation=OuttaMyWay.SettlementDestinationAssessment
 Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
@@ -370,6 +371,10 @@ local function stopForAlternative(self,s,reason)
 end
 function Runtime:update(dt)
     local s=self.active or self.pending
+    if s~=nil and type(Situation)=="table"
+        and type(Situation.sample)=="function" then
+        Situation.sample(s.vehicle,dt)
+    end
     if s==nil then
         if #self.waiting==0 then return end
         if not self:isAdmitted() then
@@ -431,7 +436,14 @@ function Runtime:update(dt)
             publish("INFO","COMPLETION_SETTLEMENT_REGION_CLAIMED",{
                 rootNode=tostring(s.vehicle.rootNode),station=route.station,
                 terminalX=route.terminalPose.x,terminalZ=route.terminalPose.z,
-                entryX=route.entryPose.x,entryZ=route.entryPose.z})
+                entryX=route.entryPose.x,entryZ=route.entryPose.z,
+                situationRisk=route.situationRisk,
+                situationReason=route.situationReason,
+                workingPeers=route.workingPeers,
+                motionWitnesses=route.motionWitnesses,
+                headingWitnesses=route.headingWitnesses,
+                selectionCost=route.selectionCost,
+                alternativeEdgeStatus="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED"})
             return
         end
         if s.kind=="EXTENDED" and phase=="DONE" and route
@@ -680,6 +692,9 @@ function Runtime:loadMap()
     self.replans=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
+    if type(Situation)=="table" and type(Situation.reset)=="function" then
+        Situation.reset()
+    end
 end
 function Runtime:deleteMap()
     local s=self.active
@@ -693,5 +708,8 @@ function Runtime:deleteMap()
     self.replans=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
+    if type(Situation)=="table" and type(Situation.reset)=="function" then
+        Situation.reset()
+    end
 end
 return Runtime

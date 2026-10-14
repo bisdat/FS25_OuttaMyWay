@@ -8,6 +8,7 @@ local M=OuttaMyWay.ParkingRegionAllocation
 local G=OuttaMyWay.FarmEdgeGeometry
 local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
 local Local=OuttaMyWay.CompletionSettlementRoute
+local Situation=OuttaMyWay.SettlementDestinationAssessment
 local MAX_SITES=8
 local EDGE_STATIONS={20,45,70,95,120,145,170,195}
 local function finite(v)
@@ -148,7 +149,14 @@ function M.advancePlan(s,units)
         if own==nil then
             s.finished=true;return "FAILED",nil,"ALLOCATION_OWN_FOOTPRINT_UNKNOWN"
         end
+        local situation,situationWhy=Situation.observe(s.vehicle,f.poly)
+        if situation==nil then
+            s.finished=true
+            return "FAILED",nil,situationWhy or "DESTINATION_SITUATION_UNAVAILABLE"
+        end
         s.frame,s.own,s.occupants=f,own,occupants
+        s.situation=situation
+        s.edgeEvidence=Situation.edgeEvidence(f.poly)
         local sorted={}
         for i=1,#EDGE_STATIONS do
             local station=EDGE_STATIONS[i]
@@ -157,11 +165,11 @@ function M.advancePlan(s,units)
             sorted[#sorted+1]={station=station,entry=candidate,
                 score=math.sqrt(dx*dx+dz*dz)}
         end
-        table.sort(sorted,function(a,b)
-            if a.score==b.score then return a.station<b.station end
-            return a.score<b.score
-        end)
-        s.sites=sorted
+        local ranked,why=Situation.rank(sorted,p,f,situation)
+        if ranked==nil then
+            s.finished=true;return "FAILED",nil,why
+        end
+        s.sites=ranked
         s.phase="NEXT"
         s.spent=s.spent+1
         return "PENDING"
@@ -178,7 +186,21 @@ function M.advancePlan(s,units)
         -- full polygon+physical stopping reserve is proven by Local planning.
         local parked={x=f.ax+f.ux*site.station+f.nx*4,
             z=f.az+f.uz*site.station+f.nz*4}
-        if not Occupancy.clear(parked,s.own,s.occupants,6)
+        -- A currently empty position is not operationally free if it
+        -- intercepts a positively observed near-term work corridor.
+        local refreshed,why=Situation.observe(s.vehicle,f.poly)
+        if refreshed==nil then
+            s.finished=true;return "FAILED",nil,why
+        end
+        local newRisk,newReason=0,"NO_ACTIVE_WORKER"
+        for i=1,#refreshed.peers do
+            local risk,reason=Situation.risk(parked,refreshed.peers[i])
+            if risk>newRisk then newRisk,newReason=risk,reason end
+        end
+        site.peerRisk=newRisk
+        site.peerRiskReason=newReason
+        if newRisk>=3
+            or not Occupancy.clear(parked,s.own,s.occupants,6)
             or not clearClaims(s.ledger,s.vehicle,parked,s.own+5)
             or not Occupancy.clear(site.entry,s.own,s.occupants) then
             s.spent=s.spent+1
@@ -206,6 +228,21 @@ function M.advancePlan(s,units)
             and clearClaims(s.ledger,s.vehicle,route.terminalPose,
                 s.own+5)
             and Occupancy.clear(route.terminalPose,s.own,s.occupants,5) then
+            local latest,latestWhy=Situation.observe(s.vehicle,s.frame.poly)
+            if latest==nil then
+                s.finished=true;return "FAILED",nil,latestWhy
+            end
+            local terminalRisk,terminalReason=0,"NO_ACTIVE_WORKER"
+            for i=1,#latest.peers do
+                local risk,reason=Situation.risk(route.terminalPose,latest.peers[i])
+                if risk>terminalRisk then
+                    terminalRisk,terminalReason=risk,reason
+                end
+            end
+            if terminalRisk>=3 then
+                s.prevSpent=nil;s.localPlan=nil;s.phase="NEXT"
+                return "PENDING"
+            end
             s.finished=true
             return "DONE",{entryPose=s.site.entry,
                 station=s.site.station,terminalPose=route.terminalPose,
@@ -213,6 +250,13 @@ function M.advancePlan(s,units)
                 stationMax=math.min(s.frame.length-3,s.site.station+26),
                 qualifiedLocalRoute=route,
                 ownRadius=s.own,
+                situationRisk=terminalRisk,
+                situationReason=terminalReason,
+                workingPeers=latest.workingCount,
+                motionWitnesses=latest.motionCount,
+                headingWitnesses=latest.headingCount,
+                edgeEvidence=s.edgeEvidence,
+                selectionCost=s.site.score,
                 claimObstacles=claimObstacles(s.ledger,s.vehicle)}
         end
         s.prevSpent=nil

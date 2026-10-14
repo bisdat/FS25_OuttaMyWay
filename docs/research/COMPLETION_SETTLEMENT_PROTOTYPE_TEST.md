@@ -611,3 +611,12 @@ The owner agreed with the analysis that **station20 was selected because of a we
 **Not established:** the screenshot alone cannot prove western margin depth, traversable complete-assembly clearance or future peer trajectory. Straight-line midpoint distance advantage/disadvantage is not whole-route or collision proof. The observed mid-guide `SETTLEMENT_STOP_NOT_ADMITTED` is an **independent downstream safety-stop contract defect**, not evidence that station20 was strategically correct. BWR remains out of scope.
 
 **Next work:** implementation and tests **after** the documented decision, keeping architectural question “which space should remain available for whom?” separate from path search and native stop mechanics. **No code/version bump in this decision-only tranche.** Version `0.5.5.15`, PR #482 draft and unmerged.
+
+
+## TEST 0.5.5.16 — destination ranking field hypothesis (awaiting GIANTS)
+
+First finisher root 396502 in .15 was ranked to the east-end station20 because the allocator used Euclidean completion-to-entry distance alone. The user agreed this is a situation assessment error. The experimental .16 assessment observes the other active worker's X/Z, heading and, if two plausible time-separated samples exist, motion direction; it distinguishes measured motion from unknown future work path. Candidate terminal risk from currently productive demand is ranked ahead of central-edge preservation and estimated entry distance. A present motion-corridor intersection is rejected before a claim rather than left solely to the moving next-target guard.
+
+The supported drive remains registered Field77 edge9. A western polygon edge may be a candidate, but the screenshot does not establish accessible whole-assembly margin or feasible local parking entry. No west-edge motor command is added. The midpoint of edge9 is now deliberately a competing choice; logged risk/reason and peer motion witnesses should let GIANTS video falsify whether the choice was appropriate.
+
+Offline tests must prove moving east-end peer changes station20 priority, heading alone is not measured motion, empty-peer control retains old ordering, and two qualified disjoint terminal claims and targeted extended guidance still pass. GIANTS must measure the resulting first-finisher destination and the peer's actual work behaviour. The independent mid-guidance Safety Stop contract defect is unresolved; this build does not introduce BWR changes.

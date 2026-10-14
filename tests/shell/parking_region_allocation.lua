@@ -40,6 +40,8 @@ OuttaMyWay.PairTransitRegion={capture=function(vehicle)
 end}
 dofile("scripts/coordination/SettlementPhysicalOccupancy.lua")
 dofile("scripts/coordination/CompletionSettlementRoute.lua")
+dofile("scripts/coordination/ExtendedInfieldApproach.lua")
+dofile("scripts/coordination/SettlementDestinationAssessment.lua")
 dofile("scripts/coordination/ParkingRegionAllocation.lua")
 local Allocation=OuttaMyWay.ParkingRegionAllocation
 local ledger={}
@@ -83,7 +85,6 @@ assert(b.qualifiedLocalRoute.terminalPose)
 Allocation.release(ledger,second)
 -- The remote first worker must find a goal-directed extended route to the
 -- specifically qualified entry, not any convenient generic edge band.
-dofile("scripts/coordination/ExtendedInfieldApproach.lua")
 local Extended=OuttaMyWay.ExtendedInfieldApproach
 local travel=assert(Extended.beginPlan(first,a.entryPose))
 local kind,planned,fail

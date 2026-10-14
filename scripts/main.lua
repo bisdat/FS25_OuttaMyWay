@@ -32,6 +32,7 @@ local modules={
     "scripts/assessment/SettlementStraightRunout.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
     "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/observation/AssemblySettlementProbe.lua",

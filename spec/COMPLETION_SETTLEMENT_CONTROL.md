@@ -67,6 +67,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | [`scripts/coordination/SettlementPhysicalOccupancy.lua`](../scripts/coordination/SettlementPhysicalOccupancy.lua) | `REALISES` |
 | [`scripts/coordination/CompletionSettlementRoute.lua`](../scripts/coordination/CompletionSettlementRoute.lua) | `REALISES` |
 | [`scripts/coordination/ParkingRegionAllocation.lua`](../scripts/coordination/ParkingRegionAllocation.lua) | `REALISES` |
+| [`scripts/coordination/SettlementDestinationAssessment.lua`](../scripts/coordination/SettlementDestinationAssessment.lua) | `REALISES` |
 | [`scripts/coordination/ExtendedInfieldApproach.lua`](../scripts/coordination/ExtendedInfieldApproach.lua) | `REALISES` |
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
@@ -80,6 +81,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | --- | --- |
 | [`tests/shell/completion_settlement.lua`](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
 | [`tests/shell/completion_extended_approach.lua`](../tests/shell/completion_extended_approach.lua) | `CHALLENGES` |
+| [`tests/shell/settlement_destination_assessment.lua`](../tests/shell/settlement_destination_assessment.lua) | `CHALLENGES` |
 | [`tests/shell/completion_settlement_drive.lua`](../tests/shell/completion_settlement_drive.lua) | `CHALLENGES` |
 | [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
 | [`tests/test_product_shell_structure.py`](../tests/test_product_shell_structure.py) | `CHALLENGES` |
@@ -242,3 +244,14 @@ Root 396502 completed native work, obtained a qualified parking claim and drove 
 **Tests required:** verify that an active peer approaching the eastern terminal zone changes allocation away from station20 when a suitable alternative exists; a physically qualified edge9 midpoint and a verified alternative edge can be compared without blindly hard-coding either; a peer position with no reliable movement samples is not treated as a certain future trajectory; candidate ranks and uncertainty are observable; distinct complete-assembly terminal claims persist; stopped alternatives do not circumvent the separately identified mid-guide Safety Stop deficiency.
 
 **Unchanged:** existing BWR trigger, accepted native stop-for-arrival path, player-Control gate and main. No executable .16 is delivered by this architectural agreement.
+
+
+## TEST 0.5.5.16 — Destination Situation Assessment (GIANTS pending)
+
+Owner-approved response to first finisher's poor station20 choice. A separate non-actuating Situation Assessment reads current active-worker positions and headings, and records an actual motion vector only after two 500ms-spaced measured positions. Native heading is not asserted to be a future GIANTS job path. A presently empty terminal cannot automatically be allocated when it threatens a productive peer's near-term movement.
+
+When peers remain active, the edge9 allocator ranks candidate terminals primarily by observed working-space risk, then distance from edge midpoint (opportunity for others), and only secondarily by the Euclidean entry-distance estimate. High-confidence corridor conflicts are rejected and risk is refreshed before a terminal is claimed. Without an active peer, the original nearest-entry ranking remains. Selected station, risk reason, working peer count, motion/heading evidence counts are logged with the claim. The first-finisher decision should no longer automatically favour the eastern station20.
+
+**Multiple-edge candidacy:** registered western Field77 edges are recorded as geometrical candidates only. Their full-member exterior margin and local parking manoeuvre have not been field-validated, so **no western-edge driving** is admitted in this TEST. Southern edge9 midpoint competes for genuine navigation. Changing the actual admissible edge set requires separate evidence and a future router change.
+
+**Scope:** this is a situation observation/selection tranche, not a claim that GIANTS route length is now optimised or that future fieldwork is predicted. Existing exclusive claims, native motor Control, BWR, player-Control gate and arrival-stop contracts are unchanged. The known mid-guidance Safety Stop admission defect remains separately open.

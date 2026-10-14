@@ -286,3 +286,14 @@ The separate **Interruption Safety Stop** capability remains necessary to respon
 **Independent downstream defect:** .15's `SETTLEMENT_STOP_NOT_ADMITTED` from calling an arrival-only stop during unfinished guidance still requires a distinct **Interruption Safety Stop** contract. That cannot substitute for good initial destination choice; both are separate responsibilities. BWR, player-Control semantics and productive fieldwork Control remain unchanged.
 
 **Testing obligations for next implementation:** given two workers, prove the first-finisher choice is not systematically biased towards the actively worked eastern corner; show comparable candidacy of center edge9 and any geometrically validated other edge; show actual peer vector evidence/uncertainty and demand effect in candidate rankings; preserve distinct terminal claims and local-feasibility tests; invalidate/reassess safely on observed route conflict. Regression the native-shaped mid-guide stop separately. Do not promote based only on nominal CI.
+
+
+### TEST 0.5.5.16 — situation-before-claim implementation hypothesis (14 October 2026)
+
+This experimentally realises the approved **Destination Situation Assessment** concept separately from physical steering and exclusive parking claims. Under continuing productive work, nominal free space has to be screened for current working-peer occupancy, near-term observed movement demand, and lower-confidence heading-aligned potential demand, before it can be considered an Available Terminal Region. Measurements from successive world-root X/Z positions yield actual motion; current orientation alone does not prove future GIANTS work trajectories.
+
+The allocator no longer sorts edge9 stations solely by a few metres of straight-line entry advantage. It first ranks productive-demand risk, favours a more central usable portion of the long parking edge, and uses entry distance only as a secondary estimate. With no other active worker the proven nearest-entry policy remains. Measured risk is checked again while attempting local manoeuvre qualification; physical occupancy and claimed-space exclusion remain independent.
+
+**Edge candidacy:** the western side in the owner's screenshot is recognised as a possible registered-polygon edge. This is **not** a proven legal external strip or qualified local parking approach; executable movement stays on Field77 edge9, and center edge9 is compared with eastern station20. Do not implement west-edge driving without verifying entire-member parking margins and local entry from that side.
+
+**Separate Safety Stop:** unfinished-guidance interruption still needs its own Control contract. Do not infer the current destination correction also repairs native safety-stop admission. BWR, player-Control and regular arrival-stop policies are unchanged.
