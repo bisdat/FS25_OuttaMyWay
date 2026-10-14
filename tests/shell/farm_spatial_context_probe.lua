@@ -3,6 +3,7 @@
 OuttaMyWay={VERSION="0.5.5.3"}
 local events,navCalls,splineCalls={},0,0
 local diagnostic=false
+local spatialSurvey=false
 OuttaMyWay.LogPublication={origin=function()
     return {publish=function(_,class,severity,code,make)
         assert(class=="DIAGNOSTIC")
@@ -13,6 +14,9 @@ local configuration={isResolved=function()return true end,
     isEnabled=function()return true end}
 local source={publicationPolicy=function()
     return diagnostic and "DIAGNOSTIC" or "NORMAL"
+end,
+isSpatialSurveyEnabled=function()
+    return diagnostic and spatialSurvey
 end}
 g_server={}
 g_terrainNode=7
@@ -64,7 +68,12 @@ assert(#events==0 and navCalls==0 and splineCalls==0,
     "normal/debug publication must not calculate diagnostic geometry")
 diagnostic=true
 probe:update(7000)
-assert(navCalls>0 and splineCalls>0,"DIAGNOSTIC must survey")
+assert(#events==0 and navCalls==0 and splineCalls==0,
+    "DIAGNOSTIC publication alone must not admit a research survey")
+spatialSurvey=true
+probe:update(7000)
+assert(navCalls>0 and splineCalls>0,
+    "explicit research survey consent must run once")
 local counts={}
 local find=function(code,edge,offset)
     for _,event in ipairs(events) do
@@ -120,6 +129,7 @@ g_farmlandManager.getOwnerIdAtWorldPosition=function(_,x,z)
 end
 local diagnosticSource2={
     publicationPolicy=function() return "DIAGNOSTIC" end,
+    isSpatialSurveyEnabled=function() return true end,
     spatialTargetFarmlandId=function() return 2,nil end
 }
 local probe2=OuttaMyWay.FarmSpatialContextProbe.new(configuration,diagnosticSource2)
