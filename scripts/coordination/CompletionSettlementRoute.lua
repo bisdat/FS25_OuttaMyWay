@@ -409,11 +409,17 @@ local function segment(c,kind,length,forward,nextStage)
     c.stage="SEGMENT"
 end
 local function createCandidate(s)
+    s.candidates=(s.candidates or 0)+1
     local c={track=newTrack(s.current),direction=s.direction,
         reverseLength=REVERSES[s.reverse],
         radius=RADII[s.radius],alpha=ANGLES[s.angle],
         jTurn=s.method==2,stage="REVERSE_INIT",extra=0}
     s.candidate=c
+end
+-- One bounded count per evaluated rejection, never a steering instruction.
+local function denied(s,why)
+    s.rejectionCounts=s.rejectionCounts or {}
+    s.rejectionCounts[why]=(s.rejectionCounts[why] or 0)+1
 end
 local function makeCheck(s,p,kind,reverse)
     local c=s.candidate
@@ -421,12 +427,15 @@ local function makeCheck(s,p,kind,reverse)
     if kind~="APPROACH" and s.options~=nil
         and (station<s.options.stationMin
             or station>s.options.stationMax) then
+        denied(s,"TERMINAL_OUTSIDE_CLAIMED_STATION")
         c.stage="RUNOUT_INIT"
         return
     end
     if kind=="APPROACH" then
         if #c.track.points>=MAX_POINTS
             or station<2 or station>s.frame.length-2 then
+            denied(s,#c.track.points>=MAX_POINTS
+                and "APPROACH_GUIDANCE_LIMIT" or "APPROACH_STATION_BAND")
             c.stage="REJECT"
             return
         end
@@ -435,11 +444,17 @@ local function makeCheck(s,p,kind,reverse)
             or depth<0 or depth>STOP_DEPTH_MAX_M
             or math.abs(p.fx*s.frame.ux+p.fz*s.frame.uz)
                 <math.cos(15*RAD) then
-            c.stage=kind=="TERMINAL" and "RUNOUT_INIT" or "RUNOUT_INIT"
+            denied(s,(station<3 or station>s.frame.length-3)
+                and "TERMINAL_STATION_BAND"
+                or (depth<0 or depth>STOP_DEPTH_MAX_M)
+                and "TERMINAL_DEPTH_BAND" or "TERMINAL_HEADING_BAND")
+            c.stage="RUNOUT_INIT"
             return
         end
     end
     if not Occupancy.clear(p,s.ownRadius,s.occupants) then
+        denied(s,kind=="APPROACH"
+            and "APPROACH_PHYSICAL_OCCUPANCY" or "TERMINAL_PHYSICAL_OCCUPANCY")
         c.stage=kind=="APPROACH" and "REJECT" or "RUNOUT_INIT"
         return
     end
@@ -515,6 +530,7 @@ local function processCheck(s)
         local rect=check.boxes[check.member]
         local poly=s.neighbors[check.neighbor].polygon
         if A.shapeIntersectsPolygon(rect,poly)~=false then
+            denied(s,"NEIGHBOR_POLYGON_"..check.kind)
             checkFinished(s,false)
         else
             check.neighbor=check.neighbor+1
@@ -526,6 +542,7 @@ local function processCheck(s)
         if check.kind=="APPROACH" then
             if check.reverse then
                 if not G.inside(s.poly,check.point.x,check.point.z) then
+                    denied(s,"REVERSE_ROOT_OUTSIDE_SOURCE")
                     checkFinished(s,false)
                     return true
                 end
@@ -533,6 +550,7 @@ local function processCheck(s)
                     for i=1,4 do
                         local corner=check.boxes[m][i]
                         if not G.inside(s.poly,corner.x,corner.z) then
+                            denied(s,"REVERSE_MEMBER_OUTSIDE_SOURCE")
                             checkFinished(s,false)
                             return true
                         end
@@ -540,6 +558,7 @@ local function processCheck(s)
                 end
             elseif not G.inside(s.poly,check.point.x,check.point.z)
                 and (check.depth<0 or check.depth>STOP_DEPTH_MAX_M) then
+                denied(s,"FORWARD_OUTSIDE_EDGE_BAND")
                 checkFinished(s,false)
                 return true
             end
@@ -547,6 +566,7 @@ local function processCheck(s)
             return true
         end
         if G.inside(s.poly,check.point.x,check.point.z) then
+            denied(s,"TERMINAL_ROOT_STILL_IN_SOURCE")
             checkFinished(s,false)
             return true
         end
@@ -561,6 +581,7 @@ local function processCheck(s)
         if not charge(s,24) then return false end
         local box=check.boxes[check.sourceMember]
         if A.shapeIntersectsPolygon(box,s.poly)~=false then
+            denied(s,"TERMINAL_MEMBER_INTERSECTS_SOURCE")
             checkFinished(s,false)
             return true
         end
@@ -568,6 +589,7 @@ local function processCheck(s)
             local station,depth=coordinates(box[i],s.frame)
             if station<1 or station>s.frame.length-1
                 or depth<0.15 or depth>STOP_DEPTH_MAX_M then
+                denied(s,"TERMINAL_MEMBER_MARGIN_ENVELOPE")
                 checkFinished(s,false)
                 return true
             end
@@ -588,9 +610,13 @@ local function advanceCandidate(s)
         local p=c.track.pose
         local delta=angleBetween(p.fx,p.fz,tx,tz)
         if c.jTurn then
-            if math.abs(delta)<20*RAD then c.stage="REJECT"
+            if math.abs(delta)<20*RAD then
+                denied(s,"J_HEADING_TOO_ALIGNED")
+                c.stage="REJECT"
             else segment(c,"ARC",delta,true,"S_SETUP") end
-        elseif math.abs(delta)>18*RAD then c.stage="REJECT"
+        elseif math.abs(delta)>18*RAD then
+            denied(s,"DIRECT_HEADING_MISALIGNED")
+            c.stage="REJECT"
         else c.stage="S_SETUP" end
     elseif c.stage=="S_SETUP" then
         local p=c.track.pose
@@ -601,6 +627,7 @@ local function advanceCandidate(s)
         local first=sense*c.alpha
         c.second=residual-first
         if first*c.second>=0 or math.abs(c.second)>95*RAD then
+            denied(s,"S_CURVE_TURN_GEOMETRY")
             c.stage="REJECT"
         else segment(c,"ARC",first,true,"ARC2_INIT") end
     elseif c.stage=="ARC2_INIT" then
@@ -625,7 +652,9 @@ local function advanceCandidate(s)
         makeCheck(s,advance(c.track.pose,STOPPING_RESERVE_M),
             "RESERVE",false)
     elseif c.stage=="RUNOUT_INIT" then
-        if c.extra>35 then c.stage="REJECT"
+        if c.extra>35 then
+            denied(s,"RUNOUT_EXHAUSTED")
+            c.stage="REJECT"
         else segment(c,"MOVE",STEP_M,true,"RUNOUT_DONE") end
     elseif c.stage=="RUNOUT_DONE" then
         c.extra=c.extra+STEP_M
