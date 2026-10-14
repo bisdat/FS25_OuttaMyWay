@@ -600,3 +600,14 @@ The owner supplied a marked overhead screenshot and challenged the **first finis
 4. **Committed Entry** — only after choosing a region spatially separated from other worker demand, prove its Qualified Entry Pose and claim it. Reassess at observable changes before entering a conflict zone.
 
 **No executable changes.** TEST `0.5.5.15` remains one-worker physical PASS, two-worker FAIL. Safety-stop precondition mismatch and initial destination assessment are **separate findings**. BWR stays unchanged; PR #482 remains draft and unmerged.
+
+
+## Owner approval after .15 screenshot: Destination Situation Assessment (14 October 2026)
+
+The owner agreed with the analysis that **station20 was selected because of a weak destination ranking**, not because it was the only sensible way to settle the first finisher. The approved direction is to assess a still-active worker's *likely productive demand* and examine multiple truly eligible edges/regions before claiming a terminal. This supersedes the immediately preceding section's **“not yet approved”** decision status; its factual source observations and geometric caveats remain valid.
+
+**Accepted architectural priorities:** observe the peer's present X/Z and orientation; use repeated samples for actual velocity when available and do **not** equate heading to future GIANTS work plan. Compare a central edge9 option and geometry-validated western candidate rather than accepting the first station from an east-to-west eight-point list. Preserve the active worker's prospective working/headland space over a marginally shorter first-finisher approach. Rank *whole feasible destination and route* with sufficient occupancy and uncertainty evidence, then prove short-entry feasibility and secure an exclusive claim. The new destination assessor must not discard the existing physical-occupancy, queued completion or stop-before-reallocation controls.
+
+**Not established:** the screenshot alone cannot prove western margin depth, traversable complete-assembly clearance or future peer trajectory. Straight-line midpoint distance advantage/disadvantage is not whole-route or collision proof. The observed mid-guide `SETTLEMENT_STOP_NOT_ADMITTED` is an **independent downstream safety-stop contract defect**, not evidence that station20 was strategically correct. BWR remains out of scope.
+
+**Next work:** implementation and tests **after** the documented decision, keeping architectural question “which space should remain available for whom?” separate from path search and native stop mechanics. **No code/version bump in this decision-only tranche.** Version `0.5.5.15`, PR #482 draft and unmerged.
