@@ -394,6 +394,8 @@ function Probe:diagnosticEligible()
         and self.configuration:isEnabled()==true
         and self.diagnosticSource~=nil
         and self.diagnosticSource:publicationPolicy()=="DIAGNOSTIC"
+        and type(self.diagnosticSource.isSpatialSurveyEnabled)=="function"
+        and self.diagnosticSource:isSpatialSurveyEnabled()==true
 end
 
 function Probe:loadMap()
