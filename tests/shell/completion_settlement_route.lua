@@ -201,4 +201,29 @@ memberCount=2
 local multi,reasonMulti=Route.plan(vehicle)
 assert(multi==nil and reasonMulti=="ARTICULATED_ENTRY_REALITY_UNVALIDATED",
     "a nominal rigid path does not authorise articulated reversing")
+-- This fixture cannot prove the TS019 world failure. Deliberately deny
+-- all terminal stations to exercise attributed, finite local refusal.
+memberCount=1
+current.x,current.z,current.fx,current.fz=128.628,-245.676,0.953,0.302
+local rejected=assert(Route.beginPlan(vehicle,{
+    stationMin=0,stationMax=0,
+    expectedEntryPose={x=131.509,z=-246.184,fx=0.988,fz=-0.154}}))
+local rejectedPhase,rejectedRoute,rejectedReason
+for i=1,12500 do
+    rejectedPhase,rejectedRoute,rejectedReason=Route.advancePlan(rejected,64)
+    if rejectedPhase~="PENDING" then break end
+end
+assert(rejectedPhase=="FAILED" and rejectedRoute==nil
+    and rejectedReason=="NO_POSE_REACHABLE_PARKING_REGION")
+assert(rejected.candidates==300,
+    "bounded local candidate enumeration must finish")
+local observedRejections=0
+for _,count in pairs(rejected.rejectionCounts or {}) do
+    observedRejections=observedRejections+count
+end
+assert(observedRejections>0
+    and rejected.rejectionCounts.TERMINAL_OUTSIDE_CLAIMED_STATION,
+    "failed entry must retain predicate-attributed evidence")
+assert(rejected.current.x==128.628 and rejected.options.expectedEntryPose.x==131.509,
+    "nominal entry must remain distinct from measured arrival")
 print("completion settlement pose-conditioned parking region PASS")
