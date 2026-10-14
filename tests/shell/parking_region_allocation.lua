@@ -132,14 +132,14 @@ for i=1,18000 do
     status,chosen,reason=Allocation.advancePlan(assessed,320)
     if status~="PENDING" then break end
 end
-assert(status=="DONE" or
-    (status=="FAILED" and reason=="NO_QUALIFIED_TERMINAL_REGION"),reason)
-if status=="DONE" then
-    assert(chosen.station~=20
-        and chosen.situationRisk<3
-        and chosen.motionWitnesses==1,
-        "qualified destination must preserve the still-working peer corridor")
-end
+assert(status=="DONE",reason or "NO_ALTERNATIVE_QUALIFIED_TERMINAL")
+assert(chosen.station>=70 and chosen.station<=145
+    and chosen.situationRisk<3
+    and chosen.motionWitnesses==1,
+    "active eastern worker must produce a separate qualified central parking destination")
+print(string.format("active peer selection: station %d risk %d (%s), observed motion=%d",
+    chosen.station,chosen.situationRisk,chosen.situationReason,
+    chosen.motionWitnesses))
 second.getIsAIActive=nil
 Situation.reset()
 print("qualified terminal allocation: disjoint claims and future-demand-aware real allocator PASS")
