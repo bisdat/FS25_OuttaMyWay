@@ -199,7 +199,8 @@ function Runtime:startLeg()
                 return
             end
             local session,why=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax})
+                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax,
+                    expectedEntryPose=s.route.entryPose})
             if session==nil then
                 self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                     why or "LOCAL_HANDOFF_PLANNER_UNAVAILABLE")
@@ -449,7 +450,8 @@ function Runtime:update(dt)
         if s.kind=="EXTENDED" and phase=="DONE" and route
             and #route.legs==0 then
             local plan=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax})
+                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax,
+                    expectedEntryPose=s.plan.target})
             if not plan then
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                     "LOCAL_HANDOFF_PLANNER_UNAVAILABLE")
@@ -474,6 +476,34 @@ function Runtime:update(dt)
                     outsideField=scene.outsideField or 0,
                     nonAiRoots=scene.nonAiRoots or 0,
                     failureRoot=scene.failureRoot or "none"})
+            end
+            if s.kind=="LOCAL_HANDOFF"
+                and reason=="NO_POSE_REACHABLE_PARKING_REGION" then
+                -- A stopped guidance handoff is not a proven feasible entry.
+                -- Publish the bounded actual-pose refusal only once.
+                local counts={}
+                for name,amount in pairs(s.plan.rejectionCounts or {}) do
+                    counts[#counts+1]=name..":"..tostring(amount)
+                end
+                table.sort(counts)
+                local actual=s.plan.current or {}
+                local expected=s.plan.options
+                    and s.plan.options.expectedEntryPose or {}
+                publish("WARNING","COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED",{
+                    rootNode=tostring(s.vehicle.rootNode),
+                    actualX=actual.x or "unknown",
+                    actualZ=actual.z or "unknown",
+                    actualFx=actual.fx or "unknown",
+                    actualFz=actual.fz or "unknown",
+                    qualifiedX=expected.x or "unknown",
+                    qualifiedZ=expected.z or "unknown",
+                    qualifiedFx=expected.fx or "unknown",
+                    qualifiedFz=expected.fz or "unknown",
+                    stationMin=s.stationMin or "unknown",
+                    stationMax=s.stationMax or "unknown",
+                    candidates=s.plan.candidates or 0,
+                    rejectionCounts=table.concat(counts,";"),
+                    note="NOMINAL_ENTRY_NOT_PHYSICAL_HANDOFF_PROOF"})
             end
             if s.kind=="LOCAL_INITIAL"
                 and reason=="NO_POSE_REACHABLE_PARKING_REGION" then
