@@ -648,3 +648,28 @@ The qualified hypothetical entry heading was approximately (0.988,-0.154). The a
 Second root 399997 completed 06:30:48.823, correctly queued, then admitted a 52.82m/13-target reverse-forward local manoeuvre at 06:31:18.914. Its reverse leg requested stopping for the direction change at 06:31:24.347. The video then transitioned to loading and the log ended; no final stop or parking terminal event was recorded. Thus the second's outcome is INCOMPLETE OBSERVATION, not positively failed steering/terminal geometry. No mid-guidance SETTLEMENT_STOP_NOT_ADMITTED occurred in this run. BWR untouched.
 
 No executable changes; 0.5.5.16 remains not GIANTS validated; draft PR #482 stays unmerged. Next investigate the specific local candidate rejection from the real stopped pose, and qualify attainable entry position+heading rather than widening tolerances blindly.
+
+
+### Correction: second worker TRANSIT configuration was not movement admission (14 October 2026)
+
+**Owner observation:** after second worker configured TRANSIT at approximately 06:30:56, they watched until approximately 06:31:20 and observed **no relocation**. This is compatible with source log `0.5.5.16_TS019.zip/log.txt`; prior suggestion that the worker had been reversing continuously after configuration was misleading.
+
+**Physical and Control timing for second root 399997:**
+
+| Timestamp | Log and physical evidence |
+|---|---|
+| 06:30:48.823–.824 | Native completion for job3, `COMPLETED_WORKER_TRANSIT_REQUESTED reason=REQUEST_ONLY_NOT_VERIFIED`, and `COMPLETION_SETTLEMENT_QUEUED note=NO_SECOND_NATIVE_CONTROL_WHILE_FIRST_SETTLES`. User saw the resulting TRANSIT configuration around 06:30:56; physical relocation not yet admitted |
+| 06:31:05.093 | First root 396334 physically stopped and handed off from extended approach; it still held the active planning/settlement episode |
+| 06:31:11.307 | First local handoff failed and deferred/yielded |
+| 06:31:11.315 | Second root 399997 begins independently planning, `NO_MOVEMENT_UNTIL_ROUTE_ADMITTED` |
+| 06:31:18.914 | Second local `REVERSE_FORWARD` route admitted (52.8208 m, 13 targets); first reverse guidance begins |
+| 06:31:19.916 | `x=194.331253,z=-255.556732,speedMps=0.000094`: effectively stationary after command started |
+| 06:31:20.918 | `x=193.440887,z=-255.416336,speedMps=1.898`: first measured displacement of ~0.90 m |
+| 06:31:21.925 | `x=190.548553,z=-254.961945,speedMps=3.839` |
+| 06:31:23.937 | `x=185.266739,z=-254.131851,speedMps=1.067`: ~9.18 m total measured reverse displacement from 06:31:19.916 |
+| 06:31:24.347 | Starts arrival stop for reverse→forward change |
+| 06:31:24.434 | `quit savegame`; subsequent terminal outcome unobserved |
+
+**Named discovery — TRANSIT Configuration Is Not Relocation Admission.** Native `COMPLETED_WORKER_TRANSIT_REQUESTED` requests implement transit posture, **not** motor Control, verified folding or an independent parking plan. Serial Completion Settlement deliberately queues the second native completion while the first has a driving/planning lease. The second remained idle for ~22.5 seconds from native completion to its planning start, then incurred ~7.6 seconds of bounded no-movement planning; it did not physically begin reversing until ~06:31:20–21. A stationary observation until ~06:31:20 therefore does **not** prove a stuck motor or failed GIANTS guidance. Equally, log position changes **after** that observation prove that movement subsequently began; it is inaccurate to state it never physically moved before the 06:31:24 log exit.
+
+**Usability contract uncovered:** intentional queue waiting, no-drive route planning, and delayed motor admission are visible as long-lasting stationary TRANSIT with no clear progress signal to the player. This reinforces the standing HUD requirement to communicate intentional waiting and planning phases, without prematurely redesigning one-drive-lease scheduling or relaxing Control. Actual first worker local-handoff failure remains independent and must not be obscured by queue waiting. No executable change, no BWR change; TEST version remains `0.5.5.16` draft PR #482.
