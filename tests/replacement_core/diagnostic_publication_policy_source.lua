@@ -48,6 +48,9 @@ local function installApi(options)
                     if key=="outtaMyWayDiagnostics#settlementPrototype" then
                         return options.prototypeValue
                     end
+                    if key=="outtaMyWayDiagnostics#spatialSurvey" then
+                        return options.surveyValue
+                    end
                     if key=="outtaMyWayDiagnostics#spatialFarmlandId" then
                         return options.spatialValue
                     end
@@ -77,8 +80,10 @@ test("valid enabled sidecar resolves DIAGNOSTIC",function()
     equal(source:publicationPolicy(),"DIAGNOSTIC")
     equal(state.registeredKeys["outtaMyWayDiagnostics#enabled"],"BOOL")
     equal(state.registeredKeys["outtaMyWayDiagnostics#spatialFarmlandId"],"INT")
+    equal(state.registeredKeys["outtaMyWayDiagnostics#spatialSurvey"],"BOOL")
     equal(state.registeredKeys["outtaMyWayDiagnostics#settlementPrototype"],"BOOL")
     equal(source:isSettlementPrototypeEnabled(),false)
+    equal(source:isSpatialSurveyEnabled(),false)
     local target,err=source:spatialTargetFarmlandId()
     equal(target,nil); equal(err,nil)
     equal(state.loadCalls,1); equal(state.deleteCalls,1)
@@ -135,6 +140,33 @@ test("invalid engineering spatial target does not silently select another field"
     equal(source:publicationPolicy(),"DIAGNOSTIC")
     local target,err=source:spatialTargetFarmlandId()
     equal(target,nil); equal(err,"SPATIAL_FARMLAND_ID_INVALID")
+end)
+
+test("survey opt-in is independent of prototype Control and logging",function()
+    installApi({exists=true,value=true,prototypeValue=true})
+    local prototype=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(prototype:loadSidecar(),true)
+    equal(prototype:isSettlementPrototypeEnabled(),true)
+    equal(prototype:isSpatialSurveyEnabled(),false)
+
+    installApi({exists=true,value=true,surveyValue=true})
+    local survey=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(survey:loadSidecar(),true)
+    equal(survey:publicationPolicy(),"DIAGNOSTIC")
+    equal(survey:isSpatialSurveyEnabled(),true)
+    equal(survey:isSettlementPrototypeEnabled(),false)
+
+    installApi({exists=true,value=false,surveyValue=true})
+    local suppressed=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    equal(suppressed:loadSidecar(),false)
+    equal(suppressed:isSpatialSurveyEnabled(),false)
+
+    installApi({exists=true,value=true,surveyValue="true"})
+    local invalid=OuttaMyWay.DiagnosticPublicationPolicySource.new("FS25_OuttaMyWay")
+    local enabled,reason=invalid:loadSidecar()
+    equal(enabled,false)
+    equal(reason,"SPATIAL_SURVEY_FLAG_INVALID")
+    equal(invalid:isSpatialSurveyEnabled(),false)
 end)
 
 test("physical TEST Control requires a second explicit true flag",function()
