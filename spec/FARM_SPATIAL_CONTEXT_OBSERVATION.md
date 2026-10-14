@@ -11,7 +11,9 @@ This is a server-side, **DIAGNOSTIC-only**, strictly passive survey of one regis
 
 ## Admission and lifecycle
 
-Only when the profile Configuration is enabled and resolved, `g_server` exists, and the independent diagnostic publication sidecar resolves to `DIAGNOSTIC` may map geometry or native nav/farmland queries be calculated. `DEBUG` and `NORMAL` must not calculate them at all. The update listener performs one bounded survey approximately six seconds after map load, retrying missing prerequisites no later than 20 seconds, then records an explicit unavailable reason. Clear one-shot state on map deletion.
+Only when the profile Configuration is enabled and resolved, `g_server` exists, the independent diagnostic sidecar resolves to `DIAGNOSTIC`, **and that same engineering sidecar explicitly contains `spatialSurvey="true"`**, may this survey calculate field geometry or native nav/farmland queries. The default is survey OFF, including when DIAGNOSTIC publication is enabled for physical Completion Settlement. `DEBUG`, `NORMAL`, absent/false survey selection and unresolved Configuration must do no survey geometry. This explicit engineering survey consent is neither supported player Configuration nor Control authority.
+
+When and only when admitted, the existing update listener performs one bounded survey approximately six seconds after map load, retrying missing prerequisites no later than 20 seconds, then records an explicit unavailable reason. Total sampling caps **do not** guarantee bounded per-frame execution: the experimental survey remains synchronous within a single update and may cause frame-pacing disruption. Clear one-shot state on map deletion. A missing or malformed optional survey flag must fail closed; no implicit opt-in is inferred from `spatialFarmlandId` or `settlementPrototype`.
 
 Failure to resolve exactly one registered field for the selected farmland, or to discover default Field 77, missing road splines/costmap/farmland data, invalid geometry or exceeded sampling budgets must never be silently interpreted as a clear edge.
 
@@ -31,12 +33,12 @@ No invocation of `AISystem:addBlockingRegion`, `addObstacle`, `setAreaDirty`, `a
 
 ## TEST 0.5.5.3 — isolated Physical Margin Constraint witness
 
-The adjacent `PhysicalMarginConstraintProbe` is an **engineering-only**, strictly read-only source-compatibility experiment within this Observation jurisdiction. It runs **once**, after the existing `FARM_CONTEXT_SURVEY_FINISHED` on the same eligible server-only DIAGNOSTIC survey. Its failure or missing API must **not** invalidate or retry the prior spatial survey. There is no new client, normal/debug, configuration, production assessment or Control consumer.
+The adjacent `PhysicalMarginConstraintProbe` is an **engineering-only**, strictly read-only source-compatibility experiment within this Observation jurisdiction. It runs **once**, after the existing `FARM_CONTEXT_SURVEY_FINISHED` on the same explicitly requested server-only DIAGNOSTIC research survey. Its failure or missing API must **not** invalidate or retry the prior spatial survey. There is no new client, normal/debug, configuration, production assessment or Control consumer.
 
 **Guarded Ground Truth fixtures only:**
 
 - Without an explicit farmland selector, survey Mindenerwald registered **Field 77**, preferred south **edge 9** (expected length 230.97 m), and known hedge control **edge 2** (48.26 m).
-- With `spatialFarmlandId=2`, survey Riverbend registered **Field 29**, preferred east **edge 1** (141.99 m), and north-road control **edge 7** (59.99 m).
+- With `spatialSurvey=true` and `spatialFarmlandId=2`, survey Riverbend registered **Field 29**, preferred east **edge 1** (141.99 m), and north-road control **edge 7** (59.99 m).
 - Reject any unsupported selector, registered field identity, edge-length or recorded **world-coordinate endpoint** mismatch (3 m fixture tolerance). These numeric fixture IDs are **test selection**, not a general settlement preference or production edge ranking.
 
 At quarter and three-quarter stations of a preferred segment, sample a bounded set of inward/exterior depths. Field 77 uses `-2,1,2,3,4,6,8,12 m`; Riverbend `-2,2,6,12,18,24,30 m`. At Field 77's hedge control, sample at stations `8 m` and `40 m` with exterior depths `2,6,12 m`; at Riverbend's north road control, sample halfway along its edge at `2,6,12,18,24,30 m`. Budget **no more than 24 stations/offset positions and 22 synchronous physics queries** per completed survey. Every reading carries the native registered field/edge, station `s`, signed depth `d`, world X/Z, source polygon membership, farmland ID, navigation point status and terrain-height/normal availability.
@@ -56,7 +58,7 @@ For the existing Field 77 reference, compare four conditions using native logs f
 3. Native exterior navigation blocking should be contrasted with the **right-hand hedge protrusions**. An unblocked report against an observed hedge falsifies the costmap's sufficiency for static geometry.
 4. Inspect **left, right-lower and bottom** edge strips as possible directions for further investigation, not parking approvals. Distinguish different farmland IDs, ownership/access and physically obstructed stretches.
 
-A non-georeferenced screenshot cannot directly validate metre offsets or world-coordinate side orientation. For the second experiment, Riverbend Springs Farmland 2 (TS004), use `<outtaMyWayDiagnostics enabled="true" spatialFarmlandId="2" />` from the engineering diagnostics sidecar to select the matching registered field; verify `selectedFarmlandId` and `resolvedFarmlandId` in `FARM_CONTEXT_FIELD`. Compare the irregular vegetation margin, north/east access roads, eastern railway and southern road with reported edges. No parking judgement is derived from the image alone.
+A non-georeferenced screenshot cannot directly validate metre offsets or world-coordinate side orientation. For the second experiment, Riverbend Springs Farmland 2 (TS004), use `<outtaMyWayDiagnostics enabled="true" spatialSurvey="true" spatialFarmlandId="2" />` from the engineering diagnostics sidecar to select the matching registered field; verify `selectedFarmlandId` and `resolvedFarmlandId` in `FARM_CONTEXT_FIELD`. Compare the irregular vegetation margin, north/east access roads, eastern railway and southern road with reported edges. No parking judgement is derived from the image alone.
 
 ## Contract participants
 
@@ -65,6 +67,7 @@ A non-georeferenced screenshot cannot directly validate metre offsets or world-c
 | [`scripts/observation/FarmEdgeGeometry.lua`](../scripts/observation/FarmEdgeGeometry.lua) | `REALISES` |
 | [`scripts/observation/PhysicalMarginConstraintProbe.lua`](../scripts/observation/PhysicalMarginConstraintProbe.lua) | `REALISES` |
 | [`scripts/observation/FarmSpatialContextProbe.lua`](../scripts/observation/FarmSpatialContextProbe.lua) | `REALISES` |
+| [`scripts/diagnostics/DiagnosticPublicationPolicySource.lua`](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 
@@ -77,4 +80,4 @@ A non-georeferenced screenshot cannot directly validate metre offsets or world-c
 
 ## Test envelope
 
-Offline tests use a four-edge synthetic Field 77, neighboring Field 78, a top-side native road spline, a mock right-hand hedge obstruction, and a second synthetic registered field selected through Farmland 2. Duplicate fields in a selected farmland must be rejected as ambiguous. Assert true exterior orientation under both polygon windings, discrete blocked intervals on the right, foreign farmland/access identity and the source-field owner. Assert no map calculations under NORMAL/DEBUG and only one survey under DIAGNOSTIC. In-game validation remains necessary; no physical or road-crossing consequence is tested.
+Offline tests use a four-edge synthetic Field 77, neighboring Field 78, a top-side native road spline, a mock right-hand hedge obstruction, and a second synthetic registered field selected through Farmland 2. Duplicate fields in a selected farmland must be rejected as ambiguous. Assert true exterior orientation under both polygon windings, discrete blocked intervals on the right, foreign farmland/access identity and the source-field owner. Assert no map calculations under NORMAL/DEBUG **or DIAGNOSTIC without explicit `spatialSurvey=true`**, and only one survey when engineering consent and DIAGNOSTIC are both present. In-game validation remains necessary; no physical or road-crossing consequence is tested.
