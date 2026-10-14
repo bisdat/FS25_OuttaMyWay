@@ -106,4 +106,40 @@ local conflict,reason=Allocation.claim(ledger,second,
 assert(conflict==nil and reason=="TERMINAL_REGION_ALREADY_CLAIMED")
 Allocation.release(ledger,first)
 assert(Allocation.claimCurrent(ledger,first)==nil)
-print("qualified terminal allocation: screened entry/terminal and exclusive claim PASS")
+-- Actual allocator integration: first finisher is remote, while the peer
+-- remains northbound on the eastern working corridor. The original .15
+-- station20 MUST NOT quietly win merely from Euclidean proximity.
+local Situation=OuttaMyWay.SettlementDestinationAssessment
+poses[100]={x=165.047,z=-465.489,fx=-0.20,fz=0.979795897}
+poses[200]={x=195,z=-355,fx=0,fz=1}
+second.getIsAIActive=function()return true end
+Situation.reset()
+poses[200].z=-360
+Situation.sample(first,500)
+poses[200].z=-355
+Situation.sample(first,500)
+local assessed=assert(Allocation.beginPlan(first,ledger))
+local status,chosen,reason=Allocation.advancePlan(assessed,320)
+assert(status=="PENDING" and assessed.siteIndex==0)
+local leading=assessed.sites[1]
+assert(leading.station>=70 and leading.station<=145,
+    "situation-aware allocator must consider central sites first")
+assert(assessed.situation.motionCount==1)
+assert(assessed.sites[#assessed.sites].station==20
+    or assessed.sites[#assessed.sites-1].station==20,
+    "station20 should be heavily disfavoured under observed peer demand")
+for i=1,18000 do
+    status,chosen,reason=Allocation.advancePlan(assessed,320)
+    if status~="PENDING" then break end
+end
+assert(status=="DONE" or
+    (status=="FAILED" and reason=="NO_QUALIFIED_TERMINAL_REGION"),reason)
+if status=="DONE" then
+    assert(chosen.station~=20
+        and chosen.situationRisk<3
+        and chosen.motionWitnesses==1,
+        "qualified destination must preserve the still-working peer corridor")
+end
+second.getIsAIActive=nil
+Situation.reset()
+print("qualified terminal allocation: disjoint claims and future-demand-aware real allocator PASS")
