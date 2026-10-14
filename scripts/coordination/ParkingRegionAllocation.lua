@@ -192,7 +192,8 @@ function M.advancePlan(s,units)
         if refreshed==nil then
             s.finished=true;return "FAILED",nil,why
         end
-        local newRisk,newReason=0,"NO_ACTIVE_WORKER"
+        local newRisk,newReason=0,#refreshed.peers>0
+            and "NO_NEAR_DEMAND_EVIDENCE" or "NO_ACTIVE_WORKER"
         for i=1,#refreshed.peers do
             local risk,reason=Situation.risk(parked,refreshed.peers[i])
             if risk>newRisk then newRisk,newReason=risk,reason end
@@ -232,7 +233,8 @@ function M.advancePlan(s,units)
             if latest==nil then
                 s.finished=true;return "FAILED",nil,latestWhy
             end
-            local terminalRisk,terminalReason=0,"NO_ACTIVE_WORKER"
+            local terminalRisk,terminalReason=0,#latest.peers>0
+                and "NO_NEAR_DEMAND_EVIDENCE" or "NO_ACTIVE_WORKER"
             for i=1,#latest.peers do
                 local risk,reason=Situation.risk(route.terminalPose,latest.peers[i])
                 if risk>terminalRisk then
