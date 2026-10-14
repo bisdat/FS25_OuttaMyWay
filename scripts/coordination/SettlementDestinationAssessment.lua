@@ -146,7 +146,8 @@ function M.rank(sites,origin,frame,situation)
         local site=sites[i]
         local terminal={x=frame.ax+frame.ux*site.station+frame.nx*4,
             z=frame.az+frame.uz*site.station+frame.nz*4}
-        local worst,reason=0,"NO_ACTIVE_WORKER"
+        local worst,reason=0,#situation.peers>0
+            and "NO_NEAR_DEMAND_EVIDENCE" or "NO_ACTIVE_WORKER"
         for j=1,#situation.peers do
             local risk,why=M.risk(terminal,situation.peers[j])
             if risk>worst then worst,reason=risk,why end
