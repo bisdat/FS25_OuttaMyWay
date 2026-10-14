@@ -7,6 +7,14 @@ authority.
 
 ## Breadcrumbs
 
+- [TEST 0.5.5.4–0.5.5.6 Nominal Assembly Evidence](ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md) — GIANTS-validated multi-member static and continuous registered-polygon sweep on Field 77 edge 9, without physical Control.
+- [TEST 0.5.5.7 Forward Settlement Prototype](COMPLETION_SETTLEMENT_PROTOTYPE_TEST.md) — explicitly opted-in GIANTS three-leg approach/crossing/run-out experiment; movement and whole-assembly parking not yet field validated.
+- [TEST 0.5.5.3 GIANTS Reality — Field Selection and Riverbend Witness](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md) — observed ROAD-classified physics hit, exterior terrain rise, Mindenerwald target-selection mistake and force-close evidence limits.
+- [Physical Margin Constraint Source Review](PHYSICAL_MARGIN_CONSTRAINT_SOURCE_REVIEW.md) — FS25 v1.20 physics, terrain and road evidence candidates, their limits, and a read-only 1.24 Reality-probe proposal.
+- [Exterior Margin Profile Falsification Plan](EXTERIOR_MARGIN_PROFILE_VALIDATION.md) — Field 77/Riverbend evidence matrix, missing physical boundaries and prospective tests; no new movement.
+- [Riverbend Springs Farmland 2 Contrast](RIVERBEND_FIELD2_SPATIAL_PROBE.md) — TS004 screenshot and cross-map falsification plan for spatial survey 0.5.5.2.
+- [Field 77 Farm Spatial Context Probe](FIELD77_SPATIAL_PROBE.md) — screenshot-grounded road/hedge comparison plan for diagnostic-only source-field edge surveying (#476).
+
 - [Blocked Recovery Investigations](BLOCKED_RECOVERY_INVESTIGATIONS.md) — historical native-blockage, solo/static recovery and pair-egress hypotheses, disproofs and GIANTS validation provenance; current authority stays in Architecture and Specification.
 
 - [Spatial Pair Inference](SPATIAL_PAIR_INFERENCE.md) — minimal nearest-local-worker hypothesis from GIANTS root X/Z positions; locality bound and causal attribution remain unvalidated under #440.

@@ -7,7 +7,7 @@
 
 **Primary Architecture Authority:** [Completion-Triggered Terminal Egress](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-transit)
 
-This restricted TEST increment can request GIANTS TRANSIT configuration for a completed FIELDWORK assembly. It must not drive, reverse, navigate, hold, regulate, select a parking position, or claim that TRANSIT is physically settled.
+The field-validated baseline can request GIANTS TRANSIT configuration for a completed FIELDWORK assembly. It must not drive, reverse, navigate, hold, regulate, select a parking position, or claim that TRANSIT is physically settled.
 
 ## Admission and supersession
 
@@ -21,7 +21,7 @@ Use the established native solo/static TRANSIT plan construction and `NativeTran
 
 When product is disabled or the map tears down, relinquish the completion request state without applying WORKING restoration commands to a completed machine. A newer AI job prevents admission, but ownership after a started request is not a validated future parking/control lifecycle.
 
-**TEST-only Configuration limitation:** this increment is temporarily gated by overall `enabled`. Issue #476 requires a dedicated persisted player choice before integration into a released capability. It is **not approved for merge into main** until that choice and associated interruption contract are implemented.
+**Current Configuration boundary:** the validated Completion TRANSIT capability is governed by the existing product-wide `enabled` setting. The dedicated persisted player choice requested in Issue #476 is deferred to a separate increment, together with its interruption semantics, before completion-triggered off-field settlement is released. The absence of this dedicated setting does not invalidate the accepted request-only TRANSIT baseline.
 
 ## Contract participants
 

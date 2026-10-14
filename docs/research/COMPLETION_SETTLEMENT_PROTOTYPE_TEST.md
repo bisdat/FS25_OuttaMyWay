@@ -1,0 +1,710 @@
+# TEST 0.5.5.7 — Three-Leg Completion Settlement Prototype
+
+**Status:** implemented for independent offline CI and subsequent GIANTS Reality; **no in-game steering outcome validated yet**. Parent: [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476), draft [PR #482](https://github.com/bisdat/FS25_OuttaMyWay/pull/482).
+
+## Accepted premise and why this prototype exists
+
+GIANTS Reality on Mindenerwald Field 77 / south edge 9 in TEST 0.5.5.6 returned a **two-member** frozen-assembly continuous nominal polygon-only straight sweep of **204.55 m**, with no represented registered-field intersection along that sampled tangent. The requested experiment treats that selected edge as driveable, rather than repeating physical terrain/collision-margin studies performed in TEST 0.5.5.3. **No previous log contained an executed parking manoeuvre.**
+
+The falsifiable hypothesis is that GIANTS-native forward steering can use a reached infield staging point, shallow outward crossing and long tangent run-out to stop a complete articulated assembly outside the source polygon. Failed GIANTS steering, overshooting, jackknifing, a blocked verge or attached members remaining in the source field would disprove the proposed mechanism or its assumed route.
+
+## Distinct authority and limits
+
+TEST 0.5.5.7 keeps production Completion Transit request-only unless a **separate experimental consent** is set. Add `settlementPrototype="true"` to the existing `modSettings/FS25_OuttaMyWay/diagnostics.xml` root, alongside `enabled="true"`. Example:
+
+```xml
+<outtaMyWayDiagnostics enabled="true" settlementPrototype="true" />
+```
+
+Without **both** true values, no terminal movement is eligible. The spatialFarmlandId selector, if any, must be absent for the Field 77 survey fixture. Unlike ordinary DIAGNOSTIC logging, this option **can physically drive a completed vehicle**. Do not enable it on valuable unsaved work or without active in-game supervision. The flag is read on game load; disable the mod in its Settings page to request immediate Control relinquishment. The code never turns an AI job cancellation or manual stop into completion egress.
+
+This prototype only accepts **registered Field 77 / native edge 9**, with matched measured endpoints and a real completed root inside the source field. It requires a successful native FIELDWORK completion and independently accepted completion-TRANSIT request. An active BWR commitment or new native AI job supersedes the manoeuvre. It is not generalised to Riverbend or arbitrary field boundaries in this TEST.
+
+## Proposed three-leg Reality observation
+
+1. `INFIELD_APPROACH`: forward steering to an interior root waypoint about 16 m before the chosen sweep seed station at 6 m infield depth.
+2. `SHALLOW_CROSSING`: from that point, steer 24 m longitudinally towards a root waypoint 8 m beyond the seed station and at its sampled shallow exterior depth. With +2 m exterior depth, the nominal chord is about 18.4° from the tangent.
+3. `FORWARD_RUNOUT`: continue parallel to the field edge towards the sweep-endpoint horizon minus 3 m; observe steering and attachment alignment, with no numerical run-out guarantee.
+
+Native `AIVehicleUtil.driveToPoint` is reused through a distinct static-driver instance. Speed is capped at 8 km/h, each arrival requires actual root proximity within 2.5 m, and the prototype stops after a finite 240 s total lease or 180 s per leg. Native motor, cruise and physics influence must neutralise on expiry, new job, other BWR authority, disable or driving error.
+
+After the last leg, a *new live snapshot* of root + attachments must show **all nominal member rectangle corners outside Field 77**, with unchanged member count. A root crossing is not full completion. The experiment does not detect every hedge, traffic lane, slope, collision shape or dynamic-worker conflict.
+
+## Evidence to capture
+
+Retain the complete GIANTS log including `COMPLETED_WORKER_TRANSIT_REQUESTED`, `COMPLETION_SETTLEMENT_ADMITTED`, each `COMPLETION_SETTLEMENT_LEG_STARTED` and `LEG_FINISHED`, and final `COMPLETION_SETTLEMENT_FINISHED` or `INTERRUPTED` with reason. Observe visually whether the implement swings across a neighbouring field, the tractor turns sharply while approaching the infield station, the crossing is shallow after physical steering transients, and all articulated members actually clear. Note any pause, reversal, motor intervention, jackknife, overshoot, player takeover and the precise in-game time.
+
+One normal-completion run is the first decisive test. A second deliberate mod-disable test while an approach leg is active challenges relinquishment. Do not call an offline CI PASS a successful GIANTS parking result.
+
+## GIANTS Reality — TS018, 12 October 2026
+
+**Evidence:** supplied archive `0.5.5.7_TS018.zip`, containing a complete 2,928-line GIANTS log and a 352.875-second (2560×1440, 60 fps) in-game video, Mindenerwald Field 77.
+
+**Observed native completion/Control sequence** (log clock):
+
+| Time | Runtime evidence |
+| --- | --- |
+| 05:22:19.808 | `AIMessageSuccessFinishedJob` for root `398874`, job 0 |
+| 05:22:19.808 | `COMPLETED_WORKER_TRANSIT_REQUESTED` |
+| 05:22:20.195 | Prototype admitted: edge 9, `memberCount=1`, selected `202.83 m` **polygon-only** sweep (different from the earlier 204.55 m two-member fixture) |
+| 05:22:20.195 | `INFIELD_APPROACH` starts, target (220.21, −247.88), initial root distance 21.08 m, requested cap 8 km/h |
+| 05:23:09.307 | Approach marked complete; `SHALLOW_CROSSING` starts, target (197.73, −236.27), root distance 23.93 m |
+| 05:23:34.825 | Crossing marked complete; `FORWARD_RUNOUT` starts, target (8.20, −206.70), root distance 194.31 m |
+| 05:25:12.779–12.783 | Final leg and `WHOLE_NOMINAL_ASSEMBLY_OUTSIDE_REGISTERED_FIELDS` both reported as success |
+
+**Video contradiction:** The completed sprayer visibly remains stationary for considerable intervals after the first steering objective is armed. The player reports that it moved only with manual steering input. The video shows irregular motion and manual manoeuvring around the first turn; the log records only position-based leg completion, not actual independent steering or who moved it. It cannot prove a native steering call was *rejected*. Crucially, at approximately **05:25:17** (roughly five seconds *after* `COMPLETION_SETTLEMENT_FINISHED`), the speedometer reads approximately **30 km/h** while the machine is still in motion; a subsequent frame around **05:25:22** reads **0 km/h**, after the player's reported manual stop. This is **positive evidence of an incomplete terminal stopping/relinquishment contract**, despite successful geometric occupancy.
+
+**Discovery — Waypoint Orientation Blindness:** The three-leg planner selects an infield *point* only 21.08 m away from the end-of-job pose without requiring an entry heading or physically realised turn curvature. Passing that point, even with manual input, is not evidence of a stable edge-aligned approach. A forward **J-shaped heading acquisition** before shallow entry is a plausible engineering hypothesis, not proven by the existing steering logs.
+
+**Discovery — Player-Control/Native-Steering Conflict:** The native direct drive mechanism checks new AI activity but not current player selection/physical Control. Existing [GIANTS Runtime Knowledge](../engine/GIANTS_RUNTIME_KNOWLEDGE.md#selected-assembly-motion-suppression--tab-context-can-claim-physical-actuation) documents an earlier independent TS018 in which hundreds of successful native drive calls moved a selected Condor by only 0.0022 m until the player tabbed away. `Drivable:updateVehiclePhysics` may rewrite `rotatedTime` for a controlled vehicle. This makes a GIANTS steering-writer conflict a **strong, previously supported explanation**, not independently instrumented proof for this specific sprayer. Neither current completion mechanism explicitly interlocks `vehicle:getIsControlled()` nor `g_currentMission.controlledVehicle`.
+
+**Discovery — Release Is Not Physical Stop:** `NativeStaticAssemblyDriveMechanism.release` issues one zero-acceleration `driveToPoint` call, restores prior cruise settings and ends the lease; it does not measure subsequent velocity, require sustained braking, or verify stationarity. When the engine was already running at arm time, release does not request `stopMotor`. `CompletionSettlementRuntime` calls `verifyTerminal` immediately after the final point-within-2.5m leg completes, so its “FINISHED” means nominal **occupancy**, not confirmed **stopped settlement**. The 30 km/h post-success video falsifies the compound “parked safely” interpretation.
+
+**Assembly scope:** The vehicle in this TS018 run reports `memberCount=1` (a self-propelled sprayer in video), so articulated attachment behaviour is still untested. The chosen sweep was **202.83 m**, not the earlier two-member **204.55 m** figure. Preserve both run-scoped observations; no fixed literal is embedded in the route planner.
+
+**Speed decision:** The 8 km/h artificial prototype cap is **unnecessary**, per the test assessment, and should be removed in a subsequent executable TEST increment. Native motor and cruise capabilities should remain governing bounds. Lifting that cap in isolation **before reliable terminal stopping** would increase the consequences of the observed release defect; do not retest unattended.
+
+**Dispositions:**
+
+1. Treat **autonomous steering unvalidated** and **safe terminal stop disproven**. TEST `0.5.5.7` is a **qualified failure**, not an accepted field-validated plateau.
+2. Before changing the turn geometry, explicitly address the player-Control/native-drive writer conflict; an occupied/selected vehicle should not silently remain under competing physical writers.
+3. Replace orientation-blind approach-point admission with a forward, heading-aware **J-Entry** hypothesis; validate actual infield heading acquisition separately from the later shallow crossing.
+4. Make *Stopped Terminal Settlement* a positive end condition: continue native neutral/braking responsibility until the whole assembly is outside and physical speed has settled, then relinquish; report failure/inability to stop rather than nominal `FINISHED`.
+5. Remove the prototype's artificial 8 km/h speed cap while retaining native limits and safety termination. Make each change independently falsifiable.
+6. Keep draft PR #482 unmerged; separate observation/discussion from the next controlled executable revision.
+
+**Authority Triad disposition:** existing Architecture's intended full-assembly **stopped** terminal outcome remains correct; the currently implemented Specification/Source interpretation is demonstrably insufficient. A follow-on contract revision must distinguish **position arrival** from **heading realised**, **player Control** and **physical stop**, with independent GIANTS validation.
+
+
+## FS25 native source cross-check — two concrete Control defects
+
+After correlating TS018 video/log, inspect the native [GIANTS FS25 `AIVehicleUtil.driveToPoint`](https://gdn.giants-software.com/documentation_scripting_fs25.php?category=91&class=881&version=script) source, documented for FS25 script v1.20 and consistent with the project's supplied 1.24 source knowledge. **The current source behaviour on this exact running 1.24 machine is not instrumented, but the API contract supplies a stronger explanation than the earlier “steering rejected” hypothesis.**
+
+**Discovery — Local Target Distance Destruction:** `NativeStaticAssemblyDriveMechanism:movementStatus` constructs `lx,lz=worldToLocal(steeringNode,worldTarget)`, correctly a **local position**, then calls `AIVehicleUtil.driveToPoint(..., lx/length, lz/length, ...)`. The native `driveToPoint` computes geometric turning *curvature* from **the actual local point coordinates**: they are not merely a unit direction. Scaling a 20+ metre waypoint to length 1 metre raises requested curvature approximately in proportion to the removed scale, potentially saturating steering. The native helper additionally applies sharp speed reduction and can set `acceleration=0` when target steering change would reduce forward speed below 1 km/h. This gives a **source-supported causal hypothesis** for the initial prolonged stationary interval under steering demand, compounded by the already documented player-controlled vehicle steering-writer conflict. **Correction:** pass actual local `lx,lz` as a position in the completion-settlement path; do not silently alter the previously field-tested Hold & Relocate driver path in the same increment. Distinguish actual heading/steer/yaw/progress in next diagnostic evidence.
+
+**Discovery — Cruise State Restoration Omission:** The native `driveToPoint` explicitly calls `setCruiseControlState(ACTIVE)` during allowed drive. The current release function sends one `driveToPoint(acceleration=0,allowed=false,maxSpeed=0)`, restores `setCruiseControlMaxSpeed` and ends its lease **without restoring `getCruiseControlState()` or guaranteeing an inactive cruise state**. A call with `allowed=false` does not by itself undo an earlier activation. This can leave native cruise ACTIVE at the reinstated previous speed (visually about 30 km/h after termination). The TS018 video **directly falsifies successful final physical stop**. The particular engine state remains unmeasured, but this source-backed omission is a concrete corrective target. A normal terminal success must include actual stopped-speed evidence, not just restoring cruise limits.
+
+**Next controlled experiment ordering:** fix the completion-only local-point contract; establish scoped cruise-state acquisition/neutralisation and speed-confirmed stop on terminal or failure; add player selection/Control attribution and heading/steering telemetry; then test whether a forward **J-shaped entry** is still required. Remove the blanket 8 km/h cap per the accepted TS018 decision, using native motor/cruise limits. Do **not** release or test an unguarded faster build before correcting the demonstrated stop defect. No executable change is contained in this evidence record.
+
+## TEST 0.5.5.8 corrective hypothesis and GIANTS validation protocol
+
+**Change under test:** correct the completion-only native steering target from unit `(lx/length,lz/length)` to full local point `(lx,lz)`; remove the artificial 8 km/h cap; explicitly turn cruise OFF and maintain native neutral braking until low speed (≤0.12 m/s) and less than 0.20 m of root travel persist for ≥1,200 ms at each waypoint; refuse current player-controlled selection; sample steering request, heading, root progress, cruise, native speed, Control context at 1 s intervals when DIAGNOSTIC is enabled. TEST `0.5.5.7` TS018 remains a failure and is not retroactively upgraded.
+
+**Preserved:** the same three waypoint route/fixture, no invented J-turn path yet, no change to the previously accepted Hold & Relocate unit-vector driver; completion TRANSIT request still has no fold-readiness wait. Native speed limits prevail; the unchanged overall 240-second attempt and per-leg 180-second failsafes bound the experiment. This is a supervised prototype; higher native speed increases risk despite the added stop requirement.
+
+**Target tests:** initial motor + accepted steering should create forward displacement **without any manual steering** when the completed sprayer is *not selected*; verify that actual local target distance starts at the physical tens-of-metres range rather than 1 m. Approach, crossing, run-out and STOPPING stages should all log independently. Confirm a stationary engine/cruise-OFF vehicle for at least 1,200 ms **before** `COMPLETION_SETTLEMENT_FINISHED`; watch the vehicle for several seconds afterwards to disprove recurring cruise acceleration. Separately, test a player tab-selection mid-route: it must explicitly interrupt rather than silently accept manual movement. With an articulated assembly, verify the whole physical footprint and turn behaviour separately.
+
+**Evidence needed:** the complete GIANTS log, actual video through and *after* terminal stop, positive or negative `COMPLETION_SETTLEMENT_MOTION_SAMPLE` evidence, failure/interruption reasons and any mismatch between observed physics and status. CI validates offline wiring, exact native API inputs, cruise-OFF/low-speed release and inherited BWR assumptions; CI **cannot** prove road clearance, curvature, player-control timing or GIANTS physical stop.
+
+**Validation status:** PENDING GIANTS Reality for TEST 0.5.5.8. Do not treat passing an offline contract as a successful terminal parking result.
+
+
+## TEST 0.5.5.8 — 12 October 2026, early admission refusal
+
+**Evidence:** supplied `log(20261012-051854).txt`, 2,920 lines, GIANTS FS25 1.24.0.0; mod identity `0.5.5.8` (line 701, startup line 943). **Reported behaviour:** no driving at all.
+
+At **06:17:36.137**, the log records on the **same timestamp**:
+- `[NATIVE_FIELDWORK_JOB_STOPPED]` with `jobId=0`, `rootNode=398433`, `message=AIMessageSuccessFinishedJob`.
+- `[COMPLETED_WORKER_TRANSIT_REQUESTED]` for the same job and root.
+- `[COMPLETION_SETTLEMENT_NOT_ADMITTED] reason=NATIVE_PLAYER_CONTROL_ACTIVE`.
+
+No `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_LEG_STARTED`, `COMPLETION_SETTLEMENT_MOTION_SAMPLE`, `COMPLETION_SETTLEMENT_STOPPING` or terminal result is recorded for this attempt. No OuttaMyWay error is recorded. The new selection interlock in `CompletionSettlementRuntime:onNativeCompletion` consults `vehicle:getIsControlled()` **before** nominal route planning or physical drive admission, and rejects immediately. Therefore **the steering-target correction, native-speed command and stopping Control in TEST 0.5.5.8 were not executed or tested**.
+
+**Discovery — Synchronous Completion / Control-Handover Ambiguity.** The guard evaluated `getIsControlled()==true` at the *exact same millisecond* as GIANTS' native AI job termination notification. The log does **not** record `g_currentMission.controlledVehicle`, player seat/tab context, explicit steering input or a later `getIsControlled()` sample; therefore this single positive witness cannot distinguish a genuinely player-selected vehicle from a possible transient handover state at job termination. The printed reason says `NATIVE_PLAYER_CONTROL_ACTIVE`, but **player intention and physical steering competition are not established**.
+
+This newly added policy **prevents the planned GIANTS actuation experiment** under that witness; it should not be labelled an engine steering refusal or a disproven drive correction. The earlier observation that tab-selection can suppress non-job motion is independent and remains valid, but selection alone is not evidence of a manually commanded steering or throttle input. Whether selected vehicles must be eligible for unattended settlement is an architectural decision, not a reason to silently force competing writers.
+
+**Immediate discriminating validation (unchanged TEST 0.5.5.8):** before the worker finishes the job, switch the player's controlled vehicle to a different vehicle or remain on foot, and do not take control of the completed worker during the attempted approach. Switching after the stopped-job event cannot restart this attempt because completion admission is event-triggered. If the same `NATIVE_PLAYER_CONTROL_ACTIVE` reason persists while the worker is definitely not selected, the synchronously sampled GIANTS handover flag is a strong new hypothesis requiring post-stop observation before admission. If the guard clears, the actual `COMPLETION_SETTLEMENT_LEG_STARTED` and `COMPLETION_SETTLEMENT_MOTION_SAMPLE` events are the first meaningful steering/stop test. No executable change is justified by this log alone.
+
+**Disposition:** TEST 0.5.5.8 physical Control **not exercised**, neither PASS nor an actual steering FAIL; failure is **admission-policy gating**. Keep PR #482 draft, main unchanged, and do not invent a new driving algorithm from this negative observation.
+
+
+## TEST 0.5.5.8 — Second GIANTS run, autonomous driving diverged (12 October 2026)
+
+**Evidence:** `log(20261012-052505).txt`, 2,942 lines; Mindenerwald Field 77, root `400110`. Observed in-game outcome: drove essentially straight ahead off the field. This is a **distinct failure** from the preceding synchronous `NATIVE_PLAYER_CONTROL_ACTIVE` refusal: the second run had `playerClaim=NO_POSITIVE_CLAIM`, was admitted and actuated, and therefore tests the changed driving command.
+
+| Log time | Evidence |
+| --- | --- |
+| 06:24:16.824 | Native successful FIELDWORK completion and independent accepted TRANSIT request |
+| 06:24:17.189 | `COMPLETION_SETTLEMENT_ADMITTED`, edge 9, `memberCount=1`, nominal 202.83 m sweep |
+| 06:24:17.191 | `INFIELD_APPROACH` to **(6.02, −214.46)**, **199.50 m** from current root, native requested maximum **60 km/h**, `localTargetContract=POSITION` |
+| 06:24:18.133 | Root at (201.478, −256.684); root heading forward (0.987846, −0.155355), speed ~0; no native command yet in first sample |
+| 06:24:19.137 | Native drive calls running (`commanded=134`), cruise state **ACTIVE**, 2.23 m/s; first logged local target distance 200.62 m |
+| 06:24:24.148 | Root (231.906, −260.997), already beyond registered Field 77 maximum X **228.15 m**, approach still MOVING |
+| 06:24:38.203 | Root (291.683, −255.820), 9.60 m/s (~34.6 km/h), `commanded=2566`, `regionProgressM=-88.44`, local target distance **288.10 m** |
+| 06:24:38.226 | `COMPLETION_SETTLEMENT_INTERRUPTED`, `leg=1`, `SETTLEMENT_LEG_TRAJECTORY_DIVERGED` |
+
+**Discovery — Unreachable Forward Entry Pose.** Relative to the initial root, the target vector is approximately (−195.46,+42.22) m. The measured current **root** forward heading is (+0.98785,−0.15535); its dot product with the unit vector to the target is approximately **−0.9984**: target bearing **176.7° behind**, with about **200 m negative longitudinal projection**. Steering-node orientation was not separately logged, but the physical root heading and forward displacement are unambiguous. Rather than approach the interior staging point, the vehicle advanced **~90.2 m east** to increasing X. The heading only changed from approximately (+0.988,−0.155) to (+0.989,+0.151), never acquiring the required westward entry heading.
+
+**Discovery — Nominal Corridor Selection Is Not Maneuver Entry.** `CompletionSettlementRoute.plan` ranks candidates **only by polygon-only straight sweep `lowerBoundM`**. It passes the current root heading into `SettlementCorridorAssessment` but does not ensure the selected start station or three consecutive waypoint headings are dynamically reachable by a forward-moving assembly. The selected first waypoint was near the **opposite end of the field**; driving to it from the job-completion pose would require an explicit headland turn before any shallow boundary crossing. Even selecting a nearer start point does not by itself establish heading continuity across approach→crossing→run-out. This refutes the **three point targets alone** hypothesis; it does not refute the tested 202.83 m straight polygon run-out or demonstrate that a J-entry is dynamically feasible.
+
+**Discovery — Negative Progress Without Early Abort.** `NativeStaticAssemblyDriveMechanism:movementStatus` computes signed `progressM`, and published `regionProgressM` declined steadily from **−0.46 m to −88.44 m**, but neither Control nor the route checks that an INFIELD_APPROACH is progressing towards its target. Only lateral divergence greater than **20 m** and generic lease deadlines can stop this particular failure; no phase-specific field-boundary guard exists. The vehicle had crossed the source-field maximum-X bounding line about **14 seconds before** interruption. A safe experimental contract requires positive movement/progress attribution and an independent approach-phase boundary invariant, not only lateral separation after a substantial runaway.
+
+**Native steering interpretation:** The full-scale local target and new native speed were indeed exercised, with cruise ACTIVE and thousands of native calls. The observed result is small turning response while a destination remains behind; successful native function invocation is not proof of useful steering. The retained `0.5.5.8` player-Control interlock allowed this run. The 1.2-second physical stopping phase was **not** reached; cancellation on divergence ran, but the log does not independently confirm vehicle speed zero following revocation.
+
+**Architecture candidate — Forward Entry Reachability.** Before actuator admission, a route must include a **reachable pose** (position **and heading**) and continuous forward manoeuvre from current heading to approach alignment; an infield J-shaped heading-acquisition manoeuvre is a candidate, not yet accepted geometry. A putative edge corridor should distinguish (1) end selection, (2) heading acquisition, (3) shallow crossing and (4) tangent run-out. Plan validity cannot be established solely by 200 m of polygon-compatible terminal sweep. Also consider explicit *Monotonic Route Progress* and *Approach Containment* safety contracts; neither is implemented or authorised by this entry. Avoid modifying existing BWR semantics.
+
+**Engineering authority correction:** The `0.5.5.8` player-Control interlock was introduced **without explicit project authorisation**. It might ultimately be valid, but introducing it inside a steering/stopping corrective tranche obscured consent and invalidated the first test. The project decision is to **leave it in place temporarily**, not to retroactively authorise or establish it as accepted architecture. Future behavioural interlocks and route strategies require explicit discussion and approval before executable changes. Existing source remains unchanged.
+
+**Disposition:** Second `0.5.5.8` run **FAIL**, with actual native forward propulsion **validated** and autonomous entry steering/route selection **disproven**. Do not accept the build; keep PR #482 draft and unmerged. No executable revision in this evidence commit.
+
+
+## Proposed next experiment — Progressive Steering rather than distant point acquisition
+
+**Source-backed discovery — Long-Lookahead Curvature Collapse:** native FS25 `AIVehicleUtil.driveToPoint` computes a circle/curvature to the supplied local-space point; it does **not** generate a multi-point route or a 180-degree turn. See GIANTS [AIVehicleUtil scripting source](https://gdn.giants-software.com/documentation_scripting_fs25.php?category=91&class=881&version=script), `driveToPoint` lines 26–96. For the 0.5.5.8 TS018 approach's first diagnostic root pose (201.478, −256.684), heading (0.987846, −0.155355), and planned target (6.02, −214.46), the target lies approximately **199.64 m behind, 11.35 m to one side**, i.e. **176.75° behind**. For a point-chasing curvature law, `abs(curvature) ≈ 2*abs(lateral)/(range²) ≈ 0.000567/m`, an implied **~1,762 m turn radius**. This is compatible with the logged near-straight +X traversal; the steering API need not be “rejecting” the target. The full-distance input fix in 0.5.5.8 made the geometry real, but revealed its mismatch to the forward-turn requirement.
+
+**Proposed architecture — Progressive Steering:** keep selected edge-9 corridor as the terminal geometric reference, but represent the manoeuvre from the post-job pose as a **continuous sequence of forward-reachable short guidance targets** along a feasible J-shaped heading-acquisition path, then shallow edge crossing and tangent run-out. Shortening the *same straight line* from current root to the point behind would not fix the unreachable initial bearing. A short target immediately abeam can also demand steering beyond the assembly's turning capability. Local targets must remain forward-directed and curvature-feasible for the actual assembly; a tentative guidance lookahead on the order of 10–15 m is an **implementation hypothesis, not a fixed architecture constant**.
+
+**Important distinction — guidance target vs physical leg:** the current `CompletionSettlementRuntime` enters a cruise-OFF, 1.2-second STOPPING phase after *every* three waypoint arrivals. Progressive steering should update/look ahead to a new target **without stopping between subtargets**, maintaining one physical movement lease through the turn. Physical stopping is a separately verified event after major manoeuvre termination (or interrupted safe handback). The exact lookahead, actual feasible curvature and stopping/braking evidence require GIANTS validation.
+
+**Observability:** progress must be assessed along the **local forward guidance manoeuvre**, not merely as monotonic decreasing Euclidean distance to the distant final edge endpoint: during a valid J-entry the final terminal distance may temporarily increase. Measure actual heading change, attained curvature, local target bearing/range and field containment. The earlier terminal polygon-only sweep remains a *corridor* premise rather than an autonomous path certificate.
+
+**Governance:** this is a proposed response to the field-test suggestion “make smaller legs that GIANTS can achieve”, **not executable approval** to add new interlocks or to refactor Hold & Relocate. The previously unauthorised player-Control interlock remains in the experimental source per explicit instruction, but is not retroactively accepted as architectural policy. Proposed next TEST is a constrained steering-guidance experiment after architectural agreement.
+
+
+## TS018 annotated field view — two manoeuvre families from the real completion pose (12 October 2026)
+
+**Evidence:** player-supplied overhead screenshot `Screenshot_20261012_063537.png` of Mindenerwald Field 77, the completed self-propelled sprayer beside the field's southern margin and a nearby ditch/adjacent field. The user has drawn two blue candidate paths, describing them as **either a forward J-turn or reverse**. The screenshot is useful for topology, but **does not measure precise path radius, soil/ditch clearance, true yaw, registered polygon coordinates, or articulated swept space**.
+
+**Observed topology:** the sprayer is parked infield near the acute field-corner area, with its *front* (white nose at lower-left in the screenshot) directed towards the short corner and its rear directed approximately along the extending field boundary towards the upper-right. The hand-drawn **left** path depicts a forward sweeping J/loop around the corner towards the margin; the **right** path depicts reversing approximately along the preferred edge direction and then merging smoothly onto its outside/margin alignment. These are *qualitative candidate paths*, not independently proven safe corridors.
+
+**Discovery — Direction-Aware Entry Maneuver:** An edge/corridor is a **terminal geometry**; the usable arrival path depends on the assembly's current *pose and available drive directions*. The same completion pose may offer a tight forward 180° reversal with short-corner/ditch exposure, or a much smaller reverse heading change. A planner that always assumes **forward travel to a distant staging point** discards available reverse reachability and can create the exactly backward 199.5 m leg that TEST 0.5.5.8 failed. Choosing small guidance legs is necessary but not sufficient: each target must be reachable in the *selected direction* without asking GIANTS to make a huge turn.
+
+**Two candidate entry families (not selected as executable policy):**
+- **Forward J-entry:** short native forward guidance targets that acquire heading before shallow crossing, provided the full physical sweep stays inside a viable manoeuvre envelope around the corner. The screenshot shows a ditch/boundary close to the turning region. Neither turning radius nor tyre/tool swept envelope is validated.
+- **Reverse entry:** native reverse-specific steering/reverser node, gentle curve or short progressive reverse targets towards edge-parallel alignment; for the pictured self-propelled sprayer it is *plausibly* the lower-curvature entry. Native reverse capability must be tested in GIANTS, with the drive convention and continuous end heading recorded. For articulated assemblies, reverse is **not assumed stable** and cannot be selected solely on visual ease: articulation/jackknife and implement clearance remain distinct feasibility constraints.
+
+**Proposed architectural separation:** (1) **Terminal Corridor** — where the assembly may park; (2) **Entry Manoeuvre** — forward J or reverse, chosen from current heading, attainable curvature, available physical space and assembly characteristics; (3) **Local Guidance** — short reachable point targets, not direct 200 m point acquisition; (4) **Stopped Terminal** — positive physical stop after successful run-out. A chosen reverse approach must explicitly state whether the entire run-out is reverse or reverse is only a short reposition before a new forward heading; the image and statement alone do not determine this for all assemblies.
+
+**Status:** architectural observation/proposal only. No new executable route selection, driving permission, interlock, speed change or build was authorised by the screenshot. TEST `0.5.5.8` remains FAIL; PR #482 stays draft. Preserve the player-Control interlock as instructed, without retroactive architectural acceptance.
+
+## TEST 0.5.5.9 — discriminating protocol (pending GIANTS)
+
+The owner confirmed short reverse→forward when feasible, replan for each completion pose, and success anywhere along an edge between fields. Experiment `0.5.5.9` implements **only a bounded Field 77 edge 9 fixture** with shortest-nearby *nominal* terminal choice; old far-end traversal is removed. The path consists of 5 m candidate steering points for a reverse positioning segment and two forward steering arcs (or forward heading-acquisition J), with nominal rigid-member candidate collision screening against registered field polygons. This is not continuous physical/road/hedge or dynamic worker clearance.
+
+**Key falsifiable evidence:** 0.5.5.8 first target was 199.5 m/176.7° behind; in the next run the **first target** should be approximately a short 5 m local move in the selected travel direction, not another far back point. The engine must show actual reverse or forward motion, steering and target transitions, a positive stop at the first direction change, continuous forward driving through intermediate guidance targets, and terminal full-member location *wherever* valid along the edge. The final drive must remain cruise OFF and physically stopped after the success event. If it instead runs out of progress, leaves the exterior edge envelope or cannot stop, record the failed phase and do not promote the build.
+
+**Control and speed:** retained 0.5.5.8 player-Control veto is unchanged per explicit owner instruction; it is not retroactive approval. The original unbounded 60 km/h command from the long-point trial is replaced by an **experimental target-horizon stopping-speed profile**, not a fixed 8 km/h cap; observed physics may invalidate the nominal 1.5 m/s² deceleration assumption. Unattended selection veto may prevent admission, as in earlier runs. `DIAGNOSTIC` one-second evidence and NORMAL phase events must be captured.
+
+**Evidence status:** GIANTS TS018 test **PENDING**; route viability, native reverse steering and stop safety are unproven. Offline checks are preconditions only. Any discrepancy requires revisiting the architecture, not adding hidden special cases.
+
+### Steering and stopping-reserve follow-up
+
+The first terminal pose that clears both registered field polygons is not automatically a safe target at low native speed: the assembly can continue forward during STOPPING. The planner therefore requires the same nominal full-member terminal predicate **five metres farther along the planned tangent** before accepting a target. This is a bounded *stopping-envelope hypothesis* accompanying the physically observed 1.2-second stop contract, not a measurement of actual braking distance. A nominal station whose succeeding five metres conflicts with a field/corner is not a safe target; later stations along the chosen tangent may qualify. All TEST motion DIAGNOSTIC samples also identify the active guidance index and world-space target, so short waypoint advancement can be reconstructed from GIANTS logs.
+
+**Safety boundary explicitly introduced for the first GIANTS run:** refuse `foot.memberCount ~= 1` as `ARTICULATED_ENTRY_REALITY_UNVALIDATED`. The current geometry estimator freezes member yaw and cannot validate changing hitch angles during the proposed reverse+forward entry. Only the TS018 one-member self-propelled sprayer is physically admitted. This is a temporary TEST boundary, not a claim that articulated machines cannot be settled under the architecture.
+
+
+## TEST 0.5.5.9 — GIANTS TS018 FAIL: synchronous soft-lock and neutralisation ordering (12 October 2026)
+
+**Primary evidence:** user-supplied `0.5.5.9_TS018.zip`, containing `log.txt` (2,930 lines) and `2026-10-12 07-17-24.mp4` (~192.4 s, 2560×1440/60 fps). Owner verdict: **overall FAIL**, with a brief soft-lock at **07:19:56**. The log identifies the loaded experimental build as `0.5.5.9` (line 701 / shell-start line 943). This is direct user GIANTS Reality, not a CI inference.
+
+### Discovery — Synchronous Route Planning Stall
+
+- **07:19:55.706**: `NATIVE_FIELDWORK_JOB_STOPPED`, `AIMessageSuccessFinishedJob`, root `398837`, job 0; immediately followed by accepted `COMPLETED_WORKER_TRANSIT_REQUESTED`.
+- **07:20:06.680**: the first `COMPLETION_SETTLEMENT_ADMITTED` appears, **10.974 seconds** later: Field 77, edge 9, nominal `REVERSE_FORWARD`, 24.0 m reverse, 64.82 m total, 15 short guidance points, trial radius 18 m.
+- The video independently confirms that the game image and in-game HUD stop updating for approximately **07:19:57–07:20:06**, while the separate video timestamp advances. Scene resumes around the recorded route-admission time. The AVI/MP4 video and game log thus corroborate the owner's reported freeze.
+- Source: `CompletionSettlementRuntime:onNativeCompletion` synchronously invokes `CompletionSettlementRoute.plan` before publishing admission. Planner examines up to **150** candidate combinations (two along-edge directions × five reverse distances × three trial radii × five arc angles × two strategies). Each candidate may repeatedly test complete-member nominal rectangles against **84** registered neighbouring field polygons. There is no frame budget, preselection of nearby slots or incremental scheduling. The large synchronous geometry search is the **strongly supported cause of the stall**. Timestamps alone do not benchmark the exact CPU distribution; engine profile traces were not supplied.
+- **Architectural discovery: Bounded Search ≠ Bounded Frame Work.** Limiting candidate counts makes termination finite but does not make the event handler frame-safe. Physical movement must not be admitted before a budgeted route decision, but route selection must not monopolise the main game thread. Reduce candidates before full geometry evaluation and/or execute explicit fixed-budget planning slices across game updates, preserving authority and cancellation. Do **not** solve this by simply increasing the supported timeout.
+
+### Discovery — Cruise-State Ordering Conflict (source-determined)
+
+- **07:20:06.681**: `REVERSE_POSITIONING` leg 1 starts, first target `(196.28, -255.87)` ~4.8 m away, native reverse.
+- One-second samples show actual reverse motion and progression: at **07:20:08.638**, speed 1.93 m/s, root `(200.57,-256.54)`; at **07:20:12.657**, speed **4.65 m/s (~16.8 km/h)**, root `(183.96,-253.93)`. Guidance progressed through successive reverse points, with no positive player-control claim. These observations validate native reverse propulsion and point handover, *not* forward J/S entry or parking.
+- **07:20:13.568**: `COMPLETION_SETTLEMENT_STOPPING`, reason `DIRECTION_CHANGE_REQUIRES_STOP`, after the last reverse guidance point.
+- **07:20:13.575**: `COMPLETION_SETTLEMENT_INTERRUPTED`, `leg=5`, `SETTLEMENT_NEUTRAL_REQUEST_UNCONFIRMED`. Only **7 milliseconds** elapsed between stop entry and failure. The requirement of 1.2 seconds observed stationary motion was never reached; no forward leg or final terminal geometry validation occurred. No separate `NEUTRALIZE_UNCONFIRMED` warning is logged, which does **not** prove the assembly stopped.
+- In `NativeStaticAssemblyDriveMechanism:settlementStopStatus`, the code calls `vehicle:setCruiseControlState(OFF)` **before** `AIVehicleUtil.driveToPoint(vehicle,dt,0,false,false,0,1,0,false)` and then requires `getCruiseControlState()==OFF`. The authoritative FS25 GIANTS `AIVehicleUtil.driveToPoint` script **sets cruise to ACTIVE even when allowedToDrive=false**, before applying the zero-acceleration physics command. Thus the ensuing state read is incompatible with the immediately preceding native call: this is a **deterministic implementation ordering defect**, independent of whether steering is good. See GIANTS documentation: https://gdn.giants-software.com/documentation_scripting_fs25.php?category=91&class=881&version=script, `driveToPoint` lines 26–96.
+- **Second uncertainty — Stopping distance:** at 4.65 m/s, the assumed 1.5 m/s² deceleration would need at least ~7.2 m without reaction time. The observed speed is not positive evidence that a reverse→forward transition can stop within the current 2.5 m point-arrival tolerance. Real GIANTS neutral braking and overshoot require a separate observed test. **Do not** claim parking success from lease release or a single cruise flag.
+
+### Observations, inferences, and disposition
+
+**Observed:** 10.974-second log gap; game/HUD frozen over the same approximate period; genuine short-point reverse driving; attempted direction-change stop; immediate `SETTLEMENT_NEUTRAL_REQUEST_UNCONFIRMED`; no forward entry or terminal success. No primary game error stack trace is present for this event.
+
+**Strongly supported interpretation:** excessive synchronous nominal planning caused the soft-lock. **Source-proven error:** cruise-state check cannot succeed in the present stop-command ordering, because native `driveToPoint` reactivates cruise.
+
+**Unvalidated:** safe physical stopping after emergency cancellation, actual articulated reversing, field-margin collision clearance, and forward manoeuvre execution.
+
+**Disposition:** **TEST `0.5.5.9` overall FAIL**. Do not promote or re-run unattended. Keep main production behaviour and previously field-validated Hold & Relocate unchanged; no executable patch approved by this record. Correct the main-thread planning work boundary and the cruise-control neutralisation ordering as separate, explicit implementation hypotheses; then validate native stopping before resuming manoeuvre complexity. The 0.5.5.8 player-Control veto remains unchanged as owner instructed.
+
+## TEST 0.5.5.10 — narrowly scoped validation plan (pending in-game)
+
+**Implementation response to prior TS018 0.5.5.9 FAIL:**
+1. The native completion event now queues a route search, rather than calculating any of the potentially expensive 150 poses synchronously. The same route choices are assessed over update frames using weighted cost checkpoints and world-axis-aligned bounds rejection for distant neighbours. Admission logs `planningUpdates` and `weightedGeometryChecks`, useful for quantifying the work distribution. Assert no motor lease during pending planning; cover disable and supersession.
+2. Native neutral `driveToPoint` is invoked **before** cruise OFF and cruise verification. This reverses the erroneous 0.5.5.9 STOPPING order, while retaining speed and measured 1.2 s stillness as independent evidence.
+3. Existing guidance speed model now also reduces native speed as continuous same-direction distance to the next physical stop shrinks. This is intended to avoid arriving at the reverse→forward transition at 4.65 m/s (0.5.5.9 sample); stopping dynamics at 1.5 m/s² remain a *hypothesis*, not a guarantee.
+
+**Next experiment:** one-member TS018 Field 77, engineering opt-in and DIAGNOSTIC enabled; complete log plus video spanning job completion, planning, reverse, direction-change STOPPING, forward and physical parking. Treat any game-frame pause, uncontrolled inertia, repeated uncontrolled cruise activation or failure to reach a valid parking region as FAIL. No implementation change to player-Control interlock, production TRANSIT or previously field-validated Hold & Relocate.
+
+
+## TEST 0.5.5.10 — GIANTS TS018 refusal: coroutine admission capability unavailable (12 October 2026)
+
+**Evidence:** user-supplied `log(20261012-064712).txt`; FS25 1.24.0.0, experimental mod `0.5.5.10` confirmed by mod list (line 701) and `OUTTAMYWAY_SHELL_STARTED` (line 943). Owner observation: **no soft-lock, but no movement either**.
+
+**07:46:13.176** (same timestamp): `NATIVE_FIELDWORK_JOB_STOPPED` success, job 0/root `400107`; `COMPLETED_WORKER_TRANSIT_REQUESTED` (request only); `COMPLETION_SETTLEMENT_NOT_ADMITTED reason=COROUTINE_UNAVAILABLE`. No `COMPLETION_SETTLEMENT_PLANNING_STARTED`, `COMPLETION_SETTLEMENT_ADMITTED`, guidance movement, stopping or terminal result. The attempt exited before route generation.
+
+**Source-backed finding — Coroutine-Dependent Planning Admission:** `CompletionSettlementRoute.beginPlan` returns `COROUTINE_UNAVAILABLE` when any of `type(coroutine)=="table"`, `type(coroutine.create)=="function"`, or `type(coroutine.yield)=="function"` is false. GIANTS returned that outcome through the normal control path; the log does **not** specify which individual facility is absent/blocked nor whether a native Lua thread primitive could exist under another API. Offline LuaJIT passed because it provides the global coroutine API: the tests checked a different execution environment than GIANTS.
+
+**Interpretation:** this is a **capability/admission failure**, not evidence for or against pose-dependent route feasibility, reverse steering, the revised cruise-neutral order, anticipatory braking, terminal occupation or measured soft-lock avoidance. The absence of another freeze is expected when the new planner **did not execute**. It is incorrect to call the 0.5.5.10 frame-budget approach GIANTS-validated.
+
+**Corrective hypothesis — Explicit Incremental Assessment:** keep the `PLANNING` state first class but implement resumable route search as a plain data structure holding candidate indices, partial manoeuvre points, stage, neighbour-polygon index and accumulated best solution. On each `update`, perform bounded iteration and persist all continuation state explicitly, with *no* requirement for `coroutine.create/yield/resume/status`. Finish admission only after every required candidate is assessed or explicitly pruned; do not admit movement from partially validated geometry. Keep the same Field 77 one-member TEST envelope, player-Control interlock unchanged by owner instruction, deterministic candidate ranking and explicit disable/new-job supersession. Importantly, a fixed number of high-cost geometry calls does not itself bound milliseconds: count calls, sample frame timing where GIANTS supports it, and use conservative per-update work slices.
+
+**Engineering governance:** The coroutine dependency was an unsupported engine capability assumption introduced in TEST `0.5.5.10`. Future engine-dependent implementation contracts need a positive GIANTS capability witness or a design that does not depend on the unverified facility. Recommend testing the plain-state planner in LuaJIT with the global `coroutine` deliberately unavailable, then validating in GIANTS. No executable change was requested by this log review; do not promote or merge the untested build.
+
+**Disposition:** TEST `0.5.5.10` **FAIL (not admitted)**. It exercises neither driving nor actual frame-budgeted route planning. PR #482 remains draft/unmerged; production main unchanged.
+
+## TEST 0.5.5.11 — explicit assessment scheduling hypothesis (pending GIANTS)
+
+The `0.5.5.10` log at 07:46:13.176 proves a *pre-planning admission veto*: `COROUTINE_UNAVAILABLE`. The game did not freeze because our planner never attempted any geometric work. The proposed correction replaces only coroutine suspension/resumption with explicitly stored continuation state: candidate indices; partial forward/reverse arc guidance point; source and registered neighbouring field check stages; and the best complete terminal-region candidate. Each game update advances at most the existing **320 weighted operation units** while rejecting incomplete candidate plans as driving authority.
+
+**Offline falsification:** globally set `coroutine=nil` and run the actual Field 77 fixture and two distinct completion poses through `Route.beginPlan/advancePlan`. Compare all selected method/direction/reverse/radius/terminal/guidance-point fields to the unchanged `Route.plan` reference. Assert no external motor call before `DONE`, no callback-time geometry, and bounded weighted checks per update. Errors or mismatches disprove the replacement scheduler.
+
+**GIANTS validation target:** verify `COMPLETION_SETTLEMENT_PLANNING_STARTED`, then `COMPLETION_SETTLEMENT_ADMITTED` with `planningUpdates` and `weightedGeometryChecks` but **no** `COROUTINE_UNAVAILABLE`, **no** visible game freeze, and short reverse guidance starting subsequently. Only then can the distinct 0.5.5.10 neutral-order and braking changes receive their first true in-game test. The interlock, route geometry, physical Control and production defaults are unchanged. Keep PR #482 draft and unmerged.
+
+## TEST 0.5.5.11 — field-validated TS018 PASS (12 October 2026)
+
+**Evidence and verdict:** owner supplied `0.5.5.11_TS018.zip` (GIANTS `log.txt`, 2,947 lines, and `2026-10-12 08-06-09.mp4`, 198.08 s, 2560×1440 60 fps). The owner's assessment is explicitly **"0.5.5.11 PASS"**. Review of the log and accompanying in-game recording independently supports successful execution of the complete experimental settlement lifecycle. This supersedes the prior `PENDING` validation label **for this specific theatre/assembly only**.
+
+### Observed sequence
+
+| Local time | Observed GIANTS/OuttaMyWay event |
+| --- | --- |
+| 08:06:33.023 | `OUTTAMYWAY_SHELL_STARTED` confirms version `0.5.5.11`, enabled |
+| 08:08:40.097 | Native AI job `0` / root `399970` completes successfully; completion TRANSIT request and `COMPLETION_SETTLEMENT_PLANNING_STARTED` in same millisecond |
+| 08:08:48.334 | `COMPLETION_SETTLEMENT_ADMITTED`: planning takes **8.237 s and 1,051 updates**, **335,978 weighted geometry checks**, Field 77 edge 9, `memberCount=1`, `REVERSE_FORWARD`, **24.00 m planned reverse**, **64.793 m planned travel**, 15 guidance points, nominal radius 18 m |
+| 08:08:50–56 | `COMPLETION_SETTLEMENT_MOTION_SAMPLE` proves actual reverse propulsion and successive short-target retargets; initial heading approximately (+0.988, −0.157), native speed rises to ~4.66 m/s and then declines to ~0.69 m/s before the reverse stop |
+| 08:08:56.504 | `COMPLETION_SETTLEMENT_STOPPING`, direction change requires physical stop |
+| 08:08:57.809 | Reverse leg complete at **0.0000323 m/s**, **1,206.6 ms** measured stable, cruise OFF |
+| 08:08:57.811 | `FORWARD_GUIDANCE` starts; native player claim remains absent |
+| 08:08:59–08:09:09 | Root position, heading and native steering `rotatedTime` all change during forward short-target guidance (sampled heading rotates through the S-turn, not straight-line motion) |
+| 08:09:10.184 | Final `COMPLETION_SETTLEMENT_STOPPING`, `PARKING_REGION_REQUIRES_STOP` |
+| 08:09:11.587 | Final physical stop complete at **0.0000362 m/s**, **1,204.3 ms** stable, cruise OFF |
+| 08:09:11.588 | **`COMPLETION_SETTLEMENT_FINISHED`**, `WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION`, root approximately **(210.432, −237.204)** |
+| 08:09:20.387 | User exits savegame; no further settlement warning/error or renewed acceleration logged in intervening ~8.8 seconds |
+
+### Independent video corroboration and limits
+
+The scene visibly continues updating during the planning interval, consistent with the owner's report that the former soft-lock is absent. The self-propelled sprayer reverses near the southern edge, performs its forward curved manoeuvre and remains stationary at its parking position for several seconds after the final event. Video later switches to the map/menu and exits, so the observation horizon ends with the recording; this is **not** an indefinite stationarity proof.
+
+**Success claims supported:** actual GIANTS runtime availability without a coroutine API; budgeted multi-update planning; genuine independent reverse driving and native steering targets; repeatable short guidance target handover; verified stop before reverse→forward gear transition; forward heading-acquisition path; final cruise OFF / sustained native low speed; nominal single-member physical footprint outside registered fields in the selected inter-field corridor; and owner acceptance of TS018 parking location.
+
+**Limits not waived:** this is one single-member sprayer on native Field 77 edge 9 with the experiment explicitly opted in; no articulated reverse/jackknife, other completing poses in GIANTS, other source fields, roads/hedges/ditches beyond the nominal fixture, multiplayer, or a complete world-geometry clearance certificate. The ~8.24 s **responsive planning latency** is a measurable UX consideration: the user previously required intentional waits to be explained in HUD; the current log's `PLANNING_STARTED` is not yet a full player-facing waiting message. Avoid adding unrelated HUD behaviour during this acceptance record.
+
+**Consequence:** the explicit state-machine scheduling hypothesis and the corrected native neutral-order are now **GIANTS-supported** for this fixture. Promote the architectural knowledge, not untested generality. Do **not** interpret owner PASS as authorisation to merge draft PR #482, declare a canonical PATCH, remove the single-member limit, change player-Control interlock policy or alter the previously field-validated Hold & Relocate. No executable change in this research update.
+
+## TEST 0.5.5.11 — TS019 two completed workers, divergent outcomes (12 October 2026)
+
+**Evidence:** owner-supplied `0.5.5.11_TS019.zip`, containing `log.txt` (3,027 lines) and 120-second overhead `TS_004.mp4`, 2560×1440 at 60 fps. Owner observation: **"One worker finished but did not move, the second did."** Loaded mod identity `0.5.5.11`, default enabling confirmed. This is a *new completion-pose test* and does not revoke the separate single-worker TS018 PASS.
+
+### Native completion and settlement outcomes
+
+| Observation | First completing worker | Second completing worker |
+| --- | --- | --- |
+| GIANTS completion | **17:53:14.699**, job 2, root `396315`, `AIMessageSuccessFinishedJob` | **17:54:09.349**, job 3, root `400002`, `AIMessageSuccessFinishedJob` |
+| Default TRANSIT request | Same instant, `REQUEST_ONLY_NOT_VERIFIED` | Same instant, `REQUEST_ONLY_NOT_VERIFIED` |
+| Incremental planning | Started 17:53:14.699; **refused 17:53:22.477**, ~**7.78 seconds** | Started 17:54:09.349; **admitted 17:54:17.377**, ~**8.03 seconds**, **1,117 updates**, **356,976 weighted checks** |
+| Route evidence | `NO_POSE_REACHABLE_PARKING_REGION` | Field 77 **fixed edge 9**, `REVERSE_FORWARD`, 12 m nominal reverse, **52.798 m** planned travel, 13 short targets, 18 m trial radius, one member |
+| Actual physical motion | **None from Completion Settlement**, because no candidate was admitted | Native reverse/forward movement and progressive steering confirmed in log and overhead video |
+| Direction-change stop | Not reached | **17:54:24.236**, **0.0000184 m/s**, ~**1,201 ms** sustained, cruise OFF |
+| Terminal stopping | Not reached | **17:54:37.889**, **0.0000321 m/s**, ~**1,206 ms** sustained, cruise OFF |
+| Final terminal decision | Not admitted / no movement | **`COMPLETION_SETTLEMENT_INTERRUPTED`**, reason **`WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION`**, **not** `FINISHED` |
+
+Video correlation: the first completed sprayer remains near the **upper/right field boundary**, away from the experimental *southern* edge 9. The still-active other worker progresses toward the south margin, finishes, and then visibly executes a short reverse and curved forward approach; it remains stationary near that margin afterwards. The recording confirms the user's two-worker differentiation and does not show a new main-thread freeze. It cannot establish registered-field membership more precisely than the runtime polygon predicate. Two Hold & Relocate encounters with job restarts had occurred earlier in the same run, but they must not be conflated with completion-settlement authority.
+
+### Discovery — Fixed Preferred Edge Is Not a Universal Destination
+
+The prototype continues to restrict route planning to **Field 77 native edge 9** and enumerates a bounded set of local 0/12/18/24/30 m reverse manoeuvres, 12/18/24 m nominal turn radii and at most ~35 m final forward runout. The first worker's completion pose is near another boundary. `NO_POSE_REACHABLE_PARKING_REGION` proves only that **none of the fixture-limited candidates reached the fixed edge-9 terminal predicate**; it does *not* prove that the assembly has no reachable safe parking region elsewhere on the field boundary. A pose-conditioned route must be able to evaluate the **relevant field edges / viable inter-field margins** from each completing assembly pose. The user's previously confirmed *anywhere along the edge* outcome and *independent route per worker* imply this architectural generalisation; candidate-edge discovery and clearance may still fail legitimately.
+
+### Discovery — Guidance Arrival Does Not Establish Terminal Occupancy
+
+The second worker reached the **final target's 2.5-m acceptance region** and physically stopped, but the independent final member/polygon recapture **rejected** the actual pose. Last planned guidance point was approximately **(217.565, −238.146)**. The root at the last stationary sample was approximately **(215.155, −237.973)**, **2.416 m** from that nominal point—inside the permitted **2.5 m guidance arrival radius** in `NativeStaticAssemblyDriveMechanism:movementStatus`. The stopped root's recorded forward vector was approximately **(0.9997, 0.0250)**. The source `CompletionSettlementRoute.verifyTerminal` requires actual complete-member footprint outside the source polygon and all registered neighbours and fully inside the exterior edge band. The log only reports the **combined failure code**, not whether source-field overlap, neighbour overlap, lateral/depth band or station/corner threshold specifically failed. Do **not** attribute failure to one exact boundary from the root point alone.
+
+**Architectural consequence — Terminal Confirmation and Local Correction:** nominal terminal feasibility at a planned point cannot substitute for measured full-assembly terminal success at the reached pose, particularly when the guidance target's arrival tolerance can accept more than 2 m of position error. Stopping worked; occupancy did not. Before declaring a settled worker, independently evaluate the whole actual assembly; if the result is inadequate, a future concept may permit a **bounded, physically feasible correction**, with new geometry evidence, rather than counting the original guidance target as terminal. Any correction must obey stopping/Control leases and neighbouring-field safety; it is a design proposal, not approved executable behaviour.
+
+**Planning UX:** ~7.78 and ~8.03 seconds of responsive search for these workers, consistent with TS018's ~8.24 s. Future operational/HUD messages should explain this deliberate waiting, without adding HUD changes inside the current evidence-only review.
+
+**Disposition:** TS019 **mixed drive evidence, incomplete terminal settlement for both**. Reverse/forward native movement and physical neutralisation for the second are GIANTS-validated; the first was correctly refused under the existing restricted candidate policy. This does not invalidate TS018, nor demonstrate generalisation. Retain TEST `0.5.5.11`, draft/unmerged PR #482, unchanged player-Control interlock and single-member constraint. No executable changes authorised here.
+
+## TS019 — owner screenshot corrects first route feasibility and second physical PASS (12 October 2026)
+
+**Subsequent owner evidence:** annotated aerial screenshot `Screenshot_20261012_180542.png` and direct clarification: **"The second one was successful. It is the same worker as TS018. There is a route to edge 9, just lengthy."** This correction **supersedes the prior assistant interpretation that neither worker achieved useful terminal parking**. The original TS019 log analysis remains an accurate account of the software events; it was **not** a complete account of the user's physical assessment of the scene.
+
+### Worker one — candidate search scope versus actual approach reachability
+
+- Owner's long blue curve begins at the completed worker in the **upper/right area** of the field and traverses the field towards the **southern margin / preferred edge 9**, bending around the field's western side before reaching the edge. The screenshot supplies a **plausible, spatially coherent approach concept** to edge 9 despite the long distance. It is *not an executed GIANTS route*, nor a measurement of swept obstacle clearance or turn radii.
+- The current plan search evaluates only **local entry manoeuvre families** around the completion pose: finite reverse distances, arcs of selected radii/angles and short terminal runout. It does not search for an **Extended Infield Approach** connecting a distant completion pose to the same preferred parking edge. Thus `NO_POSE_REACHABLE_PARKING_REGION` means **"not found within local candidates for edge 9"**, rather than "edge 9 cannot be reached."
+- **New architectural distinction — Local Entry versus Extended Infield Approach.** Edge 9 may remain the preferred target; the planner should not infer another edge is mandatory merely because the short-entry search fails. A useful hierarchy is *nearby safe entry if one exists → feasible longer intra-field approach to the preferred parking strip → alternative field-edge regions where justified → player intervention if no safe route is proven*. That is a **proposed conceptual order**, not a new approved implementation algorithm, and user priority between different edges and long paths remains to be decided.
+- The full polygon of Field 77 gives geometric context but alone does not certify that a long approach is drivable. Guidance, source-field containment, remaining active workers' productive demand, obstacles and actual manoeuvring limits matter. The blue line is **positive evidence of an intended approach**, not a proven safe corridor.
+
+### Worker two — physical PASS versus formal terminal predicate
+
+- Owner reports the second worker **successfully parked**; it is the **same worker as validated TS018**. The screenshot shows the completed red sprayer stationary in the **southern grass strip**, approximately parallel to the adjoining field edge. This is a **player-observed physical parking PASS**, not a software `COMPLETION_SETTLEMENT_FINISHED`.
+- The TS019 log still indisputably records a cruise-OFF, sustained low-speed stop followed by `WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION`. This is now a **Terminal Verification Discrepancy**: user-observed satisfactory parked outcome versus strict nominal geometry rejection. A *false negative is plausible*, but **not independently proven**, since the screenshot does not expose exact GIANTS registered polygons, per-member corners, measured edge-band clearance or neighbour intersections.
+- The previous ~2.416 m shortfall from the last guidance point remains a fact, **not a demonstrated root cause**. Whether stopping tolerance, the 0.15 m full-corner depth minimum, terminal station window, heading tolerance, source/neighbor overlap or another test caused the rejection is **unknown**.
+- Next diagnostic need: publish **the first failed terminal predicate and actual measured geometrical margin** (station bounds, root and four actual member-corner normal depths, source polygon intersection, registered-neighbour intersection, heading alignment). Preserve physical stop before checks and avoid weakening the safety predicate solely to force a PASS. Assess any genuine required local correction **only after** the exact deficit is known.
+
+### Updated TS019 assessment and scope
+
+**Worker one:** completion successfully observed; **NO MOVE / local route coverage FAIL** to preferred edge 9, although the owner demonstrates a plausible *long* approach that the planner never considers. **Worker two:** **PHYSICAL PARKING PASS per owner** with reverse/forward motion and stationary placement; **software terminal verification FAIL/discrepancy**, unresolved until geometric failure attribution. **TS018 remains PASS**, and the same worker repeating physical placement strengthens the observed single-assembly manoeuvre result. The two outcomes are not equivalent to a double physical failure.
+
+The next discussion should protect **parking objective vs route availability vs formal evidence**, with no executed long-route or verified false-negative claim. This is an **evidence/architecture correction only**: no change to TEST `0.5.5.11`, player-Control interlock, exact field-edge candidate enumerator, or stop/geometry verifier. Draft PR #482 remains unmerged.
+
+## TS019 runtime outcome clarification — terminal warning is post-release (12 October 2026)
+
+**Owner question:** what actually follows `WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION`? The owner considers the second worker physically successful and has not requested a further corrective drive. Inspection of the exact experimental `0.5.5.11` sources establishes:
+
+1. `CompletionSettlementRuntime:update` observes `status.isStopped` after native cruise-OFF and stable low speed, then invokes `self.drive:stopMovement(vehicle)` first.
+2. On successful release, `s.driveArmed=false`, `COMPLETION_SETTLEMENT_LEG_FINISHED` is emitted, and `s.legIndex` increments. No further route leg exists, so `Runtime:startLeg` calls `CompletionSettlementRoute.verifyTerminal`.
+3. When the strict terminal predicate returns `false, "WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION"`, `Runtime:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)` clears `self.active` and `self.pending` and publishes a **NORMAL/WARNING** outcome. Because `state.driveArmed==false`, `finish` does **not** call `cancelMovement` and issues **no additional physical command**.
+4. The per-vehicle `self.attempted[vehicle]` flag set on initial completion admission is not cleared by this terminal outcome; an ordinary later update cannot restart the episode.
+
+**Named distinction — Post-Release Terminal Verification Advisory.** A completed, physically stopped, released worker can generate a strict formal terminal-verification FAIL **without any consequent relocation, retry or control lease**. This is the actual current implementation, not a proposed policy change. The term `INTERRUPTED` is a log status, not evidence that motor Control remains held. If lease release itself had failed, it would follow a different interruption path; in TS019 the successful stop and cruise-OFF evidence and subsequent geometry rejection identify the post-release case.
+
+**TS019 accepted physical result:** the second worker is a **physical parking PASS per owner**, despite the software geometry-warning discrepancy. The exact polygon predicate remains unresolved; instrumenting it later may improve evidence but does not justify *automatic correction* of an acceptable parked assembly. No experimental executable behaviour is changed.
+
+### Agreed next architecture inquiry — Extended Infield Approach to edge 9
+
+The owner agrees to investigate **a longer approach** to the existing preferred edge rather than presuming the distant worker needs another edge. Separate:
+- **Target region:** any suitable lengthwise station on preferred Field 77 edge 9, with full-member parked inter-field clearance.
+- **Extended Infield Approach:** a feasible route from the worker's *actual completed pose* through the source field to a reachable local manoeuvre entry pose near that edge. The sketched blue TS019 route is a spatial hypothesis, not certified travel.
+- **Local Entry:** the existing short reverse→forward or forward J guidance, only after a suitable arrival pose is established.
+- **Stopped Terminal:** native cruise-OFF and actual stationary assembly, then the existing non-correcting terminal verification publication.
+
+An extended approach is **not** achieved by raising `MAX_POINTS`, increasing the 35 m run-out literal or substituting one 200 m `driveToPoint` command. It requires a traversable sequence of short attainable guidance targets with heading continuity and measured containment, and must consider still-active workers and conflict zones: in TS019 worker one completed while worker two remained at work. Extended travel across the field cannot assume that productive space is empty or free of right-of-way commitments.
+
+**Evidence and implementation status:** no trajectory across Field 77 was actually driven by worker one in TS019; long-route feasibility is not yet validated. This research note **does not authorise** an automated long route or new collision-control policy. Executable `0.5.5.11` unchanged, existing player-Control veto unchanged, and PR #482 remains draft/unmerged.
+
+
+## Extended Infield Approach — initial architecture investigation after TS019 agreement (12 October 2026)
+
+**Authority:** the owner agreed to investigate longer infield routing to preferred Field 77 edge 9. This agreement is **architectural investigation**, not permission for a new physical-Control algorithm or an automatic corrective drive. TEST `0.5.5.11` remains the validated single-member, locally reachable prototype.
+
+### Source inspection and specific TS019 evidence
+
+- `CompletionSettlementRoute.plan` fixes source Field 77 polygon edge 9 and enumerates **local** candidate strategies: five nominal reverse distances (0/12/18/24/30 m), three trial turn radii (12/18/24 m), five trial turn angles (35–75°), two edge directions and two local entry families. Candidate tracks include only local short guidance points and ≤35 m of extra tangent runout. The method does **not** build a connecting route from a remote completion pose to another part of the source field.
+- The accepted short planner already defines both terminal **position and approximate parallel heading**, but does not publish **all valid local entry poses** as a set that a separate extended-route planner could target. This missing boundary is best named **Approach Entry Region**: the set of feasible full-assembly poses (X/Z and yaw, not X/Z alone) from which a validated local parking manoeuvre can begin.
+- The registered Field 77 polygon, connected native edge identities, inward/outward normals and registered-neighbour polygons are available through `FarmEdgeGeometry`. The existing `FarmSpatialContextProbe`, `PhysicalMarginConstraintProbe` and `SettlementCorridorAssessment` offer **read-only observations**, not a proven drivable longitudinal corridor or long-route solution. The available GIANTS `driveToPoint` helper is a local steering actuator, **not** a route planner.
+- TS019 log: root `396315` completed at **17:53:14.699**, but `NO_POSE_REACHABLE_PARKING_REGION` resulted at **17:53:22.477** without a steering command. Root `400002` completed at **17:54:09.349**—**54.650 seconds after the first**—and subsequently drove its accepted local route. Thus a long cross-field approach attempted immediately by worker one would coexist with a still-unfinished second job. The data do **not** prove exactly where that active worker would be at each future approach stage.
+- **Evidence gap:** the normal logs do not publish the *first worker's world X/Z and heading at the completion event*, nor a sequence of full-assembly candidate poses and cross-field clearance results. The user's blue screenshot establishes a **plausible topology** for a long path to the western end of edge 9 but supplies no measured metre-scale route, yaw profile, swept footprint or future-worker trajectories. A numerical safe-route or runtime estimate cannot currently be supported.
+
+### Hypothesis — Extended Approach targets an Entry Pose Set, not a waypoint
+
+A future **Extended Infield Approach** responsibility should seek a continuous source-field-contained path from the completed assembly's actual pose to **any reachable member of the Approach Entry Region** along preferred edge 9. The accepted local parking guidance owns the next phase and its terminal-region verification; the extended approach has **no independent parking-success condition** and must not force a particular edge endpoint. This separation avoids reproducing the long-target steering failure in TEST 0.5.5.8.
+
+Candidate-feasibility questions, **not implemented as settled rules**:
+1. **Topology/containment:** is there a connected infield corridor from the completion pose to at least one local entry region, accounting for nominal full-assembly footprint, neighbouring fields, edge/corner geometry and static world constraints? A visual path is not an occupancy certificate.
+2. **Kinematic continuity:** can an actual assembly acquire/maintain appropriate heading through a sequence of GIANTS-reachable short targets, without unvalidated reversing or jackknifing? A sequence of line-segment centres does not prove swept clearance.
+3. **Concurrent demand:** can the completed worker traverse the proposed corridor while other AI workers continue productive fieldwork, subject to the existing pairwise Interaction Bubble / Regulation responsibilities? A long path may intersect future active-worker demand, and a static snapshot is not enough to promise clearance throughout.
+4. **Evidence handoff:** does the completing worker actually arrive at a qualified entry pose, within an acceptable physical heading/position and current occupancy envelope, before the local parking manoeuvre may acquire its separate Control lease? An approach's final waypoint is not proof that an entry is feasible *at arrival time*.
+5. **Performance and revocation:** can the route assess geometry under incremental bounded frame work, with a clear no-route or WAITING_FOR_EVIDENCE outcome and revocation if the source field's occupancy changes? Do not regress to synchronous search or an unsupported global Lua coroutine dependency.
+
+**Proposed lowest-cost next validation:** a **strictly non-actuating, bounded read-only Extended Approach Feasibility Probe** on the same TS019 theatre, capturing actual root pose/heading at completion and the other active worker's presence; report multiple potential edge-9 entry poses and the reason a connecting infield corridor is supported or unknown. It should not alter current TRANSIT, local settlement steering, terminal verification, player-Control interlock, or legitimate player intervention. A subsequent supervised single-assembly movement TEST would require explicit route admission and owner authorisation. This is a proposed experiment only, not an approved feature or next build.
+
+**Authority Triad disposition for this research:** architecture retains the existing Attempt/Approach/Terminal responsibility boundaries; `spec/COMPLETION_SETTLEMENT_CONTROL.md` correctly describes the current restricted TEST route and does **not** yet promise long-range navigation; `scripts/coordination/CompletionSettlementRoute.lua` and runtime remain unchanged. Current tests do not establish extended-route connectivity or interaction safety. The source failure and the owner's visual long-route hypothesis are both preserved as evidence, without reclassifying them as a proven drivable path.
+
+## TEST 0.5.5.12 — extended Field 77 approach supervised experiment (pending GIANTS)
+
+**Authorisation:** owner requested a new build using progressive long-distance infield navigation toward edge 9 and **the other active worker's position as an avoidance input**. Hypothesis: if a collision still occurs, BWR might react independently to its native blocked-worker evidence. This is **not** implemented as a new collision → BWR workflow.
+
+**Modifications:** add isolated `scripts/coordination/ExtendedInfieldApproach.lua`; wire it after local planning reports `NO_POSE_REACHABLE_PARKING_REGION`, retaining the local TS018 path as the first choice. The new planner incrementally searches infield steering states using ~8 m steps and ±22.5° curvature-limited heading changes. Root and nominal member corners must stay in Field 77 at each of four step samples. The other currently AI-active worker is excluded with its observed root/base-size-footprint radius plus an additional reserve; movement checks its evolving location every ~250 ms and interrupts on conflict/unknown. Unknown inventory refuses long driving. At a nominated pose *inside* edge 9, the actual worker stops, releases native Control, and is replanned using the existing pose-conditioned local reverse/forward module. Only *that* module can verify final terminal success. No automatic parking correction is introduced.
+
+**Offline falsification:** recreate the registered Field 77 polygon with a remote completing assembly, a second active worker, and a bounded update budget. Confirm a connected route contains many **short forward** targets rather than one distant steering demand; reject occupied footprints; reject when the other worker's location shifts into the next target; and refuse when the active worker inventory cannot be observed. Runtime shell tests challenge the no-route fallback, no motor during planning, stop-and-release before local handoff and eventual independent terminal verification. CI cannot prove physical driveability or dynamic worker separation.
+
+**GIANTS next-run evidence:** log `COMPLETION_SETTLEMENT_EXTENDED_PLANNING`, `COMPLETION_SETTLEMENT_ADMITTED stage=EXTENDED`, progressive native heading/location diagnostics, `COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING`, any final local admission and the terminal result. Capture an uninterrupted view of the **other working worker** throughout the long traversal. If no nominal path can be proven, refusal is a valid limited TEST outcome. Assess worker coexistence separately from whether the completed worker reaches the chosen edge. Keep PR #482 draft and do not merge or claim general supported navigation without in-game evidence. The TS018 local physical PASS and TS019 physical parking PASS remain separate observations.
+
+
+### Offline validation and known concurrency limitation — TEST 0.5.5.12
+
+**CI:** [Offline Validation #38346482520](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38346482520) — generated source, structural contracts and Lua behavioural contracts all PASS. The original TS018 local planner fixture still selects `REVERSE_FORWARD`, 18 m reverse, 58.8 m total/14 guidance targets; the alternative pose chooses 47.1 m/10 targets. The new remote completion fixture (same registered Field 77 polygon, one active other worker) produces **392.0 m nominal infield travel, 49 forward guidance targets**. When the observed other worker is moved into the next guidance target's reserve, `EXTENDED_ACTIVE_WORKER_PROXIMITY` rejects continuation. Without scene inventory, planning refuses rather than assume free space. The runtime mock confirms a separate physical stop/release before a second local plan and terminal verification.
+
+**Explicit supported-control limit:** `CompletionSettlementRuntime` presently has **one `active` or `pending` episode globally**. While a long approach is planning/driving, a second worker completing a GIANTS job cannot simultaneously start another experimental settlement attempt. Its independent default TRANSIT request still occurs; no delayed settlement retry is queued. This limitation was inherited from the pre-existing prototype, not resolved by a successful nominal route search. TS019's 54.65 s separation is not enough to assert the first long route would finish before the second completes. Record this as an outstanding **Concurrent Completion Admission** question, not silently as working multi-worker settlement.
+
+**Dynamic-obstacle limit:** the initial route avoids **currently observed AI-active worker positions** via conservative point/nominal-member-radius reserves; the ongoing guard re-observes their roots near current/next guidance targets approximately every 250 ms. This is *reactive proximity prevention*, not a prediction of the second worker's native course, turning demand or future occupancy. It does not guarantee physical collision avoidance. An incidental collision could still produce qualified BWR blockage evidence, but whether BWR can arbitrate that case safely is **unvalidated**; the new experimental code never invokes BWR on collision.
+
+**Next GIANTS Reality:** replay a supervised TS019-style two-worker field episode with `0.5.5.12` and full DIAGNOSTIC log/video, ensuring the unselected distant worker completes first. Observe the local no-route refusal, entry into `EXTENDED` planning, route admission, the long sequence of short forward steering targets, avoidance/revocation near the still-working peer, positive stop and local handoff (or a specific failure). Observe separately whether a second worker's completion occurs during the first active attempt. No full two-worker completion-settlement PASS is predicted from this test.
+
+
+## TEST 0.5.5.12 — TS019 repeat: extended planning vetoed by worker-scene evidence (13 October 2026)
+
+**Owner observation:** `0.5.5.12` produced "same outcome as .11". Source: supplied GIANTS `log(20261013-061859).txt`, 3,028 lines. The log distinguishes *why* the first worker remained stationary and reveals a stronger verified software terminal result for the second.
+
+| Local timestamp | Recorded evidence |
+| --- | --- |
+| 07:09:21.978 | `OUTTAMYWAY_SHELL_STARTED`, version `0.5.5.12`, mod enabled |
+| 07:16:15.462 | First worker root `396306`, job 2, GIANTS `AIMessageSuccessFinishedJob`; Completion TRANSIT requested; local incremental planning started |
+| 07:16:24.588 | `COMPLETION_SETTLEMENT_EXTENDED_PLANNING` starts for root `396306`, reason `LOCAL_ENTRY_UNREACHABLE` |
+| 07:16:24.596 | **`COMPLETION_SETTLEMENT_NOT_ADMITTED reason=WORKER_SCENE_EVIDENCE_UNAVAILABLE`**. Only ~8 ms after extended planning selection. No extended plan admitted; no extended motor or steering was commanded |
+| 07:17:10.234 | Second worker root `398988`, job 3, GIANTS success; default TRANSIT and local planning |
+| 07:17:19.785 | Short local path admitted: Field 77 edge 9, `REVERSE_FORWARD`, 12.0 m reverse, 52.818 m nominal travel, 13 guidance points |
+| 07:17:25–26 | Second worker reverses, then native cruise-OFF stop positively verified at 07:17:26.640, stable 1,205.7 ms |
+| 07:17:39–40 | Final cruise-OFF stop positively verified at 07:17:40.438, stable 1,201.9 ms |
+| 07:17:40.439 | **`COMPLETION_SETTLEMENT_FINISHED reason=WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION`** |
+
+**Primary discovery — Scene Census Admission Fragility.** In `ExtendedInfieldApproach.context` the single `WORKER_SCENE_EVIDENCE_UNAVAILABLE` result wraps `activePeers()` returning `inventory=false`. Inspection of `activePeers` shows several potential causes: (1) `g_currentMission` or its `vehicles` is not a Lua table, (2) scan exceeds 512 entries, (3) one candidate vehicle's `getIsAIActive` throws under `pcall`, or (4) an AI-active vehicle's root pose/heading is unavailable. The log has **no subreason, scene cardinality, offending root or known other-worker pose**. It is therefore unjustified to claim which branch occurred or to blame navigation geometry/obstacle connectivity. The ~8 ms gap strongly indicates *scene acquisition failure before heading-lattice search*, not search-budget exhaustion. The previous shell tests supplied a complete synthetic `g_currentMission.vehicles` inventory and therefore did not exercise this GIANTS data-contract failure.
+
+**Architectural interpretation:** the prototype currently requires a **globally complete scene census** before moving a single completed worker towards a preferred parking strip. That is stronger than the owner's requirement to use a **known other active worker's position** for avoidance, and it may be fragile in GIANTS where incidental vehicles can be unobservable. The correct response is **not** to interpret missing evidence as empty scene. Instead, first distinguish source-list availability, count exhaustion, relevant worker identified but pose unavailable, and unrelated object observation failures. Reuse validated active-worker/Operation membership where appropriate, with a conservatively bounded search around the proposed corridor. A relevant unknown obstacle must still block passage. A nonrelevant unobservable unrelated vehicle should not automatically have global veto authority without an evidence-based contract. These are **proposed** scoping changes, not approved code.
+
+**Second worker:** unlike earlier TS019 `0.5.5.11`, this run emitted an actual `COMPLETION_SETTLEMENT_FINISHED`. The user's visible "same outcome" describes **movement/parking**, not identical formal terminal-verification status. Do not regress or edit the field-validated local planner solely because the first extended plan was refused.
+
+**Next validation action:** instrument the four `activePeers` failure branches with **precise one-line bounded diagnostics**, capture known active peer root and world pose when possible, then revisit the census/obstacle evidence contract before allowing longer motor-driven exploration. No automatic BWR collision authority follows: collision-triggered BWR is still the owner's explicitly unvalidated hypothesis. Executable `0.5.5.12` unchanged by this research finding; draft PR #482 unmerged and no PATCH promotion.
+
+## TEST 0.5.5.13 — scene admission correction, GIANTS replay pending
+
+The `0.5.5.12` GIANTS log documented first worker root `396306` completing at 07:16:15.462, short-path failure and `COMPLETION_SETTLEMENT_EXTENDED_PLANNING` at 07:16:24.588, then immediate `WORKER_SCENE_EVIDENCE_UNAVAILABLE` at 07:16:24.596. No extended route search or movement took place. The second worker root `398988` executed the unchanged local route and achieved `WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION` at 07:17:40.439.
+
+**Source-backed hypothesis:** `ExtendedInfieldApproach` queried `g_currentMission.vehicles` while the existing `StaticBlockageEncounterObservation` has an established `g_currentMission.vehicleSystem.vehicles` census. Inability to read `mission.vehicles` is a plausible cause, but the generic prior failure log cannot identify its branch. The next TEST changes only the worker-scene evidence contract, with independent normal failure attribution.
+
+**Correction:** evaluate the registered source field's **relevant AI-active roots** from `mission.vehicleSystem.vehicles`, dereferencing root vehicles and deduplicating attachments. Obtain root X/Z before status read, avoiding a needless heading requirement. An unreadable status on a demonstrably distant root is no longer a veto; unobservable in-field AI status or positively active but unlocatable worker remains a refusal. Use both native AI active and job observations where available. Missing registry/census limit/relevant activity unknown/active position missing publish distinct codes and bounded source/cardinality/root evidence. The change intentionally does not assert static obstacles or future productive corridor clearance.
+
+**Offline falsification checklist:** the synthetic mission has the **actual vehicleSystem census**; a legacy top-level `mission.vehicles` alone must not be accepted; unrelated distant AI state exceptions must not force refusal; an unknown in-field AI state, or a known active root with missing position, must still refuse; an AI-active worker with unreadable heading but valid X/Z must be observed; native current-job evidence can confirm active status when the activity flag throws. Existing route and physical-handoff tests remain mandatory.
+
+**GIANTS acceptance:** new first-worker evidence should show `COMPLETION_SETTLEMENT_ADMITTED stage=EXTENDED`, `sceneRegistry=MISSION_VEHICLE_SYSTEM`, `observedActiveWorkers` positive when the second worker is still AI-active in Field 77, followed by real progressive guidance. A refusal remains meaningful if it identifies a *specific relevant evidence failure*, and no assumptions about collision-triggered BWR should be added. The known single global settlement episode limit remains. TEST `0.5.5.13` awaits all offline contracts and then field testing; PR #482 remains draft/unmerged.
+
+
+### Offline validation of .13 worker-scene admission
+
+**Validation:** [Offline Validation #38359498744](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38359498744) **3/3 PASS** (structural/source/Lua behavioural). TEST `0.5.5.13` source commit `2f09e5f`; new runtime negative-path mock `83dacc1`. Both validate without GIANTS.
+
+The existing TS018 nominal local solution remains `REVERSE_FORWARD` reverse 18.0 m, travel 58.8 m, 14 targets in the shell fixture. The remote Field 77 extended fixture again selects 392.0 m, 49 forward targets with active-peer proximity guard. The revised shell challenges: native `vehicleSystem.vehicles` present versus legacy-only top-level list; an irrelevant out-of-field vehicle whose `getIsAIActive` throws; an in-field vehicle whose activity cannot be observed (**refuse**); fallback to a positive `getCurrentAIJob` when the activity flag throws; a definitely active worker with unreadable world X/Z (**refuse**); an inactive worker with unreadable position (not an active obstacle); a peer with X/Z but no readable heading (still observable). It also proves a failed scene admission emits one bounded named witness and `COMPLETION_SETTLEMENT_NOT_ADMITTED`, **without native motor Control or a same-episode retry**.
+
+**GIANTS evidence still needed:** does `g_currentMission.vehicleSystem.vehicles` deliver the remaining worker's root and active state during the `0.5.5.12` failure pose? Does the new planning result admit the route and drive? If it fails, the reason code and bounded `COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED` log must identify the first actual mismatch. Do not infer global static world clearance or a BWR collision contract from these results. PR #482 remains draft and TEST-only; production defaults unchanged.
+
+
+## TEST 0.5.5.13 TS019 — why native static BWR did not trigger at settlement convergence (13 October 2026)
+
+**Owner's hypothesis:** a stationary completed worker should qualify for normal Blocked Worker Recovery (BWR) when another vehicle approaches it. Source and log inspection clarify the necessary trigger domain: **static BWR can move an inactive stationary blocker, but only in response to a current GIANTS `FIELDWORK` worker's positively observed native `aiFieldCourse.isBlocked` pulse**.
+
+**Direct code evidence:** `NativeBlockageObservation.activeFieldWorkers` enumerates `g_currentMission.aiSystem.activeJobVehicles`, retains `spec_aiFieldWorker.isActive==true`, reads a live field-course drive strategy's `isBlocked` and current native job, and accumulates at least **1,000 ms** of successive positive samples. `LiveHoldRelocateRuntime` can nominate a `STATIC_BLOCKER` via `NativePairCommitmentAuthority.admitStaticBlockerCandidate` from a *solo* native pulse and a first-edge physical encounter snapshot. Admission requires a blocked worker with a current GIANTS fieldwork strategy/job and a plausible static subject (currently inactive, measured speed ≤0.25 m/s, within 30 m, near the worker's **own** GIANTS course polygon). The obstacle can be a worker that has finished its job; **the blocked beneficiary must still be natively working**. BWR does **not** observe arbitrary physics collision/contact events or OuttaMyWay's separate Completion Settlement steering authority as substitute native blockage pulses.
+
+**GIANTS log corroboration:** during earlier active fieldwork in this same `0.5.5.13` TS019, `NATIVE_BLOCKAGE_PAIR_CANDIDATE` at **17:22:32.809** and **17:23:07.566** produced `HOLD_RELOCATE_STARTED` at **17:22:32.810** and **17:23:07.568**. Later the first assembly (root `399176`) was driving with **Completion Settlement** long approach/local handoff, while the second root `401885` had finished its GIANTS fieldwork at **17:28:09**. At the observed convergence / poor forward progress after **17:28:27**, the log contains **no new native blocked-fieldworker candidate, and no new BWR admission**. A positive BWR trigger is therefore absent; absence of a contact-specific native message is not independent proof that the bodies touched.
+
+**Named discovery — Native Blockage Trigger Domain.** Static BWR is *not* general obstacle avoidance; its beneficiary must be an active native field-course worker. The current Completion Settlement driver is outside that signal domain. Consequently, normal BWR is not guaranteed to respond when an OMW-controlled completed assembly encounters another completed/stationary assembly. Do **not** forge `isBlocked` or redirect BWR authority on that basis. The architectural gap is **Terminal Occupancy Persistence / Completed-Assembly Obstacle Membership**: after a job completes, the vehicle can remain physically occupying space along the route or terminal strip, even though the extended planner's current `activePeers` census no longer includes it and local parking geometry ignores physical scene occupancy.
+
+**Design inquiry, not approved code:** distinguish physical occupancy (all actual nearby assemblies, including completed and inactive) from *active productive demand* and from *native blockage evidence*. A planned edge-9 entry/terminal region must not silently become available because another worker's AI job has ended. Determine how to model occupied spaces and movement conflicts across the long-to-local handoff before adding a new collision or BWR trigger. The current reported issue is a **planning/space-allocation boundary**, not proven BWR malfunction. No executable change is authorised by this note; TEST `0.5.5.13` and draft PR #482 remain unchanged.
+
+### TS019 .13 — polygon membership correction from owner's screenshot
+
+**Owner correction (13 October 2026):** both sprayers were **inside the field polygon** at the convergence; the accompanying overhead image shows them near the eastern boundary but on the field's interior side. My preceding explanation incorrectly suggested an *outside-field* spatial exclusion might explain the lack of BWR. **Retract that interpretation for this encounter.** The requirement in `admitStaticBlockerCandidate` for an inactive static subject to be inside the *blocked beneficiary's native course polygon* is real, but is **not** a demonstrated reason for non-admission in TS019.
+
+The decisive supported reason remains the **Native Blockage Trigger Domain**: by then the moving root `399176` was driven under Completion Settlement (not a live GIANTS field-course strategy), and root `401885` had finished its native job. Neither furnished the active-fieldwork `isBlocked` pulse necessary for a static BWR candidate. Physical in-field presence therefore **does not imply eligibility as the beneficiary**. This correction preserves the completed/inactive-assembly occupancy gap, does not assert independently verified engine contact, and makes no change to BWR or settlement Control.
+
+## TEST 0.5.5.14 — TS019 double parking correction hypothesis (pending GIANTS)
+
+The owner observed both sprayers converging near Field 77's eastern boundary under `0.5.5.13` and instructed separate parking spaces for each, leaving BWR untouched. Source confirms **two independently missing contracts**: the extended planner discarded completed/inactive workers from `activePeers`; the local parking planner knew registered fields but **not the real vehicle occupying the target**, and second native completions were dropped while the first settlement episode was active.
+
+**TEST response:** add a read-only `SettlementPhysicalOccupancy` witness of actual physical roots from GIANTS `vehicleSystem.vehicles` without an AI-active filter, with conservative nominal footprint radius, external edge-region coverage and explicit unknown/refusal. Wire physical occupancy into local short guidance and terminal + stopping reserve, and extended path + entry region. Recheck the current physical scene before the native steering lease and while driving. A stopped assembly remains an obstacle and cannot be a newly available slot simply because GIANTS completed its job. No alteration to BWR.
+
+**Concurrency:** retain a single active/pending native steering lease, but queue up to two extra native completions within the existing supported three-worker field envelope. Subsequent workers must independently replan at their actual current poses with the first settled worker physically still present. No predetermined shared parking waypoint, no simultaneous movement authority.
+
+**Offline acceptance:** original TS018 one-member pose candidate parity and stopping remain; with an AI-inactive second sprayer occupying the former nominal terminal, either find a genuinely distinct valid terminal or explicitly refuse that first route; an occupied next target is not drivable; a second completion during extended movement starts no simultaneous steering and receives a later separate episode. This is **not** an exhaustive proof of two physical GIANTS parked vehicles until repeat TS019 video and logs demonstrate disjoint margins and real stop/release.
+
+
+**Additional serial-allocation regression:** when a completed worker has positively released the long approach and its `LOCAL_HANDOFF` search finds no available region while a later completed worker is waiting, it yields exactly once **without motor actuation**, the queued peer receives its independent native Control turn, then the first is re-planned from its current pose. Exhaustion does not create an unbounded retry. The short parking route's live physical-occupancy guard now receives the **current guidance index**, not a stale first-target check.
+
+
+### TEST 0.5.5.14 — offline physical occupancy and serial allocation validation
+
+**CI:** [Offline Validation #38435809281](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38435809281), three jobs **PASS** (generated source reference, structural contracts, Lua behavioural contracts). Initial .14 implementation commit `7274b65a45141404ba0a26b80b06fbd5d0166f83`; bounded local handoff yield and current-guidance guard commit `3702c381c2cef56712b29a22b1ec07a8666397da`. Earlier shell assertions were corrected to use event boundaries rather than fixed update counts and to expect the new physical occupancy veto before the active-worker proximity veto; **no BWR or native drive mechanism source was modified**.
+
+**Offline facts:** the original TS018 nominal local parking fixture still selects a `REVERSE_FORWARD` path, 18 m nominal reverse, 58.8 m total, 14 short guidance points; a separate completion pose still selects 47.1 m / 10 targets. The synthetic extended Field77 fixture still yields 392 m / 49 forward targets. A physically present **AI-inactive** second vehicle placed at the original terminal rejects the original full route and final target; if the planner can find a different local terminal it must be at least 10 m from that nominal root, otherwise a no-route refusal is accepted. An occupied next extended target is vetoed whether or not GIANTS reports that vehicle AI-active. The runtime mock verifies that a second completion is queued during the first native Control lease, not admitted simultaneously, is processed under a fresh local planning episode, and can be processed ahead of a **once-deferred, already stopped** first completion. A scene/geometry refusal commands no native drive.
+
+**Limitations and next GIANTS evidence:** the world-space circle representation is a conservative nominal bounding envelope, not true collision-free swept kinematics; dynamic positions can change between 250 ms checks, and GIANTS steering may deviate from nominal guidance. The **one-time deferral applies only to a worker which has positively stopped/released its extended approach before local parking planning**, not an in-motion collision. A second queued worker may find no reachable safe site; no guaranteed completion is claimed. Replay TS019 with two completed sprayers and observe two distinct `COMPLETION_SETTLEMENT_PLANNING_STARTED` episodes, actual physical spacing, long/local approach sequence, positive motor release and each terminal result. A refusal caused by lack of space is a legitimate safety outcome; repeatedly driving into another worker's occupied footprint is not. BWR stays untouched, PR #482 draft, no production PATCH promotion.
+
+
+## TEST 0.5.5.14 TS019 — occupancy veto works but no alternative parking allocation (13 October 2026)
+
+**Owner observation:** "same outcome as .13". Supplied `0.5.5.14_TS019.zip` (GIANTS `log.txt` 3,057 lines, 79.274-second overhead `TS_004.mp4`). This is **NOT** a two-worker parking PASS despite offline CI success. Overhead video shows the vehicles again close together near the eastern side of Field 77; the log positively differentiates .14's fail-safe stopping from .13's prior near-stall.
+
+**Exact native/runtime chronology:**
+
+| Timestamp | Evidence |
+|---|---|
+| 18:17:13.485 | GIANTS job 2 successful completion, root `396437`; experimental local planning begins |
+| 18:17:22.616 | No pose-local path, enter `COMPLETION_SETTLEMENT_EXTENDED_PLANNING` |
+| 18:17:23.151 | Extended path admitted for root `396437`, 288 m / 36 short targets, one observed active other worker |
+| 18:18:08.154 | GIANTS job 3 successful completion, root `398432`; **`COMPLETION_SETTLEMENT_QUEUED`**, ordinal 1 |
+| 18:18:15.375 | First root `396437` still physically advancing near x≈174.36, z≈−255.10, at extended guidance index 35/36 |
+| 18:18:16.071 | First interrupted **`PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED`**, leg 36, while MOVING; no `COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING` reached |
+| 18:18:16.082 | Queued second root `398432` receives independent `COMPLETION_SETTLEMENT_PLANNING_STARTED` |
+| 18:18:17.396 | Second cannot find a short local path; enters EXTENDED planning |
+| 18:18:17.404 | Second extension refuses **`EXTENDED_ALREADY_AT_ENTRY`**; publishes `COMPLETION_SETTLEMENT_NOT_ADMITTED` |
+ 
+**Positive discovery — Physical Occupancy Veto Is Real:** the code now detects occupied space and interrupts the first vehicle before completing a route into the other sprayer. The second native completion is correctly retained and receives its own later planning turn. This is an improvement in safety evidence over .13, *not* achievement of separate parking.
+
+**Disproven implementation hypothesis — Reactive Veto + Serial Queue Alone Allocates Parking:** checking the next point and subsequently replanning the other completed worker does **not** ensure independent feasible destinations. The first extended route was selected while root `398432` was still working; it became unavailable as the second worker finished near the eastern area. The first **never reached a positively stopped extended-to-local handoff**, so the one-time `LOCAL_HANDOFF` deferral policy is not applicable. Its interruption ends that episode and no alternative entry pose is considered. The second worker is **already geometrically within** the abstract extended entry region, but the local manoeuvre from its actual pose was infeasible; the long planner has no way to search for a *different* entry region and immediately rejects with `EXTENDED_ALREADY_AT_ENTRY`. This does not establish that edge 9 lacks further usable space.
+
+**Named architectural concept — Parking-Space Allocation and Replanning:** 
+- **Parking Region Claim:** identify an actual member-fit terminal interval *along the 230.97 m preferred edge*, excluding physically present bodies and outstanding commitments, rather than selecting a generic edge-entry target and hoping local parking later succeeds.
+- **Qualified Approach Entry:** an entry pose is qualified only relative to a *specific* reachable, unoccupied terminal region and its feasible local manoeuvre. Merely entering a fixed 11–24 m infield depth band with nominal edge-parallel heading is insufficient. 
+- **Reassessment on Invalidated Claim:** if physical occupancy changes while approaching, the worker must positively relinquish/stop and consider another **distinct** terminal + entry region under separately admitted control; no blind continuing, unbounded reroute, or assumption that BWR will resolve a collision.
+- **Distinct Worker Allocation:** multiple completed workers need disjoint simultaneous parking claims and physical occupancy evidence; the queue alone serialises motor Control, not destination selection. A free region can legitimately be unavailable due to a still-needed approach corridor or a newly arrived body.
+ 
+**Next design decision required before another build:** establish how region claims, feasible local manoeuvres and active-worker demand interact. A next test should challenge *two geometrically reachable distinct slots, second worker changing position mid-approach, no eligible local route at an already-valid generic entry, and stop/lease release before any reroute*. Do not simply reduce the footprint radius or relax the guard to manufacture a second PASS. Articulated assemblies and other fields remain outside test evidence. **No executable change in this evidence entry; version `0.5.5.14`, PR #482 draft/unmerged, BWR untouched.**
+
+## TEST 0.5.5.15 — qualified claims implementation and test expectations
+
+User approved a destination-first claim architecture after .14 both-root TS019 failure. TEST implementation: incremental edge-9 terminal/entry candidate qualification through `CompletionSettlementRoute.beginPlan(vehicle,{entryPose,stationMin,stationMax})`, shared exclusive claim ledger, targeted `ExtendedInfieldApproach.beginPlan(vehicle,qualifiedEntry)`, claimed station range on physical long-to-local handoff, and one bounded invalidation recovery requiring **positive stable motor stop and Control release** before any reassessment. BWR source, player-control interlock, Field77 edge9 and single-member prototype gate stay unchanged.
+
+Offline acceptance to verify: reference TS018 local path untouched; at least one demonstrably feasible phantom entry+terminal under the nominal fixture; distinct terminal claims or explicit no-space refusal for two workers; targeted extended approach rather than generic band; claim cleanup; no alternate drive before stop; queued worker independently assessed. A pass proves only nominal geometry and mocked native leases. GIANTS must demonstrate separate actual parking positions on TS019 before this becomes a validated capability.
+
+
+### TEST 0.5.5.15 — offline qualified parking allocation and stopped-alternative acceptance (13 October 2026)
+
+**[Offline Validation #38443062256](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38443062256): 3/3 PASS** — structural contracts, Lua behavioural contracts, generated source reference. The experimental source remains on draft PR #482, Field 77 edge 9, explicit opt-in, single-member completion assemblies. **No GIANTS physical two-worker validation has yet occurred.**
+
+**Test-backed additions:**
+- New `ParkingRegionAllocation` enumerates **eight** finite edge-station hypotheses, ordered by distance from the completing worker, and launches the existing **incremental** local route planner at a hypothetical physically valid entry pose for each station. A candidate is **qualified** only if the unchanged local geometry mechanism finds a full polygon/whole nominal member path and terminal pose inside that station's range. This pre-validates the destination-to-entry link **without driving**.
+- An exclusive per-worker nominal terminal claim is recorded before the extended drive is admitted, including an uncertainty reserve for the eventual engine stopping position. A second live claim must be spatially disjoint. Real GIANTS vehicles remain independent physical occupancy irrespective of whether their claims have been released.
+- The Extended Infield Approach accepts a **specified** entry position+heading. Its search is no longer satisfied by entering an arbitrary generic strip if a target exists. The shell validates a *remote* nominal path to the specific qualified entry and a separate **already-at-qualified-entry** case yielding a zero-leg handoff (not `EXTENDED_ALREADY_AT_ENTRY`).
+- At physical long-to-local handoff, `CompletionSettlementRoute` replans from the **actual** arrived pose within the claimed terminal station range. It checks the resulting nominal final root is within 8 m of the claimed terminal. Large divergence is an explicit `LOCAL_ROUTE_MISSES_CLAIMED_TERMINAL` failure, not a silent new location. The chosen 8 m threshold and reservation margin are TEST hypotheses.
+- If a moving worker's physical guidance/claimed space becomes unavailable, the runtime commands **BRAKE → BRAKING → STOP** with positive `settlementStopStatus.isStopped` and actual `stopMovement` before considering one finite alternate allocation; queue priority permits another finished worker's turn after that stop. A dedicated mock regression initially disproved an implementation which re-ran guards while braking, preventing the stop contract; the runtime now checks motion hazards **only during MOVING** and lets the already-commanded stop finish.
+- When a drive is interrupted and `cancelMovement` does **not** confirm neutralisation, its terminal claim is **retained**, with `COMPLETION_SETTLEMENT_CLAIM_RETAINED` warning, rather than being immediately reallocated. Verified normal completion/stop frees the claim while the actual body remains independently occupied.
+
+**Observed nominal results:** original TS018 pose-conditioned route remains `REVERSE_FORWARD` (18 m reverse; 58.8 m total; 14 short points) in the shell fixture; original remote unguided Field77 test remains 392 m/49 short forward points. The new two-worker allocation shell demonstrates **two different, complete nominal terminal claims** on the 230.97 m edge and an actual targeted synthetic approach to one claim's qualified entry. Simulated invalidation while extended driving enforces the physically witnessed stop before a new planning session. All remain *offline nominal* claims, not observed GIANTS wheel paths or safe margins.
+
+**Risks and falsification targets for TS019:** the first qualified station might not be reachable by GIANTS steering under the real worker pose even when the short local manoeuvre itself is nominally valid; the worker may stop several metres away from the candidate entry so real local feasibility and claim match could still reject. Claimed physical clearance uses conservative bounding circles and sampled dynamic occupancy, not a full environment/navigation-mesh certificate. Eight entry-station samples do not guarantee all possible parking regions have been explored; a failed search is legitimate and should be explained. The candidate trials, timing and fixed one-reassessment limit must be tested, not defended as architectural truths. Two-worker execution remains serial with its existing queue. **BWR was not modified or used as a fallback.**
+
+**Required video/log evidence:** repeat supervised TS019; both distinct completion roots; `COMPLETION_SETTLEMENT_ALLOCATING_REGION`; `COMPLETION_SETTLEMENT_REGION_CLAIMED` identifying separate station and terminal coordinates; targeted `ADMITTED stage=EXTENDED` and physically driven intermediate guidance; positive extended-to-local stopped handoff; real local approach and completed/interrupt outcome for each. A moving-target invalidation should report `ALTERNATIVE_STOPPING`, then `ALTERNATIVE_STOPPED` *before* any `ALLOCATING_REGION` or `ALTERNATIVE_QUEUED`. If the video shows overlapping physical footprints, the TEST fails regardless of a logged formal terminal success.
+
+## GIANTS TS019 .15 — arrival stop vs interrupted-guidance stop (14 October 2026)
+
+Owner log: log(20261014-035117).txt, 3,081 lines. Two-worker physical parking FAIL; one local worker PASS.
+
+At 04:48:44 root 396502 completed, then claimed Field77 edge9 station 20, entry (205.612,-257.745), terminal (211.488,-237.579). A 280m/35-guide extended route began. At 04:49:39 root 398900 completed and was queued. At 04:49:47 first root was still driving near (183.123,-274.995), speed 5.595 m/s, on guidance 33. At 04:49:48 it was interrupted in MOVING guidance 34: SETTLEMENT_STOP_NOT_ADMITTED. There is no positive ALTERNATIVE_STOPPED or first-worker local handoff. The log does not disclose which occupancy/claim guard originally triggered the stop request.
+
+Second root 398900 independently planned 52.84m/13 guides, reversed 12m, achieved positive physical stop at direction change and at final park, and FINISHED at 04:50:14. Last sampled root (215.637,-238.006) is only 4.17m from the first worker's **formerly** claimed nominal terminal. The first claim had already been relinquished after interruption; this is not evidence of two simultaneous overlapping claims. First assembly did not reach its terminal.
+
+**Discovery: Arrival-Qualified Stop is not Interruption Safety Stop.** In NativeStaticAssemblyDriveMechanism.lua, beginSettlementStop requires s.isComplete. The new runtime stopForAlternative calls it precisely during an unfinished MOVING guide. That is the immediate reason for SETTLEMENT_STOP_NOT_ADMITTED. Ordinary stopMovement also requires both guide completion and stable stop; cancelMovement can release an incomplete guide but by itself is not the required positive physical-stopping witness.
+
+**Disproven test hypothesis: Mock Admission Contract Drift.** The shell drive mock admits beginSettlementStop on any active movement and does not enforce s.isComplete. Consequently 3/3 offline CI passed without exercising this true GIANTS admission contract.
+
+**Next architectural discussion:** separate the proven planned-arrival stopping path from a safety interruption able to neutralise an incomplete guide, measure steady stopped speed/position, and confirm release before one alternative claim. Also log the original guard reason before attempting stop, so the underlying risk is not hidden by the failed admission. No executable changes in this observation; TEST 0.5.5.15 and draft PR #482 unchanged; BWR untouched.
+
+
+## TS019 .15 screenshot review — destination-choice failure precedes interrupted stop (14 October 2026)
+
+The owner supplied a marked overhead screenshot and challenged the **first finisher's destination**, rather than accepting the late `SETTLEMENT_STOP_NOT_ADMITTED` as the underlying cause. The marked path shows an extended cross-field approach directed towards the eastern end of the south/edge-9 margin where the second worker subsequently ends its job. The owner identifies a plausible left/west field edge and, at a minimum, a midpoint on primary edge 9 as less conflict-prone choices. The screenshot does **not** alone certify that the western edge has a legal full-assembly stopping footprint or an accessible external margin; such an alternative needs geometric assessment.
+
+**Source-backed actual selection:**
+- `ParkingRegionAllocation.fixture()` hardcodes **Field77 edge9 only**. `EDGE_STATIONS={20,45,70,95,120,145,170,195}` with `MAX_SITES=8`. These are stations from edge9's **eastern** endpoint (world approx `(228.15,-243.04)` towards `(-0.06,-207.44)`).
+- At allocation INIT the worker root's current world position is sampled, then candidate stations are ordered **solely by Euclidean root-to-entry distance**, `sqrt((root.x-entry.x)^2+(root.z-entry.z)^2)`. At NEXT/QUALIFY the **first** candidate with a feasible hypothetical local short route and static physical occupancy clearance ends the search. No route-distance cost comparison, balanced-first edge preference, terminal-position comparison with the second worker's future demand, or second-edge evaluation occurs.
+- Log `04:48:59.578` first finisher root 396502 begins extended drive from `(165.0473,-465.4893)`. The chosen station20 entry is `(205.6123,-257.7450)`, a straight-line separation ~**211.7m**. A station near the midpoint (~115.5m) would have entry approximately `(111.25,-243.03)`, straight-line ~**228.9m**, only **17.2m** farther from the first worker but significantly displaced from the eastern corner where its peer is still working. This is a **candidate comparison**, not proof that the midpoint's local manoeuvre or full long path would be feasible. The admitted route to station20 was **280m / 35 targets**.
+- `ExtendedInfieldApproach.activePeers` recognises the continuing GIANTS worker but records each peer as **`{vehicle,x,z,radius}` only**, with occupancy clearance applied at the peer's snapshot position. `ParkingRegionAllocation` calls `SettlementPhysicalOccupancy.snapshot` for the same current-world-space exclusion; neither evaluates the peer's movement direction, projected path, or remaining productive demand **when ranking terminal regions**. Log shows `observedActiveWorkers=1` on first extended admission. Other OMW subsystems **do** observe heading vectors (e.g. peer clearance diagnostics near `04:44:37`), but this is not an up-to-date measurement at parking-choice time and cannot legitimately be extrapolated as the 04:48:58 future course.
+- Root 396502 was physically moving on its 34th unfinished extended guide when admission to interrupted braking failed. Root 398900 later successfully parked at ~`(215.637,-238.006)`, near the first finisher's former claim ~`(211.488,-237.579)`. This supports a poor destination choice and later conflict **but the exact fieldwork vector at first claim time is not present in the allocator's record**. The screenshot is evidence of the resulting cross-field path, not exact collision timing.
+
+**Named discovery — Destination Situation Assessment Before Feasibility Search.** An empty, geometrically feasible terminal is not *operationally available* if it is in or likely to intersect another active worker's imminent work/finish corridor. Selecting the nearest entry among arbitrary samples before assessing **where other workers are and where their demand is going** confuses *geometric feasibility* with *strategically appropriate settlement*. First finisher had the greatest flexibility; it should not pre-emptively converge on the active worker's apparent completion area. Even a technically corrected interrupted-guidance stop only mitigates danger **after** this poor commitment.
+
+**Proposed (not yet approved) architecture for discussion:** 
+1. **Edge Candidacy** — identify more than one geometrically usable full-assembly parking edge (e.g. the west edge visible in the screenshot and preferred south edge9), respecting actual field margins; do not silently assume all edges allow external parking.
+2. **Future Demand Exclusion** — collect current peer position, heading, observed movement vector (successive poses) and, only where evidence supports it, native course/work progress. Distinguish observed current motion from uncertain projected future work. Reserve the peer's near-term productive/turning space when evaluating terminal and approach corridors; use a protective uncertainty margin rather than invent an exact future path.
+3. **Region Ranking** — first filter for physical/legal capacity and the active worker's future demand, then compare entire achievable approach+local manoeuvre and opportunity cost, not just Euclidean distance to the entry. A midpoint of the primary edge is a plausible balanced initial preference and comparison case, not guaranteed safe or shorter for every pose.
+4. **Committed Entry** — only after choosing a region spatially separated from other worker demand, prove its Qualified Entry Pose and claim it. Reassess at observable changes before entering a conflict zone.
+
+**No executable changes.** TEST `0.5.5.15` remains one-worker physical PASS, two-worker FAIL. Safety-stop precondition mismatch and initial destination assessment are **separate findings**. BWR stays unchanged; PR #482 remains draft and unmerged.
+
+
+## Owner approval after .15 screenshot: Destination Situation Assessment (14 October 2026)
+
+The owner agreed with the analysis that **station20 was selected because of a weak destination ranking**, not because it was the only sensible way to settle the first finisher. The approved direction is to assess a still-active worker's *likely productive demand* and examine multiple truly eligible edges/regions before claiming a terminal. This supersedes the immediately preceding section's **“not yet approved”** decision status; its factual source observations and geometric caveats remain valid.
+
+**Accepted architectural priorities:** observe the peer's present X/Z and orientation; use repeated samples for actual velocity when available and do **not** equate heading to future GIANTS work plan. Compare a central edge9 option and geometry-validated western candidate rather than accepting the first station from an east-to-west eight-point list. Preserve the active worker's prospective working/headland space over a marginally shorter first-finisher approach. Rank *whole feasible destination and route* with sufficient occupancy and uncertainty evidence, then prove short-entry feasibility and secure an exclusive claim. The new destination assessor must not discard the existing physical-occupancy, queued completion or stop-before-reallocation controls.
+
+**Not established:** the screenshot alone cannot prove western margin depth, traversable complete-assembly clearance or future peer trajectory. Straight-line midpoint distance advantage/disadvantage is not whole-route or collision proof. The observed mid-guide `SETTLEMENT_STOP_NOT_ADMITTED` is an **independent downstream safety-stop contract defect**, not evidence that station20 was strategically correct. BWR remains out of scope.
+
+**Next work:** implementation and tests **after** the documented decision, keeping architectural question “which space should remain available for whom?” separate from path search and native stop mechanics. **No code/version bump in this decision-only tranche.** Version `0.5.5.15`, PR #482 draft and unmerged.
+
+
+## TEST 0.5.5.16 — destination ranking field hypothesis (awaiting GIANTS)
+
+First finisher root 396502 in .15 was ranked to the east-end station20 because the allocator used Euclidean completion-to-entry distance alone. The user agreed this is a situation assessment error. The experimental .16 assessment observes the other active worker's X/Z, heading and, if two plausible time-separated samples exist, motion direction; it distinguishes measured motion from unknown future work path. Candidate terminal risk from currently productive demand is ranked ahead of central-edge preservation and estimated entry distance. A present motion-corridor intersection is rejected before a claim rather than left solely to the moving next-target guard.
+
+The supported drive remains registered Field77 edge9. A western polygon edge may be a candidate, but the screenshot does not establish accessible whole-assembly margin or feasible local parking entry. No west-edge motor command is added. The midpoint of edge9 is now deliberately a competing choice; logged risk/reason and peer motion witnesses should let GIANTS video falsify whether the choice was appropriate.
+
+Offline tests must prove moving east-end peer changes station20 priority, heading alone is not measured motion, empty-peer control retains old ordering, and two qualified disjoint terminal claims and targeted extended guidance still pass. GIANTS must measure the resulting first-finisher destination and the peer's actual work behaviour. The independent mid-guidance Safety Stop contract defect is unresolved; this build does not introduce BWR changes.
+
+
+### TEST 0.5.5.16 offline outcome — situation-aware terminal selection (14 October 2026)
+
+**[Offline Validation #38514574806](https://github.com/bisdat/FS25_OuttaMyWay/actions/runs/38514574806): 3/3 PASS** (Lua behaviour, structural contracts, generated source reference). The new observation/decision source is versioned **0.5.5.16** on draft PR #482; **GIANTS physical TS019 has not yet been replayed with .16**.
+
+**Independent source/fixture results:**
+- The new `SettlementDestinationAssessment` differentiates current X/Z pose, heading and a truly measured direction from **two successive 500 ms samples**, rejecting a stationary or single-image heading as proof of forward motion. Scene recognition still comes from the same `ExtendedInfieldApproach.activePeers` native vehicle-system census.
+- With an active second worker located around `(195,-355)` and observed moving north along the eastern end of Field77, the allocator now evaluates full local terminal feasibility **after** risk-weighted station ordering, and demonstrably selects a qualified terminal at **edge9 station 145**, assessed `situationRisk=0` with **one measured motion witness**, **rather than station20**. The recorded reason was corrected to `NO_NEAR_DEMAND_EVIDENCE`: an **active worker exists**, but its observed demand does not threaten this *selected* terminal. Physical footprint and claims are still independently checked.
+- With no active peer observed, the existing entry-distance-first ranking selects station20 in the synthetic scene, preserving a previous no-other-worker preference.
+- Registered long west-side polygon segments are surfaced as **potential** edges with `MARGIN_AND_LOCAL_ROUTER_UNVALIDATED`; they do not receive parking Control merely from screenshot appearance or registered polygon status.
+- Existing TS018 local route reference remains reverse-first **18m, total 58.8m / 14 targets**; the pre-existing generic remote extended route fixture remains **392m / 49 short guides**. Separate physical-occupancy, claimed-terminal non-overlap, serial queue and mock stable-stop conditions remain passing offline.
+
+**Limitations:** the situation score uses qualitative current-peer proximity, sampled-movement and lower-confidence heading corridors, a central-edge preference and **straight-line entry distance as a secondary estimate**. It does **not yet compare actual full planned extended route lengths across multiple destinations**, nor certify a western edge or extrapolate a native future GIANTS route. The 500 ms cadence and risk/cost literals are TEST hypotheses. It does not resolve the earlier in-game **unfinished-guidance Interruption Safety Stop** admission failure: if a genuinely unsafe target arises mid-drive, `beginSettlementStop` still requires `s.isComplete`; BWR remains untouched. A field test must be supervised with ability to intervene. Prefer observing the new destination choice without declaring simultaneous two-worker parking achieved.
+
+**Recommended TS019 evidence:** repeat the same two-sprayer scenario with prototype opt-in/diagnostics; record the first finisher's `COMPLETION_SETTLEMENT_REGION_CLAIMED` station, `situationRisk`, `situationReason`, working peer count and measured-vs-heading witness counts, then compare with the remaining worker's actual observed direction and subsequent movement. Verify a non-eastern, qualified approach and disjoint claims. Treat any `SETTLEMENT_STOP_NOT_ADMITTED` as the **separate** currently-known Control deficiency, not a justification for poor station ranking. PR #482 remains draft/unmerged.
+
+## TS019 0.5.5.16 GIANTS outcome: Arrival Pose Qualification (14 October 2026)
+
+User supplied 0.5.5.16_TS019.zip with a 3,067-line log, ~59 s video and overhead screenshot. Both complete assemblies were observed inside Field77 at recording end; two-worker terminal parking NOT validated.
+
+First root 396334 completed 06:29:53.682. Situation-aware allocation selected edge9 station95 (not former corner station20) at 06:30:07.381; entry (131.509,-246.184), terminal (155.169,-228.793), one working peer, one observed motion and heading witness, zero near-demand risk. The first worker followed a single curved 288m/36-target extended route. The visually observed change of travel direction was part of this route, not a different claimed destination. It completed its final guidance, positively stopped with cruise OFF for ~1202 ms, and released native Control at 06:31:05.093. The actual-pose local parking search then failed at 06:31:11.307 with NO_POSE_REACHABLE_PARKING_REGION; the worker yielded its turn behind the queued second worker without parking.
+
+The qualified hypothetical entry heading was approximately (0.988,-0.154). The actual stopped root position was (128.628,-245.676), heading (0.953,+0.302), representing ~2.93 m positional difference and ~26.4 degrees heading difference. Physical point arrival and stable stopped evidence do NOT prove attainment of a manoeuvre-feasible entry pose. The extended planner's goal tolerance is 9m/25deg on nominal lattice nodes; native guidance uses 2.5m point arrival with no final heading evidence contract. The discrepancy is a plausible source of local-plan infeasibility, not an identified specific failed polygon/turn check. **Discovery: Qualified Entry / Actual Arrival Pose Gap.** A hypothetical entry is valid only for its nominal pose; a physical stopped handoff must validate the actual measured pose and full member against the intended parking manoeuvre, or report its inability to do so. No simple steering threshold relaxation is justified.
+
+Second root 399997 completed 06:30:48.823, correctly queued, then admitted a 52.82m/13-target reverse-forward local manoeuvre at 06:31:18.914. Its reverse leg requested stopping for the direction change at 06:31:24.347. The video then transitioned to loading and the log ended; no final stop or parking terminal event was recorded. Thus the second's outcome is INCOMPLETE OBSERVATION, not positively failed steering/terminal geometry. No mid-guidance SETTLEMENT_STOP_NOT_ADMITTED occurred in this run. BWR untouched.
+
+No executable changes; 0.5.5.16 remains not GIANTS validated; draft PR #482 stays unmerged. Next investigate the specific local candidate rejection from the real stopped pose, and qualify attainable entry position+heading rather than widening tolerances blindly.
+
+
+### Correction: second worker TRANSIT configuration was not movement admission (14 October 2026)
+
+**Owner observation:** after second worker configured TRANSIT at approximately 06:30:56, they watched until approximately 06:31:20 and observed **no relocation**. This is compatible with source log `0.5.5.16_TS019.zip/log.txt`; prior suggestion that the worker had been reversing continuously after configuration was misleading.
+
+**Physical and Control timing for second root 399997:**
+
+| Timestamp | Log and physical evidence |
+|---|---|
+| 06:30:48.823–.824 | Native completion for job3, `COMPLETED_WORKER_TRANSIT_REQUESTED reason=REQUEST_ONLY_NOT_VERIFIED`, and `COMPLETION_SETTLEMENT_QUEUED note=NO_SECOND_NATIVE_CONTROL_WHILE_FIRST_SETTLES`. User saw the resulting TRANSIT configuration around 06:30:56; physical relocation not yet admitted |
+| 06:31:05.093 | First root 396334 physically stopped and handed off from extended approach; it still held the active planning/settlement episode |
+| 06:31:11.307 | First local handoff failed and deferred/yielded |
+| 06:31:11.315 | Second root 399997 begins independently planning, `NO_MOVEMENT_UNTIL_ROUTE_ADMITTED` |
+| 06:31:18.914 | Second local `REVERSE_FORWARD` route admitted (52.8208 m, 13 targets); first reverse guidance begins |
+| 06:31:19.916 | `x=194.331253,z=-255.556732,speedMps=0.000094`: effectively stationary after command started |
+| 06:31:20.918 | `x=193.440887,z=-255.416336,speedMps=1.898`: first measured displacement of ~0.90 m |
+| 06:31:21.925 | `x=190.548553,z=-254.961945,speedMps=3.839` |
+| 06:31:23.937 | `x=185.266739,z=-254.131851,speedMps=1.067`: ~9.18 m total measured reverse displacement from 06:31:19.916 |
+| 06:31:24.347 | Starts arrival stop for reverse→forward change |
+| 06:31:24.434 | `quit savegame`; subsequent terminal outcome unobserved |
+
+**Named discovery — TRANSIT Configuration Is Not Relocation Admission.** Native `COMPLETED_WORKER_TRANSIT_REQUESTED` requests implement transit posture, **not** motor Control, verified folding or an independent parking plan. Serial Completion Settlement deliberately queues the second native completion while the first has a driving/planning lease. The second remained idle for ~22.5 seconds from native completion to its planning start, then incurred ~7.6 seconds of bounded no-movement planning; it did not physically begin reversing until ~06:31:20–21. A stationary observation until ~06:31:20 therefore does **not** prove a stuck motor or failed GIANTS guidance. Equally, log position changes **after** that observation prove that movement subsequently began; it is inaccurate to state it never physically moved before the 06:31:24 log exit.
+
+**Usability contract uncovered:** intentional queue waiting, no-drive route planning, and delayed motor admission are visible as long-lasting stationary TRANSIT with no clear progress signal to the player. This reinforces the standing HUD requirement to communicate intentional waiting and planning phases, without prematurely redesigning one-drive-lease scheduling or relaxing Control. Actual first worker local-handoff failure remains independent and must not be obscured by queue waiting. No executable change, no BWR change; TEST version remains `0.5.5.16` draft PR #482.
+
+## TEST 0.5.5.17 — actual-entry rejection attribution staged (14 October 2026)
+
+TS019 .16's first completed assembly stopped safely after its extended approach but the local planner found no physical-pose-reachable route to its claimed terminal. The actual rejection predicate was not exposed. TEST .17 adds **bounded per-predicate rejection counters** to the existing incremental local planner and one `COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED` log event **only** when an actual stopped `LOCAL_HANDOFF` exhausts its candidates.
+
+The event carries the observed local-planner start pose and original nominally qualified entry, station interval, finite candidate count, and sorted rejection counts (heading admission, turning geometry, approach occupancy/boundary, neighbouring productive polygon, complete-member terminal geometry and run-out exhaustion). The counters record decisions already made by the current planner. They do not add geometry checks, modify candidate order, accept different clearance, move a vehicle, or establish parking success.
+
+The offline test deliberately provides an unreachable terminal interval from the logged TS019 stopped pose, exercising 300 finite candidates and checking the refusal has attributed evidence. **This synthetic refusal is not a reproduced GIANTS scene.** GIANTS Reality must identify which predicates dominate the actual station-95 handoff before changing approach steering, permissible arrival region or terminal choice. The separate mid-guidance Interruption Safety Stop deficiency is unchanged.
+
+**Authority Triad revalidation:** Architecture's hypothetical Qualified Entry versus measured Arrival Pose distinction remains correct; Specification's no-movement-on-unqualified-handoff and positive whole-assembly terminal occupancy obligations remain correct; only source observability and its offline test change. BWR remains untouched. No offline or GIANTS pass is claimed before independent validation.
+
+## TS019 TEST 0.5.5.17 GIANTS Reality — two independent off-field settlements PASS (14 October 2026)
+
+The supplied `0.5.5.17_TS019.zip` contains a 3,121-line GIANTS log and 120-second overhead video. The player observed Patriot settling at approximately 07:13:45 and Condor at approximately 07:14:14. The log confirms **two separate `COMPLETION_SETTLEMENT_FINISHED` terminal outcomes** following positively observed stable native stops, with the two complete nominal assemblies occupying widely separated regions along Field77 southern edge9. This validates the **specific supervised TS019 two-worker settlement outcome**, not all-field or full-world physical-clearance generality.
+
+**Chronology and attribution:**
+
+| Time | Root and observation |
+| --- | --- |
+| 07:11:58.574 | First finisher / Condor root `396337`: GIANTS completion, `COMPLETED_WORKER_TRANSIT_REQUESTED`, initial local assessment begins. |
+| 07:12:07.220–07:12:14.013 | Local assessment cannot park from initial pose; allocator selects region station95, qualified entry `(131.509,-246.184)`, nominal terminal `(155.169,-228.793)`; 288m/36-guidance-point extended route admitted. |
+| 07:12:53.662 | Patriot root `400110`: `COMPLETED_WORKER_TRANSIT_REQUESTED`, **queued** while Condor retains the single settlement Control/planning lease. |
+| 07:13:09.671–07:13:11.087 | Condor completes extended route, enters arrival stop and positively neutralises after ~1202ms stationary evidence. Reaching the qualified entry neighbourhood does not prove local parking feasibility. |
+| 07:13:17.791 | Condor actual-pose local handoff fails `NO_POSE_REACHABLE_PARKING_REGION`. One-shot `LOCAL_ENTRY_REJECTED` witness reports actual pose `(131.976,-245.902)`, heading `(0.956,+0.294)` versus nominal heading `(0.988,-0.154)`: ~0.55m position error but **~26° heading discrepancy**. |
+| 07:13:17.791–07:13:17.798 | Condor positively stopped, relinquishes the first parking claim and **queues a bounded alternative** behind Patriot; no new motor steering is commanded during the handoff. |
+| 07:13:17.798–07:13:26.080 | Patriot obtains its planning turn. Independent actual-pose local planner takes **8.282 s**, admits a 52.82m/13-guidance-point `REVERSE_FORWARD` route. |
+| 07:13:26.081–07:13:46.771 | Patriot drives and completes reverse-to-forward turn with positive intermediate stop. Final parking STOPPING begins 07:13:45.357; `FINISHED` is emitted **07:13:46.771**, after ~1206ms stable physical stop and whole nominal assembly terminal check. Final motion sample root about `(215.646,-238.020)`. |
+| 07:13:46.779–07:13:53.675 | Condor receives a new LOCAL_INITIAL assessment **from its actual stopped pose** after Patriot has parked; a 58.92m/14-guidance-point `FORWARD_J` route is admitted. |
+| 07:13:53.676–07:14:16.102 | Condor reverses briefly, stops at the direction change, drives off-field and verifies stable final stop; `FINISHED` at **07:14:16.102**. Final motion sample root about `(108.116,-220.275)`. |
+
+**Why Patriot appeared stationary in TRANSIT:** the player observed the posture at about **07:13:07**, ~39.8 s before the logged successful terminal. In that observed interval, ~10.8 s was the remaining serial queue, ~8.3 s was deliberately non-driving incremental route planning and ~20.7 s was manoeuvre execution including measured stopping. From the **actual TRANSIT request at 07:12:53.662**, elapsed time to `FINISHED` was **53.109 s**: 24.136 s queued, 8.282 s planning and 20.691 s driving/stopping. TRANSIT request is neither motion admission nor proof of parking. The ~1.4 s difference between visible final STOPPING and `FINISHED` is positive stationary/neutral verification, not an unexplained stall.
+
+**New evidence from .17 rejected-entry attribution:** the first claim station95 was not reached by an executable local plan from the physically attained heading. The 300 nominal candidates returned counts (not mutually exclusive): `DIRECT_HEADING_MISALIGNED=150`, `NEIGHBOR_POLYGON_APPROACH=77`, `APPROACH_PHYSICAL_OCCUPANCY=30`, `RUNOUT_EXHAUSTED=43`, `TERMINAL_DEPTH_BAND=142`, `TERMINAL_OUTSIDE_CLAIMED_STATION=443`, `TERMINAL_MEMBER_INTERSECTS_SOURCE=1`. The same candidate may be checked/rejected repeatedly during terminal run-out; these are **predicate evaluations, not counts of distinct failed candidate routes**. Heading mismatch contributes but is **not proved the unique cause**. Condor's eventual success used a newly allocated local path after yielding, **not** a successful retry of the original station95 handoff. This is an important successful **Stopped Yield → Independent Peer Settlement → Fresh Actual-Pose Assessment** outcome.
+
+**Disposition:** **TS019 .17 two-worker PASS**, supported by positive log outcomes and overhead observation. The .17 source change itself was diagnostic instrumentation only; do not attribute improved physical motion or routing policy to those counters. The known **unfinished-guide Interruption Safety Stop** admission deficiency was **not exercised or repaired** in this run. Route generality, articulated movement and other maps remain outside this bounded PASS. The observed queue/planning delay confirms the issue #89 Operational Player Message obligation; no HUD feature is implemented here. Draft PR #482 remains subject to explicit acceptance rather than automatically promoted by one scenario.

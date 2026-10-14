@@ -1,5 +1,5 @@
 -- OuttaMyWay product-shell entry point. Build identity lives in scripts/config.lua and modDesc.xml.
--- Specification Jurisdictions: `CONFIGURATION`
+-- Specification Jurisdictions: `CONFIGURATION`, `COMPLETION_SETTLEMENT_CONTROL`
 -- Native blockage Observation feeds independently admitted live Hold & Relocate Control.
 local modDirectory=g_currentModDirectory or ""
 local modules={
@@ -27,7 +27,19 @@ local modules={
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/observation/FarmEdgeGeometry.lua",
+    "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/assessment/SettlementStraightRunout.lua",
+    "scripts/coordination/SettlementPhysicalOccupancy.lua",
+    "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/SettlementDestinationAssessment.lua",
+    "scripts/coordination/ParkingRegionAllocation.lua",
+    "scripts/coordination/ExtendedInfieldApproach.lua",
+    "scripts/observation/AssemblySettlementProbe.lua",
+    "scripts/observation/PhysicalMarginConstraintProbe.lua",
+    "scripts/observation/FarmSpatialContextProbe.lua",
     "scripts/control/CompletionTransitRuntime.lua",
+    "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
     "scripts/gui/ConfigurationSettingsExtension.lua",
     "scripts/gui/DisabledStartupReminder.lua"
@@ -74,8 +86,14 @@ OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
 OuttaMyWay.nativeJobCompletionProbe=OuttaMyWay.NativeJobCompletionProbe.new(OuttaMyWay.configuration)
 OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(OuttaMyWay.configuration)
+OuttaMyWay.completionSettlementRuntime=OuttaMyWay.CompletionSettlementRuntime.new(
+    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
+-- Engineering-only one-shot Field 77 spatial survey. No production consumer.
+OuttaMyWay.farmSpatialContextProbe=OuttaMyWay.FarmSpatialContextProbe.new(
+    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
 OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
-    OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
+    local accepted=OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
+    OuttaMyWay.completionSettlementRuntime:onNativeCompletion(job,vehicle,accepted)
 end)
 OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(
     OuttaMyWay.configuration,OuttaMyWay.nativeBlockageObservation)
@@ -84,6 +102,7 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
         and notification.value==false then
         OuttaMyWay.liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")
         OuttaMyWay.completionTransitRuntime:relinquish()
+        OuttaMyWay.completionSettlementRuntime:relinquish("PLAYER_DISABLED")
     end
 end)
 OuttaMyWay.disabledStartupReminder=OuttaMyWay.DisabledStartupReminder.new(OuttaMyWay.configuration)
@@ -91,7 +110,9 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.nativeBlockageObservation)
     addModEventListener(OuttaMyWay.nativeJobCompletionProbe)
+    addModEventListener(OuttaMyWay.farmSpatialContextProbe)
     addModEventListener(OuttaMyWay.completionTransitRuntime)
+    addModEventListener(OuttaMyWay.completionSettlementRuntime)
     addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)
     addModEventListener(OuttaMyWay.disabledStartupReminder)
 end

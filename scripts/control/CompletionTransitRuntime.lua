@@ -1,5 +1,5 @@
 -- Completion-triggered TRANSIT only. No navigation, relocation or parking.
--- Specification Jurisdictions: `COMPLETION_TRANSIT`
+-- Specification Jurisdictions: `COMPLETION_TRANSIT`, `COMPLETION_SETTLEMENT_CONTROL`
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionTransitRuntime={}
 local Runtime=OuttaMyWay.CompletionTransitRuntime
@@ -48,6 +48,7 @@ function Runtime:onNativeCompletion(job,vehicle)
                 version=OuttaMyWay.VERSION
             }
         end)
+    return accepted==true
 end
 
 function Runtime:relinquish()
