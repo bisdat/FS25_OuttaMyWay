@@ -1,3 +1,23 @@
+## D-0225 — Retire Completed Research Instruments Without a Parallel Archive
+
+**Status:** Accepted decision, 15 October 2026.
+
+**Decision:** A completed research probe does not remain a runtime responsibility merely because its experimental conclusions are still useful. Remove the synchronous field-wide spatial context survey and associated hypothetical assembly/physical-margin research instruments from shipped source and executable offline contracts when live parking does not consume their evidence. Preserve validated observations, uncertainty and reusable conclusions under the existing `docs/research/` responsibility; delete obsolete code and duplicate documentation copies from the working tree. Git retains exact source revisions and obsolete tests. Do not introduce `docs/research/retired/` as a second evidence surface.
+
+**Reason:** The survey produced noticeable startup frame-pacing disturbance when commissioned; it had no current operational consumer, and TS019 separately demonstrated parking without its presence. Keeping redundant instrumentation under another flag or duplicating files into a new archive would give expired mechanisms a false continuing responsibility.
+
+**Consequence:** Live polygon geometry, current physical occupancy, route/claim/lease evidence and Control remain subject to their independent specifications and Reality tests. Current Architecture describes responsibilities without versioned migration narratives. The Engineering Journal/Research and Git record how that state was reached.
+
+## D-0224 — Full Completion Parking as a Player Choice
+
+**Status:** Accepted design decision, 15 October 2026. Configuration implementation deferred.
+
+**Decision:** Full Completion Parking is a dedicated supported player Configuration choice, default `true` (On). It gates **physical parking after positive native FIELDWORK completion**, independently of the separate Completion Transit request-only responsibility and of DIAGNOSTIC publication. Master Enabled remains overriding. Turning the eventual parking preference Off must interrupt queued and active physical parking safely, neutralise outstanding Control, retire claims and prevent retrospective replay of consumed completion evidence. The persisted choice, schema migration and General Settings presentation are deferred to Issue #139.
+
+**Interim implementation:** Once `settlementPrototype` is removed from `diagnostics.xml`, physically admitted parking follows the existing resolved master Enabled setting, but **only within separately qualified field, assembly, evidence and safety bounds**. This is not the completed player setting and does not authorise expansion to other fields. `diagnostics.xml` governs engineering log publication, not physical Control.
+
+**Reason:** Physical parking is an observable, separable player choice rather than engineering diagnostics or a universal on/off for native Completion Transit. Keeping sidecar publication independent prevents a log setting from inadvertently deciding vehicle motion.
+
 ## D-0223 — Validated Plateau Versioning and the 0.4 Architectural Epoch
 
 **Status:** Accepted owner decision.
