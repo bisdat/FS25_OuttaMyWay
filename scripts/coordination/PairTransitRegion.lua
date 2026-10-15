@@ -1,5 +1,5 @@
 -- Bounded pair-local TRANSIT geometry for egress-region candidates.
--- Specification Jurisdictions: `HOLD_RELOCATE`, `SETTLEMENT_CORRIDOR_ASSESSMENT`
+-- Specification Jurisdictions: `HOLD_RELOCATE`
 -- GIANTS base-size rectangles are directional *candidate* evidence, not
 -- comprehensive collision-shape closure or proof of native steering sweep.
 OuttaMyWay=OuttaMyWay or {}
