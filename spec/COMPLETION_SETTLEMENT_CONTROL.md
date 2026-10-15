@@ -5,7 +5,7 @@
 **Specification Jurisdiction:** Completion Settlement Control  
 **Jurisdiction ID:** `COMPLETION_SETTLEMENT_CONTROL`
 
-**Primary Architecture Authority:** [Completion-Triggered Terminal Egress — Completion Settlement Control](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-settlement-control-test)
+**Primary Architecture Authority:** [Completion-Triggered Terminal Egress — Completion Settlement Control](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-settlement-control)
 
 **Current status (TEST 0.5.5.19):** Completion Parking is a working but Field 77 edge 9 / single-nominal-member-bounded runtime capability. TS019 .17 and .18 validated two independently completed workers parking after serial stopped yield and actual-pose replanning. General fields, articulated cases and mid-guide Safety Stop are unvalidated.
 
@@ -20,7 +20,7 @@ TEST 0.5.5.8 admits only the already surveyed Mindenerwald registered Field **77
 
 ## Governing objective after the 12 October owner clarification
 
-**Architecture authority:** [Pose-Conditioned Terminal Settlement](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#owner-confirmed-architecture-refinement--pose-conditioned-terminal-settlement-12-october-2026).
+**Architecture authority:** [Pose-Conditioned Terminal Settlement](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#pose-conditioned-terminal-settlement).
 
 The subsequent architectural decision defines an **entire-assembly terminal parking region between field boundaries** as the objective, with **success anywhere along a suitable edge**, not a specific point or mandated full-edge traverse. It prefers **brief reverse followed by forward entry** when feasible, otherwise a pose-conditioned manoeuvre such as forward J-entry. Reassess from each independently completed worker's actual root/attached-member pose. The necessary forward distance depends on assembly clearance and final stopping feasibility, not a predetermined 60 m or ~200 m route literal.
 
