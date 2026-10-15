@@ -10,7 +10,7 @@
 
 The profile describes **world space**. A separate **Settlement Corridor Assessment** must determine whether an actual articulated Physical Assembly can use that space. This separation prevents implementation convenience or nominal vehicle-root navigation from redefining what “off-field settlement” means.
 
-This document discovers concepts and evidence requirements. A new Specification Jurisdiction and implementation-facing sampling contract are **deferred** until the evidence sources and their limitations have been experimentally assessed. The active [Farm Spatial Context Observation Specification](../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md) still defines the existing **diagnostic-only, discrete** probe.
+This document discovers concepts and evidence requirements. A new Specification Jurisdiction and implementation-facing sampling contract are **deferred** until the evidence sources and their limitations have been experimentally assessed. The archived [Farm Spatial Context Observation Specification](../docs/research/retired/spec__FARM_SPATIAL_CONTEXT_OBSERVATION.md) documents the historical **diagnostic-only, discrete** probe, now retired from runtime.
 
 ## Spatial reference — Edge Station and Outward Depth
 
@@ -128,6 +128,6 @@ A good model should explain **both** human selections *without* inventing “Fie
 
 **Open discoveries, in order:** (1) real **physical outer-constraint** coverage (road, vegetation and terrain); (2) **actual** assembly approach and steering/articulation run-out against those constraints and other live workers, not merely the now-tested nominal rigid polygon sweep; (3) positive whole-assembly exterior terminal occupancy and interruption/handback. TRANSIT is separately **requested**, not verified or gated. Investigate physical evidence and Control admission separately.
 
-**Source/Specification disposition:** The `FARM_SPATIAL_CONTEXT_OBSERVATION` jurisdiction remains **diagnostic and pointwise**. The separate `SETTLEMENT_CORRIDOR_ASSESSMENT` jurisdiction now implements a bounded **nominal static and straight-swept registered polygon** witness in TEST `0.5.5.6`; it does not declare real physical corridor continuity or Movement Control authority. Completion TRANSIT remains **request-only** and unaffected.
+**Source/Specification disposition:** The historical `FARM_SPATIAL_CONTEXT_OBSERVATION` research was **diagnostic and pointwise**, and is now retired. The separate `SETTLEMENT_CORRIDOR_ASSESSMENT` jurisdiction now implements a bounded **nominal static and straight-swept registered polygon** witness in TEST `0.5.5.6`; it does not declare real physical corridor continuity or Movement Control authority. Completion TRANSIT remains **request-only** and unaffected.
 
 **Validation disposition:** The existing offline tests and TEST `0.5.5.1`/`0.5.5.2` runs demonstrate *observation acquisition*, not Approach/Run-Out/Terminal Assessment. Separate prospective validation scenarios are in [Exterior Margin Profile Investigation](../docs/research/EXTERIOR_MARGIN_PROFILE_VALIDATION.md).
