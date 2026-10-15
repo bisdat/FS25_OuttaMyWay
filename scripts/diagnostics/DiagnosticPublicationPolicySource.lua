@@ -1,7 +1,6 @@
---- Resolves engineering-only DIAGNOSTIC publication and explicit
--- settlement prototype consent from a modSettings sidecar.
--- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`, `FARM_SPATIAL_CONTEXT_OBSERVATION`
--- This source is not supported player Configuration and owns no Runtime semantic or Control authority.
+--- Resolves engineering-only DIAGNOSTIC log publication from a sidecar.
+-- Specification Jurisdictions: `LOG_PUBLICATION`
+-- Publication visibility is not player Configuration or physical Control.
 
 OuttaMyWay.DiagnosticPublicationPolicySource = {}
 local Source=OuttaMyWay.DiagnosticPublicationPolicySource
