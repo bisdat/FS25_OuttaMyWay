@@ -243,7 +243,7 @@ A generic publication rate limiter or deduplication policy requires separate evi
 The current implementation deliberately has one narrow publication boundary:
 
 - [`scripts/publication/LogPublication.lua`](../scripts/publication/LogPublication.lua) owns Descriptor validation, cumulative eligibility, deferred Payload invocation, deterministic one-line rendering, severity routing and non-recursive publication-failure isolation;
-- [`scripts/diagnostics/DiagnosticPublicationPolicySource.lua`](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) supplies the engineering-only DIAGNOSTIC publication-policy input from the optional `modSettings/<modName>/diagnostics.xml` sidecar; absence or invalid content resolves safely to NORMAL and does not become player Configuration;
+- [`scripts/diagnostics/DiagnosticPublicationPolicySource.lua`](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) supplies **only** the engineering DIAGNOSTIC publication-policy input from the optional `modSettings/<modName>/diagnostics.xml` sidecar; absence or invalid content resolves safely to NORMAL and does not become player Configuration;
 - [`scripts/configuration/Configuration.lua`](../scripts/configuration/Configuration.lua) supplies the supported player `debug` semantic choice independently of Log Publication mechanics;
 - [`scripts/main.lua`](../scripts/main.lua) composes publication policy so engineering DIAGNOSTIC takes precedence when deliberately enabled, otherwise player `debug=false/true` resolves NORMAL/DEBUG, then publishes the product startup state;
 - semantic owners and diagnostic instruments call the publication contract while retaining ownership of event meaning, code, class, severity and role vocabulary.
