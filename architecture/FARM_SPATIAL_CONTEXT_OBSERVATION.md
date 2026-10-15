@@ -1,5 +1,9 @@
 # Farm Spatial Context Observation — Field-Edge Investigation
 
+## Current status: retired investigation
+
+The completed synchronous Field77/Riverbend spatial survey and adjuncts were removed from production scripts and archived as historical code/fixtures in [Retired Research](../docs/research/retired/README.md). This document records past observations, **not an active startup survey or a product admission criterion**.
+
 ## Purpose
 
 For [Completion-Triggered Terminal Egress #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476), discover what GIANTS knows outside the completed worker's source field before proposing any Off-Field Settlement responsibility.
@@ -11,7 +15,7 @@ The 11 October 2026 annotated Field 77 screenshot is the first human Ground Trut
 ## Specification Jurisdiction — Farm Spatial Context Observation
 
 **Jurisdiction ID:** `FARM_SPATIAL_CONTEXT_OBSERVATION`  
-**Primary Specification:** [Farm Spatial Context Observation](../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md)
+**Historical Specification:** [Farm Spatial Context Observation](../docs/research/retired/spec__FARM_SPATIAL_CONTEXT_OBSERVATION.md)
 
 **Responsibility:** capture, without mutation, each diagnostic target field edge's consecutive endpoints and exterior-side measurements from GIANTS field polygons, farmland ownership/access, road spline samples and vehicle-navigation costmap. Keep original coordinate frames, observation resolution, unavailable evidence and truncation explicit.
 
