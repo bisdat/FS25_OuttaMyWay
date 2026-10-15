@@ -718,3 +718,28 @@ The supplied `0.5.5.17_TS019.zip` contains a 3,121-line GIANTS log and 120-secon
 **Bounded source increment:** `DiagnosticPublicationPolicySource` reads the optional boolean flag, `FarmSpatialContextProbe` returns before any survey clock/geometry work when it is not expressly enabled, and offline regression tests challenge both disabled and explicit-enabled paths. The old one-shot research calculations, sampling caps, 6-second timer, native APIs, physical Completion Settlement Control, TRANSIT request-only operation, routing, safety guards and BWR are **unchanged**. The survey is still synchronous **when deliberately requested**, and the experiment does not claim to solve that independently.
 
 **Authority Triad revalidation:** `architecture/FARM_SPATIAL_CONTEXT_OBSERVATION.md` records the explicit commissioning boundary; `spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md` and `spec/SETTLEMENT_CORRIDOR_ASSESSMENT.md` define the opt-in contract and compatibility; source enforces it with tests. Completion Settlement Architecture and Specification admission remain unchanged and valid. The next GIANTS test must compare a diagnostic-enabled, prototype-enabled, survey-disabled load against deliberately survey-enabled load in the same save to test—not assume—the stutter hypothesis. No CI pass or GIANTS Reality success is claimed until observed.
+
+## TEST 0.5.5.18 — A/B GIANTS Reality validates explicit survey commissioning (15 October 2026)
+
+**Test input:** `0.5.5.18_TS019A.zip` and `0.5.5.18_TS019B.zip` provided after draft PR #485; each contains a GIANTS `log.txt` and a recorded gameplay MP4 (A: approximately 92.44 s; B: approximately 84.68 s). The player reports **“Clean A, stutter B”** on loading the same Field 77 save with the survey disabled versus deliberately enabled. This is direct perceptual frame-pacing evidence, **not** a captured frame-time distribution or a profiler.
+
+**A — DIAGNOSTIC on / experimental settlement on / `spatialSurvey` absent:** log records product startup `version=0.5.5.18` at **04:40:57.622**, then live Hold & Relocate listener **04:41:32.990**. There are **zero `FARM_CONTEXT_*`, `PHYSICAL_MARGIN_*`, or `ASSEMBLY_SETTLEMENT_*` event lines** in A. DIAGNOSTIC publication was nevertheless working: two `NATIVE_FIELDWORK_JOB_STOPPED` diagnostic lines appeared at **04:41:54.178–.180** when the test ended, each with `successClass=false`. The player reported a **clean load without the previous stutter**.
+
+**B — same TEST build and source Field 77, `spatialSurvey="true"`:** startup reports `version=0.5.5.18` at **04:43:20.414**, live Hold & Relocate listener at **04:43:55.761**, and first research survey event at **04:44:01.737** (approximately **5.976 s** after the live listener). The diagnostic events give these observed boundaries:
+
+| Event | Time | Evidence |
+| --- | --- | --- |
+| `FARM_CONTEXT_FIELD` | 04:44:01.737 | Registered Field 77, 12 edges, 84 neighbouring registered field polygons, 89 nearby registered road-spline samples; registry not truncated |
+| `FARM_CONTEXT_SURVEY_FINISHED` | 04:44:01.750 | **690** exterior samples across 2/6/12m offsets, no sample truncation |
+| `PHYSICAL_MARGIN_SURVEY_FINISHED` | 04:44:01.751 | **20** native physics calls at **22** sampled points, no physics errors |
+| `ASSEMBLY_SETTLEMENT_SCAN` | 04:44:01.751 | Scene census 56 entries, two nearby candidate root assemblies |
+| First `ASSEMBLY_SETTLEMENT_NOMINAL_SCREENED` | 04:44:02.131 | First nominal assessment and straight sweep |
+| Second `ASSEMBLY_SETTLEMENT_NOMINAL_SCREENED` and `ASSEMBLY_SETTLEMENT_FINISHED` | 04:44:02.474 | Two candidate assembly studies completed |
+
+The logged **04:44:01.751 to 04:44:02.474 = ~723 ms** is the **elapsed interval across the two assembly nominal assessments**; ~380ms and ~343ms separate logged completions for the two subjects. These are wall-clock differences between GIANTS log lines, **not proof of CPU utilisation, the exact duration of one frame, or exclusive attribution of every millisecond to the probe**. The entire synchronous research call may have begun before the first publication line, so **723ms is not a total-survey stopwatch**. The player's observed **stutter returned in B**.
+
+**Interpretation — hypothesis promoted with a bounded scope:** A/B confirms the *activation isolation*: the prototype settlement and diagnostic publication can remain enabled **without** commissioning the research survey, and explicit `spatialSurvey=true` restores that survey. The return of stutter only when that large synchronous survey executes gives **strong GIANTS evidence for its causal role** in the previously observed ~6-second hitch; quantitative frame pacing remains under #86. In B, the two nominal assembly screens dominate the *observable log interval*, which is worth inspecting if engineering survey execution is ever optimised; no inference that the geometry/nav phases were CPU-free.
+
+**Limit:** Neither capture contains a `COMPLETION_SETTLEMENT_FINISHED` outcome. The diagnostic `NATIVE_FIELDWORK_JOB_STOPPED successClass=false` events near exit are **not successful natural completion**, so this A/B test **does not revalidate TS019 end-of-job parking**, mid-guide Safety Stop or articulated control. Successful 0.5.5.17 TS019 remains the previous physical baseline. The operational Control and routing code is unchanged in 0.5.5.18, but an actual 0.5.5.18 full-run regression is still required before the broader parking claim.
+
+**Disposition:** **A/B startup survey decoupling GIANTS PASS**, user-observed no stutter under A and restored stutter under B; issue #484 prototype-productionisation tranche is partially validated, draft PR #485 is not automatically merged, and full fieldwork/parking regression is separate.
