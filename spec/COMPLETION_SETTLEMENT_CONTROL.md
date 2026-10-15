@@ -1,4 +1,4 @@
-# Completion Settlement Control — Explicit TEST Prototype
+# Completion Settlement Control — Field 77-Bounded Completion Parking
 
 ## Identity and authority
 
@@ -7,13 +7,13 @@
 
 **Primary Architecture Authority:** [Completion-Triggered Terminal Egress — Completion Settlement Control](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-settlement-control-test)
 
-**Status:** Implemented as an explicitly gated TEST prototype; unvalidated in GIANTS Reality. This is not a generally supported parking capability.
+**Current status (TEST 0.5.5.19):** Completion Parking is a working but Field 77 edge 9 / single-nominal-member-bounded runtime capability. TS019 .17 and .18 validated two independently completed workers parking after serial stopped yield and actual-pose replanning. General fields, articulated cases and mid-guide Safety Stop are unvalidated.
 
 ## Admission
 
 A real native successful GIANTS `AIJobFieldWork` stop is the only trigger. The established [Completion Transit](COMPLETION_TRANSIT.md) consumer first requests native TRANSIT configuration; request acceptance, not fold completion, enables the subsequent prototype. A manual job stop, new AI job, disabled mod, missing native vehicle identity, an active blocked-recovery intervention, missing geometry or a vehicle outside the target source field vetoes Control.
 
-Physical movement additionally requires an explicit engineering-only `settlementPrototype="true"` attribute in `modSettings/FS25_OuttaMyWay/diagnostics.xml`, alongside `enabled="true"`. Diagnostic logging alone does **not** enable physical Control. The default is no settlement movement. This is intentionally separate from player Configuration and must not mutate the existing accepted completion-TRANSIT request-only behaviour when the opt-in is absent.
+**Interim TEST 0.5.5.19 admission:** Physical Completion Parking is On by default only after master player Configuration `enabled=true` is durably resolved and the server, positive native FIELDWORK completion, accepted separate Completion TRANSIT request, specific field/edge/single-member geometry and existing ownership/safety conditions admit Control. It no longer reads `diagnostics.xml`; publication settings cannot enable/disable vehicle movement. Master Enabled off still supersedes pending/active parking. A dedicated player `Full Completion Parking` option, **default On**, will be implemented later under reopened [#139](https://github.com/bisdat/FS25_OuttaMyWay/issues/139), separate from Completion TRANSIT request-only. The option is **not yet available in General Settings**.
 
 TEST 0.5.5.8 admits only the already surveyed Mindenerwald registered Field **77**, native southern edge **9**, matched by its measured ordered endpoints and length. Other fields remain not admitted. This is a scoped Reality experiment, not field-dependent general product logic.
 
@@ -71,7 +71,6 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | [`scripts/coordination/ExtendedInfieldApproach.lua`](../scripts/coordination/ExtendedInfieldApproach.lua) | `REALISES` |
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
-| [`scripts/diagnostics/DiagnosticPublicationPolicySource.lua`](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) | `SUPPORTS` |
 | [`scripts/control/CompletionTransitRuntime.lua`](../scripts/control/CompletionTransitRuntime.lua) | `SUPPORTS` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
 
