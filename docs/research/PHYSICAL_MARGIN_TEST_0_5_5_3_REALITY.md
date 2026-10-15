@@ -57,7 +57,7 @@ There is **no logged Lua exception** or physics-query failure associated with OM
 
 **Minimum next action:** rerun **only Mindenerwald Field 77**, with `spatialFarmlandId` **absent** and DIAGNOSTICS enabled; wait for `PHYSICAL_MARGIN_SURVEY_FINISHED` or `PHYSICAL_MARGIN_UNAVAILABLE` and supply the log. Do not create a new build, widen the physics scan or introduce settlement Control based on these observations. After that, compare the known hedge and preferred south edge with the Riverbend data before deciding what physical boundary evidence is still missing.
 
-**Architecture/Specification disposition:** existing [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md), [source-review plan](PHYSICAL_MARGIN_CONSTRAINT_SOURCE_REVIEW.md) and [Farm Spatial Context Observation Spec](../../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md) remain valid. This report **updates evidence only**. The running TEST `0.5.5.3` and accepted request-only Completion TRANSIT remain unchanged.
+**Architecture/Specification disposition:** existing [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md), [source-review plan](PHYSICAL_MARGIN_CONSTRAINT_SOURCE_REVIEW.md) and [Farm Spatial Context Observation Spec](retired/spec__FARM_SPATIAL_CONTEXT_OBSERVATION.txt) remain valid. This report **updates evidence only**. The running TEST `0.5.5.3` and accepted request-only Completion TRANSIT remain unchanged.
 
 
 ---
