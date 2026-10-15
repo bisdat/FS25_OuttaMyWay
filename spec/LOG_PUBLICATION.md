@@ -237,6 +237,7 @@ A generic publication rate limiter or deduplication policy requires separate evi
 | Production source | Participation |
 | --- | --- |
 | [`scripts/publication/LogPublication.lua`](../scripts/publication/LogPublication.lua) | `REALISES` |
+| [`scripts/diagnostics/DiagnosticPublicationPolicySource.lua`](../scripts/diagnostics/DiagnosticPublicationPolicySource.lua) | `SUPPORTS` |
 
 ## Implementation traceability
 
