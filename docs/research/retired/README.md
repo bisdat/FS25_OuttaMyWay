@@ -15,6 +15,7 @@ The following are exact retained historical files, not modules loaded by `script
 | [farm_spatial_context_probe.lua](tests__shell__farm_spatial_context_probe.lua) | Synthetic Field 77 and Riverbend survey test |
 | [physical_margin_constraint_probe.lua](tests__shell__physical_margin_constraint_probe.lua) | Finite physics-margin test fixture |
 | [settlement_straight_runout.lua](tests__shell__settlement_straight_runout.lua) | Bounded nominal straight-sweep fixture |
+| [Original settlement_corridor_assessment.lua experiment](tests__shell__settlement_corridor_assessment_experiment.lua) | Retired multi-assembly nominal-probe fixture; replaced with live polygon intersection tests |
 | [Historical Farm Spatial Context Specification](spec__FARM_SPATIAL_CONTEXT_OBSERVATION.md) | Completed field-edge survey contract and limits |
 
 **Preserved in current runtime:** `FarmEdgeGeometry` and the `SettlementCorridorAssessment.shapeIntersectsPolygon` mathematical helper continue to serve the actual `CompletionSettlementRoute`. Operational occupancy, planning, claims and physical Control have their own current evidence contracts. The retirement neither weakens them nor generalises Field 77 eligibility.
