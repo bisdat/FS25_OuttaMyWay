@@ -475,6 +475,7 @@ function Runtime:update(dt)
             end
             if s.kind=="LOCAL_HANDOFF"
                 and reason=="NO_POSE_REACHABLE_PARKING_REGION"
+                and type(publication.isEligible)=="function"
                 and publication:isEligible("DIAGNOSTIC","INFO",
                     "COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED") then
                 -- A stopped guidance handoff is not a proven feasible entry.
