@@ -6,7 +6,7 @@
 
 **Primary question:** Can we observe enough *continuous* outside-field geometry to distinguish a traversable edge-aligned settlement strip from discrete points that merely look free?
 
-The proposed concept and responsibility boundary are in [Exterior Margin Profile Architecture](../../architecture/EXTERIOR_MARGIN_PROFILE.md). Current source observation is [Farm Spatial Context](retired/architecture__FARM_SPATIAL_CONTEXT_OBSERVATION.txt), not a settlement assessor.
+The proposed concept and responsibility boundary are in [Exterior Margin Profile Architecture](../../architecture/EXTERIOR_MARGIN_PROFILE.md). Current source observation is [Field 77 Spatial Probe](FIELD77_SPATIAL_PROBE.md), not a settlement assessor.
 
 ## What the existing two runs really established
 
