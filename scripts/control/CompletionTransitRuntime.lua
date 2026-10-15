@@ -44,8 +44,7 @@ function Runtime:onNativeCompletion(job,vehicle)
             return {
                 rootNode=vehicle.rootNode or "unavailable",
                 jobId=job.jobId or "unavailable",
-                reason=accepted and "REQUEST_ONLY_NOT_VERIFIED" or tostring(reason),
-                version=OuttaMyWay.VERSION
+                reason=accepted and "REQUEST_ONLY_NOT_VERIFIED" or tostring(reason)
             }
         end)
     return accepted==true

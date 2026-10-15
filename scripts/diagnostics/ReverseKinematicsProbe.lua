@@ -65,7 +65,6 @@ local function publish(state,code,fields)
     local publisher=state and state.publisher
     if publisher==nil then return end
     pcall(publisher.publish,publisher,"DIAGNOSTIC","INFO",code,function()
-        fields.version=OuttaMyWay.VERSION
         return fields
     end)
 end

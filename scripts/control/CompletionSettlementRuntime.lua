@@ -43,11 +43,9 @@ local function objectiveFor(route,index,currentX,currentZ)
         targetX=leg.point.x,targetZ=leg.point.z,
         returnRegion={source="COMPLETION_SETTLEMENT_LEG"}},distance
 end
-local function publish(level,code,fields)
-    publication:publish("NORMAL",level,code,function()
-        fields.version=OuttaMyWay.VERSION
-        return fields
-    end)
+local function publish(publicationClass,level,code,fields)
+    publication:publish(publicationClass,level,code,
+        type(fields)=="function" and fields or function() return fields end)
 end
 local function rootPose(vehicle)
     if type(vehicle)~="table" or vehicle.rootNode==nil
@@ -114,7 +112,7 @@ function Runtime:finish(code,reason)
         local stopped,why=self.drive:cancelMovement(state.vehicle)
         if not stopped then
             releaseClaim=false
-            publish("WARNING","COMPLETION_SETTLEMENT_NEUTRALIZE_UNCONFIRMED",{
+            publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NEUTRALIZE_UNCONFIRMED",{
                 rootNode=tostring(state.vehicle.rootNode),reason=tostring(why)})
         end
     end
@@ -123,12 +121,14 @@ function Runtime:finish(code,reason)
     if releaseClaim then
         Allocation.release(self.claims,state.vehicle)
     else
-        publish("WARNING","COMPLETION_SETTLEMENT_CLAIM_RETAINED",{
+        publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_CLAIM_RETAINED",{
             rootNode=tostring(state.vehicle.rootNode),
             reason="NATIVE_NEUTRALIZATION_UNCONFIRMED"})
     end
-    publish(code=="COMPLETION_SETTLEMENT_FINISHED" and "INFO" or "WARNING",
-        code,{rootNode=tostring(state.vehicle.rootNode),
+    publish("NORMAL",
+        (code=="COMPLETION_SETTLEMENT_FINISHED"
+            or reason=="PLAYER_DISABLED" or reason=="CONTROL_REVOKED")
+            and "INFO" or "WARNING",code,{rootNode=tostring(state.vehicle.rootNode),
             phase=state.phase,leg=state.legIndex,
             reason=tostring(reason)})
 end
@@ -156,8 +156,7 @@ function Runtime:sampleMotion(state,status)
     end
     publication:publish("DIAGNOSTIC","INFO",
         "COMPLETION_SETTLEMENT_MOTION_SAMPLE",function()
-        return {version=OuttaMyWay.VERSION,
-            rootNode=tostring(vehicle.rootNode),
+        return {rootNode=tostring(vehicle.rootNode),
             leg=state.route.legs[state.legIndex].name,
             guidanceIndex=state.legIndex,
             guidanceCount=#state.route.legs,
@@ -208,7 +207,7 @@ function Runtime:startLeg()
                 kind="LOCAL_HANDOFF",elapsedMs=s.totalElapsedMs,
                 stationMin=s.stationMin,stationMax=s.stationMax,
                 phase="PLANNING",driveArmed=false}
-            publish("INFO","COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING",{
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING",{
                 rootNode=tostring(s.vehicle.rootNode),
                 note="EXTENDED_APPROACH_STOPPED_AND_RELEASED"})
             return
@@ -245,7 +244,7 @@ function Runtime:startLeg()
     s.phase="MOVING"
     s.legElapsedMs=0
     s.telemetryElapsedMs=0
-    publish("INFO","COMPLETION_SETTLEMENT_LEG_STARTED",{
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_LEG_STARTED",function() return {
         rootNode=tostring(s.vehicle.rootNode),leg=leg.name,
         ordinal=s.legIndex,moveForwards=leg.moveForwards,
         targetX=string.format("%.2f",leg.point.x),
@@ -256,7 +255,7 @@ function Runtime:startLeg()
         localTargetContract=type(evidence)=="table"
             and evidence.localTargetContract or "unknown",
         initialCruiseState=type(evidence)=="table"
-            and evidence.initialCruiseState or "unknown"})
+            and evidence.initialCruiseState or "unknown"} end)
 end
 -- A stopped long-approach worker may yield once if a queued completed
 -- peer currently occupies its local parking entry. No uncontrolled
@@ -273,7 +272,7 @@ local function deferStoppedEntry(self,state,reason)
     self.deferred[state.vehicle]=true
     self.pending=nil
     self.waiting[#self.waiting+1]={vehicle=state.vehicle,job=state.job}
-    publish("INFO","COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE",{
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE",{
         rootNode=tostring(state.vehicle.rootNode),reason=reason,
         queuedAfterOther=#self.waiting-1,
         note="PREVIOUS_LONG_APPROACH_PHYSICALLY_STOPPED"})
@@ -283,7 +282,7 @@ local function beginEpisode(self,job,vehicle)
     local okay,session,reason=pcall(
         OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle)
     if not okay or session==nil then
-        publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+        publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
             rootNode=tostring(vehicle.rootNode),
             reason=okay and tostring(reason)
                 or "SETTLEMENT_PLANNING_SESSION_UNAVAILABLE"})
@@ -291,7 +290,7 @@ local function beginEpisode(self,job,vehicle)
     end
     self.pending={vehicle=vehicle,job=job,plan=session,
         kind="LOCAL_INITIAL",elapsedMs=0,phase="PLANNING",driveArmed=false}
-    publish("INFO","COMPLETION_SETTLEMENT_PLANNING_STARTED",{
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_PLANNING_STARTED",{
         rootNode=tostring(vehicle.rootNode),
         budgetUnitsPerUpdate=PLAN_UNITS_PER_UPDATE,
         note="NO_MOVEMENT_UNTIL_ROUTE_ADMITTED"})
@@ -305,20 +304,20 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     end
     local claim=playerClaim(vehicle)
     if claim~=nil then
-        publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
             rootNode=tostring(vehicle.rootNode),reason=claim})
         return false
     end
     if self.active~=nil or self.pending~=nil or #self.waiting>0 then
         if #self.waiting>=MAX_QUEUED_COMPLETIONS then
-            publish("WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+            publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
                 rootNode=tostring(vehicle.rootNode),
                 reason="COMPLETION_QUEUE_CAPACITY_EXHAUSTED"})
             return false
         end
         self.attempted[vehicle]=true
         self.waiting[#self.waiting+1]={vehicle=vehicle,job=job}
-        publish("INFO","COMPLETION_SETTLEMENT_QUEUED",{
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_QUEUED",{
             rootNode=tostring(vehicle.rootNode),
             ordinal=#self.waiting,
             note="NO_SECOND_NATIVE_CONTROL_WHILE_FIRST_SETTLES"})
@@ -334,7 +333,7 @@ local function allocation(self,s,why)
     self.pending={vehicle=s.vehicle,job=s.job,plan=plan,
         kind="ALLOCATE",phase="PLANNING",driveArmed=false,
         elapsedMs=s.totalElapsedMs or s.elapsedMs or 0}
-    publish("INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
         rootNode=tostring(s.vehicle.rootNode),reason=why})
     return true
 end
@@ -345,7 +344,7 @@ local function retryStopped(self,s,why)
     if #self.waiting>0 and #self.waiting<MAX_QUEUED_COMPLETIONS then
         self.active=nil;self.pending=nil
         self.waiting[#self.waiting+1]={vehicle=s.vehicle,job=s.job}
-        publish("INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_QUEUED",{
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_QUEUED",{
             rootNode=tostring(s.vehicle.rootNode),reason=why,
             note="STABLE_STOP_CONFIRMED"})
         return true
@@ -363,7 +362,7 @@ local function stopForAlternative(self,s,reason)
     end
     s.phase="STOP_FOR_ALTERNATIVE"
     s.alternativeReason=reason
-    publish("WARNING","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPING",{
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPING",{
         rootNode=tostring(s.vehicle.rootNode),reason=reason})
     return true
 end
@@ -383,7 +382,7 @@ function Runtime:update(dt)
         local item=table.remove(self.waiting,1)
         local claim=playerClaim(item.vehicle)
         if superseded(item.vehicle) or claim~=nil then
-            publish("WARNING","COMPLETION_SETTLEMENT_QUEUED_REJECTED",{
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_QUEUED_REJECTED",{
                 rootNode=tostring(item.vehicle.rootNode),
                 reason=claim or "GIANTS_JOB_SUPERSEDED"})
             return
@@ -431,7 +430,7 @@ function Runtime:update(dt)
                 return
             end
             s.plan=plan;s.kind="EXTENDED"
-            publish("INFO","COMPLETION_SETTLEMENT_REGION_CLAIMED",{
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REGION_CLAIMED",function() return {
                 rootNode=tostring(s.vehicle.rootNode),station=route.station,
                 terminalX=route.terminalPose.x,terminalZ=route.terminalPose.z,
                 entryX=route.entryPose.x,entryZ=route.entryPose.z,
@@ -441,7 +440,7 @@ function Runtime:update(dt)
                 motionWitnesses=route.motionWitnesses,
                 headingWitnesses=route.headingWitnesses,
                 selectionCost=route.selectionCost,
-                alternativeEdgeStatus="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED"})
+                alternativeEdgeStatus="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED"} end)
             return
         end
         if s.kind=="EXTENDED" and phase=="DONE" and route
@@ -455,7 +454,7 @@ function Runtime:update(dt)
                 return
             end
             s.plan=plan;s.kind="LOCAL_HANDOFF"
-            publish("INFO","COMPLETION_SETTLEMENT_ALREADY_AT_QUALIFIED_ENTRY",{
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALREADY_AT_QUALIFIED_ENTRY",{
                 rootNode=tostring(s.vehicle.rootNode)})
             return
         end
@@ -464,7 +463,7 @@ function Runtime:update(dt)
                 -- One bounded evidence line on a failed scene admission,
                 -- not a per-frame or per-candidate diagnostic flood.
                 local scene=s.plan.sceneEvidence
-                publish("WARNING","COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED",{
+                publish("DEBUG","INFO","COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED",{
                     rootNode=tostring(s.vehicle.rootNode),
                     reason=tostring(reason),
                     registry=scene.registry or "unknown",
@@ -475,7 +474,10 @@ function Runtime:update(dt)
                     failureRoot=scene.failureRoot or "none"})
             end
             if s.kind=="LOCAL_HANDOFF"
-                and reason=="NO_POSE_REACHABLE_PARKING_REGION" then
+                and reason=="NO_POSE_REACHABLE_PARKING_REGION"
+                and type(publication.isEligible)=="function"
+                and publication:isEligible("DIAGNOSTIC","INFO",
+                    "COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED") then
                 -- A stopped guidance handoff is not a proven feasible entry.
                 -- Publish the bounded actual-pose refusal only once.
                 local counts={}
@@ -486,7 +488,7 @@ function Runtime:update(dt)
                 local actual=s.plan.current or {}
                 local expected=s.plan.options
                     and s.plan.options.expectedEntryPose or {}
-                publish("WARNING","COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED",{
+                publish("DIAGNOSTIC","INFO","COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED",{
                     rootNode=tostring(s.vehicle.rootNode),
                     actualX=actual.x or "unknown",
                     actualZ=actual.z or "unknown",
@@ -549,7 +551,15 @@ function Runtime:update(dt)
             stationMin=s.stationMin,stationMax=s.stationMax,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
             phase="ADMITTED",driveArmed=false}
-        publish("INFO","COMPLETION_SETTLEMENT_ADMITTED",{
+        publish("NORMAL","INFO","COMPLETION_SETTLEMENT_ADMITTED",{
+            rootNode=tostring(s.vehicle.rootNode),
+            field=route.field,edge=route.edge,
+            stage=s.kind or "LOCAL_INITIAL",
+            plannedMethod=route.method,
+            verification="ADMITTED_ROUTE_NOT_PHYSICAL_PARKING_RESULT"})
+        publication:publish("DEBUG","INFO",
+            "COMPLETION_SETTLEMENT_ADMISSION_EVIDENCE",function()
+            return {
             rootNode=tostring(s.vehicle.rootNode),
             planningUpdates=s.plan.advances,
             weightedGeometryChecks=s.plan.spent,
@@ -564,7 +574,8 @@ function Runtime:update(dt)
             guidancePoints=#route.legs,
             estimatedTravelM=route.estimatedTravelM,
             guideRadiusM=route.guideRadiusM,
-            note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"})
+            note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"}
+        end)
         self:startLeg()
         return
     end
@@ -638,7 +649,7 @@ function Runtime:update(dt)
             return
         end
         s.driveArmed=false
-        publish("INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPED",{
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPED",{
             rootNode=tostring(s.vehicle.rootNode),
             stableMs=status.steadyMs,cruiseState=status.cruiseState})
         if not retryStopped(self,s,s.alternativeReason) then
@@ -681,7 +692,7 @@ function Runtime:update(dt)
             return
         end
         s.phase="STOPPING"
-        publish("INFO","COMPLETION_SETTLEMENT_STOPPING",{
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_STOPPING",{
             rootNode=tostring(s.vehicle.rootNode),
             leg=completedLeg.name,
             note=nextLeg and "DIRECTION_CHANGE_REQUIRES_STOP"
@@ -696,7 +707,7 @@ function Runtime:update(dt)
             return
         end
         s.driveArmed=false
-        publish("INFO","COMPLETION_SETTLEMENT_LEG_FINISHED",{
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_LEG_FINISHED",{
             rootNode=tostring(s.vehicle.rootNode),
             leg=s.route.legs[s.legIndex].name,ordinal=s.legIndex,
             physicalSpeedMps=status.speedMps,

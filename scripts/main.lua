@@ -73,7 +73,7 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
     if notification==nil or notification.name~="enabled" or notification.durable~=true then return end
     local code=notification.value==true and "OUTTAMYWAY_SHELL_ENABLED" or "OUTTAMYWAY_SHELL_DISABLED"
     productPublication:publish("NORMAL","INFO",code,function()
-        return {version=OuttaMyWay.VERSION,aiControl=g_server~=nil and notification.value==true}
+        return {aiControl=g_server~=nil and notification.value==true}
     end)
 end)
 
