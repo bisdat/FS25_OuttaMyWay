@@ -70,6 +70,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | [`scripts/coordination/SettlementDestinationAssessment.lua`](../scripts/coordination/SettlementDestinationAssessment.lua) | `REALISES` |
 | [`scripts/coordination/ExtendedInfieldApproach.lua`](../scripts/coordination/ExtendedInfieldApproach.lua) | `REALISES` |
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
+| [`scripts/observation/FarmEdgeGeometry.lua`](../scripts/observation/FarmEdgeGeometry.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/CompletionTransitRuntime.lua`](../scripts/control/CompletionTransitRuntime.lua) | `SUPPORTS` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
