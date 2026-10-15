@@ -27,11 +27,11 @@ No per-capability switches for Regulation, Passage or Recovery, no arbitrary tun
 
 **Player choice != implementation capability.** A durable Enabled value does not resurrect old traffic modules or turn historical architecture into current functionality.
 
-## Approved future choice — Full Completion Parking (#139)
+## Full Completion Parking choice
 
-The owner has specifically approved a supported **Full Completion Parking** player toggle, default **On**, as a narrow exception to the initial no-per-capability-switch principle. The feature only governs **physical parking after positive native FIELDWORK completion**. It does **not** disable native Completion TRANSIT request-only, nor regulate other recovery capabilities. Turning it Off during pending/active physical parking will require safe interruption, neutralisation, claim/queue retirement and a clean Control release; exact durable Configuration schema evolution, UI, and lifecycle semantics are deferred to [reopened #139](https://github.com/bisdat/FS25_OuttaMyWay/issues/139).
+Full Completion Parking is a separate player choice, default **On**, governing post-completion **physical relocation and parking**. It is subordinate to master Enabled and independent of engineering DIAGNOSTIC publication. Turning it Off must prevent new physical parking and safely supersede any pending or currently held parking Control; it must not disable native successful-completion TRANSIT requests or unrelated interventions.
 
-**Current implementation boundary:** The accepted local-profile Configuration schema remains version 1 with `enabled`, `hudVisible`, and `debug`. TEST 0.5.5.19's Completion Parking follows the existing resolved master Enabled value (effectively On by default). No fourth persisted value or General Settings control exists yet. This is an acknowledged interim, not a silent substitute for the approved player setting.
+Configuration defines the supported choice and consent boundary; the [Completion-Triggered Terminal Egress architecture](COMPLETION_TRIGGERED_TERMINAL_EGRESS.md) owns the physical responsibility. Implementation and persistence details belong to the Configuration Specification.
 
 ## Lifetime and storage
 
