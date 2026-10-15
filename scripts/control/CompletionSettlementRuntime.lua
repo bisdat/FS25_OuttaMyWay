@@ -1,4 +1,4 @@
--- Explicitly opted-in TEST completion settlement Control. Does not share a
+-- Completion-triggered parking Control. Does not share a
 -- native drive instance or intervention state with active Hold & Relocate.
 -- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
 OuttaMyWay=OuttaMyWay or {}
@@ -92,8 +92,8 @@ local function pairedControlActive()
         and type(runtime.coordinator.isActive)=="function"
         and runtime.coordinator:isActive()
 end
-function Runtime.new(configuration,diagnostics)
-    return setmetatable({configuration=configuration,diagnostics=diagnostics,
+function Runtime.new(configuration)
+    return setmetatable({configuration=configuration,
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
         active=nil,pending=nil,waiting={},claims={},replans=setmetatable({},{__mode="k"}),
         attempted=setmetatable({},{__mode="k"}),
@@ -103,9 +103,6 @@ function Runtime:isAdmitted()
     return g_server~=nil and self.configuration~=nil
         and self.configuration:isResolved()==true
         and self.configuration:isEnabled()==true
-        and self.diagnostics~=nil
-        and type(self.diagnostics.isSettlementPrototypeEnabled)=="function"
-        and self.diagnostics:isSettlementPrototypeEnabled()==true
 end
 function Runtime:finish(code,reason)
     local state=self.active or self.pending
