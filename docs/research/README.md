@@ -7,8 +7,6 @@ authority.
 
 ## Breadcrumbs
 
-- [Retired spatial research instruments](retired/README.md) — source, fixtures and historical specification archived; removed from runtime after validated 0.5.5.18 A/B.
-
 - [TEST 0.5.5.4–0.5.5.6 Nominal Assembly Evidence](ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md) — GIANTS-validated multi-member static and continuous registered-polygon sweep on Field 77 edge 9, without physical Control.
 - [TEST 0.5.5.7 Forward Settlement Prototype](COMPLETION_SETTLEMENT_PROTOTYPE_TEST.md) — explicitly opted-in GIANTS three-leg approach/crossing/run-out experiment; movement and whole-assembly parking not yet field validated.
 - [TEST 0.5.5.3 GIANTS Reality — Field Selection and Riverbend Witness](PHYSICAL_MARGIN_TEST_0_5_5_3_REALITY.md) — observed ROAD-classified physics hit, exterior terrain rise, Mindenerwald target-selection mistake and force-close evidence limits.
