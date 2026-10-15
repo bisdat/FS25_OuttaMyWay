@@ -17,7 +17,7 @@ The route obtains field geometry and physical occupancy through its own demand-d
 
 ## Retired research responsibility
 
-TEST 0.5.5.4–0.5.5.6 originally explored bounded diagnostic 144-pose nominal static screens and continuous rigid straight-sweep polygon witnesses on Field 77. Their historical positive samples were **necessary-only** hypothetical evidence, never parking waypoints or safety authority. The four research-only modules, their three standalone test fixtures and the prior Farm Spatial Context Specification are preserved under [Retired Research](../docs/research/retired/README.md) following the owner-validated TEST 0.5.5.18 A/B startup stutter test and two-worker parking regression. They are no longer loaded as game scripts.
+TEST 0.5.5.4–0.5.5.6 originally explored bounded diagnostic 144-pose nominal static screens and continuous rigid straight-sweep polygon witnesses on Field 77. Those historical positive samples were **necessary-only** hypothetical evidence, never parking waypoints or safety authority. The research findings are retained in [Nominal Assembly Research](../docs/research/ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md) following the owner-validated TEST 0.5.5.18 A/B startup stutter test and two-worker parking regression. They are no longer loaded as game scripts.
 
 These findings remain true historical research, but the finite diagnostic survey is no longer an implementation obligation or a precondition for real Completion Settlement planning.
 
