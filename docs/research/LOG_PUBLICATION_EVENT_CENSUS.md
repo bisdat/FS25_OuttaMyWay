@@ -23,7 +23,7 @@ Bounded static census of the modules explicitly sourced by `scripts/main.lua`, r
 | --- | --- | --- | --- | --- | --- |
 | `HOLD_RELOCATE_RUNTIME_ACTIVE` | Server listener begins | N/I → D/I | — | listener status | Once per map; not a fieldwork transition |
 | `HOLD_RELOCATE_ADMISSION_REJECTED` | Candidate does not acquire responsibility | N/W → D/I | — | candidate kind, pair, rejection reason, blocked duration | Once per native blocked occurrence; no Control attempted |
-| `HOLD_RELOCATE_STARTED` | Coordinator accepts intervention | N/I → N/I | commitment, kind, pair identity | — | Once per admitted attempt; only minimal identity |
+| `HOLD_RELOCATE_STARTED` | Coordinator accepts intervention | N/I → N/I | commitment, established kind, pair identity | — | Once per admitted attempt; pair identity follows the two-participant commitment when no explicit kind exists |
 | `HOLD_RELOCATE_ADMISSION_EVIDENCE` | Accepted attempt causal details | — → D/I | — | plan choice, steering, geometry, demand | Once per admitted attempt; projected only after DEBUG eligibility |
 | `HOLD_RELOCATE_EGRESS_STARTED` | Physical egress movement begins | D/I → D/I | — | direction, space, speeds and constraints | One per motion start; lazy text |
 | `HOLD_RELOCATE_STEERING_SELECTION` | Steering alternative selected | D/I → D/I | — | selected vs geometry preference and evidence counts | One per selected steering start; lazy text |
@@ -32,7 +32,7 @@ Bounded static census of the modules explicitly sourced by `scripts/main.lua`, r
 | `HOLD_RELOCATE_INITIAL_REVERSE_VECTOR` | First reverse vector captured | D/I → D/I | — | relative angle evidence | Once per evidence object; lazy text |
 | `HOLD_RELOCATE_EGRESS_REGULATION_EVIDENCE` | Nonmover regulation result | D/I → D/I | — | intercepts, displacement, actual speeds | Once per result; lazy text |
 | `PAIR_TRANSIT_SETTLEMENT_EXHAUSTED` | Transit readiness window ends but egress assessment continues | N/W → D/I | — | elapsed time, fold status, continuation action | Once per result; expected continuation is not an operational failure |
-| `HOLD_RELOCATE_OUTCOME` | Coordinator reports final result and handback | N/I or N/W → N/I or N/W | status, reason | — | Once per attempt; successful native restart/static move INFO, other outcomes WARNING |
+| `HOLD_RELOCATE_OUTCOME` | Coordinator reports final result and handback | N/I or N/W → N/I or N/W | status, reason when available | — | Once per attempt; successful native restart/static move INFO, other outcomes WARNING |
 | `HOLD_RELOCATE_UNRESOLVED` | Native cleanup/relinquishment unconfirmed | N/W → N/W | reason | — | Only on genuine failed cleanup or active unresolved Control |
 | `HOLD_RELOCATE_NOT_STARTED` | Commitment did not start physical intervention | N/W → N/W | reason | — | Once per unsuccessful committed attempt |
 
@@ -153,6 +153,14 @@ The following modules are explicitly sourced by `scripts/main.lua` but do not th
 - Normal-only evidence must show admitted Completion Parking, end result and safety/Control uncertainty, not every plan, guide leg or queued candidate. The final `WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION` nominal screen is not proof of failed physical parking: the existing terminal interruption code and reason still record *unverified nominal completion*, with no added physical Control action.
 - Debug On with engineering sidecar Off admits NORMAL plus DEBUG. Engineering sidecar On additionally admits targeted DIAGNOSTIC; the sidecar never gates parking or activates the instruments.
 - Source-level producer contracts check classification and deferred payload boundaries; central Log Publication contracts still check cumulative policy, severity, rendering and failed payload isolation. The unchanged Architecture and Specification remain the binding authority. CI and GIANTS comparison are independent validation steps.
+
+## Observed publication-payload mismatch and correction
+
+The GIANTS TEST 0.5.5.22 Field 77 run on 2026-10-15 recorded two accepted native-pair commitments but their NORMAL `HOLD_RELOCATE_STARTED` payloads said `kind=nil`. Authority-owned pair commitments establish two participants without a `kind` scalar; single-worker and static-blocker commitments have explicit kinds. Source presentation now reports `kind=PAIR` for an explicitly two-participant commitment, retains established explicit kinds otherwise, and reports `UNKNOWN` only when neither evidence exists. This is a publication classification of existing commitment structure, not a new admission decision.
+
+The same run exposed successful `HOLD_RELOCATE_OUTCOME` entries with `reason=nil`. The outcome payload now omits an unavailable reason rather than manufacturing the literal string `nil`, while preserving any provided abnormal reason. The DEBUG admission evidence is now keyed with `commitmentId=` for correlation with NORMAL start and outcome.
+
+These are output-only corrections; no native job, admission, Control, lease or event cadence change is intended. The source-level and offline behavioural tests exercise single/pair kind, DEBUG correlation, no-reason successful outcome and release of the established commitment. GIANTS Reality remains the authority for a tested build.
 
 ## Required GIANTS Reality comparison
 

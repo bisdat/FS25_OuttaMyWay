@@ -111,12 +111,18 @@ def test_hold_relocate_distinguishes_attempt_and_rejected_candidate() -> None:
     assert 'publication:publish(publicationClass or "DEBUG",level,code,' in source
     assert 'publication:publish("DEBUG","INFO","HOLD_RELOCATE_ADMISSION_REJECTED"' in source
     assert '"HOLD_RELOCATE_STARTED",' in source
+    assert 'commitment.participants[2]~=nil and "PAIR" or "UNKNOWN"' in source
+    assert '" kind="..tostring(commitment.kind or' in source
     assert 'and self.publication:isEligible("DEBUG","INFO",' in source
     assert '"HOLD_RELOCATE_ADMISSION_EVIDENCE") then' in source
+    assert 'local details="commitmentId="..tostring(commitment.commitmentId)' in source
     assert '"HOLD_RELOCATE_ADMISSION_EVIDENCE",\n                        details,"DEBUG")' in source
     assert '"HOLD_RELOCATE_NOT_STARTED",why,"NORMAL")' in source
     assert '"HOLD_RELOCATE_UNRESOLVED",why,"NORMAL")' in source
-    assert '"HOLD_RELOCATE_OUTCOME",\n                        "commitmentId="' in source
+    assert '"HOLD_RELOCATE_OUTCOME",function()' in source
+    assert 'local details="commitmentId="..tostring(outcome.commitmentId)' in source
+    assert 'if outcome.reason~=nil then' in source
+    assert 'details=details.." reason="..tostring(outcome.reason)' in source
     assert '"PAIR_TRANSIT_SETTLEMENT_EXHAUSTED",function() return' in source
     assert 'type(detail)=="function" and detail() or detail' in source
     for code in (

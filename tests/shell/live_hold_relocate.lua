@@ -364,8 +364,10 @@ coords[first.rootNode]={x=20,z=20}
 local published={}
 OuttaMyWay.VERSION="0.5.1.3"
 OuttaMyWay.LogPublication={origin=function()return {
-    publish=function(_,_,_,code,payload)
-        published[#published+1]={code=code,detail=payload and payload()}
+    publish=function(_,publicationClass,severity,code,payload)
+        published[#published+1]={code=code,
+            publicationClass=publicationClass,severity=severity,
+            detail=payload and payload()}
     end
 }end}
 local occurrence={}
@@ -425,5 +427,68 @@ assert(startedSolo==1 and #published==4
 runtime:update(16)
 assert(startedSolo==1 and #published==4,
     "one intervention admission per solo blocked occurrence")
+assert(published[4].publicationClass=="NORMAL"
+    and string.find(published[4].detail.detail,"kind=SINGLE",1,true)~=nil)
+
+-- Paired commitment deliberately has no `kind` field in the semantic
+-- authority. The producer must render the two-member contract as PAIR,
+-- preserving an independently classified solo commitment above.
+assert(runtime.authority:release(runtime.authority.active))
+observer.getCurrentSingleCandidates=function()return {} end
+local pairedOccurrence={}
+observer.getCurrentPairCandidates=function()return {
+    {candidateIdentity=pairedOccurrence,pairKey="first|second",
+        firstWorker=first,secondWorker=second,
+        blockedWorker=first,confirmedBlockedMs=1000}
+} end
+g_fieldManager.fields={{densityMapPolygon={
+    pointsX={0,100,100,0},pointsZ={0,0,100,100}}}}
+runtime.coordinator.begin=function(_,commitment)
+    assert(commitment.kind==nil and commitment.participants[2]~=nil)
+    return true,{regionRequiredProgressM=40,directionSource="TEST_PAIR"}
+end
+runtime.publication.isEligible=function(_,publicationClass)
+    return publicationClass=="DEBUG"
+end
+local priorPublications=#published
+runtime:update(16)
+assert(#published==priorPublications+2,
+    "paired NORMAL start plus one gated DEBUG admission")
+local pairStart=published[priorPublications+1]
+local pairEvidence=published[priorPublications+2]
+local pairCommitment=assert(runtime.authority.active)
+assert(pairStart.code=="HOLD_RELOCATE_STARTED"
+    and pairStart.publicationClass=="NORMAL"
+    and string.find(pairStart.detail.detail,
+        "commitmentId="..pairCommitment.commitmentId.." kind=PAIR",1,true)~=nil
+    and string.find(pairStart.detail.detail,"kind=nil",1,true)==nil)
+assert(pairEvidence.code=="HOLD_RELOCATE_ADMISSION_EVIDENCE"
+    and pairEvidence.publicationClass=="DEBUG"
+    and string.find(pairEvidence.detail.detail,
+        "commitmentId="..pairCommitment.commitmentId,1,true)==1)
+
+-- Successful native outcome with no reason must not fabricate the string
+-- "reason=nil". A reason remains available for abnormal outcomes.
+local pairActive=true
+runtime.coordinator.active={phase="REVERSING"}
+runtime.coordinator.isActive=function()return pairActive end
+runtime.coordinator.advance=function()pairActive=false end
+runtime.coordinator.getStatus=function()
+    return {lastOutcome={commitmentId=pairCommitment.commitmentId,
+        status="NATIVE_RESTART_ACCEPTED"}}
+end
+runtime:update(16)
+local outcome=published[#published]
+assert(#published==priorPublications+3
+    and outcome.code=="HOLD_RELOCATE_OUTCOME"
+    and outcome.publicationClass=="NORMAL"
+    and outcome.severity=="INFO"
+    and string.find(outcome.detail.detail,
+        "commitmentId="..pairCommitment.commitmentId,1,true)~=nil
+    and string.find(outcome.detail.detail,
+        "status=NATIVE_RESTART_ACCEPTED",1,true)~=nil
+    and string.find(outcome.detail.detail,"reason=",1,true)==nil)
+assert(runtime.authority.active==nil,
+    "outcome publication must not retain commitment Control")
 -- No player-control veto or diagnostic fields remain in live admission.
 print("Live Pair Commitment with GIANTS job and field evidence, no player-control gate: PASS")

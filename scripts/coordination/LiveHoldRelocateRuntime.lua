@@ -261,10 +261,14 @@ function Runtime:update(dt)
             if outcome~=nil then
                 issue(self,(outcome.status=="NATIVE_RESTART_ACCEPTED"
                     or outcome.status=="STATIC_BLOCKER_MOVED") and "INFO" or "WARNING",
-                    "HOLD_RELOCATE_OUTCOME",
-                        "commitmentId="..tostring(outcome.commitmentId)
-                        .." status="..tostring(outcome.status)
-                        .." reason="..tostring(outcome.reason),"NORMAL")
+                    "HOLD_RELOCATE_OUTCOME",function()
+                        local details="commitmentId="..tostring(outcome.commitmentId)
+                            .." status="..tostring(outcome.status)
+                        if outcome.reason~=nil then
+                            details=details.." reason="..tostring(outcome.reason)
+                        end
+                        return details
+                    end,"NORMAL")
             end
             self.authority:release(self.authority.active)
             if outcome~=nil then
@@ -338,13 +342,14 @@ function Runtime:update(dt)
                     self.currentCandidatePairKey=evidence.pairKey
                     issue(self,"INFO","HOLD_RELOCATE_STARTED",
                         "commitmentId="..tostring(commitment.commitmentId)
-                        .." kind="..tostring(commitment.kind)
+                        .." kind="..tostring(commitment.kind or
+                            (commitment.participants[2]~=nil and "PAIR" or "UNKNOWN"))
                         .." pairKey="..tostring(evidence.pairKey or "none"),
                         "NORMAL")
                     if type(self.publication.isEligible)=="function"
                         and self.publication:isEligible("DEBUG","INFO",
                             "HOLD_RELOCATE_ADMISSION_EVIDENCE") then
-                    local details=commitment.commitmentId
+                    local details="commitmentId="..tostring(commitment.commitmentId)
                     if commitment.kind=="STATIC_BLOCKER" then
                         details=details.." inferredStaticSubject="
                             ..tostring(commitment.relocator.assemblyReferenceKey)
