@@ -27,6 +27,12 @@ No per-capability switches for Regulation, Passage or Recovery, no arbitrary tun
 
 **Player choice != implementation capability.** A durable Enabled value does not resurrect old traffic modules or turn historical architecture into current functionality.
 
+## Approved future choice — Full Completion Parking (#139)
+
+The owner has specifically approved a supported **Full Completion Parking** player toggle, default **On**, as a narrow exception to the initial no-per-capability-switch principle. The feature only governs **physical parking after positive native FIELDWORK completion**. It does **not** disable native Completion TRANSIT request-only, nor regulate other recovery capabilities. Turning it Off during pending/active physical parking will require safe interruption, neutralisation, claim/queue retirement and a clean Control release; exact durable Configuration schema evolution, UI, and lifecycle semantics are deferred to [reopened #139](https://github.com/bisdat/FS25_OuttaMyWay/issues/139).
+
+**Current implementation boundary:** The accepted local-profile Configuration schema remains version 1 with `enabled`, `hudVisible`, and `debug`. TEST 0.5.5.19's Completion Parking follows the existing resolved master Enabled value (effectively On by default). No fourth persisted value or General Settings control exists yet. This is an acknowledged interim, not a silent substitute for the approved player setting.
+
 ## Lifetime and storage
 
 Configuration belongs to the **local player/profile**, not to a savegame. Supported choices persist together across saves in one OuttaMyWay-owned `modSettings` representation.
