@@ -2,6 +2,8 @@
 
 ## Disposition — 15 October 2026
 
+[Historical System Architecture](architecture__FARM_SPATIAL_CONTEXT_OBSERVATION.txt) and [historical primary Specification](spec__FARM_SPATIAL_CONTEXT_OBSERVATION.txt) are verbatim text archives, **not active** Architecture/Specification jurisdictions. This avoids stale references appearing to be current authority.
+
 The owner-validated TEST 0.5.5.18 startup comparison produced a **clean** load without the Field 77 research survey and a **stutter** when the same research was deliberately enabled; an independently completed two-worker TS019 .18 run parked both assemblies without this survey. These observations justify **retirement from the shipped product**, not continued maintenance of a permanent gated world-scanning research instrument.
 
 The following are exact retained historical files, not modules loaded by `scripts/main.lua`. Their original Git history remains available. Links to companion production modules in their historical comments reflect the original experiment and are **not current implementation routes**.
@@ -16,7 +18,7 @@ The following are exact retained historical files, not modules loaded by `script
 | [physical_margin_constraint_probe.lua](tests__shell__physical_margin_constraint_probe.lua) | Finite physics-margin test fixture |
 | [settlement_straight_runout.lua](tests__shell__settlement_straight_runout.lua) | Bounded nominal straight-sweep fixture |
 | [Original settlement_corridor_assessment.lua experiment](tests__shell__settlement_corridor_assessment_experiment.lua) | Retired multi-assembly nominal-probe fixture; replaced with live polygon intersection tests |
-| [Historical Farm Spatial Context Specification](spec__FARM_SPATIAL_CONTEXT_OBSERVATION.md) | Completed field-edge survey contract and limits |
+| [Historical Farm Spatial Context Specification](spec__FARM_SPATIAL_CONTEXT_OBSERVATION.txt) | Completed field-edge survey contract and limits |
 
 **Preserved in current runtime:** `FarmEdgeGeometry` and the `SettlementCorridorAssessment.shapeIntersectsPolygon` mathematical helper continue to serve the actual `CompletionSettlementRoute`. Operational occupancy, planning, claims and physical Control have their own current evidence contracts. The retirement neither weakens them nor generalises Field 77 eligibility.
 
