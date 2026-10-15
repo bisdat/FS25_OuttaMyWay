@@ -47,7 +47,7 @@ For each actual edge, compare native field ID, endpoints, length, exterior farml
 
 A Field Edge Segment is an observation unit connecting **consecutive polygon vertices**. **Edge-Aligned Settlement** is a plausible *hypothesis*, not yet a Control capability. A region able to contain a complete folded Physical Assembly needs continuous clearance in length and depth, static obstacles and other fields, road exclusion and actual movement feasibility. This experiment only observes.
 
-Original Field 77 baseline: [Field 77 Spatial Probe](FIELD77_SPATIAL_PROBE.md). Current Architecture: [Farm Spatial Context Observation](../retired/architecture__FARM_SPATIAL_CONTEXT_OBSERVATION.txt).
+Original Field 77 baseline: [Field 77 Spatial Probe](FIELD77_SPATIAL_PROBE.md). Current Architecture: [Farm Spatial Context Observation](retired/architecture__FARM_SPATIAL_CONTEXT_OBSERVATION.txt).
 
 ## GIANTS Reality — Riverbend Springs TS004, TEST 0.5.5.2 (11 October 2026)
 
