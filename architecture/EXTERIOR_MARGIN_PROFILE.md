@@ -105,7 +105,7 @@ The experiment chooses at most four static seed poses across **both tangent trav
 
 A positive result establishes only this: *at the captured member dimensions and frozen articulation, a pure rigid straight translation of the complete nominal assembly snapshot over the measured distance does not intersect any represented registered source/other field polygon*. This is **not** physical corridor clearance or a validation of actual connected Settlement Corridor feasibility. Roads, railway, hedges, terrain, AI collision-map discordance, other live workers, changing hitch articulation, available steering/run-out and final off-field occupancy remain independent, unresolved requirements. In particular, it says nothing about whether the assembly can **approach the virtual starting pose** from its actual infield heading.
 
-**Do not elevate nominal polygon distance to actual Run-Out SUPPORTED**, invent a required metre threshold, or admit parking Control. TRANSIT remains a request with no verification gate. See [the exact TEST 0.5.5.6 Specification](../docs/research/retired/spec__FARM_SPATIAL_CONTEXT_OBSERVATION.txt) and [Reality falsification plan](../docs/research/ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md).
+**Do not elevate nominal polygon distance to actual Run-Out SUPPORTED**, invent a required metre threshold, or admit parking Control. TRANSIT remains a request with no verification gate. See [historical TEST 0.5.5.6 research specification](../docs/research/retired/spec__SETTLEMENT_CORRIDOR_ASSESSMENT.txt) and [Reality falsification plan](../docs/research/ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md).
 
 ## Two human-preferred falsification fixtures
 
