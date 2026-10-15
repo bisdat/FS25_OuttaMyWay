@@ -29,15 +29,11 @@ local modules={
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
-    "scripts/assessment/SettlementStraightRunout.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
     "scripts/coordination/ExtendedInfieldApproach.lua",
-    "scripts/observation/AssemblySettlementProbe.lua",
-    "scripts/observation/PhysicalMarginConstraintProbe.lua",
-    "scripts/observation/FarmSpatialContextProbe.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
@@ -86,11 +82,10 @@ OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
 OuttaMyWay.nativeJobCompletionProbe=OuttaMyWay.NativeJobCompletionProbe.new(OuttaMyWay.configuration)
 OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(OuttaMyWay.configuration)
+-- The dedicated default-On player parking choice will be implemented under #139.
+-- Until then, Completion Parking observes master product Enabled consent.
 OuttaMyWay.completionSettlementRuntime=OuttaMyWay.CompletionSettlementRuntime.new(
-    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
--- Engineering-only one-shot Field 77 spatial survey. No production consumer.
-OuttaMyWay.farmSpatialContextProbe=OuttaMyWay.FarmSpatialContextProbe.new(
-    OuttaMyWay.configuration,OuttaMyWay.diagnosticPublicationPolicySource)
+    OuttaMyWay.configuration)
 OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
     local accepted=OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
     OuttaMyWay.completionSettlementRuntime:onNativeCompletion(job,vehicle,accepted)
@@ -110,7 +105,6 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.nativeBlockageObservation)
     addModEventListener(OuttaMyWay.nativeJobCompletionProbe)
-    addModEventListener(OuttaMyWay.farmSpatialContextProbe)
     addModEventListener(OuttaMyWay.completionTransitRuntime)
     addModEventListener(OuttaMyWay.completionSettlementRuntime)
     addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)
