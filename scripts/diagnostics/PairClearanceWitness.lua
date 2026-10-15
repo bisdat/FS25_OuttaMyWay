@@ -45,7 +45,6 @@ local function publish(state,code,payload)
     if type(publisher)~="table"
         or type(publisher.publish)~="function" then return end
     pcall(publisher.publish,publisher,"DIAGNOSTIC","INFO",code,function()
-        payload.version=OuttaMyWay.VERSION
         return payload
     end)
 end

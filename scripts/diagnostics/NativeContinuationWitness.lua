@@ -90,7 +90,7 @@ local function publish(state,code,detail)
         or type(state.publisher.publish)~="function" then return end
     pcall(state.publisher.publish,state.publisher,
         "DIAGNOSTIC","INFO",code,function()
-            return {detail=detail,version=OuttaMyWay.VERSION}
+            return {detail=detail}
         end)
 end
 

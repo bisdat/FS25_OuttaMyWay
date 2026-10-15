@@ -54,32 +54,23 @@ def test_publisher_owns_dynamic_destination_and_engineering_policy_is_separate_f
     assert "createFolder" not in policy_source
     assert "modSettings/<modName>/diagnostics.xml" in example
     assert '<outtaMyWayDiagnostics enabled="true" />' in example
-    assert 'OUTTAMYWAY_STARTED' in main
+    assert 'OUTTAMYWAY_SHELL_STARTED' in main
 
 
-def test_suppressed_diagnostic_projection_stops_before_avoidable_source_work() -> None:
-    observation = (SCRIPTS / "observation" / "LiveObservationSource.lua").read_text(encoding="utf-8")
-    adapter = (SCRIPTS / "observation" / "RuntimeObservationAdapter.lua").read_text(encoding="utf-8")
-    situation = (SCRIPTS / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
-    validator = (SCRIPTS / "diagnostics" / "PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    physical = (SCRIPTS / "observation" / "CurrentPhysicalAssemblySource.lua").read_text(encoding="utf-8")
-    causal = (SCRIPTS / "assessment" / "CausalObstructionAssessment.lua").read_text(encoding="utf-8")
-    runtime = (SCRIPTS / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
-    passage = (SCRIPTS / "control" / "CooperativePassageControl.lua").read_text(encoding="utf-8")
-    relocation = (SCRIPTS / "control" / "ObstructionRelocationControl.lua").read_text(encoding="utf-8")
+def test_suppressed_projection_stops_before_avoidable_source_work() -> None:
+    settlement = (SCRIPTS / "control" / "CompletionSettlementRuntime.lua").read_text(encoding="utf-8")
+    blockage = (SCRIPTS / "observation" / "NativeBlockageObservation.lua").read_text(encoding="utf-8")
+    hold = (SCRIPTS / "coordination" / "LiveHoldRelocateRuntime.lua").read_text(encoding="utf-8")
+    clearance = (SCRIPTS / "diagnostics" / "PairClearanceWitness.lua").read_text(encoding="utf-8")
+    reverse = (SCRIPTS / "diagnostics" / "ReverseKinematicsProbe.lua").read_text(encoding="utf-8")
 
-    assert 'local diagnosticActive=diagnosticProjectionEnabled()' in observation
-    assert 'if diagnosticActive then\n            raw.diagnostics={' in observation
-    assert 'diagnostics=raw.diagnostics~=nil and shallowCopy(raw.diagnostics) or nil' in adapter
-    assert 'local diagnosticProjectionActive=snapshot.diagnostics~=nil' in situation
-    assert 'if diagnosticProjectionActive then' in situation
-
-    validator_gate = validator.index('if not publicationEnabled() then return end', validator.index('function Validator:observeRuntimeResult'))
-    validator_projection = validator.index('local projection=self:_project(live)', validator.index('function Validator:observeRuntimeResult'))
-    assert validator_gate < validator_projection
-
-    assert 'diagnosticPublicationEnabled("MISSION_ASSEMBLY_CENSUS")' in physical
-    assert 'publication:isEligible("DIAGNOSTIC","INFO","CAUSAL_OBSTRUCTION_RELATION_CENSUS")' in causal
-    assert 'publication:isEligible("DIAGNOSTIC","INFO","COOPERATIVE_PASSAGE_CONSTRAINT_VERDICT")' in runtime
-    assert 'diagnosticPublicationEnabled("COOPERATIVE_PASSAGE_STATE")' in passage
-    assert 'diagnosticPublicationEnabled("OBSTRUCTION_RELOCATION_STEERING_HEARTBEAT")' in relocation
+    assert 'or not publication:isEligible("DIAGNOSTIC","INFO",' in settlement
+    assert '"COMPLETION_SETTLEMENT_MOTION_SAMPLE") then return end' in settlement
+    assert 'and publication:isEligible("DIAGNOSTIC","INFO",' in settlement
+    assert '"COMPLETION_SETTLEMENT_LOCAL_ENTRY_REJECTED") then' in settlement
+    assert 'publication:publish("DEBUG","INFO",' in blockage
+    assert 'evidence=OuttaMyWay.StaticBlockageEncounterObservation.describe(' in blockage
+    assert 'type(detail)=="function" and detail() or detail' in hold
+    assert 'if self.publication:isEligible("DEBUG","INFO",' in hold
+    assert 'if not enabled(self.publisher) then return false end' in clearance
+    assert 'if not ok or eligible~=true then return nil end' in reverse

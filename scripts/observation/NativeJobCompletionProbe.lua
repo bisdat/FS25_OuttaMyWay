@@ -72,8 +72,7 @@ function Probe:onJobStopped(job,aiMessage)
             jobId=job.jobId or "unavailable",
             rootNode=vehicleIdentity(vehicleOf(job)),
             message=messageIdentity(aiMessage),
-            successClass=isSuccessMessage(aiMessage),
-            version=OuttaMyWay.VERSION
+            successClass=isSuccessMessage(aiMessage)
         }
     end)
     if isSuccessMessage(aiMessage) and type(self.completionListener)=="function" then

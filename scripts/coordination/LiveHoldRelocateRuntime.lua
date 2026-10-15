@@ -9,24 +9,23 @@ Runtime.__index=Runtime
 local function issue(runtime,level,code,detail,publicationClass)
     local publication=runtime.publication
     if publication==nil then return end
-    publication:publish(publicationClass or "NORMAL",level,code,function()
-        return {detail=tostring(detail or ""),version=OuttaMyWay.VERSION}
+    publication:publish(publicationClass or "DEBUG",level,code,function()
+        local rendered=type(detail)=="function" and detail() or detail
+        return {detail=tostring(rendered or "")}
     end)
 end
 
--- Admission rejection is a meaningful outcome of a qualifying native pair
--- candidate. Emit once per candidate occurrence; do not silently consume
--- the only evidence that can explain why no physical intervention followed.
+-- Admission rejection explains a non-admitted candidate once per occurrence;
+-- it is causal evidence, not an attempted physical intervention.
 local function reportRejectedAdmission(runtime,evidence,reason)
     local publication=runtime.publication
     if publication==nil then return end
-    publication:publish("NORMAL","WARNING","HOLD_RELOCATE_ADMISSION_REJECTED",function()
+    publication:publish("DEBUG","INFO","HOLD_RELOCATE_ADMISSION_REJECTED",function()
         return {
             pairKey=tostring(evidence.pairKey or "none"),
             candidateKind=evidence.worker~=nil and "SINGLE" or "PAIR",
             reason=tostring(reason or "UNSPECIFIED_ADMISSION_REJECTION"),
-            confirmedBlockedMs=evidence.confirmedBlockedMs,
-            version=OuttaMyWay.VERSION
+            confirmedBlockedMs=evidence.confirmedBlockedMs
         }
     end)
 end
@@ -92,7 +91,7 @@ function Runtime:relinquish(reason)
     if not self.coordinator:isActive() then
         self.authority:release(commitment)
     end
-    if not released then issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why) end
+    if not released then issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why,"NORMAL") end
     return released
 end
 
@@ -143,19 +142,19 @@ function Runtime:update(dt)
         local wait=coordinator.lastPairTransitExhaustion
         if wait~=nil and wait~=self.lastReportedPairTransitExhaustion then
             self.lastReportedPairTransitExhaustion=wait
-            issue(self,"WARNING","PAIR_TRANSIT_SETTLEMENT_EXHAUSTED",
+            issue(self,"INFO","PAIR_TRANSIT_SETTLEMENT_EXHAUSTED",function() return
                 "commitmentId="..tostring(wait.commitmentId)
                 .." waitedMs="..tostring(wait.elapsedMs)
                 .." action=CONTINUE_PAIR_EGRESS_ASSESSMENT"
                 .." firstFoldStatus="..tostring(wait.first
                     and wait.first.isSettled)
                 .." secondFoldStatus="..tostring(wait.second
-                    and wait.second.isSettled))
+                    and wait.second.isSettled) end)
         end
         local start=coordinator.lastPairMotionStartEvidence
         if start~=nil and start~=self.lastReportedPairMotionStartEvidence then
             self.lastReportedPairMotionStartEvidence=start
-            issue(self,"INFO","HOLD_RELOCATE_EGRESS_STARTED",
+            issue(self,"INFO","HOLD_RELOCATE_EGRESS_STARTED",function() return 
                 "commitmentId="..tostring(start.commitmentId)
                 .." relocator="..tostring(start.relocatingAssemblyReferenceKey)
                 .." protected="..tostring(start.otherAssemblyReferenceKey)
@@ -176,10 +175,9 @@ function Runtime:update(dt)
                     start.remainingWorkerConfiguration)
                 .." representation="..tostring(start.geometryBasis)
                 .." confirmedPhysicalClearance=false"
-                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh),
-                "DEBUG")
+                .." nativeSpeedKmh="..tostring(start.requestedDriveSpeedKmh) end,"DEBUG")
             if start.selectedSteeringDeviationDeg~=nil then
-                issue(self,"INFO","HOLD_RELOCATE_STEERING_SELECTION",
+                issue(self,"INFO","HOLD_RELOCATE_STEERING_SELECTION",function() return 
                     "commitmentId="..tostring(start.commitmentId)
                     .." direction="..tostring(start.directionSource)
                     .." initialNativeCommandDeviationDeg="
@@ -193,8 +191,7 @@ function Runtime:update(dt)
                     .." viableCandidates="
                     ..tostring(start.steeringCandidatesAssessed)
                     .." candidatesMissingSteeringEvidence="
-                    ..tostring(start.steeringCandidatesUnavailable),
-                    "DEBUG")
+                    ..tostring(start.steeringCandidatesUnavailable) end,"DEBUG")
                 -- High-detail alternatives are relevant to this engineering
                 -- investigation only; not a support-grade causal summary.
                 local enabled=false
@@ -225,7 +222,7 @@ function Runtime:update(dt)
         local static=coordinator.lastStaticMotionEvidence
         if static~=nil and static~=self.lastReportedStaticMotionEvidence then
             self.lastReportedStaticMotionEvidence=static
-            issue(self,"INFO","HOLD_RELOCATE_STATIC_ACTUATION_EVIDENCE",
+            issue(self,"INFO","HOLD_RELOCATE_STATIC_ACTUATION_EVIDENCE",function() return 
                 "commitmentId="..tostring(static.commitmentId)
                 .." subjectRootId="..tostring(static.subjectRootId)
                 .." motorStarted="..tostring(static.motorStarted)
@@ -234,29 +231,29 @@ function Runtime:update(dt)
                     tostring(static.physicalDisplacementM)
                 .." lateralProgressM="..tostring(static.progressM)
                 .." requiredLateralM="..tostring(static.requiredProgressM)
-                .." statusReason="..tostring(static.statusReason),"DEBUG")
+                .." statusReason="..tostring(static.statusReason) end,"DEBUG")
         end
         local motion=coordinator.lastInitialMotionEvidence
         if motion~=nil and motion~=self.lastReportedInitialMotionEvidence then
             self.lastReportedInitialMotionEvidence=motion
-            issue(self,"INFO","HOLD_RELOCATE_INITIAL_REVERSE_VECTOR",
+            issue(self,"INFO","HOLD_RELOCATE_INITIAL_REVERSE_VECTOR",function() return 
                 "commitmentId="..tostring(motion.commitmentId)
                 .." angleToTargetDeg="..tostring(motion.relativeToTargetDeg)
                 .." angleToNativeReverseDeg="..
-                    tostring(motion.relativeToNativeReverseDeg),"DEBUG")
+                    tostring(motion.relativeToNativeReverseDeg) end,"DEBUG")
         end
         local results=coordinator.lastEgressRegulationResults
         if results~=nil and results~=self.lastReportedEgressRegulationResults then
             self.lastReportedEgressRegulationResults=results
             for i=1,#results do
                 local e=results[i]
-                issue(self,"INFO","HOLD_RELOCATE_EGRESS_REGULATION_EVIDENCE",
+                issue(self,"INFO","HOLD_RELOCATE_EGRESS_REGULATION_EVIDENCE",function() return 
                     "commitmentId="..tostring(e.commitmentId)
                     .." blockerRootId="..tostring(e.rootId)
                     .." nativeDriveCalls="..tostring(e.interceptCount)
                     .." displacementM="..tostring(e.displacementM)
                     .." regulationKmh="..tostring(e.regulatedSpeedKmh)
-                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh),"DEBUG")
+                    .." lastNativeSpeedKmh="..tostring(e.lastNativeSpeedKmh) end,"DEBUG")
             end
         end
         if not coordinator:isActive() then
@@ -264,8 +261,10 @@ function Runtime:update(dt)
             if outcome~=nil then
                 issue(self,(outcome.status=="NATIVE_RESTART_ACCEPTED"
                     or outcome.status=="STATIC_BLOCKER_MOVED") and "INFO" or "WARNING",
-                    "HOLD_RELOCATE_OUTCOME",outcome.status
-                        .." reason="..tostring(outcome.reason))
+                    "HOLD_RELOCATE_OUTCOME",
+                        "commitmentId="..tostring(outcome.commitmentId)
+                        .." status="..tostring(outcome.status)
+                        .." reason="..tostring(outcome.reason),"NORMAL")
             end
             self.authority:release(self.authority.active)
             if outcome~=nil then
@@ -337,6 +336,13 @@ function Runtime:update(dt)
                     end
                     self.currentCandidateIdentity=evidence.candidateIdentity
                     self.currentCandidatePairKey=evidence.pairKey
+                    issue(self,"INFO","HOLD_RELOCATE_STARTED",
+                        "commitmentId="..tostring(commitment.commitmentId)
+                        .." kind="..tostring(commitment.kind)
+                        .." pairKey="..tostring(evidence.pairKey or "none"),
+                        "NORMAL")
+                    if self.publication:isEligible("DEBUG","INFO",
+                        "HOLD_RELOCATE_ADMISSION_EVIDENCE") then
                     local details=commitment.commitmentId
                     if commitment.kind=="STATIC_BLOCKER" then
                         details=details.." inferredStaticSubject="
@@ -377,12 +383,14 @@ function Runtime:update(dt)
                                 ..tostring(why.fieldIdentitySource)
                         end
                     end
-                    issue(self,"INFO","HOLD_RELOCATE_STARTED",details)
+                    issue(self,"INFO","HOLD_RELOCATE_ADMISSION_EVIDENCE",
+                        details,"DEBUG")
+                    end
                 elseif coordinator:isActive() then
-                    issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why)
+                    issue(self,"WARNING","HOLD_RELOCATE_UNRESOLVED",why,"NORMAL")
                 else
                     self.authority:release(commitment)
-                    issue(self,"WARNING","HOLD_RELOCATE_NOT_STARTED",why)
+                    issue(self,"WARNING","HOLD_RELOCATE_NOT_STARTED",why,"NORMAL")
                 end
                 break
             end
