@@ -742,11 +742,11 @@ The logged **04:44:01.751 to 04:44:02.474 = ~723 ms** is the **elapsed interval 
 
 **Limit:** Neither capture contains a `COMPLETION_SETTLEMENT_FINISHED` outcome. The diagnostic `NATIVE_FIELDWORK_JOB_STOPPED successClass=false` events near exit are **not successful natural completion**, so this A/B test **does not revalidate TS019 end-of-job parking**, mid-guide Safety Stop or articulated control. Successful 0.5.5.17 TS019 remains the previous physical baseline. The operational Control and routing code is unchanged in 0.5.5.18, but an actual 0.5.5.18 full-run regression is still required before the broader parking claim.
 
-**Disposition:** **A/B startup survey decoupling GIANTS PASS**, user-observed no stutter under A and restored stutter under B; issue #484 prototype-productionisation tranche is partially validated, draft PR #485 is not automatically merged, and full fieldwork/parking regression is separate.
+**Disposition:** **A/B startup survey decoupling GIANTS PASS**, player-observed no stutter under A and restored stutter under B; issue #484 prototype-productionisation tranche is partially validated, draft PR #485 is not automatically merged, and full fieldwork/parking regression is separate.
 
 ## TEST 0.5.5.18 — TS019 complete-episode parking regression PASS (15 October 2026)
 
-**Evidence:** owner-provided GIANTS `log(20261015-040245).txt` (3,028 lines), FS25 1.24.0.0 on Mindenerwald Field 77, OuttaMyWay TEST `0.5.5.18`; owner confirms **both workers successfully parked**. Engineering sidecar permits DIAGNOSTIC publication and the settlement prototype, with the new explicit `spatialSurvey` opt-in absent. The full log contains **zero** `FARM_CONTEXT_*`, `PHYSICAL_MARGIN_*` or `ASSEMBLY_SETTLEMENT_*` startup research-survey events.
+**Evidence:** provided GIANTS `log(20261015-040245).txt` (3,028 lines), FS25 1.24.0.0 on Mindenerwald Field 77, OuttaMyWay TEST `0.5.5.18`; both workers were reported and logged as successfully parked. Engineering sidecar permits DIAGNOSTIC publication and the settlement prototype, with the new explicit `spatialSurvey` opt-in absent. The full log contains **zero** `FARM_CONTEXT_*`, `PHYSICAL_MARGIN_*` or `ASSEMBLY_SETTLEMENT_*` startup research-survey events.
 
 **Job admission:**
 - **05:00:09.325**, GIANTS `AIMessageSuccessFinishedJob`, jobId 2, root **396404**. Completion TRANSIT requested (`REQUEST_ONLY_NOT_VERIFIED`) and separate physical Settlement planning commenced.
