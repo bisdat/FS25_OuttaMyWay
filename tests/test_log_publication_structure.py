@@ -71,6 +71,6 @@ def test_suppressed_projection_stops_before_avoidable_source_work() -> None:
     assert 'publication:publish("DEBUG","INFO",' in blockage
     assert 'evidence=OuttaMyWay.StaticBlockageEncounterObservation.describe(' in blockage
     assert 'type(detail)=="function" and detail() or detail' in hold
-    assert 'if self.publication:isEligible("DEBUG","INFO",' in hold
+    assert 'and self.publication:isEligible("DEBUG","INFO",' in hold
     assert 'if not enabled(self.publisher) then return false end' in clearance
     assert 'if not ok or eligible~=true then return nil end' in reverse

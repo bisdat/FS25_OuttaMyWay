@@ -111,6 +111,7 @@ def test_hold_relocate_distinguishes_attempt_and_rejected_candidate() -> None:
     assert 'publication:publish(publicationClass or "DEBUG",level,code,' in source
     assert 'publication:publish("DEBUG","INFO","HOLD_RELOCATE_ADMISSION_REJECTED"' in source
     assert '"HOLD_RELOCATE_STARTED",' in source
+    assert 'and self.publication:isEligible("DEBUG","INFO",' in source
     assert '"HOLD_RELOCATE_ADMISSION_EVIDENCE") then' in source
     assert '"HOLD_RELOCATE_ADMISSION_EVIDENCE",\n                        details,"DEBUG")' in source
     assert '"HOLD_RELOCATE_NOT_STARTED",why,"NORMAL")' in source

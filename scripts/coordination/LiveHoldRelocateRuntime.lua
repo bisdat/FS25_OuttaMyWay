@@ -341,8 +341,9 @@ function Runtime:update(dt)
                         .." kind="..tostring(commitment.kind)
                         .." pairKey="..tostring(evidence.pairKey or "none"),
                         "NORMAL")
-                    if self.publication:isEligible("DEBUG","INFO",
-                        "HOLD_RELOCATE_ADMISSION_EVIDENCE") then
+                    if type(self.publication.isEligible)=="function"
+                        and self.publication:isEligible("DEBUG","INFO",
+                            "HOLD_RELOCATE_ADMISSION_EVIDENCE") then
                     local details=commitment.commitmentId
                     if commitment.kind=="STATIC_BLOCKER" then
                         details=details.." inferredStaticSubject="
