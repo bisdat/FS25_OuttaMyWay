@@ -37,6 +37,13 @@ Completion Parking needs a **Settlement Corridor**, not merely a nominal stoppin
 
 [Exterior Margin Profile](EXTERIOR_MARGIN_PROFILE.md) owns the reusable description of the exterior strip and its observational limits. Physical-assembly geometry and native movement remain separate responsibilities.
 
+## Specification Jurisdiction — Completion Settlement Control
+
+**Jurisdiction ID:** `COMPLETION_SETTLEMENT_CONTROL`  
+**Primary Specification:** [Completion Settlement Control](../spec/COMPLETION_SETTLEMENT_CONTROL.md)
+
+Completion Settlement Control owns the admitted physical movement, current command authority, safe interruption and positively verified terminal outcome of a completed assembly. Geometry assessment, destination choice and native FIELDWORK completion evidence are inputs, not movement authority.
+
 ## Pose-Conditioned Terminal Settlement
 
 The **actual pose and current complete assembly** at successful FIELDWORK completion are inputs to Situation Assessment. Parking is not an obligation to traverse a selected edge end to end or reach a fixed point.
