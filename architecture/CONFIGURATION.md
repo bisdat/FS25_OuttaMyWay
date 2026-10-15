@@ -27,6 +27,12 @@ No per-capability switches for Regulation, Passage or Recovery, no arbitrary tun
 
 **Player choice != implementation capability.** A durable Enabled value does not resurrect old traffic modules or turn historical architecture into current functionality.
 
+## Full Completion Parking choice
+
+Full Completion Parking is a separate player choice, default **On**, governing post-completion **physical relocation and parking**. It is subordinate to master Enabled and independent of engineering DIAGNOSTIC publication. Turning it Off must prevent new physical parking and safely supersede any pending or currently held parking Control; it must not disable native successful-completion TRANSIT requests or unrelated interventions.
+
+Configuration defines the supported choice and consent boundary; the [Completion-Triggered Terminal Egress architecture](COMPLETION_TRIGGERED_TERMINAL_EGRESS.md) owns the physical responsibility. Implementation and persistence details belong to the Configuration Specification.
+
 ## Lifetime and storage
 
 Configuration belongs to the **local player/profile**, not to a savegame. Supported choices persist together across saves in one OuttaMyWay-owned `modSettings` representation.

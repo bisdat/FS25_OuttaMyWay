@@ -87,11 +87,7 @@ jobs:
             scripts/observation/NativeJobCompletionProbe.lua \
             scripts/observation/FarmEdgeGeometry.lua \
             scripts/assessment/SettlementCorridorAssessment.lua \
-            scripts/assessment/SettlementStraightRunout.lua \
             scripts/coordination/CompletionSettlementRoute.lua \
-            scripts/observation/AssemblySettlementProbe.lua \
-            scripts/observation/PhysicalMarginConstraintProbe.lua \
-            scripts/observation/FarmSpatialContextProbe.lua \
             scripts/control/CompletionTransitRuntime.lua \
             scripts/control/CompletionSettlementRuntime.lua \
             scripts/configuration/Configuration.lua \
@@ -126,10 +122,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/native_blockage_observation.lua
           "$LUAJIT_BIN" tests/shell/native_job_completion_probe.lua
           "$LUAJIT_BIN" tests/shell/farm_edge_geometry.lua
-          "$LUAJIT_BIN" tests/shell/farm_spatial_context_probe.lua
-          "$LUAJIT_BIN" tests/shell/physical_margin_constraint_probe.lua
           "$LUAJIT_BIN" tests/shell/settlement_corridor_assessment.lua
-          "$LUAJIT_BIN" tests/shell/settlement_straight_runout.lua
           "$LUAJIT_BIN" tests/shell/completion_transit.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement_route.lua

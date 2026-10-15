@@ -172,12 +172,10 @@ OuttaMyWay.ExtendedInfieldApproach={
         return not activeConflict,"PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
     end
 }
-local optin=false
 local enabled=true
 g_server={}
 local config={isResolved=function()return true end,
     isEnabled=function()return enabled end}
-local diagnostic={isSettlementPrototypeEnabled=function()return optin end}
 getWorldTranslation=function()
     -- The drive mock owns its own successful-leg outcome; this passive
     -- world-pose fixture only feeds each new leg's target distance.
@@ -191,13 +189,10 @@ local a={rootNode=12,x=0,z=0,
 local b={rootNode=24,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-local runtime=Runtime.new(config,diagnostic)
-assert(not runtime:onNativeCompletion({},a,true))
-assert(#driveCalls==0 and routeCalls==0,
-    "diagnostics without explicit prototype consent never move")
-optin=true
+local runtime=Runtime.new(config)
 assert(not runtime:onNativeCompletion({},a,false))
-assert(#driveCalls==0,"Transit rejection must not move")
+assert(#driveCalls==0 and routeCalls==0,
+    "Transit rejection must not move")
 assert(runtime:onNativeCompletion({},a,true))
 assert(#driveCalls==0 and routeCalls==1 and runtime.pending~=nil,
     "successful native completion must not synchronously actuate")

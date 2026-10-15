@@ -1,7 +1,6 @@
---- Resolves engineering-only DIAGNOSTIC publication and explicit
--- settlement prototype consent from a modSettings sidecar.
--- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
--- This source is not supported player Configuration and owns no Runtime semantic or Control authority.
+--- Resolves engineering-only DIAGNOSTIC log publication from a sidecar.
+-- Specification Jurisdictions: `LOG_PUBLICATION`
+-- Publication visibility is not player Configuration or physical Control.
 
 OuttaMyWay.DiagnosticPublicationPolicySource = {}
 local Source=OuttaMyWay.DiagnosticPublicationPolicySource
@@ -9,8 +8,6 @@ Source.__index=Source
 
 local ROOT_KEY="outtaMyWayDiagnostics"
 local ENABLED_KEY=ROOT_KEY.."#enabled"
-local SPATIAL_FARMLAND_ID_KEY=ROOT_KEY.."#spatialFarmlandId"
-local SETTLEMENT_PROTOTYPE_KEY=ROOT_KEY.."#settlementPrototype"
 local FILE_NAME="diagnostics.xml"
 local XML_FILE_ID="outtaMyWayDiagnostics"
 
@@ -42,18 +39,12 @@ function Source.new(modName)
         modName=resolvedModName,
         filePath=nil,
         isDiagnosticEnabled=false,
-        settlementPrototypeEnabled=false,
-        spatialFarmlandId=nil, -- nil preserves Field 77 default test fixture
-        spatialSelectionError=nil,
         loadReason="NOT_LOADED"
     },Source)
 end
 
 function Source:loadSidecar()
     self.isDiagnosticEnabled=false
-    self.settlementPrototypeEnabled=false
-    self.spatialFarmlandId=nil
-    self.spatialSelectionError=nil
     local path,pathReason=diagnosticsPath(self.modName)
     self.filePath=path
     if path==nil then
@@ -90,26 +81,6 @@ function Source:loadSidecar()
         self.loadReason="SCHEMA_REGISTRATION_FAILED"
         return false,self.loadReason
     end
-    -- An explicit second opt-in is required for the moving prototype.
-    -- Enabling diagnostic logging alone must never actuate a vehicle.
-    if not pcall(schema.register,schema,XMLValueType.BOOL,
-        SETTLEMENT_PROTOTYPE_KEY) then
-        self.loadReason="SETTLEMENT_PROTOTYPE_SCHEMA_UNAVAILABLE"
-        return false,self.loadReason
-    end
-    -- Engineering-only spatial fixture selection; never a product Configuration.
-    -- An absent attribute preserves the original Field 77 test behaviour.
-    local spatialSchemaAvailable=XMLValueType.INT~=nil
-    if spatialSchemaAvailable then
-        local spatialRegistered=pcall(schema.register,schema,XMLValueType.INT,SPATIAL_FARMLAND_ID_KEY)
-        if not spatialRegistered then
-            self.spatialSelectionError="SPATIAL_SCHEMA_REGISTRATION_FAILED"
-            spatialSchemaAvailable=false
-        end
-    else
-        self.spatialSelectionError="SPATIAL_INT_SCHEMA_UNAVAILABLE"
-    end
-
     local loadOk,xmlFile=pcall(XMLFile.loadIfExists,XML_FILE_ID,path,schema)
     if not loadOk or xmlFile==nil then
         self.loadReason="INVALID_OR_UNREADABLE"
@@ -117,53 +88,20 @@ function Source:loadSidecar()
     end
 
     local valueOk,value=false,nil
-    local prototypeOk,prototypeValue=true,nil
-    local spatialOk,spatialValue=true,nil
     if type(xmlFile.getValue)=="function" then
         valueOk,value=pcall(xmlFile.getValue,xmlFile,ENABLED_KEY)
-        prototypeOk,prototypeValue=pcall(xmlFile.getValue,xmlFile,
-            SETTLEMENT_PROTOTYPE_KEY)
-        if spatialSchemaAvailable then
-            spatialOk,spatialValue=pcall(xmlFile.getValue,xmlFile,SPATIAL_FARMLAND_ID_KEY)
-        end
     end
     deleteXmlFile(xmlFile)
-    if not spatialOk then
-        self.spatialSelectionError="SPATIAL_FIELD_READ_FAILED"
-    elseif spatialValue~=nil then
-        if type(spatialValue)=="number" and spatialValue>=1
-            and spatialValue<=65535 and spatialValue%1==0 then
-            self.spatialFarmlandId=spatialValue
-        else
-            self.spatialSelectionError="SPATIAL_FARMLAND_ID_INVALID"
-        end
-    end
     if not valueOk or type(value)~="boolean" then
         self.loadReason="INVALID_OR_UNREADABLE"
         return false,self.loadReason
     end
 
-    if not prototypeOk or (prototypeValue~=nil
-        and type(prototypeValue)~="boolean") then
-        self.loadReason="SETTLEMENT_PROTOTYPE_FLAG_INVALID"
-        return false,self.loadReason
-    end
     self.isDiagnosticEnabled=value
-    self.settlementPrototypeEnabled=value and prototypeValue==true
     self.loadReason=value and "ENABLED" or "DISABLED"
     return self.isDiagnosticEnabled,self.loadReason
 end
 
 function Source:publicationPolicy()
     return self.isDiagnosticEnabled and "DIAGNOSTIC" or "NORMAL"
-end
-
-function Source:spatialTargetFarmlandId()
-    if self.spatialSelectionError~=nil then return nil,self.spatialSelectionError end
-    return self.spatialFarmlandId,nil
-end
-
--- Physical TEST Control is separately enabled, not implied by logging level.
-function Source:isSettlementPrototypeEnabled()
-    return self.isDiagnosticEnabled and self.settlementPrototypeEnabled
 end

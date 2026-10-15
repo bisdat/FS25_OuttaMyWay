@@ -1,5 +1,5 @@
--- Read-only polygon/edge mathematics for the Farm Spatial Context investigation.
--- Specification Jurisdictions: `FARM_SPATIAL_CONTEXT_OBSERVATION`
+-- Shared registered-field polygon/edge geometry for live Completion Parking.
+-- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.FarmEdgeGeometry={}
 local G=OuttaMyWay.FarmEdgeGeometry

@@ -95,7 +95,7 @@ The bounded plan above has been encoded as a **fixture-guarded, bounded** adjunc
 ## Authority and version disposition
 
 - **Architecture:** The [Exterior Margin Profile](../../architecture/EXTERIOR_MARGIN_PROFILE.md) needs evidence of limiting features and unknowns; these sources offer candidate *witnesses*, not a change in settlement policy.
-- **Specification:** [Farm Spatial Context Observation](../../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md) retains the implemented `2/6/12 m` baseline and now explicitly contracts the separate TEST `0.5.5.3` physics adjunct. It does not constitute a continuous Exterior Margin Profile.
+- **Specification:** [Field 77 spatial probe](FIELD77_SPATIAL_PROBE.md) retains the implemented `2/6/12 m` baseline and now explicitly contracts the separate TEST `0.5.5.3` physics adjunct. It does not constitute a continuous Exterior Margin Profile.
 - **Source:** a separate experimental `PhysicalMarginConstraintProbe.lua` now makes guarded, bounded read-only native queries in TEST `0.5.5.3`. It is **not** production settlement assessment or Control.
 - **Validation:** Synthetic CI confirmed API gating, bounds and explicit failure handling; GIANTS 1.24 confirmed working terrain-height and collision queries on both known fixtures. The sparse samples **do not validate full road/hedge representation or articulated assembly clearance**.
 - **Engine Knowledge:** Findings remain in Research until confirmed in 1.24; do **not** revise `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` to imply validation that has not occurred.

@@ -34,7 +34,7 @@ A mismatch improves the architecture by identifying missing physical/world conce
 
 ## Authority
 
-[Architecture](../../architecture/FARM_SPATIAL_CONTEXT_OBSERVATION.md); [Specification](../../spec/FARM_SPATIAL_CONTEXT_OBSERVATION.md); [Source API clues, #420](https://github.com/bisdat/FS25_OuttaMyWay/issues/420); [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476).
+[Exterior Margin Architecture](../../architecture/EXTERIOR_MARGIN_PROFILE.md); [current Corridor Specification](../../spec/SETTLEMENT_CORRIDOR_ASSESSMENT.md); [Source API clues, #420](https://github.com/bisdat/FS25_OuttaMyWay/issues/420); [Issue #476](https://github.com/bisdat/FS25_OuttaMyWay/issues/476).
 
 ## GIANTS Reality evidence — Field 77, TEST 0.5.5.1 (11 October 2026)
 

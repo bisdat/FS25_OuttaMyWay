@@ -34,15 +34,11 @@ SHELL_MODULES = [
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
-    "scripts/assessment/SettlementStraightRunout.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
     "scripts/coordination/ExtendedInfieldApproach.lua",
-    "scripts/observation/AssemblySettlementProbe.lua",
-    "scripts/observation/PhysicalMarginConstraintProbe.lua",
-    "scripts/observation/FarmSpatialContextProbe.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
@@ -76,7 +72,7 @@ def test_shell_wires_only_admitted_hold_relocate_without_legacy_control():
     ):
         assert forbidden not in text
     assert "OuttaMyWay.runtime=" not in text
-    assert text.count("addModEventListener(") == 8
+    assert text.count("addModEventListener(") == 7
     assert "OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new" in text
     assert "addModEventListener(OuttaMyWay.liveHoldRelocateRuntime)" in text
     assert 'liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")' in text
@@ -216,6 +212,9 @@ def test_settings_and_disabled_reminder_are_retained():
     assert "OUTTAMYWAY_SHELL_ENABLED" in main
     assert "OUTTAMYWAY_SHELL_DISABLED" in main
     assert "OuttaMyWay.nativeBlockedEventTap" not in main
+    assert "OuttaMyWay.farmSpatialContextProbe" not in main
+    assert "isSettlementPrototypeEnabled" not in (
+        ROOT / "scripts/control/CompletionSettlementRuntime.lua").read_text(encoding="utf-8")
 
 
 def test_manifest_describes_live_ai_control():
