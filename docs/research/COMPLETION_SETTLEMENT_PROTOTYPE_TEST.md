@@ -797,3 +797,95 @@ The log contains no `FARM_CONTEXT_SURVEY` or `FARM_CONTEXT_FIELD` output. Both c
 **Separate field-work observation:** Two prior Hold & Relocate episodes at ~06:02 both report `NATIVE_RESTART_ACCEPTED`. Four native `FieldManager` field/farmland-contact errors at ~06:00:36 are unrelated map initialization lines and cannot be attributed to parking without evidence. 
 
 **Disposition:** **Physical TS019 PASS with known, warning-only nominal-verification discrepancy** and **DIAGNOSTIC-independent parking admission PASS**. Root 399373's warning is terminal bookkeeping after successful stable stop; no further OMW Control is applied. Do not add speculative recovery, loosen tolerances or declare a new functional failure from this log. The outstanding productionisation envelope under #484—other fields, whole-assembly physical clearance, and mid-guide safety—remains separate. PR #485 requires normal acceptance review, but this observation does **not** block it.
+
+
+## Issue #484 — Operational spatial-evidence lifetime census (accepted main after #487)
+
+**Question:** At what points do Completion Parking decisions depend on current
+GIANTS Reality, a retained spatial snapshot, or an inference whose freshness
+has not been established? This is a source census of current accepted
+implementation, not a new Control contract or a diagnosis of a GIANTS failure.
+
+**Evidence chain:** native successful completion -> optional local route search
+-> destination allocation / extended approach / local handoff when necessary
+-> route and claim admission -> live MOVING guards -> actual stop -> terminal
+verification. Each stage uses a different evidence scope; a clear static
+candidate is not automatically a clear current approach or terminal.
+
+| Producer / consumer | Evidence and lifetime visible in accepted source | Current boundary |
+| --- | --- | --- |
+| \`FarmEdgeGeometry\` / route, allocation, extended planning | Registered field polygons, indexed edge and outward side are read when a planning context is established. The resulting context is retained during incremental assessment. | Polygon geometry is a necessary geometric reference, not road, terrain or clearance evidence; the admitted physical fixture is still Field 77 edge 9. |
+| \`PairTransitRegion.capture\` / route and extended planning | Actual nominal member rectangles are captured at planning initialisation and reused through candidate exploration. | Single-member admission remains; rigid nominal sweep cannot establish articulated or physical swept clearance. Terminal verification separately recaptures the assembly. |
+| \`SettlementDestinationAssessment.sample / observe\` | Live in-field AI peer roots/heading, plus retained two-position movement history from nominal 500 ms sampling. \`observe\` obtains peer positions anew but attaches any retained motion vector keyed by root. | Motion-history age is not tracked by an absolute observation clock; see finding L2. Risk is a **ranking estimate** of productive demand, not native route prediction. |
+| \`SettlementPhysicalOccupancy.snapshot\` | Reads current \`mission.vehicleSystem.vehicles\` root locations and represented radii; excludes the nominated moving root, bounds to field AABB ±50 m and limits census to 512 registry entries. Unknown registry/pose prevents a positive snapshot. | A snapshot proves only its observed root/radius scene at capture time, not complete collision meshes or continuously available passage. |
+| \`ParkingRegionAllocation\` | \`INIT\` captures a scene, own radius and destination situation. Several candidate stations and a local route are assessed across updates against the retained \`s.occupants\`; live peer \`Situation.observe\` is repeated at \`NEXT\` and \`QUALIFY\`. | A qualified destination remains provisional. After planning, claim checking and \`routeClear\` can still veto physical admission using a new scene. |
+| \`CompletionSettlementRoute.beginPlan / advancePlan\` | The incremental planner captures geometry, assembly and scene at \`INIT\`; subsequent candidates share that scene across its bounded multi-update search. | A completed route alone is not Control authority. The runtime invokes \`SettlementPhysicalOccupancy.routeClear\` against a fresh snapshot before physical admission. |
+| \`ExtendedInfieldApproach.beginPlan / advancePlan\` | Its search retains the initial peer and occupancy scenes across incremental expansions. | At physical admission, \`routeClear\` rechecks current represented occupancy. During MOVING, \`ExtendedInfieldApproach.guard\` obtains fresh peers and next-guide occupancy. |
+| \`ParkingRegionAllocation.claim / claimClear\` | Exclusive claims are remembered until explicit release; \`claimClear\` checks the current terminal claim against a newly captured physical scene. | A claim reserves an assessed region against other claims, but does not prove it is unoccupied or physically reachable later. |
+| \`CompletionSettlementRuntime\` / local and extended MOVING | Local \`CompletionSettlementRoute.guard\` calls \`nextClear\` each MOVING update; the same local path additionally calls \`nextClear\` at about 250 ms intervals. Extended MOVING at about 250 ms calls \`ExtendedInfieldApproach.guard\` (peer census plus \`nextClear\`) and \`Allocation.claimClear\` (another snapshot). \`Situation.sample\` may make its own approximately 500 ms peer census. | These are bounded *per census*, not measured per-frame costs. Repeated local and extended scene traversal is source-confirmed, but no material stutter or acceptable freshness cadence has been measured. |
+| \`CompletionSettlementRoute.verifyTerminal\` | Following positive native stop/release, recaptures nominal assembly geometry and checks source/neighbour field polygons, terminal band and another current occupancy snapshot. | This is a post-stop nominal verdict, not proof of collision-mesh physical parking; the previously accepted TS019 visual parking result is not overturned by its known coarse warning. |
+
+### Named observations and hypotheses
+
+**L1 — Snapshot lifetime != decision-time observation (source fact).**
+Planning and destination qualification intentionally retain snapshots while
+incremental work progresses. The runtime performs an independent fresh route
+census immediately before admission and fresh guards during movement. Therefore
+the observed snapshot retention is not, by itself, evidence of unsafe admission.
+It does mean that candidate selection can reason from a scene earlier than its
+eventual Control decision. No general freshness contract or maximum permissible
+candidate age is established by the accepted source.
+
+**L2 — Motion evidence age not independently established (source fact,
+behavioural consequence unvalidated).** \`SettlementDestinationAssessment.sample\`
+returns early if the field or current peer census cannot be obtained. Its
+retained \`histories\` do not carry an absolute sample timestamp; the
+\`MAX_SAMPLE_GAP_MS\` check uses the current sampling period, not demonstrated
+elapsed time since the earlier valid observation. A later \`observe\` can
+therefore attach old motion direction to a freshly seen peer following missed
+samples. This could distort destination *ranking*; it does not establish an
+observed parking failure or that the runtime commanded movement into danger.
+
+**L3 — Repeated scene census != demonstrated frame-pacing defect (source fact,
+performance effect unknown).** Local MOVING currently rechecks next-guide
+occupancy each update and again around 250 ms. Extended MOVING can perform
+separate active-peer, next-guide-occupancy and claim-clear censuses in the same
+guard interval. The total call pattern is confirmable from source, but no
+per-call cost, p95/p99 frame-time impact or change justification is yet
+established. The retired six-second research sweep is a different mechanism.
+
+**L4 — Distinct evidence questions must stay distinct (architecture boundary).**
+Current root occupancy, active productive demand, claimed terminal space,
+registered field polygons and complete physical swept clearance are not
+interchangeable. A missing physical scene witness does not mean empty space.
+Neither the restricted Field 77 positive result nor this source census
+authorises alternate edges, road-side margins or articulated assemblies.
+
+### Next falsifiable observations — before implementation
+
+1. On the already-positive TS019 save, record *elapsed wall/frame time and
+   invocation counts* for local MOVING \`nextClear\`, extended guard
+   \`activePeers\`/\`nextClear\`/\`claimClear\`, and planning snapshots,
+   with ordinary versus DIAGNOSTIC overhead distinguished. Coordinate the
+   baseline methodology with Issue #86. Do not add a permanent diagnostic
+   stream solely to obtain this evidence.
+2. Examine a repeatable peer-observation interruption (failed or missing peer
+   inventory, followed by restoration) and determine whether old motion history
+   materially changes candidate ranking. Separate an incorrect preference
+   from unsafe Control admission; source reasoning alone cannot attribute a
+   GIANTS physical outcome.
+3. Decide whether the existing admission-time and in-motion rechecks already
+   satisfy the intended supported Field 77 contract. Only then consider any
+   time-bounded evidence reuse, expiry, invalidation or reduced duplicate
+   traversals. Do not prescribe a new cache or a universal sampling interval
+   before defining the freshness/safety obligation.
+4. Preserve accepted serial TS019 physical parking and request-only
+   completion-TRANSIT semantics as regressions. Paired Hold & Relocate scene
+   census remains the separate Issue #483 responsibility.
+
+**Disposition:** Observation and code-walk evidence only. No production
+source, Architecture, Specification, configuration, performance limit or
+supported-envelope change is justified by this census alone. The declined
+incomplete-guide Safety Stop draft PR #488 remains closed/unmerged pending
+independent GIANTS necessity evidence.
+
