@@ -56,6 +56,40 @@ Releasing a Completion Settlement leg keeps native cruise OFF, restores the prio
 
 There is no generally verified dynamic-worker demand arbitration, collision-complete physical safety proof, or universal off-field parking allocation. Any such unsupported assumption must remain falsifiable during the explicitly opted-in prototype.
 
+## Incomplete-guide Safety Stop — physical neutralisation before handback
+
+A locally detected unsafe or failed MOVING guide (including invalidated
+occupancy, loss of route evidence, failed steering progress and Control-lease
+expiry) MUST request a **Safety Stop** even when the current guidance waypoint
+has not been reached. A waypoint-completion witness MUST NOT be required for
+entry to native braking. The movement lease and exclusive parking-region claim
+remain current while this stop is being positively established.
+
+The stopped-witness contract remains the existing GIANTS neutral drive command,
+followed by cruise-OFF confirmation and at least 1,200 ms of current low-speed,
+low-displacement evidence. Only after this physical evidence may an unfinished
+guide release through the explicitly separate interrupted-settlement handback.
+The normal terminal stop retains its additional completed-waypoint requirement.
+Successful interruption is **not** positive parked-terminal verification and
+MUST NOT authorise automatic resumption or a new native movement; ordinary
+stopped-yield is separately governed by its once-bounded reassessment contract.
+
+If native braking or release cannot be confirmed, publish an actionable
+neutralisation warning and preserve the exclusive claim rather than treating
+unknown motion as clearance. External supersession by master disablement, a
+new native job, positive player Control or another active intervention MUST
+still request **immediate** relinquishment; the stop-only continuation is not
+permission to command a party after external authority has superseded it.
+The immediate-cancellation path cannot itself prove a settled physical pose;
+unknown neutralisation must remain explicit.
+
+An incomplete-guide Safety Stop is a distinct mechanism from normal final
+STOPPING and serial stopped-yield. The source uses the existing DEBUG stopping
+event with a distinct `INCOMPLETE_GUIDANCE_SAFETY_STOP` note and preserves the
+original interruption reason on its terminal outcome. This bounded correction
+does not generalise fields, articulated geometry, physical occupancy freshness
+or collision clearance.
+
 ## Observable contract
 
 NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_LEG_STARTED`, `COMPLETION_SETTLEMENT_STOPPING`, `COMPLETION_SETTLEMENT_LEG_FINISHED`, `COMPLETION_SETTLEMENT_FINISHED`, `COMPLETION_SETTLEMENT_NOT_ADMITTED`, `COMPLETION_SETTLEMENT_INTERRUPTED` and `COMPLETION_SETTLEMENT_NEUTRALIZE_UNCONFIRMED` distinguish stages and failures. The existing `COMPLETED_WORKER_TRANSIT_REQUESTED` still records the separate configuration request. Experimental action must never be inferred merely from the previous DIAGNOSTIC polygon-sweep log. One-second `COMPLETION_SETTLEMENT_MOTION_SAMPLE` payloads are eligible only for `DIAGNOSTIC` publication and include current heading, requested steering state, native velocity, cruise state, player-claim witness and local target distance. They must not be computed when DIAGNOSTIC is disabled.

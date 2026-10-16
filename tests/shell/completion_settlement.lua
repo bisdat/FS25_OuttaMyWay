@@ -41,17 +41,31 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
         beginSettlementStop=function(self,vehicle)
             assert(self.active and self.active.vehicle==vehicle)
             assert(self.active.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
+            self.active.stopping=true
             driveCalls[#driveCalls+1]="BRAKE"
             return true
         end,
         settlementStopStatus=function(self,vehicle)
-            assert(self.active and self.active.vehicle==vehicle)
+            assert(self.active and self.active.vehicle==vehicle
+                and self.active.stopping)
             driveCalls[#driveCalls+1]="BRAKING"
+            self.active.stopped=true
             return {isStopped=true,speedMps=0,steadyMs=1200,cruiseState=0}
         end,
         stopMovement=function(self,vehicle)
             assert(self.active and self.active.vehicle==vehicle)
             driveCalls[#driveCalls+1]="STOP"
+            self.active=nil
+            return true
+        end,
+        stopInterruptedSettlement=function(self,vehicle)
+            assert(self.active and self.active.vehicle==vehicle
+                and self.active.stopped,
+                "interrupted guide release requires positive physical stop")
+            driveCalls[#driveCalls+1]="STOP_INTERRUPTED"
+            if failCancel then
+                return false,"NATIVE_NEUTRAL_NOT_CONFIRMED"
+            end
             self.active=nil
             return true
         end,
@@ -250,9 +264,18 @@ assert(runtime:onNativeCompletion({},d,true))
 runtime:update(16)
 failure="NATIVE_STEERING_FAILED"
 runtime:update(16)
-assert(runtime.active==nil and driveCalls[#driveCalls]=="CANCEL",
-    "native steering fault must neutralise Control")
+assert(runtime.active and runtime.active.phase=="STOP_FOR_INTERRUPTION"
+    and driveCalls[#driveCalls]=="BRAKE",
+    "native steering failure must brake before relinquishing an unfinished guide")
+assert(runtime.claims[d]~=nil,
+    "interrupted moving assembly must keep its parking claim until neutralised")
 failure=nil
+runtime:update(16)
+assert(runtime.active==nil and driveCalls[#driveCalls]=="STOP_INTERRUPTED"
+    and runtime.claims[d]==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_INTERRUPTED"
+    and events[#events].fields.reason=="NATIVE_STEERING_FAILED",
+    "verified interruption stop releases Control without claiming terminal parking")
 local e={rootNode=60,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
@@ -401,7 +424,7 @@ assert(runtime.active and runtime.active.phase=="STOP_FOR_ALTERNATIVE"
 runtime:update(16)
 assert(runtime.active==nil and runtime.pending
     and runtime.pending.kind=="ALLOCATE"
-    and driveCalls[#driveCalls]=="STOP"
+    and driveCalls[#driveCalls]=="STOP_INTERRUPTED"
     and #driveCalls==beforeConflict+3
     and driveCalls[beforeConflict+1]=="BRAKE"
     and driveCalls[beforeConflict+2]=="BRAKING",
@@ -420,6 +443,8 @@ runtime:update(16)
 assert(runtime.active and runtime.claims[uncertain])
 failure="SYNTHETIC_NATIVE_GUIDANCE_FAILURE"
 failCancel=true
+runtime:update(16)
+assert(runtime.active and runtime.active.phase=="STOP_FOR_INTERRUPTION")
 runtime:update(16)
 assert(runtime.active==nil and runtime.pending==nil
     and runtime.claims[uncertain]~=nil

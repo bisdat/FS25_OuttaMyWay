@@ -797,3 +797,44 @@ The log contains no `FARM_CONTEXT_SURVEY` or `FARM_CONTEXT_FIELD` output. Both c
 **Separate field-work observation:** Two prior Hold & Relocate episodes at ~06:02 both report `NATIVE_RESTART_ACCEPTED`. Four native `FieldManager` field/farmland-contact errors at ~06:00:36 are unrelated map initialization lines and cannot be attributed to parking without evidence. 
 
 **Disposition:** **Physical TS019 PASS with known, warning-only nominal-verification discrepancy** and **DIAGNOSTIC-independent parking admission PASS**. Root 399373's warning is terminal bookkeeping after successful stable stop; no further OMW Control is applied. Do not add speculative recovery, loosen tolerances or declare a new functional failure from this log. The outstanding productionisation envelope under #484—other fields, whole-assembly physical clearance, and mid-guide safety—remains separate. PR #485 requires normal acceptance review, but this observation does **not** block it.
+
+
+## TEST 0.5.5.24 — Incomplete-guide Safety Stop contract (Issue #484)
+
+**Observation:** the Field 77 Control path includes live route guards that
+call `stopForAlternative` before a steering waypoint has been reached. The
+native mechanism's `beginSettlementStop` previously required
+`s.isComplete`; therefore a valid mid-guide threat was refused with
+`SETTLEMENT_STOP_NOT_ADMITTED` and fell back to immediate cancellation.
+`stopMovement` separately requires both guide completion and a confirmed
+physical stop. The existing TS019 success did not challenge this conflict.
+
+**Discovery — Guidance Completion != Safety Stop Admission.** A current
+movement lease must permit braking from an incomplete guide. Safe release is
+a distinct positive physical-stop observation, not a side effect of guide
+progress or a successful native neutral command.
+
+**Scoped implementation hypothesis:** permit an incomplete moving Settlement
+guide to enter the existing brake/stillness witness. Release that guide only
+through a separate `stopInterruptedSettlement` operation after confirmed
+stillness; retain ordinary completed-waypoint `stopMovement` requirements.
+Local MOVING faults enter `STOP_FOR_INTERRUPTION` and preserve their original
+cause; stopped alternatives retain the once-bounded existing reassessment.
+External GIANTS job, player-Control, paired-Control or master-disabled
+supersession still requests immediate relinquishment rather than continued
+OMW steering.
+
+**Evidence plan:** GitHub offline drive/runtime contracts must demonstrate
+stop admission before arrival, refusal to release until stable, claim
+retention while braking, release after positive stop, absence of a false
+parking-success event, and retained claim after unconfirmed native release.
+A targeted GIANTS run must independently establish native braking,
+cruise-OFF, 1.2-second stationarity, no post-release movement and handback
+during an actual interrupted incomplete guide. The current .17–.19 TS019
+parking positives remain mandatory regressions. No in-game PASS is claimed
+by this implementation record; external cancellation cannot by itself prove
+zero residual physical velocity.
+
+**Boundary:** No changed field/edge admission, route choice, candidate search,
+articulated support, occupational evidence freshness or parking semantics.
+This increment does not resolve general production readiness under #484.

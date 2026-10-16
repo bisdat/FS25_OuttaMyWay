@@ -143,6 +143,28 @@ assert(lastSpeed<firstSpeed
     and math.abs(lastSpeed-math.sqrt(2*1.5*0.5)*3.6)<0.02,
     "braking demand must decrease before reaching changeover")
 assert(drive:cancelMovement(vehicle))
+-- A safety stop is valid during an unfinished guide, but release still
+-- requires genuine cruise-OFF and stable physical stillness.
+positions[11].x,positions[11].z=0,0
+assert(drive:startMovement(vehicle,objective))
+assert(not drive:movementStatus(vehicle,16).isComplete)
+assert(drive:beginSettlementStop(vehicle))
+assert(not drive:stopMovement(vehicle),
+    "normal terminal release still requires waypoint completion")
+assert(not drive:stopInterruptedSettlement(vehicle),
+    "an incomplete guide cannot release before stable stopping")
+vehicle.lastSpeedReal=0.002
+local interruptedMoving=drive:settlementStopStatus(vehicle,300)
+assert(not interruptedMoving.isStopped and interruptedMoving.speedMps==2)
+vehicle.lastSpeedReal=0
+local interruptedStopped
+for i=1,6 do
+    interruptedStopped=drive:settlementStopStatus(vehicle,300)
+end
+assert(interruptedStopped.isStopped and interruptedStopped.steadyMs>=1200)
+assert(drive:stopInterruptedSettlement(vehicle))
+assert(drive.active==nil and cruise.state==0 and not motorRunning,
+    "confirmed interrupted stop must neutralise and clear its scoped lease")
 -- Interruption cannot leave cruise ACTIVE even when never stopped.
 assert(drive:startMovement(vehicle,objective))
 drive:movementStatus(vehicle,16)

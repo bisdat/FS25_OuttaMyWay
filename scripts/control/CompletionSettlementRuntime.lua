@@ -102,9 +102,26 @@ function Runtime:isAdmitted()
         and self.configuration:isResolved()==true
         and self.configuration:isEnabled()==true
 end
-function Runtime:finish(code,reason)
+function Runtime:finish(code,reason,immediate)
     local state=self.active or self.pending
     if state==nil then return end
+    -- Locally detected failures first require a confirmed physical stop,
+    -- even when the current guidance point has not been reached. External
+    -- supersession must instead relinquish Control immediately.
+    if not immediate and state.driveArmed and state.phase=="MOVING" then
+        local admitted,why=self.drive:beginSettlementStop(state.vehicle)
+        if admitted then
+            state.phase="STOP_FOR_INTERRUPTION"
+            state.interruptionCode=code
+            state.interruptionReason=reason
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_STOPPING",{
+                rootNode=tostring(state.vehicle.rootNode),
+                note="INCOMPLETE_GUIDANCE_SAFETY_STOP",
+                reason=tostring(reason)})
+            return
+        end
+        reason=tostring(reason).." stopAdmission="..tostring(why)
+    end
     self.active=nil
     self.pending=nil
     local releaseClaim=true
@@ -357,7 +374,7 @@ local function stopForAlternative(self,s,reason)
     local started,why=self.drive:beginSettlementStop(s.vehicle)
     if not started then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-            why or "ALTERNATIVE_BRAKING_UNAVAILABLE")
+            why or "ALTERNATIVE_BRAKING_UNAVAILABLE",true)
         return true
     end
     s.phase="STOP_FOR_ALTERNATIVE"
@@ -394,7 +411,7 @@ function Runtime:update(dt)
     if not self:isAdmitted() or superseded(s.vehicle)
         or pairedControlActive() or claim~=nil then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-            claim or "CONFIGURATION_JOB_OR_OTHER_CONTROL_SUPERSEDED")
+            claim or "CONFIGURATION_JOB_OR_OTHER_CONTROL_SUPERSEDED",true)
         return
     end
     if type(dt)~="number" or dt<=0 or dt>5000 then
@@ -582,8 +599,9 @@ function Runtime:update(dt)
     s.totalElapsedMs=s.totalElapsedMs+dt
     s.legElapsedMs=s.legElapsedMs+dt
     s.telemetryElapsedMs=s.telemetryElapsedMs+dt
-    if s.totalElapsedMs>TOTAL_DEADLINE_MS
-        or s.legElapsedMs>LEG_DEADLINE_MS then
+    if s.phase~="STOP_FOR_INTERRUPTION"
+        and (s.totalElapsedMs>TOTAL_DEADLINE_MS
+            or s.legElapsedMs>LEG_DEADLINE_MS) then
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
@@ -631,7 +649,8 @@ function Runtime:update(dt)
         end
     end
     local status
-    if s.phase=="STOPPING" or s.phase=="STOP_FOR_ALTERNATIVE" then
+    if s.phase=="STOPPING" or s.phase=="STOP_FOR_ALTERNATIVE"
+        or s.phase=="STOP_FOR_INTERRUPTION" then
         status=self.drive:settlementStopStatus(s.vehicle,dt)
     else
         status=self.drive:movementStatus(s.vehicle,dt)
@@ -641,8 +660,19 @@ function Runtime:update(dt)
             status and status.reason or "DRIVE_STATUS_UNAVAILABLE")
         return
     end
+    if s.phase=="STOP_FOR_INTERRUPTION" and status.isStopped then
+        local stopped,why=self.drive:stopInterruptedSettlement(s.vehicle)
+        if not stopped then
+            self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                why or "INTERRUPTION_RELEASE_UNCONFIRMED",true)
+            return
+        end
+        s.driveArmed=false
+        self:finish(s.interruptionCode,s.interruptionReason,true)
+        return
+    end
     if s.phase=="STOP_FOR_ALTERNATIVE" and status.isStopped then
-        local stopped,why=self.drive:stopMovement(s.vehicle)
+        local stopped,why=self.drive:stopInterruptedSettlement(s.vehicle)
         if not stopped then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 why or "ALTERNATIVE_NATIVE_RELEASE_UNCONFIRMED")
@@ -720,7 +750,7 @@ end
 function Runtime:relinquish(reason)
     self.waiting={}
     self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-        reason or "CONTROL_REVOKED")
+        reason or "CONTROL_REVOKED",true)
 end
 function Runtime:loadMap()
     self.pending=nil

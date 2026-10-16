@@ -351,13 +351,12 @@ function M:retargetSettlement(vehicle,objective)
     return true
 end
 
--- A settlement point is only a position witness. Maintain native braking
--- and cruise-OFF Control until actual low speed and stationary displacement
--- are observed over a bounded, continuous interval.
+-- Neutralisation is admissible while a guidance point is still incomplete.
+-- An interrupted guide is not a reached destination: physical stop evidence
+-- is independent of the waypoint-completion predicate.
 function M:beginSettlementStop(vehicle)
     local s=self.active
-    if s==nil or s.vehicle~=vehicle or not s.settlement
-        or not s.isComplete then
+    if s==nil or s.vehicle~=vehicle or not s.settlement then
         return false,"SETTLEMENT_STOP_NOT_ADMITTED"
     end
     s.stopping=true
@@ -489,6 +488,17 @@ end
 
 function M:stopMovement(vehicle)
     return release(self,vehicle,true)
+end
+
+-- A safety interruption or stopped yield can release an unfinished guide,
+-- but never on waypoint progress alone or without observed physical stillness.
+-- Keep ordinary stopMovement's waypoint-completion contract unchanged.
+function M:stopInterruptedSettlement(vehicle)
+    local s=self.active
+    if s==nil or s.vehicle~=vehicle or not s.settlement or not s.stopped then
+        return false,"SETTLEMENT_INTERRUPTED_STOP_NOT_CONFIRMED"
+    end
+    return release(self,vehicle,false)
 end
 
 function M:cancelMovement(vehicle)
