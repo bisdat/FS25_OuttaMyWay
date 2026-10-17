@@ -1,4 +1,4 @@
-# Completion Settlement Control — Field 77-Bounded Completion Parking
+# Completion Settlement Control — Spatially Selected Completion Parking
 
 ## Identity and authority
 
@@ -7,7 +7,7 @@
 
 **Primary Architecture Authority:** [Completion-Triggered Terminal Egress — Completion Settlement Control](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-settlement-control)
 
-**Current status (TEST 0.5.5.19):** Completion Parking is a working but Field 77 edge 9 / single-nominal-member-bounded runtime capability. TS019 .17 and .18 validated two independently completed workers parking after serial stopped yield and actual-pose replanning. General fields, articulated cases and mid-guide Safety Stop are unvalidated.
+**Current implementation:** Parking identifies its registered Source Field from actual assembly position and evaluates registered candidate edges. Field 77 edge 9 TS019 remains the GIANTS-validated regression; other fields and edges remain GIANTS unvalidated. The single nominal-member reverse envelope and the separately unresolved incomplete-guide Safety Stop are unchanged.
 
 ## Admission
 
@@ -17,6 +17,10 @@ A real native successful GIANTS `AIJobFieldWork` stop is the only trigger. The e
 
 TEST 0.5.5.8 admits only the already surveyed Mindenerwald registered Field **77**, native southern edge **9**, matched by its measured ordered endpoints and length. Other fields remain not admitted. This is a scoped Reality experiment, not field-dependent general product logic.
 
+
+## General Source Field and eligible parking edges
+
+The native successful FIELDWORK stop triggers the candidate. The assembly's actual root position identifies the unique registered Source Field independently of any job course or detection seed. A shared geometry context discovers registered polygon edges whose outward normal is positively resolved and whose nominal length is at least 40 metres. A local parking plan first tries the nearest geometrically eligible edge. If that yields no feasible nominal local route, incremental Parking Region Allocation compares entry stations on other eligible edges, including observed working-assembly Situation Assessment and full physical-occupancy exclusion. A candidate terminal can only be claimed after its own local manoeuvre is qualified. The selected field and edge are retained through extended infield approach, stopped handoff, replanning and final whole-nominal-assembly terminal verification. No field number or edge index grants or vetoes parking authority. Geometry and nominal physical occupancy are not road/ditch/hedge or tyre-swept safety guarantees; multi-field GIANTS execution remains the validator.
 
 ## Governing objective after the 12 October owner clarification
 
@@ -72,6 +76,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
 | [`scripts/observation/FarmEdgeGeometry.lua`](../scripts/observation/FarmEdgeGeometry.lua) | `SUPPORTS` |
 | [`scripts/observation/CompletionFieldMembership.lua`](../scripts/observation/CompletionFieldMembership.lua) | `SUPPORTS` |
+| [`scripts/observation/CompletionParkingGeometry.lua`](../scripts/observation/CompletionParkingGeometry.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/CompletionTransitRuntime.lua`](../scripts/control/CompletionTransitRuntime.lua) | `SUPPORTS` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
@@ -82,6 +87,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | --- | --- |
 | [`tests/shell/completion_settlement.lua`](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
 | [`tests/shell/completion_field_membership.lua`](../tests/shell/completion_field_membership.lua) | `CHALLENGES` |
+| [`tests/shell/completion_parking_geometry.lua`](../tests/shell/completion_parking_geometry.lua) | `CHALLENGES` |
 | [`tests/shell/completion_extended_approach.lua`](../tests/shell/completion_extended_approach.lua) | `CHALLENGES` |
 | [`tests/shell/settlement_destination_assessment.lua`](../tests/shell/settlement_destination_assessment.lua) | `CHALLENGES` |
 | [`tests/shell/completion_settlement_drive.lua`](../tests/shell/completion_settlement_drive.lua) | `CHALLENGES` |

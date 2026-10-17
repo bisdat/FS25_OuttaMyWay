@@ -87,6 +87,7 @@ jobs:
             scripts/observation/NativeJobCompletionProbe.lua \
             scripts/observation/FarmEdgeGeometry.lua \
             scripts/observation/CompletionFieldMembership.lua \
+            scripts/observation/CompletionParkingGeometry.lua \
             scripts/assessment/SettlementCorridorAssessment.lua \
             scripts/coordination/CompletionSettlementRoute.lua \
             scripts/control/CompletionTransitRuntime.lua \
@@ -124,6 +125,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/native_job_completion_probe.lua
           "$LUAJIT_BIN" tests/shell/farm_edge_geometry.lua
           "$LUAJIT_BIN" tests/shell/completion_field_membership.lua
+          "$LUAJIT_BIN" tests/shell/completion_parking_geometry.lua
           "$LUAJIT_BIN" tests/shell/settlement_corridor_assessment.lua
           "$LUAJIT_BIN" tests/shell/completion_transit.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement.lua

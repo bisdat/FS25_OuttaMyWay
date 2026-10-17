@@ -196,7 +196,8 @@ function Runtime:startLeg()
                 return
             end
             local session,why=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax,
+                s.vehicle,{sourceField=s.sourceField,edgeIndex=s.edgeIndex,
+                    stationMin=s.stationMin,stationMax=s.stationMax,
                     expectedEntryPose=s.route.entryPose})
             if session==nil then
                 self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
@@ -207,6 +208,7 @@ function Runtime:startLeg()
             self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,plan=session,
                 kind="LOCAL_HANDOFF",elapsedMs=s.totalElapsedMs,
                 stationMin=s.stationMin,stationMax=s.stationMax,
+                edgeIndex=s.edgeIndex,
                 phase="PLANNING",driveArmed=false}
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING",{
                 rootNode=tostring(s.vehicle.rootNode),
@@ -281,17 +283,9 @@ local function deferStoppedEntry(self,state,reason)
     return true
 end
 local function beginEpisode(self,job,vehicle,sourceField)
-    -- A completed job triggers settlement; it is not its field identity.
-    -- Physical Control remains limited to the already validated fixture.
-    if type(sourceField)~="table" or sourceField.fieldId~=77 then
-        publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
-            rootNode=tostring(vehicle.rootNode),
-            reason="SOURCE_FIELD_NOT_YET_SUPPORTED_FOR_PARKING",
-            fieldId=sourceField and sourceField.fieldId or "unavailable"})
-        return false
-    end
     local okay,session,reason=pcall(
-        OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle)
+        OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle,
+        {sourceField=sourceField})
     if not okay or session==nil then
         publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
             rootNode=tostring(vehicle.rootNode),
@@ -330,13 +324,6 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
         rootNode=tostring(vehicle.rootNode),fieldId=sourceField.fieldId,
         rootX=sourceField.rootX,rootZ=sourceField.rootZ,
         provenance=sourceField.provenance})
-    if sourceField.fieldId~=77 then
-        publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
-            rootNode=tostring(vehicle.rootNode),
-            fieldId=sourceField.fieldId,
-            reason="SOURCE_FIELD_NOT_YET_SUPPORTED_FOR_PARKING"})
-        return false
-    end
     if self.active~=nil or self.pending~=nil or #self.waiting>0 then
         if #self.waiting>=MAX_QUEUED_COMPLETIONS then
             publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
@@ -357,7 +344,7 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     return beginEpisode(self,job,vehicle,sourceField)
 end
 local function allocation(self,s,why)
-    local plan,reason=Allocation.beginPlan(s.vehicle,self.claims)
+    local plan,reason=Allocation.beginPlan(s.vehicle,self.claims,s.sourceField)
     if not plan then return false,reason end
     self.active=nil
     self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
@@ -402,7 +389,7 @@ function Runtime:update(dt)
     local s=self.active or self.pending
     if s~=nil and type(Situation)=="table"
         and type(Situation.sample)=="function" then
-        Situation.sample(s.vehicle,dt)
+        Situation.sample(s.vehicle,dt,s.sourceField)
     end
     if s==nil then
         if #self.waiting==0 then return end
@@ -455,8 +442,9 @@ function Runtime:update(dt)
                 return
             end
             s.stationMin=route.stationMin;s.stationMax=route.stationMax
+            s.edgeIndex=route.edge
             local plan,reason=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
-                s.vehicle,route.entryPose)
+                s.vehicle,route.entryPose,s.sourceField,route.edge)
             if not plan then
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",reason)
                 return
@@ -472,13 +460,15 @@ function Runtime:update(dt)
                 motionWitnesses=route.motionWitnesses,
                 headingWitnesses=route.headingWitnesses,
                 selectionCost=route.selectionCost,
-                alternativeEdgeStatus="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED"} end)
+                edgeIndex=route.edge,
+                edgeQualification="LOCAL_ROUTE_AND_TERMINAL_QUALIFIED"} end)
             return
         end
         if s.kind=="EXTENDED" and phase=="DONE" and route
             and #route.legs==0 then
             local plan=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax,
+                s.vehicle,{sourceField=s.sourceField,edgeIndex=s.edgeIndex,
+                    stationMin=s.stationMin,stationMax=s.stationMax,
                     expectedEntryPose=s.plan.target})
             if not plan then
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
@@ -582,6 +572,7 @@ function Runtime:update(dt)
         self.active={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
             route=route,legIndex=1,
             stationMin=s.stationMin,stationMax=s.stationMax,
+            edgeIndex=s.edgeIndex or route.edge,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
             phase="ADMITTED",driveArmed=false}
         publish("NORMAL","INFO","COMPLETION_SETTLEMENT_ADMITTED",{

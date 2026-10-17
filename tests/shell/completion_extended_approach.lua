@@ -2,6 +2,8 @@
 -- Same actual Field77 polygon as settlement's shell tests.
 OuttaMyWay={}
 dofile("scripts/observation/FarmEdgeGeometry.lua")
+dofile("scripts/observation/CompletionFieldMembership.lua")
+dofile("scripts/observation/CompletionParkingGeometry.lua")
 local G=OuttaMyWay.FarmEdgeGeometry
 local xs={131.79,143.52,153.81,162.43,165.16,165.55,175.32,
     182.15,228.15,-0.06,-10.56,-40.20}
@@ -44,7 +46,8 @@ end}
 dofile("scripts/coordination/SettlementPhysicalOccupancy.lua")
 dofile("scripts/coordination/ExtendedInfieldApproach.lua")
 local A=OuttaMyWay.ExtendedInfieldApproach
-local context=A.beginPlan(root)
+local sourceField=assert(OuttaMyWay.CompletionFieldMembership.identify(root))
+local context=A.beginPlan(root,nil,sourceField,9)
 assert(context and context.phase=="INIT")
 local status,route,reason
 for i=1,1200 do
@@ -54,7 +57,8 @@ for i=1,1200 do
     if status~="PENDING" then break end
 end
 assert(status=="DONE",reason)
-assert(route.mode=="EXTENDED_INFIELD" and route.edge==9)
+assert(route.mode=="EXTENDED_INFIELD" and route.edge==9
+    and route.field==sourceField.fieldId)
 assert(route.estimatedTravelM>80 and #route.legs>10,
     "remote completion must require an actual connecting approach")
 assert(#route.legs<=115)
@@ -83,7 +87,7 @@ local target={x=prev.x,z=prev.z,
 local saved={x=current.x,z=current.z,fx=current.fx,fz=current.fz}
 current.x,current.z,current.fx,current.fz=
     target.x,target.z,target.fx,target.fz
-local targeted=assert(A.beginPlan(root,target))
+local targeted=assert(A.beginPlan(root,target,sourceField,9))
 local targetPhase,targetRoute,targetReason=A.advancePlan(targeted,64)
 assert(targetPhase=="DONE" and targetRoute
     and targetRoute.mode=="EXTENDED_INFIELD"
@@ -109,7 +113,7 @@ other.getIsAIActive=function()return true end
 -- mission.vehicles alias must not silently stand in for that witness.
 g_currentMission.vehicles={root,other}
 g_currentMission.vehicleSystem.vehicles=nil
-local blank=assert(A.beginPlan(root))
+local blank=assert(A.beginPlan(root,nil,sourceField,9))
 local phase,_,fail=A.advancePlan(blank,64)
 assert(phase=="FAILED" and fail=="WORKER_SCENE_REGISTRY_UNAVAILABLE")
 assert(blank.sceneEvidence.registry=="MISSION_VEHICLE_SYSTEM")
