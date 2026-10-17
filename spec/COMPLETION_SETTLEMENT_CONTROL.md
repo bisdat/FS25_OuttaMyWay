@@ -71,6 +71,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | [`scripts/coordination/ExtendedInfieldApproach.lua`](../scripts/coordination/ExtendedInfieldApproach.lua) | `REALISES` |
 | [`scripts/control/CompletionSettlementRuntime.lua`](../scripts/control/CompletionSettlementRuntime.lua) | `REALISES` |
 | [`scripts/observation/FarmEdgeGeometry.lua`](../scripts/observation/FarmEdgeGeometry.lua) | `SUPPORTS` |
+| [`scripts/observation/CompletionFieldMembership.lua`](../scripts/observation/CompletionFieldMembership.lua) | `SUPPORTS` |
 | [`scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua`](../scripts/control/mechanisms/NativeStaticAssemblyDriveMechanism.lua) | `SUPPORTS` |
 | [`scripts/control/CompletionTransitRuntime.lua`](../scripts/control/CompletionTransitRuntime.lua) | `SUPPORTS` |
 | [`scripts/main.lua`](../scripts/main.lua) | `SUPPORTS` |
@@ -80,6 +81,7 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/completion_settlement.lua`](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
+| [`tests/shell/completion_field_membership.lua`](../tests/shell/completion_field_membership.lua) | `CHALLENGES` |
 | [`tests/shell/completion_extended_approach.lua`](../tests/shell/completion_extended_approach.lua) | `CHALLENGES` |
 | [`tests/shell/settlement_destination_assessment.lua`](../tests/shell/settlement_destination_assessment.lua) | `CHALLENGES` |
 | [`tests/shell/completion_settlement_drive.lua`](../tests/shell/completion_settlement_drive.lua) | `CHALLENGES` |

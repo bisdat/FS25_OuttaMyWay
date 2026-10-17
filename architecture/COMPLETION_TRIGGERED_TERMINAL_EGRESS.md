@@ -48,6 +48,8 @@ Completion Settlement Control owns the admitted physical movement, current comma
 
 The **actual pose and current complete assembly** at successful FIELDWORK completion are inputs to Situation Assessment. Parking is not an obligation to traverse a selected edge end to end or reach a fixed point.
 
+**Source Field is spatial membership, not native job metadata.** The successful GIANTS Job Episode determines *when* Completion Parking may be considered. A separately observed assembly root within exactly one currently registered Field World polygon identifies the candidate Source Field at that completion. The association is retained during serial parking, including any subsequent movement outside that polygon. Unknown or overlapping registered field membership cannot authorise parking. Root membership identifies a field; complete-assembly footprint and safe corridor remain distinct evidence for movement and terminal settlement.
+
 Select a feasible terminal region and an attainable approach jointly, then choose a pose-conditioned entry manoeuvre (for example, short reverse followed by forward entry or a forward infield turn) under the available Control contract. A nominally qualified entry pose is not proof the vehicle will arrive there with the needed heading.
 
 The order of responsibility is:

@@ -181,6 +181,17 @@ getWorldTranslation=function()
     -- world-pose fixture only feeds each new leg's target distance.
     return 0,0,0
 end
+-- Source Field is observed independently from the native completion job.
+-- The lifecycle fixture isolates Control; spatial containment has its own test.
+local membershipCalls=0
+local missingMembership=false
+local fieldOverride=nil
+OuttaMyWay.CompletionFieldMembership={identify=function(vehicle)
+    membershipCalls=membershipCalls+1
+    if missingMembership then return nil,"ASSEMBLY_OUTSIDE_REGISTERED_FIELDS" end
+    return {fieldId=fieldOverride or 77,rootNode=vehicle.rootNode,
+        provenance="ASSEMBLY_ROOT_REGISTERED_POLYGON_MEMBERSHIP"}
+end}
 dofile("scripts/control/CompletionSettlementRuntime.lua")
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local a={rootNode=12,x=0,z=0,
@@ -191,6 +202,7 @@ local b={rootNode=24,x=0,z=0,
     getCurrentAIJob=function()return nil end}
 local runtime=Runtime.new(config)
 assert(not runtime:onNativeCompletion({},a,false))
+assert(membershipCalls==0,"native transit rejection must not scan registered fields")
 assert(#driveCalls==0 and routeCalls==0,
     "Transit rejection must not move")
 assert(runtime:onNativeCompletion({},a,true))
@@ -429,4 +441,35 @@ failCancel=false
 failure=nil
 runtime:loadMap()
 assert(runtime.claims[uncertain]==nil)
+-- A unique registered field, not the native Job Episode, determines
+-- eligibility. Other fields and absent memberships must not drive.
+local other={rootNode=301,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local callsBefore=routeCalls
+fieldOverride=29
+assert(not runtime:onNativeCompletion({},other,true))
+assert(routeCalls==callsBefore and runtime.active==nil
+    and runtime.pending==nil,"unvalidated field cannot enter Field77 Control")
+fieldOverride=nil
+missingMembership=true
+assert(not runtime:onNativeCompletion({},other,true))
+assert(routeCalls==callsBefore
+    and events[#events].fields.reason=="ASSEMBLY_OUTSIDE_REGISTERED_FIELDS")
+missingMembership=false
+-- Physical membership is captured once at completion and retained
+-- unchanged through serial admission even if the scene changes later.
+local first={rootNode=302,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local queued={rootNode=303,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},first,true))
+assert(runtime:onNativeCompletion({},queued,true))
+assert(runtime.waiting[1].sourceField.fieldId==77)
+local countBefore=membershipCalls
+fieldOverride=29
+for i=1,12 do runtime:update(16) end
+assert(runtime.waiting[1]==nil and membershipCalls==countBefore,
+    "queued parking must preserve the original source-field association")
+fieldOverride=nil
+runtime:loadMap()
 print("completion settlement TEST lifecycle, claim handoff, stable-stop alternative, retained unsafe claim and scene attribution PASS")
