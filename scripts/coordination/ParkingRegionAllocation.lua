@@ -11,10 +11,8 @@ local Local=OuttaMyWay.CompletionSettlementRoute
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Parking=OuttaMyWay.CompletionParkingGeometry
 local Membership=OuttaMyWay.CompletionFieldMembership
-local MAX_SITES=64
 local MAX_SITES_PER_EDGE=8
-local STATION_START_M=20
-local STATION_STEP_M=25
+local MIN_TERMINAL_MARGIN_M=3
 local function finite(v)
     return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge
 end
@@ -153,15 +151,21 @@ function M.advancePlan(s,units)
         s.edgeEvidence=Situation.edgeEvidence(poly)
         local sorted={}
         for _,f in ipairs(context.frames) do
-            local stations=0
-            for station=STATION_START_M,f.length-STATION_START_M,STATION_STEP_M do
-                if stations>=MAX_SITES_PER_EDGE then break end
-                stations=stations+1
-                local candidate=entry(f,station)
-                local dx,dz=p.x-candidate.x,p.z-candidate.z
-                sorted[#sorted+1]={edgeIndex=f.index,frame=f,
-                    station=station,entry=candidate,
-                    score=math.sqrt(dx*dx+dz*dz)}
+            -- Candidate stations span the *actual* edge. The previous
+            -- 20+25m*8 stations examined only the first 195 metres,
+            -- excluding usable portions of longer edges by construction.
+            local margin=math.max(MIN_TERMINAL_MARGIN_M,math.min(own+1,
+                f.length*0.25))
+            local available=f.length-2*margin
+            if available>0 then
+                for j=1,MAX_SITES_PER_EDGE do
+                    local station=margin+available*(j-0.5)/MAX_SITES_PER_EDGE
+                    local candidate=entry(f,station)
+                    local dx,dz=p.x-candidate.x,p.z-candidate.z
+                    sorted[#sorted+1]={edgeIndex=f.index,frame=f,
+                        station=station,entry=candidate,
+                        score=math.sqrt(dx*dx+dz*dz)}
+                end
             end
         end
         if #sorted==0 then
@@ -177,7 +181,7 @@ function M.advancePlan(s,units)
         return "PENDING"
     end
     if s.phase=="NEXT" then
-        if s.siteIndex>=math.min(MAX_SITES,#s.sites) then
+        if s.siteIndex>=#s.sites then
             s.finished=true
             return "FAILED",nil,"NO_QUALIFIED_TERMINAL_REGION"
         end

@@ -128,6 +128,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/completion_parking_geometry.lua
           "$LUAJIT_BIN" tests/shell/settlement_corridor_assessment.lua
           "$LUAJIT_BIN" tests/shell/completion_transit.lua
+          "$LUAJIT_BIN" tests/shell/completion_transit_plan.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement_route.lua
           "$LUAJIT_BIN" tests/shell/settlement_destination_assessment.lua

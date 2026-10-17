@@ -277,11 +277,9 @@ function Route.plan(vehicle,checkpoint,options)
     end
     local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return nil,why end
-    -- This bounded experiment does not infer articulation stability from
-    -- nominal rigid rectangles. Multi-member reversing remains unvalidated.
-    if foot.memberCount~=1 then
-        return nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
-    end
+    -- Captured current member rectangles bound the nominal candidate.
+    -- The native actuator handles forward/reverse for multi-member assemblies;
+    -- live member poses are rechecked during guidance and at final stopping.
     local occupants,occupiedWhy=Occupancy.snapshot(vehicle,poly)
     if occupants==nil then return nil,occupiedWhy end
     local ownRadius=Occupancy.footRadius(vehicle)
@@ -661,9 +659,8 @@ local function executeBudget(s)
             if s.options and s.options.entryPose then
                 foot=rotatedFootForEntry(foot,actual,current)
             end
-            if foot.memberCount~=1 then
-                return "FAILED",nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
-            end
+            -- A multi-member assembly participates in the same bounded
+            -- candidate search; unsupported routes fail geometry, not identity.
             local frame=edgeFrame(edge,poly)
             if frame==nil then return "FAILED",nil,"EDGE_OUTWARD_UNAVAILABLE" end
             local occupants,occupiedWhy=Occupancy.snapshot(s.vehicle,poly)
@@ -746,6 +743,31 @@ function Route.guard(vehicle,route,index)
         or (not G.inside(route.poly,p.x,p.z)
             and (d<0 or d>STOP_DEPTH_MAX_M)) then
         return false,"SETTLEMENT_ENTRY_OUTSIDE_EDGE_ENVELOPE"
+    end
+    local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if foot==nil then return false,why end
+    if foot.memberCount~=route.memberCount then
+        return false,"ASSEMBLY_MEMBERSHIP_CHANGED"
+    end
+    -- Actual current member poses are independent of root-only guidance.
+    -- The nominal planner may rotate a captured configuration; movement
+    -- continuation must reject observed deviation into other field polygons
+    -- or outside the nominated exterior corridor.
+    local boxes=rotatedFoot(foot,p,p)
+    if not noNeighborHit(boxes,route.neighbors) then
+        return false,"LIVE_MEMBER_INTERSECTS_NEIGHBOUR_FIELD"
+    end
+    for m=1,#boxes do
+        for i=1,4 do
+            local v=boxes[m][i]
+            if not G.inside(route.poly,v.x,v.z) then
+                local station,depth=coordinates(v,route.frame)
+                if station<0 or station>route.frame.length
+                    or depth<0 or depth>STOP_DEPTH_MAX_M then
+                    return false,"LIVE_MEMBER_OUTSIDE_SELECTED_EDGE_CORRIDOR"
+                end
+            end
+        end
     end
     return Occupancy.nextClear(vehicle,route,index or 1)
 end

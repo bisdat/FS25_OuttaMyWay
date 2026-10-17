@@ -44,6 +44,14 @@ OuttaMyWay.PairTransitRegion={
                     z=lateralZ*1.2*side+p.fz*2.5*front}
             end
         end
+        if v~=other and memberCount>1 then
+            -- Identical nominal members isolate *admission policy* from
+            -- geometry feasibility. Real articulated node changes are
+            -- covered separately by the live-member-geometry witness.
+            for i=1,4 do
+                corners[#corners+1]={x=corners[i].x,z=corners[i].z}
+            end
+        end
         return {rootX=p.x,rootZ=p.z,
             corners=corners,memberCount=v==other and 1 or memberCount}
     end
@@ -203,8 +211,16 @@ assert(Route.plan(vehicle,nil,fixtureOptions)==nil)
 current.x,current.z=201.478,-256.684
 memberCount=2
 local multi,reasonMulti=Route.plan(vehicle,nil,fixtureOptions)
-assert(multi==nil and reasonMulti=="ARTICULATED_ENTRY_REALITY_UNVALIDATED",
-    "a nominal rigid path does not authorise articulated reversing")
+assert(multi and multi.memberCount==2,reasonMulti or
+    "a multi-member assembly must enter nominal route qualification")
+local multiSession=assert(Route.beginPlan(vehicle,fixtureOptions))
+local multiPhase,multiRoute,multiReason
+for i=1,12500 do
+    multiPhase,multiRoute,multiReason=Route.advancePlan(multiSession,64)
+    if multiPhase~="PENDING" then break end
+end
+assert(multiPhase=="DONE" and multiRoute.memberCount==2,multiReason or
+    "incremental planner must not retain a single-member prototype veto")
 -- This fixture cannot prove the TS019 world failure. Deliberately deny
 -- all terminal stations to exercise attributed, finite local refusal.
 memberCount=1

@@ -50,9 +50,8 @@ local function context(vehicle,sourceField,edgeIndex)
     end
     local foot,footWhy=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return nil,footWhy end
-    if foot.memberCount~=1 then
-        return nil,"EXTENDED_ARTICULATED_SWEEP_UNVALIDATED"
-    end
+    -- Full selected assembly, including its current attached-member
+    -- rectangles, is eligible for nominal path assessment.
     local peers,inventory,reason,evidence=M.activePeers(vehicle,poly)
     if not inventory then return nil,reason,evidence end
     local occupants,occupiedWhy=Occupancy.snapshot(vehicle,poly)
@@ -384,6 +383,20 @@ function M.guard(vehicle,route,index)
     if p==nil then return false,"EXTENDED_APPROACH_POSE_UNAVAILABLE" end
     if not G.inside(route.poly,p.x,p.z) then
         return false,"EXTENDED_APPROACH_FIELD_CONTAINMENT_LOST"
+    end
+    -- The candidate search uses captured nominal member geometry.
+    -- During actual movement observe the current attachment configuration,
+    -- not the rigidly rotated prediction used to shortlist candidates.
+    local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if foot==nil then return false,why end
+    if foot.memberCount~=route.memberCount then
+        return false,"ASSEMBLY_MEMBERSHIP_CHANGED"
+    end
+    for i=1,#foot.corners do
+        local corner=foot.corners[i]
+        if not G.inside(route.poly,p.x+corner.x,p.z+corner.z) then
+            return false,"EXTENDED_LIVE_MEMBER_OUTSIDE_SOURCE_FIELD"
+        end
     end
     local others,okay,reason=M.activePeers(vehicle,route.poly)
     if not okay then return false,reason or "EXTENDED_WORKER_OBSERVATION_UNAVAILABLE" end

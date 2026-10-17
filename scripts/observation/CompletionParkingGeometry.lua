@@ -6,7 +6,9 @@ OuttaMyWay.CompletionParkingGeometry={}
 local M=OuttaMyWay.CompletionParkingGeometry
 local G=OuttaMyWay.FarmEdgeGeometry
 local MAX_FIELDS=512
-local MIN_EDGE_M=40
+-- A possible terminal needs at least three metres of longitudinal margin
+-- from each endpoint; actual member fit is evaluated by the route planner.
+local MIN_EDGE_M=6
 local function finite(v)
     return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge
 end

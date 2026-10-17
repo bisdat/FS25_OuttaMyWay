@@ -27,10 +27,10 @@ local c77=assert(Parking.enumerate(source77,first))
 local c29=assert(Parking.enumerate(source29,second))
 assert(c77.fieldId==77 and c29.fieldId==29)
 assert(#c77.frames==4 and #c29.frames==4,
-    "every adequately long registered edge may be considered")
+    "every registered candidate is screened by actual geometry")
 local found={}
 for _,f in ipairs(c29.frames) do
-    assert(f.length>=40 and f.index>=1 and f.index<=4)
+    assert(f.length>=6 and f.index>=1 and f.index<=4)
     found[f.index]=true
     assert(f.nx~=nil and f.nz~=nil and f.ux~=nil)
 end
@@ -46,6 +46,14 @@ assert(assert(Parking.select(moved)).index~=initialEdge.index,
 g_fieldManager.fields[15]=field(15,0,900,50,940)
 local context=assert(Parking.enumerate(source29,second))
 assert(#context.neighbors==2)
+g_fieldManager.fields[15]=nil
+local narrow=field(15,1000,1000,1014,1010)
+g_fieldManager.fields[15]=narrow
+poses[2]={x=790,z=750}
+local narrowContext=assert(Parking.enumerate({
+    field=narrow,fieldId=15}, {rootNode=2}))
+assert(#narrowContext.frames==4,
+    "small but geometrically possible edges must not be discarded by a 40m fixture")
 g_fieldManager.fields[15]=nil
 g_fieldManager.fields[3]={fieldId=3,densityMapPolygon={}}
 local missing,why=Parking.enumerate(source29,second)

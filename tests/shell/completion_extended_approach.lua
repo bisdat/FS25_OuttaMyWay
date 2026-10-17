@@ -41,7 +41,12 @@ OuttaMyWay.PairTransitRegion={capture=function(vehicle)
                 z=-signX*1.5*p.fx+signZ*3*p.fz}
         end
     end
-    return {memberCount=1,corners=corners}
+    local count=vehicle==root and (root.memberCount or 1) or 1
+    if count>1 then
+        for i=1,4 do corners[#corners+1]={
+            x=corners[i].x,z=corners[i].z} end
+    end
+    return {memberCount=count,corners=corners}
 end}
 dofile("scripts/coordination/SettlementPhysicalOccupancy.lua")
 dofile("scripts/coordination/ExtendedInfieldApproach.lua")
@@ -93,6 +98,13 @@ assert(targetPhase=="DONE" and targetRoute
     and targetRoute.mode=="EXTENDED_INFIELD"
     and #targetRoute.legs==0,
     "qualified entry already reached must hand off to local planner")
+root.memberCount=2
+local articulated=assert(A.beginPlan(root,target,sourceField,9))
+local multiPhase,multiRoute,multiWhy=A.advancePlan(articulated,64)
+assert(multiPhase=="DONE" and multiRoute
+    and multiRoute.memberCount==2,multiWhy or
+    "multi-member nominal entry must not be categorically excluded")
+root.memberCount=nil
 current.x,current.z,current.fx,current.fz=
     saved.x,saved.z,saved.fx,saved.fz
 -- New active-worker position in front of the route invalidates authority.

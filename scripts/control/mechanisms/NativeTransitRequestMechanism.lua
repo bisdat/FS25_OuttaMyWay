@@ -68,9 +68,15 @@ function Mechanism:requestTransit(vehicle)
     if type(source)~="table" or type(source.getTransitRequests)~="function" then
         return false,"TRANSIT_REQUEST_SOURCE_UNAVAILABLE"
     end
-    local ok,plan=pcall(source.getTransitRequests,source,vehicle)
-    if not ok or type(plan)~="table"
-        or validActions(plan.transitActions)~=true
+    local ok,plan,why=pcall(source.getTransitRequests,source,vehicle)
+    if not ok then
+        return false,"TRANSIT_REQUEST_SOURCE_EXCEPTION"
+    end
+    if type(plan)~="table" then
+        return false,type(why)=="string" and why or
+            "TRANSIT_REQUEST_PLAN_UNAVAILABLE"
+    end
+    if validActions(plan.transitActions)~=true
         or validActions(plan.restoreActions)~=true then
         return false,"TRANSIT_REQUEST_PLAN_INVALID"
     end
@@ -84,7 +90,8 @@ function Mechanism:requestTransit(vehicle)
     if not sent then return false,reason end
     state.isRequestAccepted=true
     return true,{isTransitRequested=true,isConfigurationVerified=false,
-        isReadyGateRequired=false}
+        isReadyGateRequired=false,
+        unresolvedFoldCount=plan.unknownFoldCount or 0}
 end
 
 -- Cancellation sends cached inverse requests without waiting for completion.
