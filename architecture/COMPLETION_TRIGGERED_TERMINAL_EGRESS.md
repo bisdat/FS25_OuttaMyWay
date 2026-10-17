@@ -48,6 +48,14 @@ Completion Settlement Control owns the admitted physical movement, current comma
 
 The **actual pose and current complete assembly** at successful FIELDWORK completion are inputs to Situation Assessment. Parking is not an obligation to traverse a selected edge end to end or reach a fixed point.
 
+### Source Field identity and candidate edges
+
+The **Source Field** for Completion Parking is the registered Field World polygon associated with the successfully completed **Job Episode**, not an arbitrary polygon containing the vehicle's current root or a displayed farmland label. The completion subject and that field must be positively associated. Root position may help corroborate a source field, but a root can leave its field at completion or while awaiting a serial parking turn. Ambiguous, absent or contradictory source-field identity cannot authorise physical parking.
+
+The Source Field's registered boundary provides **candidate edge segments**, not permission to cross them. An edge is merely a geometric candidate until the observed exterior margin and a specific assembly's **Approach, Run-Out and Terminal Envelopes** together support feasible parking there. A positive gap to another registered field does not establish usable road-free margin. Where a road, physical obstacle, terrain boundary, occupied region or necessary connection remains unknown, the affected candidate is not qualified for Control.
+
+Candidate discovery, evidence qualification, destination preference and physical Control are separate responsibilities. Compare only sufficiently qualified alternatives under current productive demand and settlement claims; never select an edge simply because it is indexed first, is nearest to the completion root, or appears longest. Once a route is admitted, its source-field and selected-edge identities must remain associated with the claim, local handoff and final whole-assembly terminal assessment rather than being re-inferred from a vehicle that has moved.
+
 Select a feasible terminal region and an attainable approach jointly, then choose a pose-conditioned entry manoeuvre (for example, short reverse followed by forward entry or a forward infield turn) under the available Control contract. A nominally qualified entry pose is not proof the vehicle will arrive there with the needed heading.
 
 The order of responsibility is:

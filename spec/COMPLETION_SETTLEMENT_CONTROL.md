@@ -18,6 +18,90 @@ A real native successful GIANTS `AIJobFieldWork` stop is the only trigger. The e
 TEST 0.5.5.8 admits only the already surveyed Mindenerwald registered Field **77**, native southern edge **9**, matched by its measured ordered endpoints and length. Other fields remain not admitted. This is a scoped Reality experiment, not field-dependent general product logic.
 
 
+## General Source Field and edge eligibility — contract for future capability
+
+**Current implementation boundary:** The accepted movement path remains restricted
+to Mindenerwald registered Field 77, edge 9 and a single nominal assembly
+member. The rules in this section govern extension; they do not imply that
+another field/edge has passed GIANTS admission or that a physical action is
+permitted before its evidence exists.
+
+**Source Field proof before edge choice.** At positive native FIELDWORK
+completion, associate the physical completion subject and its successful Job
+Episode with one positively identified registered Field World polygon. A
+farmland/UI label is not a native field identifier. The completion root's
+position at the callback is supporting location evidence only, not exclusive
+Job Episode field identity. If one trustworthy association cannot be
+established, refuse physical parking without affecting the independent
+Completion Transit request. Preserve this association across a queued serial
+turn, planning, stopped yield, fresh-pose replan and terminal verification.
+
+**Candidate versus qualified edge.** Enumerate the identified polygon's
+nondegenerate native consecutive-vertex edges, with explicit endpoints,
+edge identity, consistent outward direction and polygon provenance.
+Index/order, length, compass orientation and outward-normal samples alone
+are candidate evidence. An ambiguous outward side, unresolved source polygon
+or edge identity cannot qualify a candidate. Screening must not confuse
+displayed farmland identity with native field identity.
+
+For each candidate, distinguish the following successive findings:
+
+1. **Possible exterior region:** bounded longitudinal station and depth,
+   registered neighbouring fields, surface/access and any observed limiting
+   terrain, road or physical obstacle; gaps, missing coverage, unknown bounds
+   and source-polygon re-entry remain explicit. This is Exterior Margin
+   Profile evidence, not Control authority.
+2. **Assembly-conditioned Settlement Corridor:** the actual complete
+   physical assembly and current root pose must admit mutually connected
+   Approach, Run-Out and Terminal Envelopes, including current productive
+   demand, other occupied/claimed regions and admissible physical steering.
+   No nominal nonintersection or empty sample point alone proves this.
+3. **Destination decision and claim:** compare only sufficiently qualified
+   candidates for viable travel and protected productive work, then claim
+   one terminal region and route. A shorter root-to-edge distance, longer
+   segment or first registered edge is not a clearance verdict.
+4. **Movement admission and terminal result:** selected native Field World
+   identity, field-edge identity, route, claim and actual-pose handoff must
+   agree at every Control transition. Revalidate necessary live evidence,
+   independently verify physical stop and whole-assembly terminal occupation,
+   and never infer successful parking from candidate qualification.
+
+**Fail-closed scope:** If a candidate's necessary road/obstacle boundary is
+unresolved or if current assembly manoeuvre support is unvalidated, that
+candidate cannot acquire *new* general-field Control authority. The
+already field-validated TS019 fixture remains the separate, explicitly
+bounded supported movement case; these prospective rules do not retroactively
+veto its witnessed positive physical parking.
+
+**Validation before enabling a second field:**
+- **TS019 / Field 77 / edge 9:** same positive completion → serial
+  settlement → stopped yield → actual-pose replan → physical parking result;
+  no changed default admission or routing.
+- **Riverbend / displayed Farmland 2, registered Field 29:** independently
+  associate the native completed Job Episode to Field 29, enumerate its
+  ordered edges and show the human-nominated eastern edge 1 as a candidate
+  without treating a farmland label, sampled unblocked grass or apparent
+  separation to another field as an executable verge.
+- **Negative evidence:** mismatch or ambiguity between completed Job Episode
+  and registered polygon; missing/outward-ambiguous edge; wrong registered
+  polygon; road occupying an apparently large inter-field gap; short or
+  disconnected margin; physically unsupported assembly; concurrent productive
+  demand. These cases must not issue native parking commands.
+- Only once a distinct second site has positive corridor evidence should a
+  separate GIANTS physical-movement experiment be proposed, including its
+  safe refusal/control handback and whole-assembly result.
+
+**Source traceability:** Current `NativeJobCompletionProbe` forwards job and
+vehicle but does not supply an independently qualified Source Field to
+Completion Parking; `CompletionSettlementRuntime`,
+`CompletionSettlementRoute`, `ExtendedInfieldApproach`,
+`ParkingRegionAllocation` and `SettlementDestinationAssessment` each
+currently depend on the selected Field 77 fixture. This is an implementation
+gap, not an invitation to substitute post-completion root containment for
+Job Episode identity. Which GIANTS field-identity witness can be obtained
+reliably while FIELDWORK is active remains a bounded implementation/Reality
+question, not a new architectural assumption.
+
 ## Governing objective after the 12 October owner clarification
 
 **Architecture authority:** [Pose-Conditioned Terminal Settlement](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#pose-conditioned-terminal-settlement).
