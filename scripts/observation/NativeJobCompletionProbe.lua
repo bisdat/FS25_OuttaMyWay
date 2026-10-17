@@ -124,7 +124,7 @@ function Probe:onJobStopped(job,aiMessage)
         or self.configuration:isResolved()~=true
         or self.configuration:isEnabled()~=true
         or not isFieldWorkJob(job) then
-        self.sourceFields[job]=nil
+        if type(job)=="table" then self.sourceFields[job]=nil end
         return
     end
     if self.seen[job] then return end

@@ -131,7 +131,8 @@ assert(#reports==6 and #completions==3,
     "disabled product must neither observe nor forward completion")
 enabled=true
 callback(target,instance({}),instance(AIMessageSuccessFinishedJob))
-assert(#reports==6,"unrelated job class must be excluded")
+callback(target,nil,instance(AIMessageSuccessFinishedJob))
+assert(#reports==6,"nil and unrelated jobs must be ignored")
 probe:deleteMap()
 assert(unsubscribed and not probe.subscribed
     and next(probe.sourceFields)==nil)
