@@ -847,3 +847,58 @@ and that manual stop does not trigger positive completed-Source-Field output.
 Source Field witness or qualify any new parking edge. Its observation is the
 smallest read-only test of a proposed source-field binding before investing
 in broad destination or road-margin Generalisation.
+
+## TEST 0.5.5.26 — TS019 Source Field candidate falsification (17 October 2026)
+
+**Reality input:** \`0.5.5.26_TS019.zip\` with one 3,030-line GIANTS log;
+no video. Product start at 08:30:13.236, \`enabled=true\`;
+the native FIELDWORK success events prove DIAGNOSTIC publication was active.
+
+**Positive physical parking regression (log-validated, not independently
+video-validated):** Field 77 two-sprayer serial settlement completed.
+Job 2 (root 396389) completed FIELDWORK at 08:37:03.661, ran an extended
+guide, safely stopped, yielded after \`LOCAL_ROUTE_MISSES_CLAIMED_TERMINAL\`
+at 08:38:19.787, then later replanned with \`FORWARD_J\`. Job 3 (root
+400092) completed FIELDWORK at 08:37:58.671, queued and then parked on
+\`REVERSE_FORWARD\`, with positive
+\`COMPLETION_SETTLEMENT_FINISHED\` at 08:38:47.111. Root 396389 finished
+its separately replanned local parking at 08:39:10.928. Both final stop
+records confirm \`cruiseState=0\` and \`steadyMs>1200\`; both terminal
+records report \`WHOLE_NOMINAL_ASSEMBLY_IN_INTERFIELD_PARKING_REGION\`.
+No post-stop verifier warning is present in this particular log.
+
+**Source Field observation — two negatives, identity hypothesis not
+confirmed:** job 2 (root 396389, 08:37:03.661) and job 3 (root
+400092, 08:37:58.671) each published
+\`NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE\` with
+\`detectionX=unavailable\`, \`detectionZ=unavailable\`,
+\`fieldId=unavailable\`, \`status=NOT_OBSERVED\` and
+\`provenance=NO_ACTIVE_FIELD_DETECTION_WITNESS\`.
+Earlier job IDs 0 and 1 were native non-success stops. Both final
+FIELDWORK episodes lasted longer than the observer's proposed 1-second
+sample interval, so simple lack of run duration is not a persuasive
+explanation. The present event schema **does not identify which input
+failed**, so a missing detection seed, an active-job identity mismatch,
+an unavailable strategy/registry, or a polygon mismatch cannot be
+distinguished from the finished log.
+
+**Version-limited GIANTS source interpretation:** published
+\`AIDriveStrategyFieldCourse:setAIVehicle\` (v1.20) sets
+\`self.fieldDetectionX/Z\` in the normal detection path but may skip that
+path when applying course reconstruction data from a save. That is a
+*possible* explanation for this result, not a confirmed cause in
+FS25 1.24. Native job restarts in this TS019 run further justify
+preserving exact Job Episode identity. Neither source reasoning nor
+a negative candidate output disproves the physical parking result.
+
+**Next discriminator:** at the existing positive completion event,
+preserve a bounded **negative observation reason** from the live
+active-job sampling stage, such as
+\`NO_ACTIVE_SAMPLE\` / \`ACTIVE_JOB_IDENTITY_MISMATCH\` /
+\`ACTIVE_FIELD_COURSE_UNAVAILABLE\` /
+\`FIELD_DETECTION_SEED_UNAVAILABLE\` /
+\`FIELD_DETECTION_POLYGON_UNMATCHED\`. Do not commission additional
+field-wide surveys, change parking Control, infer a Source Field from
+post-job root containment, or promote this evidence to general-field
+admission. Riverbend registered Field 29 is still an independently
+pending validation fixture, not a completed result.
