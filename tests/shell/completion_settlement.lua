@@ -441,19 +441,21 @@ failCancel=false
 failure=nil
 runtime:loadMap()
 assert(runtime.claims[uncertain]==nil)
--- A unique registered field, not the native Job Episode, determines
--- eligibility. Other fields and absent memberships must not drive.
+-- Every uniquely identified registered Source Field may begin bounded
+-- planning. A different field ID no longer vetoes admission.
 local other={rootNode=301,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local callsBefore=routeCalls
 fieldOverride=29
-assert(not runtime:onNativeCompletion({},other,true))
-assert(routeCalls==callsBefore and runtime.active==nil
-    and runtime.pending==nil,"unvalidated field cannot enter Field77 Control")
+assert(runtime:onNativeCompletion({},other,true))
+assert(routeCalls==callsBefore+1 and runtime.active==nil
+    and runtime.pending and runtime.pending.sourceField.fieldId==29,
+    "non-fixture source fields must enter independently qualified planning")
+runtime:loadMap()
 fieldOverride=nil
 missingMembership=true
 assert(not runtime:onNativeCompletion({},other,true))
-assert(routeCalls==callsBefore
+assert(routeCalls==callsBefore+1
     and events[#events].fields.reason=="ASSEMBLY_OUTSIDE_REGISTERED_FIELDS")
 missingMembership=false
 -- Physical membership is captured once at completion and retained
