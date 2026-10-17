@@ -9,8 +9,10 @@ local G=OuttaMyWay.FarmEdgeGeometry
 local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
 local Local=OuttaMyWay.CompletionSettlementRoute
 local Situation=OuttaMyWay.SettlementDestinationAssessment
-local MAX_SITES=8
-local EDGE_STATIONS={20,45,70,95,120,145,170,195}
+local Parking=OuttaMyWay.CompletionParkingGeometry
+local Membership=OuttaMyWay.CompletionFieldMembership
+local MIN_TERMINAL_MARGIN_M=3
+local MIN_STATION_SPACING_M=20
 local function finite(v)
     return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge
 end
@@ -20,27 +22,6 @@ local function position(vehicle)
     local ok,x,_,z=pcall(getWorldTranslation,vehicle.rootNode)
     if ok and finite(x) and finite(z) then return {x=x,z=z} end
     return nil
-end
-local function fixture()
-    local manager=g_fieldManager
-    if type(manager)~="table" or type(manager.fields)~="table" then
-        return nil,"ALLOCATION_FIELD_REGISTRY_UNAVAILABLE"
-    end
-    local field=manager.fields[77]
-    if type(manager.getFieldById)=="function" then
-        local ok,f=pcall(manager.getFieldById,manager,77)
-        if ok and type(f)=="table" then field=f end
-    end
-    local poly=G.polygonFor(field)
-    local edge=poly and G.edges(poly)[9]
-    if edge==nil or math.abs(edge.length-230.97)>3 then
-        return nil,"ALLOCATION_EDGE_9_UNAVAILABLE"
-    end
-    local nx,nz=G.outwardAt(poly,edge,
-        (edge.ax+edge.bx)*.5,(edge.az+edge.bz)*.5)
-    if nx==nil then return nil,"ALLOCATION_OUTWARD_UNAVAILABLE" end
-    return {poly=poly,ax=edge.ax,az=edge.az,ux=edge.dx/edge.length,
-        uz=edge.dz/edge.length,nx=nx,nz=nz,length=edge.length}
 end
 local function entry(f,station)
     return {x=f.ax+f.ux*station-f.nx*18,
@@ -121,11 +102,11 @@ function M.claimClear(ledger,vehicle,poly)
     end
     return true
 end
-function M.beginPlan(vehicle,ledger)
+function M.beginPlan(vehicle,ledger,sourceField)
     if type(vehicle)~="table" or type(ledger)~="table" then
         return nil,"ALLOCATION_INPUT_UNAVAILABLE"
     end
-    return {vehicle=vehicle,ledger=ledger,phase="INIT",
+    return {vehicle=vehicle,ledger=ledger,sourceField=sourceField,phase="INIT",
         spent=0,advances=0,siteIndex=0}
 end
 function M.advancePlan(s,units)
@@ -135,37 +116,66 @@ function M.advancePlan(s,units)
     end
     s.advances=s.advances+1
     if s.phase=="INIT" then
-        local f,why=fixture()
-        if f==nil then s.finished=true;return "FAILED",nil,why end
+        local source=s.sourceField
+        if source==nil then
+            local why
+            source,why=Membership.identify(s.vehicle)
+            if source==nil then
+                s.finished=true;return "FAILED",nil,why
+            end
+        end
+        local context,why=Parking.enumerate(source,s.vehicle)
+        if context==nil then s.finished=true;return "FAILED",nil,why end
+        s.sourceField=source
+        local poly=context.poly
         local p=position(s.vehicle)
         if p==nil then
             s.finished=true;return "FAILED",nil,"ALLOCATION_ROOT_POSE_UNAVAILABLE"
         end
         local own=Occupancy.footRadius(s.vehicle)
-        local occupants,occupiedWhy=Occupancy.snapshot(s.vehicle,f.poly)
+        local occupants,occupiedWhy=Occupancy.snapshot(s.vehicle,poly)
         if occupants==nil then
             s.finished=true;return "FAILED",nil,occupiedWhy
         end
         if own==nil then
             s.finished=true;return "FAILED",nil,"ALLOCATION_OWN_FOOTPRINT_UNKNOWN"
         end
-        local situation,situationWhy=Situation.observe(s.vehicle,f.poly)
+        local situation,situationWhy=Situation.observe(s.vehicle,poly)
         if situation==nil then
             s.finished=true
             return "FAILED",nil,situationWhy or "DESTINATION_SITUATION_UNAVAILABLE"
         end
-        s.frame,s.own,s.occupants=f,own,occupants
+        s.poly,s.own,s.occupants=poly,own,occupants
         s.situation=situation
-        s.edgeEvidence=Situation.edgeEvidence(f.poly)
+        s.fieldId=context.fieldId
+        s.edgeEvidence=Situation.edgeEvidence(poly)
         local sorted={}
-        for i=1,#EDGE_STATIONS do
-            local station=EDGE_STATIONS[i]
-            local candidate=entry(f,station)
-            local dx,dz=p.x-candidate.x,p.z-candidate.z
-            sorted[#sorted+1]={station=station,entry=candidate,
-                score=math.sqrt(dx*dx+dz*dz)}
+        for _,f in ipairs(context.frames) do
+            -- Candidate stations span the *actual* edge. The previous
+            -- 20+25m*8 stations examined only the first 195 metres,
+            -- excluding usable portions of longer edges by construction.
+            local margin=math.max(MIN_TERMINAL_MARGIN_M,math.min(own+1,
+                f.length*0.25))
+            local available=f.length-2*margin
+            if available>0 then
+                -- Sampling density follows actual edge length and the
+                -- represented assembly, not a fixed first-N site quota.
+                local spacing=math.max(MIN_STATION_SPACING_M,own*2)
+                local stations=math.max(1,math.ceil(available/spacing))
+                for j=1,stations do
+                    local station=margin+available*(j-0.5)/stations
+                    local candidate=entry(f,station)
+                    local dx,dz=p.x-candidate.x,p.z-candidate.z
+                    sorted[#sorted+1]={edgeIndex=f.index,frame=f,
+                        station=station,entry=candidate,
+                        score=math.sqrt(dx*dx+dz*dz)}
+                end
+            end
         end
-        local ranked,why=Situation.rank(sorted,p,f,situation)
+        if #sorted==0 then
+            s.finished=true;return "FAILED",nil,"NO_EDGE_ENTRY_STATIONS"
+        end
+        local ranked,why=Situation.rank(sorted,p,nil,situation)
         if ranked==nil then
             s.finished=true;return "FAILED",nil,why
         end
@@ -175,20 +185,20 @@ function M.advancePlan(s,units)
         return "PENDING"
     end
     if s.phase=="NEXT" then
-        if s.siteIndex>=math.min(MAX_SITES,#s.sites) then
+        if s.siteIndex>=#s.sites then
             s.finished=true
             return "FAILED",nil,"NO_QUALIFIED_TERMINAL_REGION"
         end
         s.siteIndex=s.siteIndex+1
         local site=s.sites[s.siteIndex]
-        local f=s.frame
+        local f=site.frame
         -- Approximate outfield parking region only pre-screens the candidate;
         -- full polygon+physical stopping reserve is proven by Local planning.
         local parked={x=f.ax+f.ux*site.station+f.nx*4,
             z=f.az+f.uz*site.station+f.nz*4}
         -- A currently empty position is not operationally free if it
         -- intercepts a positively observed near-term work corridor.
-        local refreshed,why=Situation.observe(s.vehicle,f.poly)
+        local refreshed,why=Situation.observe(s.vehicle,poly)
         if refreshed==nil then
             s.finished=true;return "FAILED",nil,why
         end
@@ -207,7 +217,8 @@ function M.advancePlan(s,units)
             s.spent=s.spent+1
             return "PENDING"
         end
-        local options={entryPose=site.entry,
+        local options={entryPose=site.entry,sourceField=s.sourceField,
+            edgeIndex=site.edgeIndex,
             stationMin=math.max(3,site.station-26),
             stationMax=math.min(f.length-3,site.station+26),
             claimObstacles=claimObstacles(s.ledger,s.vehicle)}
@@ -229,7 +240,7 @@ function M.advancePlan(s,units)
             and clearClaims(s.ledger,s.vehicle,route.terminalPose,
                 s.own+5)
             and Occupancy.clear(route.terminalPose,s.own,s.occupants,5) then
-            local latest,latestWhy=Situation.observe(s.vehicle,s.frame.poly)
+            local latest,latestWhy=Situation.observe(s.vehicle,s.poly)
             if latest==nil then
                 s.finished=true;return "FAILED",nil,latestWhy
             end
@@ -249,7 +260,9 @@ function M.advancePlan(s,units)
             return "DONE",{entryPose=s.site.entry,
                 station=s.site.station,terminalPose=route.terminalPose,
                 stationMin=math.max(3,s.site.station-26),
-                stationMax=math.min(s.frame.length-3,s.site.station+26),
+                stationMax=math.min(s.site.frame.length-3,s.site.station+26),
+                sourceField=s.sourceField,field=s.fieldId,
+                edge=s.site.edgeIndex,
                 qualifiedLocalRoute=route,
                 ownRadius=s.own,
                 situationRisk=terminalRisk,

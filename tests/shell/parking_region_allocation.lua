@@ -2,6 +2,8 @@
 -- No native motor calls; geometry feasibility is incremental.
 OuttaMyWay={}
 dofile("scripts/observation/FarmEdgeGeometry.lua")
+dofile("scripts/observation/CompletionFieldMembership.lua")
+dofile("scripts/observation/CompletionParkingGeometry.lua")
 dofile("scripts/assessment/SettlementCorridorAssessment.lua")
 local G=OuttaMyWay.FarmEdgeGeometry
 local xs={131.79,143.52,153.81,162.43,165.16,165.55,175.32,
@@ -44,9 +46,10 @@ dofile("scripts/coordination/ExtendedInfieldApproach.lua")
 dofile("scripts/coordination/SettlementDestinationAssessment.lua")
 dofile("scripts/coordination/ParkingRegionAllocation.lua")
 local Allocation=OuttaMyWay.ParkingRegionAllocation
+local sourceField=assert(OuttaMyWay.CompletionFieldMembership.identify(first))
 local ledger={}
 local function qualify(vehicle)
-    local s=assert(Allocation.beginPlan(vehicle,ledger))
+    local s=assert(Allocation.beginPlan(vehicle,ledger,sourceField))
     local phase,route,reason
     for i=1,18000 do
         local prior=s.spent
@@ -61,7 +64,8 @@ end
 local phase,a,why=qualify(first)
 assert(phase=="DONE",why)
 assert(a.qualifiedLocalRoute and #a.qualifiedLocalRoute.legs>0)
-assert(a.entryPose and a.terminalPose and a.station)
+assert(a.entryPose and a.terminalPose and a.station
+    and type(a.edge)=="number" and a.field==sourceField.fieldId)
 local firstClaim=assert(Allocation.claim(ledger,first,a.terminalPose,a.ownRadius))
 assert(firstClaim==ledger[first])
 assert(Allocation.claimCurrent(ledger,first))
@@ -86,7 +90,7 @@ Allocation.release(ledger,second)
 -- The remote first worker must find a goal-directed extended route to the
 -- specifically qualified entry, not any convenient generic edge band.
 local Extended=OuttaMyWay.ExtendedInfieldApproach
-local travel=assert(Extended.beginPlan(first,a.entryPose))
+local travel=assert(Extended.beginPlan(first,a.entryPose,sourceField,a.edge))
 local kind,planned,fail
 for i=1,1000 do
     kind,planned,fail=Extended.advancePlan(travel,320)
@@ -118,25 +122,28 @@ poses[200].z=-360
 Situation.sample(first,500)
 poses[200].z=-355
 Situation.sample(first,500)
-local assessed=assert(Allocation.beginPlan(first,ledger))
+local assessed=assert(Allocation.beginPlan(first,ledger,sourceField))
 local status,chosen,reason=Allocation.advancePlan(assessed,320)
 assert(status=="PENDING" and assessed.siteIndex==0)
 local leading=assessed.sites[1]
-assert(leading.station>=70 and leading.station<=145,
-    "situation-aware allocator must consider central sites first")
+assert(leading.frame and leading.edgeIndex
+    and #assessed.sites>1,
+    "all registered edge sites must carry their geometric provenance")
 assert(assessed.situation.motionCount==1)
-assert(assessed.sites[#assessed.sites].station==20
-    or assessed.sites[#assessed.sites-1].station==20,
-    "station20 should be heavily disfavoured under observed peer demand")
+local previous=assessed.sites[1].score
+for i=2,#assessed.sites do
+    assert(assessed.sites[i].score>=previous,
+        "situation-ranked edge candidates must be ordered by evidence")
+    previous=assessed.sites[i].score
+end
 for i=1,18000 do
     status,chosen,reason=Allocation.advancePlan(assessed,320)
     if status~="PENDING" then break end
 end
 assert(status=="DONE",reason or "NO_ALTERNATIVE_QUALIFIED_TERMINAL")
-assert(chosen.station>=70 and chosen.station<=145
-    and chosen.situationRisk<3
-    and chosen.motionWitnesses==1,
-    "active eastern worker must produce a separate qualified central parking destination")
+assert(chosen.edge and chosen.field==sourceField.fieldId
+    and chosen.situationRisk<3 and chosen.motionWitnesses==1,
+    "productive demand and actual route must qualify the selected field edge")
 print(string.format("active peer selection: station %d risk %d (%s), observed motion=%d",
     chosen.station,chosen.situationRisk,chosen.situationReason,
     chosen.motionWitnesses))

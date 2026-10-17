@@ -42,11 +42,13 @@ Completion Parking needs a **Settlement Corridor**, not merely a nominal stoppin
 **Jurisdiction ID:** `COMPLETION_SETTLEMENT_CONTROL`  
 **Primary Specification:** [Completion Settlement Control](../spec/COMPLETION_SETTLEMENT_CONTROL.md)
 
-Completion Settlement Control owns the admitted physical movement, current command authority, safe interruption and positively verified terminal outcome of a completed assembly. Geometry assessment, destination choice and native FIELDWORK completion evidence are inputs, not movement authority.
+Completion Settlement Control owns the admitted physical movement, current command authority, safe interruption and positively verified terminal outcome of a completed assembly. Geometry assessment, destination choice and native FIELDWORK completion evidence are inputs, not movement authority. **Assembly membership is not an admission class:** a tractor with selected attachments is assessed as a complete Physical Assembly, not categorically refused because its member count exceeds one. Existing native forward/reverse Control can drive such an assembly; nominated parking curves remain geometric hypotheses that must be checked against the actual changing member arrangement while executing.
 
 ## Pose-Conditioned Terminal Settlement
 
 The **actual pose and current complete assembly** at successful FIELDWORK completion are inputs to Situation Assessment. Parking is not an obligation to traverse a selected edge end to end or reach a fixed point.
+
+**Source Field is spatial membership, not native job metadata.** The successful GIANTS Job Episode determines *when* Completion Parking may be considered. A separately observed assembly root within exactly one currently registered Field World polygon identifies the candidate Source Field at that completion. The association is retained during serial parking, including any subsequent movement outside that polygon. Unknown or overlapping registered field membership cannot authorise parking. Root membership identifies a field; complete-assembly footprint and safe corridor remain distinct evidence for movement and terminal settlement. **Field edges are candidates, not fixtures:** assess an attainable parking entry and qualified exterior terminal region relative to registered edges without treating a particular field number or edge index as product eligibility.
 
 Select a feasible terminal region and an attainable approach jointly, then choose a pose-conditioned entry manoeuvre (for example, short reverse followed by forward entry or a forward infield turn) under the available Control contract. A nominally qualified entry pose is not proof the vehicle will arrive there with the needed heading.
 
@@ -84,4 +86,4 @@ The dedicated parking choice and the broader supported-field envelope have indep
 
 Nominal registered-polygon screening, single-member motion, road and exterior margin evidence, physical obstacles, articulated reverse and stopping, field-to-field portability, active-worker interactions and mid-guidance neutralisation have different validation envelopes. No result for one may be promoted to general physical safety for the others.
 
-The finite field-specific current implementation and tests are owned by the [Completion Settlement Control Specification](../spec/COMPLETION_SETTLEMENT_CONTROL.md) and [Completion Parking Research](../docs/research/COMPLETION_SETTLEMENT_PROTOTYPE_TEST.md); the unresolved wider qualification programme belongs to [Issue #484](https://github.com/bisdat/FS25_OuttaMyWay/issues/484).
+The current field-agnostic implementation and tests are governed by the [Completion Settlement Control Specification](../spec/COMPLETION_SETTLEMENT_CONTROL.md) and [Completion Parking Research](../docs/research/COMPLETION_SETTLEMENT_PROTOTYPE_TEST.md); the unresolved wider qualification programme belongs to [Issue #484](https://github.com/bisdat/FS25_OuttaMyWay/issues/484).

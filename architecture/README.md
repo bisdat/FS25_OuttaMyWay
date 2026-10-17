@@ -8,7 +8,7 @@ OuttaMyWay aims to preserve autonomous GIANTS fieldwork through the least disrup
 
 - [Project Vision](PROJECT_VISION.md) — mission, autonomous continuity, Trust Test and scope.
 - [Blocked-First Situation Assessment and Hold & Relocate](BLOCKED_PROGRESS_QUALIFICATION.md) — native blockage evidence, qualification, candidate relationships, intervention responsibility, bounded egress and GIANTS handback.
-- [Completion-Triggered Terminal Egress](COMPLETION_TRIGGERED_TERMINAL_EGRESS.md) — accepted completion-TRANSIT request plus master-enabled, Field77-bounded Completion Parking; general parking support remains unvalidated.
+- [Completion-Triggered Terminal Egress](COMPLETION_TRIGGERED_TERMINAL_EGRESS.md) — accepted completion-TRANSIT request plus master-enabled, spatially selected Completion Parking; multi-field physical execution remains subject to GIANTS validation.
 - [Configuration](CONFIGURATION.md) — supported player choices, consent, persistence and change semantics.
 - [Log Publication](LOG_PUBLICATION.md) — eligibility, classification and delivery of runtime and engineering log events without acquiring semantic authority.
 - [GUI](GUI.md) — player-facing product status, configuration presentation, operational communication and Help/Reference boundaries.

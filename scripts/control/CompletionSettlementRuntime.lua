@@ -6,6 +6,7 @@ OuttaMyWay.CompletionSettlementRuntime={}
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local Allocation=OuttaMyWay.ParkingRegionAllocation
 local Situation=OuttaMyWay.SettlementDestinationAssessment
+local Membership=OuttaMyWay.CompletionFieldMembership
 Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
@@ -195,7 +196,8 @@ function Runtime:startLeg()
                 return
             end
             local session,why=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax,
+                s.vehicle,{sourceField=s.sourceField,edgeIndex=s.edgeIndex,
+                    stationMin=s.stationMin,stationMax=s.stationMax,
                     expectedEntryPose=s.route.entryPose})
             if session==nil then
                 self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
@@ -203,9 +205,10 @@ function Runtime:startLeg()
                 return
             end
             self.active=nil
-            self.pending={vehicle=s.vehicle,job=s.job,plan=session,
+            self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,plan=session,
                 kind="LOCAL_HANDOFF",elapsedMs=s.totalElapsedMs,
                 stationMin=s.stationMin,stationMax=s.stationMax,
+                edgeIndex=s.edgeIndex,
                 phase="PLANNING",driveArmed=false}
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_LOCAL_HANDOFF_PLANNING",{
                 rootNode=tostring(s.vehicle.rootNode),
@@ -271,16 +274,18 @@ local function deferStoppedEntry(self,state,reason)
     end
     self.deferred[state.vehicle]=true
     self.pending=nil
-    self.waiting[#self.waiting+1]={vehicle=state.vehicle,job=state.job}
+    self.waiting[#self.waiting+1]={vehicle=state.vehicle,job=state.job,
+        sourceField=state.sourceField}
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_DEFERRED_FOR_PARKING_SPACE",{
         rootNode=tostring(state.vehicle.rootNode),reason=reason,
         queuedAfterOther=#self.waiting-1,
         note="PREVIOUS_LONG_APPROACH_PHYSICALLY_STOPPED"})
     return true
 end
-local function beginEpisode(self,job,vehicle)
+local function beginEpisode(self,job,vehicle,sourceField)
     local okay,session,reason=pcall(
-        OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle)
+        OuttaMyWay.CompletionSettlementRoute.beginPlan,vehicle,
+        {sourceField=sourceField})
     if not okay or session==nil then
         publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
             rootNode=tostring(vehicle.rootNode),
@@ -288,7 +293,8 @@ local function beginEpisode(self,job,vehicle)
                 or "SETTLEMENT_PLANNING_SESSION_UNAVAILABLE"})
         return false
     end
-    self.pending={vehicle=vehicle,job=job,plan=session,
+    self.pending={vehicle=vehicle,job=job,sourceField=sourceField,
+        plan=session,
         kind="LOCAL_INITIAL",elapsedMs=0,phase="PLANNING",driveArmed=false}
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_PLANNING_STARTED",{
         rootNode=tostring(vehicle.rootNode),
@@ -308,6 +314,16 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
             rootNode=tostring(vehicle.rootNode),reason=claim})
         return false
     end
+    local sourceField,fieldReason=Membership.identify(vehicle)
+    if sourceField==nil then
+        publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
+            rootNode=tostring(vehicle.rootNode),reason=fieldReason})
+        return false
+    end
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_SOURCE_FIELD",{
+        rootNode=tostring(vehicle.rootNode),fieldId=sourceField.fieldId,
+        rootX=sourceField.rootX,rootZ=sourceField.rootZ,
+        provenance=sourceField.provenance})
     if self.active~=nil or self.pending~=nil or #self.waiting>0 then
         if #self.waiting>=MAX_QUEUED_COMPLETIONS then
             publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
@@ -316,7 +332,8 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
             return false
         end
         self.attempted[vehicle]=true
-        self.waiting[#self.waiting+1]={vehicle=vehicle,job=job}
+        self.waiting[#self.waiting+1]={vehicle=vehicle,job=job,
+            sourceField=sourceField}
         publish("DEBUG","INFO","COMPLETION_SETTLEMENT_QUEUED",{
             rootNode=tostring(vehicle.rootNode),
             ordinal=#self.waiting,
@@ -324,13 +341,14 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
         return true
     end
     self.attempted[vehicle]=true
-    return beginEpisode(self,job,vehicle)
+    return beginEpisode(self,job,vehicle,sourceField)
 end
 local function allocation(self,s,why)
-    local plan,reason=Allocation.beginPlan(s.vehicle,self.claims)
+    local plan,reason=Allocation.beginPlan(s.vehicle,self.claims,s.sourceField)
     if not plan then return false,reason end
     self.active=nil
-    self.pending={vehicle=s.vehicle,job=s.job,plan=plan,
+    self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
+        plan=plan,
         kind="ALLOCATE",phase="PLANNING",driveArmed=false,
         elapsedMs=s.totalElapsedMs or s.elapsedMs or 0}
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
@@ -343,7 +361,8 @@ local function retryStopped(self,s,why)
     Allocation.release(self.claims,s.vehicle)
     if #self.waiting>0 and #self.waiting<MAX_QUEUED_COMPLETIONS then
         self.active=nil;self.pending=nil
-        self.waiting[#self.waiting+1]={vehicle=s.vehicle,job=s.job}
+        self.waiting[#self.waiting+1]={vehicle=s.vehicle,job=s.job,
+            sourceField=s.sourceField}
         publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_QUEUED",{
             rootNode=tostring(s.vehicle.rootNode),reason=why,
             note="STABLE_STOP_CONFIRMED"})
@@ -370,7 +389,7 @@ function Runtime:update(dt)
     local s=self.active or self.pending
     if s~=nil and type(Situation)=="table"
         and type(Situation.sample)=="function" then
-        Situation.sample(s.vehicle,dt)
+        Situation.sample(s.vehicle,dt,s.sourceField)
     end
     if s==nil then
         if #self.waiting==0 then return end
@@ -387,7 +406,7 @@ function Runtime:update(dt)
                 reason=claim or "GIANTS_JOB_SUPERSEDED"})
             return
         end
-        beginEpisode(self,item.job,item.vehicle)
+        beginEpisode(self,item.job,item.vehicle,item.sourceField)
         return
     end
     local claim=playerClaim(s.vehicle)
@@ -423,8 +442,9 @@ function Runtime:update(dt)
                 return
             end
             s.stationMin=route.stationMin;s.stationMax=route.stationMax
+            s.edgeIndex=route.edge
             local plan,reason=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
-                s.vehicle,route.entryPose)
+                s.vehicle,route.entryPose,s.sourceField,route.edge)
             if not plan then
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",reason)
                 return
@@ -440,13 +460,15 @@ function Runtime:update(dt)
                 motionWitnesses=route.motionWitnesses,
                 headingWitnesses=route.headingWitnesses,
                 selectionCost=route.selectionCost,
-                alternativeEdgeStatus="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED"} end)
+                edgeIndex=route.edge,
+                edgeQualification="LOCAL_ROUTE_AND_TERMINAL_QUALIFIED"} end)
             return
         end
         if s.kind=="EXTENDED" and phase=="DONE" and route
             and #route.legs==0 then
             local plan=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{stationMin=s.stationMin,stationMax=s.stationMax,
+                s.vehicle,{sourceField=s.sourceField,edgeIndex=s.edgeIndex,
+                    stationMin=s.stationMin,stationMax=s.stationMax,
                     expectedEntryPose=s.plan.target})
             if not plan then
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
@@ -547,8 +569,10 @@ function Runtime:update(dt)
             return
         end
         self.pending=nil
-        self.active={vehicle=s.vehicle,job=s.job,route=route,legIndex=1,
+        self.active={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
+            route=route,legIndex=1,
             stationMin=s.stationMin,stationMax=s.stationMax,
+            edgeIndex=s.edgeIndex or route.edge,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
             phase="ADMITTED",driveArmed=false}
         publish("NORMAL","INFO","COMPLETION_SETTLEMENT_ADMITTED",{

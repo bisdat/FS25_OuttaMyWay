@@ -1,6 +1,6 @@
 -- TEST pose-conditioned terminal region + bounded nominal entry candidates.
 -- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
--- Field 77 edge 9 is the only experimental physical movement fixture.
+-- Every edge is assessed from registered Source Field geometry.
 -- All planned swept footprints are NOMINAL rigid snapshots, not GIANTS physics.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionSettlementRoute={}
@@ -8,7 +8,8 @@ local Route=OuttaMyWay.CompletionSettlementRoute
 local G=OuttaMyWay.FarmEdgeGeometry
 local A=OuttaMyWay.SettlementCorridorAssessment
 local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
-local FIXTURE={ax=228.15,az=-243.04,bx=-0.06,bz=-207.44,length=230.97}
+local Parking=OuttaMyWay.CompletionParkingGeometry
+local Membership=OuttaMyWay.CompletionFieldMembership
 local RAD=math.pi/180
 local MAX_POINTS=55
 local STEP_M=5
@@ -19,50 +20,21 @@ local STOPPING_RESERVE_M=5
 local function finite(x)
     return type(x)=="number" and x==x and x~=math.huge and x~=-math.huge
 end
-local function near(a,b) return finite(a) and math.abs(a-b)<=3 end
 local function dist(a,b)
     return math.sqrt((a.x-b.x)^2+(a.z-b.z)^2)
 end
-local function field77()
-    local manager=g_fieldManager
-    if type(manager)~="table" or type(manager.fields)~="table" then
-        return nil,nil,nil,"FIELD_REGISTRY_UNAVAILABLE"
+local function fieldContext(vehicle,options)
+    local source=options and options.sourceField
+    if source==nil then
+        local why
+        source,why=Membership.identify(vehicle)
+        if source==nil then return nil,nil,nil,nil,why end
     end
-    local field
-    if type(manager.getFieldById)=="function" then
-        local ok,result=pcall(manager.getFieldById,manager,77)
-        if ok then field=result end
-    end
-    if field==nil then
-        local count=0
-        for id,entry in pairs(manager.fields) do
-            count=count+1
-            if count>512 then return nil,nil,nil,"FIELD_CATALOGUE_TRUNCATED" end
-            if type(entry)=="table" and (id==77 or entry.fieldId==77) then
-                field=entry;break
-            end
-        end
-    end
-    if type(field)~="table" then return nil,nil,nil,"FIELD_77_UNAVAILABLE" end
-    local poly=G.polygonFor(field)
-    local edge=poly and G.edges(poly)[9] or nil
-    if edge==nil or edge.index~=9
-        or not near(edge.ax,FIXTURE.ax) or not near(edge.az,FIXTURE.az)
-        or not near(edge.bx,FIXTURE.bx) or not near(edge.bz,FIXTURE.bz)
-        or not near(edge.length,FIXTURE.length) then
-        return nil,nil,nil,"FIELD_77_EDGE_9_MISMATCH"
-    end
-    local neighbors,scanned={},0
-    for _,other in pairs(manager.fields) do
-        scanned=scanned+1
-        if scanned>512 then return nil,nil,nil,"FIELD_CATALOGUE_TRUNCATED" end
-        if other~=field and type(other)=="table" then
-            local p=G.polygonFor(other)
-            if p==nil then return nil,nil,nil,"NEIGHBOR_POLYGON_UNAVAILABLE" end
-            neighbors[#neighbors+1]={polygon=p}
-        end
-    end
-    return poly,edge,neighbors,nil
+    local ctx,why=Parking.enumerate(source,vehicle)
+    if ctx==nil then return nil,nil,nil,nil,why end
+    local frame,edgeWhy=Parking.select(ctx,options and options.edgeIndex)
+    if frame==nil then return nil,nil,nil,nil,edgeWhy end
+    return ctx.poly,frame,ctx.neighbors,ctx.fieldId
 end
 local function pose(vehicle)
     if type(vehicle)~="table" or vehicle.rootNode==nil
@@ -89,6 +61,7 @@ local function rotatedFootForEntry(foot,actual,entry)
     return {memberCount=foot.memberCount,corners=corners}
 end
 local function edgeFrame(edge,poly)
+    if edge.ux~=nil and edge.nx~=nil then return edge end
     local mx,mz=(edge.ax+edge.bx)*0.5,(edge.az+edge.bz)*0.5
     local nx,nz=G.outwardAt(poly,edge,mx,mz)
     if nx==nil then return nil end
@@ -116,7 +89,7 @@ local function rotatedFoot(foot,initial,p)
     return boxes
 end
 -- Each expensive geometry check has a chargeable, yieldable boundary.
--- Source Field77 polygons have world-space AABBs, so distant fields can be
+-- Registered field polygons have world-space AABBs, so distant fields can be
 -- rejected before rectangle/polygon intersection.
 local function noNeighborHit(boxes,neighbors,checkpoint)
     for m=1,#boxes do
@@ -294,21 +267,19 @@ local function tryTrack(current,foot,poly,neighbors,frame,
     end
     return nil
 end
-function Route.plan(vehicle,checkpoint)
-    local poly,edge,neighbors,reason=field77()
+function Route.plan(vehicle,checkpoint,options)
+    local poly,edge,neighbors,fieldId,reason=fieldContext(vehicle,options)
     if poly==nil then return nil,reason end
     local current=pose(vehicle)
     if current==nil then return nil,"ROOT_POSE_UNAVAILABLE" end
     if not G.inside(poly,current.x,current.z) then
-        return nil,"COMPLETED_ROOT_NOT_IN_FIXTURE_FIELD"
+        return nil,"COMPLETED_ROOT_OUTSIDE_SOURCE_FIELD"
     end
     local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return nil,why end
-    -- This bounded experiment does not infer articulation stability from
-    -- nominal rigid rectangles. Multi-member reversing remains unvalidated.
-    if foot.memberCount~=1 then
-        return nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
-    end
+    -- Captured current member rectangles bound the nominal candidate.
+    -- The native actuator handles forward/reverse for multi-member assemblies;
+    -- live member poses are rechecked during guidance and at final stopping.
     local occupants,occupiedWhy=Occupancy.snapshot(vehicle,poly)
     if occupants==nil then return nil,occupiedWhy end
     local ownRadius=Occupancy.footRadius(vehicle)
@@ -350,7 +321,7 @@ function Route.plan(vehicle,checkpoint)
         end
     end
     if best==nil then return nil,"NO_POSE_REACHABLE_PARKING_REGION" end
-    return {field=77,edge=9,poly=poly,neighbors=neighbors,
+    return {field=fieldId,edge=edge.index,poly=poly,neighbors=neighbors,
         memberCount=foot.memberCount,frame=frame,
         method=best.method,direction=best.direction,
         reverseM=best.track.reverseM,guideRadiusM=best.radius,
@@ -425,6 +396,8 @@ local function makeCheck(s,p,kind,reverse)
     local c=s.candidate
     local station,depth=coordinates(p,s.frame)
     if kind~="APPROACH" and s.options~=nil
+        and type(s.options.stationMin)=="number"
+        and type(s.options.stationMax)=="number"
         and (station<s.options.stationMin
             or station>s.options.stationMax) then
         denied(s,"TERMINAL_OUTSIDE_CLAIMED_STATION")
@@ -670,7 +643,7 @@ local function executeBudget(s)
     while s.remaining>0 do
         if s.phase=="INIT" then
             if not charge(s,1) then return "PENDING" end
-            local poly,edge,neighbors,reason=field77()
+            local poly,edge,neighbors,fieldId,reason=fieldContext(s.vehicle,s.options)
             if poly==nil then return "FAILED",nil,reason end
             local actual=pose(s.vehicle)
             if actual==nil then return "FAILED",nil,"ROOT_POSE_UNAVAILABLE" end
@@ -679,16 +652,15 @@ local function executeBudget(s)
                 return "FAILED",nil,"ENTRY_POSE_UNAVAILABLE"
             end
             if not G.inside(poly,current.x,current.z) then
-                return "FAILED",nil,"COMPLETED_ROOT_NOT_IN_FIXTURE_FIELD"
+                return "FAILED",nil,"COMPLETED_ROOT_OUTSIDE_SOURCE_FIELD"
             end
             local foot,why=OuttaMyWay.PairTransitRegion.capture(s.vehicle)
             if foot==nil then return "FAILED",nil,why end
             if s.options and s.options.entryPose then
                 foot=rotatedFootForEntry(foot,actual,current)
             end
-            if foot.memberCount~=1 then
-                return "FAILED",nil,"ARTICULATED_ENTRY_REALITY_UNVALIDATED"
-            end
+            -- A multi-member assembly participates in the same bounded
+            -- candidate search; unsupported routes fail geometry, not identity.
             local frame=edgeFrame(edge,poly)
             if frame==nil then return "FAILED",nil,"EDGE_OUTWARD_UNAVAILABLE" end
             local occupants,occupiedWhy=Occupancy.snapshot(s.vehicle,poly)
@@ -703,8 +675,8 @@ local function executeBudget(s)
                 return "FAILED",nil,"PHYSICAL_OCCUPANCY_OWN_FOOTPRINT_UNAVAILABLE"
             end
             s.occupants,s.ownRadius=occupants,ownRadius
-            s.poly,s.neighbors,s.current,s.foot,s.frame=
-                poly,neighbors,current,foot,frame
+            s.poly,s.neighbors,s.current,s.foot,s.frame,s.fieldId,s.edgeIndex=
+                poly,neighbors,current,foot,frame,fieldId,edge.index
             s.direction=-1;s.reverse=1;s.radius=1;s.angle=1;s.method=1
             s.phase="CANDIDATE"
         elseif s.phase=="CANDIDATE" then
@@ -727,7 +699,7 @@ local function executeBudget(s)
                 return "FAILED",nil,"NO_POSE_REACHABLE_PARKING_REGION"
             end
             local best=s.best
-            return "DONE",{field=77,edge=9,poly=s.poly,
+            return "DONE",{field=s.fieldId,edge=s.edgeIndex,poly=s.poly,
                 neighbors=s.neighbors,memberCount=s.foot.memberCount,
                 frame=s.frame,method=best.method,
                 direction=best.direction,reverseM=best.track.reverseM,
@@ -771,6 +743,31 @@ function Route.guard(vehicle,route,index)
         or (not G.inside(route.poly,p.x,p.z)
             and (d<0 or d>STOP_DEPTH_MAX_M)) then
         return false,"SETTLEMENT_ENTRY_OUTSIDE_EDGE_ENVELOPE"
+    end
+    local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if foot==nil then return false,why end
+    if foot.memberCount~=route.memberCount then
+        return false,"ASSEMBLY_MEMBERSHIP_CHANGED"
+    end
+    -- Actual current member poses are independent of root-only guidance.
+    -- The nominal planner may rotate a captured configuration; movement
+    -- continuation must reject observed deviation into other field polygons
+    -- or outside the nominated exterior corridor.
+    local boxes=rotatedFoot(foot,p,p)
+    if not noNeighborHit(boxes,route.neighbors) then
+        return false,"LIVE_MEMBER_INTERSECTS_NEIGHBOUR_FIELD"
+    end
+    for m=1,#boxes do
+        for i=1,4 do
+            local v=boxes[m][i]
+            if not G.inside(route.poly,v.x,v.z) then
+                local station,depth=coordinates(v,route.frame)
+                if station<0 or station>route.frame.length
+                    or depth<0 or depth>STOP_DEPTH_MAX_M then
+                    return false,"LIVE_MEMBER_OUTSIDE_SELECTED_EDGE_CORRIDOR"
+                end
+            end
+        end
     end
     return Occupancy.nextClear(vehicle,route,index or 1)
 end
