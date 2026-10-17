@@ -95,7 +95,10 @@ assert(#reports==2
     and reports[1].code=="NATIVE_FIELDWORK_JOB_STOPPED"
     and reports[2].code=="NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE")
 assert(reports[2].payload.fieldId==29
-    and reports[2].payload.status=="CANDIDATE_NOT_CONTROL_AUTHORITY")
+    and reports[2].payload.status=="CANDIDATE_NOT_CONTROL_AUTHORITY"
+    and reports[2].payload.reason=="CANDIDATE_OBSERVED"
+    and reports[2].payload.sampleCount==1
+    and reports[2].payload.sampledJobId==1)
 assert(#completions==1 and completions[1].job==natural
     and completions[1].vehicle==worker
     and completions[1].source.fieldId==29)
@@ -113,6 +116,7 @@ local late=job(4,worker)
 callback(target,late,instance(AIMessageSuccessFinishedJob))
 assert(#reports==6 and reports[6].payload.status=="NOT_OBSERVED"
     and reports[6].payload.fieldId=="unavailable"
+    and reports[6].payload.reason=="NO_MATCHING_ACTIVE_WORKER_SAMPLE"
     and #completions==2 and completions[2].source==nil,
     "no observed native seed cannot be promoted to field identity")
 diagnostics=false
@@ -133,6 +137,47 @@ enabled=true
 callback(target,instance({}),instance(AIMessageSuccessFinishedJob))
 callback(target,nil,instance(AIMessageSuccessFinishedJob))
 assert(#reports==6,"nil and unrelated jobs must be ignored")
+
+-- Failed seed evidence must survive for the exact successful Job Episode.
+local missingSeedJob=job(7,worker)
+worker.spec_aiFieldWorker.driveStrategies[1].fieldDetectionX=nil
+probe:update(1000)
+assert(probe.sourceFields[missingSeedJob]~=nil
+    and probe.sourceFields[missingSeedJob].reason=="FIELD_DETECTION_SEED_UNAVAILABLE")
+callback(target,missingSeedJob,instance(AIMessageSuccessFinishedJob))
+assert(#reports==8 and #completions==4)
+assert(reports[8].payload.status=="NOT_OBSERVED"
+    and reports[8].payload.reason=="FIELD_DETECTION_SEED_UNAVAILABLE"
+    and reports[8].payload.sampleCount==1
+    and reports[8].payload.sampledJobId==7)
+
+-- A present strategy without an aiFieldCourse is a distinct diagnosis.
+local incompleteCourse=job(8,worker)
+worker.spec_aiFieldWorker.driveStrategies[1].aiFieldCourse=nil
+probe:update(1000)
+callback(target,incompleteCourse,instance(AIMessageSuccessFinishedJob))
+assert(reports[10].payload.reason=="ACTIVE_FIELD_COURSE_OBJECT_UNAVAILABLE")
+
+-- A sample for a newer native job must not be promoted to an older job.
+local previousJob=job(9,worker)
+local replacement=job(10,worker)
+probe:update(1000)
+callback(target,previousJob,instance(AIMessageSuccessFinishedJob))
+assert(reports[12].payload.status=="NOT_OBSERVED"
+    and reports[12].payload.reason=="ACTIVE_JOB_REFERENCE_MISMATCH_AT_COMPLETION"
+    and reports[12].payload.sampledJobId==10
+    and completions[#completions].source==nil)
+callback(target,replacement,instance(AIMessageSuccessFinishedJob))
+assert(reports[14].payload.fieldId==29
+    and reports[14].payload.reason=="CANDIDATE_OBSERVED")
+
+-- Missing registry is not mistaken for a clean spatial result.
+g_currentMission.aiSystem.activeJobVehicles=nil
+local noRegistry=job(11,worker)
+probe:update(1000)
+callback(target,noRegistry,instance(AIMessageSuccessFinishedJob))
+assert(reports[16].payload.reason=="NO_MATCHING_ACTIVE_WORKER_SAMPLE"
+    and reports[16].payload.sampleStatus=="ACTIVE_JOB_REGISTRY_UNAVAILABLE")
 probe:deleteMap()
 assert(unsubscribed and not probe.subscribed
     and next(probe.sourceFields)==nil)

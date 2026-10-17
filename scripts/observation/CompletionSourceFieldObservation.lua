@@ -28,8 +28,10 @@ local function detectionSeed(vehicle)
         return nil,"ACTIVE_FIELD_COURSE_UNAVAILABLE"
     end
     local seed=nil
+    local hasNativeFieldCourse=false
     for _,strategy in pairs(spec.driveStrategies) do
         if type(strategy)=="table" and strategy.aiFieldCourse~=nil then
+            hasNativeFieldCourse=true
             local x,z=strategy.fieldDetectionX,strategy.fieldDetectionZ
             if finite(x) and finite(z) then
                 if seed~=nil and (seed.x~=x or seed.z~=z) then
@@ -39,6 +41,7 @@ local function detectionSeed(vehicle)
             end
         end
     end
+    if not hasNativeFieldCourse then return nil,"ACTIVE_FIELD_COURSE_OBJECT_UNAVAILABLE" end
     if seed==nil then return nil,"FIELD_DETECTION_SEED_UNAVAILABLE" end
     return seed
 end

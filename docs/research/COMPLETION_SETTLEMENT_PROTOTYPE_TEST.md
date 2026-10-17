@@ -902,3 +902,27 @@ field-wide surveys, change parking Control, infer a Source Field from
 post-job root containment, or promote this evidence to general-field
 admission. Riverbend registered Field 29 is still an independently
 pending validation fixture, not a completed result.
+
+### TEST 0.5.5.27 — Bounded negative Source Field diagnostic (not yet GIANTS-validated)
+
+Following the two successful physical TS019 parking outcomes but missing
+native field candidates on .26, this increment **changes diagnostic
+explanatory evidence, not parking behaviour**. The existing one-second
+DIAGNOSTIC-only active-job sampler now retains both positive and negative
+outcomes for the exact native job. At positive completion it publishes
+\`reason\`, \`sampleStatus\`, \`sampleCount\` and \`sampledJobId\` within
+the existing single \`NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE\` event.
+A missing active worker is now distinguishable from a sampled worker with
+no native job reference, a sampled different job, an unavailable
+FieldCourse object, a FieldCourse lacking finite detection coordinates,
+an unregistered seed, or an ambiguous polygon match. This does not
+invent a secondary field identity or change Control.
+
+**Test:** Rerun only **TS019 / Mindenerwald Field 77** with DIAGNOSTIC
+enabled. Inspect the new \`reason\` and \`sampleStatus\` fields for the
+two positive FIELDWORK completions and independently verify both physical
+parking outcomes. Do not require Riverbend, whose long-running scenario
+remains deferred until the Field 77 observation question is resolved.
+Only after actual GIANTS evidence identifies the failed source boundary
+should the observation algorithm be revised again.
+

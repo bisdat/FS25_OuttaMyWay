@@ -53,7 +53,9 @@ end
 
 function Probe.new(configuration)
     return setmetatable({configuration=configuration,subscribed=false,
-        seen={},sourceFields=setmetatable({},{__mode="k"}),sourceSampleElapsedMs=0,
+        seen={},sourceFields=setmetatable({},{__mode="k"}),
+        sourceByVehicle=setmetatable({},{__mode="k"}),
+        sourceSampleStatus="NOT_SAMPLED",sourceSampleElapsedMs=0,
         completionListener=nil},Probe)
 end
 
@@ -61,53 +63,88 @@ function Probe:setCompletionListener(listener)
     self.completionListener=listener
 end
 
--- This is a DIAGNOSTIC-only identity experiment. Sample the active native
--- job, never retrospectively infer its field from the stopped vehicle root.
--- The seed match is only a candidate witness, not production field authority.
+-- This is DIAGNOSTIC evidence only. Preserve the precise negative witness
+-- for the *same native job* rather than collapsing all missed observations
+-- into an undifferentiated NOT_OBSERVED at successful job termination.
+local function discardSourceSamples(self)
+    self.sourceFields=setmetatable({},{__mode="k"})
+    self.sourceByVehicle=setmetatable({},{__mode="k"})
+    self.sourceSampleStatus="NOT_SAMPLED"
+    self.sourceSampleElapsedMs=0
+end
+
 function Probe:update(dt)
     if g_server==nil or self.configuration==nil
         or self.configuration:isResolved()~=true
         or self.configuration:isEnabled()~=true then
-        self.sourceFields=setmetatable({},{__mode="k"})
-        self.sourceSampleElapsedMs=0
+        discardSourceSamples(self)
         return
     end
     if type(publication.isEligible)~="function" or not
         publication:isEligible("DIAGNOSTIC","INFO",
-            "NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE") then return end
-    if type(dt)~="number" or dt<=0 or dt>5000 then return end
+            "NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE") then
+        discardSourceSamples(self)
+        return
+    end
+    if type(dt)~="number" or dt<=0 or dt>5000 then
+        self.sourceSampleStatus="INVALID_SAMPLE_DELTA"
+        return
+    end
     self.sourceSampleElapsedMs=self.sourceSampleElapsedMs+dt
     if self.sourceSampleElapsedMs<SOURCE_INTERVAL_MS then return end
     self.sourceSampleElapsedMs=0
+
     local mission=g_currentMission
     local registry=mission and mission.aiSystem
         and mission.aiSystem.activeJobVehicles
-    if type(registry)~="table" then return end
-    local seen,examined={},0
+    if type(registry)~="table" then
+        self.sourceSampleStatus="ACTIVE_JOB_REGISTRY_UNAVAILABLE"
+        return
+    end
+    local seen,examined,activeCount={},0,0
     local function consider(vehicle)
         if type(vehicle)~="table" or seen[vehicle] then return end
         seen[vehicle]=true
         local fieldSpec=vehicle.spec_aiFieldWorker
         if type(fieldSpec)~="table" or fieldSpec.isActive~=true then return end
+        activeCount=activeCount+1
         local jobSpec=vehicle.spec_aiJobVehicle
         local job=(type(jobSpec)=="table" and jobSpec.job) or fieldSpec.fieldJob
-        -- A different native job on the same worker supersedes any cached
-        -- identity candidate from its preceding Job Episode.
         for earlier,record in pairs(self.sourceFields) do
             if record.vehicle==vehicle and earlier~=job then
                 self.sourceFields[earlier]=nil
             end
         end
-        if not isFieldWorkJob(job) or self.sourceFields[job]~=nil then return end
-        local candidate=OuttaMyWay.CompletionSourceFieldObservation.observe(
-            vehicle,job)
-        if candidate~=nil then
-            self.sourceFields[job]={vehicle=vehicle,candidate=candidate}
+        local previous=type(job)=="table" and self.sourceFields[job] or nil
+        local record={
+            job=job,vehicle=vehicle,
+            samples=(previous and previous.samples or 0)+1,
+            reason=nil,candidate=nil
+        }
+        if not isFieldWorkJob(job) then
+            record.reason=job==nil and "ACTIVE_JOB_REFERENCE_UNAVAILABLE"
+                or "ACTIVE_JOB_CLASS_NOT_FIELDWORK"
+        elseif previous~=nil and previous.candidate~=nil
+            and previous.vehicle==vehicle then
+            -- Retain a positive witness throughout this same Job Episode.
+            record.candidate=previous.candidate
+            record.reason="CANDIDATE_OBSERVED"
+        else
+            local candidate,why=
+                OuttaMyWay.CompletionSourceFieldObservation.observe(vehicle,job)
+            record.candidate=candidate
+            record.reason=candidate~=nil and "CANDIDATE_OBSERVED"
+                or (why or "FIELD_OBSERVATION_UNAVAILABLE")
         end
+        self.sourceByVehicle[vehicle]=record
+        if isFieldWorkJob(job) then self.sourceFields[job]=record end
     end
     for key,value in pairs(registry) do
         examined=examined+1
-        if examined>MAX_ACTIVE_REGISTRY then return end
+        if examined>MAX_ACTIVE_REGISTRY then
+            self.sourceSampleStatus="ACTIVE_JOB_REGISTRY_LIMIT"
+            return
+        end
         consider(key)
         consider(value)
         if type(value)=="table" then
@@ -117,6 +154,9 @@ function Probe:update(dt)
             consider(value[1])
         end
     end
+    self.sourceSampleStatus=activeCount>0
+        and "ACTIVE_FIELDWORK_WORKERS_SAMPLED"
+        or "NO_ACTIVE_FIELDWORK_WORKERS"
 end
 
 function Probe:onJobStopped(job,aiMessage)
@@ -132,8 +172,26 @@ function Probe:onJobStopped(job,aiMessage)
     local vehicle=vehicleOf(job)
     local observed=self.sourceFields[job]
     self.sourceFields[job]=nil
+    local lastVehicleSample=vehicle~=nil and self.sourceByVehicle[vehicle] or nil
+    if lastVehicleSample~=nil and lastVehicleSample.job==job then
+        self.sourceByVehicle[vehicle]=nil
+    end
     local sourceField=observed~=nil and observed.vehicle==vehicle
         and observed.candidate or nil
+    local sourceReason
+    if sourceField~=nil then
+        sourceReason="CANDIDATE_OBSERVED"
+    elseif observed~=nil then
+        sourceReason=observed.vehicle==vehicle
+            and (observed.reason or "FIELD_OBSERVATION_UNAVAILABLE")
+            or "SAMPLED_VEHICLE_IDENTITY_MISMATCH"
+    elseif lastVehicleSample~=nil then
+        sourceReason=lastVehicleSample.job~=job
+            and "ACTIVE_JOB_REFERENCE_MISMATCH_AT_COMPLETION"
+            or (lastVehicleSample.reason or "FIELD_OBSERVATION_UNAVAILABLE")
+    else
+        sourceReason="NO_MATCHING_ACTIVE_WORKER_SAMPLE"
+    end
 
     -- Do not collapse the native message into a claim of completed agronomy.
     -- This witness has no connection to Terminal Egress Control.
@@ -155,8 +213,14 @@ function Probe:onJobStopped(job,aiMessage)
                     detectionX=sourceField and sourceField.detectionX or "unavailable",
                     detectionZ=sourceField and sourceField.detectionZ or "unavailable",
                     status=sourceField and sourceField.status or "NOT_OBSERVED",
+                    reason=sourceReason,
+                    sampleStatus=self.sourceSampleStatus,
+                    sampleCount=observed and observed.samples or 0,
+                    sampledJobId=lastVehicleSample
+                        and type(lastVehicleSample.job)=="table"
+                        and lastVehicleSample.job.jobId or "unavailable",
                     provenance=sourceField and sourceField.provenance
-                        or "NO_ACTIVE_FIELD_DETECTION_WITNESS"
+                        or "ACTIVE_JOB_FIELD_OBSERVATION"
                 }
             end)
     end
@@ -168,8 +232,7 @@ end
 
 function Probe:loadMap()
     self.seen={}
-    self.sourceFields=setmetatable({},{__mode="k"})
-    self.sourceSampleElapsedMs=0
+    discardSourceSamples(self)
     if g_server==nil or g_messageCenter==nil
         or MessageType==nil or MessageType.AI_JOB_STOPPED==nil
         or type(g_messageCenter.subscribe)~="function" then return end
@@ -184,6 +247,5 @@ function Probe:deleteMap()
     end
     self.subscribed=false
     self.seen={}
-    self.sourceFields=setmetatable({},{__mode="k"})
-    self.sourceSampleElapsedMs=0
+    discardSourceSamples(self)
 end

@@ -37,10 +37,15 @@ active strategy, seed, polygon or unambiguous registered-field identity is
 a displayed farmland label. A missing seed after native course reconstruction
 is a legitimate unknown until empirically qualified.
 
-Retain the candidate against that native job for the natural success callback,
-publish **one** `NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE` DIAGNOSTIC
-observation (or explicit `NOT_OBSERVED`) and offer the candidate as optional
-read-only completion metadata. It MUST NOT affect the existing
+Retain the candidate **or the explicit negative observation reason** against that
+native job for its natural success callback. Publish **one**
+`NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE` DIAGNOSTIC event containing
+`reason`, `sampleStatus`, `sampleCount` and `sampledJobId`, even when its
+status is `NOT_OBSERVED`. Distinguish a missing active-worker sample,
+an observed-but-different job reference, unavailable active FieldCourse,
+missing field-detection coordinates, and failed registered-polygon matching.
+A missing field identity is not evidence that no native source field exists.
+Offer a positively observed candidate as optional read-only completion metadata. It MUST NOT affect the existing
 Completion Transit request, parking admission, destination allocation,
 movement or handback; those retain the accepted Field 77 restriction.
 Non-success stops never publish a candidate-completion event.
