@@ -27,6 +27,7 @@ local modules={
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/observation/CompletionSourceFieldObservation.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
@@ -86,8 +87,10 @@ OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(Outt
 -- Until then, Completion Parking observes master product Enabled consent.
 OuttaMyWay.completionSettlementRuntime=OuttaMyWay.CompletionSettlementRuntime.new(
     OuttaMyWay.configuration)
-OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
+OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle,sourceField)
     local accepted=OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
+    -- Source Field is presently DIAGNOSTIC candidate evidence only.
+    -- Do not make it an additional movement-admission input before GIANTS validation.
     OuttaMyWay.completionSettlementRuntime:onNativeCompletion(job,vehicle,accepted)
 end)
 OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(

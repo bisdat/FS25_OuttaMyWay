@@ -91,9 +91,14 @@ veto its witnessed positive physical parking.
   separate GIANTS physical-movement experiment be proposed, including its
   safe refusal/control handback and whole-assembly result.
 
-**Source traceability:** Current `NativeJobCompletionProbe` forwards job and
-vehicle but does not supply an independently qualified Source Field to
-Completion Parking; `CompletionSettlementRuntime`,
+**Source traceability:** The engineering-only
+`CompletionSourceFieldObservation` obtains a candidate native field-course
+detection seed and registered polygon match while the original job is active;
+the positive completion callback can carry that read-only metadata but
+Completion Parking neither consumes nor trusts it as Source Field authority.
+The candidate requires in-game validation and must not alter field admission.
+Current `NativeJobCompletionProbe` still does not supply an independently
+qualified Source Field to Completion Parking; `CompletionSettlementRuntime`,
 `CompletionSettlementRoute`, `ExtendedInfieldApproach`,
 `ParkingRegionAllocation` and `SettlementDestinationAssessment` each
 currently depend on the selected Field 77 fixture. This is an implementation

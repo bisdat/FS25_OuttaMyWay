@@ -17,6 +17,45 @@ Filter only positively identified `AIJobFieldWork` instances using the GIANTS cl
 
 Capture native job identity, available vehicle root identity, observed reason identity, positive success-class boolean and build. Emit at most one diagnostic stop report per observed job object. Emit no reports when Configuration is disabled or unresolved, or on a non-server runtime. Subscribe on map load, unsubscribe on map teardown, and clear retained identity state. An unavailable message, unknown job class, lost event or late subscription does not license inferred completion.
 
+## Read-only active Source Field association experiment
+
+Positive FIELDWORK completion identifies a native job and vehicle, **not** its
+registered Source Field. The GIANTS v1.20 field-course strategy constructs
+`fieldDetectionX/Z` when it commissions native field-course generation.
+That detection position is an evidence *candidate*, not a documented
+positive field identity or a licence for post-job Control.
+
+When DIAGNOSTIC publication is explicitly enabled, the completion observer
+may perform a bounded, read-only 1-second sampling of the native
+`aiSystem.activeJobVehicles` registry. For each actively working
+`AIJobFieldWork` object, a live FieldCourse strategy with an existing
+`aiFieldCourse` and finite `fieldDetectionX/Z` supplies a candidate seed.
+The seed must be contained in exactly one registered field polygon, associated
+with the same native job reference while it is active. Missing registry,
+active strategy, seed, polygon or unambiguous registered-field identity is
+**no candidate**, not fallback to the vehicle's post-stop root position or
+a displayed farmland label. A missing seed after native course reconstruction
+is a legitimate unknown until empirically qualified.
+
+Retain the candidate against that native job for the natural success callback,
+publish **one** `NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE` DIAGNOSTIC
+observation (or explicit `NOT_OBSERVED`) and offer the candidate as optional
+read-only completion metadata. It MUST NOT affect the existing
+Completion Transit request, parking admission, destination allocation,
+movement or handback; those retain the accepted Field 77 restriction.
+Non-success stops never publish a candidate-completion event.
+Ordinary NORMAL/DEBUG gameplay MUST NOT commission the source-field census.
+The experiment does not inspect native job data by mutating AI callbacks.
+
+**GIANTS falsification:** TS019 must produce a candidate native Field 77
+for both successful jobs without changing their physical parking. Riverbend
+displayed Farmland 2 must produce registered Field 29 if its native
+FIELDWORK course detection seed is inside the correct field. If native
+course detection has nil, outside-field, ambiguous or stale coordinates,
+record the actual result and do **not** promote this candidate rule to
+authoritative Job Episode Source Field identity. Repeat on native job
+interruption/supersession; a candidate tied to the wrong job is invalid.
+
 ## Validation
 
 The candidate native event was validated within a bounded FS25 `1.24.0.0` test envelope: TS019 distinguished manual stop from successful FIELDWORK completion; TS003 observed a Hold & Relocate stop/restart without false success classification. Other native failure and replacement variants remain unvalidated. GitHub Actions checks structural and offline witness behaviour. In-game validation must compare:
@@ -34,6 +73,7 @@ The Observer itself MUST NOT issue TRANSIT, stop/start/replace AI jobs, run relo
 | Production source | Participation |
 | --- | --- |
 | [`scripts/observation/NativeJobCompletionProbe.lua`](../scripts/observation/NativeJobCompletionProbe.lua) | `REALISES` |
+| [`scripts/observation/CompletionSourceFieldObservation.lua`](../scripts/observation/CompletionSourceFieldObservation.lua) | `SUPPORTS` |
 
 ## Repository validation participants
 

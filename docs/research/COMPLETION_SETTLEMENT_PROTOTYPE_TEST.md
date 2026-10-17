@@ -797,3 +797,53 @@ The log contains no `FARM_CONTEXT_SURVEY` or `FARM_CONTEXT_FIELD` output. Both c
 **Separate field-work observation:** Two prior Hold & Relocate episodes at ~06:02 both report `NATIVE_RESTART_ACCEPTED`. Four native `FieldManager` field/farmland-contact errors at ~06:00:36 are unrelated map initialization lines and cannot be attributed to parking without evidence. 
 
 **Disposition:** **Physical TS019 PASS with known, warning-only nominal-verification discrepancy** and **DIAGNOSTIC-independent parking admission PASS**. Root 399373's warning is terminal bookkeeping after successful stable stop; no further OMW Control is applied. Do not add speculative recovery, loosen tolerances or declare a new functional failure from this log. The outstanding productionisation envelope under #484—other fields, whole-assembly physical clearance, and mid-guide safety—remains separate. PR #485 requires normal acceptance review, but this observation does **not** block it.
+
+## Issue #484 — Source Field identity: GIANTS native course seed, bounded probe
+
+**Unresolved question:** Can we associate a successfully completed native
+FIELDWORK **Job Episode** with one registered **Source Field**, independently
+of its final vehicle root position and a displayed farmland number?
+
+**Source finding:** The published FS25 GIANTS `AIJobFieldWork` source exposes
+the native job and its vehicle but no demonstrated registered-field identity.
+The published v1.20 `AIDriveStrategyFieldCourse:setAIVehicle` code obtains
+`fieldDetectionX/Z` from `FieldCourse.findClosestField` and uses that
+position to request a native field course. The strategy later receives an
+`aiFieldCourse`. These are *candidate native field-course detection*
+coordinates, **not a version-verified binding between a completed job and a
+registered Source Field**. In particular a reconstructed course may not supply
+the same seed.
+
+**Engineering hypothesis:** While the exact native `AIJobFieldWork` remains
+active, correlate that job to its vehicle's live FieldCourse strategy, retain
+one finite detection seed and independently match it to exactly one registered
+field polygon. The resulting pair `{native job, candidate field}` may survive
+the GIANTS stop callback even if the vehicle is outside the field by then.
+This is engineering observation, not a new parking-admission rule.
+
+**Negative evidence:** no active strategy; field-course generation incomplete;
+reconstructed course without a detection seed; missed live sampling; seed
+outside all registered fields; overlapping polygons; no unambiguous registered
+ID; field/vehicle/job mismatch; or a different job taking over. None permits
+inferencing the Source Field from a UI farmland label or the post-job root.
+
+**Experimental source boundary:** In DIAGNOSTIC only, a bounded once-per-second
+read of GIANTS' existing `aiSystem.activeJobVehicles` yields active job
+candidates. `CompletionSourceFieldObservation` matches a seed against
+registered polygons via existing `FarmEdgeGeometry`. The native job
+completion observer correlates the candidate on successful stop and emits
+`NATIVE_COMPLETION_SOURCE_FIELD_CANDIDATE`; ordinary parking and Transit
+continue unchanged. DIAGNOSTIC off incurs no new Source Field census.
+
+**Falsifiable GIANTS TEST:** TS019 must associate both sprayers with
+registered Field **77** (while preserving their already-validated parking).
+Riverbend's displayed Farmland **2** must associate a valid native FIELDWORK
+job with registered Field **29**, not Field 2. A `NOT_OBSERVED` outcome is
+useful counterevidence about the source or capture window; do not broaden
+movement eligibility in response. Confirm distinct native jobs remain distinct
+and that manual stop does not trigger positive completed-Source-Field output.
+
+**Disposition:** This study does not establish a generally authoritative
+Source Field witness or qualify any new parking edge. Its observation is the
+smallest read-only test of a proposed source-field binding before investing
+in broad destination or road-margin Generalisation.

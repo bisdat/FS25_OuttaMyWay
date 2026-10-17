@@ -25,6 +25,7 @@ local expected={
     "scripts/observation/StaticBlockageEncounterObservation.lua",
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
+    "scripts/observation/CompletionSourceFieldObservation.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
@@ -97,6 +98,7 @@ source=function(path)
     elseif path=="scripts/observation/StaticBlockageEncounterObservation.lua"
         or path=="scripts/observation/NativeBlockageObservation.lua"
         or path=="scripts/observation/NativeJobCompletionProbe.lua"
+        or path=="scripts/observation/CompletionSourceFieldObservation.lua"
         or path=="scripts/observation/FarmEdgeGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
         or path=="scripts/coordination/SettlementPhysicalOccupancy.lua"
