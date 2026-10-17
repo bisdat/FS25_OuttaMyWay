@@ -17,7 +17,7 @@ Require authoritative server, resolved and enabled profile Configuration, valid 
 
 ## Mechanism and retirement
 
-Use the established native TRANSIT command-plan producer and `NativeTransitRequestMechanism` in a **separate instance**, never borrowing the live Hold & Relocate Control plan cache or mechanism state. For a completed assembly, request independently available work-off and raise operations and a fold command only when the currently selected native fold state/direction can support that command. Unreadable optional fold evidence, a partially changing fold, or an unsupported fold command increments `unresolvedFoldCount`; it must not suppress otherwise valid work-off/raise commands. An empty valid plan is a legitimate **request-only no-op**. Neither accepted commands nor a no-op certify final fold configuration. The separate Hold & Relocate solo readiness policy remains unchanged. Plan-producer refusal preserves its specific error classification rather than flattening every missing API into `TRANSIT_REQUEST_PLAN_INVALID`.
+Use the established native solo/static TRANSIT plan construction and `NativeTransitRequestMechanism` in a **separate instance**, never borrowing the existing Hold & Relocate Control plan cache or mechanism state. Requests may command work-off, raise and supported fold operations, but no readiness assertion follows from an accepted request.
 
 When product is disabled or the map tears down, relinquish the completion request state without applying WORKING restoration commands to a completed machine. A newer AI job prevents admission, but ownership after a started request is not a validated future parking/control lifecycle.
 
@@ -34,7 +34,6 @@ When product is disabled or the map tears down, relinquish the completion reques
 | Validation surface | Relationship |
 | --- | --- |
 | [`tests/shell/completion_transit.lua`](../tests/shell/completion_transit.lua) | `CHALLENGES` |
-| [`tests/shell/completion_transit_plan.lua`](../tests/shell/completion_transit_plan.lua) | `CHALLENGES` |
 | [`tests/shell/main_smoke.lua`](../tests/shell/main_smoke.lua) | `CHALLENGES` |
 
 ## Validation route

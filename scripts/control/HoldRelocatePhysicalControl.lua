@@ -23,8 +23,7 @@ end
 -- Capture the actual native assembly once per admitted relocation. The cached
 -- plan has no semantic capability beyond selected, reversible native commands.
 -- Unsupported or unobservable fold shapes are NOT guessed as 'already folded'.
-local function buildTransitPlan(vehicle,isPair,options)
-    local completion=type(options)=="table" and options.completion==true
+local function buildTransitPlan(vehicle,isPair)
     local members,seen={},{}
     local function include(object)
         if type(object)~="table" or object.isDeleted==true then
@@ -87,29 +86,15 @@ local function buildTransitPlan(vehicle,isPair,options)
             local ok,value=method(object,"getFoldAnimTime")
             if ok and finite(value) then position=value
             elseif type(fold)=="table" then position=fold.foldAnimTime end
-            if not finite(position) then
-                if completion then
-                    unknownFoldCount=unknownFoldCount+1
-                else
-                    return nil,"FOLD_START_UNKNOWN"
-                end
-            elseif position<=0.001 then
+            if not finite(position) then return nil,"FOLD_START_UNKNOWN" end
+            if position<=0.001 then
                 local known,direction=method(object,"getToggledFoldDirection")
-                if known and finite(direction) and direction>0 then
-                    append(object,"setFoldDirection",direction,-direction)
-                elseif completion then
-                    unknownFoldCount=unknownFoldCount+1
-                else
+                if not known or not finite(direction) or direction<=0 then
                     return nil,"FOLD_DIRECTION_UNAVAILABLE"
                 end
+                append(object,"setFoldDirection",direction,-direction)
             elseif position<0.999 then
-                if completion then
-                    -- A partially changing fold is already native-owned.
-                    -- Do not request an unproved direction or claim readiness.
-                    unknownFoldCount=unknownFoldCount+1
-                else
-                    return nil,"FOLD_POSITION_AMBIGUOUS"
-                end
+                return nil,"FOLD_POSITION_AMBIGUOUS"
             end
         elseif isPair and hasActiveParts then
             local position=nil

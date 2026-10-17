@@ -11,7 +11,7 @@
 
 ## Admission
 
-A real native successful GIANTS `AIJobFieldWork` stop is the only trigger. The established [Completion Transit](COMPLETION_TRANSIT.md) consumer first requests native TRANSIT configuration; accepted native request-only work-off/raise/supported-fold handling, including a valid zero-action plan, permits subsequent parking assessment. Unreadable *optional* fold progress must be reported but does not cancel independently supported requests. Accepted commands do not establish fold readiness. A manual job stop, new AI job, disabled mod, missing native vehicle identity, an active blocked-recovery intervention, missing geometry or a vehicle outside the target source field vetoes Control.
+A real native successful GIANTS `AIJobFieldWork` stop is the only trigger. The established [Completion Transit](COMPLETION_TRANSIT.md) consumer first requests native TRANSIT configuration; request acceptance, not fold completion, enables subsequent parking assessment. No Completion TRANSIT request policy is changed as part of generalising parking. A manual job stop, new AI job, disabled mod, missing native vehicle identity, an active blocked-recovery intervention, missing geometry or a vehicle outside the target source field vetoes Control.
 
 **Interim TEST 0.5.5.19 admission:** Physical Completion Parking is On by default only after master player Configuration `enabled=true` is durably resolved and the server, positive native FIELDWORK completion, accepted separate Completion TRANSIT request, uniquely observed registered Source Field, complete-member geometry and existing ownership/safety conditions admit Control. It no longer reads `diagnostics.xml`; publication settings cannot enable/disable vehicle movement. Master Enabled off still supersedes pending/active parking. A dedicated player `Full Completion Parking` option, **default On**, will be implemented later under reopened [#139](https://github.com/bisdat/FS25_OuttaMyWay/issues/139), separate from Completion TRANSIT request-only. The option is **not yet available in General Settings**.
 
@@ -79,7 +79,6 @@ NORMAL runtime events `COMPLETION_SETTLEMENT_ADMITTED`, `COMPLETION_SETTLEMENT_L
 | [`tests/shell/completion_settlement.lua`](../tests/shell/completion_settlement.lua) | `CHALLENGES` |
 | [`tests/shell/completion_field_membership.lua`](../tests/shell/completion_field_membership.lua) | `CHALLENGES` |
 | [`tests/shell/completion_parking_geometry.lua`](../tests/shell/completion_parking_geometry.lua) | `CHALLENGES` |
-| [`tests/shell/completion_transit_plan.lua`](../tests/shell/completion_transit_plan.lua) | `CHALLENGES` |
 | [`tests/shell/completion_extended_approach.lua`](../tests/shell/completion_extended_approach.lua) | `CHALLENGES` |
 | [`tests/shell/settlement_destination_assessment.lua`](../tests/shell/settlement_destination_assessment.lua) | `CHALLENGES` |
 | [`tests/shell/completion_settlement_drive.lua`](../tests/shell/completion_settlement_drive.lua) | `CHALLENGES` |

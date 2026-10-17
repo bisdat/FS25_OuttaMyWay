@@ -30,29 +30,21 @@ local function sendActions(actions)
     return true
 end
 
-local function validActions(actions,kind)
-    if type(actions)~="table" then
-        return false,kind.."_ACTIONS_UNAVAILABLE"
-    end
+local function validActions(actions)
+    if type(actions)~="table" then return false end
     for i=1,#actions do
-        local action=actions[i]
-        local at=kind.."_ACTION_"..tostring(i)
-        if type(action)~="table" or type(action.object)~="table"
-            or action.object.isDeleted==true then
-            return false,at.."_SUBJECT_UNAVAILABLE"
+        local a=actions[i]
+        if type(a)~="table" or type(a.object)~="table"
+            or a.object.isDeleted==true or not ALLOWED_ACTIONS[a.method] then
+            return false
         end
-        if not ALLOWED_ACTIONS[action.method] then
-            return false,at.."_METHOD_NOT_ALLOWED"
-        end
-        if action.method=="setFoldDirection" then
-            local value=action.value
-            if type(value)~="number" or value==0
-                or value~=value or value==math.huge
-                or value==-math.huge then
-                return false,at.."_FOLD_DIRECTION_INVALID"
+        if a.method=="setFoldDirection" then
+            if type(a.value)~="number" or a.value==0
+                or a.value~=a.value or a.value==math.huge or a.value==-math.huge then
+                return false
             end
-        elseif type(action.value)~="boolean" then
-            return false,at.."_VALUE_INVALID"
+        elseif type(a.value)~="boolean" then
+            return false
         end
     end
     return true
@@ -76,18 +68,12 @@ function Mechanism:requestTransit(vehicle)
     if type(source)~="table" or type(source.getTransitRequests)~="function" then
         return false,"TRANSIT_REQUEST_SOURCE_UNAVAILABLE"
     end
-    local ok,plan,why=pcall(source.getTransitRequests,source,vehicle)
-    if not ok then
-        return false,"TRANSIT_REQUEST_SOURCE_EXCEPTION"
+    local ok,plan=pcall(source.getTransitRequests,source,vehicle)
+    if not ok or type(plan)~="table"
+        or validActions(plan.transitActions)~=true
+        or validActions(plan.restoreActions)~=true then
+        return false,"TRANSIT_REQUEST_PLAN_INVALID"
     end
-    if type(plan)~="table" then
-        return false,type(why)=="string" and why or
-            "TRANSIT_REQUEST_PLAN_UNAVAILABLE"
-    end
-    local valid,reason=validActions(plan.transitActions,"TRANSIT")
-    if not valid then return false,reason end
-    valid,reason=validActions(plan.restoreActions,"RESTORE")
-    if not valid then return false,reason end
     -- Mark potential effect before any GIANTS call; partial failure retains
     -- the restoration request rather than reporting no side effects.
     local state={transitActions=plan.transitActions,
@@ -98,8 +84,7 @@ function Mechanism:requestTransit(vehicle)
     if not sent then return false,reason end
     state.isRequestAccepted=true
     return true,{isTransitRequested=true,isConfigurationVerified=false,
-        isReadyGateRequired=false,
-        unresolvedFoldCount=plan.unknownFoldCount or 0}
+        isReadyGateRequired=false}
 end
 
 -- Cancellation sends cached inverse requests without waiting for completion.

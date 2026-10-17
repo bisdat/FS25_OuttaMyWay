@@ -11,11 +11,9 @@ local function planSource()
         getTransitRequests=function(_,vehicle)
             -- Reuse the validated solo/static native command selection, but
             -- NEVER the live Hold & Relocate instance or its request state.
-            -- Completion is request-only. Unknown native fold state must
-            -- not suppress independent work-off or raise commands.
-            local plan,reason=OuttaMyWay.HoldRelocatePhysicalControl.buildTransitPlan(
-                vehicle,false,{completion=true})
-            return plan,reason
+            local plan,reason=OuttaMyWay.HoldRelocatePhysicalControl.buildTransitPlan(vehicle,false)
+            if plan==nil then error(reason or "TRANSIT_PLAN_UNAVAILABLE") end
+            return plan
         end
     }
 end
@@ -46,9 +44,7 @@ function Runtime:onNativeCompletion(job,vehicle)
             return {
                 rootNode=vehicle.rootNode or "unavailable",
                 jobId=job.jobId or "unavailable",
-                reason=accepted and "REQUEST_ONLY_NOT_VERIFIED" or tostring(reason),
-                unresolvedFoldCount=accepted and
-                    (reason.unresolvedFoldCount or 0) or "unknown"
+                reason=accepted and "REQUEST_ONLY_NOT_VERIFIED" or tostring(reason)
             }
         end)
     return accepted==true
