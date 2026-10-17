@@ -230,4 +230,52 @@ assert(observedRejections>0
     "failed entry must retain predicate-attributed evidence")
 assert(rejected.current.x==128.628 and rejected.options.expectedEntryPose.x==131.509,
     "nominal entry must remain distinct from measured arrival")
-print("completion settlement pose-conditioned parking region PASS")
+-- An independent registered Source Field ID and translated polygon must
+-- produce the same shape-relative manoeuvre, never the old world fixture.
+current.x,current.z,current.fx,current.fz=201.478,-256.684,0.987846,-0.155355
+local shiftedX,shiftedZ={},{}
+for i=1,#originalX do
+    shiftedX[i]=originalX[i]+330
+    shiftedZ[i]=originalZ[i]+540
+end
+local shiftedNeighborX,shiftedNeighborZ={},{}
+for i=1,#neighbor.densityMapPolygon.pointsX do
+    shiftedNeighborX[i]=neighbor.densityMapPolygon.pointsX[i]+330
+    shiftedNeighborZ[i]=neighbor.densityMapPolygon.pointsZ[i]+540
+end
+local shiftedField={densityMapPolygon={pointsX=shiftedX,
+    pointsZ=shiftedZ},fieldId=29}
+local shiftedNeighbor={densityMapPolygon={pointsX=shiftedNeighborX,
+    pointsZ=shiftedNeighborZ},fieldId=88}
+g_fieldManager.fields={[29]=shiftedField,[88]=shiftedNeighbor}
+current.x,current.z=current.x+330,current.z+540
+local nonFixtureField=assert(OuttaMyWay.CompletionFieldMembership.identify(vehicle))
+assert(nonFixtureField.fieldId==29)
+local translated,translatedWhy=Route.plan(vehicle,nil,{
+    sourceField=nonFixtureField,edgeIndex=9})
+assert(translated,translatedWhy)
+assert(translated.field==29 and translated.edge==9
+    and translated.method==a.method and #translated.legs==#a.legs
+    and math.abs(translated.estimatedTravelM-a.estimatedTravelM)<0.001,
+    "local parking depends on registered field geometry, not Field77")
+for i=1,#translated.legs do
+    local original=a.legs[i].point
+    local shifted=translated.legs[i].point
+    assert(math.abs(shifted.x-(original.x+330))<0.001
+        and math.abs(shifted.z-(original.z+540))<0.001,
+        "all guidance targets must follow the registered polygon translation")
+end
+local shiftedSession=assert(Route.beginPlan(vehicle,{
+    sourceField=nonFixtureField,edgeIndex=9}))
+local shiftedPhase,shiftedRoute,shiftedReason
+for i=1,12500 do
+    shiftedPhase,shiftedRoute,shiftedReason=Route.advancePlan(
+        shiftedSession,64)
+    if shiftedPhase~="PENDING" then break end
+end
+assert(shiftedPhase=="DONE",shiftedReason)
+assert(shiftedRoute.field==29 and shiftedRoute.edge==9
+    and math.abs(shiftedRoute.estimatedTravelM-
+        translated.estimatedTravelM)<0.001,
+    "incremental general-field Control planning must match the reference")
+print("completion settlement registered Field29 translated route and Field77 regression PASS")
