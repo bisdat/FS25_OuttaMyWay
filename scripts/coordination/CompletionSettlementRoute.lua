@@ -398,6 +398,8 @@ local function makeCheck(s,p,kind,reverse)
     local c=s.candidate
     local station,depth=coordinates(p,s.frame)
     if kind~="APPROACH" and s.options~=nil
+        and type(s.options.stationMin)=="number"
+        and type(s.options.stationMax)=="number"
         and (station<s.options.stationMin
             or station>s.options.stationMax) then
         denied(s,"TERMINAL_OUTSIDE_CLAIMED_STATION")
