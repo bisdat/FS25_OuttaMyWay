@@ -330,10 +330,10 @@ local ahead={rootNode=197,getIsAIActive=function()return false end,
 local deferredJob={}
 runtime.attempted[blocked]=true
 runtime.attempted[ahead]=true
-runtime.pending={vehicle=blocked,job=deferredJob,
+runtime.pending={vehicle=blocked,job=deferredJob,sourceField={fieldId=77},
     plan={advances=0,spent=0},kind="LOCAL_HANDOFF",elapsedMs=0,
     phase="PLANNING",driveArmed=false}
-runtime.waiting={{vehicle=ahead,job={}}}
+runtime.waiting={{vehicle=ahead,job={},sourceField={fieldId=77}}}
 local callsBeforeDeferral=#driveCalls
 localFallback=true
 runtime:update(16)
