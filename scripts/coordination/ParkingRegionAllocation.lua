@@ -11,8 +11,8 @@ local Local=OuttaMyWay.CompletionSettlementRoute
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Parking=OuttaMyWay.CompletionParkingGeometry
 local Membership=OuttaMyWay.CompletionFieldMembership
-local MAX_SITES_PER_EDGE=8
 local MIN_TERMINAL_MARGIN_M=3
+local MIN_STATION_SPACING_M=20
 local function finite(v)
     return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge
 end
@@ -158,8 +158,12 @@ function M.advancePlan(s,units)
                 f.length*0.25))
             local available=f.length-2*margin
             if available>0 then
-                for j=1,MAX_SITES_PER_EDGE do
-                    local station=margin+available*(j-0.5)/MAX_SITES_PER_EDGE
+                -- Sampling density follows actual edge length and the
+                -- represented assembly, not a fixed first-N site quota.
+                local spacing=math.max(MIN_STATION_SPACING_M,own*2)
+                local stations=math.max(1,math.ceil(available/spacing))
+                for j=1,stations do
+                    local station=margin+available*(j-0.5)/stations
                     local candidate=entry(f,station)
                     local dx,dz=p.x-candidate.x,p.z-candidate.z
                     sorted[#sorted+1]={edgeIndex=f.index,frame=f,

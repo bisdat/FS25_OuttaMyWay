@@ -30,21 +30,29 @@ local function sendActions(actions)
     return true
 end
 
-local function validActions(actions)
-    if type(actions)~="table" then return false end
+local function validActions(actions,kind)
+    if type(actions)~="table" then
+        return false,kind.."_ACTIONS_UNAVAILABLE"
+    end
     for i=1,#actions do
-        local a=actions[i]
-        if type(a)~="table" or type(a.object)~="table"
-            or a.object.isDeleted==true or not ALLOWED_ACTIONS[a.method] then
-            return false
+        local action=actions[i]
+        local at=kind.."_ACTION_"..tostring(i)
+        if type(action)~="table" or type(action.object)~="table"
+            or action.object.isDeleted==true then
+            return false,at.."_SUBJECT_UNAVAILABLE"
         end
-        if a.method=="setFoldDirection" then
-            if type(a.value)~="number" or a.value==0
-                or a.value~=a.value or a.value==math.huge or a.value==-math.huge then
-                return false
+        if not ALLOWED_ACTIONS[action.method] then
+            return false,at.."_METHOD_NOT_ALLOWED"
+        end
+        if action.method=="setFoldDirection" then
+            local value=action.value
+            if type(value)~="number" or value==0
+                or value~=value or value==math.huge
+                or value==-math.huge then
+                return false,at.."_FOLD_DIRECTION_INVALID"
             end
-        elseif type(a.value)~="boolean" then
-            return false
+        elseif type(action.value)~="boolean" then
+            return false,at.."_VALUE_INVALID"
         end
     end
     return true
@@ -76,10 +84,10 @@ function Mechanism:requestTransit(vehicle)
         return false,type(why)=="string" and why or
             "TRANSIT_REQUEST_PLAN_UNAVAILABLE"
     end
-    if validActions(plan.transitActions)~=true
-        or validActions(plan.restoreActions)~=true then
-        return false,"TRANSIT_REQUEST_PLAN_INVALID"
-    end
+    local valid,reason=validActions(plan.transitActions,"TRANSIT")
+    if not valid then return false,reason end
+    valid,reason=validActions(plan.restoreActions,"RESTORE")
+    if not valid then return false,reason end
     -- Mark potential effect before any GIANTS call; partial failure retains
     -- the restoration request rather than reporting no side effects.
     local state={transitActions=plan.transitActions,

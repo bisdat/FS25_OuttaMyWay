@@ -788,6 +788,25 @@ The established Field 77 / edge 9 TS019 run remains a regression fixture, not pr
 
 **Validation contract:** isolated Lua tests must prove that two-member assemblies reach nominal local and extended planning, that a failed geometry candidate remains a refusal rather than an unsafe drive, that Completion TRANSIT preserves request-only work-off/raise despite missing optional fold data, and that the previous solo BWR fold gate remains intact. GIANTS TS004 is necessary to test actual articulated steering, clearance, stopping and the previously hidden native-fold case; there is no assertion of GIANTS PASS from CI. Keep the next test result attributable by source and phase, and record any remaining true blockers without restoring prototype identity rules.
 
+### Generalisation gate census — executable source review
+
+The review followed Completion Transit, parking membership, geometry, local route, extended approach, alternative allocation, Situation Assessment, current physical occupancy, Control supersession, native drive and terminal verification.
+
+| Gate or bound | Disposition | Why |
+| --- | --- | --- |
+| Registered Field 77 / edge 9 / surveyed world coordinates | Previously retired in .29 | Map fixtures cannot be product eligibility rules |
+| `memberCount ~= 1` in both local and extended planners | **Retired .30** | Initial sprayer-only proof was a temporary experimental exclusion, not a native driving limitation |
+| Strict solo fold-state reads required before Completion TRANSIT | **Replaced with request-only completion policy .30** | Optional fold observability cannot cancel independent work-off/raise; no fold readiness is inferred |
+| Generic `TRANSIT_REQUEST_PLAN_INVALID` masking source failure | **Corrected .30** | Preserve the underlying plan producer failure; action-plan validation now identifies the failing list/index/reason |
+| 40 m edge acceptance threshold (including Situation Assessment status) | **Retired .30** | A candidate edge only needs nominal station endpoint room; actual full member fit remains separately assessed |
+| Stations fixed to the first 195 m and total 64-site cutoff | **Retired .30** | Both could hide real usable parking portions. Sampling spans complete candidate edges at density related to physical assembly radius and edge length; evaluation stays incremental |
+| Registered Source Field is unique and readable | **Retained evidence constraint** | Never guess association from a completed job, displayed farmland or neighbouring field |
+| Current selected-member pose, neighbour polygons, dynamic occupancy, claimed space and native steering state | **Retained movement/terminal constraints** | Positive clearance must be evidenced; selected-member count is not itself a rejection reason |
+| Nominal geometry/field census caps (16 members/512 scene fields), 320 weighted checks/update, finite Control/leg deadlines, bounded 12 m exterior corridor and bounded extended guidance | **Retained as explicit limits** | Resource, evidence-freshness and physical corridor bounds are not map/assembly-type gates; they can still cause genuine candidate or budget failures and must be reported specifically, not implied to be universally safe |
+| Master disablement, new native job, player steering, competing Control lease, stable physical stop | **Retained authority constraints** | Supersession and observable stopped state precede any positive parked result |
+
+The 12 m exterior band and finite local curve families remain **heuristic search-space assumptions**. Their failure to find a route can indicate incomplete search coverage rather than absent real parking space. The next GIANTS counterexample should identify the exact geometry/physical predicate before any general adjustment; avoid new map-specific or assembly-class exceptions. Neither an offline multi-member nominal route nor a missing fold sensor proves real-world articulated clearance.
+
 ## Completion Parking research instrument retirement and independent admission
 
 **Decision evidence:** The synchronous one-shot farm-context survey had completed its investigative purpose and was not consumed by live parking planning. Comparison runs with the survey absent and explicitly commissioned associated the latter with noticeable loading stutter. Independent TS019 completion parking ran without requiring the survey. The research findings about field edges, nominal member envelopes and physical-margin uncertainty remain in [Nominal Assembly Evidence](ASSEMBLY_SETTLEMENT_NOMINAL_TEST.md), [Field 77 Spatial Probe](FIELD77_SPATIAL_PROBE.md), [Riverbend Spatial Probe](RIVERBEND_FIELD2_SPATIAL_PROBE.md) and [Physical Margin Source Review](PHYSICAL_MARGIN_CONSTRAINT_SOURCE_REVIEW.md).

@@ -181,7 +181,7 @@ end
 function M.edgeEvidence(poly)
     local result={}
     for _,edge in ipairs(G.edges(poly)) do
-        if edge.length>=40 then
+        if edge.length>6 then
             local x,z=(edge.ax+edge.bx)/2,(edge.az+edge.bz)/2
             local nx=G.outwardAt(poly,edge,x,z)
             if nx~=nil then

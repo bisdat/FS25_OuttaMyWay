@@ -66,6 +66,10 @@ assert(byStation[20].peerRisk>=3,
 assert(byStation[20].score>byStation[120].score,
     "17m shorter Euclidean entry must not override demand")
 local edges=S.edgeEvidence(poly)
+local narrow={densityMapPolygon={pointsX={0,18,18,0},
+    pointsZ={0,0,14,14}}}
+assert(#S.edgeEvidence(assert(G.polygonFor(narrow)))==4,
+    "eligible short edges must appear in Situation Assessment evidence")
 assert(#edges>=2,"candidate edges must not be limited to one fixture")
 local seen={}
 for i=1,#edges do

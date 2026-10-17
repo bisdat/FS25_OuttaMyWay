@@ -83,7 +83,7 @@ plan={
 }
 local count=#calls
 ok,evidence=mechanism:requestTransit(vehicle)
-assert(not ok and evidence=="TRANSIT_REQUEST_PLAN_INVALID")
+assert(not ok and evidence=="TRANSIT_ACTION_1_METHOD_NOT_ALLOWED")
 assert(#calls==count)
 plan={transitActions={},restoreActions={}}
 ok,evidence=mechanism:requestTransit(vehicle)
