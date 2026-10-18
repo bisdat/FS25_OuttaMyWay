@@ -129,7 +129,6 @@ OuttaMyWay.ParkingRegionAllocation={
         return {advances=0,spent=0}
     end,
     advancePlan=function(session,units)
-        extendedAdvanceCalls=extendedAdvanceCalls+1
         session.advances=session.advances+1
         session.spent=session.spent+units
         if refuseExtendedScene then return "FAILED",nil,"WORKER_SCENE_AI_STATUS_UNAVAILABLE" end
@@ -167,6 +166,7 @@ OuttaMyWay.ExtendedInfieldApproach={
         return {advances=0,spent=0}
     end,
     advancePlan=function(session,units)
+        extendedAdvanceCalls=extendedAdvanceCalls+1
         session.advances=session.advances+1
         session.spent=session.spent+units
         if refuseExtendedScene then
