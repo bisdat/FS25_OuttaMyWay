@@ -1,3 +1,11 @@
+## D-0231 — A Completed Route Is Not a Search Session
+
+**Decision (18 October 2026; GIANTS retest pending):** An allocator-qualified Extended Infield route is a completed movement plan, not an unfinished ExtendedInfieldApproach planning session. The runtime consumes that plan directly after claiming the jointly qualified approach and terminal. It must not pass it to advancePlan again. The no-guidance-leg handoff uses the completed route's entryPose.
+
+**Evidence:** TS019 TEST 0.5.5.37 completed native job 2, requested Completion TRANSIT, retained Field 73, classified INSIDE, and claimed edge 8. The next update at 09:36:59.307 repeatedly crashed at ExtendedInfieldApproach.lua:329 trying to increment the route's nonexistent advances field. The prior lifecycle fixture returned a session-shaped placeholder, hiding the distinction.
+
+**Scope:** Correct the handoff and its test data. Keep the allocator's actual-pose approach qualification, physical admission, safety guards, and native TRANSIT unchanged. This does not resolve TS004 motor activation or constitute GIANTS parking success.
+
 ## D-0230 — Separate Native Motor Activation Evidence from Stop Refusal Provenance
 
 **Status:** Accepted bounded diagnostic correction, 18 October 2026. GIANTS validation pending.

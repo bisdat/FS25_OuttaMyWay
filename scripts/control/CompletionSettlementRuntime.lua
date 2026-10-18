@@ -483,7 +483,7 @@ function Runtime:update(dt)
             return
         end
         local phase,route,reason
-        if s.kind=="LOCAL_ALLOCATED" then
+        if s.prequalifiedRoute~=nil and (s.kind=="LOCAL_ALLOCATED" or s.kind=="EXTENDED") then
             -- The allocator has qualified a complete local route from the
             -- actual straddling pose, rather than an imaginary entry point.
             phase,route="DONE",s.prequalifiedRoute
@@ -517,7 +517,8 @@ function Runtime:update(dt)
                 s.prequalifiedRoute=route.qualifiedDirectRoute
                 s.kind="LOCAL_ALLOCATED"
             else
-                s.plan=route.qualifiedApproachRoute
+                s.plan=nil
+                s.prequalifiedRoute=route.qualifiedApproachRoute
                 s.kind="EXTENDED"
             end
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REGION_CLAIMED",function() return {
@@ -539,7 +540,7 @@ function Runtime:update(dt)
             local plan=OuttaMyWay.CompletionSettlementRoute.beginPlan(
                 s.vehicle,{sourceField=s.sourceField,edgeIndex=s.edgeIndex,
                     stationMin=s.stationMin,stationMax=s.stationMax,
-                    expectedEntryPose=s.plan.target})
+                    expectedEntryPose=route.entryPose})
             if not plan then
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                     "LOCAL_HANDOFF_PLANNER_UNAVAILABLE")

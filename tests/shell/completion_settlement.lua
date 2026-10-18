@@ -119,6 +119,8 @@ local refuseExtendedScene=false
 local directAllocation=false
 local lastAllocationDisposition=nil
 local occupancyDisposition="INSIDE"
+local qualifiedExtendedRoute
+local extendedAdvanceCalls=0
 local activeConflict=false
 local mismatchClaim=false
 OuttaMyWay.ParkingRegionAllocation={
@@ -127,13 +129,15 @@ OuttaMyWay.ParkingRegionAllocation={
         return {advances=0,spent=0}
     end,
     advancePlan=function(session,units)
+        extendedAdvanceCalls=extendedAdvanceCalls+1
         session.advances=session.advances+1
         session.spent=session.spent+units
+        if refuseExtendedScene then return "FAILED",nil,"WORKER_SCENE_AI_STATUS_UNAVAILABLE" end
         return "DONE",{entryPose={x=25,z=-30,fx=1,fz=0},
             terminalPose={x=40,z=20},ownRadius=5,
             stationMin=0,stationMax=100,station=50,
             qualifiedApproachRoute=not directAllocation and
-                {advances=0,spent=0} or nil,
+                qualifiedExtendedRoute or nil,
             qualifiedDirectRoute=directAllocation and route or nil}
     end,
     claim=function(ledger,vehicle,terminal,radius)
@@ -185,6 +189,12 @@ OuttaMyWay.ExtendedInfieldApproach={
         return not activeConflict,"PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
     end
 }
+qualifiedExtendedRoute={mode="EXTENDED_INFIELD",field=77,edge=9,
+    method="HEADING_LATTICE_INFIELD",
+    entryPose={x=25,z=-30,fx=1,fz=0},estimatedTravelM=16,
+    guideRadiusM=20,memberCount=1,reverseM=0,
+    legs={{name="EXTENDED_INFIELD_GUIDANCE",point={x=8,z=0},moveForwards=true},
+        {name="EXTENDED_INFIELD_GUIDANCE",point={x=16,z=0},moveForwards=true}}}
 local enabled=true
 g_server={}
 local config={isResolved=function()return true end,
@@ -306,7 +316,9 @@ assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="EXTENDED")
 runtime:update(16)
-assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
+assert(runtime.active and runtime.active.route==qualifiedExtendedRoute
+    and extendedAdvanceCalls==0,
+    "prequalified route must be executed, never advanced as a session")
 assert(driveCalls[#driveCalls]=="START")
 -- The second native completion is retained; only ONE physical driver
 -- may operate until its independent settlement turn begins.
@@ -394,17 +406,11 @@ assert(runtime:onNativeCompletion({},refused,true))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
 runtime:update(16)
-assert(runtime.pending and runtime.pending.kind=="EXTENDED")
-runtime:update(16)
 assert(runtime.active==nil and runtime.pending==nil
     and #driveCalls==beforeRefusal,
     "unknown relevant worker must refuse before physical actuation")
-assert(events[#events-1].code=="COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED")
-local witness=events[#events-1].fields
-assert(witness.reason=="WORKER_SCENE_AI_STATUS_UNAVAILABLE"
-    and witness.registry=="MISSION_VEHICLE_SYSTEM"
-    and witness.failureRoot=="220"
-    and witness.relevantWorkers==1)
+assert(runtime.claims[refused]==nil
+    and events[#events].fields.reason=="WORKER_SCENE_AI_STATUS_UNAVAILABLE")
 assert(events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED")
 assert(not runtime:onNativeCompletion({},refused,true),
     "same native completion must not start a new search after census veto")
@@ -584,5 +590,16 @@ assert(runtime.active==nil and runtime.pending==nil
     "originating safety refusal remains observable; native release unchanged")
 activeConflict=false
 forceStopRefusal=false
+runtime:loadMap()
+-- A prequalified zero-leg approach carries entryPose, not session.target.
+qualifiedExtendedRoute.legs={}
+local zero={rootNode=409,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},zero,true))
+runtime:update(16)
+runtime:update(16)
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="LOCAL_HANDOFF")
 runtime:loadMap()
 print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")
