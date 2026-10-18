@@ -638,12 +638,12 @@ function Runtime:update(dt)
             "COMPLETION_SETTLEMENT_ADMISSION_EVIDENCE",function()
             return {
             rootNode=tostring(s.vehicle.rootNode),
-            planningUpdates=s.plan.advances,
-            weightedGeometryChecks=s.plan.spent,
+            planningUpdates=s.plan and s.plan.advances or "prequalified",
+            weightedGeometryChecks=s.plan and s.plan.spent or "prequalified",
             stage=s.kind or "LOCAL_INITIAL",
-            sceneRegistry=type(s.plan.sceneEvidence)=="table"
+            sceneRegistry=s.plan and type(s.plan.sceneEvidence)=="table"
                 and s.plan.sceneEvidence.registry or "not-required",
-            observedActiveWorkers=type(s.plan.sceneEvidence)=="table"
+            observedActiveWorkers=s.plan and type(s.plan.sceneEvidence)=="table"
                 and s.plan.sceneEvidence.observedWorkers or "not-required",
             field=route.field,edge=route.edge,
             memberCount=route.memberCount,

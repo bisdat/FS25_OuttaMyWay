@@ -1,5 +1,5 @@
 -- Fresh selected-assembly occupancy relative to its retained Source Field.
--- Specification Jurisdiction: COMPLETION_SETTLEMENT_CONTROL
+-- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
 -- Called only after the native completion TRANSIT request; no fold readback.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionAssemblyFieldOccupancy={}
