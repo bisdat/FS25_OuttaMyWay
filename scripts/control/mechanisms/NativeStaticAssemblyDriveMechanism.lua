@@ -68,7 +68,6 @@ function M:startMovement(vehicle,objective)
         or type(worldToLocal)~="function"
         or type(vehicle.getMotor)~="function"
         or type(vehicle.setCruiseControlMaxSpeed)~="function"
-        or type(vehicle.getIsMotorStarted)~="function"
         or type(vehicle.startMotor)~="function"
         or type(vehicle.stopMotor)~="function"
         or newlyAIActive(vehicle) then
@@ -138,10 +137,15 @@ function M:startMovement(vehicle,objective)
     if not finite(speed) or speed<=0 then
         return false,"STATIC_NATIVE_DRIVE_SPEED_UNAVAILABLE"
     end
-    local wasRunning,alreadyStarted=pcall(vehicle.getIsMotorStarted,vehicle)
-    if not wasRunning or type(alreadyStarted)~="boolean" then
-        return false,"STATIC_MOTOR_STATE_UNKNOWN"
+    -- Native motor readback is optional ownership evidence only.
+    -- A missing/unconfirmed reading cannot veto native movement.
+    local observed,running=false,false
+    if type(vehicle.getIsMotorStarted)=="function" then
+        observed,running=pcall(vehicle.getIsMotorStarted,vehicle)
     end
+    local alreadyStarted=observed and running==true
+    local initialMotorState="UNKNOWN"
+    if observed then initialMotorState=alreadyStarted end
     local priorCruiseState=nil
     if settlement then
         local read,value=pcall(vehicle.getCruiseControlState,vehicle)
@@ -160,6 +164,12 @@ function M:startMovement(vehicle,objective)
         oldForwardSpeed=cruise.speed,oldReverseSpeed=cruise.speedReverse,
         speedKmh=speed,nativeSpeedKmh=nativeSpeed,
         startedMotor=not alreadyStarted,
+        -- Native acceptance is distinct from confirmed running state.
+        -- Retained only for bounded diagnostic attribution, not admission.
+        motorWasRunningInitially=initialMotorState,
+        motorStartCallAccepted=alreadyStarted,
+        motorStartReply=alreadyStarted
+            and "NOT_REQUESTED_ALREADY_RUNNING" or "NOT_YET_REQUESTED",
         settlement=settlement,priorCruiseState=priorCruiseState,
         stopping=false,stopped=false,steadyMs=0,
         lastDt=16,commanded=0,isFailed=false,isComplete=false
@@ -173,6 +183,8 @@ function M:startMovement(vehicle,objective)
     end
     if not alreadyStarted then
         local started,answer=pcall(vehicle.startMotor,vehicle,true)
+        state.motorStartCallAccepted=started and answer~=false
+        state.motorStartReply=tostring(answer)
         if not started or answer==false then
             state.isFailed=true
             return false,"STATIC_MOTOR_START_FAILED"
@@ -238,21 +250,11 @@ function M:movementStatus(vehicle,dt)
         s.isComplete=true
         return {isComplete=true,progressM=progress.progressM,
             commandedDriveCount=s.commanded,
-            physicalDisplacementM=s.physicalDisplacementM,
-            motorStarted=s.lastMotorStarted}
+            physicalDisplacementM=s.physicalDisplacementM}
     end
-    local read,motorOn=pcall(vehicle.getIsMotorStarted,vehicle)
-    if not read then
-        s.isFailed=true;s.reason="STATIC_MOTOR_STATE_UNAVAILABLE"
-        return {isFailed=true,reason=s.reason}
-    end
-    s.lastMotorStarted=motorOn==true
-    if motorOn~=true then
-        return {isComplete=false,progressM=progress.progressM,
-            physicalDisplacementM=s.physicalDisplacementM,
-            commandedDriveCount=s.commanded,motorStarted=false,
-            reason="NATIVE_MOTOR_STARTING"}
-    end
+    -- Do not wait for GIANTS motor-running readback here. A native
+    -- start request has already been dispatched; the normal movement
+    -- command, geometry guards and measured stopping establish outcomes.
     local targetX,targetZ=s.objective.targetX,s.objective.targetZ
     if not s.objective.moveForwards then
         local x,z,reason=OuttaMyWay.NativeReverseMechanism.adjustToolTarget(
@@ -313,7 +315,7 @@ function M:movementStatus(vehicle,dt)
     end
     return {isComplete=false,progressM=progress.progressM,
         physicalDisplacementM=s.physicalDisplacementM,
-        commandedDriveCount=s.commanded,motorStarted=true,
+        commandedDriveCount=s.commanded,
         localTargetDistanceM=s.localTargetDistanceM}
 end
 

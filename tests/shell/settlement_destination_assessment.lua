@@ -2,6 +2,8 @@
 -- demand. No native driving or AI trajectory fabrication.
 OuttaMyWay={}
 dofile("scripts/observation/FarmEdgeGeometry.lua")
+dofile("scripts/observation/CompletionFieldMembership.lua")
+dofile("scripts/observation/CompletionParkingGeometry.lua")
 local G=OuttaMyWay.FarmEdgeGeometry
 local xs={131.79,143.52,153.81,162.43,165.16,165.55,175.32,
     182.15,228.15,-0.06,-10.56,-40.20}
@@ -28,6 +30,7 @@ localDirectionToWorld=function(node)
 end
 dofile("scripts/coordination/SettlementDestinationAssessment.lua")
 local S=OuttaMyWay.SettlementDestinationAssessment
+local sourceField={fieldId=77,field=source,polygon=poly}
 local edge=G.edges(poly)[9]
 local nx,nz=G.outwardAt(poly,edge,
     (edge.ax+edge.bx)*0.5,(edge.az+edge.bz)*0.5)
@@ -47,9 +50,9 @@ local scene=assert(S.observe(root,poly))
 assert(scene.workingCount==1 and scene.headingCount==1
     and scene.motionCount==0,
     "a heading alone is not a measured movement vector")
-S.sample(root,500)
+S.sample(root,500,sourceField)
 moving.z=moving.z+5
-S.sample(root,500)
+S.sample(root,500,sourceField)
 scene=assert(S.observe(root,poly))
 assert(scene.motionCount==1 and scene.peers[1].speedMps>0,
     "two samples provide measured motion separate from heading")
@@ -63,15 +66,19 @@ assert(byStation[20].peerRisk>=3,
 assert(byStation[20].score>byStation[120].score,
     "17m shorter Euclidean entry must not override demand")
 local edges=S.edgeEvidence(poly)
-local main=false
-local west=false
+local narrow={densityMapPolygon={pointsX={0,18,18,0},
+    pointsZ={0,0,14,14}}}
+assert(#S.edgeEvidence(assert(G.polygonFor(narrow)))==4,
+    "eligible short edges must appear in Situation Assessment evidence")
+assert(#edges>=2,"candidate edges must not be limited to one fixture")
+local seen={}
 for i=1,#edges do
-    local e=edges[i]
-    if e.edge==9 and e.status=="QUALIFIED_LOCAL_ROUTER" then main=true end
-    if e.status=="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED" then west=true end
+    local candidate=edges[i]
+    assert(candidate.status=="GEOMETRIC_CANDIDATE_PENDING_ROUTE_QUALIFICATION")
+    assert(not seen[candidate.edge])
+    seen[candidate.edge]=true
 end
-assert(main and west,
-    "second/west edge is a candidate, NOT authorised by a screenshot")
+assert(seen[9],"the historical edge remains a geometric candidate")
 S.reset()
 scene=assert(S.observe(root,poly))
 assert(scene.motionCount==0 and scene.headingCount==1,

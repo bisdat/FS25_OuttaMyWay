@@ -1,5 +1,5 @@
--- Experimental Field 77 Extended Infield Approach: heading-aware short
--- forward guidance to an entry REGION on preferred edge 9.
+-- Registered-field Extended Infield Approach: heading-aware short
+-- forward guidance to a qualified entry region on a selected field edge.
 -- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
 -- This is an independent approach planner, NOT parking or BWR Control.
 OuttaMyWay=OuttaMyWay or {}
@@ -15,7 +15,8 @@ local MAX_EXPANSIONS=16000
 local MAX_GUIDES=115
 local PEER_RESERVE_M=12
 local MAX_SCENE=512
-local FIXTURE={ax=228.15,az=-243.04,bx=-0.06,bz=-207.44,length=230.97}
+local Parking=OuttaMyWay.CompletionParkingGeometry
+local Membership=OuttaMyWay.CompletionFieldMembership
 local function finite(v)
     return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge
 end
@@ -31,39 +32,28 @@ local function pose(vehicle)
     if len<0.001 then return nil end
     return {x=x,z=z,fx=fx/len,fz=fz/len}
 end
-local function context(vehicle)
-    local manager=g_fieldManager
-    if type(manager)~="table" or type(manager.fields)~="table"
-        then return nil,"FIELD_REGISTRY_UNAVAILABLE" end
-    local source
-    if type(manager.getFieldById)=="function" then
-        local ok,f=pcall(manager.getFieldById,manager,77)
-        if ok then source=f end
+local function context(vehicle,sourceField,edgeIndex)
+    local source=sourceField
+    if source==nil then
+        local why
+        source,why=Membership.identify(vehicle)
+        if source==nil then return nil,why end
     end
-    if source==nil then source=manager.fields[77] end
-    local poly=G.polygonFor(source)
-    if poly==nil then return nil,"FIELD_77_UNAVAILABLE" end
-    local edges=G.edges(poly)
-    local edge=edges[9]
-    if edge==nil or math.abs(edge.ax-FIXTURE.ax)>3
-        or math.abs(edge.az-FIXTURE.az)>3
-        or math.abs(edge.bx-FIXTURE.bx)>3
-        or math.abs(edge.bz-FIXTURE.bz)>3
-        or math.abs(edge.length-FIXTURE.length)>3 then
-        return nil,"FIELD_77_EDGE_9_MISMATCH"
-    end
-    local nx,nz=G.outwardAt(poly,edge,
-        (edge.ax+edge.bx)*0.5,(edge.az+edge.bz)*0.5)
-    if nx==nil then return nil,"EDGE_NORMAL_UNAVAILABLE" end
+    local available,why=Parking.enumerate(source,vehicle)
+    if available==nil then return nil,why end
+    local edge,edgeWhy=Parking.select(available,edgeIndex)
+    if edge==nil then return nil,edgeWhy end
+    local poly=available.poly
     local current=pose(vehicle)
     if current==nil or not G.inside(poly,current.x,current.z) then
-        return nil,"COMPLETION_ROOT_OUTSIDE_FIELD_77"
+        -- This lattice is infield-only. Exterior starts require an
+        -- independently qualified return corridor, not a synthetic one.
+        return nil,"EXTENDED_INFIELD_START_REQUIRES_FIELD_INTERIOR"
     end
-    local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
-    if foot==nil then return nil,why end
-    if foot.memberCount~=1 then
-        return nil,"EXTENDED_ARTICULATED_SWEEP_UNVALIDATED"
-    end
+    local foot,footWhy=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if foot==nil then return nil,footWhy end
+    -- Full selected assembly, including its current attached-member
+    -- rectangles, is eligible for nominal path assessment.
     local peers,inventory,reason,evidence=M.activePeers(vehicle,poly)
     if not inventory then return nil,reason,evidence end
     local occupants,occupiedWhy=Occupancy.snapshot(vehicle,poly)
@@ -72,11 +62,10 @@ local function context(vehicle)
     if ownRadius==nil then
         return nil,"PHYSICAL_OCCUPANCY_OWN_FOOTPRINT_UNAVAILABLE",evidence
     end
-    return {poly=poly,foot=foot,initial=current,peers=peers,
+    return {fieldId=available.fieldId,edgeIndex=edge.index,
+        poly=poly,foot=foot,initial=current,peers=peers,
         occupants=occupants,ownRadius=ownRadius,
-        sceneEvidence=evidence,
-        edge={ax=edge.ax,az=edge.az,ux=edge.dx/edge.length,
-            uz=edge.dz/edge.length,nx=nx,nz=nz,length=edge.length}},nil,evidence
+        sceneEvidence=evidence,edge=edge},nil,evidence
 end
 local function peerRange(vehicle)
     local radius=PEER_RESERVE_M
@@ -315,7 +304,8 @@ local function reconstruct(ctx,node)
     if #legs==0 and ctx.target==nil then
         return nil,"EXTENDED_ALREADY_AT_ENTRY"
     end
-    return {mode="EXTENDED_INFIELD",field=77,edge=9,
+    return {mode="EXTENDED_INFIELD",field=ctx.fieldId,
+        edge=ctx.edgeIndex,
         poly=ctx.poly,entryHeading=ctx.target
             and {fx=ctx.target.fx,fz=ctx.target.fz}
             or {fx=ctx.edge.ux*-1,fz=ctx.edge.uz*-1},
@@ -325,9 +315,10 @@ local function reconstruct(ctx,node)
         guideRadiusM=STEP/TURN,guidancePoints=#legs,
         legs=legs},nil
 end
-function M.beginPlan(vehicle,target)
+function M.beginPlan(vehicle,target,sourceField,edgeIndex)
     if type(vehicle)~="table" then return nil,"VEHICLE_UNAVAILABLE" end
-    return {vehicle=vehicle,target=target,phase="INIT",spent=0,advances=0,
+    return {vehicle=vehicle,target=target,sourceField=sourceField,
+        edgeIndex=edgeIndex,phase="INIT",spent=0,advances=0,
         expansions=0,finished=false}
 end
 function M.advancePlan(s,budget)
@@ -339,7 +330,7 @@ function M.advancePlan(s,budget)
     local units=budget
     while units>0 do
         if s.phase=="INIT" then
-            local ctx,reason,evidence=context(s.vehicle)
+            local ctx,reason,evidence=context(s.vehicle,s.sourceField,s.edgeIndex)
             s.sceneEvidence=evidence
             if ctx==nil then
                 s.finished=true;return "FAILED",nil,reason
@@ -356,7 +347,7 @@ function M.advancePlan(s,budget)
             end
             local node=heapPop(s.heap)
             if node==nil then
-                s.finished=true;return "FAILED",nil,"NO_EXTENDED_APPROACH_TO_EDGE_9"
+                s.finished=true;return "FAILED",nil,"NO_EXTENDED_APPROACH_TO_ELIGIBLE_EDGE"
             end
             s.expansions=s.expansions+1;s.spent=s.spent+1;units=units-1
             if isEntry(s.ctx,node.pose) then
@@ -394,6 +385,20 @@ function M.guard(vehicle,route,index)
     if p==nil then return false,"EXTENDED_APPROACH_POSE_UNAVAILABLE" end
     if not G.inside(route.poly,p.x,p.z) then
         return false,"EXTENDED_APPROACH_FIELD_CONTAINMENT_LOST"
+    end
+    -- The candidate search uses captured nominal member geometry.
+    -- During actual movement observe the current attachment configuration,
+    -- not the rigidly rotated prediction used to shortlist candidates.
+    local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if foot==nil then return false,why end
+    if foot.memberCount~=route.memberCount then
+        return false,"ASSEMBLY_MEMBERSHIP_CHANGED"
+    end
+    for i=1,#foot.corners do
+        local corner=foot.corners[i]
+        if not G.inside(route.poly,p.x+corner.x,p.z+corner.z) then
+            return false,"EXTENDED_LIVE_MEMBER_OUTSIDE_SOURCE_FIELD"
+        end
     end
     local others,okay,reason=M.activePeers(vehicle,route.poly)
     if not okay then return false,reason or "EXTENDED_WORKER_OBSERVATION_UNAVAILABLE" end

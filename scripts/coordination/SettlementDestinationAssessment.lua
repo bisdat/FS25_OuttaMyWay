@@ -25,16 +25,6 @@ local function direction(v)
     if m<0.001 then return nil,nil end
     return x/m,z/m
 end
-local function fieldPolygon()
-    local manager=g_fieldManager
-    if type(manager)~="table" or type(manager.fields)~="table" then return nil end
-    local field=manager.fields[77]
-    if type(manager.getFieldById)=="function" then
-        local ok,f=pcall(manager.getFieldById,manager,77)
-        if ok and f~=nil then field=f end
-    end
-    return G.polygonFor(field)
-end
 local function peersFor(vehicle,poly)
     local approach=OuttaMyWay.ExtendedInfieldApproach
     if type(approach)~="table"
@@ -51,13 +41,20 @@ function M.reset()
 end
 -- Physical motion is inferred ONLY from two separated position samples.
 -- Native heading alone is never labelled a measured movement vector.
-function M.sample(vehicle,dt)
+function M.sample(vehicle,dt,sourceField)
     if type(dt)~="number" or dt<=0 then return end
     elapsedMs=elapsedMs+dt
     if elapsedMs<SAMPLE_MS then return end
     local period=elapsedMs
     elapsedMs=0
-    local poly=fieldPolygon()
+    local source=sourceField
+    if source==nil and type(OuttaMyWay.CompletionFieldMembership)=="table" then
+        source=OuttaMyWay.CompletionFieldMembership.identify(vehicle)
+    end
+    local poly=source and source.polygon
+    if poly==nil and source and source.field then
+        poly=G.polygonFor(source.field)
+    end
     if poly==nil then return end
     local peers=peersFor(vehicle,poly)
     if type(peers)~="table" then return end
@@ -144,8 +141,9 @@ function M.rank(sites,origin,frame,situation)
     end
     for i=1,#sites do
         local site=sites[i]
-        local terminal={x=frame.ax+frame.ux*site.station+frame.nx*4,
-            z=frame.az+frame.uz*site.station+frame.nz*4}
+        local f=site.frame or frame
+        local terminal={x=f.ax+f.ux*site.station+f.nx*4,
+            z=f.az+f.uz*site.station+f.nz*4}
         local worst,reason=0,#situation.peers>0
             and "NO_NEAR_DEMAND_EVIDENCE" or "NO_ACTIVE_WORKER"
         for j=1,#situation.peers do
@@ -156,7 +154,7 @@ function M.rank(sites,origin,frame,situation)
         site.peerRiskReason=reason
         local dx,dz=origin.x-site.entry.x,origin.z-site.entry.z
         site.entryDistance=magnitude(dx,dz)
-        site.centreDistance=math.abs(site.station-frame.length/2)
+        site.centreDistance=math.abs(site.station-f.length/2)
         -- With active workers, protect other productive space first.
         -- When no peer is working, preserve the previously tested
         -- proximity preference. These scores are EXPERIMENTAL ranking
@@ -169,23 +167,28 @@ function M.rank(sites,origin,frame,situation)
         end
     end
     table.sort(sites,function(a,b)
-        if a.score==b.score then return a.station<b.station end
+        if a.score==b.score then
+            if a.edgeIndex~=b.edgeIndex then
+                return (a.edgeIndex or 0)<(b.edgeIndex or 0)
+            end
+            return a.station<b.station
+        end
         return a.score<b.score
     end)
     return sites
 end
--- This reports geometric edge candidates ONLY. An edge is NOT admitted
--- for parking unless its local-entry geometry and margin are validated.
+-- Edge candidacy is geometric; route/terminal qualification is separate.
 function M.edgeEvidence(poly)
     local result={}
     for _,edge in ipairs(G.edges(poly)) do
-        if edge.index==9 then
-            result[#result+1]={edge=9,status="QUALIFIED_LOCAL_ROUTER",
-                length=edge.length}
-        elseif edge.side=="X_MIN" and edge.length>150 then
-            result[#result+1]={edge=edge.index,
-                status="MARGIN_AND_LOCAL_ROUTER_UNVALIDATED",
-                length=edge.length}
+        if edge.length>6 then
+            local x,z=(edge.ax+edge.bx)/2,(edge.az+edge.bz)/2
+            local nx=G.outwardAt(poly,edge,x,z)
+            if nx~=nil then
+                result[#result+1]={edge=edge.index,
+                    status="GEOMETRIC_CANDIDATE_PENDING_ROUTE_QUALIFICATION",
+                    length=edge.length}
+            end
         end
     end
     return result

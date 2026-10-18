@@ -2,6 +2,8 @@
 -- nominal parking REGION, from the actual vehicle pose (never a far endpoint).
 OuttaMyWay={}
 dofile("scripts/observation/FarmEdgeGeometry.lua")
+dofile("scripts/observation/CompletionFieldMembership.lua")
+dofile("scripts/observation/CompletionParkingGeometry.lua")
 dofile("scripts/assessment/SettlementCorridorAssessment.lua")
 local G=OuttaMyWay.FarmEdgeGeometry
 local originalX={131.79,143.52,153.81,162.43,165.16,165.55,175.32,
@@ -42,6 +44,14 @@ OuttaMyWay.PairTransitRegion={
                     z=lateralZ*1.2*side+p.fz*2.5*front}
             end
         end
+        if v~=other and memberCount>1 then
+            -- Identical nominal members isolate *admission policy* from
+            -- geometry feasibility. Real articulated node changes are
+            -- covered separately by the live-member-geometry witness.
+            for i=1,4 do
+                corners[#corners+1]={x=corners[i].x,z=corners[i].z}
+            end
+        end
         return {rootX=p.x,rootZ=p.z,
             corners=corners,memberCount=v==other and 1 or memberCount}
     end
@@ -49,11 +59,13 @@ OuttaMyWay.PairTransitRegion={
 dofile("scripts/coordination/SettlementPhysicalOccupancy.lua")
 dofile("scripts/coordination/CompletionSettlementRoute.lua")
 local Route=OuttaMyWay.CompletionSettlementRoute
+local sourceField=assert(OuttaMyWay.CompletionFieldMembership.identify(vehicle))
+local fixtureOptions={sourceField=sourceField,edgeIndex=9}
 -- Admission from native job-stop MUST only create the planning session;
 -- no single update may complete the whole expensive route search.
 local coroutineOriginal=coroutine
 coroutine=nil -- GIANTS Reality: no global coroutine table was available.
-local async=assert(Route.beginPlan(vehicle))
+local async=assert(Route.beginPlan(vehicle,fixtureOptions))
 assert(async.advances==0 and async.spent==0
     and async.phase=="INIT" and async.poly==nil,
     "native completion must do no field geometry")
@@ -78,7 +90,7 @@ assert(Route.advancePlan(async,64)=="FAILED",
     "finished planning cannot resume again")
 assert(coroutine==nil,"the implementation must not require coroutines")
 coroutine=coroutineOriginal
-local a,err=Route.plan(vehicle)
+local a,err=Route.plan(vehicle,nil,fixtureOptions)
 assert(a,err)
 assert(route.estimatedTravelM==a.estimatedTravelM
     and route.method==a.method and #route.legs==#a.legs
@@ -92,7 +104,7 @@ for i=1,#a.legs do
         and math.abs(x.point.z-y.point.z)<0.00001,
         "explicit planner must reproduce every reference guidance point")
 end
-assert(a.field==77 and a.edge==9)
+assert(a.field==sourceField.fieldId and a.edge==fixtureOptions.edgeIndex)
 assert(a.method=="REVERSE_FORWARD" or a.method=="FORWARD_J")
 assert(#a.legs>1 and #a.legs<=55,
     "guidance should have a finite, short target list")
@@ -139,11 +151,11 @@ print(string.format("TS018 nominal chosen route: %s reverse=%.1fm travel=%.1fm t
 local first={x=current.x,z=current.z}
 current.x,current.z,current.fx,current.fz=
     141,-252,0.987846,-0.155355
-local b,why=Route.plan(vehicle)
+local b,why=Route.plan(vehicle,nil,fixtureOptions)
 assert(b,why)
 assert(#b.legs>1 and b.estimatedTravelM<120)
 -- Route agreement and bounded work must also hold for a new completion pose.
-local alternate=assert(Route.beginPlan(vehicle))
+local alternate=assert(Route.beginPlan(vehicle,fixtureOptions))
 local altPhase,altRoute,altReason
 for i=1,12500 do
     local before=alternate.spent
@@ -178,7 +190,7 @@ local clear,conflict=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
     vehicle,a)
 assert(not clear and conflict=="PHYSICAL_OCCUPANCY_ROUTE_CONFLICT")
 current.x,current.z,current.fx,current.fz=201.478,-256.684,0.987846,-0.155355
-local second,secondReason=Route.plan(vehicle)
+local second,secondReason=Route.plan(vehicle,nil,fixtureOptions)
 if second~=nil then
     local target=second.legs[#second.legs].point
     local delta=math.sqrt((target.x-occupied.x)^2+
@@ -195,18 +207,26 @@ assert(not nextStep and whyNext=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED")
 g_currentMission.vehicleSystem.vehicles={vehicle}
 -- The field fixture does not secretly admit another polygon.
 current.x,current.z=900,900
-assert(Route.plan(vehicle)==nil)
+assert(Route.plan(vehicle,nil,fixtureOptions)==nil)
 current.x,current.z=201.478,-256.684
 memberCount=2
-local multi,reasonMulti=Route.plan(vehicle)
-assert(multi==nil and reasonMulti=="ARTICULATED_ENTRY_REALITY_UNVALIDATED",
-    "a nominal rigid path does not authorise articulated reversing")
+local multi,reasonMulti=Route.plan(vehicle,nil,fixtureOptions)
+assert(multi and multi.memberCount==2,reasonMulti or
+    "a multi-member assembly must enter nominal route qualification")
+local multiSession=assert(Route.beginPlan(vehicle,fixtureOptions))
+local multiPhase,multiRoute,multiReason
+for i=1,12500 do
+    multiPhase,multiRoute,multiReason=Route.advancePlan(multiSession,64)
+    if multiPhase~="PENDING" then break end
+end
+assert(multiPhase=="DONE" and multiRoute.memberCount==2,multiReason or
+    "incremental planner must not retain a single-member prototype veto")
 -- This fixture cannot prove the TS019 world failure. Deliberately deny
 -- all terminal stations to exercise attributed, finite local refusal.
 memberCount=1
 current.x,current.z,current.fx,current.fz=128.628,-245.676,0.953,0.302
 local rejected=assert(Route.beginPlan(vehicle,{
-    stationMin=0,stationMax=0,
+    sourceField=sourceField,edgeIndex=9,stationMin=0,stationMax=0,
     expectedEntryPose={x=131.509,z=-246.184,fx=0.988,fz=-0.154}}))
 local rejectedPhase,rejectedRoute,rejectedReason
 for i=1,12500 do
@@ -226,4 +246,78 @@ assert(observedRejections>0
     "failed entry must retain predicate-attributed evidence")
 assert(rejected.current.x==128.628 and rejected.options.expectedEntryPose.x==131.509,
     "nominal entry must remain distinct from measured arrival")
-print("completion settlement pose-conditioned parking region PASS")
+-- An independent registered Source Field ID and translated polygon must
+-- produce the same shape-relative manoeuvre, never the old world fixture.
+current.x,current.z,current.fx,current.fz=201.478,-256.684,0.987846,-0.155355
+local shiftedX,shiftedZ={},{}
+for i=1,#originalX do
+    shiftedX[i]=originalX[i]+330
+    shiftedZ[i]=originalZ[i]+540
+end
+local shiftedNeighborX,shiftedNeighborZ={},{}
+for i=1,#neighbor.densityMapPolygon.pointsX do
+    shiftedNeighborX[i]=neighbor.densityMapPolygon.pointsX[i]+330
+    shiftedNeighborZ[i]=neighbor.densityMapPolygon.pointsZ[i]+540
+end
+local shiftedField={densityMapPolygon={pointsX=shiftedX,
+    pointsZ=shiftedZ},fieldId=29}
+local shiftedNeighbor={densityMapPolygon={pointsX=shiftedNeighborX,
+    pointsZ=shiftedNeighborZ},fieldId=88}
+g_fieldManager.fields={[29]=shiftedField,[88]=shiftedNeighbor}
+current.x,current.z=current.x+330,current.z+540
+local nonFixtureField=assert(OuttaMyWay.CompletionFieldMembership.identify(vehicle))
+assert(nonFixtureField.fieldId==29)
+local translated,translatedWhy=Route.plan(vehicle,nil,{
+    sourceField=nonFixtureField,edgeIndex=9})
+assert(translated,translatedWhy)
+assert(translated.field==29 and translated.edge==9
+    and translated.method==a.method and #translated.legs==#a.legs
+    and math.abs(translated.estimatedTravelM-a.estimatedTravelM)<0.001,
+    "local parking depends on registered field geometry, not Field77")
+for i=1,#translated.legs do
+    local original=a.legs[i].point
+    local shifted=translated.legs[i].point
+    assert(math.abs(shifted.x-(original.x+330))<0.001
+        and math.abs(shifted.z-(original.z+540))<0.001,
+        "all guidance targets must follow the registered polygon translation")
+end
+local shiftedSession=assert(Route.beginPlan(vehicle,{
+    sourceField=nonFixtureField,edgeIndex=9}))
+local shiftedPhase,shiftedRoute,shiftedReason
+for i=1,12500 do
+    shiftedPhase,shiftedRoute,shiftedReason=Route.advancePlan(
+        shiftedSession,64)
+    if shiftedPhase~="PENDING" then break end
+end
+assert(shiftedPhase=="DONE",shiftedReason)
+assert(shiftedRoute.field==29 and shiftedRoute.edge==9
+    and math.abs(shiftedRoute.estimatedTravelM-
+        translated.estimatedTravelM)<0.001,
+    "incremental general-field Control planning must match the reference")
+-- Root outside the polygon may still start within the selected bounded
+-- exterior edge corridor. Do not mistake identity for a field-interior veto.
+local polygon=assert(G.polygonFor(g_fieldManager.fields[29]))
+local exterior=G.edges(polygon)[9]
+local midpointX=(exterior.ax+exterior.bx)/2
+local midpointZ=(exterior.az+exterior.bz)/2
+local nx,nz=G.outwardAt(polygon,exterior,midpointX,midpointZ)
+assert(nx~=nil)
+current.x,current.z=midpointX+nx*2,midpointZ+nz*2
+assert(not G.inside(polygon,current.x,current.z))
+local marginSession=assert(Route.beginPlan(vehicle,{
+    sourceField=nonFixtureField,edgeIndex=9}))
+local marginPhase,marginRoute,marginReason
+for i=1,12500 do
+    marginPhase,marginRoute,marginReason=Route.advancePlan(marginSession,64)
+    if marginPhase~="PENDING" then break end
+end
+assert(marginPhase=="DONE"
+    or (marginPhase=="FAILED"
+        and marginReason~="COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE"),
+    "bounded exterior start must be evaluated, never categorically vetoed")
+current.x,current.z=midpointX+nx*30,midpointZ+nz*30
+local refused,refusal=Route.plan(vehicle,nil,{
+    sourceField=nonFixtureField,edgeIndex=9})
+assert(refused==nil and refusal=="COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE",
+    "an unqualified exterior start must remain outside admission")
+print("completion settlement registered-field, actual-pose margin and TS019 regression PASS")

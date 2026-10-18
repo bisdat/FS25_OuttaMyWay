@@ -27,7 +27,21 @@ local enabled=true
 local config={isResolved=function()return true end,isEnabled=function()return enabled end}
 dofile("scripts/observation/NativeJobCompletionProbe.lua")
 local probe=OuttaMyWay.NativeJobCompletionProbe.new(config)
+local consumed,updates,resets={},0,0
+probe:setFieldMembership({
+    update=function(_,dt) assert(dt==1000);updates=updates+1 end,
+    reset=function() resets=resets+1 end,
+    take=function(_,observedJob,vehicle,successful)
+        consumed[#consumed+1]={job=observedJob,successful=successful}
+        return successful and {fieldId=77} or nil
+    end})
+local forwarded={}
+probe:setCompletionListener(function(observedJob,vehicle,field)
+    forwarded[#forwarded+1]={job=observedJob,field=field}
+end)
 probe:loadMap()
+probe:update(1000)
+assert(updates==1 and resets==1)
 assert(subscribed and target==probe)
 local function instance(klass)
     return {isa=function(_,candidate)return candidate==klass end}
@@ -41,6 +55,8 @@ end
 local natural=job(1)
 callback(target,natural,instance(AIMessageSuccessFinishedJob))
 assert(#reports==1 and reports[1].payload.successClass==true)
+assert(#forwarded==1 and forwarded[1].job==natural
+    and forwarded[1].field.fieldId==77)
 assert(reports[1].payload.jobId==1 and reports[1].payload.rootNode=="101")
 callback(target,natural,instance(AIMessageSuccessFinishedJob))
 assert(#reports==1,"duplicate callback must not create a second observation")
@@ -56,6 +72,9 @@ assert(#reports==3,"disabled product must not report completion")
 enabled=true
 callback(target,instance({}),instance(AIMessageSuccessFinishedJob))
 assert(#reports==3,"unrelated job must be excluded")
+assert(#consumed==3 and consumed[1].successful
+    and not consumed[2].successful and not consumed[3].successful,
+    "every observed job stop must consume or discard its exact witness")
 probe:deleteMap()
-assert(unsubscribed and not probe.subscribed)
+assert(unsubscribed and not probe.subscribed and resets==2)
 print("native job completion probe PASS")

@@ -2,6 +2,8 @@
 -- No native motor calls; geometry feasibility is incremental.
 OuttaMyWay={}
 dofile("scripts/observation/FarmEdgeGeometry.lua")
+dofile("scripts/observation/CompletionFieldMembership.lua")
+dofile("scripts/observation/CompletionParkingGeometry.lua")
 dofile("scripts/assessment/SettlementCorridorAssessment.lua")
 local G=OuttaMyWay.FarmEdgeGeometry
 local xs={131.79,143.52,153.81,162.43,165.16,165.55,175.32,
@@ -44,9 +46,10 @@ dofile("scripts/coordination/ExtendedInfieldApproach.lua")
 dofile("scripts/coordination/SettlementDestinationAssessment.lua")
 dofile("scripts/coordination/ParkingRegionAllocation.lua")
 local Allocation=OuttaMyWay.ParkingRegionAllocation
+local sourceField=assert(OuttaMyWay.CompletionFieldMembership.identify(first))
 local ledger={}
 local function qualify(vehicle)
-    local s=assert(Allocation.beginPlan(vehicle,ledger))
+    local s=assert(Allocation.beginPlan(vehicle,ledger,sourceField))
     local phase,route,reason
     for i=1,18000 do
         local prior=s.spent
@@ -61,7 +64,10 @@ end
 local phase,a,why=qualify(first)
 assert(phase=="DONE",why)
 assert(a.qualifiedLocalRoute and #a.qualifiedLocalRoute.legs>0)
-assert(a.entryPose and a.terminalPose and a.station)
+assert(a.qualifiedApproachRoute and a.qualifiedDirectRoute==nil,
+    "allocator must establish actual current-pose entry connectivity first")
+assert(a.entryPose and a.terminalPose and a.station
+    and type(a.edge)=="number" and a.field==sourceField.fieldId)
 local firstClaim=assert(Allocation.claim(ledger,first,a.terminalPose,a.ownRadius))
 assert(firstClaim==ledger[first])
 assert(Allocation.claimCurrent(ledger,first))
@@ -81,18 +87,22 @@ local secondClaim=assert(Allocation.claim(ledger,second,
 local dx,dz=secondClaim.x-firstClaim.x,secondClaim.z-firstClaim.z
 assert(dx*dx+dz*dz>(secondClaim.radius+firstClaim.radius+4)^2,
     "two qualified terminal claims must be physically distinct")
-assert(b.qualifiedLocalRoute.terminalPose)
+assert(b.qualifiedLocalRoute.terminalPose and b.qualifiedApproachRoute,
+    "second terminal also needs an actual-pose-connected approach")
 Allocation.release(ledger,second)
 -- The remote first worker must find a goal-directed extended route to the
 -- specifically qualified entry, not any convenient generic edge band.
 local Extended=OuttaMyWay.ExtendedInfieldApproach
-local travel=assert(Extended.beginPlan(first,a.entryPose))
+local travel=assert(Extended.beginPlan(first,a.entryPose,sourceField,a.edge))
 local kind,planned,fail
 for i=1,1000 do
     kind,planned,fail=Extended.advancePlan(travel,320)
     if kind~="PENDING" then break end
 end
 assert(kind=="DONE",fail)
+assert(a.qualifiedApproachRoute.mode==planned.mode
+    and #a.qualifiedApproachRoute.legs==#planned.legs,
+    "allocation connectivity uses the existing independent extended planner")
 assert(planned and planned.mode=="EXTENDED_INFIELD")
 assert(planned.entryPose and planned.entryPose.x==a.entryPose.x)
 assert(#planned.legs>0,"distant completion must actually navigate to claim")
@@ -118,28 +128,45 @@ poses[200].z=-360
 Situation.sample(first,500)
 poses[200].z=-355
 Situation.sample(first,500)
-local assessed=assert(Allocation.beginPlan(first,ledger))
+local assessed=assert(Allocation.beginPlan(first,ledger,sourceField))
 local status,chosen,reason=Allocation.advancePlan(assessed,320)
 assert(status=="PENDING" and assessed.siteIndex==0)
 local leading=assessed.sites[1]
-assert(leading.station>=70 and leading.station<=145,
-    "situation-aware allocator must consider central sites first")
+assert(leading.frame and leading.edgeIndex
+    and #assessed.sites>1,
+    "all registered edge sites must carry their geometric provenance")
 assert(assessed.situation.motionCount==1)
-assert(assessed.sites[#assessed.sites].station==20
-    or assessed.sites[#assessed.sites-1].station==20,
-    "station20 should be heavily disfavoured under observed peer demand")
+local previous=assessed.sites[1].score
+for i=2,#assessed.sites do
+    assert(assessed.sites[i].score>=previous,
+        "situation-ranked edge candidates must be ordered by evidence")
+    previous=assessed.sites[i].score
+end
 for i=1,18000 do
     status,chosen,reason=Allocation.advancePlan(assessed,320)
     if status~="PENDING" then break end
 end
 assert(status=="DONE",reason or "NO_ALTERNATIVE_QUALIFIED_TERMINAL")
-assert(chosen.station>=70 and chosen.station<=145
-    and chosen.situationRisk<3
-    and chosen.motionWitnesses==1,
-    "active eastern worker must produce a separate qualified central parking destination")
+assert(chosen.edge and chosen.field==sourceField.fieldId
+    and chosen.situationRisk<3 and chosen.motionWitnesses==1,
+    "productive demand and actual route must qualify the selected field edge")
 print(string.format("active peer selection: station %d risk %d (%s), observed motion=%d",
     chosen.station,chosen.situationRisk,chosen.situationReason,
     chosen.motionWitnesses))
+-- For a boundary-straddling assembly, the allocator may only return
+-- a complete route from the actual pose (never a hypothetical infield entry).
 second.getIsAIActive=nil
 Situation.reset()
+poses[100]={x=229,z=-244,fx=0,fz=1}
+local straddling=assert(Allocation.beginPlan(
+    first,ledger,sourceField,"STRADDLING"))
+local state,selected,why
+for i=1,18000 do
+    state,selected,why=Allocation.advancePlan(straddling,320)
+    if state~="PENDING" then break end
+end
+assert(state=="FAILED" or (state=="DONE" and selected.qualifiedDirectRoute
+    and selected.qualifiedApproachRoute==nil),
+    "straddling cannot grant a claim using an imaginary infield starting pose")
+
 print("qualified terminal allocation: disjoint claims and future-demand-aware real allocator PASS")

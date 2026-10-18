@@ -10,6 +10,7 @@ end}
 local driveCalls={}
 local failure
 local failCancel=false
+local forceStopRefusal=false
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     return {
         active=nil,
@@ -41,6 +42,9 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
         beginSettlementStop=function(self,vehicle)
             assert(self.active and self.active.vehicle==vehicle)
             assert(self.active.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
+            if forceStopRefusal then
+                return false,"SETTLEMENT_STOP_NOT_ADMITTED"
+            end
             driveCalls[#driveCalls+1]="BRAKE"
             return true
         end,
@@ -112,16 +116,28 @@ OuttaMyWay.CompletionSettlementRoute={
     end
 }
 local refuseExtendedScene=false
+local directAllocation=false
+local lastAllocationDisposition=nil
+local occupancyDisposition="INSIDE"
+local qualifiedExtendedRoute
+local extendedAdvanceCalls=0
 local activeConflict=false
 local mismatchClaim=false
 OuttaMyWay.ParkingRegionAllocation={
-    beginPlan=function()return {advances=0,spent=0}end,
+    beginPlan=function(_,_,_,disposition)
+        lastAllocationDisposition=disposition
+        return {advances=0,spent=0}
+    end,
     advancePlan=function(session,units)
         session.advances=session.advances+1
         session.spent=session.spent+units
+        if refuseExtendedScene then return "FAILED",nil,"WORKER_SCENE_AI_STATUS_UNAVAILABLE" end
         return "DONE",{entryPose={x=25,z=-30,fx=1,fz=0},
             terminalPose={x=40,z=20},ownRadius=5,
-            stationMin=0,stationMax=100,station=50}
+            stationMin=0,stationMax=100,station=50,
+            qualifiedApproachRoute=not directAllocation and
+                qualifiedExtendedRoute or nil,
+            qualifiedDirectRoute=directAllocation and route or nil}
     end,
     claim=function(ledger,vehicle,terminal,radius)
         ledger[vehicle]={x=terminal.x,z=terminal.z,radius=radius or 5}
@@ -150,6 +166,7 @@ OuttaMyWay.ExtendedInfieldApproach={
         return {advances=0,spent=0}
     end,
     advancePlan=function(session,units)
+        extendedAdvanceCalls=extendedAdvanceCalls+1
         session.advances=session.advances+1
         session.spent=session.spent+units
         if refuseExtendedScene then
@@ -172,6 +189,12 @@ OuttaMyWay.ExtendedInfieldApproach={
         return not activeConflict,"PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
     end
 }
+qualifiedExtendedRoute={mode="EXTENDED_INFIELD",field=77,edge=9,
+    method="HEADING_LATTICE_INFIELD",
+    entryPose={x=25,z=-30,fx=1,fz=0},estimatedTravelM=16,
+    guideRadiusM=20,memberCount=1,reverseM=0,
+    legs={{name="EXTENDED_INFIELD_GUIDANCE",point={x=8,z=0},moveForwards=true},
+        {name="EXTENDED_INFIELD_GUIDANCE",point={x=16,z=0},moveForwards=true}}}
 local enabled=true
 g_server={}
 local config={isResolved=function()return true end,
@@ -181,6 +204,22 @@ getWorldTranslation=function()
     -- world-pose fixture only feeds each new leg's target distance.
     return 0,0,0
 end
+-- Source Field is observed independently from the native completion job.
+-- The lifecycle fixture isolates Control; spatial containment has its own test.
+local membershipCalls=0
+local missingMembership=false
+local fieldOverride=nil
+OuttaMyWay.CompletionFieldMembership={identify=function(vehicle)
+    membershipCalls=membershipCalls+1
+    if missingMembership then return nil,"ASSEMBLY_OUTSIDE_REGISTERED_FIELDS" end
+    return {fieldId=fieldOverride or 77,rootNode=vehicle.rootNode,
+        provenance="ASSEMBLY_ROOT_REGISTERED_POLYGON_MEMBERSHIP"}
+end}
+OuttaMyWay.CompletionAssemblyFieldOccupancy={assess=function(_,sourceField)
+    return {status=occupancyDisposition,sourceFieldId=sourceField.fieldId,
+        memberCount=2,intersectingMembers=occupancyDisposition=="CLEAR"
+            and 0 or 1}
+end}
 dofile("scripts/control/CompletionSettlementRuntime.lua")
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local a={rootNode=12,x=0,z=0,
@@ -191,6 +230,7 @@ local b={rootNode=24,x=0,z=0,
     getCurrentAIJob=function()return nil end}
 local runtime=Runtime.new(config)
 assert(not runtime:onNativeCompletion({},a,false))
+assert(membershipCalls==0,"native transit rejection must not scan registered fields")
 assert(#driveCalls==0 and routeCalls==0,
     "Transit rejection must not move")
 assert(runtime:onNativeCompletion({},a,true))
@@ -276,7 +316,9 @@ assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="EXTENDED")
 runtime:update(16)
-assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
+assert(runtime.active and runtime.active.route==qualifiedExtendedRoute
+    and extendedAdvanceCalls==0,
+    "prequalified route must be executed, never advanced as a session")
 assert(driveCalls[#driveCalls]=="START")
 -- The second native completion is retained; only ONE physical driver
 -- may operate until its independent settlement turn begins.
@@ -318,10 +360,10 @@ local ahead={rootNode=197,getIsAIActive=function()return false end,
 local deferredJob={}
 runtime.attempted[blocked]=true
 runtime.attempted[ahead]=true
-runtime.pending={vehicle=blocked,job=deferredJob,
+runtime.pending={vehicle=blocked,job=deferredJob,sourceField={fieldId=77},
     plan={advances=0,spent=0},kind="LOCAL_HANDOFF",elapsedMs=0,
     phase="PLANNING",driveArmed=false}
-runtime.waiting={{vehicle=ahead,job={}}}
+runtime.waiting={{vehicle=ahead,job={},sourceField={fieldId=77}}}
 local callsBeforeDeferral=#driveCalls
 localFallback=true
 runtime:update(16)
@@ -364,17 +406,11 @@ assert(runtime:onNativeCompletion({},refused,true))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
 runtime:update(16)
-assert(runtime.pending and runtime.pending.kind=="EXTENDED")
-runtime:update(16)
 assert(runtime.active==nil and runtime.pending==nil
     and #driveCalls==beforeRefusal,
     "unknown relevant worker must refuse before physical actuation")
-assert(events[#events-1].code=="COMPLETION_SETTLEMENT_SCENE_ADMISSION_FAILED")
-local witness=events[#events-1].fields
-assert(witness.reason=="WORKER_SCENE_AI_STATUS_UNAVAILABLE"
-    and witness.registry=="MISSION_VEHICLE_SYSTEM"
-    and witness.failureRoot=="220"
-    and witness.relevantWorkers==1)
+assert(runtime.claims[refused]==nil
+    and events[#events].fields.reason=="WORKER_SCENE_AI_STATUS_UNAVAILABLE")
 assert(events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED")
 assert(not runtime:onNativeCompletion({},refused,true),
     "same native completion must not start a new search after census veto")
@@ -429,4 +465,141 @@ failCancel=false
 failure=nil
 runtime:loadMap()
 assert(runtime.claims[uncertain]==nil)
-print("completion settlement TEST lifecycle, claim handoff, stable-stop alternative, retained unsafe claim and scene attribution PASS")
+-- Every uniquely identified registered Source Field may begin bounded
+-- planning. A different field ID no longer vetoes admission.
+local other={rootNode=301,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local callsBefore=routeCalls
+fieldOverride=29
+assert(runtime:onNativeCompletion({},other,true))
+assert(routeCalls==callsBefore+1 and runtime.active==nil
+    and runtime.pending and runtime.pending.sourceField.fieldId==29,
+    "non-fixture source fields must enter independently qualified planning")
+runtime:loadMap()
+fieldOverride=nil
+missingMembership=true
+assert(not runtime:onNativeCompletion({},other,true))
+assert(routeCalls==callsBefore+1
+    and events[#events].fields.reason=="ASSEMBLY_OUTSIDE_REGISTERED_FIELDS")
+missingMembership=false
+-- Physical membership is captured once at completion and retained
+-- unchanged through serial admission even if the scene changes later.
+local first={rootNode=302,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local queued={rootNode=303,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},first,true))
+assert(runtime:onNativeCompletion({},queued,true))
+assert(runtime.waiting[1].sourceField.fieldId==77)
+local countBefore=membershipCalls
+fieldOverride=29
+for i=1,12 do runtime:update(16) end
+assert(runtime.waiting[1]==nil and membershipCalls==countBefore,
+    "queued parking must preserve the original source-field association")
+fieldOverride=nil
+runtime:loadMap()
+-- A work-time witness has priority over the completion-time root-only scan.
+missingMembership=true
+local oldCalls=membershipCalls
+local captured={fieldId=29,field={},rootX=250,rootZ=250,
+    provenance="ACTIVE_FIELDWORK_REGISTERED_POLYGON_MEMBERSHIP"}
+assert(runtime:onNativeCompletion({},other,true,captured))
+assert(membershipCalls==oldCalls and runtime.pending.sourceField==captured,
+    "the unique Job Episode Source Field survives completion at the margin")
+missingMembership=false
+runtime:loadMap()
+-- No physical movement, destination claim or actual parking assertion if
+-- the whole selected Physical Assembly is already clear of its Source Field.
+occupancyDisposition="CLEAR"
+local alreadyClear={rootNode=405,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local starts=#driveCalls
+local planned=planAdvances
+assert(runtime:onNativeCompletion({},alreadyClear,true))
+assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL")
+runtime:update(16)
+assert(runtime.pending==nil and runtime.active==nil
+    and #driveCalls==starts and planAdvances==planned
+    and runtime.claims[alreadyClear]==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_REQUIRED"
+    and events[#events].fields.reason=="ASSEMBLY_ALREADY_CLEAR_OF_SOURCE_FIELD",
+    "already-clear assemblies require no planning, claim or Control")
+runtime:loadMap()
+-- A root outside but a member still in the Source Field requires a
+-- current-pose local route, not an imaginary infield entry.
+occupancyDisposition="STRADDLING"
+directAllocation=true
+local partial={rootNode=406,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},partial,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and lastAllocationDisposition=="STRADDLING")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="LOCAL_ALLOCATED"
+    and runtime.claims[partial]~=nil)
+runtime:update(16)
+assert(runtime.active and runtime.active.vehicle==partial
+    and runtime.active.route==route
+    and driveCalls[#driveCalls]=="START",
+    "direct, actual-pose route must be admitted only after qualification")
+runtime:loadMap()
+directAllocation=false
+occupancyDisposition="INSIDE"
+-- An unqualified allocator result must never acquire a parking claim.
+local originalAdvance=OuttaMyWay.ParkingRegionAllocation.advancePlan
+OuttaMyWay.ParkingRegionAllocation.advancePlan=function(session,units)
+    return "DONE",{terminalPose={x=99,z=99},ownRadius=5}
+end
+local missingApproach={rootNode=407,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},missingApproach,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
+runtime:update(16)
+assert(runtime.pending==nil and runtime.active==nil
+    and runtime.claims[missingApproach]==nil
+    and events[#events].fields.reason=="PARKING_APPROACH_CONNECTIVITY_UNQUALIFIED",
+    "no terminal claim until the current-pose connection is proven")
+OuttaMyWay.ParkingRegionAllocation.advancePlan=originalAdvance
+runtime:loadMap()
+-- A mid-guidance live safety veto can occur before the current leg reaches
+-- its target. If the normal completed-leg stop rejects that transition,
+-- preserve the originating safety reason, not just the stop API refusal.
+local interrupted={rootNode=408,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},interrupted,true))
+runtime:update(16) -- switch local to allocation
+runtime:update(16) -- allocation yields qualified extended approach
+runtime:update(16) -- active native guidance
+assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
+activeConflict=true
+forceStopRefusal=true
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events-1].code=="COMPLETION_SETTLEMENT_SAFETY_STOP_UNAVAILABLE"
+    and events[#events-1].fields.stopReason=="SETTLEMENT_STOP_NOT_ADMITTED"
+    and events[#events-1].fields.safetyReason=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
+    and events[#events].code=="COMPLETION_SETTLEMENT_INTERRUPTED"
+    and events[#events].fields.reason=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
+    and driveCalls[#driveCalls]=="CANCEL"
+    and runtime.claims[interrupted]==nil,
+    "originating safety refusal remains observable; native release unchanged")
+activeConflict=false
+forceStopRefusal=false
+runtime:loadMap()
+-- A prequalified zero-leg approach carries entryPose, not session.target.
+qualifiedExtendedRoute.legs={}
+local zero={rootNode=409,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},zero,true))
+runtime:update(16)
+runtime:update(16)
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="LOCAL_HANDOFF")
+runtime:loadMap()
+print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")

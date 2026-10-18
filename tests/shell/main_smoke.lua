@@ -26,12 +26,15 @@ local expected={
     "scripts/observation/NativeBlockageObservation.lua",
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
+    "scripts/observation/CompletionFieldMembership.lua",
+    "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
-    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
@@ -58,6 +61,20 @@ renderText=function(_,_,_,text) renders[#renders+1]=text end
 addModEventListener=function(listener) registered[#registered+1]=listener end
 source=function(path)
     loaded[#loaded+1]=path
+    -- Exercise dependency readiness at the actual production load boundary.
+    -- Isolated tests that load their own prerequisites cannot detect
+    -- file-scope captures made before a provider was sourced.
+    if path=="scripts/observation/CompletionAssemblyFieldOccupancy.lua" then
+        assert(type(OuttaMyWay.SettlementCorridorAssessment)=="table"
+            and type(OuttaMyWay.SettlementCorridorAssessment.shapeIntersectsPolygon)
+                =="function",
+            "Completion Assembly Occupancy captured a missing polygon assessor")
+    elseif path=="scripts/coordination/ParkingRegionAllocation.lua" then
+        assert(type(OuttaMyWay.ExtendedInfieldApproach)=="table"
+            and type(OuttaMyWay.ExtendedInfieldApproach.beginPlan)
+                =="function",
+            "Parking Region Allocation captured an unavailable extended approach")
+    end
     if path=="scripts/config.lua" or path=="scripts/assessment/SpatialPairInference.lua"
         or path=="scripts/coordination/HoldRelocateCoordinator.lua"
         or path=="scripts/coordination/ProjectedEgressRegion.lua"
@@ -98,6 +115,9 @@ source=function(path)
         or path=="scripts/observation/NativeBlockageObservation.lua"
         or path=="scripts/observation/NativeJobCompletionProbe.lua"
         or path=="scripts/observation/FarmEdgeGeometry.lua"
+        or path=="scripts/observation/CompletionFieldMembership.lua"
+        or path=="scripts/observation/CompletionAssemblyFieldOccupancy.lua"
+        or path=="scripts/observation/CompletionParkingGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
         or path=="scripts/coordination/SettlementPhysicalOccupancy.lua"
         or path=="scripts/coordination/CompletionSettlementRoute.lua"
@@ -142,6 +162,9 @@ assert(type(OuttaMyWay.NativeTranslationHoldMechanism.hold)=="function")
 assert(type(OuttaMyWay.NativeSpeedRegulationMechanism.regulate)=="function")
 assert(type(OuttaMyWay.ProjectedEgressRegion.progress)=="function")
 assert(type(OuttaMyWay.PairTransitRegion.planPair)=="function")
+assert(type(OuttaMyWay.CompletionAssemblyFieldOccupancy.assess)=="function")
+assert(type(OuttaMyWay.SettlementCorridorAssessment.shapeIntersectsPolygon)=="function")
+assert(type(OuttaMyWay.ParkingRegionAllocation.advancePlan)=="function")
 assert(OuttaMyWay.nativeTranslationHoldMechanism==nil)
 assert(type(OuttaMyWay.NativeTransitRequestMechanism.requestTransit)=="function")
 assert(OuttaMyWay.nativeTransitRequestMechanism==nil)

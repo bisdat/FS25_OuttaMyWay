@@ -1,3 +1,75 @@
+## D-0232 — Motor-Running Readback Is Not Movement Admission
+
+**Decision (18 October 2026, TEST 0.5.5.39; GIANTS retest pending):** Remove the motor-started readback veto from native static guidance. Continue dispatching the existing native `startMotor(true)` request when not positively already running; a request that actually fails remains a dispatch failure. Optional `getIsMotorStarted()` observation at initial lease acquisition may inform motor ownership and later cleanup, but false, missing or unreadable readback cannot refuse or delay the subsequent `AIVehicleUtil.driveToPoint` commands. Do not fabricate a confirmed motor-running status. Preserve independent physical displacement, corridor and nearby-occupancy safeguards, player/native-job supersession, finite deadlines, cruise neutralisation and stable physical stopping.
+
+**Evidence:** TEST 0.5.5.38 TS019 fixed assemblies PASS. The articulated TS004 assembly is accepted for Field 29 and a `REVERSE_FORWARD` path, but 62 samples report native `startMotor` dispatched without explicit refusal, `getIsMotorStarted=false`, `commanded=0`; no steering is ever attempted. The same TS004 assembly reversed under Hold & Relocate earlier, while one TS019 fixed assembly also reversed, disproving an articulated/reverse prohibition. The static drive's `movementStatus` created this indefinite readback gate independently of route, Control and actual physical safety.
+
+**Consequence:** The existing shared drive mechanism sends native commands without waiting for GIANTS to affirm motor running. Native request delivery is not evidence of movement: geometry and physical stop tests retain authority. Regression covers native nil start response, false or unreadable motor readback, actual reverse and forward `driveToPoint` calls and existing stop/Control semantics. This is a behavioural experiment for in-game validation, not a claim that the engine will move or that articulated steering will work on the selected route. Completion TRANSIT remains request-only and unchanged.
+
+**GIANTS validation (18 October 2026):** The user reports TS019 .39 PASS. In TS004 .39, the first finished articulated assembly (root 419358) progressed beyond the previously blocking motor-state check, issued native guidance commands across nine waypoints, displaced physically and completed a sustained cruise-OFF stop. This validates the specific removal of the motor-readback movement veto, not the terminal parking outcome: `WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION` remained at the final nominal assembly check. The last root location was ~2.376 m short of the waypoint under the existing 2.5 m arrival tolerance; the exact failed terminal predicate is not logged, so the root gap is a hypothesis rather than a proved cause. See the GIANTS research record for the two TS004 episodes. No new architecture or motor changes authorised by this observation.
+
+## D-0231 — A Completed Route Is Not a Search Session
+
+**Decision (18 October 2026; GIANTS retest pending):** An allocator-qualified Extended Infield route is a completed movement plan, not an unfinished ExtendedInfieldApproach planning session. The runtime consumes that plan directly after claiming the jointly qualified approach and terminal. It must not pass it to advancePlan again. The no-guidance-leg handoff uses the completed route's entryPose.
+
+**Evidence:** TS019 TEST 0.5.5.37 completed native job 2, requested Completion TRANSIT, retained Field 73, classified INSIDE, and claimed edge 8. The next update at 09:36:59.307 repeatedly crashed at ExtendedInfieldApproach.lua:329 trying to increment the route's nonexistent advances field. The prior lifecycle fixture returned a session-shaped placeholder, hiding the distinction.
+
+**Scope:** Correct the handoff and its test data. Keep the allocator's actual-pose approach qualification, physical admission, safety guards, and native TRANSIT unchanged. This does not resolve TS004 motor activation or constitute GIANTS parking success.
+
+## D-0230 — Separate Native Motor Activation Evidence from Stop Refusal Provenance
+
+**Status:** Accepted bounded diagnostic correction, 18 October 2026. GIANTS validation pending.
+
+**Observation:** TEST 0.5.5.36 correctly observed completed Job Episode 5, retained Source Field 29, native Completion TRANSIT request, selected-member occupancy INSIDE and qualified a local nine-guide FORWARD_J route. Yet 46 subsequent DIAGNOSTIC motion samples showed zero native `driveToPoint` commands, cruise OFF and essentially no travel. The existing drive mechanism only issues native steering after `getIsMotorStarted()` reports true; `startMotor` request acceptance alone is not proof of running state. The test then reported `SETTLEMENT_STOP_NOT_ADMITTED`, concealing an earlier live route/occupancy refusal that invoked the stop-for-alternative path before guidance completion. The recording and log do not identify which live guard rejected the route or why GIANTS motor startup did not complete.
+
+**Decision:** Report the startMotor native reply, initial running state, subsequently observed motor-running state and `NATIVE_MOTOR_STARTING` as separate DIAGNOSTIC fields on the existing bounded motion sample. Do not add a folding/TRANSIT/motor-readiness permission gate or infer any remedy for missing motor activation. When a live safety refusal triggers alternative braking before an individual guidance leg completes, retain the original safety reason and the stop method's distinct refusal in separate log fields. The existing cancellation, neutralisation and exclusive claim-retention behaviour remains intact.
+
+**Reason:** Native command request versus observed effect is an architectural distinction. A generic stop refusal must not erase the causal safety observation. Offline mocks had made motor-start request instantly turn the motor on and had not reproduced premature stop admission rejection, so the tests did not capture this GIANTS behavior.
+
+**Validation boundary:** Offline tests must model an accepted motor-start request with motor readback still false, prove no `driveToPoint` commands are sent and prove the originating safety reason is preserved without changing actuation. GIANTS TS004 is still required to determine why motor running never becomes true. Do not change native start semantics based solely on these diagnostic observations.
+
+## D-0229 — Production Module Readiness Before Capturing Dependencies
+
+**Status:** Corrective implementation decision, 18 October 2026; in-game validation pending.
+
+**Observation:** GIANTS TEST 0.5.5.35 repeatedly failed from the first completed FIELDWORK episode with `CompletionAssemblyFieldOccupancy.lua:45: attempt to index nil with 'shapeIntersectsPolygon'`. The attached log has 11,861 identical frame-update errors following positively admitted Source Field 29 and the native request-only Completion TRANSIT. No Assembly Field Occupancy result or parking route was reached.
+
+**Cause:** The product shell sourced `CompletionAssemblyFieldOccupancy.lua` before `SettlementCorridorAssessment.lua`. A module-file-scope local captured the missing assessor permanently. Independent Lua fixtures sourced dependencies in a working order, and the shell smoke test had checked module presence and spelling but not readiness at each capture. Inspecting the same production sequence identified `ParkingRegionAllocation.lua` capturing `ExtendedInfieldApproach` before that planner was sourced: a separate latent failure awaiting the first reachable allocation path.
+
+**Decision:** Source the two existing dependency producers before the consumers, without changing TRANSIT, geometry, route qualification, movement, or parking semantics. Extend the actual shell bootstrap contract test to assert both providers exist **at the instant the dependent module is sourced**, with their required callable interfaces present. An isolated functional test cannot substitute for product integration evidence.
+
+**Validation boundary:** Offline structural/Lua tests challenge load order and test geometry; an actual GIANTS session must confirm runtime occupancy classification and continuation without repeated errors. The failed 0.5.5.35 GIANTS run is not a parking or geometry result.
+
+## D-0228 — Assembly Field Occupancy and Connected Parking Claims
+
+**Status:** Accepted design and TEST implementation decision, 18 October 2026. GIANTS validation pending.
+
+**Decision:** Following the existing successful native FIELDWORK completion and independent request-only TRANSIT, compare all selected-member nominal base-size rectangles with the episode-retained registered Source Field polygon. If none intersects, report no Completion Parking intervention required without motor Control or destination claim. If the assembly remains wholly inside, qualify the existing infield/local candidates; if it straddles, qualify an actual-pose boundary egress. Missing geometry does not count as clearance. No optional folding/boom-state check is introduced.
+
+**Reason:** The TS004 .32 video shows a completed tractor root outside while attachment geometry remains inside the Source Field. Root containment does not represent a Physical Assembly. The allocator also selected a locally qualified hypothetical entry and terminal before its current-pose infield approach failed. The existing Settlement Corridor architecture already distinguishes reachable approach from terminal fit.
+
+**Consequence:** A parking claim follows actual-pose approach plus local terminal route qualification, not hypothetical terminal fit alone. The supported infield lattice keeps its live field-containment contract. No admissible boundary manoeuvre means a specific refusal, not a false destination claim. A no-action clearance conclusion is not reported as a physically driven and verified terminal. GIANTS remains the physical validator.
+
+## D-0227 — Fold Observations Cannot Veto Native TRANSIT Requests
+
+**Status:** Accepted corrective engineering decision, 18 October 2026. GIANTS validation pending.
+
+**Decision:** An intermediate or unreadable native fold position and an unavailable fold direction are not permission tests for requesting work-off/raise TRANSIT configuration in solo/static Hold & Relocate or Completion Transit. Send independently supported configuration requests; add a fold command only where the native unfolded start and direction are positively known. Do not equate requesting with successful folding, or replace physical movement/actuator safeguards with that assertion.
+
+**Reason:** TS004 TEST 0.5.5.32 emitted `HOLD_RELOCATE_NOT_STARTED FOLD_POSITION_AMBIGUOUS` from the inherited solo/static command-plan builder, even though the pair mover already used non-veto request semantics. The old gate rejected a static-blocker intervention *before* the available native TRANSIT commands were sent. That rejection did not establish a physical safety issue.
+
+**Consequence:** Remove the three optional fold-observation vetoes in the shared plan builder only. Preserve existing independently qualified route, lease, native command-dispatch failure and positive motion/stop evidence. Completion Transit and Hold & Relocate may use the same corrected command selection without adding further readiness gates. Record GIANTS results separately.
+
+## D-0226 — Retain Source Field for One FIELDWORK Job Episode
+
+**Status:** Accepted engineering decision, 18 October 2026. GIANTS physical validation pending.
+
+**Decision:** The assembly's uniquely registered Source Field is retained as a positive spatial witness for the exact native FIELDWORK Job Episode and its subsequent Completion Parking responsibility. A successful last or only worker may leave the native active-worker registry or move its root across the boundary without losing that field association. Each new native job requires fresh evidence. A failed job, disablement or map teardown discards unconsumed evidence. If work-time evidence is absent, positive unique containment at completion is a conservative fallback; never guess the closest field.
+
+**Reason:** TS004 TEST 0.5.5.31 disproved treating tractor-root containment at the moment of completion as the only possible field witness. The field worked is an episode fact; present spatial eligibility is a different fact.
+
+**Consequence:** Retained identity cannot authorise a route. Live complete-assembly pose, physical occupancy, selected-edge envelope and independent Control qualification remain mandatory. Native Completion TRANSIT request-only semantics, native fieldwork and physical stop mechanisms are unchanged.
+
 ## D-0225 — Retire Completed Research Instruments Without a Parallel Archive
 
 **Status:** Accepted decision, 15 October 2026.
