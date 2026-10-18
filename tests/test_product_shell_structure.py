@@ -34,14 +34,14 @@ SHELL_MODULES = [
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/observation/CompletionFieldMembership.lua",
-    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
-    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
@@ -60,6 +60,12 @@ def test_bootstrap_loads_only_explicit_shell_modules():
     assert block is not None
     loaded = re.findall(r'"(scripts/[^"]+\.lua)"', block.group(1))
     assert loaded == SHELL_MODULES
+    assert loaded.index("scripts/assessment/SettlementCorridorAssessment.lua") < loaded.index(
+        "scripts/observation/CompletionAssemblyFieldOccupancy.lua"
+    ), "Assembly Field Occupancy must be sourced after its polygon assessor"
+    assert loaded.index("scripts/coordination/ExtendedInfieldApproach.lua") < loaded.index(
+        "scripts/coordination/ParkingRegionAllocation.lua"
+    ), "Parking Region Allocation must be sourced after its approach planner"
     assert all((ROOT / path).is_file() for path in loaded)
     assert "source(modDirectory..relativePath)" in text
 
