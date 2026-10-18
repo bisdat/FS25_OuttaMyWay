@@ -311,8 +311,8 @@ local function beginEpisode(self,job,vehicle,sourceField)
         note="NO_MOVEMENT_UNTIL_ROUTE_ADMITTED"})
     return true
 end
-function Runtime:onNativeCompletion(job,vehicle,transitAccepted,retainedSourceField)
-    if not self:isAdmitted() or transitAccepted~=true
+function Runtime:onNativeCompletion(job,vehicle,retainedSourceField)
+    if not self:isAdmitted()
         or type(vehicle)~="table" or self.attempted[vehicle]
         or pairedControlActive() or superseded(vehicle) then
         return false
@@ -447,7 +447,7 @@ function Runtime:update(dt)
     if self.pending~=nil then
         s.elapsedMs=s.elapsedMs+dt
         if s.kind=="LOCAL_INITIAL" and not s.occupancyAssessed then
-            -- Native Completion TRANSIT was already requested. The selected
+            -- Parking independently assesses current occupancy. The selected
             -- real member rectangles, not tractor-root containment, decide
             -- whether this Source Field still needs clearing.
             local result,why=AssemblyOccupancy.assess(s.vehicle,s.sourceField)

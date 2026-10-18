@@ -28,15 +28,21 @@ local config={isResolved=function()return true end,isEnabled=function()return en
 dofile("scripts/observation/NativeJobCompletionProbe.lua")
 local probe=OuttaMyWay.NativeJobCompletionProbe.new(config)
 local consumed,updates,resets={},0,0
+local order={}
 probe:setFieldMembership({
     update=function(_,dt) assert(dt==1000);updates=updates+1 end,
     reset=function() resets=resets+1 end,
     take=function(_,observedJob,vehicle,successful)
+        order[#order+1]="FIELD:"..observedJob.jobId
         consumed[#consumed+1]={job=observedJob,successful=successful}
         return successful and {fieldId=77} or nil
     end})
 local forwarded={}
-probe:setCompletionListener(function(observedJob,vehicle,field)
+probe:setCompletionListener(function(observedJob,vehicle)
+    order[#order+1]="TRANSIT:"..observedJob.jobId
+end)
+probe:setParkingListener(function(observedJob,vehicle,field)
+    order[#order+1]="PARKING:"..observedJob.jobId
     forwarded[#forwarded+1]={job=observedJob,field=field}
 end)
 probe:loadMap()
@@ -57,6 +63,8 @@ callback(target,natural,instance(AIMessageSuccessFinishedJob))
 assert(#reports==1 and reports[1].payload.successClass==true)
 assert(#forwarded==1 and forwarded[1].job==natural
     and forwarded[1].field.fieldId==77)
+assert(table.concat(order,",")=="TRANSIT:1,FIELD:1,PARKING:1",
+    "parking-specific evidence must not precede completion TRANSIT")
 assert(reports[1].payload.jobId==1 and reports[1].payload.rootNode=="101")
 callback(target,natural,instance(AIMessageSuccessFinishedJob))
 assert(#reports==1,"duplicate callback must not create a second observation")
@@ -75,6 +83,12 @@ assert(#reports==3,"unrelated job must be excluded")
 assert(#consumed==3 and consumed[1].successful
     and not consumed[2].successful and not consumed[3].successful,
     "every observed job stop must consume or discard its exact witness")
+probe:setCompletionListener(function()error("SIMULATED_TRANSIT_FAILURE")end)
+local later=job(9)
+callback(target,later,instance(AIMessageSuccessFinishedJob))
+assert(#forwarded==2 and forwarded[2].job==later
+    and forwarded[2].field.fieldId==77,
+    "parking notification must not depend on TRANSIT callback result")
 probe:deleteMap()
 assert(unsubscribed and not probe.subscribed and resets==2)
 print("native job completion probe PASS")

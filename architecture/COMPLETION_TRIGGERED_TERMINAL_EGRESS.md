@@ -7,7 +7,7 @@ Completion-Triggered Terminal Egress addresses the physical disposition of a Phy
 Two distinct responsibilities must remain separate:
 
 - **Completion Transit** requests the existing native TRANSIT configuration after positive native completion. It owns a request, not proof that folding or transport configuration has completed. It neither moves a completed assembly nor waits for verified fold before discharging its responsibility.
-- **Completion Parking** may seek safe physical settlement of the now-finished assembly, subject to separate Configuration consent, evidence, feasibility, Control admission and supersession. A successful TRANSIT request is a prerequisite, not itself movement authority.
+- **Completion Parking** may seek safe physical settlement of the now-finished assembly, subject to separate Configuration consent, evidence, feasibility, Control admission and supersession. It receives its own positive-completion notification after independent TRANSIT dispatch, without making request acceptance or folding readback a gate. Neither notification grants movement authority.
 
 Successful completion does **not** imply that all space inside the source field has been released: other productive workers may still occupy or demand it. Completed assemblies may themselves remain obstacles.
 
@@ -23,7 +23,7 @@ Native completion evidence must identify the terminated native FIELDWORK job, ph
 **Jurisdiction ID:** `COMPLETION_TRANSIT`  
 **Primary Specification:** [Completion Transit](../spec/COMPLETION_TRANSIT.md)
 
-Completion Transit requests GIANTS' transport state independently of blocked-worker recovery. It does not wait for folding to finish, infer parking safety or restore completed equipment to productive WORKING state. A failed or unavailable request does not authorise movement.
+Completion Transit requests GIANTS' transport state independently of blocked-worker recovery and parking admission. It does not wait for folding to finish, infer parking safety or restore completed equipment to productive WORKING state. Its request result grants no movement authority and is not inspected by Completion Parking.
 
 ## Settlement Corridor — Approach, Run-Out and Terminal
 

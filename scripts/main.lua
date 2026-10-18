@@ -93,10 +93,13 @@ OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(Outt
 -- Until then, Completion Parking observes master product Enabled consent.
 OuttaMyWay.completionSettlementRuntime=OuttaMyWay.CompletionSettlementRuntime.new(
     OuttaMyWay.configuration)
-OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle,sourceField)
-    local accepted=OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
+-- TRANSIT and optional parking independently consume positive job completion.
+OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
+    OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
+end)
+OuttaMyWay.nativeJobCompletionProbe:setParkingListener(function(job,vehicle,sourceField)
     OuttaMyWay.completionSettlementRuntime:onNativeCompletion(
-        job,vehicle,accepted,sourceField)
+        job,vehicle,sourceField)
 end)
 OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(
     OuttaMyWay.configuration,OuttaMyWay.nativeBlockageObservation)

@@ -229,11 +229,13 @@ local b={rootNode=24,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local runtime=Runtime.new(config)
-assert(not runtime:onNativeCompletion({},a,false))
-assert(membershipCalls==0,"native transit rejection must not scan registered fields")
+enabled=false
+assert(not runtime:onNativeCompletion({},a))
+assert(membershipCalls==0,"disabled parking must not scan registered fields")
 assert(#driveCalls==0 and routeCalls==0,
-    "Transit rejection must not move")
-assert(runtime:onNativeCompletion({},a,true))
+    "disabled parking must not move")
+enabled=true
+assert(runtime:onNativeCompletion({},a))
 assert(#driveCalls==0 and routeCalls==1 and runtime.pending~=nil,
     "successful native completion must not synchronously actuate")
 forcePlanPending=true
@@ -253,9 +255,9 @@ assert(driveCalls[1]=="START" and driveCalls[2]=="RETARGET"
     and driveCalls[8]=="RETARGET" and driveCalls[11]=="STOP")
 assert(terminalCalls==1,"terminal must be independently verified")
 assert(events[#events].code=="COMPLETION_SETTLEMENT_FINISHED")
-assert(not runtime:onNativeCompletion({},a,true),
+assert(not runtime:onNativeCompletion({},a),
     "same completed vehicle never re-admits in one map")
-assert(runtime:onNativeCompletion({},b,true))
+assert(runtime:onNativeCompletion({},b))
 assert(runtime.pending~=nil and runtime.active==nil)
 enabled=false
 runtime:update(16)
@@ -266,7 +268,7 @@ assert(runtime.active==nil and runtime.pending==nil
 enabled=true
 local duringMotion={rootNode=25,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},duringMotion,true))
+assert(runtime:onNativeCompletion({},duringMotion))
 runtime:update(16)
 assert(runtime.active~=nil)
 enabled=false
@@ -277,7 +279,7 @@ enabled=true
 local c={rootNode=36,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},c,true))
+assert(runtime:onNativeCompletion({},c))
 runtime:update(16)
 c.getCurrentAIJob=function()return {} end
 runtime:update(16)
@@ -286,7 +288,7 @@ assert(runtime.active==nil and driveCalls[#driveCalls]=="CANCEL",
 local d={rootNode=48,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},d,true))
+assert(runtime:onNativeCompletion({},d))
 runtime:update(16)
 failure="NATIVE_STEERING_FAILED"
 runtime:update(16)
@@ -296,7 +298,7 @@ failure=nil
 local e={rootNode=60,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},e,true))
+assert(runtime:onNativeCompletion({},e))
 runtime:update(16)
 runtime:deleteMap()
 assert(runtime.active==nil and driveCalls[#driveCalls]=="MAP_DELETE",
@@ -308,7 +310,7 @@ local distant={rootNode=190,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local callsBefore=#driveCalls
 localFallback=true
-assert(runtime:onNativeCompletion({},distant,true))
+assert(runtime:onNativeCompletion({},distant))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
     and #driveCalls==callsBefore,
@@ -324,9 +326,9 @@ assert(driveCalls[#driveCalls]=="START")
 -- may operate until its independent settlement turn begins.
 local nextWorker={rootNode=192,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},nextWorker,true))
+assert(runtime:onNativeCompletion({},nextWorker))
 assert(#runtime.waiting==1 and runtime.waiting[1].vehicle==nextWorker)
-assert(not runtime:onNativeCompletion({},nextWorker,true),
+assert(not runtime:onNativeCompletion({},nextWorker),
     "a queued native completion is never accepted twice")
 runtime:update(16) -- first short target retarget
 assert(driveCalls[#driveCalls]=="RETARGET")
@@ -392,7 +394,7 @@ for i=1,12 do
 end
 assert(runtime.active==nil and terminalCalls==5
     and runtime.replans[blocked]==1)
-assert(not runtime:onNativeCompletion({},blocked,true),
+assert(not runtime:onNativeCompletion({},blocked),
     "yielding is bounded, not a second native completion event")
 -- Reproduce the TS019-style no-short-route / failed worker-scene path.
 -- A failed census reports the exact witnessed limitation but can never
@@ -402,7 +404,7 @@ local refused={rootNode=191,getIsAIActive=function()return false end,
 localFallback=true
 refuseExtendedScene=true
 local beforeRefusal=#driveCalls
-assert(runtime:onNativeCompletion({},refused,true))
+assert(runtime:onNativeCompletion({},refused))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
 runtime:update(16)
@@ -412,7 +414,7 @@ assert(runtime.active==nil and runtime.pending==nil
 assert(runtime.claims[refused]==nil
     and events[#events].fields.reason=="WORKER_SCENE_AI_STATUS_UNAVAILABLE")
 assert(events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED")
-assert(not runtime:onNativeCompletion({},refused,true),
+assert(not runtime:onNativeCompletion({},refused),
     "same native completion must not start a new search after census veto")
 refuseExtendedScene=false
 -- During a real extended lease, invalidated space must first cause
@@ -421,7 +423,7 @@ refuseExtendedScene=false
 local reroute={rootNode=199,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 localFallback=true
-assert(runtime:onNativeCompletion({},reroute,true))
+assert(runtime:onNativeCompletion({},reroute))
 runtime:update(16) -- initial local refusal => allocation
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
 runtime:update(16) -- qualified terminal claimed => targeted extended
@@ -451,7 +453,7 @@ runtime:loadMap()
 -- on the assumption that the previous driver definitely stopped.
 local uncertain={rootNode=202,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},uncertain,true))
+assert(runtime:onNativeCompletion({},uncertain))
 runtime:update(16)
 assert(runtime.active and runtime.claims[uncertain])
 failure="SYNTHETIC_NATIVE_GUIDANCE_FAILURE"
@@ -471,14 +473,14 @@ local other={rootNode=301,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local callsBefore=routeCalls
 fieldOverride=29
-assert(runtime:onNativeCompletion({},other,true))
+assert(runtime:onNativeCompletion({},other))
 assert(routeCalls==callsBefore+1 and runtime.active==nil
     and runtime.pending and runtime.pending.sourceField.fieldId==29,
     "non-fixture source fields must enter independently qualified planning")
 runtime:loadMap()
 fieldOverride=nil
 missingMembership=true
-assert(not runtime:onNativeCompletion({},other,true))
+assert(not runtime:onNativeCompletion({},other))
 assert(routeCalls==callsBefore+1
     and events[#events].fields.reason=="ASSEMBLY_OUTSIDE_REGISTERED_FIELDS")
 missingMembership=false
@@ -488,8 +490,8 @@ local first={rootNode=302,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local queued={rootNode=303,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
-assert(runtime:onNativeCompletion({},first,true))
-assert(runtime:onNativeCompletion({},queued,true))
+assert(runtime:onNativeCompletion({},first))
+assert(runtime:onNativeCompletion({},queued))
 assert(runtime.waiting[1].sourceField.fieldId==77)
 local countBefore=membershipCalls
 fieldOverride=29
@@ -503,7 +505,7 @@ missingMembership=true
 local oldCalls=membershipCalls
 local captured={fieldId=29,field={},rootX=250,rootZ=250,
     provenance="ACTIVE_FIELDWORK_REGISTERED_POLYGON_MEMBERSHIP"}
-assert(runtime:onNativeCompletion({},other,true,captured))
+assert(runtime:onNativeCompletion({},other,captured))
 assert(membershipCalls==oldCalls and runtime.pending.sourceField==captured,
     "the unique Job Episode Source Field survives completion at the margin")
 missingMembership=false
@@ -515,7 +517,7 @@ local alreadyClear={rootNode=405,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local starts=#driveCalls
 local planned=planAdvances
-assert(runtime:onNativeCompletion({},alreadyClear,true))
+assert(runtime:onNativeCompletion({},alreadyClear))
 assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL")
 runtime:update(16)
 assert(runtime.pending==nil and runtime.active==nil
@@ -532,7 +534,7 @@ directAllocation=true
 local partial={rootNode=406,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 localFallback=true
-assert(runtime:onNativeCompletion({},partial,true))
+assert(runtime:onNativeCompletion({},partial))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
     and lastAllocationDisposition=="STRADDLING")
@@ -555,7 +557,7 @@ end
 local missingApproach={rootNode=407,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 localFallback=true
-assert(runtime:onNativeCompletion({},missingApproach,true))
+assert(runtime:onNativeCompletion({},missingApproach))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
 runtime:update(16)
@@ -571,7 +573,7 @@ runtime:loadMap()
 local interrupted={rootNode=408,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 localFallback=true
-assert(runtime:onNativeCompletion({},interrupted,true))
+assert(runtime:onNativeCompletion({},interrupted))
 runtime:update(16) -- switch local to allocation
 runtime:update(16) -- allocation yields qualified extended approach
 runtime:update(16) -- active native guidance
@@ -596,7 +598,7 @@ qualifiedExtendedRoute.legs={}
 local zero={rootNode=409,getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 localFallback=true
-assert(runtime:onNativeCompletion({},zero,true))
+assert(runtime:onNativeCompletion({},zero))
 runtime:update(16)
 runtime:update(16)
 runtime:update(16)

@@ -1,5 +1,5 @@
 -- Completion-triggered TRANSIT only. No navigation, relocation or parking.
--- Specification Jurisdictions: `COMPLETION_TRANSIT`, `COMPLETION_SETTLEMENT_CONTROL`
+-- Specification Jurisdictions: `COMPLETION_TRANSIT`
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionTransitRuntime={}
 local Runtime=OuttaMyWay.CompletionTransitRuntime
