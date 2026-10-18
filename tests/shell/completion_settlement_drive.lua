@@ -153,21 +153,33 @@ drive:movementStatus(vehicle,16)
 assert(cruise.state==1)
 assert(drive:cancelMovement(vehicle))
 assert(cruise.state==0 and not motorRunning)
--- GIANTS can accept the motor start command while reporting motor OFF
--- afterwards. No steering command may be sent until the motor is
--- positively running, and the diagnostic must preserve the distinction.
+-- Native motor readback must not withhold an otherwise valid reverse
+-- steering request. GIANTS can accept startMotor with nil return while
+-- reporting OFF, even after completed FIELDWORK.
 local originalStartMotor=vehicle.startMotor
-vehicle.startMotor=function()return true end
+local originalMotorRead=vehicle.getIsMotorStarted
+vehicle.startMotor=function()return nil end
 local previousCommands=#driveCalls
-assert(drive:startMovement(vehicle,objective))
-local waiting=drive:movementStatus(vehicle,16)
-assert(waiting.reason=="NATIVE_MOTOR_STARTING"
-    and waiting.motorStarted==false
+assert(drive:startMovement(vehicle,reverse))
+local issued=drive:movementStatus(vehicle,16)
+assert(issued.commandedDriveCount==1 and #driveCalls==previousCommands+1
+    and driveCalls[#driveCalls].allowed
+    and driveCalls[#driveCalls].forwards==false
     and drive.active.motorStartCallAccepted==true
-    and drive.active.motorStartReply=="true"
-    and drive.active.commanded==0 and #driveCalls==previousCommands,
-    "motor request accepted is not evidence the GIANTS motor is running")
+    and drive.active.motorStartReply=="nil",
+    "native reverse must be issued without motor-running readback")
 assert(drive:cancelMovement(vehicle))
+-- Missing or throwing native motor-state observation is no permission veto.
+vehicle.getIsMotorStarted=function()error("readback unavailable")end
+previousCommands=#driveCalls
+assert(drive:startMovement(vehicle,objective))
+issued=drive:movementStatus(vehicle,16)
+assert(issued.commandedDriveCount==1
+    and #driveCalls==previousCommands+1
+    and driveCalls[#driveCalls].forwards==true,
+    "native forward guidance must continue when motor readback is unavailable")
+assert(drive:cancelMovement(vehicle))
+vehicle.getIsMotorStarted=originalMotorRead
 vehicle.startMotor=originalStartMotor
 vehicle.getIsControlled=function()return true end
 local started,why=drive:startMovement(vehicle,objective)

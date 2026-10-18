@@ -84,7 +84,7 @@ Request-only TRANSIT is not a folding-readiness contract. The solo worker and in
 
 ## Reactive static Control and release
 
-After exclusive static commitment, request TRANSIT once for the non-active subject, then issue supported direct GIANTS `driveToPoint` commands under a scoped motor, physics and native cruise lease; completed/non-job machines do not independently issue periodic AI drive commands. Regulate the **blocked active beneficiary at 1 km/h for 5,000 ms**, retaining its existing GIANTS job and WORKING configuration. This is not a translation STOP or a FIELDWORK job replacement.
+After exclusive static commitment, request TRANSIT once for the non-active subject, then issue supported direct GIANTS `driveToPoint` commands under a scoped motor, physics and native cruise lease; native `getIsMotorStarted()` readback is observational only and does not delay native steering following a successful motor-start dispatch; completed/non-job machines do not independently issue periodic AI drive commands. Regulate the **blocked active beneficiary at 1 km/h for 5,000 ms**, retaining its existing GIANTS job and WORKING configuration. This is not a translation STOP or a FIELDWORK job replacement.
 
 Select supported forward or reverse oblique departure from the static root's facing and beneficiary's native course axis. Size the nominal requested move from beneficiary WORKING width **+ 5 m**. Completion requires **real signed cross-track root displacement** into the admitted region after native drive was issued, not mere axial travel or a commanded target. Current field-interior preference does not guarantee final interior settlement or physical envelope clearance.
 

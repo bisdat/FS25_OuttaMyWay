@@ -175,7 +175,6 @@ function Runtime:sampleMotion(state,status)
                 and self.drive.active.commanded or 0,
             localTargetDistanceM=status and status.localTargetDistanceM,
             regionProgressM=status and status.progressM,
-            motorStarted=status and status.motorStarted,
             driveStatus=status and status.reason or "NO_NATIVE_STATUS_REASON",
             motorWasRunningInitially=self.drive.active
                 and self.drive.active.motorWasRunningInitially,
