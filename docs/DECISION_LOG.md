@@ -1,3 +1,15 @@
+## D-0229 — Production Module Readiness Before Capturing Dependencies
+
+**Status:** Corrective implementation decision, 18 October 2026; in-game validation pending.
+
+**Observation:** GIANTS TEST 0.5.5.35 repeatedly failed from the first completed FIELDWORK episode with `CompletionAssemblyFieldOccupancy.lua:45: attempt to index nil with 'shapeIntersectsPolygon'`. The attached log has 11,861 identical frame-update errors following positively admitted Source Field 29 and the native request-only Completion TRANSIT. No Assembly Field Occupancy result or parking route was reached.
+
+**Cause:** The product shell sourced `CompletionAssemblyFieldOccupancy.lua` before `SettlementCorridorAssessment.lua`. A module-file-scope local captured the missing assessor permanently. Independent Lua fixtures sourced dependencies in a working order, and the shell smoke test had checked module presence and spelling but not readiness at each capture. Inspecting the same production sequence identified `ParkingRegionAllocation.lua` capturing `ExtendedInfieldApproach` before that planner was sourced: a separate latent failure awaiting the first reachable allocation path.
+
+**Decision:** Source the two existing dependency producers before the consumers, without changing TRANSIT, geometry, route qualification, movement, or parking semantics. Extend the actual shell bootstrap contract test to assert both providers exist **at the instant the dependent module is sourced**, with their required callable interfaces present. An isolated functional test cannot substitute for product integration evidence.
+
+**Validation boundary:** Offline structural/Lua tests challenge load order and test geometry; an actual GIANTS session must confirm runtime occupancy classification and continuation without repeated errors. The failed 0.5.5.35 GIANTS run is not a parking or geometry result.
+
 ## D-0228 — Assembly Field Occupancy and Connected Parking Claims
 
 **Status:** Accepted design and TEST implementation decision, 18 October 2026. GIANTS validation pending.

@@ -2,6 +2,8 @@
 -- Specification Jurisdictions: `CONFIGURATION`, `COMPLETION_SETTLEMENT_CONTROL`
 -- Native blockage Observation feeds independently admitted live Hold & Relocate Control.
 local modDirectory=g_currentModDirectory or ""
+-- Module sequence is a contract: some modules capture dependencies as
+-- file-scope locals when sourced. Producers MUST be loaded first.
 local modules={
     "scripts/config.lua",
     "scripts/assessment/SpatialPairInference.lua",
@@ -29,14 +31,14 @@ local modules={
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/observation/CompletionFieldMembership.lua",
-    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
+    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
-    "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",

@@ -867,3 +867,11 @@ The log contains no `FARM_CONTEXT_SURVEY` or `FARM_CONTEXT_FIELD` output. Both c
 ### TEST 0.5.5.35 offline correction
 
 Initial .34 CI exposed a conformance header mismatch in the new Source Field occupancy module and a diagnostic-only nil-planning-session dereference after direct actual-pose route qualification. Neither establishes a failure of the occupancy classifier (its isolated Lua test passed). The module now declares its jurisdiction in the repository's standard form, and diagnostic admission attribution explicitly supports an already prequalified route without manufacturing a second planning session. The new executable TEST build awaits the full independent CI suite and GIANTS validation.
+
+## TEST 0.5.5.35 GIANTS runtime failure — missing module capture (18 October 2026)
+
+**Observed:** GIANTS engine build 49105 loaded OMW 0.5.5.35. At 08:19:24.849 native FIELDWORK job 9 finished, native Completion TRANSIT was requested (`REQUEST_ONLY_NOT_VERIFIED`), retained registered Source Field 29 was reported (`ACTIVE_FIELDWORK_REGISTERED_POLYGON_MEMBERSHIP`) and Completion Parking planning started. The immediate next frame emitted `CompletionAssemblyFieldOccupancy.lua:45: attempt to index nil with 'shapeIntersectsPolygon'`, repeating 11,861 times until game quit. Another native completion (job 11) was observed at 08:23:32.164 while the runtime remained stuck. The log contains one unique error signature, not evidence of multiple separate geometry failures.
+
+**Confirmed technical cause:** `scripts/main.lua` production module sequence loaded the occupancy consumer before `SettlementCorridorAssessment`, so its file-scope `local A` was nil. A second latent sequence bug also loaded `ParkingRegionAllocation` before `ExtendedInfieldApproach`, so its file-scope `local Extended` was nil. Standalone tests supplied the correct order and therefore missed the mismatch.
+
+**TEST 0.5.5.36 correction:** Purely reorder existing module sources. Teach the actual product-shell bootstrap fixture to assert polygon assessor and extended approach availability at each dependent module's load boundary. No new TRANSIT gate, geometry shape handling, Control mechanism, or candidate-selection rule. Offline checks and a fresh GIANTS TS004 run must be distinguished.
