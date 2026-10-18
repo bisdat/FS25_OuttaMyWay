@@ -51,11 +51,15 @@ end
 
 function Probe.new(configuration)
     return setmetatable({configuration=configuration,subscribed=false,seen={},
-        completionListener=nil,fieldMembership=nil},Probe)
+        completionListener=nil,parkingListener=nil,fieldMembership=nil},Probe)
 end
 
 function Probe:setCompletionListener(listener)
     self.completionListener=listener
+end
+-- TRANSIT and optional physical parking receive separate notifications.
+function Probe:setParkingListener(listener)
+    self.parkingListener=listener
 end
 function Probe:setFieldMembership(membership)
     self.fieldMembership=membership
@@ -84,16 +88,20 @@ function Probe:onJobStopped(job,aiMessage)
     end)
     local successful=isSuccessMessage(aiMessage)
     local vehicle=vehicleOf(job)
+    if successful and type(self.completionListener)=="function" then
+        -- TRANSIT comes before parking-only evidence and has no parking gate.
+        -- An exception cannot interrupt native GIANTS job dispatch.
+        pcall(self.completionListener,job,vehicle)
+    end
     local sourceField=nil
     if self.fieldMembership~=nil then
-        -- Consume or discard the exact Job Episode's retained witness.
+        -- Consume or discard the exact Job Episode's parking witness.
         local ok,field=pcall(self.fieldMembership.take,
             self.fieldMembership,job,vehicle,successful)
         if ok then sourceField=field end
     end
-    if successful and type(self.completionListener)=="function" then
-        -- Observation is never allowed to break native GIANTS job dispatch.
-        pcall(self.completionListener,job,vehicle,sourceField)
+    if successful and type(self.parkingListener)=="function" then
+        pcall(self.parkingListener,job,vehicle,sourceField)
     end
 end
 

@@ -32,6 +32,7 @@ dofile("scripts/observation/NativeJobCompletionProbe.lua")
 local transit=OuttaMyWay.CompletionTransitRuntime.new(config)
 local probe=OuttaMyWay.NativeJobCompletionProbe.new(config)
 probe:setCompletionListener(function(job,vehicle)transit:onNativeCompletion(job,vehicle)end)
+probe:setParkingListener(function()error("PARKING_NOT_ADMITTED")end)
 probe:loadMap()
 local vehicle={rootNode=123,setLowered=function(_,down)assert(down==false);release=release+1 end,
  getCurrentAIJob=function()return nil end}

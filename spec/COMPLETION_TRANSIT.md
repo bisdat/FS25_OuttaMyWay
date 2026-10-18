@@ -7,7 +7,7 @@
 
 **Primary Architecture Authority:** [Completion-Triggered Terminal Egress](../architecture/COMPLETION_TRIGGERED_TERMINAL_EGRESS.md#specification-jurisdiction--completion-transit)
 
-The field-validated baseline can request GIANTS TRANSIT configuration for a completed FIELDWORK assembly. It must not drive, reverse, navigate, hold, regulate, select a parking position, or claim that TRANSIT is physically settled.
+The field-validated baseline can request GIANTS TRANSIT configuration for a completed FIELDWORK assembly. It must not drive, reverse, navigate, hold, regulate, select a parking position, or claim that TRANSIT is physically settled. Positive native completion is dispatched to TRANSIT before parking-specific Source Field work; neither parking consent nor parking planning controls this request, and its return value is not a parking gate.
 
 ## Admission and supersession
 
