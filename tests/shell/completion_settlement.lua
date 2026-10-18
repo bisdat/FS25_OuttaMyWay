@@ -10,6 +10,7 @@ end}
 local driveCalls={}
 local failure
 local failCancel=false
+local forceStopRefusal=false
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     return {
         active=nil,
@@ -41,6 +42,9 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
         beginSettlementStop=function(self,vehicle)
             assert(self.active and self.active.vehicle==vehicle)
             assert(self.active.objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
+            if forceStopRefusal then
+                return false,"SETTLEMENT_STOP_NOT_ADMITTED"
+            end
             driveCalls[#driveCalls+1]="BRAKE"
             return true
         end,
@@ -554,5 +558,31 @@ assert(runtime.pending==nil and runtime.active==nil
     and events[#events].fields.reason=="PARKING_APPROACH_CONNECTIVITY_UNQUALIFIED",
     "no terminal claim until the current-pose connection is proven")
 OuttaMyWay.ParkingRegionAllocation.advancePlan=originalAdvance
+runtime:loadMap()
+-- A mid-guidance live safety veto can occur before the current leg reaches
+-- its target. If the normal completed-leg stop rejects that transition,
+-- preserve the originating safety reason, not just the stop API refusal.
+local interrupted={rootNode=408,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},interrupted,true))
+runtime:update(16) -- switch local to allocation
+runtime:update(16) -- allocation yields qualified extended approach
+runtime:update(16) -- active native guidance
+assert(runtime.active and runtime.active.route.mode=="EXTENDED_INFIELD")
+activeConflict=true
+forceStopRefusal=true
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events-1].code=="COMPLETION_SETTLEMENT_SAFETY_STOP_UNAVAILABLE"
+    and events[#events-1].fields.stopReason=="SETTLEMENT_STOP_NOT_ADMITTED"
+    and events[#events-1].fields.safetyReason=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
+    and events[#events].code=="COMPLETION_SETTLEMENT_INTERRUPTED"
+    and events[#events].fields.reason=="PHYSICAL_OCCUPANCY_NEXT_GUIDE_OCCUPIED"
+    and driveCalls[#driveCalls]=="CANCEL"
+    and runtime.claims[interrupted]==nil,
+    "originating safety refusal remains observable; native release unchanged")
+activeConflict=false
+forceStopRefusal=false
 runtime:loadMap()
 print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")

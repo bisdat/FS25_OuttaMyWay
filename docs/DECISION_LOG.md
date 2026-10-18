@@ -1,3 +1,15 @@
+## D-0230 — Separate Native Motor Activation Evidence from Stop Refusal Provenance
+
+**Status:** Accepted bounded diagnostic correction, 18 October 2026. GIANTS validation pending.
+
+**Observation:** TEST 0.5.5.36 correctly observed completed Job Episode 5, retained Source Field 29, native Completion TRANSIT request, selected-member occupancy INSIDE and qualified a local nine-guide FORWARD_J route. Yet 46 subsequent DIAGNOSTIC motion samples showed zero native `driveToPoint` commands, cruise OFF and essentially no travel. The existing drive mechanism only issues native steering after `getIsMotorStarted()` reports true; `startMotor` request acceptance alone is not proof of running state. The test then reported `SETTLEMENT_STOP_NOT_ADMITTED`, concealing an earlier live route/occupancy refusal that invoked the stop-for-alternative path before guidance completion. The recording and log do not identify which live guard rejected the route or why GIANTS motor startup did not complete.
+
+**Decision:** Report the startMotor native reply, initial running state, subsequently observed motor-running state and `NATIVE_MOTOR_STARTING` as separate DIAGNOSTIC fields on the existing bounded motion sample. Do not add a folding/TRANSIT/motor-readiness permission gate or infer any remedy for missing motor activation. When a live safety refusal triggers alternative braking before an individual guidance leg completes, retain the original safety reason and the stop method's distinct refusal in separate log fields. The existing cancellation, neutralisation and exclusive claim-retention behaviour remains intact.
+
+**Reason:** Native command request versus observed effect is an architectural distinction. A generic stop refusal must not erase the causal safety observation. Offline mocks had made motor-start request instantly turn the motor on and had not reproduced premature stop admission rejection, so the tests did not capture this GIANTS behavior.
+
+**Validation boundary:** Offline tests must model an accepted motor-start request with motor readback still false, prove no `driveToPoint` commands are sent and prove the originating safety reason is preserved without changing actuation. GIANTS TS004 is still required to determine why motor running never becomes true. Do not change native start semantics based solely on these diagnostic observations.
+
 ## D-0229 — Production Module Readiness Before Capturing Dependencies
 
 **Status:** Corrective implementation decision, 18 October 2026; in-game validation pending.

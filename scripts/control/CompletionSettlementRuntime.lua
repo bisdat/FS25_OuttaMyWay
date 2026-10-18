@@ -175,6 +175,14 @@ function Runtime:sampleMotion(state,status)
                 and self.drive.active.commanded or 0,
             localTargetDistanceM=status and status.localTargetDistanceM,
             regionProgressM=status and status.progressM,
+            motorStarted=status and status.motorStarted,
+            driveStatus=status and status.reason or "NO_NATIVE_STATUS_REASON",
+            motorWasRunningInitially=self.drive.active
+                and self.drive.active.motorWasRunningInitially,
+            motorStartCallAccepted=self.drive.active
+                and self.drive.active.motorStartCallAccepted,
+            motorStartReply=self.drive.active
+                and self.drive.active.motorStartReply,
             stoppingSteadyMs=status and status.steadyMs}
     end)
 end
@@ -382,8 +390,17 @@ local function stopForAlternative(self,s,reason)
     if not s.driveArmed then return retryStopped(self,s,reason) end
     local started,why=self.drive:beginSettlementStop(s.vehicle)
     if not started then
+        -- Stop admission applies to a completed guidance leg, whereas a
+        -- live safety/occupancy refusal can happen mid-leg. Preserve the
+        -- actual safety refusal; finish() still performs the same scoped
+        -- native neutralisation and retains the claim if unconfirmed.
+        publish("DEBUG","WARNING",
+            "COMPLETION_SETTLEMENT_SAFETY_STOP_UNAVAILABLE",{
+                rootNode=tostring(s.vehicle.rootNode),
+                safetyReason=reason,
+                stopReason=why or "ALTERNATIVE_BRAKING_UNAVAILABLE"})
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
-            why or "ALTERNATIVE_BRAKING_UNAVAILABLE")
+            reason or why or "ALTERNATIVE_BRAKING_UNAVAILABLE")
         return true
     end
     s.phase="STOP_FOR_ALTERNATIVE"

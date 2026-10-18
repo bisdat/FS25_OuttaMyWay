@@ -69,6 +69,10 @@ local drive=Drive.new()
 local objective={moveForwards=true,targetX=10,targetZ=20,
     returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
 assert(drive:startMovement(vehicle,objective))
+assert(drive.active.motorWasRunningInitially==false
+    and drive.active.motorStartCallAccepted==true
+    and drive.active.motorStartReply=="true",
+    "native motor start request response is captured without asserting readiness")
 assert(motorRunning and cruise.speed==36)
 local first=drive:movementStatus(vehicle,16)
 assert(not first.isComplete and #driveCalls==1)
@@ -149,6 +153,22 @@ drive:movementStatus(vehicle,16)
 assert(cruise.state==1)
 assert(drive:cancelMovement(vehicle))
 assert(cruise.state==0 and not motorRunning)
+-- GIANTS can accept the motor start command while reporting motor OFF
+-- afterwards. No steering command may be sent until the motor is
+-- positively running, and the diagnostic must preserve the distinction.
+local originalStartMotor=vehicle.startMotor
+vehicle.startMotor=function()return true end
+local previousCommands=#driveCalls
+assert(drive:startMovement(vehicle,objective))
+local waiting=drive:movementStatus(vehicle,16)
+assert(waiting.reason=="NATIVE_MOTOR_STARTING"
+    and waiting.motorStarted==false
+    and drive.active.motorStartCallAccepted==true
+    and drive.active.motorStartReply=="true"
+    and drive.active.commanded==0 and #driveCalls==previousCommands,
+    "motor request accepted is not evidence the GIANTS motor is running")
+assert(drive:cancelMovement(vehicle))
+vehicle.startMotor=originalStartMotor
 vehicle.getIsControlled=function()return true end
 local started,why=drive:startMovement(vehicle,objective)
 assert(not started and why=="SETTLEMENT_CONTROL_CLAIMED_OR_CRUISE_UNAVAILABLE")

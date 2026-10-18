@@ -160,6 +160,12 @@ function M:startMovement(vehicle,objective)
         oldForwardSpeed=cruise.speed,oldReverseSpeed=cruise.speedReverse,
         speedKmh=speed,nativeSpeedKmh=nativeSpeed,
         startedMotor=not alreadyStarted,
+        -- Native acceptance is distinct from confirmed running state.
+        -- Retained only for bounded diagnostic attribution, not admission.
+        motorWasRunningInitially=alreadyStarted,
+        motorStartCallAccepted=alreadyStarted,
+        motorStartReply=alreadyStarted
+            and "NOT_REQUESTED_ALREADY_RUNNING" or "NOT_YET_REQUESTED",
         settlement=settlement,priorCruiseState=priorCruiseState,
         stopping=false,stopped=false,steadyMs=0,
         lastDt=16,commanded=0,isFailed=false,isComplete=false
@@ -173,6 +179,8 @@ function M:startMovement(vehicle,objective)
     end
     if not alreadyStarted then
         local started,answer=pcall(vehicle.startMotor,vehicle,true)
+        state.motorStartCallAccepted=started and answer~=false
+        state.motorStartReply=tostring(answer)
         if not started or answer==false then
             state.isFailed=true
             return false,"STATIC_MOTOR_START_FAILED"
