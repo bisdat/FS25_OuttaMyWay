@@ -295,6 +295,42 @@ runtime:update(16)
 assert(runtime.active==nil and driveCalls[#driveCalls]=="CANCEL",
     "native steering fault must neutralise Control")
 failure=nil
+-- A diverged mid-leg plan must physically stop before new allocation.
+runtime:loadMap()
+local diverged={rootNode=49,x=0,z=0,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},diverged))
+runtime:update(16)
+assert(runtime.active and driveCalls[#driveCalls]=="START")
+local beforeDivergence=#driveCalls
+failure="SETTLEMENT_LEG_TRAJECTORY_DIVERGED"
+runtime:update(16)
+assert(runtime.active and runtime.active.phase=="STOP_FOR_ALTERNATIVE"
+    and driveCalls[#driveCalls]=="BRAKE"
+    and #driveCalls==beforeDivergence+1,
+    "trajectory divergence must brake instead of abandoning parking")
+failure=nil
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending
+    and runtime.pending.kind=="ALLOCATE"
+    and runtime.replans[diverged]==1
+    and driveCalls[#driveCalls]=="STOP",
+    "replan begins only after stable native stop and lease release")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="EXTENDED",
+    "candidate must be newly qualified")
+runtime:update(16)
+assert(runtime.active and runtime.active.route==qualifiedExtendedRoute
+    and driveCalls[#driveCalls]=="START",
+    "new movement requires a separately qualified route")
+for i=1,20 do
+    if runtime.active==nil and runtime.pending==nil then break end
+    runtime:update(16)
+end
+assert(runtime.active==nil and runtime.pending==nil,
+    "bounded replan must terminate in offline fixture")
+runtime:loadMap()
 local e={rootNode=60,x=0,z=0,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}

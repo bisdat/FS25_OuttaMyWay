@@ -387,7 +387,7 @@ end
 local function stopForAlternative(self,s,reason)
     if (self.replans[s.vehicle] or 0)>=1 then return false end
     if not s.driveArmed then return retryStopped(self,s,reason) end
-    local started,why=self.drive:beginSettlementStop(s.vehicle)
+    local started,why=self.drive:beginSettlementStop(s.vehicle,true)
     if not started then
         -- Stop admission applies to a completed guidance leg, whereas a
         -- live safety/occupancy refusal can happen mid-leg. Preserve the
@@ -731,12 +731,19 @@ function Runtime:update(dt)
         status=self.drive:movementStatus(s.vehicle,dt)
     end
     if status==nil or status.isFailed then
+        -- A diverged nominal trajectory disproves this route, not every
+        -- route. Physically stop before requalifying from the live pose.
+        if status~=nil and s.phase=="MOVING"
+            and status.reason=="SETTLEMENT_LEG_TRAJECTORY_DIVERGED"
+            and stopForAlternative(self,s,status.reason) then
+            return
+        end
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
             status and status.reason or "DRIVE_STATUS_UNAVAILABLE")
         return
     end
     if s.phase=="STOP_FOR_ALTERNATIVE" and status.isStopped then
-        local stopped,why=self.drive:stopMovement(s.vehicle)
+        local stopped,why=self.drive:stopMovement(s.vehicle,true)
         if not stopped then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 why or "ALTERNATIVE_NATIVE_RELEASE_UNCONFIRMED")

@@ -356,10 +356,10 @@ end
 -- A settlement point is only a position witness. Maintain native braking
 -- and cruise-OFF Control until actual low speed and stationary displacement
 -- are observed over a bounded, continuous interval.
-function M:beginSettlementStop(vehicle)
+function M:beginSettlementStop(vehicle,forReassessment)
     local s=self.active
     if s==nil or s.vehicle~=vehicle or not s.settlement
-        or not s.isComplete then
+        or (not s.isComplete and forReassessment~=true) then
         return false,"SETTLEMENT_STOP_NOT_ADMITTED"
     end
     s.stopping=true
@@ -489,7 +489,17 @@ local function release(self,vehicle,requireComplete)
     return true
 end
 
-function M:stopMovement(vehicle)
+function M:stopMovement(vehicle,forReassessment)
+    if forReassessment==true then
+        local s=self.active
+        -- Releasing an incomplete guide still requires a verified
+        -- stopped assembly and cruise-OFF; no unconfirmed handoff.
+        if s==nil or s.vehicle~=vehicle or not s.settlement
+            or s.stopped~=true then
+            return false,"SETTLEMENT_REASSESSMENT_STOP_NOT_CONFIRMED"
+        end
+        return release(self,vehicle,false)
+    end
     return release(self,vehicle,true)
 end
 

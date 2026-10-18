@@ -130,6 +130,26 @@ assert(drive:startMovement(vehicle,reverse))
 local report=drive:movementStatus(vehicle,16)
 assert(not report.isComplete and driveCalls[#driveCalls].forwards==false)
 assert(drive:cancelMovement(vehicle))
+-- A diverged guide can be stopped before arrival, but never released
+-- without confirmed stillness and cruise-OFF.
+assert(drive:startMovement(vehicle,reverse))
+positions[11].z=13
+local diverged=drive:movementStatus(vehicle,16)
+assert(diverged.isFailed and diverged.reason=="SETTLEMENT_LEG_TRAJECTORY_DIVERGED")
+assert(not drive:beginSettlementStop(vehicle),
+    "ordinary guide stop still requires completed arrival")
+assert(drive:beginSettlementStop(vehicle,true),
+    "reassessment must permit stopping an incomplete leg")
+assert(not drive:stopMovement(vehicle,true),
+    "reassessment must not release an unverified stop")
+vehicle.lastSpeedReal=0
+local alternativeStop
+for i=1,6 do alternativeStop=drive:settlementStopStatus(vehicle,300) end
+assert(alternativeStop.isStopped and alternativeStop.steadyMs>=1200)
+assert(drive:stopMovement(vehicle,true)
+    and drive.active==nil and cruise.state==0,
+    "stopped reassessment releases native control and remains cruise-OFF")
+positions[11].x,positions[11].z=0,0
 -- A low-distance direction change must start reducing speed before arrival.
 positions[11].x,positions[11].z=0,0
 local brake={moveForwards=true,targetX=10,targetZ=0,

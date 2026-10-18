@@ -9,9 +9,9 @@ local publication=OuttaMyWay.LogPublication.origin("COMPLETION_TRANSIT")
 local function planSource()
     return {
         getTransitRequests=function(_,vehicle)
-            -- Reuse the validated solo/static native command selection, but
-            -- NEVER the live Hold & Relocate instance or its request state.
-            local plan,reason=OuttaMyWay.HoldRelocatePhysicalControl.buildTransitPlan(vehicle,false)
+            -- Reuse the GIANTS request selection exercised by paired Hold
+            -- & Relocate, without borrowing live Control or its request state.
+            local plan,reason=OuttaMyWay.HoldRelocatePhysicalControl.buildTransitPlan(vehicle,true)
             if plan==nil then error(reason or "TRANSIT_PLAN_UNAVAILABLE") end
             return plan
         end
