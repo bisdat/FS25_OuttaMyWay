@@ -83,14 +83,17 @@ end)
 OuttaMyWay.versionHud=OuttaMyWay.VersionHud.new()
 OuttaMyWay.nativeBlockageObservation=OuttaMyWay.NativeBlockageObservation.new(OuttaMyWay.configuration)
 OuttaMyWay.nativeJobCompletionProbe=OuttaMyWay.NativeJobCompletionProbe.new(OuttaMyWay.configuration)
+OuttaMyWay.completionFieldMembership=OuttaMyWay.CompletionFieldMembership.new(OuttaMyWay.configuration)
+OuttaMyWay.nativeJobCompletionProbe:setFieldMembership(OuttaMyWay.completionFieldMembership)
 OuttaMyWay.completionTransitRuntime=OuttaMyWay.CompletionTransitRuntime.new(OuttaMyWay.configuration)
 -- The dedicated default-On player parking choice will be implemented under #139.
 -- Until then, Completion Parking observes master product Enabled consent.
 OuttaMyWay.completionSettlementRuntime=OuttaMyWay.CompletionSettlementRuntime.new(
     OuttaMyWay.configuration)
-OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle)
+OuttaMyWay.nativeJobCompletionProbe:setCompletionListener(function(job,vehicle,sourceField)
     local accepted=OuttaMyWay.completionTransitRuntime:onNativeCompletion(job,vehicle)
-    OuttaMyWay.completionSettlementRuntime:onNativeCompletion(job,vehicle,accepted)
+    OuttaMyWay.completionSettlementRuntime:onNativeCompletion(
+        job,vehicle,accepted,sourceField)
 end)
 OuttaMyWay.liveHoldRelocateRuntime=OuttaMyWay.LiveHoldRelocateRuntime.new(
     OuttaMyWay.configuration,OuttaMyWay.nativeBlockageObservation)
@@ -99,6 +102,7 @@ OuttaMyWay.configuration:addChangeListener(function(notification)
         and notification.value==false then
         OuttaMyWay.liveHoldRelocateRuntime:relinquish("PLAYER_DISABLED")
         OuttaMyWay.completionTransitRuntime:relinquish()
+        OuttaMyWay.completionFieldMembership:reset()
         OuttaMyWay.completionSettlementRuntime:relinquish("PLAYER_DISABLED")
     end
 end)

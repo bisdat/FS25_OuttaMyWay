@@ -1,3 +1,13 @@
+## D-0226 — Retain Source Field for One FIELDWORK Job Episode
+
+**Status:** Accepted engineering decision, 18 October 2026. GIANTS physical validation pending.
+
+**Decision:** The assembly's uniquely registered Source Field is retained as a positive spatial witness for the exact native FIELDWORK Job Episode and its subsequent Completion Parking responsibility. A successful last or only worker may leave the native active-worker registry or move its root across the boundary without losing that field association. Each new native job requires fresh evidence. A failed job, disablement or map teardown discards unconsumed evidence. If work-time evidence is absent, positive unique containment at completion is a conservative fallback; never guess the closest field.
+
+**Reason:** TS004 TEST 0.5.5.31 disproved treating tractor-root containment at the moment of completion as the only possible field witness. The field worked is an episode fact; present spatial eligibility is a different fact.
+
+**Consequence:** Retained identity cannot authorise a route. Live complete-assembly pose, physical occupancy, selected-edge envelope and independent Control qualification remain mandatory. Native Completion TRANSIT request-only semantics, native fieldwork and physical stop mechanisms are unchanged.
+
 ## D-0225 — Retire Completed Research Instruments Without a Parallel Archive
 
 **Status:** Accepted decision, 15 October 2026.

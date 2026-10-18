@@ -1,5 +1,5 @@
--- Completion Source Field is spatial registration, not an attribute of the
--- successful native FIELDWORK Job Episode. No GIANTS course API is mocked.
+-- Completed Source Field is registered spatial evidence retained against the
+-- exact native FIELDWORK Job Episode, including after the last worker finishes.
 OuttaMyWay={}
 local positions={}
 getWorldTranslation=function(node)
@@ -62,4 +62,60 @@ local noPose,noPoseWhy=identify({rootNode=0})
 assert(noPose==nil and noPoseWhy=="COMPLETED_ASSEMBLY_POSE_UNAVAILABLE")
 assert(assert(identify({rootNode=801,fieldId=29})).fieldId==77,
     "field identity is never read from vehicle properties")
-print("Completion Field Membership from actual registered spatial containment PASS")
+-- The final worker leaves the GIANTS registry before its positive stop event.
+local enabled=true
+local configuration={isResolved=function() return true end,
+    isEnabled=function() return enabled end}
+g_server={}
+AIJobFieldWork={}
+local function job(id)
+    return {jobId=id,isa=function(_,klass) return klass==AIJobFieldWork end}
+end
+local witness=OuttaMyWay.CompletionFieldMembership.new(configuration)
+local episode=job(71)
+root.spec_aiFieldWorker={isActive=true}
+root.spec_aiJobVehicle={job=episode}
+g_currentMission={aiSystem={activeJobVehicles={[root]=true}}}
+positions[801]={x=40,z=45}
+witness:update(1000)
+g_currentMission.aiSystem.activeJobVehicles={}
+positions[801]={x=102,z=45}
+local retained=assert(witness:take(episode,root,true))
+assert(retained.fieldId==77
+    and retained.provenance=="ACTIVE_FIELDWORK_REGISTERED_POLYGON_MEMBERSHIP",
+    "last completed worker retains its own positively sampled Source Field")
+assert(witness.byJob[episode]==nil,"witness consumed exactly once")
+local newEpisode=job(72)
+root.spec_aiJobVehicle.job=newEpisode
+local missing,why=witness:take(newEpisode,root,true)
+assert(missing==nil and why=="ASSEMBLY_OUTSIDE_REGISTERED_FIELDS",
+    "a second job must not inherit the earlier field")
+g_currentMission.aiSystem.activeJobVehicles={[root]=true}
+witness:update(1000) -- outside: no positive source association
+positions[801]={x=250,z=250}
+witness:update(1000) -- subsequently positive native work sample
+positions[801]={x=3000,z=3000}
+local nextField=assert(witness:take(newEpisode,root,true))
+assert(nextField.fieldId==29,
+    "retry unresolved work-time samples instead of treating a miss as final")
+local interrupted=job(73)
+root.spec_aiJobVehicle.job=interrupted
+positions[801]={x=40,z=45}
+witness:update(1000)
+assert(witness:take(interrupted,root,false)==nil,
+    "unsuccessful termination discards the witness")
+positions[801]={x=3000,z=3000}
+assert(witness:take(interrupted,root,true)==nil,
+    "a discarded sample must never become a later parking admission")
+local disabledJob=job(74)
+root.spec_aiJobVehicle.job=disabledJob
+positions[801]={x=40,z=45}
+witness:update(1000)
+enabled=false
+witness:update(1)
+positions[801]={x=3000,z=3000}
+assert(witness:take(disabledJob,root,true)==nil,
+    "product disablement erases retained job membership")
+witness:reset()
+assert(next(witness.byJob)==nil)
+print("Completion Field Membership and job-scoped Source Field witness PASS")

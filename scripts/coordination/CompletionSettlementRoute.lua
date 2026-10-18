@@ -72,6 +72,15 @@ local function coordinates(p,f)
     local x,z=p.x-f.ax,p.z-f.az
     return x*f.ux+z*f.uz,x*f.nx+z*f.nz
 end
+-- A completed assembly may start inside the worked field OR within the
+-- existing bounded exterior corridor of the selected edge. Identity of its
+-- worked field remains independent of the current root position.
+local function startInFieldOrEdgeBand(poly,frame,p)
+    if G.inside(poly,p.x,p.z) then return true end
+    local station,depth=coordinates(p,frame)
+    return station>=0 and station<=frame.length
+        and depth>=0 and depth<=STOP_DEPTH_MAX_M
+end
 local function rotatedFoot(foot,initial,p)
     local dot=initial.fx*p.fx+initial.fz*p.fz
     local cross=initial.fx*p.fz-initial.fz*p.fx
@@ -272,8 +281,8 @@ function Route.plan(vehicle,checkpoint,options)
     if poly==nil then return nil,reason end
     local current=pose(vehicle)
     if current==nil then return nil,"ROOT_POSE_UNAVAILABLE" end
-    if not G.inside(poly,current.x,current.z) then
-        return nil,"COMPLETED_ROOT_OUTSIDE_SOURCE_FIELD"
+    if not startInFieldOrEdgeBand(poly,edge,current) then
+        return nil,"COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE"
     end
     local foot,why=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return nil,why end
@@ -651,8 +660,8 @@ local function executeBudget(s)
             if type(current)~="table" then
                 return "FAILED",nil,"ENTRY_POSE_UNAVAILABLE"
             end
-            if not G.inside(poly,current.x,current.z) then
-                return "FAILED",nil,"COMPLETED_ROOT_OUTSIDE_SOURCE_FIELD"
+            if not startInFieldOrEdgeBand(poly,edge,current) then
+                return "FAILED",nil,"COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE"
             end
             local foot,why=OuttaMyWay.PairTransitRegion.capture(s.vehicle)
             if foot==nil then return "FAILED",nil,why end

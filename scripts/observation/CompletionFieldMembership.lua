@@ -1,5 +1,5 @@
--- Read-only Source Field association from the completed assembly's actual
--- position, independent of native FIELDWORK course/job internals.
+-- Read-only registered-field membership and Job Episode-scoped retained witness.
+-- A positive active-work sample remains valid after the assembly reaches a margin.
 -- Specification Jurisdictions: `COMPLETION_SETTLEMENT_CONTROL`
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionFieldMembership={}
@@ -75,5 +75,115 @@ function Membership.identify(vehicle)
         return nil,"ASSEMBLY_OUTSIDE_REGISTERED_FIELDS"
     end
     return selected
+end
+
+-- Active FIELDWORK establishes a job-scoped Source Field independently of
+-- the assembly's final position. A later job never inherits this witness.
+local SAMPLE_MS=1000
+local MAX_ACTIVE_WORKERS=16
+local function nativeFieldwork(job)
+    if type(job)~="table" or type(AIJobFieldWork)~="table"
+        or type(job.isa)~="function" then return false end
+    local ok,match=pcall(job.isa,job,AIJobFieldWork)
+    return ok and match==true
+end
+local function assemblyRoot(vehicle)
+    if type(vehicle)~="table" then return nil end
+    if type(vehicle.getRootVehicle)=="function" then
+        local ok,root=pcall(vehicle.getRootVehicle,vehicle)
+        if not ok or type(root)~="table" then return nil end
+        return root
+    end
+    return vehicle
+end
+function Membership.new(configuration)
+    return setmetatable({configuration=configuration,elapsedMs=0,cursor=1,
+        byJob=setmetatable({},{__mode="k"})},{__index=Membership})
+end
+function Membership:reset()
+    self.elapsedMs=0
+    self.cursor=1
+    self.byJob=setmetatable({},{__mode="k"})
+end
+function Membership:update(dt)
+    if g_server==nil or self.configuration==nil
+        or self.configuration:isResolved()~=true
+        or self.configuration:isEnabled()~=true then
+        self:reset()
+        return
+    end
+    if not finite(dt) or dt<0 then return end
+    self.elapsedMs=self.elapsedMs+dt
+    if self.elapsedMs<SAMPLE_MS then return end
+    self.elapsedMs=0
+    local mission=g_currentMission
+    local registry=mission and mission.aiSystem
+        and mission.aiSystem.activeJobVehicles
+    if type(registry)~="table" then return end
+    local workers,seen={},{}
+    local function include(worker)
+        if type(worker)~="table" or seen[worker] then return end
+        seen[worker]=true
+        local spec=worker.spec_aiFieldWorker
+        if type(spec)=="table" and spec.isActive==true
+            and #workers<MAX_ACTIVE_WORKERS then
+            workers[#workers+1]=worker
+        end
+    end
+    for key,value in pairs(registry) do
+        include(key)
+        include(value)
+        if type(value)=="table" then
+            include(value.vehicle)
+            include(value.object)
+            include(value.rootVehicle)
+            include(value[1])
+        end
+    end
+    -- One expensive field-registry observation at most per update.
+    -- Rotate among active workers so one unresolved margin sample cannot
+    -- starve the last worker's field witness.
+    local count=#workers
+    if count==0 then return end
+    local start=(self.cursor-1)%count+1
+    self.cursor=start%count+1
+    for offset=0,count-1 do
+        local worker=workers[(start+offset-1)%count+1]
+        local spec=worker.spec_aiJobVehicle
+        local job=(spec and spec.job)
+            or (worker.spec_aiFieldWorker and worker.spec_aiFieldWorker.fieldJob)
+        if nativeFieldwork(job) then
+            local root=assemblyRoot(worker)
+            local recorded=self.byJob[job]
+            if recorded~=nil and recorded.root~=root then
+                self.byJob[job]=nil
+                recorded=nil
+            end
+            if recorded==nil and root~=nil then
+                local source=Membership.identify(worker)
+                if source~=nil then
+                    source.provenance="ACTIVE_FIELDWORK_REGISTERED_POLYGON_MEMBERSHIP"
+                    self.byJob[job]={root=root,sourceField=source}
+                end
+                break
+            end
+        end
+    end
+end
+function Membership:take(job,vehicle,successful)
+    local recorded=type(job)=="table" and self.byJob[job] or nil
+    if type(job)=="table" then self.byJob[job]=nil end
+    if successful~=true then return nil end
+    local root=assemblyRoot(vehicle)
+    if recorded~=nil and root~=nil and recorded.root==root then
+        return recorded.sourceField
+    end
+    -- Short jobs may end before the active-work sample. Only unique
+    -- current registered-polygon containment can then establish identity.
+    local source,why=Membership.identify(vehicle)
+    if source~=nil then
+        source.provenance="COMPLETION_ROOT_REGISTERED_POLYGON_FALLBACK"
+    end
+    return source,why
 end
 return Membership

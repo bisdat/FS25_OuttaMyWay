@@ -1,5 +1,5 @@
 -- Passive GIANTS FIELDWORK stop-reason witness for Issue #476.
--- Specification Jurisdictions: `NATIVE_JOB_COMPLETION_OBSERVATION`
+-- Specification Jurisdictions: `NATIVE_JOB_COMPLETION_OBSERVATION`, `COMPLETION_SETTLEMENT_CONTROL`
 -- This diagnostic never starts, stops, configures or moves a vehicle.
 OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.NativeJobCompletionProbe={}
@@ -50,11 +50,18 @@ local function messageIdentity(aiMessage)
 end
 
 function Probe.new(configuration)
-    return setmetatable({configuration=configuration,subscribed=false,seen={},completionListener=nil},Probe)
+    return setmetatable({configuration=configuration,subscribed=false,seen={},
+        completionListener=nil,fieldMembership=nil},Probe)
 end
 
 function Probe:setCompletionListener(listener)
     self.completionListener=listener
+end
+function Probe:setFieldMembership(membership)
+    self.fieldMembership=membership
+end
+function Probe:update(dt)
+    if self.fieldMembership~=nil then self.fieldMembership:update(dt) end
 end
 
 function Probe:onJobStopped(job,aiMessage)
@@ -75,14 +82,24 @@ function Probe:onJobStopped(job,aiMessage)
             successClass=isSuccessMessage(aiMessage)
         }
     end)
-    if isSuccessMessage(aiMessage) and type(self.completionListener)=="function" then
+    local successful=isSuccessMessage(aiMessage)
+    local vehicle=vehicleOf(job)
+    local sourceField=nil
+    if self.fieldMembership~=nil then
+        -- Consume or discard the exact Job Episode's retained witness.
+        local ok,field=pcall(self.fieldMembership.take,
+            self.fieldMembership,job,vehicle,successful)
+        if ok then sourceField=field end
+    end
+    if successful and type(self.completionListener)=="function" then
         -- Observation is never allowed to break native GIANTS job dispatch.
-        pcall(self.completionListener,job,vehicleOf(job))
+        pcall(self.completionListener,job,vehicle,sourceField)
     end
 end
 
 function Probe:loadMap()
     self.seen={}
+    if self.fieldMembership~=nil then self.fieldMembership:reset() end
     if g_server==nil or g_messageCenter==nil
         or MessageType==nil or MessageType.AI_JOB_STOPPED==nil
         or type(g_messageCenter.subscribe)~="function" then return end
@@ -97,4 +114,5 @@ function Probe:deleteMap()
     end
     self.subscribed=false
     self.seen={}
+    if self.fieldMembership~=nil then self.fieldMembership:reset() end
 end

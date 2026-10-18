@@ -46,7 +46,9 @@ local function context(vehicle,sourceField,edgeIndex)
     local poly=available.poly
     local current=pose(vehicle)
     if current==nil or not G.inside(poly,current.x,current.z) then
-        return nil,"COMPLETION_ROOT_OUTSIDE_SOURCE_FIELD"
+        -- This lattice is infield-only. Exterior starts require an
+        -- independently qualified return corridor, not a synthetic one.
+        return nil,"EXTENDED_INFIELD_START_REQUIRES_FIELD_INTERIOR"
     end
     local foot,footWhy=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return nil,footWhy end

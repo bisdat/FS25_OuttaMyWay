@@ -474,4 +474,14 @@ assert(runtime.waiting[1]==nil and membershipCalls==countBefore,
     "queued parking must preserve the original source-field association")
 fieldOverride=nil
 runtime:loadMap()
-print("completion settlement TEST lifecycle, claim handoff, stable-stop alternative, retained unsafe claim and scene attribution PASS")
+-- A work-time witness has priority over the completion-time root-only scan.
+missingMembership=true
+local oldCalls=membershipCalls
+local captured={fieldId=29,field={},rootX=250,rootZ=250,
+    provenance="ACTIVE_FIELDWORK_REGISTERED_POLYGON_MEMBERSHIP"}
+assert(runtime:onNativeCompletion({},other,true,captured))
+assert(membershipCalls==oldCalls and runtime.pending.sourceField==captured,
+    "the unique Job Episode Source Field survives completion at the margin")
+missingMembership=false
+runtime:loadMap()
+print("completion settlement TEST lifecycle, claim handoff and retained Source Field PASS")

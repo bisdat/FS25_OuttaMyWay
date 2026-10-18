@@ -294,4 +294,30 @@ assert(shiftedRoute.field==29 and shiftedRoute.edge==9
     and math.abs(shiftedRoute.estimatedTravelM-
         translated.estimatedTravelM)<0.001,
     "incremental general-field Control planning must match the reference")
-print("completion settlement registered Field29 translated route and Field77 regression PASS")
+-- Root outside the polygon may still start within the selected bounded
+-- exterior edge corridor. Do not mistake identity for a field-interior veto.
+local polygon=assert(G.polygonFor(g_fieldManager.fields[29]))
+local exterior=G.edges(polygon)[9]
+local midpointX=(exterior.ax+exterior.bx)/2
+local midpointZ=(exterior.az+exterior.bz)/2
+local nx,nz=G.outwardAt(polygon,exterior,midpointX,midpointZ)
+assert(nx~=nil)
+current.x,current.z=midpointX+nx*2,midpointZ+nz*2
+assert(not G.inside(polygon,current.x,current.z))
+local marginSession=assert(Route.beginPlan(vehicle,{
+    sourceField=nonFixtureField,edgeIndex=9}))
+local marginPhase,marginRoute,marginReason
+for i=1,12500 do
+    marginPhase,marginRoute,marginReason=Route.advancePlan(marginSession,64)
+    if marginPhase~="PENDING" then break end
+end
+assert(marginPhase=="DONE"
+    or (marginPhase=="FAILED"
+        and marginReason~="COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE"),
+    "bounded exterior start must be evaluated, never categorically vetoed")
+current.x,current.z=midpointX+nx*30,midpointZ+nz*30
+local refused,refusal=Route.plan(vehicle,nil,{
+    sourceField=nonFixtureField,edgeIndex=9})
+assert(refused==nil and refusal=="COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE",
+    "an unqualified exterior start must remain outside admission")
+print("completion settlement registered-field, actual-pose margin and TS019 regression PASS")

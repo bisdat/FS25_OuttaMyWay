@@ -302,7 +302,7 @@ local function beginEpisode(self,job,vehicle,sourceField)
         note="NO_MOVEMENT_UNTIL_ROUTE_ADMITTED"})
     return true
 end
-function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
+function Runtime:onNativeCompletion(job,vehicle,transitAccepted,retainedSourceField)
     if not self:isAdmitted() or transitAccepted~=true
         or type(vehicle)~="table" or self.attempted[vehicle]
         or pairedControlActive() or superseded(vehicle) then
@@ -314,7 +314,11 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
             rootNode=tostring(vehicle.rootNode),reason=claim})
         return false
     end
-    local sourceField,fieldReason=Membership.identify(vehicle)
+    local sourceField=retainedSourceField
+    local fieldReason=nil
+    if sourceField==nil then
+        sourceField,fieldReason=Membership.identify(vehicle)
+    end
     if sourceField==nil then
         publish("NORMAL","WARNING","COMPLETION_SETTLEMENT_NOT_ADMITTED",{
             rootNode=tostring(vehicle.rootNode),reason=fieldReason})
@@ -322,7 +326,7 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted)
     end
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_SOURCE_FIELD",{
         rootNode=tostring(vehicle.rootNode),fieldId=sourceField.fieldId,
-        rootX=sourceField.rootX,rootZ=sourceField.rootZ,
+        observedX=sourceField.rootX,observedZ=sourceField.rootZ,
         provenance=sourceField.provenance})
     if self.active~=nil or self.pending~=nil or #self.waiting>0 then
         if #self.waiting>=MAX_QUEUED_COMPLETIONS then
