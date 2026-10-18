@@ -144,6 +144,8 @@ function M:startMovement(vehicle,objective)
         observed,running=pcall(vehicle.getIsMotorStarted,vehicle)
     end
     local alreadyStarted=observed and running==true
+    local initialMotorState="UNKNOWN"
+    if observed then initialMotorState=alreadyStarted end
     local priorCruiseState=nil
     if settlement then
         local read,value=pcall(vehicle.getCruiseControlState,vehicle)
@@ -164,7 +166,7 @@ function M:startMovement(vehicle,objective)
         startedMotor=not alreadyStarted,
         -- Native acceptance is distinct from confirmed running state.
         -- Retained only for bounded diagnostic attribution, not admission.
-        motorWasRunningInitially=observed and alreadyStarted or "UNKNOWN",
+        motorWasRunningInitially=initialMotorState,
         motorStartCallAccepted=alreadyStarted,
         motorStartReply=alreadyStarted
             and "NOT_REQUESTED_ALREADY_RUNNING" or "NOT_YET_REQUESTED",

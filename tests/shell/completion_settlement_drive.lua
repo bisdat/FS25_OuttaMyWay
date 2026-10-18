@@ -173,6 +173,7 @@ assert(drive:cancelMovement(vehicle))
 vehicle.getIsMotorStarted=function()error("readback unavailable")end
 previousCommands=#driveCalls
 assert(drive:startMovement(vehicle,objective))
+assert(drive.active.motorWasRunningInitially=="UNKNOWN")
 issued=drive:movementStatus(vehicle,16)
 assert(issued.commandedDriveCount==1
     and #driveCalls==previousCommands+1
