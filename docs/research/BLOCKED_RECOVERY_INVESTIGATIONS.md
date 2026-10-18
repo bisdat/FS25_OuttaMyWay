@@ -51,3 +51,9 @@ The full time-correlated tool-frame measurements, shadow look-throughs, video su
 ## Interpretation policy
 
 The dated TEST results, experimental thresholds, candidate module names and abandoned sequencing proposals in the predecessor are historical evidence, not standing authority. Promote a specific enduring conclusion to Architecture only after checking it against current Reality and the relevant Specification and source. Failed tests are retained to make past wrong assumptions identifiable, not to preserve them as current commands.
+
+## Fold-state admission gate exposed by TS004 .32 (18 October 2026)
+
+The TS004 .32 `HOLD_RELOCATE_NOT_STARTED FOLD_POSITION_AMBIGUOUS` occurred at 07:02:26.986 after a native blocked-worker snapshot, independent of the already accepted completed-worker TRANSIT request at 07:01:48.526. The failing branch was the older solo/static `HoldRelocatePhysicalControl.buildTransitPlan(vehicle,false)`: a fold animation progress strictly between 0.001 and 0.999 vetoed the entire native TRANSIT command plan before work-off/raise could be sent. That contradicted the request-only purpose and the already non-veto paired selected-mover path; it was not evidence that actual movement was unsafe.
+
+The corrective source change removes the three fold *observation* refusals (`FOLD_POSITION_AMBIGUOUS`, `FOLD_START_UNKNOWN`, `FOLD_DIRECTION_UNAVAILABLE`) from that plan builder. It sends independently available work-off/raise commands; only a positively known unfolded start and valid native fold direction add a fold command. Actual command dispatch and independent movement/Control safety are not inferred successful from missing folding observations. Offline regression challenges mid-fold, unreadable fold start and direction plus known folding start. This finding does not alter the separate TS004 Completion Parking current-pose-to-entry approach-connectivity failure or establish a GIANTS success for static relocation.

@@ -99,5 +99,37 @@ assert(#commands==2 and commands[1]=="B:WORK:false"
     and commands[2]=="B:RAISE:false")
 assert(nextControl:cancelTransit(b))
 assert(nextControl:getTransitRequests(a)==nil)
+-- Solo/static shares the command-plan builder with Completion TRANSIT.
+-- Neither an intermediate fold nor unreadable fold state may veto work-off
+-- and raise before GIANTS has even received the TRANSIT request.
+local function soloRequest(label,position,directionReadable)
+    local v=member("A",true)
+    v.getFoldAnimTime=function()
+        if position==nil then error("native fold position unavailable") end
+        return position
+    end
+    if not directionReadable then
+        v.getToggledFoldDirection=function()
+            error("native fold direction unavailable")
+        end
+    end
+    commands={}
+    local s=Control.new(authority)
+    assert(s:preflight({commitment=commitment,relocator={vehicle=v}}),
+        label.." must not be rejected by fold observation")
+    local plan=assert(s:getTransitRequests(v))
+    local expected=position==0 and directionReadable and 3 or 2
+    assert(#plan.transitActions==expected,
+        "only positively supported fold request should be added")
+    assert(s:requestTransit(v),
+        label.." must dispatch independent native TRANSIT requests")
+    assert(commands[1]=="A:WORK:false" and commands[2]=="A:RAISE:false")
+    assert(#commands==expected)
+    assert(s:cancelTransit(v))
+end
+soloRequest("mid-fold",0.5,true)
+soloRequest("unknown fold start",nil,true)
+soloRequest("unknown fold direction",0,false)
+soloRequest("known fold start",0,true)
 -- No vehicle has an active fold command or configuration lease.
-print("Asymmetric pair selected-mover-only TRANSIT (no fold/pose readiness): PASS")
+print("Pair and solo/static TRANSIT no fold-state admission gates: PASS")

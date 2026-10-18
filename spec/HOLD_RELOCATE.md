@@ -78,6 +78,10 @@ Each finite observation records native job-reference continuity, continued membe
 
 The witness cannot prove a fresh `driveToPoint` call, physical clearance, successful configuration restoration, or GIANTS recoverability. It must not install drive wrappers, call `getDriveData()`, generate blocked events, reacquire Control, or retry an interrupted manoeuvre. The four observations are bounded **DIAGNOSTIC-class, INFO-severity** engineering facts for this investigation. Publication eligibility is checked before root/job/strategy/lease sampling, including after a runtime policy change; suppressed DIAGNOSTIC performs no optional witness sensor work. Inactive witness work is zero except for a lightweight active-state check.
 
+## Solo/static TRANSIT command selection
+
+Request-only TRANSIT is not a folding-readiness contract. The solo worker and inactive static relocation subject must not be refused merely because an optional native fold position is intermediate or unavailable, or because a fold direction cannot be read. Request available work-off/raise commands independently; request a fold direction only when the native start position and fold direction are positively known. GIANTS owns the result. No new permission to move is inferred from the request: the normal native dispatch, assembly, route, Control, neutralisation and observed-motion contracts still apply. This matches the existing paired selected-mover non-veto semantics without changing its separate movement mechanism.
+
 ## Reactive static Control and release
 
 After exclusive static commitment, request TRANSIT once for the non-active subject, then issue supported direct GIANTS `driveToPoint` commands under a scoped motor, physics and native cruise lease; completed/non-job machines do not independently issue periodic AI drive commands. Regulate the **blocked active beneficiary at 1 km/h for 5,000 ms**, retaining its existing GIANTS job and WORKING configuration. This is not a translation STOP or a FIELDWORK job replacement.

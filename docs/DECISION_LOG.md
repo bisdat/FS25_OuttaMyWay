@@ -1,3 +1,13 @@
+## D-0227 — Fold Observations Cannot Veto Native TRANSIT Requests
+
+**Status:** Accepted corrective engineering decision, 18 October 2026. GIANTS validation pending.
+
+**Decision:** An intermediate or unreadable native fold position and an unavailable fold direction are not permission tests for requesting work-off/raise TRANSIT configuration in solo/static Hold & Relocate or Completion Transit. Send independently supported configuration requests; add a fold command only where the native unfolded start and direction are positively known. Do not equate requesting with successful folding, or replace physical movement/actuator safeguards with that assertion.
+
+**Reason:** TS004 TEST 0.5.5.32 emitted `HOLD_RELOCATE_NOT_STARTED FOLD_POSITION_AMBIGUOUS` from the inherited solo/static command-plan builder, even though the pair mover already used non-veto request semantics. The old gate rejected a static-blocker intervention *before* the available native TRANSIT commands were sent. That rejection did not establish a physical safety issue.
+
+**Consequence:** Remove the three optional fold-observation vetoes in the shared plan builder only. Preserve existing independently qualified route, lease, native command-dispatch failure and positive motion/stop evidence. Completion Transit and Hold & Relocate may use the same corrected command selection without adding further readiness gates. Record GIANTS results separately.
+
 ## D-0226 — Retain Source Field for One FIELDWORK Job Episode
 
 **Status:** Accepted engineering decision, 18 October 2026. GIANTS physical validation pending.

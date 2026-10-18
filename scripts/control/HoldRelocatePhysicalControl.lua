@@ -79,22 +79,21 @@ local function buildTransitPlan(vehicle,isPair)
             and next(fold.foldingParts)~=nil
         if not isPair and type(object.setFoldDirection)=="function"
             and type(object.getToggledFoldDirection)=="function" then
-            -- Preserve the previously accepted request-only solo/static
-            -- contract. Only paired recovery adopts the selected-runtime
-            -- readiness and bounded non-veto preparation semantics.
+            -- Fold state is not a TRANSIT request-admission or movement gate.
+            -- Only request a fold when the native start and direction are
+            -- positively known. Otherwise issue independently supported
+            -- work-off/raise commands and leave folding to GIANTS.
             local position=nil
             local ok,value=method(object,"getFoldAnimTime")
             if ok and finite(value) then position=value
-            elseif type(fold)=="table" then position=fold.foldAnimTime end
-            if not finite(position) then return nil,"FOLD_START_UNKNOWN" end
-            if position<=0.001 then
+            elseif type(fold)=="table" and finite(fold.foldAnimTime) then
+                position=fold.foldAnimTime
+            end
+            if position~=nil and position<=0.001 then
                 local known,direction=method(object,"getToggledFoldDirection")
-                if not known or not finite(direction) or direction<=0 then
-                    return nil,"FOLD_DIRECTION_UNAVAILABLE"
+                if known and finite(direction) and direction>0 then
+                    append(object,"setFoldDirection",direction,-direction)
                 end
-                append(object,"setFoldDirection",direction,-direction)
-            elseif position<0.999 then
-                return nil,"FOLD_POSITION_AMBIGUOUS"
             end
         elseif isPair and hasActiveParts then
             local position=nil

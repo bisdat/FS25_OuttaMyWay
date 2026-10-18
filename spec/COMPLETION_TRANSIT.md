@@ -17,7 +17,7 @@ Require authoritative server, resolved and enabled profile Configuration, valid 
 
 ## Mechanism and retirement
 
-Use the established native solo/static TRANSIT plan construction and `NativeTransitRequestMechanism` in a **separate instance**, never borrowing the existing Hold & Relocate Control plan cache or mechanism state. Requests may command work-off, raise and supported fold operations, but no readiness assertion follows from an accepted request.
+Use the established native solo/static TRANSIT plan construction and `NativeTransitRequestMechanism` in a **separate instance**, never borrowing the existing Hold & Relocate Control plan cache or mechanism state. Requests may command work-off, raise and supported fold operations, but no readiness assertion follows from an accepted request. Intermediate, unreadable or direction-unknown native fold state is not a plan-construction veto: independently supported work-off/raise requests still dispatch, and folding itself is requested only when its starting position and native direction are known. This is a request-only boundary, not a claim that the physical assembly is already folded.
 
 When product is disabled or the map tears down, relinquish the completion request state without applying WORKING restoration commands to a completed machine. A newer AI job prevents admission, but ownership after a started request is not a validated future parking/control lifecycle.
 
