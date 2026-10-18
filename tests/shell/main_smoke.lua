@@ -27,6 +27,7 @@ local expected={
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/observation/CompletionFieldMembership.lua",
+    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
@@ -101,6 +102,7 @@ source=function(path)
         or path=="scripts/observation/NativeJobCompletionProbe.lua"
         or path=="scripts/observation/FarmEdgeGeometry.lua"
         or path=="scripts/observation/CompletionFieldMembership.lua"
+        or path=="scripts/observation/CompletionAssemblyFieldOccupancy.lua"
         or path=="scripts/observation/CompletionParkingGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
         or path=="scripts/coordination/SettlementPhysicalOccupancy.lua"

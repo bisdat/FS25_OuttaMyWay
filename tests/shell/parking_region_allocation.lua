@@ -64,6 +64,8 @@ end
 local phase,a,why=qualify(first)
 assert(phase=="DONE",why)
 assert(a.qualifiedLocalRoute and #a.qualifiedLocalRoute.legs>0)
+assert(a.qualifiedApproachRoute and a.qualifiedDirectRoute==nil,
+    "allocator must establish actual current-pose entry connectivity first")
 assert(a.entryPose and a.terminalPose and a.station
     and type(a.edge)=="number" and a.field==sourceField.fieldId)
 local firstClaim=assert(Allocation.claim(ledger,first,a.terminalPose,a.ownRadius))
@@ -85,7 +87,8 @@ local secondClaim=assert(Allocation.claim(ledger,second,
 local dx,dz=secondClaim.x-firstClaim.x,secondClaim.z-firstClaim.z
 assert(dx*dx+dz*dz>(secondClaim.radius+firstClaim.radius+4)^2,
     "two qualified terminal claims must be physically distinct")
-assert(b.qualifiedLocalRoute.terminalPose)
+assert(b.qualifiedLocalRoute.terminalPose and b.qualifiedApproachRoute,
+    "second terminal also needs an actual-pose-connected approach")
 Allocation.release(ledger,second)
 -- The remote first worker must find a goal-directed extended route to the
 -- specifically qualified entry, not any convenient generic edge band.
@@ -97,6 +100,9 @@ for i=1,1000 do
     if kind~="PENDING" then break end
 end
 assert(kind=="DONE",fail)
+assert(a.qualifiedApproachRoute.mode==planned.mode
+    and #a.qualifiedApproachRoute.legs==#planned.legs,
+    "allocation connectivity uses the existing independent extended planner")
 assert(planned and planned.mode=="EXTENDED_INFIELD")
 assert(planned.entryPose and planned.entryPose.x==a.entryPose.x)
 assert(#planned.legs>0,"distant completion must actually navigate to claim")
@@ -147,6 +153,20 @@ assert(chosen.edge and chosen.field==sourceField.fieldId
 print(string.format("active peer selection: station %d risk %d (%s), observed motion=%d",
     chosen.station,chosen.situationRisk,chosen.situationReason,
     chosen.motionWitnesses))
+-- For a boundary-straddling assembly, the allocator may only return
+-- a complete route from the actual pose (never a hypothetical infield entry).
 second.getIsAIActive=nil
 Situation.reset()
+poses[100]={x=229,z=-244,fx=0,fz=1}
+local straddling=assert(Allocation.beginPlan(
+    first,ledger,sourceField,"STRADDLING"))
+local state,selected,why
+for i=1,18000 do
+    state,selected,why=Allocation.advancePlan(straddling,320)
+    if state~="PENDING" then break end
+end
+assert(state=="FAILED" or (state=="DONE" and selected.qualifiedDirectRoute
+    and selected.qualifiedApproachRoute==nil),
+    "straddling cannot grant a claim using an imaginary infield starting pose")
+
 print("qualified terminal allocation: disjoint claims and future-demand-aware real allocator PASS")

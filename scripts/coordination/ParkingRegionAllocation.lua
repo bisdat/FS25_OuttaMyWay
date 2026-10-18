@@ -8,6 +8,7 @@ local M=OuttaMyWay.ParkingRegionAllocation
 local G=OuttaMyWay.FarmEdgeGeometry
 local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
 local Local=OuttaMyWay.CompletionSettlementRoute
+local Extended=OuttaMyWay.ExtendedInfieldApproach
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Parking=OuttaMyWay.CompletionParkingGeometry
 local Membership=OuttaMyWay.CompletionFieldMembership
@@ -102,11 +103,31 @@ function M.claimClear(ledger,vehicle,poly)
     end
     return true
 end
-function M.beginPlan(vehicle,ledger,sourceField)
+-- A terminal is claimable only after proving the complete route from
+-- the actual completed assembly pose, not a hypothetical local entry alone.
+function M.qualifiedResult(s,approach,direct)
+    local route=s.qualifiedLocalRoute
+    local latest=s.latestSituation
+    return {entryPose=s.site.entry,
+        station=s.site.station,terminalPose=route.terminalPose,
+        stationMin=math.max(3,s.site.station-26),
+        stationMax=math.min(s.site.frame.length-3,s.site.station+26),
+        sourceField=s.sourceField,field=s.fieldId,edge=s.site.edgeIndex,
+        qualifiedLocalRoute=route,
+        qualifiedApproachRoute=approach,qualifiedDirectRoute=direct,
+        ownRadius=s.own,
+        situationRisk=s.terminalRisk,situationReason=s.terminalReason,
+        workingPeers=latest.workingCount,motionWitnesses=latest.motionCount,
+        headingWitnesses=latest.headingCount,
+        edgeEvidence=s.edgeEvidence,selectionCost=s.site.score,
+        claimObstacles=claimObstacles(s.ledger,s.vehicle)}
+end
+function M.beginPlan(vehicle,ledger,sourceField,disposition)
     if type(vehicle)~="table" or type(ledger)~="table" then
         return nil,"ALLOCATION_INPUT_UNAVAILABLE"
     end
-    return {vehicle=vehicle,ledger=ledger,sourceField=sourceField,phase="INIT",
+    return {vehicle=vehicle,ledger=ledger,sourceField=sourceField,
+        disposition=disposition or "INSIDE",phase="INIT",
         spent=0,advances=0,siteIndex=0}
 end
 function M.advancePlan(s,units)
@@ -217,11 +238,14 @@ function M.advancePlan(s,units)
             s.spent=s.spent+1
             return "PENDING"
         end
+        -- A straddling assembly needs an actual-pose local egress;
+        -- an imagined infield entry is not a connected route.
         local options={entryPose=site.entry,sourceField=s.sourceField,
             edgeIndex=site.edgeIndex,
             stationMin=math.max(3,site.station-26),
             stationMax=math.min(f.length-3,site.station+26),
             claimObstacles=claimObstacles(s.ledger,s.vehicle)}
+        if s.disposition=="STRADDLING" then options.entryPose=nil end
         local session,why=Local.beginPlan(s.vehicle,options)
         if session==nil then
             s.finished=true;return "FAILED",nil,why
@@ -237,46 +261,58 @@ function M.advancePlan(s,units)
         s.prevSpent=s.localPlan.spent
         if phase=="PENDING" then return "PENDING" end
         if phase=="DONE" and route and route.terminalPose
-            and clearClaims(s.ledger,s.vehicle,route.terminalPose,
-                s.own+5)
+            and clearClaims(s.ledger,s.vehicle,route.terminalPose,s.own+5)
             and Occupancy.clear(route.terminalPose,s.own,s.occupants,5) then
             local latest,latestWhy=Situation.observe(s.vehicle,s.poly)
             if latest==nil then
                 s.finished=true;return "FAILED",nil,latestWhy
             end
-            local terminalRisk,terminalReason=0,#latest.peers>0
+            local risk,riskReason=0,#latest.peers>0
                 and "NO_NEAR_DEMAND_EVIDENCE" or "NO_ACTIVE_WORKER"
             for i=1,#latest.peers do
-                local risk,reason=Situation.risk(route.terminalPose,latest.peers[i])
-                if risk>terminalRisk then
-                    terminalRisk,terminalReason=risk,reason
+                local candidate,reason=Situation.risk(
+                    route.terminalPose,latest.peers[i])
+                if candidate>risk then risk,riskReason=candidate,reason end
+            end
+            if risk<3 then
+                s.qualifiedLocalRoute=route
+                s.latestSituation=latest
+                s.terminalRisk=risk
+                s.terminalReason=riskReason
+                if s.disposition=="STRADDLING" then
+                    -- This local route already starts at the current actual
+                    -- pose. No imagined return to infield space is required.
+                    s.finished=true
+                    return "DONE",M.qualifiedResult(s,nil,route)
+                end
+                local approach,reason=Extended.beginPlan(s.vehicle,
+                    s.site.entry,s.sourceField,s.site.edgeIndex)
+                if approach~=nil then
+                    s.approachPlan=approach
+                    s.phase="CONNECT"
+                    return "PENDING"
                 end
             end
-            if terminalRisk>=3 then
-                s.prevSpent=nil;s.localPlan=nil;s.phase="NEXT"
-                return "PENDING"
-            end
-            s.finished=true
-            return "DONE",{entryPose=s.site.entry,
-                station=s.site.station,terminalPose=route.terminalPose,
-                stationMin=math.max(3,s.site.station-26),
-                stationMax=math.min(s.site.frame.length-3,s.site.station+26),
-                sourceField=s.sourceField,field=s.fieldId,
-                edge=s.site.edgeIndex,
-                qualifiedLocalRoute=route,
-                ownRadius=s.own,
-                situationRisk=terminalRisk,
-                situationReason=terminalReason,
-                workingPeers=latest.workingCount,
-                motionWitnesses=latest.motionCount,
-                headingWitnesses=latest.headingCount,
-                edgeEvidence=s.edgeEvidence,
-                selectionCost=s.site.score,
-                claimObstacles=claimObstacles(s.ledger,s.vehicle)}
         end
-        s.prevSpent=nil
-        s.localPlan=nil
-        s.phase="NEXT"
+        s.prevSpent=nil;s.localPlan=nil;s.phase="NEXT"
+        return "PENDING"
+    end
+    if s.phase=="CONNECT" then
+        -- Qualification includes the actual root-to-entry path BEFORE
+        -- an exclusive terminal claim. Continue within per-frame budget.
+        local phase,approach,why=Extended.advancePlan(s.approachPlan,units)
+        s.spent=s.spent+(s.approachPlan.spent-(s.prevApproachSpent or 0))
+        s.prevApproachSpent=s.approachPlan.spent
+        if phase=="PENDING" then return "PENDING" end
+        if phase=="DONE" and approach then
+            s.finished=true
+            return "DONE",M.qualifiedResult(s,approach,nil)
+        end
+        -- This terminal was locally feasible from an imaginary entry
+        -- but unreachable from actual completion pose: reject and try next.
+        s.prevSpent=nil;s.prevApproachSpent=nil
+        s.localPlan=nil;s.approachPlan=nil
+        s.qualifiedLocalRoute=nil;s.phase="NEXT"
         return "PENDING"
     end
     s.finished=true

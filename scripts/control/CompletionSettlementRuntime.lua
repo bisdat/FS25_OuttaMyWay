@@ -7,6 +7,7 @@ local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local Allocation=OuttaMyWay.ParkingRegionAllocation
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Membership=OuttaMyWay.CompletionFieldMembership
+local AssemblyOccupancy=OuttaMyWay.CompletionAssemblyFieldOccupancy
 Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
@@ -128,6 +129,7 @@ function Runtime:finish(code,reason)
     end
     publish("NORMAL",
         (code=="COMPLETION_SETTLEMENT_FINISHED"
+            or code=="COMPLETION_SETTLEMENT_NOT_REQUIRED"
             or reason=="PLAYER_DISABLED" or reason=="CONTROL_REVOKED")
             and "INFO" or "WARNING",code,{rootNode=tostring(state.vehicle.rootNode),
             phase=state.phase,leg=state.legIndex,
@@ -348,7 +350,8 @@ function Runtime:onNativeCompletion(job,vehicle,transitAccepted,retainedSourceFi
     return beginEpisode(self,job,vehicle,sourceField)
 end
 local function allocation(self,s,why)
-    local plan,reason=Allocation.beginPlan(s.vehicle,self.claims,s.sourceField)
+    local plan,reason=Allocation.beginPlan(
+        s.vehicle,self.claims,s.sourceField,s.occupancy)
     if not plan then return false,reason end
     self.active=nil
     self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
@@ -427,18 +430,63 @@ function Runtime:update(dt)
     end
     if self.pending~=nil then
         s.elapsedMs=s.elapsedMs+dt
+        if s.kind=="LOCAL_INITIAL" and not s.occupancyAssessed then
+            -- Native Completion TRANSIT was already requested. The selected
+            -- real member rectangles, not tractor-root containment, decide
+            -- whether this Source Field still needs clearing.
+            local result,why=AssemblyOccupancy.assess(s.vehicle,s.sourceField)
+            if result==nil then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    why or "ASSEMBLY_FIELD_OCCUPANCY_UNAVAILABLE")
+                return
+            end
+            s.occupancyAssessed=true
+            s.occupancy=result.status
+            publish("DEBUG","INFO","COMPLETION_ASSEMBLY_FIELD_OCCUPANCY",{
+                rootNode=tostring(s.vehicle.rootNode),
+                fieldId=result.sourceFieldId,
+                status=result.status,memberCount=result.memberCount,
+                intersectingMembers=result.intersectingMembers})
+            if result.status=="CLEAR" then
+                -- No physical Control, no parking claim, no fake successful
+                -- terminal manoeuvre. A queued episode uses this same test.
+                self:finish("COMPLETION_SETTLEMENT_NOT_REQUIRED",
+                    "ASSEMBLY_ALREADY_CLEAR_OF_SOURCE_FIELD")
+                return
+            end
+            if result.status~="INSIDE" and result.status~="STRADDLING" then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    "ASSEMBLY_FIELD_OCCUPANCY_UNKNOWN")
+                return
+            end
+        end
         if s.elapsedMs>TOTAL_DEADLINE_MS then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 "FINITE_PLANNING_LEASE_EXPIRED")
             return
         end
-        local planner=s.kind=="ALLOCATE" and Allocation or
-            (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach
-            or OuttaMyWay.CompletionSettlementRoute)
-        local phase,route,reason=planner.advancePlan(
-            s.plan,PLAN_UNITS_PER_UPDATE)
+        local phase,route,reason
+        if s.kind=="LOCAL_ALLOCATED" then
+            -- The allocator has qualified a complete local route from the
+            -- actual straddling pose, rather than an imaginary entry point.
+            phase,route="DONE",s.prequalifiedRoute
+        else
+            local planner=s.kind=="ALLOCATE" and Allocation or
+                (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach
+                or OuttaMyWay.CompletionSettlementRoute)
+            phase,route,reason=planner.advancePlan(
+                s.plan,PLAN_UNITS_PER_UPDATE)
+        end
         if phase=="PENDING" then return end
         if s.kind=="ALLOCATE" and phase=="DONE" and route then
+            -- The allocator must have qualified the actual-pose connection
+            -- before returning this terminal as claimable.
+            if route.qualifiedDirectRoute==nil
+                and route.qualifiedApproachRoute==nil then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    "PARKING_APPROACH_CONNECTIVITY_UNQUALIFIED")
+                return
+            end
             local claim,why=Allocation.claim(self.claims,s.vehicle,
                 route.terminalPose,route.ownRadius)
             if not claim then
@@ -447,13 +495,14 @@ function Runtime:update(dt)
             end
             s.stationMin=route.stationMin;s.stationMax=route.stationMax
             s.edgeIndex=route.edge
-            local plan,reason=OuttaMyWay.ExtendedInfieldApproach.beginPlan(
-                s.vehicle,route.entryPose,s.sourceField,route.edge)
-            if not plan then
-                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",reason)
-                return
+            if route.qualifiedDirectRoute~=nil then
+                s.plan=nil
+                s.prequalifiedRoute=route.qualifiedDirectRoute
+                s.kind="LOCAL_ALLOCATED"
+            else
+                s.plan=route.qualifiedApproachRoute
+                s.kind="EXTENDED"
             end
-            s.plan=plan;s.kind="EXTENDED"
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REGION_CLAIMED",function() return {
                 rootNode=tostring(s.vehicle.rootNode),station=route.station,
                 terminalX=route.terminalPose.x,terminalZ=route.terminalPose.z,
@@ -547,7 +596,7 @@ function Runtime:update(dt)
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",why)
                 return
             end
-        elseif s.kind=="LOCAL_HANDOFF" then
+        elseif s.kind=="LOCAL_HANDOFF" or s.kind=="LOCAL_ALLOCATED" then
             local matched,miss=Allocation.matchesClaim(
                 self.claims,s.vehicle,route)
             if not matched then

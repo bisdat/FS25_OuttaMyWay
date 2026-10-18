@@ -29,6 +29,7 @@ local modules={
     "scripts/observation/NativeJobCompletionProbe.lua",
     "scripts/observation/FarmEdgeGeometry.lua",
     "scripts/observation/CompletionFieldMembership.lua",
+    "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",

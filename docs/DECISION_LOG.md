@@ -1,3 +1,13 @@
+## D-0228 — Assembly Field Occupancy and Connected Parking Claims
+
+**Status:** Accepted design and TEST implementation decision, 18 October 2026. GIANTS validation pending.
+
+**Decision:** Following the existing successful native FIELDWORK completion and independent request-only TRANSIT, compare all selected-member nominal base-size rectangles with the episode-retained registered Source Field polygon. If none intersects, report no Completion Parking intervention required without motor Control or destination claim. If the assembly remains wholly inside, qualify the existing infield/local candidates; if it straddles, qualify an actual-pose boundary egress. Missing geometry does not count as clearance. No optional folding/boom-state check is introduced.
+
+**Reason:** The TS004 .32 video shows a completed tractor root outside while attachment geometry remains inside the Source Field. Root containment does not represent a Physical Assembly. The allocator also selected a locally qualified hypothetical entry and terminal before its current-pose infield approach failed. The existing Settlement Corridor architecture already distinguishes reachable approach from terminal fit.
+
+**Consequence:** A parking claim follows actual-pose approach plus local terminal route qualification, not hypothetical terminal fit alone. The supported infield lattice keeps its live field-containment contract. No admissible boundary manoeuvre means a specific refusal, not a false destination claim. A no-action clearance conclusion is not reported as a physically driven and verified terminal. GIANTS remains the physical validator.
+
 ## D-0227 — Fold Observations Cannot Veto Native TRANSIT Requests
 
 **Status:** Accepted corrective engineering decision, 18 October 2026. GIANTS validation pending.

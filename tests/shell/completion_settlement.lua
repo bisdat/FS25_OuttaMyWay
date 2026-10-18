@@ -112,16 +112,25 @@ OuttaMyWay.CompletionSettlementRoute={
     end
 }
 local refuseExtendedScene=false
+local directAllocation=false
+local lastAllocationDisposition=nil
+local occupancyDisposition="INSIDE"
 local activeConflict=false
 local mismatchClaim=false
 OuttaMyWay.ParkingRegionAllocation={
-    beginPlan=function()return {advances=0,spent=0}end,
+    beginPlan=function(_,_,_,disposition)
+        lastAllocationDisposition=disposition
+        return {advances=0,spent=0}
+    end,
     advancePlan=function(session,units)
         session.advances=session.advances+1
         session.spent=session.spent+units
         return "DONE",{entryPose={x=25,z=-30,fx=1,fz=0},
             terminalPose={x=40,z=20},ownRadius=5,
-            stationMin=0,stationMax=100,station=50}
+            stationMin=0,stationMax=100,station=50,
+            qualifiedApproachRoute=not directAllocation and
+                {advances=0,spent=0} or nil,
+            qualifiedDirectRoute=directAllocation and route or nil}
     end,
     claim=function(ledger,vehicle,terminal,radius)
         ledger[vehicle]={x=terminal.x,z=terminal.z,radius=radius or 5}
@@ -191,6 +200,11 @@ OuttaMyWay.CompletionFieldMembership={identify=function(vehicle)
     if missingMembership then return nil,"ASSEMBLY_OUTSIDE_REGISTERED_FIELDS" end
     return {fieldId=fieldOverride or 77,rootNode=vehicle.rootNode,
         provenance="ASSEMBLY_ROOT_REGISTERED_POLYGON_MEMBERSHIP"}
+end}
+OuttaMyWay.CompletionAssemblyFieldOccupancy={assess=function(_,sourceField)
+    return {status=occupancyDisposition,sourceFieldId=sourceField.fieldId,
+        memberCount=2,intersectingMembers=occupancyDisposition=="CLEAR"
+            and 0 or 1}
 end}
 dofile("scripts/control/CompletionSettlementRuntime.lua")
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
@@ -484,4 +498,61 @@ assert(membershipCalls==oldCalls and runtime.pending.sourceField==captured,
     "the unique Job Episode Source Field survives completion at the margin")
 missingMembership=false
 runtime:loadMap()
-print("completion settlement TEST lifecycle, claim handoff and retained Source Field PASS")
+-- No physical movement, destination claim or actual parking assertion if
+-- the whole selected Physical Assembly is already clear of its Source Field.
+occupancyDisposition="CLEAR"
+local alreadyClear={rootNode=405,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local starts=#driveCalls
+local planned=planAdvances
+assert(runtime:onNativeCompletion({},alreadyClear,true))
+assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL")
+runtime:update(16)
+assert(runtime.pending==nil and runtime.active==nil
+    and #driveCalls==starts and planAdvances==planned
+    and runtime.claims[alreadyClear]==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_REQUIRED"
+    and events[#events].fields.reason=="ASSEMBLY_ALREADY_CLEAR_OF_SOURCE_FIELD",
+    "already-clear assemblies require no planning, claim or Control")
+runtime:loadMap()
+-- A root outside but a member still in the Source Field requires a
+-- current-pose local route, not an imaginary infield entry.
+occupancyDisposition="STRADDLING"
+directAllocation=true
+local partial={rootNode=406,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},partial,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and lastAllocationDisposition=="STRADDLING")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="LOCAL_ALLOCATED"
+    and runtime.claims[partial]~=nil)
+runtime:update(16)
+assert(runtime.active and runtime.active.vehicle==partial
+    and runtime.active.route==route
+    and driveCalls[#driveCalls]=="START",
+    "direct, actual-pose route must be admitted only after qualification")
+runtime:loadMap()
+directAllocation=false
+occupancyDisposition="INSIDE"
+-- An unqualified allocator result must never acquire a parking claim.
+local originalAdvance=OuttaMyWay.ParkingRegionAllocation.advancePlan
+OuttaMyWay.ParkingRegionAllocation.advancePlan=function(session,units)
+    return "DONE",{terminalPose={x=99,z=99},ownRadius=5}
+end
+local missingApproach={rootNode=407,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},missingApproach,true))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
+runtime:update(16)
+assert(runtime.pending==nil and runtime.active==nil
+    and runtime.claims[missingApproach]==nil
+    and events[#events].fields.reason=="PARKING_APPROACH_CONNECTIVITY_UNQUALIFIED",
+    "no terminal claim until the current-pose connection is proven")
+OuttaMyWay.ParkingRegionAllocation.advancePlan=originalAdvance
+runtime:loadMap()
+print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")
