@@ -45,6 +45,8 @@ During actual native forward/reverse movement, the established `NativeStaticAsse
 
 The incremental planner budgets geometry per update and maintains finite Control and leg deadlines. These are bounded-work/supersession safeguards, not unsupported equipment or map-identity exclusions. Route refusal must describe the failed spatial, physical, native or timing contract; a failed candidate is not permission to move blindly.
 
+**Failed Parking Region Allocation evidence:** When DIAGNOSTIC publication is eligible, the planner retains a bounded per-session count of candidate stations examined, first site-prefilter refusals, failed local route attempts, and the local planner's already-named geometric rejection predicates. On allocation failure, the runtime publishes one aggregate diagnostic line with the Source Field, assembly occupancy classification, and rejection distribution. Collection and aggregation are inactive when DIAGNOSTIC is suppressed. This evidence does not alter candidate eligibility, grant Control or make a terminal claim. In particular, a final `NO_QUALIFIED_TERMINAL_REGION` alone is not an explanation of which predicate made the candidate set empty. Each station's Situation Assessment must use the retained Source Field polygon from that allocation session.
+
 ## Terminal and interruption
 
 After the final forward leg stops, recapture the *current* attached assembly nominal member geometry. A successful TEST observation requires unchanged member count, the root and **every captured member rectangle disjoint from the source and other registered field polygons**. If any member remains inside or current membership cannot be observed, report an interrupted or incomplete terminal rather than celebrating root arrival.

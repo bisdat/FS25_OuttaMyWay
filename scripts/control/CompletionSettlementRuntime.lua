@@ -49,6 +49,22 @@ local function publish(publicationClass,level,code,fields)
     publication:publish(publicationClass,level,code,
         type(fields)=="function" and fields or function() return fields end)
 end
+-- Sort only at publication time, never during candidate assessment.
+local function rejectionSummary(counts)
+    local keys={}
+    for key in pairs(counts or {}) do keys[#keys+1]=key end
+    table.sort(keys)
+    local parts={}
+    local limit=math.min(#keys,40)
+    for i=1,limit do
+        local key=keys[i]
+        parts[#parts+1]=key..":"..tostring(counts[key])
+    end
+    if #keys>limit then
+        parts[#parts+1]="TRUNCATED_REASON_CATEGORIES:"..tostring(#keys-limit)
+    end
+    return table.concat(parts,";")
+end
 local function rootPose(vehicle)
     if type(vehicle)~="table" or vehicle.rootNode==nil
         or type(getWorldTranslation)~="function" then return nil end
@@ -357,9 +373,19 @@ function Runtime:onNativeCompletion(job,vehicle,retainedSourceField)
     return beginEpisode(self,job,vehicle,sourceField)
 end
 local function allocation(self,s,why)
+    local collectEvidence=type(publication.isEligible)=="function"
+        and publication:isEligible("DIAGNOSTIC","INFO",
+            "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS")
     local plan,reason=Allocation.beginPlan(
-        s.vehicle,self.claims,s.sourceField,s.occupancy)
+        s.vehicle,self.claims,s.sourceField,s.occupancy,collectEvidence)
     if not plan then return false,reason end
+    if collectEvidence and type(plan.evidence)=="table" then
+        local previous=s.plan
+        plan.evidence.initialReason=why
+        plan.evidence.initialCandidates=previous and previous.candidates or 0
+        plan.evidence.initialRejections=previous
+            and previous.rejectionCounts or {}
+    end
     self.active=nil
     self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
         plan=plan,
@@ -551,6 +577,33 @@ function Runtime:update(dt)
             return
         end
         if phase~="DONE" or route==nil then
+            if s.kind=="ALLOCATE" and type(s.plan.evidence)=="table" then
+                -- One diagnostic line per failed allocation, not per site
+                -- or update. No diagnostic counting when policy suppresses it.
+                local e=s.plan.evidence
+                publish("DIAGNOSTIC","INFO",
+                    "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS",function()
+                    return {
+                        rootNode=tostring(s.vehicle.rootNode),
+                        fieldId=s.sourceField and s.sourceField.fieldId
+                            or "unknown",
+                        occupancy=s.plan.disposition or "unknown",
+                        reason=reason or "NO_QUALIFIED_TERMINAL_REGION",
+                        sitesTotal=e.sitesTotal,sitesExamined=e.sitesExamined,
+                        localPlans=e.localPlans,localFeasible=e.localFeasible,
+                        localCandidates=e.localCandidates,
+                        approachPlans=e.approachPlans,
+                        approachConnected=e.approachConnected,
+                        initialReason=e.initialReason,
+                        initialCandidates=e.initialCandidates,
+                        initialRejections=rejectionSummary(e.initialRejections),
+                        siteRejections=rejectionSummary(e.siteRejections),
+                        routeRejections=rejectionSummary(e.routeRejections),
+                        planningUpdates=s.plan.advances,
+                        weightedGeometryChecks=s.plan.spent
+                    }
+                    end)
+            end
             if s.kind=="EXTENDED" and type(s.plan.sceneEvidence)=="table" then
                 -- One bounded evidence line on a failed scene admission,
                 -- not a per-frame or per-candidate diagnostic flood.

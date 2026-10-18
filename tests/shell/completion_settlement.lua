@@ -2,8 +2,12 @@
 -- finite physical-Control lifecycle. No GIANTS movement in this fixture.
 OuttaMyWay={VERSION="0.5.test"}
 local events={}
+local diagnosticEnabled=false
 OuttaMyWay.LogPublication={origin=function()
-    return {publish=function(_,_,_,code,payload)
+    return {isEligible=function(_,class)
+        return diagnosticEnabled and class=="DIAGNOSTIC"
+    end,
+    publish=function(_,_,_,code,payload)
         events[#events+1]={code=code,fields=payload()}
     end}
 end}
@@ -640,4 +644,60 @@ runtime:update(16)
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="LOCAL_HANDOFF")
 runtime:loadMap()
+-- A terminal-allocation failure publishes ONE bounded reason distribution
+-- if diagnostic collection is enabled. Normal runs do not collect it.
+local oldBegin,oldAdvance=OuttaMyWay.ParkingRegionAllocation.beginPlan,
+    OuttaMyWay.ParkingRegionAllocation.advancePlan
+OuttaMyWay.ParkingRegionAllocation.beginPlan=function(_,_,_,_,enabled)
+    local session={advances=0,spent=0}
+    if enabled then
+        session.evidence={sitesTotal=7,sitesExamined=7,localPlans=3,
+            localCandidates=450,localFeasible=0,
+            approachPlans=0,approachConnected=0,
+            siteRejections={ENTRY_PHYSICAL_OCCUPANCY=4},
+            routeRejections={REVERSE_MEMBER_OUTSIDE_SOURCE=450}}
+    end
+    return session
+end
+OuttaMyWay.ParkingRegionAllocation.advancePlan=function()
+    return "FAILED",nil,"NO_QUALIFIED_TERMINAL_REGION"
+end
+local function summaries()
+    local n,fields=0,nil
+    for _,event in ipairs(events) do
+        if event.code=="COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS" then
+            n=n+1;fields=event.fields
+        end
+    end
+    return n,fields
+end
+local diagnosticVehicle={rootNode=410,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+diagnosticEnabled=true
+localFallback=true
+assert(runtime:onNativeCompletion({},diagnosticVehicle))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
+runtime:update(16)
+local count,fields=summaries()
+assert(count==1 and fields.rootNode=="410"
+    and fields.sitesTotal==7 and fields.sitesExamined==7
+    and fields.siteRejections=="ENTRY_PHYSICAL_OCCUPANCY:4"
+    and fields.routeRejections=="REVERSE_MEMBER_OUTSIDE_SOURCE:450"
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED",
+    "one terminal failure must publish bounded candidate evidence")
+runtime:loadMap()
+diagnosticEnabled=false
+local quietVehicle={rootNode=411,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},quietVehicle))
+runtime:update(16)
+runtime:update(16)
+assert(summaries()==1 and runtime.pending==nil and runtime.active==nil,
+    "normal logging must not collect or publish diagnostic evidence")
+OuttaMyWay.ParkingRegionAllocation.beginPlan=oldBegin
+OuttaMyWay.ParkingRegionAllocation.advancePlan=oldAdvance
 print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")

@@ -14,6 +14,15 @@ local Parking=OuttaMyWay.CompletionParkingGeometry
 local Membership=OuttaMyWay.CompletionFieldMembership
 local MIN_TERMINAL_MARGIN_M=3
 local MIN_STATION_SPACING_M=20
+-- Counts are collected only when the caller enables the one-shot
+-- diagnostic. They do not participate in candidate qualification.
+local function rejected(s,bucket,reason,amount)
+    local evidence=s.evidence
+    if evidence==nil then return end
+    local counts=evidence[bucket]
+    local key=tostring(reason or "UNSPECIFIED")
+    counts[key]=(counts[key] or 0)+(amount or 1)
+end
 local function finite(v)
     return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge
 end
@@ -122,13 +131,20 @@ function M.qualifiedResult(s,approach,direct)
         edgeEvidence=s.edgeEvidence,selectionCost=s.site.score,
         claimObstacles=claimObstacles(s.ledger,s.vehicle)}
 end
-function M.beginPlan(vehicle,ledger,sourceField,disposition)
+function M.beginPlan(vehicle,ledger,sourceField,disposition,collectEvidence)
     if type(vehicle)~="table" or type(ledger)~="table" then
         return nil,"ALLOCATION_INPUT_UNAVAILABLE"
     end
-    return {vehicle=vehicle,ledger=ledger,sourceField=sourceField,
+    local session={vehicle=vehicle,ledger=ledger,sourceField=sourceField,
         disposition=disposition or "INSIDE",phase="INIT",
         spent=0,advances=0,siteIndex=0}
+    if collectEvidence==true then
+        session.evidence={sitesTotal=0,sitesExamined=0,
+            localPlans=0,localCandidates=0,localFeasible=0,
+            approachPlans=0,approachConnected=0,
+            siteRejections={},routeRejections={}}
+    end
+    return session
 end
 function M.advancePlan(s,units)
     if type(s)~="table" or s.finished or type(units)~="number"
@@ -201,6 +217,7 @@ function M.advancePlan(s,units)
             s.finished=true;return "FAILED",nil,why
         end
         s.sites=ranked
+        if s.evidence~=nil then s.evidence.sitesTotal=#ranked end
         s.phase="NEXT"
         s.spent=s.spent+1
         return "PENDING"
@@ -211,6 +228,9 @@ function M.advancePlan(s,units)
             return "FAILED",nil,"NO_QUALIFIED_TERMINAL_REGION"
         end
         s.siteIndex=s.siteIndex+1
+        if s.evidence~=nil then
+            s.evidence.sitesExamined=s.evidence.sitesExamined+1
+        end
         local site=s.sites[s.siteIndex]
         local f=site.frame
         -- Approximate outfield parking region only pre-screens the candidate;
@@ -219,7 +239,7 @@ function M.advancePlan(s,units)
             z=f.az+f.uz*site.station+f.nz*4}
         -- A currently empty position is not operationally free if it
         -- intercepts a positively observed near-term work corridor.
-        local refreshed,why=Situation.observe(s.vehicle,poly)
+        local refreshed,why=Situation.observe(s.vehicle,s.poly)
         if refreshed==nil then
             s.finished=true;return "FAILED",nil,why
         end
@@ -231,10 +251,20 @@ function M.advancePlan(s,units)
         end
         site.peerRisk=newRisk
         site.peerRiskReason=newReason
-        if newRisk>=3
-            or not Occupancy.clear(parked,s.own,s.occupants,6)
-            or not clearClaims(s.ledger,s.vehicle,parked,s.own+5)
-            or not Occupancy.clear(site.entry,s.own,s.occupants) then
+        -- Preserve the existing short-circuit qualification order,
+        -- but retain the FIRST refusal for this site when enabled.
+        local siteRefusal
+        if newRisk>=3 then
+            siteRefusal="WORKER_CORRIDOR_RISK"
+        elseif not Occupancy.clear(parked,s.own,s.occupants,6) then
+            siteRefusal="TERMINAL_PHYSICAL_OCCUPANCY"
+        elseif not clearClaims(s.ledger,s.vehicle,parked,s.own+5) then
+            siteRefusal="TERMINAL_CLAIM_CONFLICT"
+        elseif not Occupancy.clear(site.entry,s.own,s.occupants) then
+            siteRefusal="ENTRY_PHYSICAL_OCCUPANCY"
+        end
+        if siteRefusal~=nil then
+            rejected(s,"siteRejections",siteRefusal)
             s.spent=s.spent+1
             return "PENDING"
         end
@@ -248,7 +278,12 @@ function M.advancePlan(s,units)
         if s.disposition=="STRADDLING" then options.entryPose=nil end
         local session,why=Local.beginPlan(s.vehicle,options)
         if session==nil then
+            rejected(s,"siteRejections",
+                "LOCAL_SESSION_"..tostring(why))
             s.finished=true;return "FAILED",nil,why
+        end
+        if s.evidence~=nil then
+            s.evidence.localPlans=s.evidence.localPlans+1
         end
         s.localPlan=session
         s.site=site
@@ -260,9 +295,22 @@ function M.advancePlan(s,units)
         s.spent=s.spent+(s.localPlan.spent-(s.prevSpent or 0))
         s.prevSpent=s.localPlan.spent
         if phase=="PENDING" then return "PENDING" end
-        if phase=="DONE" and route and route.terminalPose
-            and clearClaims(s.ledger,s.vehicle,route.terminalPose,s.own+5)
-            and Occupancy.clear(route.terminalPose,s.own,s.occupants,5) then
+        if s.evidence~=nil then
+            s.evidence.localCandidates=s.evidence.localCandidates+
+                (s.localPlan.candidates or 0)
+            for cause,count in pairs(s.localPlan.rejectionCounts or {}) do
+                rejected(s,"routeRejections",cause,count)
+            end
+        end
+        local terminal=phase=="DONE" and route and route.terminalPose
+        local claimAvailable=terminal
+            and clearClaims(s.ledger,s.vehicle,terminal,s.own+5)
+        local occupiedClear=claimAvailable
+            and Occupancy.clear(terminal,s.own,s.occupants,5)
+        if occupiedClear then
+            if s.evidence~=nil then
+                s.evidence.localFeasible=s.evidence.localFeasible+1
+            end
             local latest,latestWhy=Situation.observe(s.vehicle,s.poly)
             if latest==nil then
                 s.finished=true;return "FAILED",nil,latestWhy
@@ -288,11 +336,23 @@ function M.advancePlan(s,units)
                 local approach,reason=Extended.beginPlan(s.vehicle,
                     s.site.entry,s.sourceField,s.site.edgeIndex)
                 if approach~=nil then
+                    if s.evidence~=nil then
+                        s.evidence.approachPlans=s.evidence.approachPlans+1
+                    end
                     s.approachPlan=approach
                     s.phase="CONNECT"
                     return "PENDING"
                 end
+                rejected(s,"siteRejections",
+                    "APPROACH_SESSION_"..tostring(reason))
+            else
+                rejected(s,"siteRejections","TERMINAL_WORKER_RISK")
             end
+        else
+            rejected(s,"siteRejections",
+                not terminal and ("LOCAL_ROUTE_"..tostring(why or "NO_TERMINAL"))
+                or not claimAvailable and "LOCAL_TERMINAL_CLAIM"
+                or "LOCAL_TERMINAL_OCCUPIED")
         end
         s.prevSpent=nil;s.localPlan=nil;s.phase="NEXT"
         return "PENDING"
@@ -305,11 +365,16 @@ function M.advancePlan(s,units)
         s.prevApproachSpent=s.approachPlan.spent
         if phase=="PENDING" then return "PENDING" end
         if phase=="DONE" and approach then
+            if s.evidence~=nil then
+                s.evidence.approachConnected=s.evidence.approachConnected+1
+            end
             s.finished=true
             return "DONE",M.qualifiedResult(s,approach,nil)
         end
         -- This terminal was locally feasible from an imaginary entry
         -- but unreachable from actual completion pose: reject and try next.
+        rejected(s,"siteRejections",
+            "APPROACH_CONNECT_"..tostring(why or "NO_ROUTE"))
         s.prevSpent=nil;s.prevApproachSpent=nil
         s.localPlan=nil;s.approachPlan=nil
         s.qualifiedLocalRoute=nil;s.phase="NEXT"
