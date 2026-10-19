@@ -1,6 +1,7 @@
 -- Native Completion Settlement drive contract: local POSITION, unchanged
 -- Hold & Relocate unit-vector path, and sustained physical stop before release.
 OuttaMyWay={}
+local toolCorrections=0
 OuttaMyWay.NativeReverseMechanism={adjustToolTarget=function(_,tool,x,z)
     if tool~=nil then
         toolCorrections=toolCorrections+1
@@ -14,7 +15,6 @@ end}
 local positions={[11]={x=0,y=0,z=0},[12]={x=2,y=0,z=0},
     [99]={x=-3,y=0,z=0}}
 local selectedTool=nil
-local toolCorrections=0
 getWorldTranslation=function(node)
     local p=assert(positions[node])
     return p.x,p.y,p.z
