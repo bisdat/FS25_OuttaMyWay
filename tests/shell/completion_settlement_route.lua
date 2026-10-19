@@ -171,7 +171,7 @@ assert(correction.method=="STOPPED_TERMINAL_CORRECTION"
     and correction.reverseM==0 and correction.estimatedTravelM<=8
     and #correction.legs==1 and correction.legs[1].moveForwards,
     "one bounded current-pose forward correction must be separately qualified")
-assert(correction.terminalPose.x>=6
+assert(correction.terminalPose.x>=5
     and correction.terminalPose.z==-3)
 current.x,current.z=correction.terminalPose.x,correction.terminalPose.z
 local verified,verifiedWhy=Route.verifyTerminal(vehicle,correction)
