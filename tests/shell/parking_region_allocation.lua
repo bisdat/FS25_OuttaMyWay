@@ -169,4 +169,58 @@ assert(state=="FAILED" or (state=="DONE" and selected.qualifiedDirectRoute
     and selected.qualifiedApproachRoute==nil),
     "straddling cannot grant a claim using an imaginary infield starting pose")
 
+-- Diagnostic evidence must identify why every candidate was rejected
+-- without introducing a new admission rule, new native movement or
+-- per-frame publication. An ordinary session collects no such counters.
+assert(straddling.evidence==nil,
+    "diagnostic aggregation must be disabled by default")
+local savedObserve=Situation.observe
+local savedClear=OuttaMyWay.SettlementPhysicalOccupancy.clear
+local Local=OuttaMyWay.CompletionSettlementRoute
+local savedBegin,savedAdvance=Local.beginPlan,Local.advancePlan
+local observedPolygon
+Situation.observe=function(_,polygon)
+    assert(polygon~=nil,
+        "each site must assess the retained Source Field polygon")
+    if observedPolygon==nil then observedPolygon=polygon end
+    assert(polygon==observedPolygon,
+        "allocation site assessment must use its initial Source Field")
+    return {peers={},workingCount=0,motionCount=0,headingCount=0}
+end
+OuttaMyWay.SettlementPhysicalOccupancy.clear=function()return true end
+Local.beginPlan=function()
+    return {spent=0,candidates=0,rejectionCounts={}}
+end
+Local.advancePlan=function(session)
+    session.spent=session.spent+1
+    session.candidates=3
+    session.rejectionCounts={
+        REVERSE_MEMBER_OUTSIDE_SOURCE=2,
+        TERMINAL_MEMBER_INTERSECTS_SOURCE=1}
+    return "FAILED",nil,"NO_POSE_REACHABLE_PARKING_REGION"
+end
+local diagnostic=assert(Allocation.beginPlan(
+    first,ledger,sourceField,"STRADDLING",true))
+local diagnosis,_,refusal
+for i=1,18000 do
+    local before=diagnostic.spent
+    diagnosis,_,refusal=Allocation.advancePlan(diagnostic,320)
+    assert(diagnostic.spent-before<=320,
+        "instrumented allocation must remain bounded per update")
+    if diagnosis~="PENDING" then break end
+end
+assert(diagnosis=="FAILED" and refusal=="NO_QUALIFIED_TERMINAL_REGION")
+local e=assert(diagnostic.evidence)
+assert(e.sitesTotal>0 and e.sitesExamined==e.sitesTotal
+    and observedPolygon==diagnostic.poly,
+    "failure summary must cover every real Source Field candidate")
+assert(e.localPlans>0 and e.localCandidates==3*e.localPlans
+    and e.siteRejections.LOCAL_ROUTE_NO_POSE_REACHABLE_PARKING_REGION
+        ==e.localPlans
+    and e.routeRejections.REVERSE_MEMBER_OUTSIDE_SOURCE==2*e.localPlans
+    and e.routeRejections.TERMINAL_MEMBER_INTERSECTS_SOURCE==e.localPlans,
+    "site and nominal-route refusal distributions must be preserved")
+Situation.observe=savedObserve
+OuttaMyWay.SettlementPhysicalOccupancy.clear=savedClear
+Local.beginPlan,Local.advancePlan=savedBegin,savedAdvance
 print("qualified terminal allocation: disjoint claims and future-demand-aware real allocator PASS")

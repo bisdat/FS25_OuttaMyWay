@@ -33,6 +33,7 @@ local modules={
     "scripts/observation/CompletionFieldMembership.lua",
     "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/assessment/ExteriorMarginComparison.lua",
     "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",

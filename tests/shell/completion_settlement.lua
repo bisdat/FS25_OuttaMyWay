@@ -2,11 +2,29 @@
 -- finite physical-Control lifecycle. No GIANTS movement in this fixture.
 OuttaMyWay={VERSION="0.5.test"}
 local events={}
+local diagnosticEnabled=false
 OuttaMyWay.LogPublication={origin=function()
-    return {publish=function(_,_,_,code,payload)
+    return {isEligible=function(_,class)
+        return diagnosticEnabled and class=="DIAGNOSTIC"
+    end,
+    publish=function(_,_,_,code,payload)
         events[#events+1]={code=code,fields=payload()}
     end}
 end}
+local marginBegins,marginAdvances=0,0
+OuttaMyWay.ExteriorMarginComparison={
+    beginComparison=function(vehicle)
+        marginBegins=marginBegins+1
+        return {rootNode=vehicle.rootNode}
+    end,
+    advanceComparison=function(session)
+        marginAdvances=marginAdvances+1
+        return "DONE",{rootNode=session.rootNode,fieldId=29,
+            nearestEdge=7,frames={{index=7},{index=1}},
+            rows={{edge=7},{edge=1}},truncated=false}
+    end,
+    summarize=function()return "1:nominal8/18;7:nominal2/18" end
+}
 local driveCalls={}
 local failure
 local failCancel=false
@@ -20,6 +38,14 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
                 and objective.maximumSpeedKmh<60,
                 "local guidance speed must respond to target horizon")
             assert(objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
+            if not objective.moveForwards then
+                assert(type(objective.steeringTargetX)=="number"
+                    and type(objective.steeringTargetZ)=="number",
+                    "straight parking reverse must separate look-through from waypoint")
+                assert(math.sqrt((objective.steeringTargetX-objective.targetX)^2+
+                    (objective.steeringTargetZ-objective.targetZ)^2)>30,
+                    "short terminal waypoint is not the long reverse steering target")
+            end
             driveCalls[#driveCalls+1]="START"
             self.active={vehicle=vehicle,objective=objective}
             return true
@@ -90,6 +116,10 @@ local route={
     }
 }
 local routeCalls,terminalCalls=0,0
+local failTerminal=false
+local correctionAllowed=false
+local correctionCurved=false
+local correctionCalls=0
 local planAdvances=0
 local forcePlanPending=false
 local localFallback=false
@@ -112,7 +142,32 @@ OuttaMyWay.CompletionSettlementRoute={
     end,
     verifyTerminal=function()
         terminalCalls=terminalCalls+1
+        if failTerminal then
+            return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION",
+                "TERMINAL_MEMBER_INTERSECTS_SOURCE"
+        end
         return true,"WHOLE_NOMINAL_ASSEMBLY_OUTSIDE_SOURCE_FIELD"
+    end,
+    planTerminalCorrection=function(_,old)
+        correctionCalls=correctionCalls+1
+        if not correctionAllowed then
+            return nil,"NO_QUALIFIED_SHORT_TERMINAL_CORRECTION"
+        end
+        correctionAllowed=false
+        local copy={}
+        for k,v in pairs(old) do copy[k]=v end
+        copy.terminalPose={x=19,z=12}
+        copy.method=correctionCurved and "STOPPED_TERMINAL_ALIGNMENT"
+            or "STOPPED_TERMINAL_CORRECTION"
+        copy.legs={}
+        if correctionCurved then
+            copy.legs[1]={name="TERMINAL_HEADING_GUIDANCE",
+                point={x=10,z=10},moveForwards=true,arrivalRadiusM=0.75}
+        end
+        copy.legs[#copy.legs+1]={name="TERMINAL_PLACEMENT_CORRECTION",
+            point={x=19,z=12},moveForwards=true,
+            arrivalRadiusM=correctionCurved and 0.75 or nil}
+        return copy
     end
 }
 local refuseExtendedScene=false
@@ -593,6 +648,42 @@ assert(runtime.active==nil and runtime.pending==nil
 activeConflict=false
 forceStopRefusal=false
 runtime:loadMap()
+-- A diverged mid-leg plan must physically stop before new allocation.
+runtime:loadMap()
+local diverged={rootNode=49,x=0,z=0,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},diverged))
+runtime:update(16)
+assert(runtime.active and driveCalls[#driveCalls]=="START")
+local beforeDivergence=#driveCalls
+failure="SETTLEMENT_LEG_TRAJECTORY_DIVERGED"
+runtime:update(16)
+assert(runtime.active and runtime.active.phase=="STOP_FOR_ALTERNATIVE"
+    and driveCalls[#driveCalls]=="BRAKE"
+    and #driveCalls==beforeDivergence+1,
+    "trajectory divergence must brake instead of abandoning parking")
+failure=nil
+runtime:update(16)
+assert(runtime.active==nil and runtime.pending
+    and runtime.pending.kind=="ALLOCATE"
+    and runtime.replans[diverged]==1
+    and driveCalls[#driveCalls]=="STOP",
+    "replan begins only after stable native stop and lease release")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="EXTENDED",
+    "candidate must be newly qualified")
+runtime:update(16)
+assert(runtime.active and runtime.active.route==qualifiedExtendedRoute
+    and driveCalls[#driveCalls]=="START",
+    "new movement requires a separately qualified route")
+for i=1,20 do
+    if runtime.active==nil and runtime.pending==nil then break end
+    runtime:update(16)
+end
+assert(runtime.active==nil and runtime.pending==nil,
+    "bounded replan must terminate in offline fixture")
+runtime:loadMap()
 -- A prequalified zero-leg approach carries entryPose, not session.target.
 qualifiedExtendedRoute.legs={}
 local zero={rootNode=409,getIsAIActive=function()return false end,
@@ -604,4 +695,147 @@ runtime:update(16)
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="LOCAL_HANDOFF")
 runtime:loadMap()
+-- A terminal-allocation failure publishes ONE bounded reason distribution
+-- if diagnostic collection is enabled. Normal runs do not collect it.
+local oldBegin,oldAdvance=OuttaMyWay.ParkingRegionAllocation.beginPlan,
+    OuttaMyWay.ParkingRegionAllocation.advancePlan
+OuttaMyWay.ParkingRegionAllocation.beginPlan=function(_,_,_,_,enabled)
+    local session={advances=0,spent=0}
+    if enabled then
+        session.evidence={sitesTotal=7,sitesExamined=7,localPlans=3,
+            localCandidates=450,localFeasible=0,
+            approachPlans=0,approachConnected=0,
+            siteRejections={ENTRY_PHYSICAL_OCCUPANCY=4},
+            routeRejections={REVERSE_MEMBER_OUTSIDE_SOURCE=450}}
+    end
+    return session
+end
+OuttaMyWay.ParkingRegionAllocation.advancePlan=function()
+    return "FAILED",nil,"NO_QUALIFIED_TERMINAL_REGION"
+end
+local function summaries()
+    local n,fields=0,nil
+    for _,event in ipairs(events) do
+        if event.code=="COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS" then
+            n=n+1;fields=event.fields
+        end
+    end
+    return n,fields
+end
+local diagnosticVehicle={rootNode=410,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+diagnosticEnabled=true
+localFallback=true
+assert(runtime:onNativeCompletion({},diagnosticVehicle))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE")
+runtime:update(16)
+local count,fields=summaries()
+assert(count==1 and fields.rootNode=="410"
+    and fields.sitesTotal==7 and fields.sitesExamined==7
+    and fields.siteRejections=="ENTRY_PHYSICAL_OCCUPANCY:4"
+    and fields.routeRejections=="REVERSE_MEMBER_OUTSIDE_SOURCE:450"
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED",
+    "one terminal failure must publish bounded candidate evidence")
+local marginCount,marginFields=0,nil
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_MARGIN_COMPARISON" then
+        marginCount=marginCount+1;marginFields=event.fields
+    end
+end
+assert(marginCount==1 and marginBegins==1 and marginAdvances==1
+    and marginFields.rootNode=="410" and marginFields.nearestEdge==7
+    and marginFields.corridorSafety=="NOT_ESTABLISHED"
+    and marginFields.roadSurface=="UNKNOWN_NOT_OBSERVED",
+    "read-only edge evidence must be published once for diagnostic episode")
+runtime:loadMap()
+diagnosticEnabled=false
+local quietVehicle={rootNode=411,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+assert(runtime:onNativeCompletion({},quietVehicle))
+runtime:update(16)
+runtime:update(16)
+assert(summaries()==1 and runtime.pending==nil and runtime.active==nil
+    and marginBegins==1 and marginAdvances==1,
+    "normal logging must not collect or publish candidate comparisons")
+OuttaMyWay.ParkingRegionAllocation.beginPlan=oldBegin
+OuttaMyWay.ParkingRegionAllocation.advancePlan=oldAdvance
+-- A terminal miss following a positive stable stop can receive one
+-- newly qualified short correction: never a blind point extension.
+runtime:loadMap()
+local terminalVehicle={rootNode=630,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+failTerminal=true
+correctionAllowed=true
+local previousCorrectionCalls=correctionCalls
+assert(runtime:onNativeCompletion({},terminalVehicle))
+for i=1,16 do
+    runtime:update(16)
+    if correctionCalls>previousCorrectionCalls then break end
+end
+assert(correctionCalls==previousCorrectionCalls+1
+    and runtime.active and runtime.active.terminalCorrectionAttempted==true
+    and runtime.active.route.method=="STOPPED_TERMINAL_CORRECTION",
+    "failed terminal must attempt one claimed and qualified forward correction")
+failTerminal=false
+for i=1,10 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
+    "correction still requires its own independently verified stop and terminal")
+-- A heading-changing correction is one continuous forward native lease:
+-- its short arc guide cannot count as a final parked/verified terminal.
+runtime:loadMap()
+local angled={rootNode=634,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+failTerminal=true
+correctionAllowed=true
+correctionCurved=true
+local oldCalls=correctionCalls
+assert(runtime:onNativeCompletion({},angled))
+for i=1,16 do
+    runtime:update(16)
+    if correctionCalls>oldCalls then break end
+end
+assert(runtime.active and runtime.active.route.method==
+    "STOPPED_TERMINAL_ALIGNMENT"
+    and #runtime.active.route.legs==2
+    and runtime.active.route.legs[1].arrivalRadiusM==0.75,
+    "misaligned stopped terminal must admit forward heading correction")
+local beforeMove=#driveCalls
+failTerminal=false
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED"
+    and #driveCalls>beforeMove,
+    "heading correction must execute then independently verify terminal")
+correctionCurved=false
+-- If a short correction cannot qualify, reread ACTUAL member occupancy.
+-- In particular, STRADDLING must not become an imaginary INSIDE entry.
+runtime:loadMap()
+local straddling={rootNode=631,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+failTerminal=true
+correctionAllowed=false
+occupancyDisposition="STRADDLING"
+assert(runtime:onNativeCompletion({},straddling))
+for i=1,16 do
+    runtime:update(16)
+    if runtime.pending and runtime.pending.kind=="ALLOCATE" then break end
+end
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and lastAllocationDisposition=="STRADDLING"
+    and runtime.replans[straddling]==1,
+    "failed stopped terminal must requalify from current straddling members")
+runtime:loadMap()
+failTerminal=false
+occupancyDisposition="INSIDE"
 print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")

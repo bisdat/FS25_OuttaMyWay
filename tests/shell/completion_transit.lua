@@ -20,7 +20,8 @@ g_messageCenter={subscribe=function(_,_,cb,r)callback=cb;receiver=r end,unsubscr
 local calls,release=0,0
 OuttaMyWay.HoldRelocatePhysicalControl={
  buildTransitPlan=function(vehicle,isPair)
-    assert(isPair==false)
+    assert(isPair==true,
+        "completion must reuse paired native GIANTS request selection")
     calls=calls+1
     return {transitActions={{object=vehicle,method="setLowered",value=false}},
         restoreActions={{object=vehicle,method="setLowered",value=true}}}

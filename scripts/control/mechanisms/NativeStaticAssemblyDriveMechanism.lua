@@ -63,6 +63,16 @@ function M:startMovement(vehicle,objective)
         or type(objective.moveForwards)~="boolean"
         or not finite(objective.targetX)
         or not finite(objective.targetZ)
+        or (objective.arrivalRadiusM~=nil
+            and (not finite(objective.arrivalRadiusM)
+                or objective.arrivalRadiusM<=0
+                or objective.arrivalRadiusM>2.5))
+        or (objective.steeringTargetX~=nil
+            and not finite(objective.steeringTargetX))
+        or (objective.steeringTargetZ~=nil
+            and not finite(objective.steeringTargetZ))
+        or (objective.steeringTargetX==nil)~=
+            (objective.steeringTargetZ==nil)
         or type(AIVehicleUtil)~="table"
         or type(AIVehicleUtil.driveToPoint)~="function"
         or type(worldToLocal)~="function"
@@ -220,7 +230,8 @@ function M:movementStatus(vehicle,dt)
             local remaining=math.sqrt((p.x-s.objective.targetX)^2
                 +(p.z-s.objective.targetZ)^2)
             progress={progressM=(dx*tx+dz*tz)/length,
-                remainingM=remaining,isInRegion=remaining<=2.5,
+                remainingM=remaining,isInRegion=remaining<=
+                    (s.objective.arrivalRadiusM or 2.5),
                 lateralOffsetM=math.abs(dx*tz-dz*tx)/length}
         end
     else
@@ -256,6 +267,13 @@ function M:movementStatus(vehicle,dt)
     -- start request has already been dispatched; the normal movement
     -- command, geometry guards and measured stopping establish outcomes.
     local targetX,targetZ=s.objective.targetX,s.objective.targetZ
+    if s.settlement and not s.objective.moveForwards
+        and s.objective.steeringTargetX~=nil then
+        -- An independent reverse look-through never extends the movement
+        -- region or native stop boundary, unlike unbounded point pursuit.
+        targetX=s.objective.steeringTargetX
+        targetZ=s.objective.steeringTargetZ
+    end
     if not s.objective.moveForwards then
         local x,z,reason=OuttaMyWay.NativeReverseMechanism.adjustToolTarget(
             s.node,s.toolNode,targetX,targetZ)
@@ -288,7 +306,8 @@ function M:movementStatus(vehicle,dt)
     if s.settlement and finite(s.objective.remainingAfterTargetM)
         and finite(progress.remainingM) then
         local remaining=progress.remainingM+s.objective.remainingAfterTargetM
-        local brakingKmh=math.sqrt(2*1.5*math.max(0,remaining-2.5))*3.6
+        local brakingKmh=math.sqrt(2*1.5*math.max(0,
+            remaining-(s.objective.arrivalRadiusM or 2.5)))*3.6
         local bounded=math.min(s.speedKmh,math.max(2.5,brakingKmh))
         local applied=pcall(vehicle.setCruiseControlMaxSpeed,
             vehicle,bounded,bounded)
@@ -330,7 +349,17 @@ function M:retargetSettlement(vehicle,objective)
         or objective.returnRegion.source~="COMPLETION_SETTLEMENT_LEG"
         or objective.moveForwards~=s.objective.moveForwards
         or not finite(objective.targetX)
-        or not finite(objective.targetZ) then
+        or not finite(objective.targetZ)
+        or (objective.arrivalRadiusM~=nil
+            and (not finite(objective.arrivalRadiusM)
+                or objective.arrivalRadiusM<=0
+                or objective.arrivalRadiusM>2.5))
+        or (objective.steeringTargetX~=nil
+            and not finite(objective.steeringTargetX))
+        or (objective.steeringTargetZ~=nil
+            and not finite(objective.steeringTargetZ))
+        or (objective.steeringTargetX==nil)~=
+            (objective.steeringTargetZ==nil) then
         return false,"SETTLEMENT_RETARGET_UNAVAILABLE"
     end
     local p=pose(vehicle.rootNode)
@@ -356,10 +385,10 @@ end
 -- A settlement point is only a position witness. Maintain native braking
 -- and cruise-OFF Control until actual low speed and stationary displacement
 -- are observed over a bounded, continuous interval.
-function M:beginSettlementStop(vehicle)
+function M:beginSettlementStop(vehicle,forReassessment)
     local s=self.active
     if s==nil or s.vehicle~=vehicle or not s.settlement
-        or not s.isComplete then
+        or (not s.isComplete and forReassessment~=true) then
         return false,"SETTLEMENT_STOP_NOT_ADMITTED"
     end
     s.stopping=true
@@ -489,7 +518,17 @@ local function release(self,vehicle,requireComplete)
     return true
 end
 
-function M:stopMovement(vehicle)
+function M:stopMovement(vehicle,forReassessment)
+    if forReassessment==true then
+        local s=self.active
+        -- Releasing an incomplete guide still requires a verified
+        -- stopped assembly and cruise-OFF; no unconfirmed handoff.
+        if s==nil or s.vehicle~=vehicle or not s.settlement
+            or s.stopped~=true then
+            return false,"SETTLEMENT_REASSESSMENT_STOP_NOT_CONFIRMED"
+        end
+        return release(self,vehicle,false)
+    end
     return release(self,vehicle,true)
 end
 

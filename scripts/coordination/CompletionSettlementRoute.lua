@@ -150,22 +150,32 @@ end
 local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
     local station,depth=coordinates(p,frame)
     if occupants~=nil and not Occupancy.clear(p,ownRadius,occupants)
-        then return false end
+        then return false,"TERMINAL_PHYSICAL_OCCUPANCY" end
     if station<3 or station>frame.length-3
-        or depth<0 or depth>STOP_DEPTH_MAX_M then return false end
+        or depth<0 or depth>STOP_DEPTH_MAX_M then
+        return false,"TERMINAL_ROOT_OUTSIDE_EDGE_BAND"
+    end
     local parallel=math.abs(p.fx*frame.ux+p.fz*frame.uz)
-    if parallel<math.cos(15*RAD) then return false end
+    if parallel<math.cos(15*RAD) then
+        return false,"TERMINAL_HEADING_NOT_EDGE_ALIGNED"
+    end
     local boxes=rotatedFoot(foot,initial,p)
-    if not noNeighborHit(boxes,neighbors,checkpoint) then return false end
-    if G.inside(poly,p.x,p.z) then return false end
+    if not noNeighborHit(boxes,neighbors,checkpoint) then
+        return false,"TERMINAL_NEIGHBOUR_FIELD_INTERSECTION"
+    end
+    if G.inside(poly,p.x,p.z) then
+        return false,"TERMINAL_ROOT_INSIDE_SOURCE"
+    end
     for m=1,#boxes do
         if A.shapeIntersectsPolygon(boxes[m],poly)~=false then
-            return false
+            return false,"TERMINAL_MEMBER_INTERSECTS_SOURCE"
         end
         for i=1,4 do
-            local s,d=coordinates(boxes[m][i],frame)
-            if s<1 or s>frame.length-1 or d<0.15
-                or d>STOP_DEPTH_MAX_M then return false end
+            local memberStation,memberDepth=coordinates(boxes[m][i],frame)
+            if memberStation<1 or memberStation>frame.length-1
+                or memberDepth<0.15 or memberDepth>STOP_DEPTH_MAX_M then
+                return false,"TERMINAL_MEMBER_OUTSIDE_EDGE_BAND"
+            end
         end
     end
     return true
@@ -780,6 +790,132 @@ function Route.guard(vehicle,route,index)
     end
     return Occupancy.nextClear(vehicle,route,index or 1)
 end
+-- One bounded stopped correction, evaluated from ACTUAL selected-member
+-- geometry. This does not grant collision/road/terrain clearance. Live route
+-- guards, existing claim and native stable-stop authority remain independent.
+-- Correct actual stopped terminal position AND heading. Curved candidates
+-- are nominal GIANTS-forward hypotheses; only positive terminal and run-out
+-- geometry can admit a bounded new native drive lease.
+local CORRECTION_MAX_TRAVEL_M=12
+local CORRECTION_ARRIVAL_M=0.75
+local CORRECTION_RADII={24,18,12}
+local function correctionRoute(route,legs,point,travel,direction)
+    local correction={}
+    for k,v in pairs(route) do correction[k]=v end
+    correction.terminalPose={x=point.x,z=point.z,fx=point.fx,fz=point.fz}
+    correction.legs=legs
+    correction.method=direction=="CURVED" and
+        "STOPPED_TERMINAL_ALIGNMENT" or "STOPPED_TERMINAL_CORRECTION"
+    correction.reverseM=0
+    correction.estimatedTravelM=travel
+    return correction
+end
+function Route.planTerminalCorrection(vehicle,route)
+    if type(route)~="table" or type(route.frame)~="table"
+        or type(route.poly)~="table"
+        or type(route.neighbors)~="table"
+        or route.mode=="EXTENDED_INFIELD" then
+        return nil,"TERMINAL_CORRECTION_ROUTE_UNAVAILABLE"
+    end
+    local current=pose(vehicle)
+    local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if current==nil or foot==nil or foot.memberCount~=route.memberCount then
+        return nil,reason or "TERMINAL_CORRECTION_ASSEMBLY_UNAVAILABLE"
+    end
+    local frame=route.frame
+    if not startInFieldOrEdgeBand(route.poly,frame,current) then
+        return nil,"TERMINAL_CORRECTION_START_OUTSIDE_CORRIDOR"
+    end
+    local occupants,occupiedWhy=Occupancy.snapshot(vehicle,route.poly)
+    if occupants==nil then return nil,occupiedWhy end
+    local own=Occupancy.footRadius(vehicle)
+    if own==nil then return nil,"TERMINAL_CORRECTION_FOOTPRINT_UNKNOWN" end
+    local function approach(point)
+        return approachAllowed(point,foot,current,route.poly,
+            route.neighbors,frame,false,nil,occupants,own)
+    end
+    local function terminal(point)
+        return terminalAllowed(point,foot,current,route.poly,
+            route.neighbors,frame,nil,occupants,own)
+    end
+    local function fitsWithBraking(point)
+        return terminal(point)
+            and terminal(advance(point,-CORRECTION_ARRIVAL_M))
+            and terminal(advance(point,STOPPING_RESERVE_M))
+    end
+    -- The straight case remains useful when heading already qualifies.
+    -- Check the full intermediate corridor, not just its destination.
+    local point=current
+    for distance=1,8 do
+        point=advance(point,1)
+        if not approach(point) then break end
+        if distance>=3 and fitsWithBraking(point) then
+            return correctionRoute(route,{{
+                name="TERMINAL_PLACEMENT_CORRECTION",
+                point={x=point.x,z=point.z},moveForwards=true,
+                arrivalRadiusM=CORRECTION_ARRIVAL_M
+            }},point,distance,"STRAIGHT")
+        end
+    end
+    -- A terminal-heading refusal cannot be corrected by translating the
+    -- same heading. Use the existing nominal forward-arc mechanism, then
+    -- straighten along the nominated edge. Test both tangent directions;
+    -- no reverse or unqualified edge crossing is introduced.
+    for _,radius in ipairs(CORRECTION_RADII) do
+        for _,direction in ipairs({-1,1}) do
+            local tx,tz=frame.ux*direction,frame.uz*direction
+            local delta=angleBetween(current.fx,current.fz,tx,tz)
+            local arcDistance=radius*math.abs(delta)
+            if math.abs(delta)>=0.001 and math.abs(delta)<=45*RAD
+                and arcDistance>=3 and arcDistance<=CORRECTION_MAX_TRAVEL_M-3 then
+                local arcGuides=math.ceil(arcDistance/5)
+                local guideDistance=arcDistance/arcGuides
+                if guideDistance>=3 then
+                    local sampleCount=math.ceil(arcDistance)
+                    local poseAt=current
+                    local valid=true
+                    local legs={}
+                    local guideIndex=1
+                    for i=1,sampleCount do
+                        poseAt=turnStep(poseAt,radius,delta/sampleCount)
+                        if not approach(poseAt) then valid=false;break end
+                        if i==sampleCount
+                            or i*arcDistance/sampleCount>=
+                                guideIndex*guideDistance-0.0001 then
+                            legs[#legs+1]={
+                                name="TERMINAL_HEADING_GUIDANCE",
+                                point={x=poseAt.x,z=poseAt.z},
+                                moveForwards=true,
+                                arrivalRadiusM=CORRECTION_ARRIVAL_M}
+                            guideIndex=guideIndex+1
+                        end
+                    end
+                    if valid then
+                        local remaining=math.floor(
+                            CORRECTION_MAX_TRAVEL_M-arcDistance)
+                        local candidate=poseAt
+                        for distance=1,remaining do
+                            candidate=advance(candidate,1)
+                            if not approach(candidate) then break end
+                            -- Allow a meaningful edge-aligned straight leg,
+                            -- then require verified room to stop early.
+                            if distance>=3 and fitsWithBraking(candidate) then
+                                legs[#legs+1]={
+                                    name="TERMINAL_PLACEMENT_CORRECTION",
+                                    point={x=candidate.x,z=candidate.z},
+                                    moveForwards=true,
+                                    arrivalRadiusM=CORRECTION_ARRIVAL_M}
+                                return correctionRoute(route,legs,candidate,
+                                    arcDistance+distance,"CURVED")
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return nil,"NO_QUALIFIED_HEADING_AND_TERMINAL_CORRECTION"
+end
 function Route.verifyTerminal(vehicle,route)
     local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return false,reason end
@@ -788,9 +924,10 @@ function Route.verifyTerminal(vehicle,route)
     end
     local p=pose(vehicle)
     if p==nil then return false,"ROOT_POSE_UNAVAILABLE" end
-    if not terminalAllowed(p,foot,p,route.poly,
-        route.neighbors,route.frame) then
-        return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION"
+    local valid,predicate=terminalAllowed(p,foot,p,route.poly,
+        route.neighbors,route.frame)
+    if not valid then
+        return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION",predicate
     end
     local available,why=Occupancy.nextClear(vehicle,{
         poly=route.poly,legs={{point={x=p.x,z=p.z}}}},1)

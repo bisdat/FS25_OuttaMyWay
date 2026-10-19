@@ -214,6 +214,35 @@ remain distinct mechanisms.
 **Evidence:** current FS25 `AIDriveStrategyFieldCourse:getDriveData()` reverse
 path and Issue #336 S416/Condor comparison.
 
+### Reverse steering reference is not the authorised movement endpoint
+
+**Validated BWR discovery (issue #336 / PR #411):** steering the native
+reverser/tool-relative drive mechanism directly at a nearby reverse Return
+Region could produce an unstable articulated response. The successful BWR
+correction used a substantially longer world-space look-through reference
+(the supported BWR geometry uses an additional **40 m**) while the *separate
+Return Region* continued to bound actual movement, interruption and release.
+A longer steering reference is **not** an additional licence to reverse.
+See also issue #470: a physically reached Return Region does not itself
+establish a safe articulated sweep; native-steering candidate evaluation and
+newly justified BWR occurrences are distinct from unbounded retries.
+
+**Completion Parking application (unvalidated in GIANTS):** its brief initial
+reverse positioning is a straight retreat represented by consecutive short
+guidance points. The same reverse-node and tool-relative transform can use a
+look-through beyond the *last reverse waypoint*, while the **original short
+waypoints**, trajectory guards, deadline and physical stop remain the movement
+bounds. This is not permission to extend a *curved* reverse, assume hitch
+stability or copy BWR's entire recovery lifecycle. If the physical terminal
+fails despite a confirmed stop, only separately qualified current-pose
+reassessment can authorise further parking Control; a remaining waypoint
+distance does not authorise an unexamined 2–3 m movement.
+
+**Evidence limit:** issue #336's stable BWR runs justify testing this
+separation, not claiming TS004 articulated parking success. GIANTS must
+challenge the actual tool transform, steering response, current member
+configuration and bounded terminal correction on the new TEST build.
+
 ### Native field-worker and field-course blocked-state observations — FS25 1.24.0.0
 
 **External source:** the [GIANTS field-course scripting reference](https://gdn.giants-software.com/documentation_scripting_fs25.php?category=3&class=151&version=script) (published scripting **v1.20**) describes a native course blocked flag and a separate static-collision flag. Source inspection is not evidence of equivalent field behaviour in every future game release.
