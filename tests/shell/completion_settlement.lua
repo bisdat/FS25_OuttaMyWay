@@ -38,6 +38,14 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
                 and objective.maximumSpeedKmh<60,
                 "local guidance speed must respond to target horizon")
             assert(objective.returnRegion.source=="COMPLETION_SETTLEMENT_LEG")
+            if not objective.moveForwards then
+                assert(type(objective.steeringTargetX)=="number"
+                    and type(objective.steeringTargetZ)=="number",
+                    "straight parking reverse must separate look-through from waypoint")
+                assert(math.sqrt((objective.steeringTargetX-objective.targetX)^2+
+                    (objective.steeringTargetZ-objective.targetZ)^2)>30,
+                    "short terminal waypoint is not the long reverse steering target")
+            end
             driveCalls[#driveCalls+1]="START"
             self.active={vehicle=vehicle,objective=objective}
             return true
@@ -108,6 +116,9 @@ local route={
     }
 }
 local routeCalls,terminalCalls=0,0
+local failTerminal=false
+local correctionAllowed=false
+local correctionCalls=0
 local planAdvances=0
 local forcePlanPending=false
 local localFallback=false
@@ -130,7 +141,25 @@ OuttaMyWay.CompletionSettlementRoute={
     end,
     verifyTerminal=function()
         terminalCalls=terminalCalls+1
+        if failTerminal then
+            return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION",
+                "TERMINAL_MEMBER_INTERSECTS_SOURCE"
+        end
         return true,"WHOLE_NOMINAL_ASSEMBLY_OUTSIDE_SOURCE_FIELD"
+    end,
+    planTerminalCorrection=function(_,old)
+        correctionCalls=correctionCalls+1
+        if not correctionAllowed then
+            return nil,"NO_QUALIFIED_SHORT_TERMINAL_CORRECTION"
+        end
+        correctionAllowed=false
+        local copy={}
+        for k,v in pairs(old) do copy[k]=v end
+        copy.terminalPose={x=19,z=12}
+        copy.method="STOPPED_TERMINAL_CORRECTION"
+        copy.legs={{name="TERMINAL_PLACEMENT_CORRECTION",
+            point={x=19,z=12},moveForwards=true}}
+        return copy
     end
 }
 local refuseExtendedScene=false
@@ -726,4 +755,49 @@ assert(summaries()==1 and runtime.pending==nil and runtime.active==nil
     "normal logging must not collect or publish candidate comparisons")
 OuttaMyWay.ParkingRegionAllocation.beginPlan=oldBegin
 OuttaMyWay.ParkingRegionAllocation.advancePlan=oldAdvance
+-- A terminal miss following a positive stable stop can receive one
+-- newly qualified short correction: never a blind point extension.
+runtime:loadMap()
+local terminalVehicle={rootNode=630,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+failTerminal=true
+correctionAllowed=true
+local previousCorrectionCalls=correctionCalls
+assert(runtime:onNativeCompletion({},terminalVehicle))
+for i=1,16 do
+    runtime:update(16)
+    if correctionCalls>previousCorrectionCalls then break end
+end
+assert(correctionCalls==previousCorrectionCalls+1
+    and runtime.active and runtime.active.terminalCorrectionAttempted==true
+    and runtime.active.route.method=="STOPPED_TERMINAL_CORRECTION",
+    "failed terminal must attempt one claimed and qualified forward correction")
+failTerminal=false
+for i=1,10 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
+    "correction still requires its own independently verified stop and terminal")
+-- If a short correction cannot qualify, reread ACTUAL member occupancy.
+-- In particular, STRADDLING must not become an imaginary INSIDE entry.
+runtime:loadMap()
+local straddling={rootNode=631,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+failTerminal=true
+correctionAllowed=false
+occupancyDisposition="STRADDLING"
+assert(runtime:onNativeCompletion({},straddling))
+for i=1,16 do
+    runtime:update(16)
+    if runtime.pending and runtime.pending.kind=="ALLOCATE" then break end
+end
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and lastAllocationDisposition=="STRADDLING"
+    and runtime.replans[straddling]==1,
+    "failed stopped terminal must requalify from current straddling members")
+runtime:loadMap()
+failTerminal=false
+occupancyDisposition="INSIDE"
 print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")

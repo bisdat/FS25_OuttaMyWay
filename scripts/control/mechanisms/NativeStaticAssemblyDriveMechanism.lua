@@ -63,6 +63,12 @@ function M:startMovement(vehicle,objective)
         or type(objective.moveForwards)~="boolean"
         or not finite(objective.targetX)
         or not finite(objective.targetZ)
+        or (objective.steeringTargetX~=nil
+            and not finite(objective.steeringTargetX))
+        or (objective.steeringTargetZ~=nil
+            and not finite(objective.steeringTargetZ))
+        or (objective.steeringTargetX==nil)~=
+            (objective.steeringTargetZ==nil)
         or type(AIVehicleUtil)~="table"
         or type(AIVehicleUtil.driveToPoint)~="function"
         or type(worldToLocal)~="function"
@@ -256,6 +262,13 @@ function M:movementStatus(vehicle,dt)
     -- start request has already been dispatched; the normal movement
     -- command, geometry guards and measured stopping establish outcomes.
     local targetX,targetZ=s.objective.targetX,s.objective.targetZ
+    if s.settlement and not s.objective.moveForwards
+        and s.objective.steeringTargetX~=nil then
+        -- An independent reverse look-through never extends the movement
+        -- region or native stop boundary, unlike unbounded point pursuit.
+        targetX=s.objective.steeringTargetX
+        targetZ=s.objective.steeringTargetZ
+    end
     if not s.objective.moveForwards then
         local x,z,reason=OuttaMyWay.NativeReverseMechanism.adjustToolTarget(
             s.node,s.toolNode,targetX,targetZ)
@@ -330,7 +343,13 @@ function M:retargetSettlement(vehicle,objective)
         or objective.returnRegion.source~="COMPLETION_SETTLEMENT_LEG"
         or objective.moveForwards~=s.objective.moveForwards
         or not finite(objective.targetX)
-        or not finite(objective.targetZ) then
+        or not finite(objective.targetZ)
+        or (objective.steeringTargetX~=nil
+            and not finite(objective.steeringTargetX))
+        or (objective.steeringTargetZ~=nil
+            and not finite(objective.steeringTargetZ))
+        or (objective.steeringTargetX==nil)~=
+            (objective.steeringTargetZ==nil) then
         return false,"SETTLEMENT_RETARGET_UNAVAILABLE"
     end
     local p=pose(vehicle.rootNode)

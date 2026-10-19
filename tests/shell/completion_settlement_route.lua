@@ -147,6 +147,40 @@ assert(reserved,whyReserved,
 current.x,current.z=prev.x,prev.z
 print(string.format("TS018 nominal chosen route: %s reverse=%.1fm travel=%.1fm targets=%d",
     a.method,a.reverseM,a.estimatedTravelM,#a.legs))
+-- Terminal Placement Reassessment: an actual stopped assembly near the
+-- corner can qualify a short FORWARD correction only if complete member
+-- geometry, early-arrival tolerance and run-out reserve remain inside the
+-- same nominated exterior corridor.
+local testSource={densityMapPolygon={
+    pointsX={0,100,100,0},pointsZ={0,0,100,100}},fieldId=777}
+local testPoly=assert(G.polygonFor(testSource))
+local testFrame={index=1,ax=0,az=0,ux=1,uz=0,nx=0,nz=-1,length=100}
+local correctionRoute={field=777,edge=1,memberCount=1,
+    frame=testFrame,poly=testPoly,neighbors={},
+    method="FORWARD_J",legs={{name="FORWARD_GUIDANCE",
+        point={x=3,z=-3},moveForwards=true}}}
+local restored={x=current.x,z=current.z,fx=current.fx,fz=current.fz}
+current.x,current.z,current.fx,current.fz=2,-3,1,0
+local terminal,why,predicate=Route.verifyTerminal(vehicle,correctionRoute)
+assert(not terminal and why=="WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION"
+    and predicate=="TERMINAL_ROOT_OUTSIDE_EDGE_BAND",
+    "stopped terminal failure must identify the actual geometric predicate")
+local correction,reason=Route.planTerminalCorrection(vehicle,correctionRoute)
+assert(correction,reason)
+assert(correction.method=="STOPPED_TERMINAL_CORRECTION"
+    and correction.reverseM==0 and correction.estimatedTravelM<=8
+    and #correction.legs==1 and correction.legs[1].moveForwards,
+    "one bounded current-pose forward correction must be separately qualified")
+assert(correction.terminalPose.x>=7
+    and correction.terminalPose.z==-3)
+current.x,current.z=correction.terminalPose.x,correction.terminalPose.z
+local verified,verifiedWhy=Route.verifyTerminal(vehicle,correction)
+assert(verified,verifiedWhy)
+-- An ineligible member corridor must be refused, not driven through.
+current.x,current.z,current.fx,current.fz=1,-3,0,-1
+assert(Route.planTerminalCorrection(vehicle,correctionRoute)==nil)
+current.x,current.z,current.fx,current.fz=
+    restored.x,restored.z,restored.fx,restored.fz
 -- Test a *different completing pose* chooses a different terminal position.
 local first={x=current.x,z=current.z}
 current.x,current.z,current.fx,current.fz=

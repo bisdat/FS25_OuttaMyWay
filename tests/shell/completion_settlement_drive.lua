@@ -1,13 +1,20 @@
 -- Native Completion Settlement drive contract: local POSITION, unchanged
 -- Hold & Relocate unit-vector path, and sustained physical stop before release.
 OuttaMyWay={}
-OuttaMyWay.NativeReverseMechanism={adjustToolTarget=function(_,_,x,z)
+OuttaMyWay.NativeReverseMechanism={adjustToolTarget=function(_,tool,x,z)
+    if tool~=nil then
+        toolCorrections=toolCorrections+1
+        return x+4,z+2
+    end
     return x,z
 end}
 OuttaMyWay.ProjectedEgressRegion={progress=function()
     return {progressM=0,isInRegion=false}
 end}
-local positions={[11]={x=0,y=0,z=0}}
+local positions={[11]={x=0,y=0,z=0},[12]={x=2,y=0,z=0},
+    [99]={x=-3,y=0,z=0}}
+local selectedTool=nil
+local toolCorrections=0
 getWorldTranslation=function(node)
     local p=assert(positions[node])
     return p.x,p.y,p.z
@@ -29,7 +36,7 @@ local vehicle={
     getIsControlled=function()return false end,
     getCurrentAIJob=function()return nil end,
     getAISteeringNode=function()return 11 end,
-    getAIReverserNode=function()return 11 end,
+    getAIReverserNode=function()return 12 end,
     getIsMotorStarted=function()return motorRunning end,
     startMotor=function()motorRunning=true;return true end,
     stopMotor=function()motorRunning=false;stopCalls=stopCalls+1;return true end,
@@ -46,7 +53,7 @@ local vehicle={
     end
 }
 AIVehicleUtil={
-    getAIToolReverserDirectionNode=function()return nil end,
+    getAIToolReverserDirectionNode=function()return selectedTool end,
     driveToPoint=function(_,_,accel,allowed,forwards,tx,tz,speed)
     driveCalls[#driveCalls+1]={accel=accel,allowed=allowed,
         forwards=forwards,tx=tx,tz=tz,speed=speed}
@@ -130,6 +137,31 @@ assert(drive:startMovement(vehicle,reverse))
 local report=drive:movementStatus(vehicle,16)
 assert(not report.isComplete and driveCalls[#driveCalls].forwards==false)
 assert(drive:cancelMovement(vehicle))
+-- BWR's longer steering look-through is independent from a SHORT parking
+-- arrival point, and parking must still honour the tool reverse transform.
+selectedTool=99
+local lookThrough={moveForwards=false,targetX=-7,targetZ=0,
+    steeringTargetX=-47,steeringTargetZ=0,
+    maximumSpeedKmh=12,
+    returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
+assert(drive:startMovement(vehicle,lookThrough))
+local before=toolCorrections
+local beforeCommands=#driveCalls
+assert(not drive:movementStatus(vehicle,16).isComplete)
+assert(toolCorrections==before+1 and #driveCalls==beforeCommands+1
+    and driveCalls[#driveCalls].forwards==false
+    and driveCalls[#driveCalls].tx==-41
+    and driveCalls[#driveCalls].tz==2,
+    "GIANTS tool correction and reverse node must see distant steering position")
+positions[11].x=-7
+assert(drive:movementStatus(vehicle,16).isComplete,
+    "movement ends at original -7m root target, NOT -47m steering reference")
+assert(drive:beginSettlementStop(vehicle))
+vehicle.lastSpeedReal=0
+for i=1,5 do drive:settlementStopStatus(vehicle,300) end
+assert(drive:stopMovement(vehicle))
+positions[11].x=0
+selectedTool=nil
 -- A diverged guide can be stopped before arrival, but never released
 -- without confirmed stillness and cruise-OFF.
 assert(drive:startMovement(vehicle,reverse))

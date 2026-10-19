@@ -150,22 +150,32 @@ end
 local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
     local station,depth=coordinates(p,frame)
     if occupants~=nil and not Occupancy.clear(p,ownRadius,occupants)
-        then return false end
+        then return false,"TERMINAL_PHYSICAL_OCCUPANCY" end
     if station<3 or station>frame.length-3
-        or depth<0 or depth>STOP_DEPTH_MAX_M then return false end
+        or depth<0 or depth>STOP_DEPTH_MAX_M then
+        return false,"TERMINAL_ROOT_OUTSIDE_EDGE_BAND"
+    end
     local parallel=math.abs(p.fx*frame.ux+p.fz*frame.uz)
-    if parallel<math.cos(15*RAD) then return false end
+    if parallel<math.cos(15*RAD) then
+        return false,"TERMINAL_HEADING_NOT_EDGE_ALIGNED"
+    end
     local boxes=rotatedFoot(foot,initial,p)
-    if not noNeighborHit(boxes,neighbors,checkpoint) then return false end
-    if G.inside(poly,p.x,p.z) then return false end
+    if not noNeighborHit(boxes,neighbors,checkpoint) then
+        return false,"TERMINAL_NEIGHBOUR_FIELD_INTERSECTION"
+    end
+    if G.inside(poly,p.x,p.z) then
+        return false,"TERMINAL_ROOT_INSIDE_SOURCE"
+    end
     for m=1,#boxes do
         if A.shapeIntersectsPolygon(boxes[m],poly)~=false then
-            return false
+            return false,"TERMINAL_MEMBER_INTERSECTS_SOURCE"
         end
         for i=1,4 do
-            local s,d=coordinates(boxes[m][i],frame)
-            if s<1 or s>frame.length-1 or d<0.15
-                or d>STOP_DEPTH_MAX_M then return false end
+            local memberStation,memberDepth=coordinates(boxes[m][i],frame)
+            if memberStation<1 or memberStation>frame.length-1
+                or memberDepth<0.15 or memberDepth>STOP_DEPTH_MAX_M then
+                return false,"TERMINAL_MEMBER_OUTSIDE_EDGE_BAND"
+            end
         end
     end
     return true
@@ -780,6 +790,68 @@ function Route.guard(vehicle,route,index)
     end
     return Occupancy.nextClear(vehicle,route,index or 1)
 end
+-- One bounded stopped correction, evaluated from ACTUAL selected-member
+-- geometry. This does not grant collision/road/terrain clearance. Live route
+-- guards, existing claim and native stable-stop authority remain independent.
+function Route.planTerminalCorrection(vehicle,route)
+    if type(route)~="table" or type(route.frame)~="table"
+        or type(route.poly)~="table"
+        or type(route.neighbors)~="table"
+        or route.mode=="EXTENDED_INFIELD" then
+        return nil,"TERMINAL_CORRECTION_ROUTE_UNAVAILABLE"
+    end
+    local current=pose(vehicle)
+    local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)
+    if current==nil or foot==nil or foot.memberCount~=route.memberCount then
+        return nil,reason or "TERMINAL_CORRECTION_ASSEMBLY_UNAVAILABLE"
+    end
+    -- A forward-only continuation avoids extending an unstable reversing
+    -- phase. Never continue an unrelated or unverified native drive lease.
+    local frame=route.frame
+    if not startInFieldOrEdgeBand(route.poly,frame,current) then
+        return nil,"TERMINAL_CORRECTION_START_OUTSIDE_CORRIDOR"
+    end
+    local occupants,occupiedWhy=Occupancy.snapshot(vehicle,route.poly)
+    if occupants==nil then return nil,occupiedWhy end
+    local own=Occupancy.footRadius(vehicle)
+    if own==nil then return nil,"TERMINAL_CORRECTION_FOOTPRINT_UNKNOWN" end
+    local function at(distance)
+        return advance(current,distance)
+    end
+    -- Check the FULL short travel at one-metre spacing. No arbitrary
+    -- additive 2-3m command; the first terminal and five-metre run-out
+    -- reserve qualified by the same existing nominal polygon contracts wins.
+    for distance=1,8 do
+        local point=at(distance)
+        if not approachAllowed(point,foot,current,route.poly,
+            route.neighbors,frame,false,nil,occupants,own) then
+            return nil,"TERMINAL_CORRECTION_APPROACH_REFUSED"
+        end
+        if distance>=3 then
+            local endpoint=terminalAllowed(point,foot,current,route.poly,
+                route.neighbors,frame,nil,occupants,own)
+            local early=terminalAllowed(at(distance-2.5),foot,current,
+                route.poly,route.neighbors,frame,nil,occupants,own)
+            local reserve=terminalAllowed(at(distance+STOPPING_RESERVE_M),
+                foot,current,route.poly,route.neighbors,frame,nil,occupants,own)
+            if endpoint and early and reserve then
+                local correction={}
+                for k,v in pairs(route) do correction[k]=v end
+                correction.terminalPose={x=point.x,z=point.z,
+                    fx=point.fx,fz=point.fz}
+                correction.legs={{
+                    name="TERMINAL_PLACEMENT_CORRECTION",
+                    point={x=point.x,z=point.z},moveForwards=true
+                }}
+                correction.method="STOPPED_TERMINAL_CORRECTION"
+                correction.reverseM=0
+                correction.estimatedTravelM=distance
+                return correction,nil
+            end
+        end
+    end
+    return nil,"NO_QUALIFIED_SHORT_TERMINAL_CORRECTION"
+end
 function Route.verifyTerminal(vehicle,route)
     local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)
     if foot==nil then return false,reason end
@@ -788,9 +860,10 @@ function Route.verifyTerminal(vehicle,route)
     end
     local p=pose(vehicle)
     if p==nil then return false,"ROOT_POSE_UNAVAILABLE" end
-    if not terminalAllowed(p,foot,p,route.poly,
-        route.neighbors,route.frame) then
-        return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION"
+    local valid,predicate=terminalAllowed(p,foot,p,route.poly,
+        route.neighbors,route.frame)
+    if not valid then
+        return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION",predicate
     end
     local available,why=Occupancy.nextClear(vehicle,{
         poly=route.poly,legs={{point={x=p.x,z=p.z}}}},1)

@@ -20,6 +20,9 @@ local MAX_QUEUED_COMPLETIONS=2
 -- Each update resumes the route search ONCE with a finite weighted geometry
 -- budget. No native movement or fieldwork handback occurs during planning.
 local PLAN_UNITS_PER_UPDATE=320
+-- BWR's evidenced straight-reverse steering look-through; the terminal
+-- guide still owns physical arrival, lease and movement safety.
+local STRAIGHT_REVERSE_LOOKTHROUGH_M=40
 -- Target-horizon braking model, not a fixed 8 km/h travel limit.
 -- TEST assumption: 1.5 m/s^2 controllable deceleration, GIANTS to validate.
 local GUIDANCE_DECEL_MPS2=1.5
@@ -40,11 +43,30 @@ local function objectiveFor(route,index,currentX,currentZ)
             (following.point.x-previous.point.x)^2+
             (following.point.z-previous.point.z)^2)
     end
-    return {moveForwards=leg.moveForwards,
+    local objective={moveForwards=leg.moveForwards,
         maximumSpeedKmh=guidanceSpeed(distance),
         remainingAfterTargetM=beyond,
         targetX=leg.point.x,targetZ=leg.point.z,
-        returnRegion={source="COMPLETION_SETTLEMENT_LEG"}},distance
+        returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
+    if not leg.moveForwards then
+        -- The initial parking reverse is a straight retreat. Reference its
+        -- complete reverse leg, not a short mutable guidance point. This is
+        -- a look-through target, NEVER an extension to authorised travel.
+        local last=leg.point
+        for i=index+1,#route.legs do
+            if route.legs[i].moveForwards then break end
+            last=route.legs[i].point
+        end
+        local dx,dz=last.x-currentX,last.z-currentZ
+        local length=math.sqrt(dx*dx+dz*dz)
+        if length>0.001 then
+            objective.steeringTargetX=last.x+
+                dx/length*STRAIGHT_REVERSE_LOOKTHROUGH_M
+            objective.steeringTargetZ=last.z+
+                dz/length*STRAIGHT_REVERSE_LOOKTHROUGH_M
+        end
+    end
+    return objective,distance
 end
 local function publish(publicationClass,level,code,fields)
     publication:publish(publicationClass,level,code,
@@ -114,7 +136,9 @@ function Runtime.new(configuration)
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
         active=nil,pending=nil,waiting={},claims={},replans=setmetatable({},{__mode="k"}),
         attempted=setmetatable({},{__mode="k"}),
-        deferred=setmetatable({},{__mode="k"}),marginComparison=nil},Runtime)
+        deferred=setmetatable({},{__mode="k"}),
+        terminalCorrections=setmetatable({},{__mode="k"}),
+        marginComparison=nil},Runtime)
 end
 function Runtime:isAdmitted()
     return g_server~=nil and self.configuration~=nil
@@ -203,6 +227,7 @@ function Runtime:sampleMotion(state,status)
     end)
 end
 
+local retryStopped
 function Runtime:startLeg()
     local s=self.active
     if s==nil then return end
@@ -241,10 +266,52 @@ function Runtime:startLeg()
                 note="EXTENDED_APPROACH_STOPPED_AND_RELEASED"})
             return
         end
-        local okay,reason=OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
+        local okay,reason,predicate=OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
             s.vehicle,s.route)
-        self:finish(okay and "COMPLETION_SETTLEMENT_FINISHED"
-            or "COMPLETION_SETTLEMENT_INTERRUPTED",reason)
+        if okay then
+            self:finish("COMPLETION_SETTLEMENT_FINISHED",reason)
+            return
+        end
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_TERMINAL_REFUSAL",{
+            rootNode=tostring(s.vehicle.rootNode),
+            reason=reason,predicate=predicate or "unknown",
+            edge=s.route.edge,correctionAttempted=s.terminalCorrectionAttempted==true})
+        -- Stop and cruise-OFF were established BEFORE reaching here. The
+        -- next move requires a newly qualified current-pose corridor and
+        -- a retained terminal claim; never blindly add distance.
+        if not self.terminalCorrections[s.vehicle] then
+            s.terminalCorrectionAttempted=true
+            self.terminalCorrections[s.vehicle]=true
+            local candidate,why=OuttaMyWay.CompletionSettlementRoute.planTerminalCorrection(
+                s.vehicle,s.route)
+            if candidate~=nil then
+                local matched=Allocation.matchesClaim(self.claims,s.vehicle,candidate)
+                local clear=matched and Allocation.claimClear(
+                    self.claims,s.vehicle,candidate.poly)
+                local routeClear=clear and
+                    OuttaMyWay.SettlementPhysicalOccupancy.routeClear(s.vehicle,candidate)
+                if matched and clear and routeClear then
+                    s.route=candidate
+                    s.legIndex=1
+                    s.phase="ADMITTED"
+                    publish("DEBUG","INFO",
+                        "COMPLETION_SETTLEMENT_TERMINAL_CORRECTION_ADMITTED",{
+                        rootNode=tostring(s.vehicle.rootNode),
+                        edge=candidate.edge,
+                        targetX=candidate.terminalPose.x,
+                        targetZ=candidate.terminalPose.z,
+                        note="CURRENT_POSE_QUALIFIED_NOT_VERIFIED"})
+                    self:startLeg()
+                    return
+                end
+                why="TERMINAL_CORRECTION_CLAIM_OR_OCCUPANCY_REFUSED"
+            end
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_TERMINAL_CORRECTION_UNAVAILABLE",{
+                rootNode=tostring(s.vehicle.rootNode),
+                reason=why or "NO_CURRENT_POSE_TERMINAL_CORRECTION"})
+        end
+        if retryStopped(self,s,reason) then return end
+        self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)
         return
     end
     local x,z=rootPose(s.vehicle)
@@ -411,9 +478,23 @@ local function allocation(self,s,why)
         rootNode=tostring(s.vehicle.rootNode),reason=why})
     return true
 end
-local function retryStopped(self,s,why)
+retryStopped=function(self,s,why)
     if s.driveArmed or (self.replans[s.vehicle] or 0)>=1 then return false end
+    -- A completed physical movement can leave the actual selected assembly
+    -- STRADDLING: a fictional INSIDE entry would not be a connected route.
+    local current,reason=AssemblyOccupancy.assess(s.vehicle,s.sourceField)
+    if current==nil or (current.status~="INSIDE"
+        and current.status~="STRADDLING") then
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REASSESSMENT_UNAVAILABLE",{
+            rootNode=tostring(s.vehicle.rootNode),
+            reason=reason or (current and current.status) or "OCCUPANCY_UNKNOWN"})
+        return false
+    end
+    s.occupancy=current.status
     self.replans[s.vehicle]=(self.replans[s.vehicle] or 0)+1
+    publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REASSESSMENT_STARTED",{
+        rootNode=tostring(s.vehicle.rootNode),occupancy=s.occupancy,
+        reason=why})
     Allocation.release(self.claims,s.vehicle)
     if #self.waiting>0 and #self.waiting<MAX_QUEUED_COMPLETIONS then
         self.active=nil;self.pending=nil
@@ -933,6 +1014,7 @@ function Runtime:loadMap()
     self.waiting={}
     self.claims={}
     self.replans=setmetatable({},{__mode="k"})
+    self.terminalCorrections=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
     if type(Situation)=="table" and type(Situation.reset)=="function" then
@@ -950,6 +1032,7 @@ function Runtime:deleteMap()
     self.waiting={}
     self.claims={}
     self.replans=setmetatable({},{__mode="k"})
+    self.terminalCorrections=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
     if type(Situation)=="table" and type(Situation.reset)=="function" then
