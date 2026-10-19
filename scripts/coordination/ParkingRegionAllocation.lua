@@ -271,6 +271,7 @@ function M.advancePlan(s,units)
         -- A straddling assembly needs an actual-pose local egress;
         -- an imagined infield entry is not a connected route.
         local options={entryPose=site.entry,sourceField=s.sourceField,
+            earliestQualified=true,
             edgeIndex=site.edgeIndex,
             stationMin=math.max(3,site.station-26),
             stationMax=math.min(f.length-3,site.station+26),

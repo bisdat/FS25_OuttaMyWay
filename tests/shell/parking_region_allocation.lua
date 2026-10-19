@@ -178,6 +178,7 @@ local savedObserve=Situation.observe
 local savedClear=OuttaMyWay.SettlementPhysicalOccupancy.clear
 local Local=OuttaMyWay.CompletionSettlementRoute
 local savedBegin,savedAdvance=Local.beginPlan,Local.advancePlan
+local sawEarliestQualified=false
 local observedPolygon
 Situation.observe=function(_,polygon)
     assert(polygon~=nil,
@@ -188,7 +189,10 @@ Situation.observe=function(_,polygon)
     return {peers={},workingCount=0,motionCount=0,headingCount=0}
 end
 OuttaMyWay.SettlementPhysicalOccupancy.clear=function()return true end
-Local.beginPlan=function()
+Local.beginPlan=function(_,options)
+    assert(options.earliestQualified==true,
+        "region allocation must prefer first fully qualified local route")
+    sawEarliestQualified=true
     return {spent=0,candidates=0,rejectionCounts={}}
 end
 Local.advancePlan=function(session)
@@ -214,7 +218,8 @@ local e=assert(diagnostic.evidence)
 assert(e.sitesTotal>0 and e.sitesExamined==e.sitesTotal
     and observedPolygon==diagnostic.poly,
     "failure summary must cover every real Source Field candidate")
-assert(e.localPlans>0 and e.localCandidates==3*e.localPlans
+assert(sawEarliestQualified and e.localPlans>0
+    and e.localCandidates==3*e.localPlans
     and e.siteRejections.LOCAL_ROUTE_NO_POSE_REACHABLE_PARKING_REGION
         ==e.localPlans
     and e.routeRejections.REVERSE_MEMBER_OUTSIDE_SOURCE==2*e.localPlans

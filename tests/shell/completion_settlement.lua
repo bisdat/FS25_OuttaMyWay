@@ -172,6 +172,7 @@ OuttaMyWay.CompletionSettlementRoute={
 }
 local refuseExtendedScene=false
 local directAllocation=false
+local allocationStalled=false
 local lastAllocationDisposition=nil
 local occupancyDisposition="INSIDE"
 local qualifiedExtendedRoute
@@ -186,6 +187,7 @@ OuttaMyWay.ParkingRegionAllocation={
     advancePlan=function(session,units)
         session.advances=session.advances+1
         session.spent=session.spent+units
+        if allocationStalled then return "PENDING" end
         if refuseExtendedScene then return "FAILED",nil,"WORKER_SCENE_AI_STATUS_UNAVAILABLE" end
         return "DONE",{entryPose={x=25,z=-30,fx=1,fz=0},
             terminalPose={x=40,z=20},ownRadius=5,
@@ -838,4 +840,59 @@ assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
 runtime:loadMap()
 failTerminal=false
 occupancyDisposition="INSIDE"
-print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")
+-- The global 240s lease is not a player-response budget: pending
+-- assessment must return a clear refusal on the bounded planning clock.
+local slowInitial={rootNode=720,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+forcePlanPending=true
+local initialDriveCount=#driveCalls
+assert(runtime:onNativeCompletion({},slowInitial))
+for i=1,20 do runtime:update(1000) end
+assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL"
+    and runtime.pending.planningElapsedMs==20000
+    and #driveCalls==initialDriveCount,
+    "planning remains non-actuating while an incomplete candidate is pending")
+runtime:update(1000)
+assert(runtime.pending==nil and runtime.active==nil
+    and #driveCalls==initialDriveCount
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED"
+    and events[#events].fields.reason=="PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
+    "planning must explicitly refuse at its own response budget, not 240s")
+forcePlanPending=false
+runtime:loadMap()
+-- The first local planner and fallback allocator SHARE one planning clock:
+-- switching phases must not restart a 20s invisible wait.
+local slowAllocated={rootNode=721,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+allocationStalled=true
+diagnosticEnabled=true
+assert(runtime:onNativeCompletion({},slowAllocated))
+runtime:update(1000)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and runtime.pending.planningElapsedMs==1000)
+for i=1,19 do runtime:update(1000) end
+assert(runtime.pending and runtime.pending.planningElapsedMs==20000)
+local count=0
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_ALLOCATION_PROGRESS"
+        and event.fields.rootNode=="721" then
+        count=count+1
+        assert(event.fields.elapsedMs>=5000
+            and event.fields.planningElapsedMs<=20000)
+    end
+end
+assert(count==1,"slow allocation must publish only one bounded in-flight diagnostic")
+runtime:update(1000)
+assert(runtime.pending==nil and runtime.active==nil
+    and #driveCalls==initialDriveCount
+    and events[#events].fields.reason=="PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
+    "the allocator must not restart the response clock or move unqualified")
+assert(not runtime:onNativeCompletion({},slowAllocated),
+    "budget exhaustion cannot replay consumed native completion evidence")
+runtime:loadMap()
+allocationStalled=false
+diagnosticEnabled=false
+print("completion settlement TEST lifecycle, retained Source Field and planning responsiveness PASS")

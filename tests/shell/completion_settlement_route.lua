@@ -104,6 +104,30 @@ for i=1,#a.legs do
         and math.abs(x.point.z-y.point.z)<0.00001,
         "explicit planner must reproduce every reference guidance point")
 end
+-- Allocation-only early qualification must stop after a COMPLETE
+-- nominal route, without altering the ordinary best-scored local search.
+local earlyOpts={sourceField=sourceField,edgeIndex=9,earliestQualified=true}
+local early=assert(Route.beginPlan(vehicle,earlyOpts))
+local earlyPhase,earlyRoute,earlyWhy
+for i=1,12500 do
+    local used=early.spent
+    earlyPhase,earlyRoute,earlyWhy=Route.advancePlan(early,64)
+    assert(early.spent-used<=64,
+        "earliest-qualified route still obeys the per-update geometry budget")
+    if earlyPhase~="PENDING" then break end
+end
+assert(earlyPhase=="DONE" and earlyRoute and #earlyRoute.legs>0,earlyWhy)
+assert(early.candidates<async.candidates and early.spent<async.spent,
+    "allocation should stop searching after a fully screened route exists")
+local original={x=current.x,z=current.z,fx=current.fx,fz=current.fz}
+local final=earlyRoute.terminalPose
+current.x,current.z,current.fx,current.fz=final.x,final.z,final.fx,final.fz
+assert(Route.verifyTerminal(vehicle,earlyRoute),
+    "early qualification must still establish whole-assembly terminal")
+assert(Route.guard(vehicle,earlyRoute),
+    "early qualification cannot bypass live corridor validation")
+current.x,current.z,current.fx,current.fz=
+    original.x,original.z,original.fx,original.fz
 assert(a.field==sourceField.fieldId and a.edge==fixtureOptions.edgeIndex)
 assert(a.method=="REVERSE_FORWARD" or a.method=="FORWARD_J")
 assert(#a.legs>1 and #a.legs<=55,

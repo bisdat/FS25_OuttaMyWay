@@ -13,6 +13,11 @@ Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
 local LEG_DEADLINE_MS=180000
+-- TEST response hypothesis: a completed worker must not appear silently
+-- stranded while an exhaustive nominal parking search holds no drive lease.
+-- This clocks cumulative PENDING assessment, NOT physical Control time.
+local PLANNING_RESPONSE_BUDGET_MS=20000
+local ALLOCATION_PROGRESS_SAMPLE_MS=5000
 local SAMPLE_MS=1000
 -- Serial Control remains deliberate. Other completions queue for an
 -- independent assessment and space allocation after the current lease.
@@ -391,7 +396,8 @@ local function beginEpisode(self,job,vehicle,sourceField)
     end
     self.pending={vehicle=vehicle,job=job,sourceField=sourceField,
         plan=session,
-        kind="LOCAL_INITIAL",elapsedMs=0,phase="PLANNING",driveArmed=false}
+        kind="LOCAL_INITIAL",elapsedMs=0,planningElapsedMs=0,
+        phase="PLANNING",driveArmed=false}
     -- This passive comparison never affects admission, native TRANSIT,
     -- edge selection or physical Control.
     if type(publication.isEligible)=="function"
@@ -476,7 +482,9 @@ local function allocation(self,s,why)
     self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
         plan=plan,
         kind="ALLOCATE",phase="PLANNING",driveArmed=false,
-        elapsedMs=s.totalElapsedMs or s.elapsedMs or 0}
+        elapsedMs=s.totalElapsedMs or s.elapsedMs or 0,
+        planningElapsedMs=s.planningElapsedMs or 0,
+        allocationElapsedMs=0}
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
         rootNode=tostring(s.vehicle.rootNode),reason=why})
     return true
@@ -605,6 +613,30 @@ function Runtime:update(dt)
     end
     if self.pending~=nil then
         s.elapsedMs=s.elapsedMs+dt
+        s.planningElapsedMs=(s.planningElapsedMs or 0)+dt
+        if s.kind=="ALLOCATE" then
+            s.allocationElapsedMs=(s.allocationElapsedMs or 0)+dt
+            -- One in-progress witness makes early-ended GIANTS captures
+            -- interpretable without per-frame logging or physical work.
+            if s.allocationElapsedMs>=ALLOCATION_PROGRESS_SAMPLE_MS
+                and not s.allocationProgressPublished then
+                s.allocationProgressPublished=true
+                publish("DIAGNOSTIC","INFO",
+                    "COMPLETION_SETTLEMENT_ALLOCATION_PROGRESS",function()
+                    local p=s.plan
+                    return {rootNode=tostring(s.vehicle.rootNode),
+                        elapsedMs=s.allocationElapsedMs,
+                        planningElapsedMs=s.planningElapsedMs,
+                        sitesExamined=p.siteIndex or 0,
+                        sitesTotal=p.sites and #p.sites or "unknown",
+                        currentSite=p.site and p.site.edgeIndex or "none",
+                        phase=p.phase,
+                        localCandidates=p.localPlan and
+                            p.localPlan.candidates or 0,
+                        weightedGeometryChecks=p.spent or 0}
+                    end)
+            end
+        end
         if s.kind=="LOCAL_INITIAL" and not s.occupancyAssessed then
             -- Parking independently assesses current occupancy. The selected
             -- real member rectangles, not tractor-root containment, decide
@@ -638,6 +670,21 @@ function Runtime:update(dt)
         if s.elapsedMs>TOTAL_DEADLINE_MS then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 "FINITE_PLANNING_LEASE_EXPIRED")
+            return
+        end
+        if s.planningElapsedMs>PLANNING_RESPONSE_BUDGET_MS then
+            -- Budget expiry refuses unqualified parking; it never turns
+            -- a candidate into a route or authorises native steering.
+            publish("DEBUG","INFO",
+                "COMPLETION_SETTLEMENT_PLANNING_RESPONSE_LIMIT",{
+                rootNode=tostring(s.vehicle.rootNode),
+                stage=s.kind,elapsedMs=s.planningElapsedMs,
+                sitesExamined=s.plan and s.plan.siteIndex or 0,
+                sitesTotal=s.plan and s.plan.sites
+                    and #s.plan.sites or "unknown",
+                weightedGeometryChecks=s.plan and s.plan.spent or 0})
+            self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED")
             return
         end
         local phase,route,reason

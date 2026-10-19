@@ -374,6 +374,15 @@ local function finishCandidate(s)
         end
     end
     s.candidate=nil
+    if c~=nil and c.accepted and s.options~=nil
+        and s.options.earliestQualified==true then
+        -- Allocation needs a feasible destination, not proof that no
+        -- geometrically longer feasible manoeuvre exists at this site.
+        -- c.accepted is set ONLY after nominal route, terminal and
+        -- stopping reserve checks have all passed.
+        s.phase="FINISH"
+        return
+    end
     s.method=s.method+1
     if s.method>2 then s.method=1;s.angle=s.angle+1 end
     if s.angle>#ANGLES then s.angle=1;s.radius=s.radius+1 end
