@@ -121,7 +121,7 @@ source=function(path)
         or path=="scripts/observation/CompletionParkingGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
         or path=="scripts/assessment/ExteriorMarginComparison.lua"
-        or path=="scripts/coordination/SettlementPhysicalOccupancy.lua",
+        or path=="scripts/coordination/SettlementPhysicalOccupancy.lua"
         or path=="scripts/coordination/CompletionSettlementRoute.lua"
         or path=="scripts/coordination/SettlementDestinationAssessment.lua"
         or path=="scripts/coordination/ParkingRegionAllocation.lua"
