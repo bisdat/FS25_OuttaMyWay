@@ -90,6 +90,7 @@ jobs:
             scripts/observation/CompletionAssemblyFieldOccupancy.lua \
             scripts/observation/CompletionParkingGeometry.lua \
             scripts/assessment/SettlementCorridorAssessment.lua \
+            scripts/assessment/ExteriorMarginComparison.lua \
             scripts/coordination/CompletionSettlementRoute.lua \
             scripts/control/CompletionTransitRuntime.lua \
             scripts/control/CompletionSettlementRuntime.lua \
@@ -129,6 +130,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/completion_assembly_field_occupancy.lua
           "$LUAJIT_BIN" tests/shell/completion_parking_geometry.lua
           "$LUAJIT_BIN" tests/shell/settlement_corridor_assessment.lua
+          "$LUAJIT_BIN" tests/shell/exterior_margin_comparison.lua
           "$LUAJIT_BIN" tests/shell/completion_transit.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement_route.lua

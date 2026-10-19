@@ -8,6 +8,7 @@ local Allocation=OuttaMyWay.ParkingRegionAllocation
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Membership=OuttaMyWay.CompletionFieldMembership
 local AssemblyOccupancy=OuttaMyWay.CompletionAssemblyFieldOccupancy
+local MarginComparison=OuttaMyWay.ExteriorMarginComparison
 Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
@@ -113,7 +114,7 @@ function Runtime.new(configuration)
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
         active=nil,pending=nil,waiting={},claims={},replans=setmetatable({},{__mode="k"}),
         attempted=setmetatable({},{__mode="k"}),
-        deferred=setmetatable({},{__mode="k"})},Runtime)
+        deferred=setmetatable({},{__mode="k"}),marginComparison=nil},Runtime)
 end
 function Runtime:isAdmitted()
     return g_server~=nil and self.configuration~=nil
@@ -321,6 +322,21 @@ local function beginEpisode(self,job,vehicle,sourceField)
     self.pending={vehicle=vehicle,job=job,sourceField=sourceField,
         plan=session,
         kind="LOCAL_INITIAL",elapsedMs=0,phase="PLANNING",driveArmed=false}
+    -- This passive comparison never affects admission, native TRANSIT,
+    -- edge selection or physical Control.
+    if type(publication.isEligible)=="function"
+        and publication:isEligible("DIAGNOSTIC","INFO",
+            "COMPLETION_SETTLEMENT_MARGIN_COMPARISON") then
+        local comparison,why=MarginComparison.beginComparison(vehicle,sourceField)
+        if comparison~=nil then
+            self.marginComparison=comparison
+        else
+            publish("DIAGNOSTIC","INFO",
+                "COMPLETION_SETTLEMENT_MARGIN_COMPARISON_UNAVAILABLE",{
+                    rootNode=tostring(vehicle.rootNode),
+                    reason=why or "PROFILE_EVIDENCE_UNAVAILABLE"})
+        end
+    end
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_PLANNING_STARTED",{
         rootNode=tostring(vehicle.rootNode),
         budgetUnitsPerUpdate=PLAN_UNITS_PER_UPDATE,
@@ -435,6 +451,39 @@ local function stopForAlternative(self,s,reason)
     return true
 end
 function Runtime:update(dt)
+    -- One candidate edge per update, only with DIAGNOSTIC enabled.
+    local comparison=self.marginComparison
+    if comparison~=nil then
+        local phase,result,why=MarginComparison.advanceComparison(comparison)
+        if phase~="PENDING" then
+            self.marginComparison=nil
+            if phase=="DONE" then
+                publish("DIAGNOSTIC","INFO",
+                    "COMPLETION_SETTLEMENT_MARGIN_COMPARISON",function()
+                    return {
+                        rootNode=tostring(result.rootNode),
+                        fieldId=result.fieldId,
+                        nearestEdge=result.nearestEdge,
+                        edgesExamined=#result.rows,
+                        edgeCount=#result.frames,
+                        truncated=result.truncated,
+                        sampleBasis="CURRENT_NOMINAL_MEMBER_RECTANGLES",
+                        nominalEnvelope="TERMINAL_ONLY_NOT_APPROACH_OR_RUNOUT",
+                        roadSurface="UNKNOWN_NOT_OBSERVED",
+                        staticObstacles="UNKNOWN_NOT_OBSERVED",
+                        terrainBasis="MIDPOINT_HEIGHT_DELTA_2_TO_12_M_ONLY",
+                        corridorSafety="NOT_ESTABLISHED",
+                        edgeEvidence=MarginComparison.summarize(result)
+                    }
+                    end)
+            else
+                publish("DIAGNOSTIC","INFO",
+                    "COMPLETION_SETTLEMENT_MARGIN_COMPARISON_UNAVAILABLE",{
+                        rootNode=tostring(comparison.rootNode),
+                        reason=why or "COMPARISON_FAILED"})
+            end
+        end
+    end
     local s=self.active or self.pending
     if s~=nil and type(Situation)=="table"
         and type(Situation.sample)=="function" then
@@ -872,11 +921,13 @@ function Runtime:update(dt)
     end
 end
 function Runtime:relinquish(reason)
+    self.marginComparison=nil
     self.waiting={}
     self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
         reason or "CONTROL_REVOKED")
 end
 function Runtime:loadMap()
+    self.marginComparison=nil
     self.pending=nil
     self.active=nil
     self.waiting={}
@@ -889,6 +940,7 @@ function Runtime:loadMap()
     end
 end
 function Runtime:deleteMap()
+    self.marginComparison=nil
     local s=self.active
     if s~=nil and s.driveArmed then
         self.drive:discardOnMapDelete(s.vehicle)

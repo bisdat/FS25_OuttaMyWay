@@ -11,6 +11,20 @@ OuttaMyWay.LogPublication={origin=function()
         events[#events+1]={code=code,fields=payload()}
     end}
 end}
+local marginBegins,marginAdvances=0,0
+OuttaMyWay.ExteriorMarginComparison={
+    beginComparison=function(vehicle)
+        marginBegins=marginBegins+1
+        return {rootNode=vehicle.rootNode}
+    end,
+    advanceComparison=function(session)
+        marginAdvances=marginAdvances+1
+        return "DONE",{rootNode=session.rootNode,fieldId=29,
+            nearestEdge=7,frames={{index=7},{index=1}},
+            rows={{edge=7},{edge=1}},truncated=false}
+    end,
+    summarize=function()return "1:nominal8/18;7:nominal2/18" end
+}
 local driveCalls={}
 local failure
 local failCancel=false
@@ -687,6 +701,17 @@ assert(count==1 and fields.rootNode=="410"
     and fields.routeRejections=="REVERSE_MEMBER_OUTSIDE_SOURCE:450"
     and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED",
     "one terminal failure must publish bounded candidate evidence")
+local marginCount,marginFields=0,nil
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_MARGIN_COMPARISON" then
+        marginCount=marginCount+1;marginFields=event.fields
+    end
+end
+assert(marginCount==1 and marginBegins==1 and marginAdvances==1
+    and marginFields.rootNode=="410" and marginFields.nearestEdge==7
+    and marginFields.corridorSafety=="NOT_ESTABLISHED"
+    and marginFields.roadSurface=="UNKNOWN_NOT_OBSERVED",
+    "read-only edge evidence must be published once for diagnostic episode")
 runtime:loadMap()
 diagnosticEnabled=false
 local quietVehicle={rootNode=411,
@@ -696,8 +721,9 @@ localFallback=true
 assert(runtime:onNativeCompletion({},quietVehicle))
 runtime:update(16)
 runtime:update(16)
-assert(summaries()==1 and runtime.pending==nil and runtime.active==nil,
-    "normal logging must not collect or publish diagnostic evidence")
+assert(summaries()==1 and runtime.pending==nil and runtime.active==nil
+    and marginBegins==1 and marginAdvances==1,
+    "normal logging must not collect or publish candidate comparisons")
 OuttaMyWay.ParkingRegionAllocation.beginPlan=oldBegin
 OuttaMyWay.ParkingRegionAllocation.advancePlan=oldAdvance
 print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")

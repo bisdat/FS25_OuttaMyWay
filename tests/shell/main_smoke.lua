@@ -29,6 +29,7 @@ local expected={
     "scripts/observation/CompletionFieldMembership.lua",
     "scripts/observation/CompletionParkingGeometry.lua",
     "scripts/assessment/SettlementCorridorAssessment.lua",
+    "scripts/assessment/ExteriorMarginComparison.lua",
     "scripts/observation/CompletionAssemblyFieldOccupancy.lua",
     "scripts/coordination/SettlementPhysicalOccupancy.lua",
     "scripts/coordination/CompletionSettlementRoute.lua",
@@ -119,7 +120,8 @@ source=function(path)
         or path=="scripts/observation/CompletionAssemblyFieldOccupancy.lua"
         or path=="scripts/observation/CompletionParkingGeometry.lua"
         or path=="scripts/assessment/SettlementCorridorAssessment.lua"
-        or path=="scripts/coordination/SettlementPhysicalOccupancy.lua"
+        or path=="scripts/assessment/ExteriorMarginComparison.lua"
+        or path=="scripts/coordination/SettlementPhysicalOccupancy.lua",
         or path=="scripts/coordination/CompletionSettlementRoute.lua"
         or path=="scripts/coordination/SettlementDestinationAssessment.lua"
         or path=="scripts/coordination/ParkingRegionAllocation.lua"
