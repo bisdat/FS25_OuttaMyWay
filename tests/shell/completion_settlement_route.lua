@@ -176,6 +176,34 @@ assert(correction.terminalPose.x>=6
 current.x,current.z=correction.terminalPose.x,correction.terminalPose.z
 local verified,verifiedWhy=Route.verifyTerminal(vehicle,correction)
 assert(verified,verifiedWhy)
+-- A stopped root with an invalid EDGE HEADING cannot be fixed by
+-- translating that same heading. It must acquire the nominated tangent
+-- through a bounded forward arc and then reach a separately verified
+-- straight terminal pose.
+current.x,current.z=20,-4
+current.fx,current.fz=math.cos(25*math.pi/180),
+    -math.sin(25*math.pi/180)
+local bad,failed,headingFailure=Route.verifyTerminal(vehicle,correctionRoute)
+assert(not bad and headingFailure=="TERMINAL_HEADING_NOT_EDGE_ALIGNED")
+local aligned,alignWhy=Route.planTerminalCorrection(vehicle,correctionRoute)
+assert(aligned,alignWhy)
+assert(aligned.method=="STOPPED_TERMINAL_ALIGNMENT"
+    and aligned.reverseM==0 and aligned.estimatedTravelM<=12
+    and #aligned.legs>=2
+    and aligned.legs[1].name=="TERMINAL_HEADING_GUIDANCE"
+    and aligned.legs[#aligned.legs].name=="TERMINAL_PLACEMENT_CORRECTION",
+    "misaligned stop must qualify a real bounded forward turn, not a translation")
+for _,leg in ipairs(aligned.legs) do
+    assert(leg.moveForwards and leg.arrivalRadiusM==0.75,
+        "alignment requires precise forward waypoint admission")
+end
+local lastGuide=aligned.legs[#aligned.legs].point
+assert(math.abs(aligned.terminalPose.x-lastGuide.x)<0.00001
+    and math.abs(aligned.terminalPose.z-lastGuide.z)<0.00001)
+current.x,current.z=aligned.terminalPose.x,aligned.terminalPose.z
+current.fx,current.fz=aligned.terminalPose.fx,aligned.terminalPose.fz
+assert(Route.verifyTerminal(vehicle,aligned),
+    "a qualified corrected heading must verify at the planned stopped pose")
 -- An ineligible member corridor must be refused, not driven through.
 current.x,current.z,current.fx,current.fz=1,-3,0,-1
 assert(Route.planTerminalCorrection(vehicle,correctionRoute)==nil)

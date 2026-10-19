@@ -118,6 +118,7 @@ local route={
 local routeCalls,terminalCalls=0,0
 local failTerminal=false
 local correctionAllowed=false
+local correctionCurved=false
 local correctionCalls=0
 local planAdvances=0
 local forcePlanPending=false
@@ -156,9 +157,16 @@ OuttaMyWay.CompletionSettlementRoute={
         local copy={}
         for k,v in pairs(old) do copy[k]=v end
         copy.terminalPose={x=19,z=12}
-        copy.method="STOPPED_TERMINAL_CORRECTION"
-        copy.legs={{name="TERMINAL_PLACEMENT_CORRECTION",
-            point={x=19,z=12},moveForwards=true}}
+        copy.method=correctionCurved and "STOPPED_TERMINAL_ALIGNMENT"
+            or "STOPPED_TERMINAL_CORRECTION"
+        copy.legs={}
+        if correctionCurved then
+            copy.legs[1]={name="TERMINAL_HEADING_GUIDANCE",
+                point={x=10,z=10},moveForwards=true,arrivalRadiusM=0.75}
+        end
+        copy.legs[#copy.legs+1]={name="TERMINAL_PLACEMENT_CORRECTION",
+            point={x=19,z=12},moveForwards=true,
+            arrivalRadiusM=correctionCurved and 0.75 or nil}
         return copy
     end
 }
@@ -780,6 +788,36 @@ end
 assert(runtime.active==nil and runtime.pending==nil
     and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
     "correction still requires its own independently verified stop and terminal")
+-- A heading-changing correction is one continuous forward native lease:
+-- its short arc guide cannot count as a final parked/verified terminal.
+runtime:loadMap()
+local angled={rootNode=634,getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+failTerminal=true
+correctionAllowed=true
+correctionCurved=true
+local oldCalls=correctionCalls
+assert(runtime:onNativeCompletion({},angled))
+for i=1,16 do
+    runtime:update(16)
+    if correctionCalls>oldCalls then break end
+end
+assert(runtime.active and runtime.active.route.method==
+    "STOPPED_TERMINAL_ALIGNMENT"
+    and #runtime.active.route.legs==2
+    and runtime.active.route.legs[1].arrivalRadiusM==0.75,
+    "misaligned stopped terminal must admit forward heading correction")
+local beforeMove=#driveCalls
+failTerminal=false
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED"
+    and #driveCalls>beforeMove,
+    "heading correction must execute then independently verify terminal")
+correctionCurved=false
 -- If a short correction cannot qualify, reread ACTUAL member occupancy.
 -- In particular, STRADDLING must not become an imaginary INSIDE entry.
 runtime:loadMap()

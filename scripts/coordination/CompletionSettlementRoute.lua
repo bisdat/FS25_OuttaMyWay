@@ -793,6 +793,23 @@ end
 -- One bounded stopped correction, evaluated from ACTUAL selected-member
 -- geometry. This does not grant collision/road/terrain clearance. Live route
 -- guards, existing claim and native stable-stop authority remain independent.
+-- Correct actual stopped terminal position AND heading. Curved candidates
+-- are nominal GIANTS-forward hypotheses; only positive terminal and run-out
+-- geometry can admit a bounded new native drive lease.
+local CORRECTION_MAX_TRAVEL_M=12
+local CORRECTION_ARRIVAL_M=0.75
+local CORRECTION_RADII={24,18,12}
+local function correctionRoute(route,legs,point,travel,direction)
+    local correction={}
+    for k,v in pairs(route) do correction[k]=v end
+    correction.terminalPose={x=point.x,z=point.z,fx=point.fx,fz=point.fz}
+    correction.legs=legs
+    correction.method=direction=="CURVED" and
+        "STOPPED_TERMINAL_ALIGNMENT" or "STOPPED_TERMINAL_CORRECTION"
+    correction.reverseM=0
+    correction.estimatedTravelM=travel
+    return correction
+end
 function Route.planTerminalCorrection(vehicle,route)
     if type(route)~="table" or type(route.frame)~="table"
         or type(route.poly)~="table"
@@ -805,8 +822,6 @@ function Route.planTerminalCorrection(vehicle,route)
     if current==nil or foot==nil or foot.memberCount~=route.memberCount then
         return nil,reason or "TERMINAL_CORRECTION_ASSEMBLY_UNAVAILABLE"
     end
-    -- A forward-only continuation avoids extending an unstable reversing
-    -- phase. Never continue an unrelated or unverified native drive lease.
     local frame=route.frame
     if not startInFieldOrEdgeBand(route.poly,frame,current) then
         return nil,"TERMINAL_CORRECTION_START_OUTSIDE_CORRIDOR"
@@ -815,42 +830,91 @@ function Route.planTerminalCorrection(vehicle,route)
     if occupants==nil then return nil,occupiedWhy end
     local own=Occupancy.footRadius(vehicle)
     if own==nil then return nil,"TERMINAL_CORRECTION_FOOTPRINT_UNKNOWN" end
-    local function at(distance)
-        return advance(current,distance)
+    local function approach(point)
+        return approachAllowed(point,foot,current,route.poly,
+            route.neighbors,frame,false,nil,occupants,own)
     end
-    -- Check the FULL short travel at one-metre spacing. No arbitrary
-    -- additive 2-3m command; the first terminal and five-metre run-out
-    -- reserve qualified by the same existing nominal polygon contracts wins.
+    local function terminal(point)
+        return terminalAllowed(point,foot,current,route.poly,
+            route.neighbors,frame,nil,occupants,own)
+    end
+    local function fitsWithBraking(point)
+        return terminal(point)
+            and terminal(advance(point,-CORRECTION_ARRIVAL_M))
+            and terminal(advance(point,STOPPING_RESERVE_M))
+    end
+    -- The straight case remains useful when heading already qualifies.
+    -- Check the full intermediate corridor, not just its destination.
+    local point=current
     for distance=1,8 do
-        local point=at(distance)
-        if not approachAllowed(point,foot,current,route.poly,
-            route.neighbors,frame,false,nil,occupants,own) then
-            return nil,"TERMINAL_CORRECTION_APPROACH_REFUSED"
+        point=advance(point,1)
+        if not approach(point) then break end
+        if distance>=3 and fitsWithBraking(point) then
+            return correctionRoute(route,{{
+                name="TERMINAL_PLACEMENT_CORRECTION",
+                point={x=point.x,z=point.z},moveForwards=true,
+                arrivalRadiusM=CORRECTION_ARRIVAL_M
+            }},point,distance,"STRAIGHT")
         end
-        if distance>=3 then
-            local endpoint=terminalAllowed(point,foot,current,route.poly,
-                route.neighbors,frame,nil,occupants,own)
-            local early=terminalAllowed(at(distance-2.5),foot,current,
-                route.poly,route.neighbors,frame,nil,occupants,own)
-            local reserve=terminalAllowed(at(distance+STOPPING_RESERVE_M),
-                foot,current,route.poly,route.neighbors,frame,nil,occupants,own)
-            if endpoint and early and reserve then
-                local correction={}
-                for k,v in pairs(route) do correction[k]=v end
-                correction.terminalPose={x=point.x,z=point.z,
-                    fx=point.fx,fz=point.fz}
-                correction.legs={{
-                    name="TERMINAL_PLACEMENT_CORRECTION",
-                    point={x=point.x,z=point.z},moveForwards=true
-                }}
-                correction.method="STOPPED_TERMINAL_CORRECTION"
-                correction.reverseM=0
-                correction.estimatedTravelM=distance
-                return correction,nil
+    end
+    -- A terminal-heading refusal cannot be corrected by translating the
+    -- same heading. Use the existing nominal forward-arc mechanism, then
+    -- straighten along the nominated edge. Test both tangent directions;
+    -- no reverse or unqualified edge crossing is introduced.
+    for _,radius in ipairs(CORRECTION_RADII) do
+        for _,direction in ipairs({-1,1}) do
+            local tx,tz=frame.ux*direction,frame.uz*direction
+            local delta=angleBetween(current.fx,current.fz,tx,tz)
+            local arcDistance=radius*math.abs(delta)
+            if math.abs(delta)>=0.001 and math.abs(delta)<=45*RAD
+                and arcDistance>=3 and arcDistance<=CORRECTION_MAX_TRAVEL_M-3 then
+                local arcGuides=math.ceil(arcDistance/5)
+                local guideDistance=arcDistance/arcGuides
+                if guideDistance>=3 then
+                    local sampleCount=math.ceil(arcDistance)
+                    local poseAt=current
+                    local valid=true
+                    local legs={}
+                    local guideIndex=1
+                    for i=1,sampleCount do
+                        poseAt=turnStep(poseAt,radius,delta/sampleCount)
+                        if not approach(poseAt) then valid=false;break end
+                        if i==sampleCount
+                            or i*arcDistance/sampleCount>=
+                                guideIndex*guideDistance-0.0001 then
+                            legs[#legs+1]={
+                                name="TERMINAL_HEADING_GUIDANCE",
+                                point={x=poseAt.x,z=poseAt.z},
+                                moveForwards=true,
+                                arrivalRadiusM=CORRECTION_ARRIVAL_M}
+                            guideIndex=guideIndex+1
+                        end
+                    end
+                    if valid then
+                        local remaining=math.floor(
+                            CORRECTION_MAX_TRAVEL_M-arcDistance)
+                        local candidate=poseAt
+                        for distance=1,remaining do
+                            candidate=advance(candidate,1)
+                            if not approach(candidate) then break end
+                            -- Allow a meaningful edge-aligned straight leg,
+                            -- then require verified room to stop early.
+                            if distance>=3 and fitsWithBraking(candidate) then
+                                legs[#legs+1]={
+                                    name="TERMINAL_PLACEMENT_CORRECTION",
+                                    point={x=candidate.x,z=candidate.z},
+                                    moveForwards=true,
+                                    arrivalRadiusM=CORRECTION_ARRIVAL_M}
+                                return correctionRoute(route,legs,candidate,
+                                    arcDistance+distance,"CURVED")
+                            end
+                        end
+                    end
+                end
             end
         end
     end
-    return nil,"NO_QUALIFIED_SHORT_TERMINAL_CORRECTION"
+    return nil,"NO_QUALIFIED_HEADING_AND_TERMINAL_CORRECTION"
 end
 function Route.verifyTerminal(vehicle,route)
     local foot,reason=OuttaMyWay.PairTransitRegion.capture(vehicle)

@@ -199,6 +199,26 @@ assert(lastSpeed<firstSpeed
     and math.abs(lastSpeed-math.sqrt(2*1.5*0.5)*3.6)<0.02,
     "braking demand must decrease before reaching changeover")
 assert(drive:cancelMovement(vehicle))
+-- A headed terminal correction must not complete at the ordinary
+-- 2.5m arrival band; GIANTS must receive more forward steering until
+-- the separately authorised finer 0.75m arrival boundary is observed.
+positions[11].x,positions[11].z=0,0
+local precision={moveForwards=true,targetX=10,targetZ=0,
+    arrivalRadiusM=0.75,maximumSpeedKmh=15,
+    returnRegion={source="COMPLETION_SETTLEMENT_LEG"}}
+assert(drive:startMovement(vehicle,precision))
+assert(not drive:movementStatus(vehicle,16).isComplete)
+positions[11].x=8.5
+assert(not drive:movementStatus(vehicle,16).isComplete,
+    "a 1.5m remainder cannot complete a precise terminal correction")
+positions[11].x=9.4
+assert(drive:movementStatus(vehicle,16).isComplete,
+    "fine terminal guide only arrives inside its 0.75m boundary")
+assert(drive:beginSettlementStop(vehicle))
+vehicle.lastSpeedReal=0
+for i=1,5 do drive:settlementStopStatus(vehicle,300) end
+assert(drive:stopMovement(vehicle))
+positions[11].x,positions[11].z=0,0
 -- Interruption cannot leave cruise ACTIVE even when never stopped.
 assert(drive:startMovement(vehicle,objective))
 drive:movementStatus(vehicle,16)

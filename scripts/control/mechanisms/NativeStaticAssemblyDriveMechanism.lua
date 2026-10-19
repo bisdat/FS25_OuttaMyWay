@@ -63,6 +63,10 @@ function M:startMovement(vehicle,objective)
         or type(objective.moveForwards)~="boolean"
         or not finite(objective.targetX)
         or not finite(objective.targetZ)
+        or (objective.arrivalRadiusM~=nil
+            and (not finite(objective.arrivalRadiusM)
+                or objective.arrivalRadiusM<=0
+                or objective.arrivalRadiusM>2.5))
         or (objective.steeringTargetX~=nil
             and not finite(objective.steeringTargetX))
         or (objective.steeringTargetZ~=nil
@@ -226,7 +230,8 @@ function M:movementStatus(vehicle,dt)
             local remaining=math.sqrt((p.x-s.objective.targetX)^2
                 +(p.z-s.objective.targetZ)^2)
             progress={progressM=(dx*tx+dz*tz)/length,
-                remainingM=remaining,isInRegion=remaining<=2.5,
+                remainingM=remaining,isInRegion=remaining<=
+                    (s.objective.arrivalRadiusM or 2.5),
                 lateralOffsetM=math.abs(dx*tz-dz*tx)/length}
         end
     else
@@ -301,7 +306,8 @@ function M:movementStatus(vehicle,dt)
     if s.settlement and finite(s.objective.remainingAfterTargetM)
         and finite(progress.remainingM) then
         local remaining=progress.remainingM+s.objective.remainingAfterTargetM
-        local brakingKmh=math.sqrt(2*1.5*math.max(0,remaining-2.5))*3.6
+        local brakingKmh=math.sqrt(2*1.5*math.max(0,
+            remaining-(s.objective.arrivalRadiusM or 2.5)))*3.6
         local bounded=math.min(s.speedKmh,math.max(2.5,brakingKmh))
         local applied=pcall(vehicle.setCruiseControlMaxSpeed,
             vehicle,bounded,bounded)
@@ -344,6 +350,10 @@ function M:retargetSettlement(vehicle,objective)
         or objective.moveForwards~=s.objective.moveForwards
         or not finite(objective.targetX)
         or not finite(objective.targetZ)
+        or (objective.arrivalRadiusM~=nil
+            and (not finite(objective.arrivalRadiusM)
+                or objective.arrivalRadiusM<=0
+                or objective.arrivalRadiusM>2.5))
         or (objective.steeringTargetX~=nil
             and not finite(objective.steeringTargetX))
         or (objective.steeringTargetZ~=nil

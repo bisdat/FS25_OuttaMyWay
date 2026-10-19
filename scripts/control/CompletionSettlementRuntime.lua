@@ -44,6 +44,7 @@ local function objectiveFor(route,index,currentX,currentZ)
             (following.point.z-previous.point.z)^2)
     end
     local objective={moveForwards=leg.moveForwards,
+        arrivalRadiusM=leg.arrivalRadiusM,
         maximumSpeedKmh=guidanceSpeed(distance),
         remainingAfterTargetM=beyond,
         targetX=leg.point.x,targetZ=leg.point.z,
@@ -298,6 +299,8 @@ function Runtime:startLeg()
                         "COMPLETION_SETTLEMENT_TERMINAL_CORRECTION_ADMITTED",{
                         rootNode=tostring(s.vehicle.rootNode),
                         edge=candidate.edge,
+                        correctionMethod=candidate.method,
+                        guidancePoints=#candidate.legs,
                         targetX=candidate.terminalPose.x,
                         targetZ=candidate.terminalPose.z,
                         note="CURRENT_POSE_QUALIFIED_NOT_VERIFIED"})
@@ -321,7 +324,7 @@ function Runtime:startLeg()
     end
     local dx,dz=leg.point.x-x,leg.point.z-z
     local distance=math.sqrt(dx*dx+dz*dz)
-    if distance<=2.5 then
+    if distance<=(leg.arrivalRadiusM or 2.5) then
         s.legIndex=s.legIndex+1
         self:startLeg()
         return
