@@ -150,7 +150,7 @@ local beforeCommands=#driveCalls
 assert(not drive:movementStatus(vehicle,16).isComplete)
 assert(toolCorrections==before+1 and #driveCalls==beforeCommands+1
     and driveCalls[#driveCalls].forwards==false
-    and driveCalls[#driveCalls].tx==-41
+    and driveCalls[#driveCalls].tx==-45
     and driveCalls[#driveCalls].tz==2,
     "GIANTS tool correction and reverse node must see distant steering position")
 positions[11].x=-7
