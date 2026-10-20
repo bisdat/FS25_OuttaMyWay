@@ -993,8 +993,14 @@ for i=1,20 do
         break
     end
 end
-assert(observed and events[#events].code==
-    "COMPLETION_SETTLEMENT_REPOSITION_OBSERVED",
+local observedEvent=false
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_REPOSITION_OBSERVED"
+        and event.fields.rootNode=="722" then
+        observedEvent=true
+    end
+end
+assert(observed and observedEvent,
     "reposition endpoint cannot be substituted for actual stopped pose")
 -- Even if the second planner again cannot connect, do not reposition
 -- indefinitely; report the bounded final refusal.
