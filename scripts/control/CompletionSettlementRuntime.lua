@@ -1028,8 +1028,14 @@ function Runtime:update(dt)
             s.peerCheckMs=0
             local valid,why=OuttaMyWay.ExtendedInfieldApproach.guard(
                 s.vehicle,s.route,s.legIndex)
-            local claimed,claimWhy=Allocation.claimClear(
-                self.claims,s.vehicle,s.route.poly)
+            -- A bounded infield reposition has no exterior terminal
+            -- claim. Its actual assembly, peer and occupancy guards remain
+            -- mandatory; the claim is needed only for a parking approach.
+            local claimed,claimWhy=true,nil
+            if s.route.mode=="EXTENDED_INFIELD" then
+                claimed,claimWhy=Allocation.claimClear(
+                    self.claims,s.vehicle,s.route.poly)
+            end
             if not valid or not claimed then
                 local reason=not claimed and claimWhy or why
                     or "EXTENDED_APPROACH_UNSUPPORTED"
