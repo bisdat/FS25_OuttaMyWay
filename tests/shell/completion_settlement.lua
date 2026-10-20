@@ -1000,6 +1000,19 @@ for _,event in ipairs(events) do
         observedEvent=true
     end
 end
+if not (observed and observedEvent) then
+    local tail={}
+    for i=math.max(1,#events-8),#events do
+        tail[#tail+1]=events[i].code..
+            ":"..tostring(events[i].fields and events[i].fields.reason)
+    end
+    print("REPOSITION_FIXTURE_STATE observed="..tostring(observed)..
+        " event="..tostring(observedEvent)..
+        " pending="..tostring(runtime.pending and runtime.pending.kind)..
+        " active="..tostring(runtime.active and runtime.active.phase)..
+        " route="..tostring(runtime.active and runtime.active.route.mode)..
+        " tail="..table.concat(tail,"|"))
+end
 assert(observed and observedEvent,
     "reposition endpoint cannot be substituted for actual stopped pose")
 -- Even if the second planner again cannot connect, do not reposition
