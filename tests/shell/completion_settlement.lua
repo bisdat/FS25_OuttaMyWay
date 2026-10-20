@@ -176,6 +176,8 @@ local allocationStalled=false
 local lastAllocationDisposition=nil
 local occupancyDisposition="INSIDE"
 local qualifiedExtendedRoute
+local repositionAllowed=false
+local repositionPlans=0
 local extendedAdvanceCalls=0
 local activeConflict=false
 local mismatchClaim=false
@@ -219,6 +221,23 @@ OuttaMyWay.SettlementPhysicalOccupancy={
     nextClear=function()return true end
 }
 OuttaMyWay.ExtendedInfieldApproach={
+    planReposition=function()
+        repositionPlans=repositionPlans+1
+        if not repositionAllowed then
+            return nil,"NO_QUALIFIED_INFIELD_REPOSITION"
+        end
+        return {mode="REPOSITION_INFIELD",
+            field=77,edge=9,memberCount=2,
+            method="INFIELD_STRAIGHT_REVERSE",
+            poly={},estimatedTravelM=8,reverseM=8,
+            nominalMarginGainM=3,
+            legs={{name="REPOSITION_REVERSE",
+                point={x=-4,z=0},moveForwards=false,
+                arrivalRadiusM=0.75},
+                {name="REPOSITION_REVERSE",
+                point={x=-8,z=0},moveForwards=false,
+                arrivalRadiusM=0.75}}}
+    end,
     beginPlan=function()
         return {advances=0,spent=0}
     end,
@@ -942,4 +961,53 @@ assert(not runtime:onNativeCompletion({},slowAllocated),
 runtime:loadMap()
 allocationStalled=false
 diagnosticEnabled=false
+-- The search can fail its bounded response without inventing a route, but
+-- one freshly qualified infield reposition may create a useful observed
+-- actual pose. A real stable STOP precedes the second planning session.
+local repositioner={rootNode=722,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+allocationStalled=true
+repositionAllowed=true
+local beforeReposition=repositionPlans
+local beforeNative=#driveCalls
+assert(runtime:onNativeCompletion({},repositioner))
+for i=1,21 do runtime:update(1000) end
+assert(runtime.active and runtime.active.route.mode=="REPOSITION_INFIELD"
+    and runtime.repositioned[repositioner]
+    and repositionPlans==beforeReposition+1
+    and #driveCalls>beforeNative
+    and runtime.claims[repositioner]==nil,
+    "qualified intermediate positioning is an admitted non-terminal drive")
+-- No final parking success until this second planning phase and its
+-- eventual complete-assembly terminal have been independently established.
+local observed=false
+for i=1,20 do
+    runtime:update(16)
+    if runtime.pending and runtime.pending.kind=="LOCAL_INITIAL" then
+        observed=true
+        assert(runtime.drive.active==nil
+            and runtime.pending.planningElapsedMs==0,
+            "reposition must stop and release native lease before new plan")
+        break
+    end
+end
+assert(observed and events[#events].code==
+    "COMPLETION_SETTLEMENT_REPOSITION_OBSERVED",
+    "reposition endpoint cannot be substituted for actual stopped pose")
+-- Even if the second planner again cannot connect, do not reposition
+-- indefinitely; report the bounded final refusal.
+repositionAllowed=true
+forcePlanPending=true
+local countBefore=repositionPlans
+for i=1,21 do runtime:update(1000) end
+assert(runtime.pending==nil and runtime.active==nil
+    and repositionPlans==countBefore
+    and events[#events].fields.reason==
+        "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
+    "one physical reposition attempt cannot loop or fabricate parking")
+runtime:loadMap()
+forcePlanPending=false
+repositionAllowed=false
 print("completion settlement TEST lifecycle, retained Source Field and planning responsiveness PASS")

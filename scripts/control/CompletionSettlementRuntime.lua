@@ -198,6 +198,7 @@ function Runtime.new(configuration)
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
         active=nil,pending=nil,waiting={},claims={},replans=setmetatable({},{__mode="k"}),
         attempted=setmetatable({},{__mode="k"}),
+        repositioned=setmetatable({},{__mode="k"}),
         deferred=setmetatable({},{__mode="k"}),
         terminalCorrections=setmetatable({},{__mode="k"}),
         marginComparison=nil},Runtime)
@@ -295,6 +296,38 @@ function Runtime:startLeg()
     if s==nil then return end
     local leg=s.route.legs[s.legIndex]
     if leg==nil then
+        if s.route.mode=="REPOSITION_INFIELD" then
+            -- This stop proves only an infield intermediate actual pose.
+            -- No exterior terminal was claimed or certified.
+            if s.driveArmed then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "REPOSITION_HANDOFF_WITH_ACTIVE_DRIVE")
+                return
+            end
+            local occupancy,why=AssemblyOccupancy.assess(
+                s.vehicle,s.sourceField)
+            if occupancy==nil or occupancy.status~="INSIDE" then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    why or "REPOSITION_ACTUAL_ASSEMBLY_NOT_INSIDE")
+                return
+            end
+            local plan,reason=OuttaMyWay.CompletionSettlementRoute.beginPlan(
+                s.vehicle,{sourceField=s.sourceField})
+            if plan==nil then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    reason or "REPOSITION_REASSESSMENT_UNAVAILABLE")
+                return
+            end
+            self.active=nil
+            self.pending={vehicle=s.vehicle,job=s.job,
+                sourceField=s.sourceField,plan=plan,
+                kind="LOCAL_INITIAL",elapsedMs=s.totalElapsedMs,
+                planningElapsedMs=0,phase="PLANNING",driveArmed=false}
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_OBSERVED",{
+                rootNode=tostring(s.vehicle.rootNode),
+                note="PHYSICAL_STOP_CONFIRMED_FRESH_POSE_LOCAL_REASSESSMENT"})
+            return
+        end
         if s.route.mode=="EXTENDED_INFIELD" then
             -- The long approach grants NO terminal parking result.
             -- Its final stop was independently released before handoff.
@@ -540,7 +573,7 @@ local function allocation(self,s,why)
         kind="ALLOCATE",phase="PLANNING",driveArmed=false,
         elapsedMs=s.totalElapsedMs or s.elapsedMs or 0,
         planningElapsedMs=s.planningElapsedMs or 0,
-        allocationElapsedMs=0}
+        occupancy=s.occupancy,allocationElapsedMs=0}
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
         rootNode=tostring(s.vehicle.rootNode),reason=why})
     return true
@@ -596,6 +629,44 @@ local function stopForAlternative(self,s,reason)
     s.alternativeReason=reason
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPING",{
         rootNode=tostring(s.vehicle.rootNode),reason=reason})
+    return true
+end
+function Runtime:attemptInfieldReposition(s)
+    if self.repositioned[s.vehicle] or s.kind~="ALLOCATE"
+        or type(OuttaMyWay.ExtendedInfieldApproach.planReposition)
+            ~="function" then return false end
+    -- A completed parking attempt must not begin an unexplained new move
+    -- from an invented interior state. Reobserve the actual full assembly.
+    local occupancy=AssemblyOccupancy.assess(s.vehicle,s.sourceField)
+    if occupancy==nil or occupancy.status~="INSIDE" then return false end
+    local route,why=OuttaMyWay.ExtendedInfieldApproach.planReposition(
+        s.vehicle,s.sourceField)
+    if route==nil then
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_UNAVAILABLE",{
+            rootNode=tostring(s.vehicle.rootNode),
+            reason=why or "NO_NOMINAL_INFIELD_SPACE_GAIN"})
+        return false
+    end
+    local clear,reason=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
+        s.vehicle,route)
+    if not clear then
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_UNAVAILABLE",{
+            rootNode=tostring(s.vehicle.rootNode),
+            reason=reason or "INFIELD_REPOSITION_PHYSICAL_OCCUPANCY"})
+        return false
+    end
+    self.repositioned[s.vehicle]=true
+    self.pending=nil
+    self.active={vehicle=s.vehicle,job=s.job,
+        sourceField=s.sourceField,route=route,legIndex=1,
+        totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
+        phase="ADMITTED",driveArmed=false}
+    publish("NORMAL","INFO","COMPLETION_SETTLEMENT_REPOSITION_ADMITTED",{
+        rootNode=tostring(s.vehicle.rootNode),method=route.method,
+        guideCount=#route.legs,estimatedTravelM=route.estimatedTravelM,
+        nominalMarginGainM=route.nominalMarginGainM,
+        note="INFIELD_INTERMEDIATE_NOT_PARKED"})
+    self:startLeg()
     return true
 end
 function Runtime:update(dt)
@@ -741,6 +812,7 @@ function Runtime:update(dt)
                 weightedGeometryChecks=s.plan and s.plan.spent or 0})
             publishAllocationEvidence(s,
                 "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",true)
+            if self:attemptInfieldReposition(s) then return end
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED")
             return
@@ -948,7 +1020,9 @@ function Runtime:update(dt)
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
     end
-    if s.phase=="MOVING" and s.route.mode=="EXTENDED_INFIELD" then
+    if s.phase=="MOVING" and
+        (s.route.mode=="EXTENDED_INFIELD"
+            or s.route.mode=="REPOSITION_INFIELD") then
         s.peerCheckMs=(s.peerCheckMs or 250)+dt
         if s.peerCheckMs>=250 then
             s.peerCheckMs=0
@@ -1099,6 +1173,7 @@ function Runtime:loadMap()
     self.replans=setmetatable({},{__mode="k"})
     self.terminalCorrections=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
+    self.repositioned=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
     if type(Situation)=="table" and type(Situation.reset)=="function" then
         Situation.reset()
@@ -1117,6 +1192,7 @@ function Runtime:deleteMap()
     self.replans=setmetatable({},{__mode="k"})
     self.terminalCorrections=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
+    self.repositioned=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
     if type(Situation)=="table" and type(Situation.reset)=="function" then
         Situation.reset()

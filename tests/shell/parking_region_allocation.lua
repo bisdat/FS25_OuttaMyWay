@@ -132,6 +132,19 @@ local assessed=assert(Allocation.beginPlan(first,ledger,sourceField))
 local status,chosen,reason=Allocation.advancePlan(assessed,320)
 assert(status=="PENDING" and assessed.siteIndex==0)
 local leading=assessed.sites[1]
+-- The same edge station must permit both legitimate tangent entries.
+-- A single imposed entry orientation can make forward reachability appear
+-- impossible even when the local parking solver supports the other side.
+local seenDirections={}
+for _,site in ipairs(assessed.sites) do
+    local key=tostring(site.edgeIndex)..":"..string.format("%.3f",site.station)
+    seenDirections[key]=seenDirections[key] or {}
+    seenDirections[key][site.entryDirection]=true
+end
+for _,directions in pairs(seenDirections) do
+    assert(directions[-1] and directions[1],
+        "each nominal site must evaluate both edge-parallel entry headings")
+end
 assert(leading.frame and leading.edgeIndex
     and #assessed.sites>1,
     "all registered edge sites must carry their geometric provenance")

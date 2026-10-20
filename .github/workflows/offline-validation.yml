@@ -137,6 +137,7 @@ jobs:
           "$LUAJIT_BIN" tests/shell/settlement_destination_assessment.lua
           "$LUAJIT_BIN" tests/shell/parking_region_allocation.lua
           "$LUAJIT_BIN" tests/shell/completion_extended_approach.lua
+          "$LUAJIT_BIN" tests/shell/extended_infield_reposition.lua
           "$LUAJIT_BIN" tests/shell/completion_settlement_drive.lua
           "$LUAJIT_BIN" tests/shell/static_blockage_encounter.lua
           "$LUAJIT_BIN" tests/shell/static_blocker_relocation.lua

@@ -74,6 +74,8 @@ Multiple completions may require **serial settlement**. An assembly unable to co
 
 The stop, parking claim, route plan and completed terminal are distinct facts. Reporting a successful stop is not reporting physical parking. The terminal outcome must use fresh full-member occupancy evidence and measured native stationarity; root-point arrival alone is insufficient.
 
+**Manoeuvrable Pose** is a *physically observed intermediate assembly state* from which another actual-pose route assessment may become possible when no complete direct Settlement Corridor qualified. A bounded infield repositioning movement is not terminal parking and does not justify claiming a future terminal. To admit it, the complete assembly's proposed infield movement must have positive nominal containment and occupancy evidence under its own finite Control lease. Actual native steering, stop and full-member pose must then be observed before subsequent parking assessment. Only a finite number of independently justified reposition attempts are permitted; failure to establish a safer or more manoeuvrable actual pose requires refusal, not unbounded motion.
+
 ## Control and interruption
 
 Completion Settlement Control holds an independent bounded lease; it must not share an actuator lease or hidden state with active Hold & Relocate. Its movement can be superseded by master Configuration disablement, newer GIANTS AI work, player control, another admitted Control responsibility, invalidated physical occupancy or a failed safety condition.
