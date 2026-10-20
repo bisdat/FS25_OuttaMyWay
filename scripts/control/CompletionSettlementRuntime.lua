@@ -94,6 +94,62 @@ local function rejectionSummary(counts)
     end
     return table.concat(parts,";")
 end
+-- One read-only failure snapshot for a completed OR prematurely bounded
+-- allocator. The in-flight site's checks have NOT yet been aggregated into
+-- evidence.routeRejections, so publish them separately without claiming
+-- exhaustive coverage or mutating the planner's live counters.
+local function publishAllocationEvidence(state,reason,incomplete)
+    if state.kind~="ALLOCATE" or type(state.plan)~="table"
+        or type(state.plan.evidence)~="table" then return end
+    local p=state.plan
+    local e=p.evidence
+    local working=p.phase=="QUALIFY" or p.phase=="CONNECT"
+    local localPlan=p.phase=="QUALIFY" and p.localPlan or nil
+    local approach=p.phase=="CONNECT" and p.approachPlan or nil
+    publish("DIAGNOSTIC","INFO",
+        "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS",function()
+        return {
+            rootNode=tostring(state.vehicle.rootNode),
+            fieldId=state.sourceField and state.sourceField.fieldId
+                or "unknown",
+            occupancy=p.disposition or "unknown",
+            reason=reason or "NO_QUALIFIED_TERMINAL_REGION",
+            incompleteSearch=incomplete==true,
+            planningElapsedMs=state.planningElapsedMs or 0,
+            sitesTotal=e.sitesTotal or 0,
+            sitesExamined=e.sitesExamined or 0,
+            sitesCompleted=math.max(0,(p.siteIndex or 0)
+                -(working and 1 or 0)),
+            currentPhase=p.phase or "unknown",
+            currentSiteIndex=working and (p.siteIndex or 0) or "none",
+            currentSiteEdge=working and p.site
+                and p.site.edgeIndex or "none",
+            currentSiteStation=working and p.site
+                and p.site.station or "none",
+            localPlans=e.localPlans or 0,
+            localFeasible=e.localFeasible or 0,
+            localCandidates=e.localCandidates or 0,
+            approachPlans=e.approachPlans or 0,
+            approachConnected=e.approachConnected or 0,
+            initialReason=e.initialReason or "unknown",
+            initialCandidates=e.initialCandidates or 0,
+            initialRejections=rejectionSummary(e.initialRejections),
+            siteRejections=rejectionSummary(e.siteRejections),
+            routeRejections=rejectionSummary(e.routeRejections),
+            inFlightLocalCandidates=localPlan
+                and localPlan.candidates or 0,
+            inFlightLocalPhase=localPlan and localPlan.phase or "none",
+            inFlightLocalRejections=rejectionSummary(
+                localPlan and localPlan.rejectionCounts),
+            inFlightApproachExpansions=approach
+                and approach.expansions or 0,
+            actualPoseConnection=p.disposition=="STRADDLING"
+                and "DIRECT_LOCAL" or "EXTENDED_FORWARD_ONLY",
+            planningUpdates=p.advances or 0,
+            weightedGeometryChecks=p.spent or 0
+        }
+        end)
+end
 local function rootPose(vehicle)
     if type(vehicle)~="table" or vehicle.rootNode==nil
         or type(getWorldTranslation)~="function" then return nil end
@@ -683,6 +739,8 @@ function Runtime:update(dt)
                 sitesTotal=s.plan and s.plan.sites
                     and #s.plan.sites or "unknown",
                 weightedGeometryChecks=s.plan and s.plan.spent or 0})
+            publishAllocationEvidence(s,
+                "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",true)
             self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
                 "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED")
             return
@@ -757,33 +815,8 @@ function Runtime:update(dt)
             return
         end
         if phase~="DONE" or route==nil then
-            if s.kind=="ALLOCATE" and type(s.plan.evidence)=="table" then
-                -- One diagnostic line per failed allocation, not per site
-                -- or update. No diagnostic counting when policy suppresses it.
-                local e=s.plan.evidence
-                publish("DIAGNOSTIC","INFO",
-                    "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS",function()
-                    return {
-                        rootNode=tostring(s.vehicle.rootNode),
-                        fieldId=s.sourceField and s.sourceField.fieldId
-                            or "unknown",
-                        occupancy=s.plan.disposition or "unknown",
-                        reason=reason or "NO_QUALIFIED_TERMINAL_REGION",
-                        sitesTotal=e.sitesTotal,sitesExamined=e.sitesExamined,
-                        localPlans=e.localPlans,localFeasible=e.localFeasible,
-                        localCandidates=e.localCandidates,
-                        approachPlans=e.approachPlans,
-                        approachConnected=e.approachConnected,
-                        initialReason=e.initialReason,
-                        initialCandidates=e.initialCandidates,
-                        initialRejections=rejectionSummary(e.initialRejections),
-                        siteRejections=rejectionSummary(e.siteRejections),
-                        routeRejections=rejectionSummary(e.routeRejections),
-                        planningUpdates=s.plan.advances,
-                        weightedGeometryChecks=s.plan.spent
-                    }
-                    end)
-            end
+            publishAllocationEvidence(s,
+                reason or "NO_QUALIFIED_TERMINAL_REGION",false)
             if s.kind=="EXTENDED" and type(s.plan.sceneEvidence)=="table" then
                 -- One bounded evidence line on a failed scene admission,
                 -- not a per-frame or per-candidate diagnostic flood.

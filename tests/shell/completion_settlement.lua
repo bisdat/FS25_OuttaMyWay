@@ -873,6 +873,29 @@ assert(runtime:onNativeCompletion({},slowAllocated))
 runtime:update(1000)
 assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
     and runtime.pending.planningElapsedMs==1000)
+-- Ten completed sites plus an unfinished reverse-local site must remain
+-- distinguishable in the budget-expiry evidence.
+local evidenceSession=runtime.pending.plan
+evidenceSession.phase="QUALIFY"
+evidenceSession.siteIndex=11
+evidenceSession.sites={}
+for i=1,23 do evidenceSession.sites[i]={edgeIndex=i} end
+evidenceSession.site={edgeIndex=4,station=62.5}
+evidenceSession.spent=221911
+evidenceSession.advances=82
+evidenceSession.localPlan={
+    candidates=185,phase="ACTIVE",rejectionCounts={
+        REVERSE_MEMBER_OUTSIDE_SOURCE=91,
+        TERMINAL_HEADING_BAND=7}}
+evidenceSession.evidence={
+    sitesTotal=23,sitesExamined=11,localPlans=8,
+    localCandidates=650,localFeasible=0,approachPlans=0,
+    approachConnected=0,
+    initialReason="NO_POSE_REACHABLE_PARKING_REGION",
+    initialCandidates=300,
+    initialRejections={REVERSE_ROOT_OUTSIDE_SOURCE=5},
+    siteRejections={LOCAL_ROUTE_NO_POSE_REACHABLE_PARKING_REGION=7},
+    routeRejections={REVERSE_ROOT_OUTSIDE_SOURCE=99}}
 for i=1,19 do runtime:update(1000) end
 assert(runtime.pending and runtime.pending.planningElapsedMs==20000)
 local count=0
@@ -890,6 +913,30 @@ assert(runtime.pending==nil and runtime.active==nil
     and #driveCalls==initialDriveCount
     and events[#events].fields.reason=="PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
     "the allocator must not restart the response clock or move unqualified")
+local snapshots=0
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS"
+        and event.fields.rootNode=="721" then
+        snapshots=snapshots+1
+        local f=event.fields
+        assert(f.incompleteSearch==true and f.sitesTotal==23
+            and f.sitesExamined==11 and f.sitesCompleted==10
+            and f.currentPhase=="QUALIFY" and f.currentSiteEdge==4
+            and f.currentSiteStation==62.5
+            and f.inFlightLocalCandidates==185
+            and f.inFlightLocalPhase=="ACTIVE"
+            and string.find(f.inFlightLocalRejections,
+                "REVERSE_MEMBER_OUTSIDE_SOURCE:91",1,true)
+            and string.find(f.routeRejections,
+                "REVERSE_ROOT_OUTSIDE_SOURCE:99",1,true)
+            and f.initialCandidates==300
+            and f.actualPoseConnection=="EXTENDED_FORWARD_ONLY"
+            and f.approachConnected==0,
+            "timeout must retain PARTIAL complete-site and current reverse evidence")
+    end
+end
+assert(snapshots==1,
+    "budget failure must publish one incomplete, not exhaustive, reason report")
 assert(not runtime:onNativeCompletion({},slowAllocated),
     "budget exhaustion cannot replay consumed native completion evidence")
 runtime:loadMap()
