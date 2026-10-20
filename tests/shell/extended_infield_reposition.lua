@@ -51,7 +51,7 @@ end
 assert(E.guard(vehicle,route,1),
     "reposition uses the existing live whole-member infield guard")
 -- No physical source-field clearance means no intermediate manoeuvre.
-actual.x=1.5
+actual.x=0.5
 local refused,reason=E.planReposition(vehicle,association)
 assert(refused==nil and reason=="REPOSITION_START_NOT_FULLY_INSIDE_SOURCE")
 print("extended infield qualified reposition and fail-closed partial-member geometry PASS")
