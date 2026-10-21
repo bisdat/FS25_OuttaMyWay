@@ -129,6 +129,8 @@ function M.qualifiedResult(s,approach,direct)
         workingPeers=latest.workingCount,motionWitnesses=latest.motionCount,
         headingWitnesses=latest.headingCount,
         edgeEvidence=s.edgeEvidence,selectionCost=s.site.score,
+        selectionRank=s.site.selectionRank,
+        usableLongitudinalM=s.site.usableLongitudinalM,
         claimObstacles=claimObstacles(s.ledger,s.vehicle)}
 end
 function M.beginPlan(vehicle,ledger,sourceField,disposition,collectEvidence)
@@ -210,6 +212,7 @@ function M.advancePlan(s,units)
                         sorted[#sorted+1]={edgeIndex=f.index,frame=f,
                             station=station,entry=candidate,
                             entryDirection=direction,
+                            usableLongitudinalM=available,
                             score=math.sqrt(dx*dx+dz*dz)}
                     end
                 end
