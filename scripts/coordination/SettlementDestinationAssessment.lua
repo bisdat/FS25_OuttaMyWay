@@ -162,19 +162,31 @@ function M.rank(sites,origin,frame,situation)
         -- The allocator supplies true usable longitudinal edge length after
         -- assembly-dependent endpoint margins. No width/road inference here.
         site.usableLongitudinalM=site.usableLongitudinalM or f.length
-        -- Keep the geometric travel estimate distinct from priority rank.
-        site.score=site.entryDistance
+        -- Preserve existing peer-risk cost reporting separately from
+        -- the new destination selection rank.
+        if #situation.peers>0 then
+            site.score=worst*1000+site.centreDistance+
+                site.entryDistance*0.15
+        else
+            site.score=site.entryDistance
+        end
     end
     local function qualityBefore(a,b)
         if a.peerRisk~=b.peerRisk then return a.peerRisk<b.peerRisk end
         if a.usableLongitudinalM~=b.usableLongitudinalM then
             return a.usableLongitudinalM>b.usableLongitudinalM
         end
-        if a.centreDistance~=b.centreDistance then
+        -- When productive peers exist, keep a centred station away
+        -- from busy edge ends. With no peers, minimise travel among
+        -- candidate stations with equally useful edge span.
+        if #situation.peers>0 and a.centreDistance~=b.centreDistance then
             return a.centreDistance<b.centreDistance
         end
         if a.entryDistance~=b.entryDistance then
             return a.entryDistance<b.entryDistance
+        end
+        if a.centreDistance~=b.centreDistance then
+            return a.centreDistance<b.centreDistance
         end
         if a.edgeIndex~=b.edgeIndex then
             return (a.edgeIndex or 0)<(b.edgeIndex or 0)
@@ -186,11 +198,14 @@ function M.rank(sites,origin,frame,situation)
     local examinedPerEdge={}
     for i=1,#sites do
         local site=sites[i]
-        local n=examinedPerEdge[site.edgeIndex] or 0
+        -- Some general assessment fixtures supply one frame with no
+        -- indexed edge. Such a frame is still one candidate group.
+        local edgeKey=site.edgeIndex or 0
+        local n=examinedPerEdge[edgeKey] or 0
         -- Evaluate both tangent headings at the best station per edge,
         -- then other edge candidates, instead of starving distant edges.
         site.coverageRound=math.floor(n/2)
-        examinedPerEdge[site.edgeIndex]=n+1
+        examinedPerEdge[edgeKey]=n+1
     end
     table.sort(sites,function(a,b)
         if a.peerRisk~=b.peerRisk then return a.peerRisk<b.peerRisk end
