@@ -290,7 +290,7 @@ function Runtime:sampleMotion(state,status)
     end)
 end
 
-local retryStopped
+local retryStopped,allocation
 function Runtime:startLeg()
     local s=self.active
     if s==nil then return end
@@ -311,21 +311,22 @@ function Runtime:startLeg()
                     why or "REPOSITION_ACTUAL_ASSEMBLY_NOT_INSIDE")
                 return
             end
-            local plan,reason=OuttaMyWay.CompletionSettlementRoute.beginPlan(
-                s.vehicle,{sourceField=s.sourceField})
-            if plan==nil then
-                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
-                    reason or "REPOSITION_REASSESSMENT_UNAVAILABLE")
-                return
-            end
-            self.active=nil
-            self.pending={vehicle=s.vehicle,job=s.job,
-                sourceField=s.sourceField,plan=plan,
-                kind="LOCAL_INITIAL",elapsedMs=s.totalElapsedMs,
-                planningElapsedMs=0,phase="PLANNING",driveArmed=false}
+            -- A physically observed Manoeuvrable Pose changes which
+            -- destinations are attainable. Do not restart nearest-edge
+            -- planning and commit before comparing the Source Field edges.
+            -- The allocator still requires a fully connected actual-pose
+            -- approach before claiming an exterior terminal.
+            s.occupancy=occupancy.status
+            s.planningElapsedMs=0
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_OBSERVED",{
                 rootNode=tostring(s.vehicle.rootNode),
-                note="PHYSICAL_STOP_CONFIRMED_FRESH_POSE_LOCAL_REASSESSMENT"})
+                note="PHYSICAL_STOP_CONFIRMED_FIELD_WIDE_DESTINATION_REASSESSMENT"})
+            local accepted,reason=allocation(self,s,
+                "REPOSITION_ACTUAL_POSE_DESTINATION_REASSESSMENT")
+            if not accepted then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    reason or "REPOSITION_REASSESSMENT_UNAVAILABLE")
+            end
             return
         end
         if s.route.mode=="EXTENDED_INFIELD" then
@@ -553,7 +554,7 @@ function Runtime:onNativeCompletion(job,vehicle,retainedSourceField)
     self.attempted[vehicle]=true
     return beginEpisode(self,job,vehicle,sourceField)
 end
-local function allocation(self,s,why)
+allocation=function(self,s,why)
     local collectEvidence=type(publication.isEligible)=="function"
         and publication:isEligible("DIAGNOSTIC","INFO",
             "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS")
@@ -867,6 +868,9 @@ function Runtime:update(dt)
                 headingWitnesses=route.headingWitnesses,
                 selectionCost=route.selectionCost,
                 edgeIndex=route.edge,
+                selectionRank=route.selectionRank,
+                usableLongitudinalM=route.usableLongitudinalM,
+                selectionBasis="PEER_RISK_THEN_USABLE_EDGE_SPACE_NOT_ROAD_PROOF",
                 edgeQualification="LOCAL_ROUTE_AND_TERMINAL_QUALIFIED"} end)
             return
         end
