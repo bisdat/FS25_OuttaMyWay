@@ -149,12 +149,37 @@ assert(leading.frame and leading.edgeIndex
     and #assessed.sites>1,
     "all registered edge sites must carry their geometric provenance")
 assert(assessed.situation.motionCount==1)
-local previous=assessed.sites[1].score
-for i=2,#assessed.sites do
-    assert(assessed.sites[i].score>=previous,
-        "situation-ranked edge candidates must be ordered by evidence")
-    previous=assessed.sites[i].score
+for i=1,#assessed.sites do
+    assert(assessed.sites[i].selectionRank==i
+        and type(assessed.sites[i].usableLongitudinalM)=="number",
+        "global destination consideration must retain rank and real edge-space evidence")
 end
+-- A distant longer usable margin outranks a nearby shorter one for
+-- otherwise comparable productive demand. Sampling covers another edge
+-- before exhausting all stations of the longest edge.
+local candidateFrames={
+    [1]={ax=0,az=0,ux=1,uz=0,nx=0,nz=1,length=120},
+    [2]={ax=0,az=0,ux=1,uz=0,nx=0,nz=1,length=40}
+}
+local synthetic={}
+for _,edgeIndex in ipairs({1,2}) do
+    local frame=candidateFrames[edgeIndex]
+    for _,station in ipairs(edgeIndex==1 and {60,85} or {20}) do
+        for _,direction in ipairs({-1,1}) do
+            synthetic[#synthetic+1]={edgeIndex=edgeIndex,frame=frame,
+                station=station,entryDirection=direction,
+                entry={x=edgeIndex==1 and 100 or 5,z=0},
+                usableLongitudinalM=edgeIndex==1 and 105 or 25}
+        end
+    end
+end
+local ordered=assert(Situation.rank(synthetic,{x=0,z=0},nil,{peers={}}))
+assert(ordered[1].edgeIndex==1 and ordered[2].edgeIndex==1
+    and ordered[3].edgeIndex==2 and ordered[4].edgeIndex==2
+    and ordered[5].edgeIndex==1,
+    "usable destination extent must beat proximity without starving other edges")
+assert(ordered[1].selectionRank==1 and ordered[3].selectionRank==3,
+    "priority rank must not be conflated with travel cost")
 for i=1,18000 do
     status,chosen,reason=Allocation.advancePlan(assessed,320)
     if status~="PENDING" then break end
