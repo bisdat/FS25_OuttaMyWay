@@ -830,6 +830,34 @@ function Runtime:update(dt)
             phase,route,reason=planner.advancePlan(
                 s.plan,PLAN_UNITS_PER_UPDATE)
         end
+        if s.kind=="ALLOCATE" and s.plan and s.plan.sites
+            and not s.destinationPriorityPublished then
+            s.destinationPriorityPublished=true
+            publish("DIAGNOSTIC","INFO",
+                "COMPLETION_SETTLEMENT_DESTINATION_PRIORITIES",function()
+                local listed={}
+                local seen={}
+                for i=1,math.min(#s.plan.sites,20) do
+                    local site=s.plan.sites[i]
+                    if not seen[site.edgeIndex] then
+                        seen[site.edgeIndex]=true
+                        listed[#listed+1]=tostring(site.edgeIndex)
+                            ..":rank"..tostring(site.selectionRank)
+                            ..":usable"..string.format("%.1f",
+                                site.usableLongitudinalM or 0)
+                            ..":risk"..tostring(site.peerRisk)
+                    end
+                end
+                return {rootNode=tostring(s.vehicle.rootNode),
+                    fieldId=s.sourceField and s.sourceField.fieldId,
+                    occupancy=s.occupancy,
+                    totalSites=#s.plan.sites,
+                    priorityPreview=table.concat(listed,";"),
+                    basis="PEER_RISK_USABLE_LENGTH_CROSS_EDGE_COVERAGE",
+                    exteriorRoadClearance="UNKNOWN_NOT_OBSERVED",
+                    selection="ORDER_ONLY_NO_MOVEMENT_OR_CLAIM"}
+                end)
+        end
         if phase=="PENDING" then return end
         if s.kind=="ALLOCATE" and phase=="DONE" and route then
             -- The allocator must have qualified the actual-pose connection
