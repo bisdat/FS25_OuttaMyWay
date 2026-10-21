@@ -170,6 +170,21 @@ OuttaMyWay.CompletionSettlementRoute={
         return copy
     end
 }
+local directDestinationBegins=0
+OuttaMyWay.CompletionDestinationRouteAssessment={
+    beginPlan=function()
+        directDestinationBegins=directDestinationBegins+1
+        return {spent=0,advances=0,order={{
+            edgeIndex=1,selectionRank=1,usableLongitudinalM=100}}}
+    end,
+    priorityPreview=function()return "1:rank1:usable100" end,
+    advancePlan=function(session,units)
+        session.advances=session.advances+1
+        session.spent=session.spent+units
+        if forcePlanPending then return "PENDING" end
+        return "DONE",route
+    end
+}
 local refuseExtendedScene=false
 local directAllocation=false
 local allocationStalled=false
@@ -983,16 +998,18 @@ assert(runtime.active and runtime.active.route.mode=="REPOSITION_INFIELD"
 -- No final parking success until this second planning phase and its
 -- eventual complete-assembly terminal have been independently established.
 local observed=false
-local localCallsBeforeRepositionHandoff=routeCalls
+local directBefore=directDestinationBegins
+local allocationBefore=lastAllocationDisposition
 for i=1,20 do
     runtime:update(16)
-    if runtime.pending and runtime.pending.kind=="ALLOCATE" then
+    if runtime.pending and runtime.pending.kind=="DIRECT_DESTINATION" then
         observed=true
         assert(runtime.drive.active==nil
             and runtime.pending.planningElapsedMs==0
-            and lastAllocationDisposition=="INSIDE"
-            and routeCalls==localCallsBeforeRepositionHandoff,
-            "verified reposition must reassess all edges before another nearest-only local route")
+            and runtime.pending.occupancy=="INSIDE"
+            and directDestinationBegins==directBefore+1
+            and lastAllocationDisposition==allocationBefore,
+            "verified reposition must preserve direct actual-pose routes, not restart hypothetical allocation")
         break
     end
 end
