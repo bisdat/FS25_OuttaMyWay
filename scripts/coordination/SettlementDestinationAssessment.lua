@@ -134,6 +134,10 @@ function M.risk(candidate,peer)
     if range<110+peer.radius then return 2,"NEAR_PRODUCTIVE_DEMAND" end
     return 0,"NO_NEAR_DEMAND_EVIDENCE"
 end
+-- Candidate priority is an assessment of prospective space, never an
+-- admission or proof that a road, obstacle or actual drive corridor is clear.
+-- Prefer less productive-worker risk, then more usable longitudinal space.
+-- Sample separate edges before exhausting every station at the nearest edge.
 function M.rank(sites,origin,frame,situation)
     if type(sites)~="table" or type(origin)~="table"
         or type(situation)~="table" then
@@ -155,26 +159,47 @@ function M.rank(sites,origin,frame,situation)
         local dx,dz=origin.x-site.entry.x,origin.z-site.entry.z
         site.entryDistance=magnitude(dx,dz)
         site.centreDistance=math.abs(site.station-f.length/2)
-        -- With active workers, protect other productive space first.
-        -- When no peer is working, preserve the previously tested
-        -- proximity preference. These scores are EXPERIMENTAL ranking
-        -- estimates, not complete path lengths or physics forecasts.
-        if #situation.peers>0 then
-            site.score=worst*1000+site.centreDistance*1.0+
-                site.entryDistance*0.15
-        else
-            site.score=site.entryDistance
+        -- The allocator supplies true usable longitudinal edge length after
+        -- assembly-dependent endpoint margins. No width/road inference here.
+        site.usableLongitudinalM=site.usableLongitudinalM or f.length
+        -- Keep the geometric travel estimate distinct from priority rank.
+        site.score=site.entryDistance
+    end
+    local function qualityBefore(a,b)
+        if a.peerRisk~=b.peerRisk then return a.peerRisk<b.peerRisk end
+        if a.usableLongitudinalM~=b.usableLongitudinalM then
+            return a.usableLongitudinalM>b.usableLongitudinalM
         end
+        if a.centreDistance~=b.centreDistance then
+            return a.centreDistance<b.centreDistance
+        end
+        if a.entryDistance~=b.entryDistance then
+            return a.entryDistance<b.entryDistance
+        end
+        if a.edgeIndex~=b.edgeIndex then
+            return (a.edgeIndex or 0)<(b.edgeIndex or 0)
+        end
+        if a.station~=b.station then return a.station<b.station end
+        return (a.entryDirection or 0)<(b.entryDirection or 0)
+    end
+    table.sort(sites,qualityBefore)
+    local examinedPerEdge={}
+    for i=1,#sites do
+        local site=sites[i]
+        local n=examinedPerEdge[site.edgeIndex] or 0
+        -- Evaluate both tangent headings at the best station per edge,
+        -- then other edge candidates, instead of starving distant edges.
+        site.coverageRound=math.floor(n/2)
+        examinedPerEdge[site.edgeIndex]=n+1
     end
     table.sort(sites,function(a,b)
-        if a.score==b.score then
-            if a.edgeIndex~=b.edgeIndex then
-                return (a.edgeIndex or 0)<(b.edgeIndex or 0)
-            end
-            return a.station<b.station
+        if a.peerRisk~=b.peerRisk then return a.peerRisk<b.peerRisk end
+        if a.coverageRound~=b.coverageRound then
+            return a.coverageRound<b.coverageRound
         end
-        return a.score<b.score
+        return qualityBefore(a,b)
     end)
+    for i=1,#sites do sites[i].selectionRank=i end
     return sites
 end
 -- Edge candidacy is geometric; route/terminal qualification is separate.
