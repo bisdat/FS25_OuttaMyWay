@@ -93,6 +93,8 @@ coroutine=coroutineOriginal
 local a,err=Route.plan(vehicle,nil,fixtureOptions)
 assert(a,err)
 assert(route.estimatedTravelM==a.estimatedTravelM
+    and route.terminalArrivalRadiusM==0.75
+    and a.terminalArrivalRadiusM==0.75
     and route.method==a.method and #route.legs==#a.legs
     and route.direction==a.direction and route.reverseM==a.reverseM
     and route.guideRadiusM==a.guideRadiusM,
@@ -154,6 +156,14 @@ for i=1,#a.legs do
 end
 assert(switches<=1 and a.legs[#a.legs].moveForwards,
     "at most brief reverse then forwards, never full-edge reversing")
+assert(a.legs[#a.legs].arrivalRadiusM==0.75
+    and route.legs[#route.legs].arrivalRadiusM==0.75,
+    "native final guidance cannot end 2.5m before the qualified terminal")
+for i=1,#a.legs-1 do
+    assert(a.legs[i].arrivalRadiusM==nil
+        and route.legs[i].arrivalRadiusM==nil,
+        "ordinary intermediate guidance retains the existing arrival contract")
+end
 assert(a.reverseM<=32)
 -- The end of the chosen manoeuvre must be a REAL entire-member region
 -- witness, not an assumed far point. The idealised plan ended edge-parallel.
@@ -163,6 +173,18 @@ current.fx,current.fz=edge.dx/edge.length*a.direction,
 local finished,reason=Route.verifyTerminal(vehicle,a)
 assert(finished,reason)
 assert(Route.guard(vehicle,a))
+-- Every sampled position around the permitted 0.75m FINAL arrival radius
+-- must already qualify the nominal entire-member terminal. The stopped
+-- native heading remains an independent GIANTS Reality observation.
+local endX,endZ=current.x,current.z
+for i=0,7 do
+    local angle=i*math.pi/4
+    current.x=endX+math.cos(angle)*0.75
+    current.z=endZ+math.sin(angle)*0.75
+    assert(Route.verifyTerminal(vehicle,a),
+        "planned native final-arrival sample must already be a terminal")
+end
+current.x,current.z=endX,endZ
 current.x=current.x+current.fx*5
 current.z=current.z+current.fz*5
 local reserved,whyReserved=Route.verifyTerminal(vehicle,a)
@@ -197,6 +219,16 @@ assert(correction.method=="STOPPED_TERMINAL_CORRECTION"
     "one bounded current-pose forward correction must be separately qualified")
 assert(correction.terminalPose.x>=5
     and correction.terminalPose.z==-3)
+-- An earlier 2.5m-wide nominal arrival claim is not equivalent to an
+-- actual terminal: member clearance can change within that interval.
+current.x,current.z,current.fx,current.fz=5.8,-3,1,0
+assert(Route.verifyTerminal(vehicle,correctionRoute))
+current.x=5.8-2.387
+assert(not Route.verifyTerminal(vehicle,correctionRoute),
+    "the .10/.14 early-stop distance may leave a member in the margin")
+current.x=5.8-0.75
+assert(Route.verifyTerminal(vehicle,correctionRoute),
+    "precision arrival can qualify where ordinary 2.5m guidance cannot")
 current.x,current.z=correction.terminalPose.x,correction.terminalPose.z
 local verified,verifiedWhy=Route.verifyTerminal(vehicle,correction)
 assert(verified,verifiedWhy)
