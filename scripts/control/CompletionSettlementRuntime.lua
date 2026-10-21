@@ -5,6 +5,7 @@ OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionSettlementRuntime={}
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local Allocation=OuttaMyWay.ParkingRegionAllocation
+local Destination=OuttaMyWay.CompletionDestinationRouteAssessment
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Membership=OuttaMyWay.CompletionFieldMembership
 local AssemblyOccupancy=OuttaMyWay.CompletionAssemblyFieldOccupancy
@@ -311,22 +312,34 @@ function Runtime:startLeg()
                     why or "REPOSITION_ACTUAL_ASSEMBLY_NOT_INSIDE")
                 return
             end
-            -- A physically observed Manoeuvrable Pose changes which
-            -- destinations are attainable. Do not restart nearest-edge
-            -- planning and commit before comparing the Source Field edges.
-            -- The allocator still requires a fully connected actual-pose
-            -- approach before claiming an exterior terminal.
-            s.occupancy=occupancy.status
-            s.planningElapsedMs=0
+            -- .12 proved that a remote hypothetical edge-local terminal
+            -- and forward-only connection are NOT interchangeable with
+            -- .10's real-pose reverse-first terminal route. Re-observe
+            -- the full assembly, then assess destinations from that pose.
+            local plan,reason=Destination.beginPlan(s.vehicle,s.sourceField)
+            if plan==nil then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    reason or "REPOSITION_DESTINATION_ASSESSMENT_UNAVAILABLE")
+                return
+            end
+            self.active=nil
+            self.pending={vehicle=s.vehicle,job=s.job,
+                sourceField=s.sourceField,plan=plan,
+                kind="DIRECT_DESTINATION",occupancy=occupancy.status,
+                elapsedMs=s.totalElapsedMs,planningElapsedMs=0,
+                phase="PLANNING",driveArmed=false}
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_OBSERVED",{
                 rootNode=tostring(s.vehicle.rootNode),
-                note="PHYSICAL_STOP_CONFIRMED_FIELD_WIDE_DESTINATION_REASSESSMENT"})
-            local accepted,reason=allocation(self,s,
-                "REPOSITION_ACTUAL_POSE_DESTINATION_REASSESSMENT")
-            if not accepted then
-                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
-                    reason or "REPOSITION_REASSESSMENT_UNAVAILABLE")
-            end
+                note="PHYSICAL_STOP_CONFIRMED_ACTUAL_POSE_DESTINATION_ASSESSMENT"})
+            publish("DIAGNOSTIC","INFO",
+                "COMPLETION_SETTLEMENT_DIRECT_DESTINATION_PRIORITIES",function()
+                return {rootNode=tostring(s.vehicle.rootNode),
+                    preview=Destination.priorityPreview(plan),
+                    sourceFieldId=s.sourceField.fieldId,
+                    candidateEdges=#plan.order,
+                    connection="ACTUAL_POSE_LOCAL_REVERSE_FORWARD",
+                    policy="PROVISIONAL_ROUTE_NOT_DRIVE_AUTHORITY"}
+                end)
             return
         end
         if s.route.mode=="EXTENDED_INFIELD" then
@@ -824,11 +837,12 @@ function Runtime:update(dt)
             -- actual straddling pose, rather than an imaginary entry point.
             phase,route="DONE",s.prequalifiedRoute
         else
-            local planner=s.kind=="ALLOCATE" and Allocation or
-                (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach
-                or OuttaMyWay.CompletionSettlementRoute)
+            local planner=s.kind=="ALLOCATE" and Allocation
+                or (s.kind=="DIRECT_DESTINATION" and Destination)
+                or (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach)
+                or OuttaMyWay.CompletionSettlementRoute
             phase,route,reason=planner.advancePlan(
-                s.plan,PLAN_UNITS_PER_UPDATE)
+                s.plan,PLAN_UNITS_PER_UPDATE,s.planningElapsedMs)
         end
         if s.kind=="ALLOCATE" and s.plan and s.plan.sites
             and not s.destinationPriorityPublished then
@@ -976,7 +990,9 @@ function Runtime:update(dt)
                 reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
             return
         end
-        if s.kind=="LOCAL_INITIAL" then
+        if s.kind=="LOCAL_INITIAL" or s.kind=="DIRECT_DESTINATION" then
+            -- Full routes from the actual complete assembly, never
+            -- hypothetical edge entries, may acquire a terminal claim.
             local claim,why=Allocation.claimForRoute(self.claims,s.vehicle,route)
             if not claim then
                 if allocation(self,s,why) then return end
@@ -1038,6 +1054,12 @@ function Runtime:update(dt)
             guidancePoints=#route.legs,
             estimatedTravelM=route.estimatedTravelM,
             guideRadiusM=route.guideRadiusM,
+            destinationSelectionRank=route.destinationSelectionRank
+                or "not-compared",
+            destinationUsableLongitudinalM=
+                route.destinationUsableLongitudinalM or "unknown",
+            destinationAssessment=route.destinationAssessment
+                or "INITIAL_LOCAL_ROUTE",
             note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"}
         end)
         self:startLeg()
