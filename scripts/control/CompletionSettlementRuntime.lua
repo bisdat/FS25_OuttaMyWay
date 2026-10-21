@@ -375,6 +375,52 @@ function Runtime:startLeg()
                 note="EXTENDED_APPROACH_STOPPED_AND_RELEASED"})
             return
         end
+        -- The final native stop is an observation, NOT evidence that the
+        -- nominal arrival position or tangent was actually achieved.
+        -- Keep this attribution DIAGNOSTIC-only and after physical release.
+        publish("DIAGNOSTIC","INFO",
+            "COMPLETION_SETTLEMENT_TERMINAL_ARRIVAL_EVIDENCE",function()
+            local x,z=rootPose(s.vehicle)
+            local terminal=s.route.terminalPose
+            local last=s.route.legs and s.route.legs[#s.route.legs]
+            local target=terminal or (last and last.point)
+            local distance,shortfall,lateral=nil,nil,nil
+            if x~=nil and target~=nil then
+                local dx,dz=target.x-x,target.z-z
+                distance=math.sqrt(dx*dx+dz*dz)
+                if type(target.fx)=="number" and
+                    type(target.fz)=="number" then
+                    shortfall=dx*target.fx+dz*target.fz
+                    lateral=math.abs(dx*target.fz-dz*target.fx)
+                end
+            end
+            local headingError=nil
+            local frame=s.route.frame
+            if type(frame)=="table"
+                and type(localDirectionToWorld)=="function" then
+                local ok,fx,_,fz=pcall(localDirectionToWorld,
+                    s.vehicle.rootNode,0,0,1)
+                if ok and type(fx)=="number" and
+                    type(fz)=="number" then
+                    local magnitude=math.sqrt(fx*fx+fz*fz)
+                    if magnitude>0.001 then
+                        local alignment=math.abs((fx*frame.ux+
+                            fz*frame.uz)/magnitude)
+                        headingError=math.deg(math.acos(
+                            math.min(1,math.max(0,alignment))))
+                    end
+                end
+            end
+            return {rootNode=tostring(s.vehicle.rootNode),
+                edge=s.route.edge,
+                finalArrivalRadiusM=s.route.terminalArrivalRadiusM
+                    or (last and last.arrivalRadiusM) or 2.5,
+                actualToNominalTerminalM=distance or "unknown",
+                nominalHeadingShortfallM=shortfall or "unknown",
+                nominalHeadingLateralOffsetM=lateral or "unknown",
+                actualEdgeHeadingErrorDeg=headingError or "unknown",
+                terminalSampling="NOMINAL_RADIAL_EIGHT_ACTUAL_STEERING_UNPROVEN"}
+            end)
         local okay,reason,predicate=OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
             s.vehicle,s.route)
         if okay then
