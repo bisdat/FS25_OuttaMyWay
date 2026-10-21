@@ -17,6 +17,17 @@ local STOP_DEPTH_MAX_M=12
 -- The first nominal clear pose is not sufficient when cruise is braking:
 -- reserve an additional tangent position for physical stopping overshoot.
 local STOPPING_RESERVE_M=5
+-- FINAL native waypoints are not ordinary 2.5m guidance points.
+-- The existing correction path already uses the 0.75m precision contract.
+local TERMINAL_ARRIVAL_RADIUS_M=0.75
+-- Bounded radial samples of permitted native positional completion; not a
+-- prediction of articulated steering or a continuous physical clearance proof.
+local DIAGONAL=math.sqrt(0.5)
+local TERMINAL_ARRIVAL_DIRECTIONS={
+    {-1,0},{1,0},{0,-1},{0,1},
+    {-DIAGONAL,-DIAGONAL},{-DIAGONAL,DIAGONAL},
+    {DIAGONAL,-DIAGONAL},{DIAGONAL,DIAGONAL}
+}
 local function finite(x)
     return type(x)=="number" and x==x and x~=math.huge and x~=-math.huge
 end
@@ -183,6 +194,26 @@ end
 local function advance(p,length)
     return {x=p.x+p.fx*length,z=p.z+p.fz*length,fx=p.fx,fz=p.fz}
 end
+-- Each offset is measured relative to the planned FINAL heading. Runtime
+-- still judges the actual stopped heading independently and may refuse.
+local function terminalArrivalPose(p,sample)
+    local longitudinal=sample[1]*TERMINAL_ARRIVAL_RADIUS_M
+    local lateral=sample[2]*TERMINAL_ARRIVAL_RADIUS_M
+    return {x=p.x+p.fx*longitudinal-p.fz*lateral,
+        z=p.z+p.fz*longitudinal+p.fx*lateral,
+        fx=p.fx,fz=p.fz}
+end
+local function nominalTerminalArrivalClear(p,foot,initial,poly,
+    neighbors,frame,checkpoint,occupants,ownRadius)
+    for i=1,#TERMINAL_ARRIVAL_DIRECTIONS do
+        local sample=terminalArrivalPose(p,TERMINAL_ARRIVAL_DIRECTIONS[i])
+        if not terminalAllowed(sample,foot,initial,poly,
+            neighbors,frame,checkpoint,occupants,ownRadius) then
+            return false
+        end
+    end
+    return true
+end
 local function turnStep(p,radius,angle)
     local h=angle*0.5
     local midX=p.fx*math.cos(h)-p.fz*math.sin(h)
@@ -273,10 +304,17 @@ local function tryTrack(current,foot,poly,neighbors,frame,
     local extra=0
     while extra<=35 do
         if terminalAllowed(track.pose,foot,current,
-            poly,neighbors,frame,checkpoint,occupants,ownRadius) then
+            poly,neighbors,frame,checkpoint,occupants,ownRadius)
+            and nominalTerminalArrivalClear(track.pose,foot,current,
+                poly,neighbors,frame,checkpoint,occupants,ownRadius) then
             local beyond=advance(track.pose,STOPPING_RESERVE_M)
             if terminalAllowed(beyond,foot,current,
-                poly,neighbors,frame,checkpoint,occupants,ownRadius) then return track end
+                poly,neighbors,frame,checkpoint,occupants,ownRadius) then
+                local last=track.points[#track.points]
+                if last==nil or not last.moveForwards then return nil end
+                last.arrivalRadiusM=TERMINAL_ARRIVAL_RADIUS_M
+                return track
+            end
             -- Without braking reserve, keep looking along the same
             -- tangent. A later station might still offer a safe stop.
         end
@@ -345,6 +383,7 @@ function Route.plan(vehicle,checkpoint,options)
         method=best.method,direction=best.direction,
         reverseM=best.track.reverseM,guideRadiusM=best.radius,
         estimatedTravelM=best.track.travelM,
+        terminalArrivalRadiusM=TERMINAL_ARRIVAL_RADIUS_M,
         legs=best.track.points},nil
 end
 -- Explicit Incremental Planner: all continuation state is ordinary Lua data.
@@ -489,10 +528,21 @@ local function checkFinished(s,clear)
         c.segment.index=c.segment.index+1
         c.stage="SEGMENT"
     elseif check.kind=="TERMINAL" and clear then
-        c.stage="RESERVE_INIT"
+        c.arrivalIndex=1
+        c.stage="ARRIVAL_INIT"
+    elseif check.kind=="ARRIVAL" and clear then
+        c.arrivalIndex=c.arrivalIndex+1
+        c.stage="ARRIVAL_INIT"
     elseif check.kind=="RESERVE" and clear then
-        c.accepted=true
-        c.stage="ACCEPT"
+        local last=c.track.points[#c.track.points]
+        if last==nil or not last.moveForwards then
+            denied(s,"TERMINAL_FINAL_GUIDANCE_UNAVAILABLE")
+            c.stage="REJECT"
+        else
+            last.arrivalRadiusM=TERMINAL_ARRIVAL_RADIUS_M
+            c.accepted=true
+            c.stage="ACCEPT"
+        end
     else
         c.stage="RUNOUT_INIT"
     end
@@ -649,6 +699,14 @@ local function advanceCandidate(s)
         end
     elseif c.stage=="TERMINAL_INIT" then
         makeCheck(s,c.track.pose,"TERMINAL",false)
+    elseif c.stage=="ARRIVAL_INIT" then
+        if c.arrivalIndex>#TERMINAL_ARRIVAL_DIRECTIONS then
+            c.stage="RESERVE_INIT"
+        else
+            makeCheck(s,terminalArrivalPose(c.track.pose,
+                TERMINAL_ARRIVAL_DIRECTIONS[c.arrivalIndex]),
+                "ARRIVAL",false)
+        end
     elseif c.stage=="RESERVE_INIT" then
         makeCheck(s,advance(c.track.pose,STOPPING_RESERVE_M),
             "RESERVE",false)
@@ -734,6 +792,7 @@ local function executeBudget(s)
                 guideRadiusM=best.radius,
                 estimatedTravelM=best.track.travelM,
                 terminalPose=best.track.pose,
+                terminalArrivalRadiusM=TERMINAL_ARRIVAL_RADIUS_M,
                 legs=best.track.points}
         else error("INCREMENTAL_PLANNING_PHASE_INVALID") end
     end
