@@ -7,7 +7,6 @@ local M=OuttaMyWay.CompletionDestinationRouteAssessment
 local Parking=OuttaMyWay.CompletionParkingGeometry
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Local=OuttaMyWay.CompletionSettlementRoute
-local G=OuttaMyWay.FarmEdgeGeometry
 local PREFERRED_RESPONSE_CUTOFF_MS=17000
 
 local function location(vehicle)
@@ -48,13 +47,25 @@ function M.beginPlan(vehicle,sourceField)
     if #sites==0 then return nil,"DESTINATION_NO_ELIGIBLE_EDGE" end
     local ranked,rankWhy=Situation.rank(sites,current,nil,scene)
     if ranked==nil then return nil,rankWhy end
-    local preferred,nearest={},context.frames[1].index
+    -- The nearest tiny boundary segment might lack the minimum terminal
+    -- longitudinal span. Start with the nearest *eligible* edge.
+    local eligible={}
+    for _,site in ipairs(ranked) do eligible[site.edgeIndex]=site end
     local first=nil
-    for _,site in ipairs(ranked) do
-        if site.edgeIndex==nearest then first=site
-        else preferred[#preferred+1]=site end
+    for _,edge in ipairs(context.frames) do
+        if eligible[edge.index]~=nil then
+            first=eligible[edge.index]
+            break
+        end
     end
     if first==nil then return nil,"DESTINATION_NEAREST_EDGE_UNAVAILABLE" end
+    local nearest=first.edgeIndex
+    local preferred={}
+    for _,site in ipairs(ranked) do
+        if site.edgeIndex~=nearest then
+            preferred[#preferred+1]=site
+        end
+    end
     local order={first}
     for _,site in ipairs(preferred) do order[#order+1]=site end
     return {vehicle=vehicle,sourceField=sourceField,poly=context.poly,
@@ -80,6 +91,28 @@ local function rememberRefusal(plan,reason)
     local key=tostring(reason or "DESTINATION_NO_CONNECTED_ROUTE")
     plan.reasonCounts[key]=(plan.reasonCounts[key] or 0)+1
 end
+local function finalizeProvisional(plan)
+    local retained=plan.provisional
+    plan.finished=true
+    if retained==nil then
+        return "FAILED",nil,"NO_ACTUAL_POSE_CONNECTED_DESTINATION"
+    end
+    local current=location(plan.vehicle)
+    if current==nil then return "FAILED",nil,"DESTINATION_ACTUAL_POSE_UNAVAILABLE" end
+    local dx=current.x-plan.originalPose.x
+    local dz=current.z-plan.originalPose.z
+    -- A route from a captured pose cannot become a different real pose
+    -- simply because its local variant was qualified seconds earlier.
+    if dx*dx+dz*dz>0.2*0.2 then
+        return "FAILED",nil,"DESTINATION_ACTUAL_POSE_CHANGED"
+    end
+    local safe,why=supported(retained,plan)
+    if not safe then
+        return "FAILED",nil,why or "DESTINATION_DEMAND_CHANGED"
+    end
+    return "DONE",retained
+end
+
 
 function M.advancePlan(plan,units,elapsedMs)
     if type(plan)~="table" or plan.finished
@@ -90,8 +123,7 @@ function M.advancePlan(plan,units,elapsedMs)
     if plan.provisional~=nil
         and type(elapsedMs)=="number"
         and elapsedMs>=PREFERRED_RESPONSE_CUTOFF_MS then
-        plan.finished=true
-        return "DONE",plan.provisional
+        return finalizeProvisional(plan)
     end
     if plan.phase=="NEXT" then
         plan.edgeIndex=plan.edgeIndex+1
@@ -101,9 +133,7 @@ function M.advancePlan(plan,units,elapsedMs)
         if site==nil
             or (plan.provisional~=nil
                 and site.selectionRank>=plan.provisional.selectionRank) then
-            plan.finished=true
-            if plan.provisional~=nil then return "DONE",plan.provisional end
-            return "FAILED",nil,"NO_ACTUAL_POSE_CONNECTED_DESTINATION"
+            return finalizeProvisional(plan)
         end
         local options={sourceField=plan.sourceField,edgeIndex=site.edgeIndex}
         if plan.edgeIndex>1 then
