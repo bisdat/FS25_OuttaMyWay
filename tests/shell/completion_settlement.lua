@@ -983,13 +983,16 @@ assert(runtime.active and runtime.active.route.mode=="REPOSITION_INFIELD"
 -- No final parking success until this second planning phase and its
 -- eventual complete-assembly terminal have been independently established.
 local observed=false
+local localCallsBeforeRepositionHandoff=routeCalls
 for i=1,20 do
     runtime:update(16)
-    if runtime.pending and runtime.pending.kind=="LOCAL_INITIAL" then
+    if runtime.pending and runtime.pending.kind=="ALLOCATE" then
         observed=true
         assert(runtime.drive.active==nil
-            and runtime.pending.planningElapsedMs==0,
-            "reposition must stop and release native lease before new plan")
+            and runtime.pending.planningElapsedMs==0
+            and lastAllocationDisposition=="INSIDE"
+            and routeCalls==localCallsBeforeRepositionHandoff,
+            "verified reposition must reassess all edges before another nearest-only local route")
         break
     end
 end
