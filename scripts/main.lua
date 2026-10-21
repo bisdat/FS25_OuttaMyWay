@@ -40,6 +40,7 @@ local modules={
     "scripts/coordination/ExtendedInfieldApproach.lua",
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
+    "scripts/coordination/CompletionDestinationRouteAssessment.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
