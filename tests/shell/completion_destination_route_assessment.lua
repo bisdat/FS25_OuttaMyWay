@@ -108,6 +108,32 @@ assert(phase=="PENDING" and pending.provisional
 phase,route=Assessor.advancePlan(pending,320,17000)
 assert(phase=="DONE" and route.edge==2,
     "response budget protects a proven actual-pose route from an unproven priority")
+-- A provisional route cannot survive measured drift or a newly
+-- relevant productive worker just because it qualified earlier.
+local drift=assert(Assessor.beginPlan(vehicle,source))
+for i=1,5 do
+    phase,route=Assessor.advancePlan(drift,320,i*1000)
+end
+assert(drift.provisional,"source-pose local route must be established")
+current.x=current.x+0.5
+phase,route,why=Assessor.advancePlan(drift,320,17000)
+assert(phase=="FAILED" and route==nil
+    and why=="DESTINATION_ACTUAL_POSE_CHANGED",
+    "stale current pose must revoke a provisional destination")
+current.x=current.x-0.5
+local demand=assert(Assessor.beginPlan(vehicle,source))
+for i=1,5 do
+    phase,route=Assessor.advancePlan(demand,320,i*1000)
+end
+assert(demand.provisional)
+scene.peers={{vehicle={},x=18,z=15}}
+refusedRisk=true
+phase,route,why=Assessor.advancePlan(demand,320,17000)
+assert(phase=="FAILED" and route==nil
+    and why=="DESTINATION_PRODUCTIVE_CORRIDOR_RISK",
+    "new worker demand must revoke a provisional terminal")
+scene.peers={}
+refusedRisk=false
 longPending=false
 -- If every actual-pose candidate refuses, priority cannot grant Control.
 longConnected=false
