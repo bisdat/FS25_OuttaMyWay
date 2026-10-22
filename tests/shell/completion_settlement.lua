@@ -170,6 +170,32 @@ OuttaMyWay.CompletionSettlementRoute={
         return copy
     end
 }
+local boundaryAllowed=false
+local boundaryBegins=0
+local boundaryAdvanced=0
+local boundaryExitRoute={
+    mode="BOUNDARY_EXIT",field=29,edge=7,memberCount=2,
+    estimatedTravelM=6,method="ACTUAL_POSE_FORWARD_BOUNDARY_EXIT",
+    terminalPose={x=21,z=12},terminalArrivalRadiusM=0.75,
+    legs={{name="BOUNDARY_EXIT_FORWARD",
+        point={x=17,z=12},moveForwards=true},
+        {name="BOUNDARY_EXIT_FORWARD",
+        point={x=21,z=12},moveForwards=true,arrivalRadiusM=0.75}}
+}
+OuttaMyWay.CompletionBoundaryExitContinuation={
+    beginPlan=function(_,_,selectedEdge)
+        boundaryBegins=boundaryBegins+1
+        if not boundaryAllowed then return nil,"NO_SAFE_FORWARD_EXIT" end
+        return {advances=0,spent=0,reasonCounts={},
+            edgeIndex=selectedEdge}
+    end,
+    advancePlan=function(plan,units)
+        boundaryAdvanced=boundaryAdvanced+1
+        plan.advances=plan.advances+1
+        plan.spent=plan.spent+math.min(units,160)
+        return "DONE",boundaryExitRoute
+    end
+}
 local directDestinationBegins=0
 OuttaMyWay.CompletionDestinationRouteAssessment={
     beginPlan=function()
@@ -1036,4 +1062,70 @@ assert(runtime.pending==nil and runtime.active==nil
 runtime:loadMap()
 forcePlanPending=false
 repositionAllowed=false
+-- The same forward-only boundary qualifier must be reachable from
+-- two different stopped situations, never from a fictional infield pose.
+runtime:loadMap()
+occupancyDisposition="STRADDLING"
+boundaryAllowed=true
+local alreadyStraddling={rootNode=733,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local startsBefore=#driveCalls
+assert(runtime:onNativeCompletion({},alreadyStraddling))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
+    and runtime.claims[alreadyStraddling]==nil
+    and #driveCalls==startsBefore,
+    "a native STRADDLING completion must assess before any drive or claim")
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_EXIT"
+    and runtime.claims[alreadyStraddling]~=nil,
+    "a fully qualified forward route, not the mere STRADDLING fact, admits Control")
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
+    "boundary forward continuation still demands independent stopped verification")
+runtime:loadMap()
+occupancyDisposition="INSIDE"
+boundaryAllowed=true
+failTerminal=true
+local memberStillInField={rootNode=734,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},memberStillInField))
+for i=1,24 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+    -- The first terminal may be positionally admitted but its live member
+    -- still STRADDLES. Do not apply this to initial INSIDE admission.
+    if runtime.active and runtime.active.phase=="STOPPING" then
+        occupancyDisposition="STRADDLING"
+    end
+    if runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT" then
+        break
+    end
+end
+assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
+    and runtime.pending.retainClaim==true
+    and runtime.claims[memberStillInField]~=nil,
+    "a physically stopped member-intersection permits a separately qualified same-edge exit")
+failTerminal=false
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_EXIT"
+    and runtime.claims[memberStillInField]~=nil,
+    "terminal continuation must retain its prior claimed region")
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
+    "a first-finisher forward continuation must independently stop and verify")
+runtime:loadMap()
+boundaryAllowed=false
+occupancyDisposition="INSIDE"
+failTerminal=false
 print("completion settlement TEST lifecycle, retained Source Field and planning responsiveness PASS")
