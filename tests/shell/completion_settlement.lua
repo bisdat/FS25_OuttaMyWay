@@ -171,6 +171,7 @@ OuttaMyWay.CompletionSettlementRoute={
     end
 }
 local boundaryAllowed=false
+local boundaryForceRefusal=false
 local boundaryBegins=0
 local boundaryAdvanced=0
 local boundaryExitRoute={
@@ -193,6 +194,9 @@ OuttaMyWay.CompletionBoundaryExitContinuation={
         boundaryAdvanced=boundaryAdvanced+1
         plan.advances=plan.advances+1
         plan.spent=plan.spent+math.min(units,160)
+        if boundaryForceRefusal then
+            return "FAILED",nil,"NO_QUALIFIED_BOUNDARY_EXIT_CONTINUATION"
+        end
         return "DONE",boundaryExitRoute
     end
 }
@@ -1062,6 +1066,34 @@ assert(runtime.pending==nil and runtime.active==nil
 runtime:loadMap()
 forcePlanPending=false
 repositionAllowed=false
+-- The initial STRADDLING forward option remains a non-blocking
+-- alternative; refusal retains the established local-to-allocation path
+-- and its already-running response budget.
+runtime:loadMap()
+occupancyDisposition="STRADDLING"
+boundaryAllowed=true
+boundaryForceRefusal=true
+directAllocation=true
+localFallback=true
+local refusedBoundary={rootNode=732,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},refusedBoundary))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT")
+local elapsedBefore=runtime.pending.planningElapsedMs
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL"
+    and runtime.pending.planningElapsedMs>elapsedBefore
+    and runtime.claims[refusedBoundary]==nil,
+    "failed forward exit must retain local qualification without resetting time or creating claims")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and lastAllocationDisposition=="STRADDLING",
+    "failed forward exit must not suppress the known straddling allocation fallback")
+runtime:loadMap()
+boundaryForceRefusal=false
+directAllocation=false
 -- The same forward-only boundary qualifier must be reachable from
 -- two different stopped situations, never from a fictional infield pose.
 runtime:loadMap()
