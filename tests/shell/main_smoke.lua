@@ -37,6 +37,7 @@ local expected={
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
     "scripts/coordination/CompletionDestinationRouteAssessment.lua",
+    "scripts/coordination/CompletionBoundaryExitContinuation.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
@@ -127,6 +128,7 @@ source=function(path)
         or path=="scripts/coordination/SettlementDestinationAssessment.lua"
         or path=="scripts/coordination/ParkingRegionAllocation.lua"
         or path=="scripts/coordination/CompletionDestinationRouteAssessment.lua"
+        or path=="scripts/coordination/CompletionBoundaryExitContinuation.lua"
         or path=="scripts/coordination/ExtendedInfieldApproach.lua"
         or path=="scripts/control/CompletionTransitRuntime.lua"
         or path=="scripts/control/CompletionSettlementRuntime.lua"
