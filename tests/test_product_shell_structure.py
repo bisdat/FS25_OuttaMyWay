@@ -44,6 +44,7 @@ SHELL_MODULES = [
     "scripts/coordination/SettlementDestinationAssessment.lua",
     "scripts/coordination/ParkingRegionAllocation.lua",
     "scripts/coordination/CompletionDestinationRouteAssessment.lua",
+    "scripts/coordination/CompletionBoundaryExitContinuation.lua",
     "scripts/control/CompletionTransitRuntime.lua",
     "scripts/control/CompletionSettlementRuntime.lua",
     "scripts/diagnostics/VersionHud.lua",
