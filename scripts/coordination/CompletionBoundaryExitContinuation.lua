@@ -10,9 +10,13 @@ local G=OuttaMyWay.FarmEdgeGeometry
 local Assessment=OuttaMyWay.SettlementCorridorAssessment
 local Occupancy=OuttaMyWay.SettlementPhysicalOccupancy
 local Situation=OuttaMyWay.SettlementDestinationAssessment
-local STEP_M=2
-local SAMPLE_M=1
+-- A 2m target with 0.75m native arrival permits stopping after 1.25m.
+-- Place the target 0.75m beyond the required movement and screen the
+-- possible forward run-out; do not confuse a target with travelled distance.
+local MIN_FORWARD_M=2
 local ARRIVAL_M=0.75
+local TARGET_M=MIN_FORWARD_M+ARRIVAL_M
+local SAMPLES={1,2,TARGET_M,TARGET_M+ARRIVAL_M}
 local EXTERIOR_ROOT_LIMIT_M=12
 local HEADING_DRIFT_RAD=15*math.pi/180
 local function finite(x)
@@ -59,7 +63,7 @@ local function safe(s,p)
     -- corner may STILL intersect the field or pass beyond the edge
     -- station while the assembly is clearing. Never use that fact alone
     -- to prohibit the intermediate movement.
-    if station< -STEP_M or station>edge.length+STEP_M
+    if station< -TARGET_M or station>edge.length+TARGET_M
         or (not G.inside(s.poly,p.x,p.z)
             and (depth<0 or depth>EXTERIOR_ROOT_LIMIT_M)) then
         return false,"BOUNDARY_STEP_ROOT_OUTSIDE_LOCAL_CORRIDOR"
@@ -142,22 +146,22 @@ function M.advancePlan(s,units)
         s.edgeCursor=1;s.sample=1;s.phase="CHECK"
         return "PENDING"
     end
-    -- Only two 1m samples, without searching distant hypothetical terminals.
-    -- A rejected edge can give way to another nearby qualified corridor.
-    for _=1,math.min(2,math.floor(units/80)) do
+    -- Screen the required 2m travel, native arrival target and possible
+    -- 0.75m run-out. No terminal member-CLEAR gate at intermediate points.
+    for _=1,math.min(4,math.floor(units/80)) do
         local edge=s.edges[s.edgeCursor]
         if edge==nil then
             s.finished=true
             return "FAILED",nil,"NO_QUALIFIED_BOUNDARY_CLEARANCE_STEP"
         end
         s.edge=edge
-        local tested=forward(s.initial,s.sample*SAMPLE_M)
+        local tested=forward(s.initial,SAMPLES[s.sample])
         s.spent=s.spent+80;s.candidates=s.candidates+1
         local clear,why=safe(s,tested)
         if not clear then
             rejected(s,why)
             s.edgeCursor=s.edgeCursor+1;s.sample=1
-        elseif s.sample<STEP_M then
+        elseif s.sample<#SAMPLES then
             s.sample=s.sample+1
         else
             local supported,sceneWhy=sceneClear(s,tested)
@@ -180,8 +184,9 @@ function M.advancePlan(s,units)
                     poly=s.poly,neighbors=s.neighbors,frame=edge,
                     memberCount=s.foot.memberCount,
                     method="OBSERVED_STRADDLING_FORWARD_2M",
-                    reverseM=0,estimatedTravelM=STEP_M,
-                    nominalStepM=STEP_M,
+                    reverseM=0,estimatedTravelM=TARGET_M,
+                    requiredForwardM=MIN_FORWARD_M,
+                    nominalStepM=TARGET_M,
                     stepOrigin=s.initial,
                     -- For existing temporary exclusive stop-region claim:
                     -- this is NOT a certified parking terminal.
@@ -211,7 +216,8 @@ function M.guard(vehicle,route)
         (current.z-route.stepOrigin.z)*route.stepOrigin.fz
     local lateral=math.abs((current.x-route.stepOrigin.x)*route.stepOrigin.fz-
         (current.z-route.stepOrigin.z)*route.stepOrigin.fx)
-    if travelled< -0.5 or travelled>STEP_M+1.5 or lateral>1.5
+    if travelled< -0.5 or travelled>TARGET_M+ARRIVAL_M+0.5
+        or lateral>1.5
         or current.fx*route.stepOrigin.fx+
             current.fz*route.stepOrigin.fz<math.cos(HEADING_DRIFT_RAD) then
         return false,"BOUNDARY_STEP_PHYSICAL_TRAJECTORY_DIVERGED"
