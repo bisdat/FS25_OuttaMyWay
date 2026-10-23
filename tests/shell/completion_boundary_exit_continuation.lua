@@ -60,13 +60,14 @@ for i=1,150 do
     previous=plan.spent
     if phase~="PENDING" then break end
 end
-assert(phase=="DONE" and route and route.mode=="BOUNDARY_EXIT",reason)
-assert(route.edge and route.estimatedTravelM>=2
-    and route.estimatedTravelM<=12
-    and route.reverseM==0 and route.method=="ACTUAL_POSE_FORWARD_BOUNDARY_EXIT"
+assert(phase=="DONE" and route
+    and route.mode=="BOUNDARY_CLEARANCE_STEP",reason)
+assert(route.edge and route.estimatedTravelM==2
+    and route.reverseM==0
+    and route.method=="OBSERVED_STRADDLING_FORWARD_2M"
     and route.terminalArrivalRadiusM==0.75,
-    "only a finite, actual-pose nominal forward exit may qualify")
-assert(#route.legs>=1 and #route.legs<=6)
+    "a real stopped STRADDLING pose may qualify a 2m action without a fully parked endpoint")
+assert(#route.legs==1)
 for i,leg in ipairs(route.legs) do
     assert(leg.moveForwards==true
         and (i==#route.legs and leg.arrivalRadiusM==0.75
@@ -76,8 +77,10 @@ end
 assert(occupancy.assess(vehicle,source).status=="STRADDLING",
     "nominal qualification cannot change actual assembly disposition")
 current.x,current.z=route.terminalPose.x,route.terminalPose.z
-assert(occupancy.assess(vehicle,source).status=="CLEAR",
-    "expected terminal must be independently assessable as CLEAR")
+assert(occupancy.assess(vehicle,source).status=="STRADDLING",
+    "2m interim movement may still leave a member inside; this must NOT veto movement")
+assert(Boundary.guard(vehicle,route),
+    "current physical-member guard must permit a still-straddling safe pose")
 local confirmed=route.terminalPose
 current.x,current.z=50,-0.5
 local sameEdge=assert(Boundary.beginPlan(vehicle,source,route.edge))
@@ -89,33 +92,37 @@ assert(phase=="DONE" and route.edge==sameEdge.edgeIndex,
     "a nominated previously selected edge must be respected")
 -- An already CLEAR assembly must not receive another movement route.
 current.x,current.z=confirmed.x,confirmed.z
+current.z=-10
 local cleared=assert(Boundary.beginPlan(vehicle,source))
 phase,route,reason=Boundary.advancePlan(cleared,320)
 assert(phase=="FAILED" and route==nil
-    and reason=="BOUNDARY_EXIT_NOT_STRADDLING")
+    and reason=="BOUNDARY_STEP_NOT_STRADDLING")
 current.x,current.z=50,-0.5
--- A manual ability to translate does not qualify heading through an edge.
+-- Heading need not be edge-parallel for a small *intermediate*
+-- movement; its true terminal heading remains unverified.
 current.fx,current.fz=0,-1
 local misaligned=assert(Boundary.beginPlan(vehicle,source))
 for i=1,180 do
     phase,route,reason=Boundary.advancePlan(misaligned,320)
     if phase~="PENDING" then break end
 end
-assert(phase=="FAILED" and route==nil)
+assert(phase=="DONE" and route~=nil,
+    "terminal heading constraints cannot veto a safe intermediate 2m translation")
 current.fx,current.fz=math.cos(10*math.pi/180),
     -math.sin(10*math.pi/180)
--- Unknown actual member sweep cannot be reclassified as clear.
+-- A longer member may still be inside the Source Field after a safe
+-- 2m translation; this must not turn progress into terminal refusal.
 maxMemberOffset=4
 local extended=assert(Boundary.beginPlan(vehicle,source))
 for i=1,180 do
     phase,route,reason=Boundary.advancePlan(extended,320)
     if phase~="PENDING" then break end
 end
-assert(phase=="FAILED" and route==nil,
-    "too-long physical member may not be imagined outside after 12m")
+assert(phase=="DONE" and route~=nil,
+    "a too-long member must remain STRADDLING but may safely advance")
 maxMemberOffset=1.5
 -- A stationary second assembly consumes actual physical space and vetoes
--- a clearance attempt despite a nominally free registered edge.
+-- intermediate clearance despite a nominally free registered edge.
 blockedPos.x,blockedPos.z=59,-1.8
 g_currentMission.vehicleSystem.vehicles={vehicle,blocked}
 local blockedPlan=assert(Boundary.beginPlan(vehicle,source))
@@ -125,4 +132,4 @@ for i=1,180 do
 end
 assert(phase=="FAILED" and route==nil,
     "the actual physical occupancy of another assembly is not free space")
-print("bounded real-member STRADDLING boundary exit qualification PASS")
+print("2m real-member STRADDLING clearance-step qualification PASS")
