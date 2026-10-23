@@ -190,10 +190,10 @@ OuttaMyWay.CompletionBoundaryExitContinuation={
         if boundaryForceRefusal then
             return "FAILED",nil,"NO_QUALIFIED_BOUNDARY_EXIT_CONTINUATION"
         end
-        local target={x=plan.initialX+2,z=plan.initialZ}
+        local target={x=plan.initialX+2.75,z=plan.initialZ}
         return "DONE",{mode="BOUNDARY_CLEARANCE_STEP",
             field=29,edge=7,memberCount=2,
-            estimatedTravelM=2,nominalStepM=2,
+            estimatedTravelM=2.75,nominalStepM=2.75,requiredForwardM=2,
             method="OBSERVED_STRADDLING_FORWARD_2M",
             terminalPose=target,terminalArrivalRadiusM=0.75,
             stepOrigin={x=plan.initialX,z=plan.initialZ,fx=1,fz=0},
