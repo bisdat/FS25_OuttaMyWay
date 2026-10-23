@@ -62,12 +62,17 @@ for i=1,150 do
 end
 assert(phase=="DONE" and route
     and route.mode=="BOUNDARY_CLEARANCE_STEP",reason)
-assert(route.edge and route.estimatedTravelM==2
+assert(route.edge and route.requiredForwardM==2
+    and route.estimatedTravelM==2.75
     and route.reverseM==0
     and route.method=="OBSERVED_STRADDLING_FORWARD_2M"
     and route.terminalArrivalRadiusM==0.75,
     "a real stopped STRADDLING pose may qualify a 2m action without a fully parked endpoint")
 assert(#route.legs==1)
+assert(route.legs[1].point.x==
+        current.x+current.fx*2.75 or
+    math.abs(route.legs[1].point.x-current.x-current.fx*2.75)<0.00001,
+    "with 0.75m arrival radius, the command must guarantee at least 2m forward travel")
 for i,leg in ipairs(route.legs) do
     assert(leg.moveForwards==true
         and (i==#route.legs and leg.arrivalRadiusM==0.75
