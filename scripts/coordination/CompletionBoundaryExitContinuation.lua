@@ -164,7 +164,8 @@ function M.advancePlan(s,units)
         elseif s.sample<#SAMPLES then
             s.sample=s.sample+1
         else
-            local supported,sceneWhy=sceneClear(s,tested)
+            local target=forward(s.initial,TARGET_M)
+            local supported,sceneWhy=sceneClear(s,target)
             if not supported then
                 rejected(s,sceneWhy)
                 s.edgeCursor=s.edgeCursor+1;s.sample=1
@@ -190,10 +191,10 @@ function M.advancePlan(s,units)
                     stepOrigin=s.initial,
                     -- For existing temporary exclusive stop-region claim:
                     -- this is NOT a certified parking terminal.
-                    terminalPose=tested,
+                    terminalPose=target,
                     terminalArrivalRadiusM=ARRIVAL_M,
                     legs={{name="BOUNDARY_CLEARANCE_FORWARD",
-                        point={x=tested.x,z=tested.z},
+                        point={x=target.x,z=target.z},
                         moveForwards=true,arrivalRadiusM=ARRIVAL_M}}
                 }
             end
