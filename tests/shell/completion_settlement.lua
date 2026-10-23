@@ -29,6 +29,7 @@ local driveCalls={}
 local failure
 local failCancel=false
 local forceStopRefusal=false
+local freezeBoundaryMovement=false
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     return {
         active=nil,
@@ -62,7 +63,9 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
             assert(self.active and self.active.vehicle==vehicle)
             if failure then return {isFailed=true,reason=failure} end
             local target=self.active.objective
-            vehicle.x,vehicle.z=target.targetX,target.targetZ
+            if not freezeBoundaryMovement then
+                vehicle.x,vehicle.z=target.targetX,target.targetZ
+            end
             return {isComplete=true}
         end,
         beginSettlementStop=function(self,vehicle)
@@ -170,11 +173,63 @@ OuttaMyWay.CompletionSettlementRoute={
         return copy
     end
 }
+local boundaryAllowed=false
+local boundaryForceRefusal=false
+local boundaryBegins=0
+local boundaryAdvanced=0
+local boundaryLiveGuard=true
+OuttaMyWay.CompletionBoundaryExitContinuation={
+    beginPlan=function(subject,sourceField,selectedEdge)
+        boundaryBegins=boundaryBegins+1
+        if not boundaryAllowed then return nil,"NO_SAFE_FORWARD_EXIT" end
+        return {advances=0,spent=0,reasonCounts={},
+            edgeIndex=selectedEdge,vehicle=subject,initialX=subject.x or 0,
+            initialZ=subject.z or 0}
+    end,
+    advancePlan=function(plan,units)
+        boundaryAdvanced=boundaryAdvanced+1
+        plan.advances=plan.advances+1
+        plan.spent=plan.spent+math.min(units,160)
+        if boundaryForceRefusal then
+            return "FAILED",nil,"NO_QUALIFIED_BOUNDARY_EXIT_CONTINUATION"
+        end
+        local target={x=plan.initialX+2.75,z=plan.initialZ}
+        return "DONE",{mode="BOUNDARY_CLEARANCE_STEP",
+            field=29,edge=7,memberCount=2,
+            estimatedTravelM=2.75,nominalStepM=2.75,requiredForwardM=2,
+            method="OBSERVED_STRADDLING_FORWARD_2M",
+            terminalPose=target,terminalArrivalRadiusM=0.75,
+            stepOrigin={x=plan.initialX,z=plan.initialZ,fx=1,fz=0},
+            legs={{name="BOUNDARY_CLEARANCE_FORWARD",
+                point=target,moveForwards=true,arrivalRadiusM=0.75}}}
+    end,
+    guard=function()
+        return boundaryLiveGuard,"BOUNDARY_STEP_LIVE_GUARD_DENIED"
+    end
+}
+local directDestinationBegins=0
+OuttaMyWay.CompletionDestinationRouteAssessment={
+    beginPlan=function()
+        directDestinationBegins=directDestinationBegins+1
+        return {spent=0,advances=0,order={{
+            edgeIndex=1,selectionRank=1,usableLongitudinalM=100}}}
+    end,
+    priorityPreview=function()return "1:rank1:usable100" end,
+    advancePlan=function(session,units)
+        session.advances=session.advances+1
+        session.spent=session.spent+units
+        if forcePlanPending then return "PENDING" end
+        return "DONE",route
+    end
+}
 local refuseExtendedScene=false
 local directAllocation=false
+local allocationStalled=false
 local lastAllocationDisposition=nil
 local occupancyDisposition="INSIDE"
 local qualifiedExtendedRoute
+local repositionAllowed=false
+local repositionPlans=0
 local extendedAdvanceCalls=0
 local activeConflict=false
 local mismatchClaim=false
@@ -186,6 +241,7 @@ OuttaMyWay.ParkingRegionAllocation={
     advancePlan=function(session,units)
         session.advances=session.advances+1
         session.spent=session.spent+units
+        if allocationStalled then return "PENDING" end
         if refuseExtendedScene then return "FAILED",nil,"WORKER_SCENE_AI_STATUS_UNAVAILABLE" end
         return "DONE",{entryPose={x=25,z=-30,fx=1,fz=0},
             terminalPose={x=40,z=20},ownRadius=5,
@@ -217,6 +273,23 @@ OuttaMyWay.SettlementPhysicalOccupancy={
     nextClear=function()return true end
 }
 OuttaMyWay.ExtendedInfieldApproach={
+    planReposition=function()
+        repositionPlans=repositionPlans+1
+        if not repositionAllowed then
+            return nil,"NO_QUALIFIED_INFIELD_REPOSITION"
+        end
+        return {mode="REPOSITION_INFIELD",
+            field=77,edge=9,memberCount=2,
+            method="INFIELD_STRAIGHT_REVERSE",
+            poly={},estimatedTravelM=8,reverseM=8,
+            nominalMarginGainM=3,
+            legs={{name="REPOSITION_REVERSE",
+                point={x=-4,z=0},moveForwards=false,
+                arrivalRadiusM=0.75},
+                {name="REPOSITION_REVERSE",
+                point={x=-8,z=0},moveForwards=false,
+                arrivalRadiusM=0.75}}}
+    end,
     beginPlan=function()
         return {advances=0,spent=0}
     end,
@@ -254,9 +327,14 @@ local enabled=true
 g_server={}
 local config={isResolved=function()return true end,
     isEnabled=function()return enabled end}
-getWorldTranslation=function()
-    -- The drive mock owns its own successful-leg outcome; this passive
-    -- world-pose fixture only feeds each new leg's target distance.
+local physicalBoundaryTestSubject=nil
+getWorldTranslation=function(node)
+    if physicalBoundaryTestSubject~=nil
+        and node==physicalBoundaryTestSubject.rootNode then
+        return physicalBoundaryTestSubject.x or 0,0,
+            physicalBoundaryTestSubject.z or 0
+    end
+    -- Else the drive mock owns physical-leg success independently.
     return 0,0,0
 end
 -- Source Field is observed independently from the native completion job.
@@ -838,4 +916,335 @@ assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
 runtime:loadMap()
 failTerminal=false
 occupancyDisposition="INSIDE"
-print("completion settlement TEST lifecycle, retained Source Field and actual assembly occupancy PASS")
+-- The global 240s lease is not a player-response budget: pending
+-- assessment must return a clear refusal on the bounded planning clock.
+local slowInitial={rootNode=720,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+forcePlanPending=true
+local initialDriveCount=#driveCalls
+assert(runtime:onNativeCompletion({},slowInitial))
+for i=1,20 do runtime:update(1000) end
+assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL"
+    and runtime.pending.planningElapsedMs==20000
+    and #driveCalls==initialDriveCount,
+    "planning remains non-actuating while an incomplete candidate is pending")
+runtime:update(1000)
+assert(runtime.pending==nil and runtime.active==nil
+    and #driveCalls==initialDriveCount
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED"
+    and events[#events].fields.reason=="PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
+    "planning must explicitly refuse at its own response budget, not 240s")
+forcePlanPending=false
+runtime:loadMap()
+-- The first local planner and fallback allocator SHARE one planning clock:
+-- switching phases must not restart a 20s invisible wait.
+local slowAllocated={rootNode=721,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+allocationStalled=true
+diagnosticEnabled=true
+assert(runtime:onNativeCompletion({},slowAllocated))
+runtime:update(1000)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and runtime.pending.planningElapsedMs==1000)
+-- Ten completed sites plus an unfinished reverse-local site must remain
+-- distinguishable in the budget-expiry evidence.
+local evidenceSession=runtime.pending.plan
+evidenceSession.phase="QUALIFY"
+evidenceSession.siteIndex=11
+evidenceSession.sites={}
+for i=1,23 do evidenceSession.sites[i]={edgeIndex=i} end
+evidenceSession.site={edgeIndex=4,station=62.5}
+evidenceSession.spent=221911
+evidenceSession.advances=82
+evidenceSession.localPlan={
+    candidates=185,phase="ACTIVE",rejectionCounts={
+        REVERSE_MEMBER_OUTSIDE_SOURCE=91,
+        TERMINAL_HEADING_BAND=7}}
+evidenceSession.evidence={
+    sitesTotal=23,sitesExamined=11,localPlans=8,
+    localCandidates=650,localFeasible=0,approachPlans=0,
+    approachConnected=0,
+    initialReason="NO_POSE_REACHABLE_PARKING_REGION",
+    initialCandidates=300,
+    initialRejections={REVERSE_ROOT_OUTSIDE_SOURCE=5},
+    siteRejections={LOCAL_ROUTE_NO_POSE_REACHABLE_PARKING_REGION=7},
+    routeRejections={REVERSE_ROOT_OUTSIDE_SOURCE=99}}
+for i=1,19 do runtime:update(1000) end
+assert(runtime.pending and runtime.pending.planningElapsedMs==20000)
+local count=0
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_ALLOCATION_PROGRESS"
+        and event.fields.rootNode=="721" then
+        count=count+1
+        assert(event.fields.elapsedMs>=5000
+            and event.fields.planningElapsedMs<=20000)
+    end
+end
+assert(count==1,"slow allocation must publish only one bounded in-flight diagnostic")
+runtime:update(1000)
+assert(runtime.pending==nil and runtime.active==nil
+    and #driveCalls==initialDriveCount
+    and events[#events].fields.reason=="PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
+    "the allocator must not restart the response clock or move unqualified")
+local snapshots=0
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS"
+        and event.fields.rootNode=="721" then
+        snapshots=snapshots+1
+        local f=event.fields
+        assert(f.incompleteSearch==true and f.sitesTotal==23
+            and f.sitesExamined==11 and f.sitesCompleted==10
+            and f.currentPhase=="QUALIFY" and f.currentSiteEdge==4
+            and f.currentSiteStation==62.5
+            and f.inFlightLocalCandidates==185
+            and f.inFlightLocalPhase=="ACTIVE"
+            and string.find(f.inFlightLocalRejections,
+                "REVERSE_MEMBER_OUTSIDE_SOURCE:91",1,true)
+            and string.find(f.routeRejections,
+                "REVERSE_ROOT_OUTSIDE_SOURCE:99",1,true)
+            and f.initialCandidates==300
+            and f.actualPoseConnection=="EXTENDED_FORWARD_ONLY"
+            and f.approachConnected==0,
+            "timeout must retain PARTIAL complete-site and current reverse evidence")
+    end
+end
+assert(snapshots==1,
+    "budget failure must publish one incomplete, not exhaustive, reason report")
+assert(not runtime:onNativeCompletion({},slowAllocated),
+    "budget exhaustion cannot replay consumed native completion evidence")
+runtime:loadMap()
+allocationStalled=false
+diagnosticEnabled=false
+-- The search can fail its bounded response without inventing a route, but
+-- one freshly qualified infield reposition may create a useful observed
+-- actual pose. A real stable STOP precedes the second planning session.
+local repositioner={rootNode=722,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+localFallback=true
+allocationStalled=true
+repositionAllowed=true
+local beforeReposition=repositionPlans
+local beforeNative=#driveCalls
+assert(runtime:onNativeCompletion({},repositioner))
+for i=1,21 do runtime:update(1000) end
+assert(runtime.active and runtime.active.route.mode=="REPOSITION_INFIELD"
+    and runtime.repositioned[repositioner]
+    and repositionPlans==beforeReposition+1
+    and #driveCalls>beforeNative
+    and runtime.claims[repositioner]==nil,
+    "qualified intermediate positioning is an admitted non-terminal drive")
+-- No final parking success until this second planning phase and its
+-- eventual complete-assembly terminal have been independently established.
+local observed=false
+local directBefore=directDestinationBegins
+local allocationBefore=lastAllocationDisposition
+for i=1,20 do
+    runtime:update(16)
+    if runtime.pending and runtime.pending.kind=="DIRECT_DESTINATION" then
+        observed=true
+        assert(runtime.drive.active==nil
+            and runtime.pending.planningElapsedMs==0
+            and runtime.pending.occupancy=="INSIDE"
+            and directDestinationBegins==directBefore+1
+            and lastAllocationDisposition==allocationBefore,
+            "verified reposition must preserve direct actual-pose routes, not restart hypothetical allocation")
+        break
+    end
+end
+local observedEvent=false
+for _,event in ipairs(events) do
+    if event.code=="COMPLETION_SETTLEMENT_REPOSITION_OBSERVED"
+        and event.fields.rootNode=="722" then
+        observedEvent=true
+    end
+end
+assert(observed and observedEvent,
+    "reposition endpoint cannot be substituted for actual stopped pose")
+-- Even if the second planner again cannot connect, do not reposition
+-- indefinitely; report the bounded final refusal.
+repositionAllowed=true
+forcePlanPending=true
+local countBefore=repositionPlans
+for i=1,21 do runtime:update(1000) end
+assert(runtime.pending==nil and runtime.active==nil
+    and repositionPlans==countBefore
+    and events[#events].fields.reason==
+        "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",
+    "one physical reposition attempt cannot loop or fabricate parking")
+runtime:loadMap()
+forcePlanPending=false
+repositionAllowed=false
+-- The initial STRADDLING forward option remains a non-blocking
+-- alternative; refusal retains the established local-to-allocation path
+-- and its already-running response budget.
+runtime:loadMap()
+occupancyDisposition="STRADDLING"
+boundaryAllowed=true
+boundaryForceRefusal=true
+directAllocation=true
+localFallback=true
+local refusedBoundary={rootNode=732,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+assert(runtime:onNativeCompletion({},refusedBoundary))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT")
+local elapsedBefore=runtime.pending.planningElapsedMs
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="LOCAL_INITIAL"
+    and runtime.pending.planningElapsedMs>elapsedBefore
+    and runtime.claims[refusedBoundary]==nil,
+    "failed forward exit must retain local qualification without resetting time or creating claims")
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="ALLOCATE"
+    and lastAllocationDisposition=="STRADDLING",
+    "failed forward exit must not suppress the known straddling allocation fallback")
+runtime:loadMap()
+boundaryForceRefusal=false
+directAllocation=false
+-- The same forward-only boundary qualifier must be reachable from
+-- two different stopped situations, never from a fictional infield pose.
+runtime:loadMap()
+occupancyDisposition="STRADDLING"
+boundaryAllowed=true
+local alreadyStraddling={rootNode=733,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+local startsBefore=#driveCalls
+physicalBoundaryTestSubject=alreadyStraddling
+assert(runtime:onNativeCompletion({},alreadyStraddling))
+runtime:update(16)
+assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
+    and runtime.claims[alreadyStraddling]==nil
+    and #driveCalls==startsBefore,
+    "a native STRADDLING completion must assess before any drive or claim")
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP"
+    and runtime.claims[alreadyStraddling]~=nil,
+    "a qualified physical 2m step admits movement without assuming final parking")
+local stoppedStillStraddled=false
+for i=1,14 do
+    runtime:update(16)
+    if runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
+        and runtime.pending.clearanceSteps==1 then
+        stoppedStillStraddled=true
+        break
+    end
+end
+assert(stoppedStillStraddled
+    and events[#events].code~="COMPLETION_SETTLEMENT_FINISHED",
+    "one actual 2m stop still STRADDLING must not fabricate success")
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP"
+    and runtime.active.clearanceSteps==1,
+    "second clearance must start from the newly observed actual root pose")
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active and runtime.active.phase=="STOPPING" then
+        occupancyDisposition="CLEAR"
+    end
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
+    "only physically CLEAR stopped terminal may complete parking")
+physicalBoundaryTestSubject=nil
+runtime:loadMap()
+occupancyDisposition="INSIDE"
+boundaryAllowed=true
+failTerminal=true
+local memberStillInField={rootNode=734,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+physicalBoundaryTestSubject=memberStillInField
+assert(runtime:onNativeCompletion({},memberStillInField))
+for i=1,24 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+    -- The first terminal may be positionally admitted but its live member
+    -- still STRADDLES. Do not apply this to initial INSIDE admission.
+    if runtime.active and runtime.active.phase=="STOPPING" then
+        occupancyDisposition="STRADDLING"
+    end
+    if runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT" then
+        break
+    end
+end
+assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
+    and runtime.pending.retainClaim==true
+    and runtime.claims[memberStillInField]~=nil,
+    "a physically stopped member-intersection permits a separately qualified same-edge exit")
+failTerminal=false
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP"
+    and runtime.claims[memberStillInField]~=nil,
+    "stopped first-finisher continuation must use the retained short-lived claim")
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active and runtime.active.phase=="STOPPING"
+        and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP" then
+        occupancyDisposition="CLEAR"
+    end
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
+    "a first-finisher forward continuation must independently stop and verify")
+physicalBoundaryTestSubject=nil
+runtime:loadMap()
+-- Four separately verified stops are a finite clearance opportunity,
+-- NOT permission to continue past a still-straddling boundary forever.
+occupancyDisposition="STRADDLING"
+boundaryAllowed=true
+local stillStraddled={rootNode=735,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+physicalBoundaryTestSubject=stillStraddled
+assert(runtime:onNativeCompletion({},stillStraddled))
+local stepsObserved=0
+for i=1,110 do
+    runtime:update(16)
+    for _,ev in ipairs(events) do
+        if ev.code=="COMPLETION_SETTLEMENT_BOUNDARY_CLEARANCE_OBSERVED"
+            and ev.fields.rootNode=="735"
+            and (ev.fields.stepsCompleted or 0)>stepsObserved then
+            stepsObserved=ev.fields.stepsCompleted
+        end
+    end
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(stepsObserved==4 and runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED"
+    and events[#events].fields.reason==
+        "BOUNDARY_CLEARANCE_FINITE_STEPS_EXHAUSTED"
+    and runtime.claims[stillStraddled]==nil,
+    "only four observed clearance steps are permitted without physical CLEAR")
+runtime:loadMap()
+-- A nominally accepted target is not physical progress. No actual
+-- forward movement cannot unlock another clearance attempt.
+local stalledStep={rootNode=736,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+physicalBoundaryTestSubject=stalledStep
+freezeBoundaryMovement=true
+assert(runtime:onNativeCompletion({},stalledStep))
+for i=1,25 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_INTERRUPTED"
+    and events[#events].fields.reason=="BOUNDARY_STEP_NO_PHYSICAL_FORWARD_PROGRESS"
+    and runtime.claims[stalledStep]==nil,
+    "nominal waypoint completion must not count as measured physical progress")
+freezeBoundaryMovement=false
+physicalBoundaryTestSubject=nil
+runtime:loadMap()
+boundaryAllowed=false
+occupancyDisposition="INSIDE"
+failTerminal=false
+print("completion settlement TEST lifecycle, retained Source Field and planning responsiveness PASS")

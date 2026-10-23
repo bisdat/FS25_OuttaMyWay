@@ -5,6 +5,8 @@ OuttaMyWay=OuttaMyWay or {}
 OuttaMyWay.CompletionSettlementRuntime={}
 local Runtime=OuttaMyWay.CompletionSettlementRuntime
 local Allocation=OuttaMyWay.ParkingRegionAllocation
+local Destination=OuttaMyWay.CompletionDestinationRouteAssessment
+local Boundary=OuttaMyWay.CompletionBoundaryExitContinuation
 local Situation=OuttaMyWay.SettlementDestinationAssessment
 local Membership=OuttaMyWay.CompletionFieldMembership
 local AssemblyOccupancy=OuttaMyWay.CompletionAssemblyFieldOccupancy
@@ -13,6 +15,11 @@ Runtime.__index=Runtime
 local publication=OuttaMyWay.LogPublication.origin("COMPLETION_SETTLEMENT")
 local TOTAL_DEADLINE_MS=240000
 local LEG_DEADLINE_MS=180000
+-- TEST response hypothesis: a completed worker must not appear silently
+-- stranded while an exhaustive nominal parking search holds no drive lease.
+-- This clocks cumulative PENDING assessment, NOT physical Control time.
+local PLANNING_RESPONSE_BUDGET_MS=20000
+local ALLOCATION_PROGRESS_SAMPLE_MS=5000
 local SAMPLE_MS=1000
 -- Serial Control remains deliberate. Other completions queue for an
 -- independent assessment and space allocation after the current lease.
@@ -23,6 +30,10 @@ local PLAN_UNITS_PER_UPDATE=320
 -- BWR's evidenced straight-reverse steering look-through; the terminal
 -- guide still owns physical arrival, lease and movement safety.
 local STRAIGHT_REVERSE_LOOKTHROUGH_M=40
+-- Maximum six separately stopped and reobserved two-metre clearances.
+-- No intermediate step may assert parking or blindly extend a native lease.
+local MAX_BOUNDARY_CLEARANCE_STEPS=4
+local MIN_CONFIRMED_CLEARANCE_PROGRESS_M=1.75
 -- Target-horizon braking model, not a fixed 8 km/h travel limit.
 -- TEST assumption: 1.5 m/s^2 controllable deceleration, GIANTS to validate.
 local GUIDANCE_DECEL_MPS2=1.5
@@ -89,6 +100,62 @@ local function rejectionSummary(counts)
     end
     return table.concat(parts,";")
 end
+-- One read-only failure snapshot for a completed OR prematurely bounded
+-- allocator. The in-flight site's checks have NOT yet been aggregated into
+-- evidence.routeRejections, so publish them separately without claiming
+-- exhaustive coverage or mutating the planner's live counters.
+local function publishAllocationEvidence(state,reason,incomplete)
+    if state.kind~="ALLOCATE" or type(state.plan)~="table"
+        or type(state.plan.evidence)~="table" then return end
+    local p=state.plan
+    local e=p.evidence
+    local working=p.phase=="QUALIFY" or p.phase=="CONNECT"
+    local localPlan=p.phase=="QUALIFY" and p.localPlan or nil
+    local approach=p.phase=="CONNECT" and p.approachPlan or nil
+    publish("DIAGNOSTIC","INFO",
+        "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS",function()
+        return {
+            rootNode=tostring(state.vehicle.rootNode),
+            fieldId=state.sourceField and state.sourceField.fieldId
+                or "unknown",
+            occupancy=p.disposition or "unknown",
+            reason=reason or "NO_QUALIFIED_TERMINAL_REGION",
+            incompleteSearch=incomplete==true,
+            planningElapsedMs=state.planningElapsedMs or 0,
+            sitesTotal=e.sitesTotal or 0,
+            sitesExamined=e.sitesExamined or 0,
+            sitesCompleted=math.max(0,(p.siteIndex or 0)
+                -(working and 1 or 0)),
+            currentPhase=p.phase or "unknown",
+            currentSiteIndex=working and (p.siteIndex or 0) or "none",
+            currentSiteEdge=working and p.site
+                and p.site.edgeIndex or "none",
+            currentSiteStation=working and p.site
+                and p.site.station or "none",
+            localPlans=e.localPlans or 0,
+            localFeasible=e.localFeasible or 0,
+            localCandidates=e.localCandidates or 0,
+            approachPlans=e.approachPlans or 0,
+            approachConnected=e.approachConnected or 0,
+            initialReason=e.initialReason or "unknown",
+            initialCandidates=e.initialCandidates or 0,
+            initialRejections=rejectionSummary(e.initialRejections),
+            siteRejections=rejectionSummary(e.siteRejections),
+            routeRejections=rejectionSummary(e.routeRejections),
+            inFlightLocalCandidates=localPlan
+                and localPlan.candidates or 0,
+            inFlightLocalPhase=localPlan and localPlan.phase or "none",
+            inFlightLocalRejections=rejectionSummary(
+                localPlan and localPlan.rejectionCounts),
+            inFlightApproachExpansions=approach
+                and approach.expansions or 0,
+            actualPoseConnection=p.disposition=="STRADDLING"
+                and "DIRECT_LOCAL" or "EXTENDED_FORWARD_ONLY",
+            planningUpdates=p.advances or 0,
+            weightedGeometryChecks=p.spent or 0
+        }
+        end)
+end
 local function rootPose(vehicle)
     if type(vehicle)~="table" or vehicle.rootNode==nil
         or type(getWorldTranslation)~="function" then return nil end
@@ -137,8 +204,10 @@ function Runtime.new(configuration)
         drive=OuttaMyWay.NativeStaticAssemblyDriveMechanism.new(),
         active=nil,pending=nil,waiting={},claims={},replans=setmetatable({},{__mode="k"}),
         attempted=setmetatable({},{__mode="k"}),
+        repositioned=setmetatable({},{__mode="k"}),
         deferred=setmetatable({},{__mode="k"}),
         terminalCorrections=setmetatable({},{__mode="k"}),
+        boundaryExits=setmetatable({},{__mode="k"}),
         marginComparison=nil},Runtime)
 end
 function Runtime:isAdmitted()
@@ -228,12 +297,57 @@ function Runtime:sampleMotion(state,status)
     end)
 end
 
-local retryStopped
+local retryStopped,allocation
 function Runtime:startLeg()
     local s=self.active
     if s==nil then return end
     local leg=s.route.legs[s.legIndex]
     if leg==nil then
+        if s.route.mode=="REPOSITION_INFIELD" then
+            -- This stop proves only an infield intermediate actual pose.
+            -- No exterior terminal was claimed or certified.
+            if s.driveArmed then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "REPOSITION_HANDOFF_WITH_ACTIVE_DRIVE")
+                return
+            end
+            local occupancy,why=AssemblyOccupancy.assess(
+                s.vehicle,s.sourceField)
+            if occupancy==nil or occupancy.status~="INSIDE" then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    why or "REPOSITION_ACTUAL_ASSEMBLY_NOT_INSIDE")
+                return
+            end
+            -- .12 proved that a remote hypothetical edge-local terminal
+            -- and forward-only connection are NOT interchangeable with
+            -- .10's real-pose reverse-first terminal route. Re-observe
+            -- the full assembly, then assess destinations from that pose.
+            local plan,reason=Destination.beginPlan(s.vehicle,s.sourceField)
+            if plan==nil then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    reason or "REPOSITION_DESTINATION_ASSESSMENT_UNAVAILABLE")
+                return
+            end
+            self.active=nil
+            self.pending={vehicle=s.vehicle,job=s.job,
+                sourceField=s.sourceField,plan=plan,
+                kind="DIRECT_DESTINATION",occupancy=occupancy.status,
+                elapsedMs=s.totalElapsedMs,planningElapsedMs=0,
+                phase="PLANNING",driveArmed=false}
+            publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_OBSERVED",{
+                rootNode=tostring(s.vehicle.rootNode),
+                note="PHYSICAL_STOP_CONFIRMED_ACTUAL_POSE_DESTINATION_ASSESSMENT"})
+            publish("DIAGNOSTIC","INFO",
+                "COMPLETION_SETTLEMENT_DIRECT_DESTINATION_PRIORITIES",function()
+                return {rootNode=tostring(s.vehicle.rootNode),
+                    preview=Destination.priorityPreview(plan),
+                    sourceFieldId=s.sourceField.fieldId,
+                    candidateEdges=#plan.order,
+                    connection="ACTUAL_POSE_LOCAL_REVERSE_FORWARD",
+                    policy="PROVISIONAL_ROUTE_NOT_DRIVE_AUTHORITY"}
+                end)
+            return
+        end
         if s.route.mode=="EXTENDED_INFIELD" then
             -- The long approach grants NO terminal parking result.
             -- Its final stop was independently released before handoff.
@@ -267,6 +381,134 @@ function Runtime:startLeg()
                 note="EXTENDED_APPROACH_STOPPED_AND_RELEASED"})
             return
         end
+        if s.route.mode=="BOUNDARY_CLEARANCE_STEP" then
+            -- This was a bounded intermediate action, NOT a parking
+            -- terminal. The only progress witness is the fresh stopped
+            -- Physical Assembly, including actual hitch articulation.
+            if s.driveArmed then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "BOUNDARY_STEP_NATIVE_STOP_NOT_RELEASED")
+                return
+            end
+            local actualX,actualZ=rootPose(s.vehicle)
+            local origin=s.route.stepOrigin
+            local observed,why=AssemblyOccupancy.assess(
+                s.vehicle,s.sourceField)
+            if observed==nil or actualX==nil or type(origin)~="table" then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    why or "BOUNDARY_STEP_STOPPED_POSE_UNKNOWN")
+                return
+            end
+            local dx,dz=actualX-origin.x,actualZ-origin.z
+            local forwardMoved=dx*origin.fx+dz*origin.fz
+            local steps=(s.clearanceSteps or 0)+1
+            publish("DEBUG","INFO",
+                "COMPLETION_SETTLEMENT_BOUNDARY_CLEARANCE_OBSERVED",{
+                rootNode=tostring(s.vehicle.rootNode),
+                targetHorizonM=s.route.nominalStepM,
+                requiredForwardM=s.route.requiredForwardM,
+                observedForwardM=forwardMoved,
+                stepsCompleted=steps,
+                memberDisposition=observed.status,
+                intersectingMembers=observed.intersectingMembers,
+                note="PHYSICAL_STOP_NO_NOMINAL_TERMINAL_ASSERTION"})
+            if forwardMoved<MIN_CONFIRMED_CLEARANCE_PROGRESS_M then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "BOUNDARY_STEP_NO_PHYSICAL_FORWARD_PROGRESS")
+                return
+            end
+            if observed.status=="STRADDLING"
+                and steps<MAX_BOUNDARY_CLEARANCE_STEPS then
+                local plan,reason=Boundary.beginPlan(
+                    s.vehicle,s.sourceField,s.route.edge)
+                if plan==nil then
+                    self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                        reason or "BOUNDARY_STEP_REASSESSMENT_UNAVAILABLE")
+                    return
+                end
+                -- A stop-region claim covers precisely one movement lease;
+                -- release it only after a confirmed physical stop.
+                Allocation.release(self.claims,s.vehicle)
+                self.active=nil
+                self.pending={vehicle=s.vehicle,job=s.job,
+                    sourceField=s.sourceField,plan=plan,
+                    kind="BOUNDARY_EXIT",occupancy="STRADDLING",
+                    clearanceSteps=steps,
+                    elapsedMs=s.totalElapsedMs,
+                    planningElapsedMs=0,
+                    phase="PLANNING",driveArmed=false}
+                return
+            end
+            if observed.status=="STRADDLING" then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    "BOUNDARY_CLEARANCE_FINITE_STEPS_EXHAUSTED")
+                return
+            end
+            if observed.status~="CLEAR" then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "BOUNDARY_CLEARANCE_DISPOSITION_UNKNOWN")
+                return
+            end
+            -- CLEAR is necessary, but not sufficient: retain the full
+            -- stopped edge/heading/member parking verifier.
+            local parked,reason,predicate=
+                OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
+                    s.vehicle,s.route)
+            if parked then
+                self:finish("COMPLETION_SETTLEMENT_FINISHED",reason)
+            else
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    predicate or reason or
+                        "BOUNDARY_CLEARANCE_NOT_QUALIFIED_AS_PARKED")
+            end
+            return
+        end
+        -- The final native stop is an observation, NOT evidence that the
+        -- nominal arrival position or tangent was actually achieved.
+        -- Keep this attribution DIAGNOSTIC-only and after physical release.
+        publish("DIAGNOSTIC","INFO",
+            "COMPLETION_SETTLEMENT_TERMINAL_ARRIVAL_EVIDENCE",function()
+            local x,z=rootPose(s.vehicle)
+            local terminal=s.route.terminalPose
+            local last=s.route.legs and s.route.legs[#s.route.legs]
+            local target=terminal or (last and last.point)
+            local distance,shortfall,lateral=nil,nil,nil
+            if x~=nil and target~=nil then
+                local dx,dz=target.x-x,target.z-z
+                distance=math.sqrt(dx*dx+dz*dz)
+                if type(target.fx)=="number" and
+                    type(target.fz)=="number" then
+                    shortfall=dx*target.fx+dz*target.fz
+                    lateral=math.abs(dx*target.fz-dz*target.fx)
+                end
+            end
+            local headingError=nil
+            local frame=s.route.frame
+            if type(frame)=="table"
+                and type(localDirectionToWorld)=="function" then
+                local ok,fx,_,fz=pcall(localDirectionToWorld,
+                    s.vehicle.rootNode,0,0,1)
+                if ok and type(fx)=="number" and
+                    type(fz)=="number" then
+                    local magnitude=math.sqrt(fx*fx+fz*fz)
+                    if magnitude>0.001 then
+                        local alignment=math.abs((fx*frame.ux+
+                            fz*frame.uz)/magnitude)
+                        headingError=math.deg(math.acos(
+                            math.min(1,math.max(0,alignment))))
+                    end
+                end
+            end
+            return {rootNode=tostring(s.vehicle.rootNode),
+                edge=s.route.edge,
+                finalArrivalRadiusM=s.route.terminalArrivalRadiusM
+                    or (last and last.arrivalRadiusM) or 2.5,
+                actualToNominalTerminalM=distance or "unknown",
+                nominalHeadingShortfallM=shortfall or "unknown",
+                nominalHeadingLateralOffsetM=lateral or "unknown",
+                actualEdgeHeadingErrorDeg=headingError or "unknown",
+                terminalSampling="NOMINAL_RADIAL_EIGHT_ACTUAL_STEERING_UNPROVEN"}
+            end)
         local okay,reason,predicate=OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
             s.vehicle,s.route)
         if okay then
@@ -312,6 +554,39 @@ function Runtime:startLeg()
             publish("DEBUG","INFO","COMPLETION_SETTLEMENT_TERMINAL_CORRECTION_UNAVAILABLE",{
                 rootNode=tostring(s.vehicle.rootNode),
                 reason=why or "NO_CURRENT_POSE_TERMINAL_CORRECTION"})
+        end
+        -- Separate terminal member-clearance work from the existing
+        -- alignment/placement correction. This is assessed ONLY after a
+        -- positive physical stop, and only for a real STRADDLING assembly.
+        if predicate=="TERMINAL_MEMBER_INTERSECTS_SOURCE"
+            and not self.boundaryExits[s.vehicle] then
+            local occupancy=AssemblyOccupancy.assess(s.vehicle,s.sourceField)
+            if occupancy~=nil and occupancy.status=="STRADDLING" then
+                self.boundaryExits[s.vehicle]=true
+                local plan,why=Boundary.beginPlan(
+                    s.vehicle,s.sourceField,s.route.edge)
+                if plan~=nil then
+                    self.active=nil
+                    self.pending={vehicle=s.vehicle,job=s.job,
+                        sourceField=s.sourceField,plan=plan,
+                        kind="BOUNDARY_EXIT",retainClaim=true,
+                        clearanceSteps=0,
+                        occupancy="STRADDLING",planningElapsedMs=0,
+                        elapsedMs=s.totalElapsedMs or 0,
+                        phase="PLANNING",driveArmed=false}
+                    publish("DEBUG","INFO",
+                        "COMPLETION_SETTLEMENT_BOUNDARY_EXIT_ASSESSING",{
+                        rootNode=tostring(s.vehicle.rootNode),
+                        reason="ACTUAL_STOPPED_MEMBER_INTERSECTS_SOURCE",
+                        nominatedEdge=s.route.edge,
+                        authority="QUALIFICATION_ONLY"})
+                    return
+                end
+                publish("DEBUG","INFO",
+                    "COMPLETION_SETTLEMENT_BOUNDARY_EXIT_UNAVAILABLE",{
+                    rootNode=tostring(s.vehicle.rootNode),
+                    reason=why or "BOUNDARY_EXIT_SESSION_UNAVAILABLE"})
+            end
         end
         if retryStopped(self,s,reason) then return end
         self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)
@@ -391,7 +666,8 @@ local function beginEpisode(self,job,vehicle,sourceField)
     end
     self.pending={vehicle=vehicle,job=job,sourceField=sourceField,
         plan=session,
-        kind="LOCAL_INITIAL",elapsedMs=0,phase="PLANNING",driveArmed=false}
+        kind="LOCAL_INITIAL",elapsedMs=0,planningElapsedMs=0,
+        phase="PLANNING",driveArmed=false}
     -- This passive comparison never affects admission, native TRANSIT,
     -- edge selection or physical Control.
     if type(publication.isEligible)=="function"
@@ -458,7 +734,7 @@ function Runtime:onNativeCompletion(job,vehicle,retainedSourceField)
     self.attempted[vehicle]=true
     return beginEpisode(self,job,vehicle,sourceField)
 end
-local function allocation(self,s,why)
+allocation=function(self,s,why)
     local collectEvidence=type(publication.isEligible)=="function"
         and publication:isEligible("DIAGNOSTIC","INFO",
             "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS")
@@ -476,7 +752,9 @@ local function allocation(self,s,why)
     self.pending={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
         plan=plan,
         kind="ALLOCATE",phase="PLANNING",driveArmed=false,
-        elapsedMs=s.totalElapsedMs or s.elapsedMs or 0}
+        elapsedMs=s.totalElapsedMs or s.elapsedMs or 0,
+        planningElapsedMs=s.planningElapsedMs or 0,
+        occupancy=s.occupancy,allocationElapsedMs=0}
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALLOCATING_REGION",{
         rootNode=tostring(s.vehicle.rootNode),reason=why})
     return true
@@ -532,6 +810,44 @@ local function stopForAlternative(self,s,reason)
     s.alternativeReason=reason
     publish("DEBUG","INFO","COMPLETION_SETTLEMENT_ALTERNATIVE_STOPPING",{
         rootNode=tostring(s.vehicle.rootNode),reason=reason})
+    return true
+end
+function Runtime:attemptInfieldReposition(s)
+    if self.repositioned[s.vehicle] or s.kind~="ALLOCATE"
+        or type(OuttaMyWay.ExtendedInfieldApproach.planReposition)
+            ~="function" then return false end
+    -- A completed parking attempt must not begin an unexplained new move
+    -- from an invented interior state. Reobserve the actual full assembly.
+    local occupancy=AssemblyOccupancy.assess(s.vehicle,s.sourceField)
+    if occupancy==nil or occupancy.status~="INSIDE" then return false end
+    local route,why=OuttaMyWay.ExtendedInfieldApproach.planReposition(
+        s.vehicle,s.sourceField)
+    if route==nil then
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_UNAVAILABLE",{
+            rootNode=tostring(s.vehicle.rootNode),
+            reason=why or "NO_NOMINAL_INFIELD_SPACE_GAIN"})
+        return false
+    end
+    local clear,reason=OuttaMyWay.SettlementPhysicalOccupancy.routeClear(
+        s.vehicle,route)
+    if not clear then
+        publish("DEBUG","INFO","COMPLETION_SETTLEMENT_REPOSITION_UNAVAILABLE",{
+            rootNode=tostring(s.vehicle.rootNode),
+            reason=reason or "INFIELD_REPOSITION_PHYSICAL_OCCUPANCY"})
+        return false
+    end
+    self.repositioned[s.vehicle]=true
+    self.pending=nil
+    self.active={vehicle=s.vehicle,job=s.job,
+        sourceField=s.sourceField,route=route,legIndex=1,
+        totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
+        phase="ADMITTED",driveArmed=false}
+    publish("NORMAL","INFO","COMPLETION_SETTLEMENT_REPOSITION_ADMITTED",{
+        rootNode=tostring(s.vehicle.rootNode),method=route.method,
+        guideCount=#route.legs,estimatedTravelM=route.estimatedTravelM,
+        nominalMarginGainM=route.nominalMarginGainM,
+        note="INFIELD_INTERMEDIATE_NOT_PARKED"})
+    self:startLeg()
     return true
 end
 function Runtime:update(dt)
@@ -605,6 +921,30 @@ function Runtime:update(dt)
     end
     if self.pending~=nil then
         s.elapsedMs=s.elapsedMs+dt
+        s.planningElapsedMs=(s.planningElapsedMs or 0)+dt
+        if s.kind=="ALLOCATE" then
+            s.allocationElapsedMs=(s.allocationElapsedMs or 0)+dt
+            -- One in-progress witness makes early-ended GIANTS captures
+            -- interpretable without per-frame logging or physical work.
+            if s.allocationElapsedMs>=ALLOCATION_PROGRESS_SAMPLE_MS
+                and not s.allocationProgressPublished then
+                s.allocationProgressPublished=true
+                publish("DIAGNOSTIC","INFO",
+                    "COMPLETION_SETTLEMENT_ALLOCATION_PROGRESS",function()
+                    local p=s.plan
+                    return {rootNode=tostring(s.vehicle.rootNode),
+                        elapsedMs=s.allocationElapsedMs,
+                        planningElapsedMs=s.planningElapsedMs,
+                        sitesExamined=p.siteIndex or 0,
+                        sitesTotal=p.sites and #p.sites or "unknown",
+                        currentSite=p.site and p.site.edgeIndex or "none",
+                        phase=p.phase,
+                        localCandidates=p.localPlan and
+                            p.localPlan.candidates or 0,
+                        weightedGeometryChecks=p.spent or 0}
+                    end)
+            end
+        end
         if s.kind=="LOCAL_INITIAL" and not s.occupancyAssessed then
             -- Parking independently assesses current occupancy. The selected
             -- real member rectangles, not tractor-root containment, decide
@@ -634,10 +974,45 @@ function Runtime:update(dt)
                     "ASSEMBLY_FIELD_OCCUPANCY_UNKNOWN")
                 return
             end
+            if result.status=="STRADDLING" then
+                local plan,why=Boundary.beginPlan(s.vehicle,s.sourceField)
+                if plan~=nil then
+                    s.plan=plan;s.kind="BOUNDARY_EXIT"
+                    s.boundaryFirst=true
+                    publish("DEBUG","INFO",
+                        "COMPLETION_SETTLEMENT_BOUNDARY_EXIT_ASSESSING",{
+                        rootNode=tostring(s.vehicle.rootNode),
+                        reason="NATIVE_COMPLETION_ALREADY_STRADDLING",
+                        authority="QUALIFICATION_ONLY"})
+                    return
+                end
+                publish("DEBUG","INFO",
+                    "COMPLETION_SETTLEMENT_BOUNDARY_EXIT_UNAVAILABLE",{
+                    rootNode=tostring(s.vehicle.rootNode),
+                    reason=why or "BOUNDARY_EXIT_SESSION_UNAVAILABLE"})
+            end
         end
         if s.elapsedMs>TOTAL_DEADLINE_MS then
             self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
                 "FINITE_PLANNING_LEASE_EXPIRED")
+            return
+        end
+        if s.planningElapsedMs>PLANNING_RESPONSE_BUDGET_MS then
+            -- Budget expiry refuses unqualified parking; it never turns
+            -- a candidate into a route or authorises native steering.
+            publish("DEBUG","INFO",
+                "COMPLETION_SETTLEMENT_PLANNING_RESPONSE_LIMIT",{
+                rootNode=tostring(s.vehicle.rootNode),
+                stage=s.kind,elapsedMs=s.planningElapsedMs,
+                sitesExamined=s.plan and s.plan.siteIndex or 0,
+                sitesTotal=s.plan and s.plan.sites
+                    and #s.plan.sites or "unknown",
+                weightedGeometryChecks=s.plan and s.plan.spent or 0})
+            publishAllocationEvidence(s,
+                "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED",true)
+            if self:attemptInfieldReposition(s) then return end
+            self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                "PARKING_PLANNING_RESPONSE_BUDGET_EXHAUSTED")
             return
         end
         local phase,route,reason
@@ -646,11 +1021,41 @@ function Runtime:update(dt)
             -- actual straddling pose, rather than an imaginary entry point.
             phase,route="DONE",s.prequalifiedRoute
         else
-            local planner=s.kind=="ALLOCATE" and Allocation or
-                (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach
-                or OuttaMyWay.CompletionSettlementRoute)
+            local planner=s.kind=="ALLOCATE" and Allocation
+                or (s.kind=="BOUNDARY_EXIT" and Boundary)
+                or (s.kind=="DIRECT_DESTINATION" and Destination)
+                or (s.kind=="EXTENDED" and OuttaMyWay.ExtendedInfieldApproach)
+                or OuttaMyWay.CompletionSettlementRoute
             phase,route,reason=planner.advancePlan(
-                s.plan,PLAN_UNITS_PER_UPDATE)
+                s.plan,PLAN_UNITS_PER_UPDATE,s.planningElapsedMs)
+        end
+        if s.kind=="ALLOCATE" and s.plan and s.plan.sites
+            and not s.destinationPriorityPublished then
+            s.destinationPriorityPublished=true
+            publish("DIAGNOSTIC","INFO",
+                "COMPLETION_SETTLEMENT_DESTINATION_PRIORITIES",function()
+                local listed={}
+                local seen={}
+                for i=1,math.min(#s.plan.sites,20) do
+                    local site=s.plan.sites[i]
+                    if not seen[site.edgeIndex] then
+                        seen[site.edgeIndex]=true
+                        listed[#listed+1]=tostring(site.edgeIndex)
+                            ..":rank"..tostring(site.selectionRank)
+                            ..":usable"..string.format("%.1f",
+                                site.usableLongitudinalM or 0)
+                            ..":risk"..tostring(site.peerRisk)
+                    end
+                end
+                return {rootNode=tostring(s.vehicle.rootNode),
+                    fieldId=s.sourceField and s.sourceField.fieldId,
+                    occupancy=s.occupancy,
+                    totalSites=#s.plan.sites,
+                    priorityPreview=table.concat(listed,";"),
+                    basis="PEER_RISK_USABLE_LENGTH_CROSS_EDGE_COVERAGE",
+                    exteriorRoadClearance="UNKNOWN_NOT_OBSERVED",
+                    selection="ORDER_ONLY_NO_MOVEMENT_OR_CLAIM"}
+                end)
         end
         if phase=="PENDING" then return end
         if s.kind=="ALLOCATE" and phase=="DONE" and route then
@@ -690,6 +1095,9 @@ function Runtime:update(dt)
                 headingWitnesses=route.headingWitnesses,
                 selectionCost=route.selectionCost,
                 edgeIndex=route.edge,
+                selectionRank=route.selectionRank,
+                usableLongitudinalM=route.usableLongitudinalM,
+                selectionBasis="PEER_RISK_THEN_USABLE_EDGE_SPACE_NOT_ROAD_PROOF",
                 edgeQualification="LOCAL_ROUTE_AND_TERMINAL_QUALIFIED"} end)
             return
         end
@@ -710,33 +1118,33 @@ function Runtime:update(dt)
             return
         end
         if phase~="DONE" or route==nil then
-            if s.kind=="ALLOCATE" and type(s.plan.evidence)=="table" then
-                -- One diagnostic line per failed allocation, not per site
-                -- or update. No diagnostic counting when policy suppresses it.
-                local e=s.plan.evidence
+            if s.kind=="BOUNDARY_EXIT" then
                 publish("DIAGNOSTIC","INFO",
-                    "COMPLETION_SETTLEMENT_ALLOCATION_REJECTIONS",function()
-                    return {
-                        rootNode=tostring(s.vehicle.rootNode),
-                        fieldId=s.sourceField and s.sourceField.fieldId
-                            or "unknown",
-                        occupancy=s.plan.disposition or "unknown",
-                        reason=reason or "NO_QUALIFIED_TERMINAL_REGION",
-                        sitesTotal=e.sitesTotal,sitesExamined=e.sitesExamined,
-                        localPlans=e.localPlans,localFeasible=e.localFeasible,
-                        localCandidates=e.localCandidates,
-                        approachPlans=e.approachPlans,
-                        approachConnected=e.approachConnected,
-                        initialReason=e.initialReason,
-                        initialCandidates=e.initialCandidates,
-                        initialRejections=rejectionSummary(e.initialRejections),
-                        siteRejections=rejectionSummary(e.siteRejections),
-                        routeRejections=rejectionSummary(e.routeRejections),
-                        planningUpdates=s.plan.advances,
-                        weightedGeometryChecks=s.plan.spent
-                    }
+                    "COMPLETION_SETTLEMENT_BOUNDARY_EXIT_REFUSED",function()
+                    return {rootNode=tostring(s.vehicle.rootNode),
+                        reason=reason or "NO_QUALIFIED_BOUNDARY_EXIT",
+                        nominatedEdge=s.plan.edgeIndex or "any",
+                        candidateChecks=s.plan.candidates or 0,
+                        weightedWork=s.plan.spent or 0,
+                        rejections=rejectionSummary(s.plan.reasonCounts)}
                     end)
+                if s.boundaryFirst then
+                    -- Preserve pre-existing route search from the real pose;
+                    -- the forward-only concept is an alternative, not a gate.
+                    local nextPlan,why=OuttaMyWay.CompletionSettlementRoute.beginPlan(
+                        s.vehicle,{sourceField=s.sourceField})
+                    if nextPlan~=nil then
+                        s.plan=nextPlan;s.kind="LOCAL_INITIAL"
+                        s.boundaryFirst=nil
+                        return
+                    end
+                    reason=why or "LOCAL_ROUTE_SESSION_UNAVAILABLE"
+                elseif s.retainClaim then
+                    if retryStopped(self,s,reason) then return end
+                end
             end
+            publishAllocationEvidence(s,
+                reason or "NO_QUALIFIED_TERMINAL_REGION",false)
             if s.kind=="EXTENDED" and type(s.plan.sceneEvidence)=="table" then
                 -- One bounded evidence line on a failed scene admission,
                 -- not a per-frame or per-candidate diagnostic flood.
@@ -792,14 +1200,18 @@ function Runtime:update(dt)
                 reason or "POSE_CONDITIONED_ROUTE_UNAVAILABLE")
             return
         end
-        if s.kind=="LOCAL_INITIAL" then
+        if s.kind=="LOCAL_INITIAL" or s.kind=="DIRECT_DESTINATION"
+            or (s.kind=="BOUNDARY_EXIT" and not s.retainClaim) then
+            -- Full routes from the actual complete assembly, never
+            -- hypothetical edge entries, may acquire a terminal claim.
             local claim,why=Allocation.claimForRoute(self.claims,s.vehicle,route)
             if not claim then
                 if allocation(self,s,why) then return end
                 self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",why)
                 return
             end
-        elseif s.kind=="LOCAL_HANDOFF" or s.kind=="LOCAL_ALLOCATED" then
+        elseif s.kind=="LOCAL_HANDOFF" or s.kind=="LOCAL_ALLOCATED"
+            or (s.kind=="BOUNDARY_EXIT" and s.retainClaim) then
             local matched,miss=Allocation.matchesClaim(
                 self.claims,s.vehicle,route)
             if not matched then
@@ -827,6 +1239,7 @@ function Runtime:update(dt)
         self.pending=nil
         self.active={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
             route=route,legIndex=1,
+            clearanceSteps=s.clearanceSteps or 0,
             stationMin=s.stationMin,stationMax=s.stationMax,
             edgeIndex=s.edgeIndex or route.edge,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
@@ -854,6 +1267,12 @@ function Runtime:update(dt)
             guidancePoints=#route.legs,
             estimatedTravelM=route.estimatedTravelM,
             guideRadiusM=route.guideRadiusM,
+            destinationSelectionRank=route.destinationSelectionRank
+                or "not-compared",
+            destinationUsableLongitudinalM=
+                route.destinationUsableLongitudinalM or "unknown",
+            destinationAssessment=route.destinationAssessment
+                or "INITIAL_LOCAL_ROUTE",
             note="TEST_NOMINAL_POSE_PATH_NOT_PHYSICAL_CLEARANCE"}
         end)
         self:startLeg()
@@ -868,14 +1287,35 @@ function Runtime:update(dt)
             "FINITE_CONTROL_LEASE_EXPIRED")
         return
     end
-    if s.phase=="MOVING" and s.route.mode=="EXTENDED_INFIELD" then
+    if s.phase=="MOVING" and
+        s.route.mode=="BOUNDARY_CLEARANCE_STEP" then
+        local valid,why=Boundary.guard(s.vehicle,s.route)
+        local claimed,claimWhy=Allocation.claimClear(
+            self.claims,s.vehicle,s.route.poly)
+        if not valid or not claimed then
+            local reason=not claimed and claimWhy or why
+                or "BOUNDARY_STEP_LIVE_CORRIDOR_LOST"
+            if not stopForAlternative(self,s,reason) then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)
+            end
+            return
+        end
+    elseif s.phase=="MOVING" and
+        (s.route.mode=="EXTENDED_INFIELD"
+            or s.route.mode=="REPOSITION_INFIELD") then
         s.peerCheckMs=(s.peerCheckMs or 250)+dt
         if s.peerCheckMs>=250 then
             s.peerCheckMs=0
             local valid,why=OuttaMyWay.ExtendedInfieldApproach.guard(
                 s.vehicle,s.route,s.legIndex)
-            local claimed,claimWhy=Allocation.claimClear(
-                self.claims,s.vehicle,s.route.poly)
+            -- A bounded infield reposition has no exterior terminal
+            -- claim. Its actual assembly, peer and occupancy guards remain
+            -- mandatory; the claim is needed only for a parking approach.
+            local claimed,claimWhy=true,nil
+            if s.route.mode=="EXTENDED_INFIELD" then
+                claimed,claimWhy=Allocation.claimClear(
+                    self.claims,s.vehicle,s.route.poly)
+            end
             if not valid or not claimed then
                 local reason=not claimed and claimWhy or why
                     or "EXTENDED_APPROACH_UNSUPPORTED"
@@ -1018,7 +1458,9 @@ function Runtime:loadMap()
     self.claims={}
     self.replans=setmetatable({},{__mode="k"})
     self.terminalCorrections=setmetatable({},{__mode="k"})
+    self.boundaryExits=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
+    self.repositioned=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
     if type(Situation)=="table" and type(Situation.reset)=="function" then
         Situation.reset()
@@ -1036,7 +1478,9 @@ function Runtime:deleteMap()
     self.claims={}
     self.replans=setmetatable({},{__mode="k"})
     self.terminalCorrections=setmetatable({},{__mode="k"})
+    self.boundaryExits=setmetatable({},{__mode="k"})
     self.attempted=setmetatable({},{__mode="k"})
+    self.repositioned=setmetatable({},{__mode="k"})
     self.deferred=setmetatable({},{__mode="k"})
     if type(Situation)=="table" and type(Situation.reset)=="function" then
         Situation.reset()

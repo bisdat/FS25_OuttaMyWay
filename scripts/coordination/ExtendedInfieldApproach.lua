@@ -315,6 +315,94 @@ local function reconstruct(ctx,node)
         guideRadiusM=STEP/TURN,guidancePoints=#legs,
         legs=legs},nil
 end
+-- A bounded, unclaimed infield manoeuvre can make a new ACTUAL pose
+-- available for fresh parking assessment. No hypothetical final position
+-- is treated as a parked terminal or an authorised later forward route.
+-- Repositioning is only considered after the ordinary connection search
+-- fails its response budget. Its own route must pass the same live guard.
+local REPOSITION_DISTANCES={8,12}
+local REPOSITION_STEERS={-2,-1,0,1,2}
+local REPOSITION_MIN_MARGIN_GAIN_M=1.5
+local function minMemberBoundaryMargin(ctx,p)
+    if not G.inside(ctx.poly,p.x,p.z) then return nil end
+    local margin=G.distanceToBoundary(ctx.poly,p.x,p.z)
+    local dot=ctx.initial.fx*p.fx+ctx.initial.fz*p.fz
+    local cross=ctx.initial.fx*p.fz-ctx.initial.fz*p.fx
+    for i=1,#ctx.foot.corners do
+        local v=ctx.foot.corners[i]
+        local x=p.x+v.x*dot-v.z*cross
+        local z=p.z+v.x*cross+v.z*dot
+        if not G.inside(ctx.poly,x,z) then return nil end
+        margin=math.min(margin,G.distanceToBoundary(ctx.poly,x,z))
+    end
+    return margin
+end
+function M.planReposition(vehicle,sourceField)
+    local ctx,why=context(vehicle,sourceField,nil)
+    if ctx==nil then return nil,why end
+    if not onField(ctx,ctx.initial) then
+        return nil,"REPOSITION_START_NOT_FULLY_INSIDE_SOURCE"
+    end
+    local initialMargin=minMemberBoundaryMargin(ctx,ctx.initial)
+    if initialMargin==nil then return nil,"REPOSITION_MARGIN_UNKNOWN" end
+    local best=nil
+    -- Forward arcs and a STRAIGHT reverse use the same complete-member
+    -- infield containment, observed peer, and physical occupancy checks.
+    -- Every metre is screened; a reverse is never blind or unlimited.
+    for _,forwards in ipairs({true,false}) do
+        for _,steer in ipairs(REPOSITION_STEERS) do
+            if forwards or steer==0 then
+                local p=ctx.initial
+                local points={}
+                local valid=true
+                for metre=1,12 do
+                    if forwards then
+                        p=transition(p,steer,1/STEP)
+                    else
+                        p={x=p.x-p.fx,z=p.z-p.fz,
+                            fx=p.fx,fz=p.fz}
+                    end
+                    if not onField(ctx,p) then valid=false;break end
+                    if metre%4==0 then
+                        points[#points+1]={name=forwards
+                            and "REPOSITION_FORWARD" or "REPOSITION_REVERSE",
+                            point={x=p.x,z=p.z},moveForwards=forwards,
+                            arrivalRadiusM=0.75}
+                    end
+                    for _,distance in ipairs(REPOSITION_DISTANCES) do
+                        if metre==distance then
+                            local margin=minMemberBoundaryMargin(ctx,p)
+                            local gain=margin and margin-initialMargin or -math.huge
+                            -- A materially deeper entire-assembly pose,
+                            -- not mere displacement, is the objective.
+                            if gain>=REPOSITION_MIN_MARGIN_GAIN_M then
+                                local score=gain-0.03*distance
+                                if best==nil or score>best.score then
+                                    local copy={}
+                                    for i=1,#points do copy[i]=points[i] end
+                                    best={score=score,distance=distance,
+                                        terminal=p,legs=copy,
+                                        moveForwards=forwards,
+                                        gain=gain}
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if best==nil then return nil,"NO_QUALIFIED_INFIELD_REPOSITION" end
+    return {mode="REPOSITION_INFIELD",field=ctx.fieldId,
+        edge=ctx.edgeIndex,poly=ctx.poly,memberCount=ctx.foot.memberCount,
+        method=best.moveForwards and "INFIELD_FORWARD_TURN"
+            or "INFIELD_STRAIGHT_REVERSE",
+        reverseM=best.moveForwards and 0 or best.distance,
+        estimatedTravelM=best.distance,
+        nominalMarginGainM=best.gain,
+        terminalPose=best.terminal,
+        legs=best.legs},nil
+end
 function M.beginPlan(vehicle,target,sourceField,edgeIndex)
     if type(vehicle)~="table" then return nil,"VEHICLE_UNAVAILABLE" end
     return {vehicle=vehicle,target=target,sourceField=sourceField,

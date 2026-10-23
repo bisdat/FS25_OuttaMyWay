@@ -33,10 +33,10 @@ local function position(vehicle)
     if ok and finite(x) and finite(z) then return {x=x,z=z} end
     return nil
 end
-local function entry(f,station)
+local function entry(f,station,direction)
     return {x=f.ax+f.ux*station-f.nx*18,
         z=f.az+f.uz*station-f.nz*18,
-        fx=-f.ux,fz=-f.uz}
+        fx=f.ux*direction,fz=f.uz*direction}
 end
 local function claimObstacles(ledger,vehicle)
     local results={}
@@ -129,6 +129,8 @@ function M.qualifiedResult(s,approach,direct)
         workingPeers=latest.workingCount,motionWitnesses=latest.motionCount,
         headingWitnesses=latest.headingCount,
         edgeEvidence=s.edgeEvidence,selectionCost=s.site.score,
+        selectionRank=s.site.selectionRank,
+        usableLongitudinalM=s.site.usableLongitudinalM,
         claimObstacles=claimObstacles(s.ledger,s.vehicle)}
 end
 function M.beginPlan(vehicle,ledger,sourceField,disposition,collectEvidence)
@@ -201,11 +203,18 @@ function M.advancePlan(s,units)
                 local stations=math.max(1,math.ceil(available/spacing))
                 for j=1,stations do
                     local station=margin+available*(j-0.5)/stations
-                    local candidate=entry(f,station)
-                    local dx,dz=p.x-candidate.x,p.z-candidate.z
-                    sorted[#sorted+1]={edgeIndex=f.index,frame=f,
-                        station=station,entry=candidate,
-                        score=math.sqrt(dx*dx+dz*dz)}
+                    -- Both legitimate edge-parallel arrivals must be
+                    -- representable; one prescribed tangent can reject a
+                    -- physically accessible forward approach prematurely.
+                    for _,direction in ipairs({-1,1}) do
+                        local candidate=entry(f,station,direction)
+                        local dx,dz=p.x-candidate.x,p.z-candidate.z
+                        sorted[#sorted+1]={edgeIndex=f.index,frame=f,
+                            station=station,entry=candidate,
+                            entryDirection=direction,
+                            usableLongitudinalM=available,
+                            score=math.sqrt(dx*dx+dz*dz)}
+                    end
                 end
             end
         end
@@ -271,6 +280,7 @@ function M.advancePlan(s,units)
         -- A straddling assembly needs an actual-pose local egress;
         -- an imagined infield entry is not a connected route.
         local options={entryPose=site.entry,sourceField=s.sourceField,
+            earliestQualified=true,
             edgeIndex=site.edgeIndex,
             stationMin=math.max(3,site.station-26),
             stationMax=math.min(f.length-3,site.station+26),
