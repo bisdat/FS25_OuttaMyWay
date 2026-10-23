@@ -32,8 +32,8 @@ local PLAN_UNITS_PER_UPDATE=320
 local STRAIGHT_REVERSE_LOOKTHROUGH_M=40
 -- Maximum six separately stopped and reobserved two-metre clearances.
 -- No intermediate step may assert parking or blindly extend a native lease.
-local MAX_BOUNDARY_CLEARANCE_STEPS=6
-local MIN_CONFIRMED_CLEARANCE_PROGRESS_M=0.5
+local MAX_BOUNDARY_CLEARANCE_STEPS=4
+local MIN_CONFIRMED_CLEARANCE_PROGRESS_M=1.75
 -- Target-horizon braking model, not a fixed 8 km/h travel limit.
 -- TEST assumption: 1.5 m/s^2 controllable deceleration, GIANTS to validate.
 local GUIDANCE_DECEL_MPS2=1.5
@@ -402,10 +402,11 @@ function Runtime:startLeg()
             local dx,dz=actualX-origin.x,actualZ-origin.z
             local forwardMoved=dx*origin.fx+dz*origin.fz
             local steps=(s.clearanceSteps or 0)+1
-            publish("NORMAL","INFO",
+            publish("DEBUG","INFO",
                 "COMPLETION_SETTLEMENT_BOUNDARY_CLEARANCE_OBSERVED",{
                 rootNode=tostring(s.vehicle.rootNode),
-                attemptedStepM=s.route.nominalStepM,
+                targetHorizonM=s.route.nominalStepM,
+                requiredForwardM=s.route.requiredForwardM,
                 observedForwardM=forwardMoved,
                 stepsCompleted=steps,
                 memberDisposition=observed.status,
