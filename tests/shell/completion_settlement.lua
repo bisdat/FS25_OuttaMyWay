@@ -29,6 +29,7 @@ local driveCalls={}
 local failure
 local failCancel=false
 local forceStopRefusal=false
+local freezeBoundaryMovement=false
 OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
     return {
         active=nil,
@@ -62,7 +63,9 @@ OuttaMyWay.NativeStaticAssemblyDriveMechanism={new=function()
             assert(self.active and self.active.vehicle==vehicle)
             if failure then return {isFailed=true,reason=failure} end
             local target=self.active.objective
-            vehicle.x,vehicle.z=target.targetX,target.targetZ
+            if not freezeBoundaryMovement then
+                vehicle.x,vehicle.z=target.targetX,target.targetZ
+            end
             return {isComplete=true}
         end,
         beginSettlementStop=function(self,vehicle)
@@ -1191,6 +1194,54 @@ end
 assert(runtime.active==nil and runtime.pending==nil
     and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
     "a first-finisher forward continuation must independently stop and verify")
+physicalBoundaryTestSubject=nil
+runtime:loadMap()
+-- Four separately verified stops are a finite clearance opportunity,
+-- NOT permission to continue past a still-straddling boundary forever.
+occupancyDisposition="STRADDLING"
+boundaryAllowed=true
+local stillStraddled={rootNode=735,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+physicalBoundaryTestSubject=stillStraddled
+assert(runtime:onNativeCompletion({},stillStraddled))
+local stepsObserved=0
+for i=1,110 do
+    runtime:update(16)
+    for _,ev in ipairs(events) do
+        if ev.code=="COMPLETION_SETTLEMENT_BOUNDARY_CLEARANCE_OBSERVED"
+            and ev.fields.rootNode=="735"
+            and (ev.fields.stepsCompleted or 0)>stepsObserved then
+            stepsObserved=ev.fields.stepsCompleted
+        end
+    end
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(stepsObserved==4 and runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_NOT_ADMITTED"
+    and events[#events].fields.reason==
+        "BOUNDARY_CLEARANCE_FINITE_STEPS_EXHAUSTED"
+    and runtime.claims[stillStraddled]==nil,
+    "only four observed clearance steps are permitted without physical CLEAR")
+runtime:loadMap()
+-- A nominally accepted target is not physical progress. No actual
+-- forward movement cannot unlock another clearance attempt.
+local stalledStep={rootNode=736,
+    getIsAIActive=function()return false end,
+    getCurrentAIJob=function()return nil end}
+physicalBoundaryTestSubject=stalledStep
+freezeBoundaryMovement=true
+assert(runtime:onNativeCompletion({},stalledStep))
+for i=1,25 do
+    runtime:update(16)
+    if runtime.active==nil and runtime.pending==nil then break end
+end
+assert(runtime.active==nil and runtime.pending==nil
+    and events[#events].code=="COMPLETION_SETTLEMENT_INTERRUPTED"
+    and events[#events].fields.reason=="BOUNDARY_STEP_NO_PHYSICAL_FORWARD_PROGRESS"
+    and runtime.claims[stalledStep]==nil,
+    "nominal waypoint completion must not count as measured physical progress")
+freezeBoundaryMovement=false
 physicalBoundaryTestSubject=nil
 runtime:loadMap()
 boundaryAllowed=false
