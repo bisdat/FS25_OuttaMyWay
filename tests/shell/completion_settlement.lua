@@ -174,21 +174,14 @@ local boundaryAllowed=false
 local boundaryForceRefusal=false
 local boundaryBegins=0
 local boundaryAdvanced=0
-local boundaryExitRoute={
-    mode="BOUNDARY_EXIT",field=29,edge=7,memberCount=2,
-    estimatedTravelM=6,method="ACTUAL_POSE_FORWARD_BOUNDARY_EXIT",
-    terminalPose={x=21,z=12},terminalArrivalRadiusM=0.75,
-    legs={{name="BOUNDARY_EXIT_FORWARD",
-        point={x=17,z=12},moveForwards=true},
-        {name="BOUNDARY_EXIT_FORWARD",
-        point={x=21,z=12},moveForwards=true,arrivalRadiusM=0.75}}
-}
+local boundaryLiveGuard=true
 OuttaMyWay.CompletionBoundaryExitContinuation={
     beginPlan=function(_,_,selectedEdge)
         boundaryBegins=boundaryBegins+1
         if not boundaryAllowed then return nil,"NO_SAFE_FORWARD_EXIT" end
         return {advances=0,spent=0,reasonCounts={},
-            edgeIndex=selectedEdge}
+            edgeIndex=selectedEdge,vehicle=_,initialX=_.x or 0,
+            initialZ=_.z or 0}
     end,
     advancePlan=function(plan,units)
         boundaryAdvanced=boundaryAdvanced+1
@@ -197,7 +190,18 @@ OuttaMyWay.CompletionBoundaryExitContinuation={
         if boundaryForceRefusal then
             return "FAILED",nil,"NO_QUALIFIED_BOUNDARY_EXIT_CONTINUATION"
         end
-        return "DONE",boundaryExitRoute
+        local target={x=plan.initialX+2,z=plan.initialZ}
+        return "DONE",{mode="BOUNDARY_CLEARANCE_STEP",
+            field=29,edge=7,memberCount=2,
+            estimatedTravelM=2,nominalStepM=2,
+            method="OBSERVED_STRADDLING_FORWARD_2M",
+            terminalPose=target,terminalArrivalRadiusM=0.75,
+            stepOrigin={x=plan.initialX,z=plan.initialZ,fx=1,fz=0},
+            legs={{name="BOUNDARY_CLEARANCE_FORWARD",
+                point=target,moveForwards=true,arrivalRadiusM=0.75}}}
+    end,
+    guard=function()
+        return boundaryLiveGuard,"BOUNDARY_STEP_LIVE_GUARD_DENIED"
     end
 }
 local directDestinationBegins=0
@@ -320,9 +324,14 @@ local enabled=true
 g_server={}
 local config={isResolved=function()return true end,
     isEnabled=function()return enabled end}
-getWorldTranslation=function()
-    -- The drive mock owns its own successful-leg outcome; this passive
-    -- world-pose fixture only feeds each new leg's target distance.
+local physicalBoundaryTestSubject=nil
+getWorldTranslation=function(node)
+    if physicalBoundaryTestSubject~=nil
+        and node==physicalBoundaryTestSubject.rootNode then
+        return physicalBoundaryTestSubject.x or 0,0,
+            physicalBoundaryTestSubject.z or 0
+    end
+    -- Else the drive mock owns physical-leg success independently.
     return 0,0,0
 end
 -- Source Field is observed independently from the native completion job.
@@ -1103,6 +1112,7 @@ local alreadyStraddling={rootNode=733,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
 local startsBefore=#driveCalls
+physicalBoundaryTestSubject=alreadyStraddling
 assert(runtime:onNativeCompletion({},alreadyStraddling))
 runtime:update(16)
 assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
@@ -1110,16 +1120,36 @@ assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
     and #driveCalls==startsBefore,
     "a native STRADDLING completion must assess before any drive or claim")
 runtime:update(16)
-assert(runtime.active and runtime.active.route.mode=="BOUNDARY_EXIT"
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP"
     and runtime.claims[alreadyStraddling]~=nil,
-    "a fully qualified forward route, not the mere STRADDLING fact, admits Control")
+    "a qualified physical 2m step admits movement without assuming final parking")
+local stoppedStillStraddled=false
 for i=1,14 do
     runtime:update(16)
+    if runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
+        and runtime.pending.clearanceSteps==1 then
+        stoppedStillStraddled=true
+        break
+    end
+end
+assert(stoppedStillStraddled
+    and events[#events].code~="COMPLETION_SETTLEMENT_FINISHED",
+    "one actual 2m stop still STRADDLING must not fabricate success")
+runtime:update(16)
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP"
+    and runtime.active.clearanceSteps==1,
+    "second clearance must start from the newly observed actual root pose")
+for i=1,14 do
+    runtime:update(16)
+    if runtime.active and runtime.active.phase=="STOPPING" then
+        occupancyDisposition="CLEAR"
+    end
     if runtime.active==nil and runtime.pending==nil then break end
 end
 assert(runtime.active==nil and runtime.pending==nil
     and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
-    "boundary forward continuation still demands independent stopped verification")
+    "only physically CLEAR stopped terminal may complete parking")
+physicalBoundaryTestSubject=nil
 runtime:loadMap()
 occupancyDisposition="INSIDE"
 boundaryAllowed=true
@@ -1127,6 +1157,7 @@ failTerminal=true
 local memberStillInField={rootNode=734,
     getIsAIActive=function()return false end,
     getCurrentAIJob=function()return nil end}
+physicalBoundaryTestSubject=memberStillInField
 assert(runtime:onNativeCompletion({},memberStillInField))
 for i=1,24 do
     runtime:update(16)
@@ -1146,16 +1177,21 @@ assert(runtime.pending and runtime.pending.kind=="BOUNDARY_EXIT"
     "a physically stopped member-intersection permits a separately qualified same-edge exit")
 failTerminal=false
 runtime:update(16)
-assert(runtime.active and runtime.active.route.mode=="BOUNDARY_EXIT"
+assert(runtime.active and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP"
     and runtime.claims[memberStillInField]~=nil,
-    "terminal continuation must retain its prior claimed region")
+    "stopped first-finisher continuation must use the retained short-lived claim")
 for i=1,14 do
     runtime:update(16)
+    if runtime.active and runtime.active.phase=="STOPPING"
+        and runtime.active.route.mode=="BOUNDARY_CLEARANCE_STEP" then
+        occupancyDisposition="CLEAR"
+    end
     if runtime.active==nil and runtime.pending==nil then break end
 end
 assert(runtime.active==nil and runtime.pending==nil
     and events[#events].code=="COMPLETION_SETTLEMENT_FINISHED",
     "a first-finisher forward continuation must independently stop and verify")
+physicalBoundaryTestSubject=nil
 runtime:loadMap()
 boundaryAllowed=false
 occupancyDisposition="INSIDE"
