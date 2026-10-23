@@ -176,12 +176,12 @@ local boundaryBegins=0
 local boundaryAdvanced=0
 local boundaryLiveGuard=true
 OuttaMyWay.CompletionBoundaryExitContinuation={
-    beginPlan=function(_,_,selectedEdge)
+    beginPlan=function(subject,sourceField,selectedEdge)
         boundaryBegins=boundaryBegins+1
         if not boundaryAllowed then return nil,"NO_SAFE_FORWARD_EXIT" end
         return {advances=0,spent=0,reasonCounts={},
-            edgeIndex=selectedEdge,vehicle=_,initialX=_.x or 0,
-            initialZ=_.z or 0}
+            edgeIndex=selectedEdge,vehicle=subject,initialX=subject.x or 0,
+            initialZ=subject.z or 0}
     end,
     advancePlan=function(plan,units)
         boundaryAdvanced=boundaryAdvanced+1
