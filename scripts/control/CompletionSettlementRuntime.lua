@@ -30,6 +30,10 @@ local PLAN_UNITS_PER_UPDATE=320
 -- BWR's evidenced straight-reverse steering look-through; the terminal
 -- guide still owns physical arrival, lease and movement safety.
 local STRAIGHT_REVERSE_LOOKTHROUGH_M=40
+-- Maximum six separately stopped and reobserved two-metre clearances.
+-- No intermediate step may assert parking or blindly extend a native lease.
+local MAX_BOUNDARY_CLEARANCE_STEPS=6
+local MIN_CONFIRMED_CLEARANCE_PROGRESS_M=0.5
 -- Target-horizon braking model, not a fixed 8 km/h travel limit.
 -- TEST assumption: 1.5 m/s^2 controllable deceleration, GIANTS to validate.
 local GUIDANCE_DECEL_MPS2=1.5
@@ -377,6 +381,87 @@ function Runtime:startLeg()
                 note="EXTENDED_APPROACH_STOPPED_AND_RELEASED"})
             return
         end
+        if s.route.mode=="BOUNDARY_CLEARANCE_STEP" then
+            -- This was a bounded intermediate action, NOT a parking
+            -- terminal. The only progress witness is the fresh stopped
+            -- Physical Assembly, including actual hitch articulation.
+            if s.driveArmed then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "BOUNDARY_STEP_NATIVE_STOP_NOT_RELEASED")
+                return
+            end
+            local actualX,actualZ=rootPose(s.vehicle)
+            local origin=s.route.stepOrigin
+            local observed,why=AssemblyOccupancy.assess(
+                s.vehicle,s.sourceField)
+            if observed==nil or actualX==nil or type(origin)~="table" then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    why or "BOUNDARY_STEP_STOPPED_POSE_UNKNOWN")
+                return
+            end
+            local dx,dz=actualX-origin.x,actualZ-origin.z
+            local forwardMoved=dx*origin.fx+dz*origin.fz
+            local steps=(s.clearanceSteps or 0)+1
+            publish("NORMAL","INFO",
+                "COMPLETION_SETTLEMENT_BOUNDARY_CLEARANCE_OBSERVED",{
+                rootNode=tostring(s.vehicle.rootNode),
+                attemptedStepM=s.route.nominalStepM,
+                observedForwardM=forwardMoved,
+                stepsCompleted=steps,
+                memberDisposition=observed.status,
+                intersectingMembers=observed.intersectingMembers,
+                note="PHYSICAL_STOP_NO_NOMINAL_TERMINAL_ASSERTION"})
+            if forwardMoved<MIN_CONFIRMED_CLEARANCE_PROGRESS_M then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "BOUNDARY_STEP_NO_PHYSICAL_FORWARD_PROGRESS")
+                return
+            end
+            if observed.status=="STRADDLING"
+                and steps<MAX_BOUNDARY_CLEARANCE_STEPS then
+                local plan,reason=Boundary.beginPlan(
+                    s.vehicle,s.sourceField,s.route.edge)
+                if plan==nil then
+                    self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                        reason or "BOUNDARY_STEP_REASSESSMENT_UNAVAILABLE")
+                    return
+                end
+                -- A stop-region claim covers precisely one movement lease;
+                -- release it only after a confirmed physical stop.
+                Allocation.release(self.claims,s.vehicle)
+                self.active=nil
+                self.pending={vehicle=s.vehicle,job=s.job,
+                    sourceField=s.sourceField,plan=plan,
+                    kind="BOUNDARY_EXIT",occupancy="STRADDLING",
+                    clearanceSteps=steps,
+                    elapsedMs=s.totalElapsedMs,
+                    planningElapsedMs=0,
+                    phase="PLANNING",driveArmed=false}
+                return
+            end
+            if observed.status=="STRADDLING" then
+                self:finish("COMPLETION_SETTLEMENT_NOT_ADMITTED",
+                    "BOUNDARY_CLEARANCE_FINITE_STEPS_EXHAUSTED")
+                return
+            end
+            if observed.status~="CLEAR" then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    "BOUNDARY_CLEARANCE_DISPOSITION_UNKNOWN")
+                return
+            end
+            -- CLEAR is necessary, but not sufficient: retain the full
+            -- stopped edge/heading/member parking verifier.
+            local parked,reason,predicate=
+                OuttaMyWay.CompletionSettlementRoute.verifyTerminal(
+                    s.vehicle,s.route)
+            if parked then
+                self:finish("COMPLETION_SETTLEMENT_FINISHED",reason)
+            else
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",
+                    predicate or reason or
+                        "BOUNDARY_CLEARANCE_NOT_QUALIFIED_AS_PARKED")
+            end
+            return
+        end
         -- The final native stop is an observation, NOT evidence that the
         -- nominal arrival position or tangent was actually achieved.
         -- Keep this attribution DIAGNOSTIC-only and after physical release.
@@ -484,6 +569,7 @@ function Runtime:startLeg()
                     self.pending={vehicle=s.vehicle,job=s.job,
                         sourceField=s.sourceField,plan=plan,
                         kind="BOUNDARY_EXIT",retainClaim=true,
+                        clearanceSteps=0,
                         occupancy="STRADDLING",planningElapsedMs=0,
                         elapsedMs=s.totalElapsedMs or 0,
                         phase="PLANNING",driveArmed=false}
@@ -1152,6 +1238,7 @@ function Runtime:update(dt)
         self.pending=nil
         self.active={vehicle=s.vehicle,job=s.job,sourceField=s.sourceField,
             route=route,legIndex=1,
+            clearanceSteps=s.clearanceSteps or 0,
             stationMin=s.stationMin,stationMax=s.stationMax,
             edgeIndex=s.edgeIndex or route.edge,
             totalElapsedMs=s.elapsedMs,legElapsedMs=0,telemetryElapsedMs=0,
@@ -1200,6 +1287,19 @@ function Runtime:update(dt)
         return
     end
     if s.phase=="MOVING" and
+        s.route.mode=="BOUNDARY_CLEARANCE_STEP" then
+        local valid,why=Boundary.guard(s.vehicle,s.route)
+        local claimed,claimWhy=Allocation.claimClear(
+            self.claims,s.vehicle,s.route.poly)
+        if not valid or not claimed then
+            local reason=not claimed and claimWhy or why
+                or "BOUNDARY_STEP_LIVE_CORRIDOR_LOST"
+            if not stopForAlternative(self,s,reason) then
+                self:finish("COMPLETION_SETTLEMENT_INTERRUPTED",reason)
+            end
+            return
+        end
+    elseif s.phase=="MOVING" and
         (s.route.mode=="EXTENDED_INFIELD"
             or s.route.mode=="REPOSITION_INFIELD") then
         s.peerCheckMs=(s.peerCheckMs or 250)+dt
