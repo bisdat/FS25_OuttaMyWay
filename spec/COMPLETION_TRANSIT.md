@@ -21,7 +21,7 @@ Use the existing GIANTS-native TRANSIT request selection exercised by paired Hol
 
 When product is disabled or the map tears down, relinquish the completion request state without applying WORKING restoration commands to a completed machine. A newer AI job prevents admission, but ownership after a started request is not a validated future parking/control lifecycle.
 
-**Current Configuration boundary:** the validated Completion TRANSIT capability is governed by the existing product-wide `enabled` setting. The dedicated persisted player choice requested in Issue #476 is deferred to a separate increment, together with its interruption semantics, before completion-triggered off-field settlement is released. The absence of this dedicated setting does not invalidate the accepted request-only TRANSIT baseline.
+**Current Configuration boundary:** Completion TRANSIT requires resolved master `enabled` consent. The architecturally accepted Full Completion Parking choice remains deferred under Issue #139; its absence must not gate or veto this separate native request-only responsibility. Physical Completion Parking retains its own admission and interruption contract under [Completion Settlement Control](COMPLETION_SETTLEMENT_CONTROL.md).
 
 ## Contract participants
 
