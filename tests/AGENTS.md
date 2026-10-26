@@ -16,7 +16,7 @@ These instructions apply to the entire `/tests` subtree and specialise the repos
 
 ## Modification
 
-- Tests protect current accepted contracts, not historical repository topology. For the intentionally control-free 0.5 rewrite shell, legacy 0.4 worker-coordination behavioural suites are retained as historical evidence but removed from active CI enforcement because those responsibilities are no longer implemented. The new active shell contracts are blocking and must not be weakened to hide a shell regression.
+- Tests protect current accepted contracts, not historical repository topology. The prior 0.4 coordination suites remain historical evidence rather than active CI gates. Current independently admitted Hold & Relocate and Completion Parking responsibilities have their own blocking offline contracts, which must not be weakened to conceal a regression.
 - Change a test only when the asserted contract, fixture responsibility, or validation mechanism genuinely changes.
 - Do not weaken, delete, skip, or rewrite a test merely to make an implementation change pass CI.
 - Preserve failure evidence. A failing test may indicate architecture disproved, implementation defect, architecture/implementation mismatch, invalid test assumption, insufficient instrumentation, or environment/runtime change.
@@ -27,6 +27,6 @@ These instructions apply to the entire `/tests` subtree and specialise the repos
 GitHub Actions provides the independent execution evidence for ordinary pull requests:
 
 - `Structural contracts` is blocking for the currently loaded product shell.
-- `Lua offline behavioural contracts` is blocking for the shell bootstrap and Configuration/Log Publication dependencies. The former 0.4 traffic suites are not active gates while those modules are not loaded.
+- `Lua offline behavioural contracts` is blocking for shell bootstrap, Configuration/Log Publication, Native Blockage Observation, Hold & Relocate and Completion Parking among other current active contracts. Former 0.4 traffic suites remain outside the active gate unless separately requalified.
 - **Contract Applicability != Test Passage**: the old tests remain available for future architectural reconsideration; their removal from active CI is an explicit scope change, not evidence that the historical behaviours still pass.
 - Neither offline mechanism proves GIANTS in-game Reality.
