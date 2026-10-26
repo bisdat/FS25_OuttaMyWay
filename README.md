@@ -13,4 +13,4 @@ OuttaMyWay is not a replacement AI worker, productive route planner, agronomic s
 
 Development / engineering documentation:
 
-docs/README.md
+[docs/README.md](docs/README.md)
