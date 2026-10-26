@@ -2,7 +2,7 @@ OuttaMyWay.VersionHud={}
 local Hud=OuttaMyWay.VersionHud
 Hud.__index=Hud
 
--- Minimal product-shell status indicator; this build has no AI coordination runtime.
+-- Version-only Product Status Indicator; visibility reflects Enabled consent, not active Control.
 local VERSION_HUD_ENABLED=true
 local VERSION_HUD_X=0.985
 local VERSION_HUD_Y=0.720
