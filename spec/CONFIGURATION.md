@@ -5,15 +5,17 @@
 **Specification Jurisdiction:** Configuration  
 **Jurisdiction ID:** `CONFIGURATION`
 
-**Primary Architecture Authority:** [`architecture/CONFIGURATION.md`](../architecture/CONFIGURATION.md#specification-jurisdiction--configuration)
+**Primary Architecture Authority:** [`architecture/CONFIGURATION.md`](../architecture/CONFIGURATION.md)
 
 This Specification owns the implementation-facing contract for the supported local-profile player Configuration state, its persistence lifecycle, first-use materialisation, invalid-representation recovery, immediate semantic changes and handoff to consuming subsystems.
 
 It does not own GUI layout, player-message lifecycle, Log Publication internals, Runtime authority, diagnostic engineering controls, savegame state or multiplayer Configuration semantics.
 
-## Rewrite-shell consumer contract
+## Current runtime consumer contract
 
-While the 0.5 no-control shell is the active product, the persisted `enabled` value gates the labelled shell status indicator and future product consent, but MUST NOT construct a traffic Runtime or trigger GIANTS AI actuation. A durable enabled-change notification updates shell status only. Disabling requires no physical hand-back because the shell owns no physical controls. `hudVisible` remains persisted for future Operational Player Messages and MUST NOT hide the Product Status Indicator; `debug` continues to select Log Publication policy. Existing storage and Settings UI behaviour is retained.
+Resolved `enabled` is master product consent. The active product composes native-blockage Hold & Relocate, Completion TRANSIT and Completion Parking consumers, but Configuration alone MUST NOT grant any of them Situation, movement or job authority. Each consumer independently requires current GIANTS evidence, admission and bounded authority. Disabling removes eligibility immediately and notifies consumers to revoke and neutralise effects within their own contracts; a change notification does not certify physical release. Re-enabling restores eligibility only after durable persistence and does not replay previously consumed native completion or create a GIANTS job.
+
+`hudVisible` remains persisted for future Operational Player Messages and MUST NOT hide the Product Status Indicator; `debug` continues to select Log Publication policy. The existing Settings UI and schema-1 persistence behaviour remain unchanged.
 
 ## Supported semantic state
 
@@ -24,6 +26,8 @@ Configuration exposes exactly three supported player values:
 | `enabled` | boolean | `true` | product lifecycle |
 | `hudVisible` | boolean | `true` | GUI/HUD Operational Player Messages |
 | `debug` | boolean | `false` | Log Publication policy resolution |
+
+The distinct Full Completion Parking choice is accepted in Architecture but is not yet implemented or persisted. Schema 1 and the current General Settings surface retain these three values; until Issue #139 implements the additional consent boundary, Completion Parking depends on master `enabled` and its independent physical admission contract.
 
 No fourth player logging switch exists. NORMAL publication remains the ordinary operational journal. `debug=false` resolves publication policy to NORMAL; `debug=true` resolves it to DEBUG.
 
@@ -139,7 +143,7 @@ Because the reminder communicates product operational status rather than Operati
 
 > **Disabled Startup Reminder != Operational Player Message**
 
-The startup reminder duration is intentionally longer than the current shutdown hand-back warning. The latter follows an explicit player action; the startup reminder must remain readable through entry into gameplay because GIANTS blinking means nominal warning lifetime is not equivalent to continuously readable exposure.
+The startup reminder must remain readable through entry into gameplay rather than rely on the shorter exposure potentially adequate for an explicit-action notice. GIANTS blinking means nominal warning lifetime is not equivalent to continuously readable exposure. A dedicated disablement/hand-back notice remains unresolved under Issue #89; its intended wording is not evidence of an implemented warning.
 
 > **Warning Lifetime != Readable Exposure**
 
@@ -204,11 +208,11 @@ The exact user-facing HUD treatment of this failure remains GUI/HUD responsibili
 
 A deliberate player change to `enabled=false` applies immediately as product-consent withdrawal.
 
-Configuration owns the value change and notification. The current shell owns no worker physical effects; its consumers only update supported product-status presentation. Future worker Control, if ever implemented, requires a separately established release contract.
+Configuration owns the value change and notification. Current runtime consumers must immediately deny new admissions and request bounded release/neutralisation of their held physical effects under the governing Control contracts. Configuration itself does not call GIANTS movement or claim that neutralisation succeeded.
 
 Consent withdrawal takes effect immediately even if persisting `enabled=false` fails. A storage failure MUST NOT keep OuttaMyWay active merely to preserve consistency with the old persisted value. The current session remains disabled, the failure is surfaced, and durable success MUST NOT be claimed.
 
-A deliberate change to `enabled=true` requests shell re-enablement only after the new value has been persisted successfully. If persistence fails, the current session remains disabled and the failure is surfaced. Re-enabling does not create GIANTS AI Runtime or worker coordination.
+A deliberate change to `enabled=true` restores current-session runtime eligibility only after the new value has been persisted successfully. If persistence fails, the current session remains disabled and the failure is surfaced. Existing consumers may assess fresh evidence; they must not infer an active GIANTS job, a justified Control lease or a replayable completion from the Configuration change.
 
 ### HUD visibility
 
@@ -298,15 +302,15 @@ Configuration MUST NOT directly establish Situation meaning, Current Responsibil
 
 ## Implementation traceability
 
-The active 0.5 implementation consists only of the persistent product shell:
+Current Configuration is composed into the active product/runtime boundary:
 
-- [Configuration.lua](../scripts/configuration/Configuration.lua) owns profile-scoped persistence, first-use defaults, schema validation, recovery, getters/setters and durable change notifications;
-- [main.lua](../scripts/main.lua) resolves Configuration during startup, composes the NORMAL/DEBUG/DIAGNOSTIC publication policy, and publishes the shell's enabled/disabled status. There is **no AI Runtime or worker-control re-bootstrap**;
-- [ConfigurationSettingsExtension.lua](../scripts/gui/ConfigurationSettingsExtension.lua) exposes the supported player choices through GIANTS' General Settings and saves them through Configuration;
+- [Configuration.lua](../scripts/configuration/Configuration.lua) provides profile-scoped persistence, first-use defaults, schema validation, recovery, getters/setters and durable change notifications;
+- [main.lua](../scripts/main.lua) resolves Configuration before runtime admission, composes Log Publication and the current native-blockage Hold & Relocate, Completion TRANSIT and Completion Parking consumers, and routes enabled-change notifications to their independent relinquishment paths;
+- [ConfigurationSettingsExtension.lua](../scripts/gui/ConfigurationSettingsExtension.lua) exposes the three implemented values through GIANTS General Settings and saves them through Configuration;
 - [DisabledStartupReminder.lua](../scripts/gui/DisabledStartupReminder.lua) displays the bounded disabled reminder at mission startup;
-- [VersionHud.lua](../scripts/diagnostics/VersionHud.lua) consumes the enabled/disabled state to display the dynamic version-only product status. It is a GUI consumer, not an additional `CONFIGURATION` contract participant.
+- [VersionHud.lua](../scripts/diagnostics/VersionHud.lua) consumes the enabled state for version-only product status; it is a GUI consumer, not an additional `CONFIGURATION` contract participant.
 
-The product `enabled` flag controls the supported shell experience. Enabling cannot imply worker coordination when no AI Runtime exists. Operational Player Messages and the full HUD remain deferred to [GUI Architecture](../architecture/GUI.md).
+Master Enabled gates eligibility, not successful coordination. The runtime's independent Specifications govern native evidence, movement, interruption and completion. Operational Player Messages and the full HUD remain deferred to [GUI Architecture](../architecture/GUI.md).
 
 `scripts/config.lua` continues to own product identity and version, not player settings or mixed runtime constants.
 
@@ -316,7 +320,7 @@ The persistence mechanism relies on the FS25 user-profile/XML surfaces recorded 
 
 Those engine surfaces supply mechanics only. They do not own Configuration semantics.
 
-The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. Because the current shell has no GIANTS worker Runtime and no Control interceptors, toggling enabled only changes the shell's supported status and messaging behaviour. No worker reinitialisation, AI interception, Regulation or Control relinquishment is performed by Configuration in the current implementation.
+The Configuration Section relies on the current GIANTS General Settings extension surfaces recorded in [GIANTS API Surfaces](../docs/engine/GIANTS_API_SURFACES.md#general-settings-extension-and-mod-listener-surfaces). It extends `InGameMenuSettingsFrame.generalSettingsLayout` through file-load callback hooks and does not register a top-level `TabbedMenu` page or GUI map listener. The Settings adapter changes semantic Configuration only; current runtime consumers interpret Enabled and perform their own admission or relinquishment. Configuration itself performs no GIANTS worker actuation.
 
 ## Repository validation participants
 

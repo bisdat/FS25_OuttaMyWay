@@ -6,9 +6,9 @@
 
 This document is the authoritative live home for player-facing GUI, HUD, messaging and interaction architecture.
 
-## Rewrite-shell Product Status
+## Product Status Indicator
 
-The persistent Product Status Indicator displays **only `OuttaMyWay` and the dynamically resolved version string**, without a mode suffix, diagnosis, or operational message. This applies in the 0.5 no-control shell and remains the standing presentation contract. The indicator is absent when Configuration is disabled; its visibility does not assert that AI coordination is implemented. Actual capability status belongs in the mod description, product logging and documentation, not as invented HUD text. Operational Player Messages and the full HUD remain deferred; the disabled-startup reminder remains appropriate. The shell must not display an intervention-completed or control-handback message because it has never taken control.
+The persistent Product Status Indicator displays **only `OuttaMyWay` and the dynamically resolved version string**, without a mode suffix, diagnosis, or operational message. It is absent when Configuration is disabled. The active product can admit bounded Hold & Relocate and Completion Parking Control, but this indicator reports product enablement only, not a currently held Control lease or verified physical outcome. Operational Player Messages and the full HUD remain deferred; the Disabled Startup Reminder remains a separate product-status notice. No completion, intervention or hand-back message may be inferred from the version indicator.
 
 ## Current observation and boundaries
 
@@ -27,7 +27,7 @@ The Configuration **HUD visibility** choice governs Operational Player Messages 
 
 Master OuttaMyWay enablement governs whether the Product Status Indicator exists. Explicit disablement immediately supersedes OuttaMyWay functional responsibility and triggers bounded release/neutralisation of effects the mod already owns; there is no long-lived shutdown-drain state. The Product Status Indicator must disappear when that immediate hand-back has completed rather than remain visible for an unrelated GIANTS Job or Local Operation lifetime.
 
-A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. The current bounded shutdown/hand-back notification therefore confirms that OuttaMyWay has stopped and tells the player to review active workers. It uses the GIANTS blinking-warning surface for 2000 ms and remains governed by the existing Operational messages visibility choice. Broader Operational Player Message queueing and prioritisation remain owned by this GUI Architecture; Issue #89 tracks the unresolved design and implementation work.
+A disable action may leave active GIANTS AI jobs in an awkward or unresolved physical situation because **Safe Relinquishment != Safe Resolution**. The active runtime requests immediate bounded release of held effects; that request alone cannot certify native neutralisation or autonomous recovery. A dedicated disablement/hand-back warning is not currently wired into the active product, even though an earlier localised text resource remains. Issue #89 retains the outstanding operational notice, truthful outcome and retirement obligations, including concurrency and presentation. The Disabled Startup Reminder is independent of this work.
 
 ### Disabled Startup Reminder
 
@@ -63,15 +63,15 @@ OuttaMyWay exposes supported player Configuration through one dedicated **OuttaM
 
 The section owns presentation and player interaction only. It MUST consume the semantic `Configuration` interface and MUST NOT read, write or interpret `configuration.xml`, schema versions, persistence paths or Runtime state directly.
 
-The initial section exposes exactly the three accepted player choices:
+The current section exposes three implemented player choices. The accepted Full Completion Parking choice remains deferred under Issue #139 and is not yet displayed:
 
 | Player-facing label | Configuration value | Meaning |
 | --- | --- | --- |
-| **Enabled** | `enabled` | Master OuttaMyWay consent. Off hides the status indicator and withdraws consent; on restores shell status only after successful persistence. The current product has no AI worker Control to relinquish or re-bootstrap. |
+| **Enabled** | `enabled` | Master OuttaMyWay consent. Off removes admission eligibility, requests bounded release of held runtime Control and hides the status indicator. On restores eligibility after successful persistence; each runtime still requires its own fresh evidence and admission. |
 | **Operational messages** | `hudVisible` | Shows or hides Operational Player Messages only. It does not hide the Product Status Indicator. |
 | **Debug** | `debug` | Adds bounded troubleshooting detail to the normal operational log. It does not expose engineering DIAGNOSTIC mode. |
 
-Each choice is a simple **On / Off** option. No per-capability switches, tuning values, Logging switch, DIAGNOSTIC switch or Reset Defaults action belong in the initial section.
+Each implemented choice is a simple **On / Off** option. Apart from the separately accepted but deferred Full Completion Parking choice, no other per-capability switches, tuning values, Logging switch, DIAGNOSTIC switch or Reset Defaults action belong in the section.
 
 The section extends `InGameMenuSettingsFrame.generalSettingsLayout` rather than registering a new top-level `TabbedMenu` page or input binding. This preserves GIANTS ownership of Settings navigation, focus, lifetime and shutdown teardown.
 
@@ -89,7 +89,7 @@ The Configuration area remains the architectural host for a future discoverable 
 English is the localisation source language under [`docs/LOCALISATION.md`](../docs/LOCALISATION.md). Initial Configuration Section wording is:
 
 - section title: **OuttaMyWay**
-- **Enabled** — “Allow OuttaMyWay to coordinate supported GIANTS AI field workers. Turning this off immediately returns all control to GIANTS AI.”
+- **Enabled** — “Enable live OuttaMyWay Hold & Relocate control and the status indicator. In-game validation is pending.”
 - **Operational messages** — “Show messages that explain OuttaMyWay activity and waiting. This does not hide the OuttaMyWay status indicator.”
 - **Debug** — “Add extra troubleshooting detail to the log. Normal operational logging remains enabled.”
 - persistence warning — “OuttaMyWay could not save this setting. The current value is shown in the menu.”

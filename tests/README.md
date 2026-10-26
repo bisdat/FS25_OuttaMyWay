@@ -2,10 +2,10 @@
 
 This directory contains current CI contracts and retained **historical** tests. Testing methodology is owned by [Testing Methodology](../docs/TESTING_METHODOLOGY.md); passing a test never creates Architecture or a Specification.
 
-## Current active shell contracts
+## Current active offline contracts
 
-- [Shell structural contracts](test_product_shell_structure.py) — exact explicit `scripts/main.lua` module inventory, no orphan production Lua, two presentation listeners and passive native observer, dormant Hold & Relocate coordinator, dynamic version-only HUD, and coherent TEST identity.
-- [Shell bootstrap smoke](shell/main_smoke.lua) — no GIANTS runtime or vehicle Control; enabled/disabled status behaviour.
+- [Shell structural contracts](test_product_shell_structure.py) — explicit `scripts/main.lua` module inventory and admitted runtime wiring, native observation and Control boundaries, version-only status and coherent TEST identity.
+- [Shell bootstrap smoke](shell/main_smoke.lua) — production entry-point loading, runtime composition and event-listener registration under GIANTS-free mocks; it does not demonstrate physical vehicle Control in-game.
 - [Spatial Pair Inference](shell/spatial_pair_inference.lua) — pure 1000 ms gate and 30 m nearest eligible root.
 - [Live Hold & Relocate](shell/live_hold_relocate.lua) — independent GIANTS job/field-polygon Pair Commitment, server interlock, physical adapter, immediate TRANSIT/reverse and timer-only Hold release under mocks; in-game Reality is still unvalidated.
 - [Native FIELDWORK Job Replacement](shell/native_fieldwork_job_replacement.lua) — native prepare/validate before stop, immediate stop-to-start, independent Job Episode source and conservative post-stop uncertainty under mocked GIANTS APIs; no in-game claim.
@@ -17,13 +17,13 @@ This directory contains current CI contracts and retained **historical** tests. 
 - [Configuration](shell/configuration_persistence.lua), [diagnostic publication policy](replacement_core/diagnostic_publication_policy_source.lua) and [Log Publication](replacement_core/log_publication.lua) — independently retained supporting runtime contracts.
 - [GitHub Actions](../.github/workflows/offline-validation.yml) — runs the blocking shell structural and Lua suites. Generated LDoc is a derived non-authoritative reference.
 
-The native observer invokes Spatial Pair Inference only on qualifying single blocked pulses; offline tests do not establish in-game event-fidelity or player-visible behaviour. The completed `NativeBlockedProbe` and `NativeBlockedEventTap` fixtures and instruments are retired. The 0.5.0.5 experiment remains reconstructable from Git history; no diagnostic observer remains in current source.
+The native observer can nominate Spatial Pair Inference from qualified blocked evidence; independent authority must admit each Control action. Offline tests do not establish in-game event fidelity, safe physical clearance or player-visible behaviour. The former `NativeBlockedProbe` and `NativeBlockedEventTap` instruments are retired. The TEST 0.5.0.5 experiment remains reconstructable from Git history; the current `NativeBlockageObservation` is a separate active production observer.
 
 ## Historical evidence — not active CI
 
 `replacement_core/` and `replay/` retain pre-rewrite offline fixtures and former traffic-contract structure tests. Most reference sources retired from the current `scripts/` tree. Their prior passing results are **historical evidence only**; these suites are no longer runnable against the current shell and must not be described as current regression gates.
 
-The preserved prior-era implementation and its valid corresponding contracts live at [archive/0.4.11.0](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). A future reintroduction requires a distinct architectural decision and new Specification/validation applicability, **not** opportunistic restoration of old tests.
+The prior-era implementation and its corresponding contracts live at [archive/0.4.11.0](https://github.com/bisdat/FS25_OuttaMyWay/tree/archive/0.4.11.0). Current worker-control behaviour is covered by separate current Specifications and validation contracts; old tests must not be opportunistically restored as authority for those responsibilities.
 
 ## Maintenance boundary
 
