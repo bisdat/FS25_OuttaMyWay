@@ -230,7 +230,7 @@ end
 -- candidate, not an unverified intermediate exit or a synthetic entry pose.
 local REVERSE_EXIT_MAX_M=40
 local REVERSE_EXIT_GUIDE_M=4
-local REVERSE_EXIT_WORK_UNITS=96
+local REVERSE_EXIT_WORK_UNITS=24
 local function reverseExitEligible(p,frame)
     return -(p.fx*frame.nx+p.fz*frame.nz)>=math.cos(20*RAD)
 end
