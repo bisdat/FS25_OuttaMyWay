@@ -437,11 +437,10 @@ function Route.plan(vehicle,checkpoint,options)
     end
     local frame=edgeFrame(edge,poly)
     if frame==nil then return nil,"EDGE_OUTWARD_UNAVAILABLE" end
-    if beginReverseExit({options=options,current=current,frame=frame}) then
-        local reverseSession={options=options,current=current,foot=foot,
-            poly=poly,neighbors=neighbors,frame=frame,occupants=occupants,
-            ownRadius=ownRadius,fieldId=fieldId,edgeIndex=edge.index}
-        beginReverseExit(reverseSession)
+    local reverseSession={options=options,current=current,foot=foot,
+        poly=poly,neighbors=neighbors,frame=frame,occupants=occupants,
+        ownRadius=ownRadius,fieldId=fieldId,edgeIndex=edge.index}
+    if beginReverseExit(reverseSession) then
         for _=1,REVERSE_EXIT_MAX_M do
             local phase,route=reverseExitStep(reverseSession)
             if phase=="DONE" then return route,nil end
