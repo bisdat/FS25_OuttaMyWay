@@ -438,4 +438,44 @@ local refused,refusal=Route.plan(vehicle,nil,{
     sourceField=nonFixtureField,edgeIndex=9})
 assert(refused==nil and refusal=="COMPLETED_POSE_OUTSIDE_SELECTED_EDGE_ENVELOPE",
     "an unqualified exterior start must remain outside admission")
+-- Reverse Boundary Egress: an actual pose facing into the Source Field
+-- can qualify a straight rearward terminal across a selected boundary.
+-- The entire member, terminal arrival envelope and reverse stopping
+-- reserve must fit inside the same bounded exterior margin.
+current.x,current.z,current.fx,current.fz=60,16,0,1
+memberCount=1
+local reverseField={densityMapPolygon={
+    pointsX={0,120,120,0},pointsZ={0,0,120,120}},fieldId=91}
+g_fieldManager.fields={[91]=reverseField}
+local reverseSource=assert(OuttaMyWay.CompletionFieldMembership.identify(vehicle))
+assert(reverseSource.fieldId==91)
+local reverseOptions={sourceField=reverseSource,edgeIndex=1}
+local reverseSession=assert(Route.beginPlan(vehicle,reverseOptions))
+local reverseState,reverseRoute,reverseReason
+for i=1,500 do
+    local before=reverseSession.spent
+    reverseState,reverseRoute,reverseReason=Route.advancePlan(reverseSession,64)
+    assert(reverseSession.spent-before<=64,
+        "reverse exit cannot exceed the incremental geometry work budget")
+    if reverseState~="PENDING" then break end
+end
+assert(reverseState=="DONE" and reverseRoute
+    and reverseRoute.method=="REVERSE_BOUNDARY_EXIT",reverseReason)
+assert(reverseRoute.reverseM>16 and reverseRoute.reverseM<=40
+    and reverseRoute.estimatedTravelM==reverseRoute.reverseM)
+assert(#reverseRoute.legs>=2
+    and not reverseRoute.legs[#reverseRoute.legs].moveForwards
+    and reverseRoute.legs[#reverseRoute.legs].arrivalRadiusM==0.75,
+    "the final reverse target requires precise native stopping")
+local reverseReference=assert(Route.plan(vehicle,nil,reverseOptions))
+assert(reverseReference.method==reverseRoute.method
+    and reverseReference.reverseM==reverseRoute.reverseM,
+    "reference and bounded planners must agree on the reverse exit")
+current.x,current.z,current.fx,current.fz=
+    reverseRoute.terminalPose.x,reverseRoute.terminalPose.z,
+    reverseRoute.terminalPose.fx,reverseRoute.terminalPose.fz
+assert(Route.verifyTerminal(vehicle,reverseRoute),
+    "stopped reverse exit requires real whole-member terminal evidence")
+assert(Route.guard(vehicle,reverseRoute))
+print("bounded actual-pose reverse boundary exit PASS")
 print("completion settlement registered-field, actual-pose margin and TS019 regression PASS")
