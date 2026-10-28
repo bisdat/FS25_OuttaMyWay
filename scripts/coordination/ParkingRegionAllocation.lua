@@ -14,6 +14,10 @@ local Parking=OuttaMyWay.CompletionParkingGeometry
 local Membership=OuttaMyWay.CompletionFieldMembership
 local MIN_TERMINAL_MARGIN_M=3
 local MIN_STATION_SPACING_M=20
+-- Bound a single terminal-site search without declaring that unfinished
+-- geometry is impossible. Preserve its session for a later work slice.
+local LOCAL_SITE_SLICE_UNITS=12000
+local INITIAL_CROSS_EDGE_SITES=16
 -- Counts are collected only when the caller enables the one-shot
 -- diagnostic. They do not participate in candidate qualification.
 local function rejected(s,bucket,reason,amount)
@@ -139,7 +143,8 @@ function M.beginPlan(vehicle,ledger,sourceField,disposition,collectEvidence)
     end
     local session={vehicle=vehicle,ledger=ledger,sourceField=sourceField,
         disposition=disposition or "INSIDE",phase="INIT",
-        spent=0,advances=0,siteIndex=0}
+        spent=0,advances=0,siteIndex=0,
+        completedCount=0,deferredLocal={},resumeAlternation=false}
     if collectEvidence==true then
         session.evidence={sitesTotal=0,sitesExamined=0,
             localPlans=0,localCandidates=0,localFeasible=0,
@@ -232,10 +237,28 @@ function M.advancePlan(s,units)
         return "PENDING"
     end
     if s.phase=="NEXT" then
+        -- Visit a bounded cross-edge set before re-expanding deep local
+        -- searches. Alternate new candidates with resumable local work;
+        -- a search slice is not an edge refusal or an invented route.
+        local firstCoverage=math.min(#s.sites,INITIAL_CROSS_EDGE_SITES)
+        if #s.deferredLocal>0
+            and (s.siteIndex>=#s.sites
+                or (s.siteIndex>=firstCoverage
+                    and not s.resumeAlternation)) then
+            local saved=table.remove(s.deferredLocal,1)
+            s.site=saved.site
+            s.localPlan=saved.plan
+            s.prevSpent=s.localPlan.spent or 0
+            s.siteSliceEnd=s.prevSpent+LOCAL_SITE_SLICE_UNITS
+            s.resumeAlternation=true
+            s.phase="QUALIFY"
+            return "PENDING"
+        end
         if s.siteIndex>=#s.sites then
             s.finished=true
             return "FAILED",nil,"NO_QUALIFIED_TERMINAL_REGION"
         end
+        s.resumeAlternation=false
         s.siteIndex=s.siteIndex+1
         if s.evidence~=nil then
             s.evidence.sitesExamined=s.evidence.sitesExamined+1
@@ -274,6 +297,7 @@ function M.advancePlan(s,units)
         end
         if siteRefusal~=nil then
             rejected(s,"siteRejections",siteRefusal)
+            s.completedCount=s.completedCount+1
             s.spent=s.spent+1
             return "PENDING"
         end
@@ -297,6 +321,7 @@ function M.advancePlan(s,units)
         end
         s.localPlan=session
         s.site=site
+        s.siteSliceEnd=LOCAL_SITE_SLICE_UNITS
         s.phase="QUALIFY"
         return "PENDING"
     end
@@ -304,7 +329,15 @@ function M.advancePlan(s,units)
         local phase,route,why=Local.advancePlan(s.localPlan,units)
         s.spent=s.spent+(s.localPlan.spent-(s.prevSpent or 0))
         s.prevSpent=s.localPlan.spent
-        if phase=="PENDING" then return "PENDING" end
+        if phase=="PENDING" then
+            if s.localPlan.spent>=s.siteSliceEnd then
+                s.deferredLocal[#s.deferredLocal+1]={
+                    site=s.site,plan=s.localPlan}
+                s.localPlan=nil;s.siteSliceEnd=nil
+                s.prevSpent=nil;s.phase="NEXT"
+            end
+            return "PENDING"
+        end
         if s.evidence~=nil then
             s.evidence.localCandidates=s.evidence.localCandidates+
                 (s.localPlan.candidates or 0)
@@ -340,6 +373,7 @@ function M.advancePlan(s,units)
                 if s.disposition=="STRADDLING" then
                     -- This local route already starts at the current actual
                     -- pose. No imagined return to infield space is required.
+                    s.completedCount=s.completedCount+1
                     s.finished=true
                     return "DONE",M.qualifiedResult(s,nil,route)
                 end
@@ -364,7 +398,9 @@ function M.advancePlan(s,units)
                 or not claimAvailable and "LOCAL_TERMINAL_CLAIM"
                 or "LOCAL_TERMINAL_OCCUPIED")
         end
-        s.prevSpent=nil;s.localPlan=nil;s.phase="NEXT"
+        s.completedCount=s.completedCount+1
+        s.prevSpent=nil;s.localPlan=nil;s.siteSliceEnd=nil
+        s.phase="NEXT"
         return "PENDING"
     end
     if s.phase=="CONNECT" then
@@ -378,6 +414,7 @@ function M.advancePlan(s,units)
             if s.evidence~=nil then
                 s.evidence.approachConnected=s.evidence.approachConnected+1
             end
+            s.completedCount=s.completedCount+1
             s.finished=true
             return "DONE",M.qualifiedResult(s,approach,nil)
         end
@@ -385,6 +422,7 @@ function M.advancePlan(s,units)
         -- but unreachable from actual completion pose: reject and try next.
         rejected(s,"siteRejections",
             "APPROACH_CONNECT_"..tostring(why or "NO_ROUTE"))
+        s.completedCount=s.completedCount+1
         s.prevSpent=nil;s.prevApproachSpent=nil
         s.localPlan=nil;s.approachPlan=nil
         s.qualifiedLocalRoute=nil;s.phase="NEXT"

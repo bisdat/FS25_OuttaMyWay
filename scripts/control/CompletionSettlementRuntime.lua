@@ -124,8 +124,10 @@ local function publishAllocationEvidence(state,reason,incomplete)
             planningElapsedMs=state.planningElapsedMs or 0,
             sitesTotal=e.sitesTotal or 0,
             sitesExamined=e.sitesExamined or 0,
-            sitesCompleted=math.max(0,(p.siteIndex or 0)
-                -(working and 1 or 0)),
+            sitesCompleted=type(p.completedCount)=="number"
+                and p.completedCount or math.max(0,(p.siteIndex or 0)
+                    -(working and 1 or 0)),
+            deferredLocalSites=#(p.deferredLocal or {}),
             currentPhase=p.phase or "unknown",
             currentSiteIndex=working and (p.siteIndex or 0) or "none",
             currentSiteEdge=working and p.site
