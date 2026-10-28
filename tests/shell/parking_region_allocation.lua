@@ -266,4 +266,40 @@ assert(sawEarliestQualified and e.localPlans>0
 Situation.observe=savedObserve
 OuttaMyWay.SettlementPhysicalOccupancy.clear=savedClear
 Local.beginPlan,Local.advancePlan=savedBegin,savedAdvance
+-- Long local qualification must not prevent a second edge from
+-- receiving a first work slice. The paused candidate remains resumable,
+-- and no unfinished candidate becomes an admitted route or claim.
+local visitedEdges={}
+Situation.observe=function() return {
+    peers={},workingCount=0,motionCount=0,headingCount=0} end
+OuttaMyWay.SettlementPhysicalOccupancy.clear=function()return true end
+Local.beginPlan=function(_,options)
+    visitedEdges[options.edgeIndex]=true
+    return {spent=0,candidates=0,rejectionCounts={}}
+end
+Local.advancePlan=function(plan,units)
+    plan.spent=plan.spent+units
+    plan.candidates=plan.candidates+1
+    return "PENDING"
+end
+local fair=assert(Allocation.beginPlan(
+    first,ledger,sourceField,"INSIDE",true))
+local fairState
+for i=1,400 do
+    local before=fair.spent
+    fairState=Allocation.advancePlan(fair,320)
+    assert(fair.spent-before<=320,
+        "cross-edge scheduling must preserve the frame work budget")
+    if fair.siteIndex>=4 and #fair.deferredLocal>=2 then break end
+end
+local distinct=0
+for _ in pairs(visitedEdges) do distinct=distinct+1 end
+assert(fairState=="PENDING" and distinct>=2
+    and #fair.deferredLocal>=2 and fair.completedCount==0,
+    "unfinished edge searches must yield fairly, not be mistaken for refusals")
+assert(fair.evidence and fair.evidence.localFeasible==0,
+    "fair scheduling cannot invent a completed candidate")
+Situation.observe=savedObserve
+OuttaMyWay.SettlementPhysicalOccupancy.clear=savedClear
+Local.beginPlan,Local.advancePlan=savedBegin,savedAdvance
 print("qualified terminal allocation: disjoint claims and future-demand-aware real allocator PASS")
