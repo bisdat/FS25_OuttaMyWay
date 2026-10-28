@@ -158,7 +158,7 @@ local function approachAllowed(p,foot,initial,poly,neighbors,frame,reverse,check
     end
     return true
 end
-local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius)
+local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint,occupants,ownRadius,reverseExit)
     local station,depth=coordinates(p,frame)
     if occupants~=nil and not Occupancy.clear(p,ownRadius,occupants)
         then return false,"TERMINAL_PHYSICAL_OCCUPANCY" end
@@ -166,9 +166,18 @@ local function terminalAllowed(p,foot,initial,poly,neighbors,frame,checkpoint,oc
         or depth<0 or depth>STOP_DEPTH_MAX_M then
         return false,"TERMINAL_ROOT_OUTSIDE_EDGE_BAND"
     end
-    local parallel=math.abs(p.fx*frame.ux+p.fz*frame.uz)
-    if parallel<math.cos(15*RAD) then
-        return false,"TERMINAL_HEADING_NOT_EDGE_ALIGNED"
+    if reverseExit then
+        -- A reverse boundary exit ends with the nose facing back into the
+        -- worked field. It is qualified separately from edge-tangent parking.
+        local outward=-(p.fx*frame.nx+p.fz*frame.nz)
+        if outward<math.cos(20*RAD) then
+            return false,"REVERSE_TERMINAL_HEADING_NOT_OUTWARD"
+        end
+    else
+        local parallel=math.abs(p.fx*frame.ux+p.fz*frame.uz)
+        if parallel<math.cos(15*RAD) then
+            return false,"TERMINAL_HEADING_NOT_EDGE_ALIGNED"
+        end
     end
     local boxes=rotatedFoot(foot,initial,p)
     if not noNeighborHit(boxes,neighbors,checkpoint) then
@@ -204,14 +213,97 @@ local function terminalArrivalPose(p,sample)
         fx=p.fx,fz=p.fz}
 end
 local function nominalTerminalArrivalClear(p,foot,initial,poly,
-    neighbors,frame,checkpoint,occupants,ownRadius)
+    neighbors,frame,checkpoint,occupants,ownRadius,reverseExit)
     for i=1,#TERMINAL_ARRIVAL_DIRECTIONS do
         local sample=terminalArrivalPose(p,TERMINAL_ARRIVAL_DIRECTIONS[i])
         if not terminalAllowed(sample,foot,initial,poly,
-            neighbors,frame,checkpoint,occupants,ownRadius) then
+            neighbors,frame,checkpoint,occupants,ownRadius,
+            reverseExit) then
             return false
         end
     end
+    return true
+end
+-- Only an actual-pose reverse directed into the nominated exterior band
+-- may cross the Source Field boundary. Each metre screens the full nominal
+-- assembly, occupied space and neighbouring fields. This is a direct terminal
+-- candidate, not an unverified intermediate exit or a synthetic entry pose.
+local REVERSE_EXIT_MAX_M=40
+local REVERSE_EXIT_GUIDE_M=4
+local REVERSE_EXIT_WORK_UNITS=96
+local function reverseExitEligible(p,frame)
+    return -(p.fx*frame.nx+p.fz*frame.nz)>=math.cos(20*RAD)
+end
+local function reverseExitStepAllowed(s,p)
+    local station,depth=coordinates(p,s.frame)
+    if station<2 or station>s.frame.length-2
+        or (not G.inside(s.poly,p.x,p.z)
+            and (depth<0 or depth>STOP_DEPTH_MAX_M))
+        or not Occupancy.clear(p,s.ownRadius,s.occupants) then
+        return false
+    end
+    local boxes=rotatedFoot(s.foot,s.current,p)
+    if not noNeighborHit(boxes,s.neighbors) then return false end
+    for m=1,#boxes do
+        for i=1,4 do
+            local corner=boxes[m][i]
+            if not G.inside(s.poly,corner.x,corner.z) then
+                local along,out=coordinates(corner,s.frame)
+                if along<1 or along>s.frame.length-1
+                    or out<0 or out>STOP_DEPTH_MAX_M then
+                    return false
+                end
+            end
+        end
+    end
+    return true
+end
+local function reverseExitStep(s)
+    local r=s.reverseExit
+    if r.metres>=REVERSE_EXIT_MAX_M then return "FAILED" end
+    local p=advance(r.pose,-1)
+    if not reverseExitStepAllowed(s,p) then return "FAILED" end
+    r.metres=r.metres+1
+    r.pose=p
+    if r.metres%REVERSE_EXIT_GUIDE_M==0 then
+        r.legs[#r.legs+1]={name="REVERSE_BOUNDARY_GUIDANCE",
+            point={x=p.x,z=p.z},moveForwards=false}
+    end
+    local station=coordinates(p,s.frame)
+    local withinClaim=s.options==nil
+        or ((type(s.options.stationMin)~="number"
+                or station>=s.options.stationMin)
+            and (type(s.options.stationMax)~="number"
+                or station<=s.options.stationMax))
+    if withinClaim and r.metres>=REVERSE_EXIT_GUIDE_M
+        and terminalAllowed(p,s.foot,s.current,s.poly,s.neighbors,
+            s.frame,nil,s.occupants,s.ownRadius,true)
+        and nominalTerminalArrivalClear(p,s.foot,s.current,s.poly,
+            s.neighbors,s.frame,nil,s.occupants,s.ownRadius,true)
+        and terminalAllowed(advance(p,-STOPPING_RESERVE_M),
+            s.foot,s.current,s.poly,s.neighbors,s.frame,
+            nil,s.occupants,s.ownRadius,true) then
+        local last=r.legs[#r.legs]
+        if r.metres%REVERSE_EXIT_GUIDE_M~=0 then
+            last={name="REVERSE_BOUNDARY_TERMINAL",
+                point={x=p.x,z=p.z},moveForwards=false}
+            r.legs[#r.legs+1]=last
+        end
+        last.arrivalRadiusM=TERMINAL_ARRIVAL_RADIUS_M
+        return "DONE",{field=s.fieldId,edge=s.edgeIndex,poly=s.poly,
+            neighbors=s.neighbors,memberCount=s.foot.memberCount,
+            frame=s.frame,method="REVERSE_BOUNDARY_EXIT",direction=0,
+            reverseM=r.metres,guideRadiusM=0,
+            estimatedTravelM=r.metres,terminalPose=p,
+            terminalArrivalRadiusM=TERMINAL_ARRIVAL_RADIUS_M,
+            legs=r.legs}
+    end
+    return "PENDING"
+end
+local function beginReverseExit(s)
+    if s.options and s.options.entryPose then return false end
+    if not reverseExitEligible(s.current,s.frame) then return false end
+    s.reverseExit={pose=s.current,metres=0,legs={}}
     return true
 end
 local function turnStep(p,radius,angle)
@@ -345,6 +437,17 @@ function Route.plan(vehicle,checkpoint,options)
     end
     local frame=edgeFrame(edge,poly)
     if frame==nil then return nil,"EDGE_OUTWARD_UNAVAILABLE" end
+    if beginReverseExit({options=options,current=current,frame=frame}) then
+        local reverseSession={options=options,current=current,foot=foot,
+            poly=poly,neighbors=neighbors,frame=frame,occupants=occupants,
+            ownRadius=ownRadius,fieldId=fieldId,edgeIndex=edge.index}
+        beginReverseExit(reverseSession)
+        for _=1,REVERSE_EXIT_MAX_M do
+            local phase,route=reverseExitStep(reverseSession)
+            if phase=="DONE" then return route,nil end
+            if phase=="FAILED" then break end
+        end
+    end
     local best
     -- A finite pose-sensitive candidate set, tried for both edge directions.
     -- Reverse-first is preferred when total safe travel is comparable.
@@ -764,7 +867,23 @@ local function executeBudget(s)
             s.poly,s.neighbors,s.current,s.foot,s.frame,s.fieldId,s.edgeIndex=
                 poly,neighbors,current,foot,frame,fieldId,edge.index
             s.direction=-1;s.reverse=1;s.radius=1;s.angle=1;s.method=1
-            s.phase="CANDIDATE"
+            if beginReverseExit(s) then
+                s.phase="REVERSE_EXIT"
+            else
+                s.phase="CANDIDATE"
+            end
+        elseif s.phase=="REVERSE_EXIT" then
+            -- The same 20-second response deadline applies; reverse
+            -- screening consumes finite weighted work in each update.
+            if not charge(s,REVERSE_EXIT_WORK_UNITS) then
+                return "PENDING"
+            end
+            local result,route=reverseExitStep(s)
+            if result=="DONE" then
+                s.finished=true
+                return "DONE",route
+            end
+            if result=="FAILED" then s.phase="CANDIDATE" end
         elseif s.phase=="CANDIDATE" then
             if not charge(s,1) then return "PENDING" end
             createCandidate(s)
@@ -993,7 +1112,8 @@ function Route.verifyTerminal(vehicle,route)
     local p=pose(vehicle)
     if p==nil then return false,"ROOT_POSE_UNAVAILABLE" end
     local valid,predicate=terminalAllowed(p,foot,p,route.poly,
-        route.neighbors,route.frame)
+        route.neighbors,route.frame,nil,nil,nil,
+        route.method=="REVERSE_BOUNDARY_EXIT")
     if not valid then
         return false,"WHOLE_ASSEMBLY_NOT_IN_INTERFIELD_PARKING_REGION",predicate
     end
